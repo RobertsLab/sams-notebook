@@ -41,3 +41,10 @@ Qubit results (Google Sheet):
 Samples were stored at -80<sup>o</sup>C in:
 
 [Rack 15, 4, 5](http://b.link/srlab-80C) in [C.bairdi gDNA Box #2](https://docs.google.com/spreadsheets/d/1EnI5UlvN8qoT3pB0VcP6Eu44BdiyyElToYA9VwukPEE/edit?usp=sharing)
+
+
+| Sample ID   | [DNA] (ng/uL) |
+|-------------|---------------|
+| 6212_485_26 | 28.8          |
+| 6212_132_9  | 19.7          |
+| 6212_334_12 | 23.6          |
