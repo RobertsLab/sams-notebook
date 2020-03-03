@@ -32,4 +32,15 @@ Jupyter Notebook (GitHub):
 
 Output folder:
 
-- []()
+- [20200228_swoose_olur_v081_fasta_renaming](https://gannet.fish.washington.edu/Atumefaciens/20200228_swoose_olur_v081_fasta_renaming)
+
+Renamed FastA ():
+
+- [Olurida_v081.genes.fasta](https://gannet.fish.washington.edu/Atumefaciens/20200228_swoose_olur_v081_fasta_renaming/Olurida_v081.genes.fasta)
+
+Renamed FastA Index (txt):
+
+- [Olurida_v081.genes.fasta.fai](https://gannet.fish.washington.edu/Atumefaciens/20200228_swoose_olur_v081_fasta_renaming/Olurida_v081.genes.fasta.fai)
+
+
+Will add to [Genomic Resources wiki](https://github.com/RobertsLab/resources/wiki/Genomic-Resources#ostrea-lurida).
