@@ -30,6 +30,8 @@ Jupyter Notebook (GitHub):
 
 #### RESULTS
 
+This ran for a surprisingly long time - a bit over 17 _hours_ just for a find/replace. I think I could've speeded things up if the last `sed` command looked only at lines beginning with "`>`", instead of scanning each line for each possible match. Oh well.
+
 Output folder:
 
 - [20200228_swoose_olur_v081_fasta_renaming](https://gannet.fish.washington.edu/Atumefaciens/20200228_swoose_olur_v081_fasta_renaming)
