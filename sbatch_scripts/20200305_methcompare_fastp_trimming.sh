@@ -49,7 +49,7 @@ fastp=/gscratch/srlab/programs/fastp-0.20.0/fastp
 multiqc=/gscratch/srlab/programs/anaconda3/bin/multiqc
 
 # Programs array
-programs_array=(fastp)
+programs_array=("${fastp}" "${multiqc}")
 
 
 # Capture program options
