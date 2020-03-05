@@ -24,7 +24,7 @@
 ### https://github.com/hputnam/Meth_Compare
 
 # Exit script if any command fails
-set -e
+# set -e
 
 # Load Python Mox module for Python module availability
 
@@ -57,7 +57,7 @@ for program in "${!programs_array[@]}"
 do
 	echo "Program options for ${programs_array[program]}: "
 	echo ""
-	${programs_array[program]} -h >> program_options.log
+	${programs_array[program]} -h &>> program_options.log
 	echo ""
 	echo ""
 	echo "----------------------------------------------"
