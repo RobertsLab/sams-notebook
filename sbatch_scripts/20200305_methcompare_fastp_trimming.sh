@@ -83,6 +83,9 @@ do
 done
 
 # Run fastp on RRBS files
+# Specifies removal of first 2bp from 3' end of read1 and
+# removes 2bp from 5' end of read2, per Bismark instructions for RRBS
+# https://rawgit.com/FelixKrueger/Bismark/master/Docs/Bismark_User_Guide.html
 for index in "${!rrbs_array[@]}"
 do
 	timestamp=$(date +%Y%m%d%M%S)
@@ -90,6 +93,8 @@ do
 	--in1 "${rrbs_array[index]}${read1}" \
 	--in2 "${rrbs_array[index]}${read2}" \
 	--detect_adapter_for_pe \
+	--trim_tail1 2 \
+	--trim_front2 2 \
 	--thread ${threads} \
 	--html "${rrbs_array[index]}".fastp-trim."${timestamp}".report.html \
 	--json "${rrbs_array[index]}".fastp-trim."${timestamp}".report.json \
