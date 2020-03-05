@@ -51,6 +51,16 @@ programs_array=(fastp)
 
 # Capture program options
 for program in "${!programs_array[@]}"
+do
+	echo "Program options for ${programs_array[program]}: "
+	echo ""
+	${programs_array[program]} -h >> program_options.log
+	echo ""
+	echo ""
+	echo "----------------------------------------------"
+	echo ""
+	echo ""
+done
 
 
 # Input/output files
