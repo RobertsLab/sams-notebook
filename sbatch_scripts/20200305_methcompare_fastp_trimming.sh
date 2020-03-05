@@ -19,7 +19,9 @@
 
 
 ### WGBS and RRBS trimming using fastp.
-
+### FastQ files were provide by Hollie Putnam.
+### See this GitHub repo for more info:
+### https://github.com/hputnam/Meth_Compare
 
 # Exit script if any command fails
 set -e
