@@ -96,20 +96,23 @@ do
 	--trim_tail1 2 \
 	--trim_front2 2 \
 	--thread ${threads} \
-	--html "${rrbs_array[index]}".fastp-trim."${timestamp}".report.html \
-	--json "${rrbs_array[index]}".fastp-trim."${timestamp}".report.json \
-	--out1 "${rrbs_array[index]}".fastp-trim."${timestamp}${read1}" \
-	--out2 "${rrbs_array[index]}".fastp-trim."${timestamp}${read2}"
+	--html "${rrbs_array[index]}.fastp-trim.${timestamp}.report.html" \
+	--json "${rrbs_array[index]}.fastp-trim.${timestamp}.report.json" \
+	--out1 "${rrbs_array[index]}.fastp-trim.${timestamp}${read1}" \
+	--out2 "${rrbs_array[index]}.fastp-trim.${timestamp}${read2}"
 
 	# Generate md5 checksums for newly trimmed files
 	{
-		md5sum "${rrbs_array[index]}".fastp-trim."${timestamp}${read1}"
-		md5sum "${rrbs_array[index]}".fastp-trim."${timestamp}${read2}"
+		md5sum "${rrbs_array[index]}.fastp-trim.${timestamp}${read1}"
+		md5sum "${rrbs_array[index]}.fastp-trim.${timestamp}${read2}"
 	} >> "${trimmed_checksums}"
 
 done
 
-# Run fastp on RRBS files
+# Run fastp on WGBS files
+# Specifies removal of first 10bp from 5' and 3' end of all reads
+# per Bismark instructions for WGBS Zymo/Swift library kits
+# https://rawgit.com/FelixKrueger/Bismark/master/Docs/Bismark_User_Guide.html
 for index in "${!wgbs_array[@]}"
 do
 	timestamp=$(date +%Y%m%d%M%S)
@@ -117,16 +120,20 @@ do
 	--in1 "${wgbs_array[index]}" \
 	--in2 "${wgbs_array[index]}" \
 	--detect_adapter_for_pe \
+	--trim_front1 10 \
+	--trim_tail1 10 \
+	--trim_front2 10 \
+	--trim_tail2 10 \
 	--thread ${threads} \
-	--html "${wgbs_array[index]}".fastp-trim."${timestamp}".report.html \
-	--json "${wgbs_array[index]}".fastp-trim."${timestamp}".report.json \
-	--out1 "${wgbs_array[index]}".fastp-trim."${timestamp}${read1}" \
-	--out2 "${wgbs_array[index]}".fastp-trim."${timestamp}${read2}"
+	--html "${wgbs_array[index]}.fastp-trim.${timestamp}.report.html" \
+	--json "${wgbs_array[index]}.fastp-trim.${timestamp}.report.json" \
+	--out1 "${wgbs_array[index]}.fastp-trim.${timestamp}${read1}" \
+	--out2 "${wgbs_array[index]}.fastp-trim.${timestamp}${read2}"
 
 	# Generate md5 checksums for newly trimmed files
 	{
-		md5sum "${wgbs_array[index]}".fastp-trim."${timestamp}${read1}"
-		md5sum "${wgbs_array[index]}".fastp-trim."${timestamp}${read2}"
+		md5sum "${wgbs_array[index]}.fastp-trim.${timestamp}${read1}"
+		md5sum "${wgbs_array[index]}.fastp-trim.${timestamp}${read2}"
 	} >> "${trimmed_checksums}"
 
 done
