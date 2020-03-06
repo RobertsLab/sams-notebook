@@ -120,8 +120,8 @@ for index in "${!wgbs_array[@]}"
 do
 	timestamp=$(date +%Y%m%d%M%S)
 	${fastp} \
-	--in1 "${wgbs_array[index]}" \
-	--in2 "${wgbs_array[index]}" \
+	--in1 "${wgbs_array[index]}${read1}" \
+	--in2 "${wgbs_array[index]}${read2}" \
 	--detect_adapter_for_pe \
 	--trim_front1 10 \
 	--trim_tail1 10 \
