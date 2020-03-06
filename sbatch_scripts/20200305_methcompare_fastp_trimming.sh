@@ -73,7 +73,7 @@ trimmed_checksums=trimmed_fastq_checksums.md5
 # These were provided by Hollie Putnam
 # See https://github.com/hputnam/Meth_Compare/blob/master/Meth_Compare_Pipeline.md
 rrbs_array=(Meth4 Meth5 Meth6 Meth13 Meth14 Meth15)
-wgbs_array=(Meth1 Meth2 Meth3  Meth7 Meth8 Meth9 Meth10 Meth11 Meth12 Meth16 Meth17 Meth18)
+wgbs_array=(Meth1 Meth2 Meth3 Meth7 Meth8 Meth9 Meth10 Meth11 Meth12 Meth16 Meth17 Meth18)
 
 # Assign file suffixes to variables
 read1="_R1_001.fastq.gz"
