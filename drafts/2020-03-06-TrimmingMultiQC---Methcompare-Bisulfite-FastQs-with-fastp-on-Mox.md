@@ -174,6 +174,16 @@ ${multiqc} .
 
 #### RESULTS
 
+This took ~6.5hrs to complete:
+
+![](https://github.com/RobertsLab/sams-notebook/blob/master/images/screencaps/20200305_methcompare_fastp_trimming_runtime.png?raw=true)
+
+The runtime in the image above shows a runtime of ~5hrs. However, a subset of samples were _not_ properly processed by fastp (everything in the logs looked fine, no errors, but no output files were generated; very odd). I re-ran a subset of the code on the "missing" samples and it worked fine. Took ~1.5hrs to process the remaining samples.
+
 Output folder:
 
 - [20200305_methcompare_fastp_trimming/](https://gannet.fish.washington.edu/Atumefaciens/20200305_methcompare_fastp_trimming/)
+
+Trimmed files are named with the following convention:
+
+- *.fastp-trim*.gz
