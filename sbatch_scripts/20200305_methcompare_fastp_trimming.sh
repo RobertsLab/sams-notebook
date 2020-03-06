@@ -57,13 +57,13 @@ for program in "${!programs_array[@]}"
 do
 	echo "Program options for ${programs_array[program]}: "
 	echo ""
-	${programs_array[program]} -h &>> program_options.log
+	${programs_array[program]} -h
 	echo ""
 	echo ""
 	echo "----------------------------------------------"
 	echo ""
 	echo ""
-done
+done &>> program_options.log
 
 
 # Input/output files
