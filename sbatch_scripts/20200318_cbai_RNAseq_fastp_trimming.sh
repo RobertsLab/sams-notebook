@@ -43,7 +43,7 @@ threads=27
 
 # Input/output files
 trimmed_checksums=trimmed_fastq_checksums.md5
-raw_reads_dir=/gscratch/scrubbed/samwhite/data/C_bairdi/RNAseq
+raw_reads_dir=/gscratch/scrubbed/samwhite/data/C_bairdi/RNAseq/
 
 # Paths to programs
 fastp=/gscratch/srlab/programs/fastp-0.20.0/fastp
