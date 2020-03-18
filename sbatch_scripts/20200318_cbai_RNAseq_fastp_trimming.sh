@@ -52,8 +52,27 @@ multiqc=multiqc=/gscratch/srlab/programs/anaconda3/bin/multiqc
 ## Inititalize arrays
 fastq_array_R1=()
 fastq_array_R2=()
+programs_array=()
 R1_names_array=()
 R2_names_array=()
+
+# Programs array
+programs_array=("${fastp}" "${multiqc}")
+
+# Capture program options
+for program in "${!programs_array[@]}"
+do
+	{
+  echo "Program options for ${programs_array[program]}: "
+	echo ""
+	${programs_array[program]} -h
+	echo ""
+	echo ""
+	echo "----------------------------------------------"
+	echo ""
+	echo ""
+  } &>> program_options.log
+done
 
 # Sync raw FastQ files to working directory
 rsync --archive --verbose \
