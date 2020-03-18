@@ -71,7 +71,7 @@ do
 	echo "----------------------------------------------"
 	echo ""
 	echo ""
-  } &>> program_options.log
+} &>> program_options.log || true
 done
 
 # Sync raw FastQ files to working directory
