@@ -10,7 +10,14 @@ tags:
 categories:
   - Data Received
 ---
+We received the RNAseq data from the [RNA that was sent out by Grace on 20200212](https://grace-ac.github.io/sent-crab-rna-genewiz/).
 
+Sequencing is 150bp PE.
+
+Grace has a Google Sheet that describes what the samples constitute (e.g. ambient/cold/warm, infected/uninfect, day, etc.)
+
+- [02122020-samples-sent-to-genewiz
+](https://docs.google.com/spreadsheets/d/1hXMY1rg5qYNTsqvO7PXbRgM7LF06ntEp27N2Efc9gSo/edit?usp=sharing)
 
 Genewiz report:
 
@@ -44,10 +51,14 @@ Genewiz report:
 Confirmed that SFTP transfer from Genewiz to `owl/nightingales/C_bairdi/` was successful:
 
 ![screencap of md5sum output](https://github.com/RobertsLab/sams-notebook/blob/master/images/screencaps/20200318_cbai_rnaseq_genewiz_md5_checks.png?raw=true)
+
+
 ---
 
 #### RESULTS
 
 Output folder:
 
-- []()
+- [owl/nightingales/C_bairdi/](https://owl.fish.washington.edu/nightingales/C_bairdi)
+
+Will update the [nightingales Google Sheet](https://b.link/nightingales) with the appropriate info shortly.
