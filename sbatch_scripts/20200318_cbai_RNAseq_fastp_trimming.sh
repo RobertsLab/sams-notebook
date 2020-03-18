@@ -95,14 +95,14 @@ done
 ## Uses awk to parse out sample name from filename
 for R1_fastq in *R1*.gz
 do
-  R1_names_array+=($(echo "${R1_fastq}" | awk -F"_" '{print $1}'))
+  R1_names_array+=($(echo "${R1_fastq}" | awk -F"." '{print $1}'))
 done
 
 # Create array of sample names
 ## Uses awk to parse out sample name from filename
 for R2_fastq in *R2*.gz
 do
-  R2_names_array+=($(echo "${R2_fastq}" | awk -F"_" '{print $1}'))
+  R2_names_array+=($(echo "${R2_fastq}" | awk -F"." '{print $1}'))
 done
 
 # Create list of fastq files used in analysis
