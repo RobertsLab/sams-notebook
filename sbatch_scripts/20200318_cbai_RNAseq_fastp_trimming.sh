@@ -47,7 +47,7 @@ raw_reads_dir=/gscratch/scrubbed/samwhite/data/C_bairdi/RNAseq/
 
 # Paths to programs
 fastp=/gscratch/srlab/programs/fastp-0.20.0/fastp
-multiqc=multiqc=/gscratch/srlab/programs/anaconda3/bin/multiqc
+multiqc=/gscratch/srlab/programs/anaconda3/bin/multiqc
 
 ## Inititalize arrays
 fastq_array_R1=()
