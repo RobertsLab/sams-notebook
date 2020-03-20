@@ -1,8 +1,8 @@
 ---
 layout: post
-title: TrimmingQCMultiQC - C.bairdi RNAseq FastQ with fastp on Mox
+title: Trimming/FastQC/MultiQC - C.bairdi RNAseq FastQ with fastp on Mox
 date: '2020-03-18 11:48'
-tags: 
+tags:
   - mox
   - Tanner crab
   - RNAseq
@@ -10,7 +10,7 @@ tags:
   - Chionoecetes bairdi
   - fastp
   - multiqc
-categories: 
+categories:
   - Miscellaneous
 ---
 
@@ -23,4 +23,3 @@ categories:
 Output folder:
 
 - []()
-
