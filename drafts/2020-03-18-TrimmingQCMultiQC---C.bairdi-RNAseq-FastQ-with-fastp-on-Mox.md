@@ -176,4 +176,19 @@ ${multiqc} .
 
 Output folder:
 
-- []()
+- [20200318_cbai_RNAseq_fastp_trimming/](https://gannet.fish.washington.edu/Atumefaciens/20200318_cbai_RNAseq_fastp_trimming/)
+
+fastp MultiQC report (HTML):
+
+- [20200318_cbai_RNAseq_fastp_trimming/multiqc_report.html](https://gannet.fish.washington.edu/Atumefaciens/20200318_cbai_RNAseq_fastp_trimming/multiqc_report.html)
+
+Individual fastp reports are also available (HTML). An example is below.
+
+https://gannet.fish.washington.edu/Atumefaciens/20200318_cbai_RNAseq_fastp_trimming/485_R1_001.fastp-trim.202003181245_fastqc.html
+
+FastQC MultiQC report (HTML):
+
+- [20200318_cbai_RNAseq_fastp_trimming/multiqc_report_1.html](https://gannet.fish.washington.edu/Atumefaciens/20200318_cbai_RNAseq_fastp_trimming/multiqc_report_1.html)
+
+
+Some of the samples are potentially problematic, based on FastQC plots:
