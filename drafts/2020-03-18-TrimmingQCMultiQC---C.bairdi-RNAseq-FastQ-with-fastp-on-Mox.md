@@ -174,6 +174,12 @@ ${multiqc} .
 
 #### RESULTS
 
+Run time was just under three hours:
+
+![fastp runtime screencap](https://github.com/RobertsLab/sams-notebook/blob/master/images/screencaps/20200318_cbai_RNAseq_fastp_trimming_runtime.png?raw=true)
+
+NOTE: Although the job indicates "FAILED", this was simply due to a MultiQC failing (path to MultiQC was incorrect). Trimming proceeded/completed properly.
+
 Output folder:
 
 - [20200318_cbai_RNAseq_fastp_trimming/](https://gannet.fish.washington.edu/Atumefaciens/20200318_cbai_RNAseq_fastp_trimming/)
@@ -192,3 +198,98 @@ FastQC MultiQC report (HTML):
 
 
 Some of the samples are potentially problematic, based on FastQC plots:
+
+##### SAMPLE 73
+
+![73 Read1 FastQC](https://github.com/RobertsLab/sams-notebook/blob/master/images/screencaps/20200318_cbai_RNAseq_fastp_trimming_fastqc_73R1.png?raw=true)
+
+![73 Read2 FastQC](https://github.com/RobertsLab/sams-notebook/blob/master/images/screencaps/20200318_cbai_RNAseq_fastp_trimming_fastqc_73R2.png?raw=true)
+
+---
+
+##### SAMPLE 113
+
+![113 Read1 FastQC](https://github.com/RobertsLab/sams-notebook/blob/master/images/screencaps/20200318_cbai_RNAseq_fastp_trimming_fastqc_113R1.png?raw=true)
+
+![113 Read2 FastQC](https://github.com/RobertsLab/sams-notebook/blob/master/images/screencaps/20200318_cbai_RNAseq_fastp_trimming_fastqc_113R2.png?raw=true)
+
+---
+
+##### SAMPLE 118
+![118 Read1 FastQC](https://github.com/RobertsLab/sams-notebook/blob/master/images/screencaps/20200318_cbai_RNAseq_fastp_trimming_fastqc_118R1.png?raw=true)
+
+![118 Read2 FastQC](https://github.com/RobertsLab/sams-notebook/blob/master/images/screencaps/20200318_cbai_RNAseq_fastp_trimming_fastqc_118R2.png?raw=true)
+
+
+
+---
+
+##### SAMPLE 127
+
+![127 Read1 FastQC](https://github.com/RobertsLab/sams-notebook/blob/master/images/screencaps/20200318_cbai_RNAseq_fastp_trimming_fastqc_127R1.png?raw=true)
+
+![127 Read2 FastQC](https://github.com/RobertsLab/sams-notebook/blob/master/images/screencaps/20200318_cbai_RNAseq_fastp_trimming_fastqc_127R2.png?raw=true)
+
+---
+
+##### SAMPLE 222
+
+![222 Read1 FastQC](https://github.com/RobertsLab/sams-notebook/blob/master/images/screencaps/20200318_cbai_RNAseq_fastp_trimming_fastqc_222R1.png?raw=true)
+
+![222 Read2 FastQC](https://github.com/RobertsLab/sams-notebook/blob/master/images/screencaps/20200318_cbai_RNAseq_fastp_trimming_fastqc_222R2.png?raw=true)
+
+---
+
+##### SAMPLE 272
+
+![272 Read1 FastQC](https://github.com/RobertsLab/sams-notebook/blob/master/images/screencaps/20200318_cbai_RNAseq_fastp_trimming_fastqc_272R1.png?raw=true)
+
+![272 Read2 FastQC](https://github.com/RobertsLab/sams-notebook/blob/master/images/screencaps/20200318_cbai_RNAseq_fastp_trimming_fastqc_272R2.png?raw=true)
+
+---
+
+##### SAMPLE 280
+
+![280 Read1 FastQC](https://github.com/RobertsLab/sams-notebook/blob/master/images/screencaps/20200318_cbai_RNAseq_fastp_trimming_fastqc_280R1.png?raw=true)
+
+![280 Read2 FastQC](https://github.com/RobertsLab/sams-notebook/blob/master/images/screencaps/20200318_cbai_RNAseq_fastp_trimming_fastqc_280R2.png?raw=true)
+
+---
+
+##### SAMPLE 425
+
+![425 Read1 FastQC](https://github.com/RobertsLab/sams-notebook/blob/master/images/screencaps/20200318_cbai_RNAseq_fastp_trimming_fastqc_425R1.png?raw=true)
+
+![425 Read2 FastQC](https://github.com/RobertsLab/sams-notebook/blob/master/images/screencaps/20200318_cbai_RNAseq_fastp_trimming_fastqc_425R2.png?raw=true)
+
+---
+
+##### SAMPLE 427
+
+![427 Read1 FastQC](https://github.com/RobertsLab/sams-notebook/blob/master/images/screencaps/20200318_cbai_RNAseq_fastp_trimming_fastqc_427R1.png?raw=true)
+
+![427 Read2 FastQC](https://github.com/RobertsLab/sams-notebook/blob/master/images/screencaps/20200318_cbai_RNAseq_fastp_trimming_fastqc_427R2.png?raw=true)
+
+---
+
+##### SAMPLE 445
+
+![445 Read1 FastQC](https://github.com/RobertsLab/sams-notebook/blob/master/images/screencaps/20200318_cbai_RNAseq_fastp_trimming_fastqc_445R1.png?raw=true)
+
+![445 Read2 FastQC](https://github.com/RobertsLab/sams-notebook/blob/master/images/screencaps/20200318_cbai_RNAseq_fastp_trimming_fastqc_445R2.png?raw=true)
+
+---
+
+##### SAMPLE 463
+
+![463 Read1 FastQC](https://github.com/RobertsLab/sams-notebook/blob/master/images/screencaps/20200318_cbai_RNAseq_fastp_trimming_fastqc_463R1.png?raw=true)
+
+![463 Read2 FastQC](https://github.com/RobertsLab/sams-notebook/blob/master/images/screencaps/20200318_cbai_RNAseq_fastp_trimming_fastqc_463R2.png?raw=true)
+
+---
+
+##### SAMPLE 481
+
+![481 Read1 FastQC](https://github.com/RobertsLab/sams-notebook/blob/master/images/screencaps/20200318_cbai_RNAseq_fastp_trimming_fastqc_481R1.png?raw=true)
+
+![481 Read2 FastQC](https://github.com/RobertsLab/sams-notebook/blob/master/images/screencaps/20200318_cbai_RNAseq_fastp_trimming_fastqc_481R2.png?raw=true)
