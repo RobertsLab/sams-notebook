@@ -197,7 +197,15 @@ FastQC MultiQC report (HTML):
 - [20200318_cbai_RNAseq_fastp_trimming/multiqc_report_1.html](https://gannet.fish.washington.edu/Atumefaciens/20200318_cbai_RNAseq_fastp_trimming/multiqc_report_1.html)
 
 
-Some of the samples are potentially problematic, based on FastQC plots:
+Some of the samples are potentially problematic, based on FastQC plots (see end of post). Despite the weirdness, I think I'm going to leave things as they are and try to filter these reads out downstream. Downstream stuff entails:
+
+- BLASTx
+
+- taxonomic read assignment using MEGAN6
+
+I feel like crappy reads will get filtered out based on BLAST results and subsequent taxonomic assignment, since we'll only be using _Arthropoda_ and _Alveolata_ reads.
+
+---
 
 ##### SAMPLE 73
 
