@@ -18,6 +18,8 @@ categories:
 
 DIAMOND BLASTx will be run on Mox. Meganization will be run on my computer (swoose), due to MEGAN6's reliance on Java X11 window (this is not available on Mox - throws an error when trying to run it).
 
+I fully anticipate this process to take a week or two (DIAMOND BLASTx will likely take a few days and read extraction will definitely take many days...)
+
 SBATCH script (GitHub):
 
 - [20200318_cbai_diamond_blastx.sh](https://github.com/RobertsLab/sams-notebook/blob/master/sbatch_scripts/20200318_cbai_diamond_blastx.sh)
@@ -207,6 +209,10 @@ runtime=$((end-start))
 ---
 
 #### RESULTS
+
+DIAMOND BLASTx took ~4.5 days:
+
+- [DIAMOND BLASTx runtime](https://github.com/RobertsLab/sams-notebook/blob/master/images/screencaps/20200318_cbai_diamond_blastx_runtime.png?raw=true)
 
 Output folder:
 
