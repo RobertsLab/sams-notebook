@@ -45,7 +45,7 @@ do
   start_loop=${SECONDS}
   sample_name=$(echo "${daa_array_R1[index]}" | awk -F "_" '{print $1}')
 
-  echo "Now processing ${sample_name}".daa2rma.rma6"
+  echo "Now processing ${sample_name}.daa2rma.rma6"
   echo ""
 
   # Run daa2rma with paired option
@@ -59,10 +59,10 @@ do
   2>&1 | tee --append daa2rma_log.txt
 
   end_loop=${SECONDS}
-  loop_runtime=$((end-start))
+  loop_runtime=$((end_loop-start_loop))
 
 
-  echo "Finished processing ${sample_name}".daa2rma.rma6 in ${loop_runtime} seconds"
+  echo "Finished processing ${sample_name}.daa2rma.rma6 in ${loop_runtime} seconds."
   echo ""
 
 done
