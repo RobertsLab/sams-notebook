@@ -214,6 +214,10 @@ DIAMOND BLASTx took ~4.5 days:
 
 - [DIAMOND BLASTx runtime](https://github.com/RobertsLab/sams-notebook/blob/master/images/screencaps/20200318_cbai_diamond_blastx_runtime.png?raw=true)
 
+The subsequent conversion from DAA to RMA6 files to ~5.6 days.
+
 Output folder:
 
-- []()
+- [20200318_cbai_diamond_blastx/](https://gannet.fish.washington.edu/Atumefaciens/20200318_cbai_diamond_blastx/)
+
+The RMA6 files can now be loaded into MEGAN6 to extract reads based on taxonomy.
