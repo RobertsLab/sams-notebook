@@ -83,3 +83,150 @@ FastQ _C.bairdi_ read extractions:
 FastQ _Hematodinium_ read extractions:
 
 - [20200330.Hematodinium_megan_reads](https://gannet.fish.washington.edu/Atumefaciens/20200330.Hematodinium_megan_reads)
+
+
+#### Taxonomic Trees
+
+##### 113
+
+![113 MEGAN6 taxonomic tree](https://github.com/RobertsLab/sams-notebook/blob/master/images/screencaps/20200323_cbai_MEGAN_read_extractions_113.png?raw=true)
+
+---
+
+##### 118
+
+![118 MEGAN6 taxonomic tree](https://github.com/RobertsLab/sams-notebook/blob/master/images/screencaps/20200323_cbai_MEGAN_read_extractions_118.png?raw=true)
+
+---
+
+##### 127
+
+![127 MEGAN6 taxonomic tree](https://github.com/RobertsLab/sams-notebook/blob/master/images/screencaps/20200323_cbai_MEGAN_read_extractions_127.png?raw=true)
+
+---
+
+##### 132
+
+![132 MEGAN6 taxonomic tree](https://github.com/RobertsLab/sams-notebook/blob/master/images/screencaps/20200323_cbai_MEGAN_read_extractions_132.png?raw=true)
+
+---
+
+##### 151
+
+![151 MEGAN6 taxonomic tree](https://github.com/RobertsLab/sams-notebook/blob/master/images/screencaps/20200323_cbai_MEGAN_read_extractions_151.png?raw=true)
+
+---
+
+##### 173
+
+![173 MEGAN6 taxonomic tree](https://github.com/RobertsLab/sams-notebook/blob/master/images/screencaps/20200323_cbai_MEGAN_read_extractions_173.png?raw=true)
+
+---
+
+##### 178
+
+![178 MEGAN6 taxonomic tree](https://github.com/RobertsLab/sams-notebook/blob/master/images/screencaps/20200323_cbai_MEGAN_read_extractions_178.png?raw=true)
+
+---
+
+##### 221
+
+![221 MEGAN6 taxonomic tree](https://github.com/RobertsLab/sams-notebook/blob/master/images/screencaps/20200323_cbai_MEGAN_read_extractions_221.png?raw=true)
+
+---
+
+##### 222
+
+![222 MEGAN6 taxonomic tree](https://github.com/RobertsLab/sams-notebook/blob/master/images/screencaps/20200323_cbai_MEGAN_read_extractions_222.png?raw=true)
+
+---
+
+##### 254
+
+![254 MEGAN6 taxonomic tree](https://github.com/RobertsLab/sams-notebook/blob/master/images/screencaps/20200323_cbai_MEGAN_read_extractions_254.png?raw=true)
+
+---
+
+##### 272
+
+![272 MEGAN6 taxonomic tree](https://github.com/RobertsLab/sams-notebook/blob/master/images/screencaps/20200323_cbai_MEGAN_read_extractions_272.png?raw=true)
+
+---
+
+##### 280
+
+![280 MEGAN6 taxonomic tree](https://github.com/RobertsLab/sams-notebook/blob/master/images/screencaps/20200323_cbai_MEGAN_read_extractions_280.png?raw=true)
+
+---
+
+##### 294
+
+![294 MEGAN6 taxonomic tree](https://github.com/RobertsLab/sams-notebook/blob/master/images/screencaps/20200323_cbai_MEGAN_read_extractions_294.png?raw=true)
+
+---
+
+##### 334
+
+![334 MEGAN6 taxonomic tree](https://github.com/RobertsLab/sams-notebook/blob/master/images/screencaps/20200323_cbai_MEGAN_read_extractions_334.png?raw=true)
+
+---
+
+##### 349
+
+![349 MEGAN6 taxonomic tree](https://github.com/RobertsLab/sams-notebook/blob/master/images/screencaps/20200323_cbai_MEGAN_read_extractions_349.png?raw=true)
+
+---
+
+##### 359
+
+![359 MEGAN6 taxonomic tree](https://github.com/RobertsLab/sams-notebook/blob/master/images/screencaps/20200323_cbai_MEGAN_read_extractions_359.png?raw=true)
+
+---
+
+##### 425
+
+![425 MEGAN6 taxonomic tree](https://github.com/RobertsLab/sams-notebook/blob/master/images/screencaps/20200323_cbai_MEGAN_read_extractions_425.png?raw=true)
+
+---
+
+##### 427
+
+![427 MEGAN6 taxonomic tree](https://github.com/RobertsLab/sams-notebook/blob/master/images/screencaps/20200323_cbai_MEGAN_read_extractions_427.png?raw=true)
+
+---
+
+##### 445
+
+![445 MEGAN6 taxonomic tree](https://github.com/RobertsLab/sams-notebook/blob/master/images/screencaps/20200323_cbai_MEGAN_read_extractions_445.png?raw=true)
+
+---
+
+##### 463
+
+![463 MEGAN6 taxonomic tree](https://github.com/RobertsLab/sams-notebook/blob/master/images/screencaps/20200323_cbai_MEGAN_read_extractions_463.png?raw=true)
+
+---
+
+##### 481
+
+![481 MEGAN6 taxonomic tree](https://github.com/RobertsLab/sams-notebook/blob/master/images/screencaps/20200323_cbai_MEGAN_read_extractions_481.png?raw=true)
+
+---
+
+##### 485
+
+![485 MEGAN6 taxonomic tree](https://github.com/RobertsLab/sams-notebook/blob/master/images/screencaps/20200323_cbai_MEGAN_read_extractions_485.png?raw=true)
+
+---
+
+##### 72
+
+![72 MEGAN6 taxonomic tree](https://github.com/RobertsLab/sams-notebook/blob/master/images/screencaps/20200323_cbai_MEGAN_read_extractions_72.png?raw=true)
+
+---
+
+##### 73
+
+![73 MEGAN6 taxonomic tree](https://github.com/RobertsLab/sams-notebook/blob/master/images/screencaps/20200323_cbai_MEGAN_read_extractions_73.png?raw=true)
+
+---
