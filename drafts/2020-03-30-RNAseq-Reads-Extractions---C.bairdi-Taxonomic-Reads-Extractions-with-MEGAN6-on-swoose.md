@@ -89,7 +89,7 @@ The taxonomic tree from each MEGAN6 RMA6 file is shown below. There are a couple
 
 1. Some samples have a high abundance of reads assigned to _Bacteria_. My guess is that this was due to a slight misstep in sampling, leading to collecting mostly sea water instead of mostly hemolymph. I say this because in these samples, there are still a large amount of _Arthropoda_ reads, so it's clear that some hemolymph was collected.
 
-2. Most samples which should have reads assigned to _Hematodinium_ ([18 samples were considered "infected" via qPCR]()) do not have _any_ reads assigned. In fact, only four samples ended up having _Hematodinium_ reads extracted:
+2. Most samples which should have reads assigned to _Hematodinium_ ([18 samples were considered "infected" via qPCR](https://docs.google.com/spreadsheets/d/1hXMY1rg5qYNTsqvO7PXbRgM7LF06ntEp27N2Efc9gSo/edit?usp=sharing)) do not have _any_ reads assigned. In fact, only four samples ended up having _Hematodinium_ reads extracted:
 
 - 132
 
