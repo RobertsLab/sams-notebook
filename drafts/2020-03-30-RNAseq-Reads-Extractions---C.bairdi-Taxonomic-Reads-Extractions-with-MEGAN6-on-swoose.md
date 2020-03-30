@@ -70,6 +70,16 @@ This aspect of read extractions/concatenations is documented in the following Ju
 
 #### RESULTS
 
-Output folder:
+OUTPUT FOLDERS
 
-- []()
+Initial reads extracted as FastAs:
+
+- [20200323_cbai_MEGAN_read_extractions/](https://gannet.fish.washington.edu/Atumefaciens/20200323_cbai_MEGAN_read_extractions/)
+
+FastQ _C.bairdi_ read extractions:
+
+- [20200330.C_bairdi_megan_reads/](https://gannet.fish.washington.edu/Atumefaciens/20200330.C_bairdi_megan_reads)
+
+FastQ _Hematodinium_ read extractions:
+
+- [20200330.Hematodinium_megan_reads](https://gannet.fish.washington.edu/Atumefaciens/20200330.Hematodinium_megan_reads)
