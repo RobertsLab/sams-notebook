@@ -85,6 +85,28 @@ FastQ _Hematodinium_ read extractions:
 - [20200330.Hematodinium_megan_reads](https://gannet.fish.washington.edu/Atumefaciens/20200330.Hematodinium_megan_reads)
 
 
+The taxonomic tree from each MEGAN6 RMA6 file is shown below. There are a couple of interesting things to notice from these:
+
+1. Some samples have a high abundance of reads assigned to _Bacteria_. My guess is that this was due to a slight misstep in sampling, leading to collecting mostly sea water instead of mostly hemolymph. I say this because in these samples, there are still a large amount of _Arthropoda_ reads, so it's clear that some hemolymph was collected.
+
+2. Most samples which should have reads assigned to _Hematodinium_ ([18 samples were considered "infected" via qPCR]()) do not have _any_ reads assigned. In fact, only four samples ended up having _Hematodinium_ reads extracted:
+
+- 132
+
+- 178
+
+- 349
+
+- 485
+
+At this point in time, it's not that big of a deal, since we're currently just using this data to create an updated transcriptome for each of the two phyla.
+
+3. Many (most?) of the samples had a relatively high abundance of reads assigned to a microsporidian, _Enterospora canceri_, a known crab parasite. This is intriguing and not entirely sure what the implications are for analyzing the crab gene expression are. Also, it might be interesting to try to extract these reads and assemble a _Enterospora canceri_ transcriptome...
+
+Next up, creating some updated transcriptome assemblies/annotations for these two phyla.
+
+---
+
 #### Taxonomic Trees
 
 ##### 113
