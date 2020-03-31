@@ -159,17 +159,17 @@ BUSCO short summary (text):
 ```
 # BUSCO version is: 3.0.2
 # The lineage dataset is: metazoa_odb9 (Creation date: 2016-02-13, number of species: 65, number of BUSCOs: 978)
-# To reproduce this run: python /gscratch/srlab/programs/busco-v3/scripts/run_BUSCO.py -i /gscratch/srlab/sam/data/Hematodinium/transcriptomes/20200122.hemat.megan.Trinity.fasta -o 20200207.hemat.megan -l /gscratch/srlab/sam/data/databases/BUSCO/metazoa_odb9/ -m transcriptome -c 28 --long -z
+# To reproduce this run: python /gscratch/srlab/programs/busco-v3/scripts/run_BUSCO.py -i /gscratch/srlab/sam/data/Hematodinium/transcriptomes/20200122.hemat.megan.Trinity.fasta -o 20200331.hemat.megan -l /gscratch/srlab/sam/data/databases/BUSCO/metazoa_odb9/ -m transcriptome -c 28 --long -z
 #
 # Summarized benchmarking in BUSCO notation for file /gscratch/srlab/sam/data/Hematodinium/transcriptomes/20200122.hemat.megan.Trinity.fasta
 # BUSCO was run in mode: transcriptome
 
-	C:85.4%[S:65.6%,D:19.8%],F:9.3%,M:5.3%,n:978
+	C:25.1%[S:19.2%,D:5.9%],F:9.5%,M:65.4%,n:978
 
-	836	Complete BUSCOs (C)
-	642	Complete and single-copy BUSCOs (S)
-	194	Complete and duplicated BUSCOs (D)
-	91	Fragmented BUSCOs (F)
-	51	Missing BUSCOs (M)
+	246	Complete BUSCOs (C)
+	188	Complete and single-copy BUSCOs (S)
+	58	Complete and duplicated BUSCOs (D)
+	93	Fragmented BUSCOs (F)
+	639	Missing BUSCOs (M)
 	978	Total BUSCO groups searched
 ```
