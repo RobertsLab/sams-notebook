@@ -150,40 +150,42 @@ Assembly Stats (txt):
 
 - [20200122_hemat_trinity_megan_RNAseq/assembly_stats.txt](https://gannet.fish.washington.edu/Atumefaciens/20200122_hemat_trinity_megan_RNAseq/assembly_stats.txt)
 
-```shell
+```
+
+
 ################################
 ## Counts of transcripts, etc.
 ################################
-Total trinity 'genes':	13835
-Total trinity transcripts:	19699
-Percent GC: 53.41
+Total trinity 'genes':	4440
+Total trinity transcripts:	5183
+Percent GC: 50.21
 
 ########################################
 Stats based on ALL transcript contigs:
 ########################################
 
-	Contig N10: 3563
-	Contig N20: 2593
-	Contig N30: 2037
-	Contig N40: 1708
-	Contig N50: 1440
+	Contig N10: 1856
+	Contig N20: 1446
+	Contig N30: 1189
+	Contig N40: 1000
+	Contig N50: 870
 
-	Median contig length: 744
-	Average contig: 1010.81
-	Total assembled bases: 19912002
+	Median contig length: 634
+	Average contig: 736.61
+	Total assembled bases: 3817832
 
 
 #####################################################
 ## Stats based on ONLY LONGEST ISOFORM per 'GENE':
 #####################################################
 
-	Contig N10: 3195
-	Contig N20: 2333
-	Contig N30: 1880
-	Contig N40: 1576
-	Contig N50: 1312
+	Contig N10: 1803
+	Contig N20: 1422
+	Contig N30: 1175
+	Contig N40: 986
+	Contig N50: 848
 
-	Median contig length: 635
-	Average contig: 899.16
-	Total assembled bases: 12439838
+	Median contig length: 612
+	Average contig: 713.35
+	Total assembled bases: 3167294
 ```
