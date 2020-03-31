@@ -135,3 +135,58 @@ This was remarkably fast! I think was likely due to not using the "stranded" set
 Output folder:
 
 - [20200330_hemat_trinity_megan_RNAseq/](https://gannet.fish.washington.edu/Atumefaciens/20200330_hemat_trinity_megan_RNAseq/)
+
+
+Assembly (FastA; 4.5MB):
+
+- [20200330_hemat_trinity_megan_RNAseq/trinity_out_dir/20200331.hemat.megan.Trinity.fasta](https://gannet.fish.washington.edu/Atumefaciens/20200330_hemat_trinity_megan_RNAseq/trinity_out_dir/20200331.hemat.megan.Trinity.fasta)
+
+FastA Index (FAI):
+
+- [20200330_hemat_trinity_megan_RNAseq/trinity_out_dir/20200331.hemat.megan.Trinity.fasta.fai](https://gannet.fish.washington.edu/Atumefaciens/20200330_hemat_trinity_megan_RNAseq/trinity_out_dir/20200331.hemat.megan.Trinity.fasta.fai)
+
+Trinity Gene Trans Map (txt):
+
+- [20200330_hemat_trinity_megan_RNAseq/trinity_out_dir/20200331.hemat.megan.Trinity.fasta.gene_trans_map](https://gannet.fish.washington.edu/Atumefaciens/20200330_hemat_trinity_megan_RNAseq/trinity_out_dir/20200331.hemat.megan.Trinity.fasta.gene_trans_map)
+
+Assembly Stats (txt):
+
+- [20200330_hemat_trinity_megan_RNAseq/assembly_stats.txt](https://gannet.fish.washington.edu/Atumefaciens/20200330_hemat_trinity_megan_RNAseq/assembly_stats.txt)
+
+```
+################################
+## Counts of transcripts, etc.
+################################
+Total trinity 'genes':	5402
+Total trinity transcripts:	6201
+Percent GC: 50.26
+
+########################################
+Stats based on ALL transcript contigs:
+########################################
+
+	Contig N10: 1884
+	Contig N20: 1488
+	Contig N30: 1214
+	Contig N40: 1013
+	Contig N50: 873
+
+	Median contig length: 587
+	Average contig: 704.10
+	Total assembled bases: 4366146
+
+
+#####################################################
+## Stats based on ONLY LONGEST ISOFORM per 'GENE':
+#####################################################
+
+	Contig N10: 1814
+	Contig N20: 1434
+	Contig N30: 1172
+	Contig N40: 986
+	Contig N50: 841
+
+	Median contig length: 553.5
+	Average contig: 674.95
+	Total assembled bases: 3646089
+```
