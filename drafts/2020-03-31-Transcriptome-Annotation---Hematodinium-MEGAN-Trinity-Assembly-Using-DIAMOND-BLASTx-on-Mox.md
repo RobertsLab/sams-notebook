@@ -10,7 +10,9 @@ tags:
 categories:
   - Miscellaneous
 ---
+As part of annotating the most recent [transcriptome assembly from the MEGAN6 _Hematodinium_ taxonomic-specific reads](https://robertslab.github.io/sams-notebook/2020/03/30/Transcriptome-Assembly-Hematodinium-with-MEGAN6-Taxonomy-specific-Reads-with-Trinity-on-Mox.html), I need to run DIAMOND BLASTx to use with Trinotate.
 
+Ran DIAMOND BLASTx against the UniProt/SwissProt database (downloaded 20200123) on Mox.
 
 SBATCH script (GitHub):
 
