@@ -18,7 +18,7 @@ Ran a _de novo_ assembly using the extracted reads classified under _Alveolata_ 
 
 - [20200330](https://robertslab.github.io/sams-notebook/2020/03/30/RNAseq-Reads-Extractions-C.bairdi-Taxonomic-Reads-Extractions-with-MEGAN6-on-swoose.html)
 
-The assembly was performed with Trinity on Mox.
+The assembly was performed with Trinity on Mox. It's important to note that this assembly was _not_ performed using the "stranded" option in Trinity. The [previous Trinity assembly from 20200122](https://robertslab.github.io/sams-notebook/2020/01/22/Transcriptome-Assembly-Hematodinium-with-MEGAN6-Taxonomy-specific-Reads-with-Trinity-on-Mox.html) _was_ performed using the "stranded" setting. The reason for this difference is that the [most recent RNAseq libraries from 20200318](https://robertslab.github.io/sams-notebook/2020/03/18/Data-Received-C.bairdi-RNAseq-Data-from-Genewiz.html) were _not stranded libraries_. As such, I think it might be best to use the "lowest common denominator" approach.
 
 SBATCH script (GitHub):
 
