@@ -127,7 +127,7 @@ mkdir "${pfam_out_dir}"
 
 #### RESULTS
 
-Runtime was a bit < 5hrs:
+Runtime was a ~55mins:
 
 ![Transdecoder runtime](https://github.com/RobertsLab/sams-notebook/blob/master/images/screencaps/20200123_hemat_transdecoder_megan.png?raw=true)
 
