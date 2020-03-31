@@ -1,9 +1,9 @@
 #!/bin/bash
 ## Job Name
-#SBATCH --job-name=trinotate_cbi
+#SBATCH --job-name=trinotate_hemat
 ## Allocation Definition
-#SBATCH --account=srlab
-#SBATCH --partition=srlab
+#SBATCH --account=coenv
+#SBATCH --partition=coenv
 ## Resources
 ## Nodes
 #SBATCH --nodes=1
