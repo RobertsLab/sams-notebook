@@ -89,6 +89,16 @@ ${diamond} blastx \
 
 #### RESULTS
 
+Completed in 7 seconds!
+
+! [DIAMOND BLASTx runtime](https://github.com/RobertsLab/sams-notebook/blob/master/images/screencaps/20200331_hemat_diamond_blastx_megan_runtime.png?raw=true)
+
 Output folder:
 
-- []()
+- [20200331_hemat_diamond_blastx_megan/](https://gannet.fish.washington.edu/Atumefaciens/20200331_hemat_diamond_blastx_megan/)
+
+BLASTx output - BLAST format 6 (tab):
+
+- [20200331_hemat_diamond_blastx_megan/20200331.hemat.megan.Trinity.blastx.outfmt6](https://gannet.fish.washington.edu/Atumefaciens/20200331_hemat_diamond_blastx_megan/20200331.hemat.megan.Trinity.blastx.outfmt6)
+
+Will proceed with Trinotate.
