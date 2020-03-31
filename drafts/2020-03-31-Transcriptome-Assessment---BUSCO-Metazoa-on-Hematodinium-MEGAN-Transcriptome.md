@@ -175,3 +175,5 @@ BUSCO short summary (text):
 	978	Total BUSCO groups searched
 
 ```
+
+This current assembly shows only a slight increase in completeness (26.6% complete BUSCOS), [compared to the initial transcriptome assembly from 20200123](https://robertslab.github.io/sams-notebook/2020/02/07/Transcriptome-Assessment-BUSCO-Metazoa-on-Hematodinium-MEGAN-Transcriptome.html) (25.1%). 
