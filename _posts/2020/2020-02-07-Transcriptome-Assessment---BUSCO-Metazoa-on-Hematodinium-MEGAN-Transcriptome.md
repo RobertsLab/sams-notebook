@@ -144,7 +144,7 @@ ${busco} \
 
 #### RESULTS
 
-This was _very_ quick - 1m52s (ignore the mislaballed job name!):
+This was _very_ quick - 33s (ignore the mislaballed job name!):
 
 ![BUSCO runtime](https://github.com/RobertsLab/sams-notebook/blob/master/images/screencaps/20200207_hemat_busco_megan_runtime.png?raw=true)
 
