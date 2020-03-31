@@ -15,7 +15,7 @@
 #SBATCH --mail-type=ALL
 #SBATCH --mail-user=samwhite@uw.edu
 ## Specify the working directory for this job
-#SBATCH --chdir=/gscratch/scrubbed/samwhite/outputs/202000330_hemat_trinity_megan_RNAseq
+#SBATCH --chdir=/gscratch/scrubbed/samwhite/outputs/20200330_hemat_trinity_megan_RNAseq
 
 # Exit script if a command fails
 set -e
