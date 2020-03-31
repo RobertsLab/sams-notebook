@@ -76,7 +76,6 @@ ${trinity_dir}/Trinity \
 --seqType fq \
 --max_memory 120G \
 --CPU ${threads} \
---SS_lib_type RF \
 --left "${R1_list}" \
 --right "${R2_list}"
 
