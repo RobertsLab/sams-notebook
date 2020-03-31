@@ -34,8 +34,8 @@ echo "${PATH}" | tr : \\n
 } >> system_path.log
 
 # User-defined variables
-reads_dir=/gscratch/srlab/sam/data/C_bairdi/RNAseq
-threads=27
+reads_dir=/gscratch/srlab/sam/data/Hematodinium/RNAseq
+threads=28
 assembly_stats=assembly_stats.txt
 timestamp=$(date +%Y%m%d)
 fasta_name="${timestamp}.hemat.megan.Trinity.fasta"
