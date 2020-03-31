@@ -91,11 +91,10 @@ ${diamond} blastx \
 
 #### RESULTS
 
-Well, this ran in a riduculous 9 _seconds_!
+Well, this ran in a ridiculous 3 _seconds_!
 
 ![hemat DIAMOND runtime](https://github.com/RobertsLab/sams-notebook/blob/master/images/screencaps/20200123_hemat_diamond_blastx_megan_runtime.png?raw=true)
 
-Seriously, 14,000 query sequences were aligned in 9 seconds!
 
 Output folder:
 
