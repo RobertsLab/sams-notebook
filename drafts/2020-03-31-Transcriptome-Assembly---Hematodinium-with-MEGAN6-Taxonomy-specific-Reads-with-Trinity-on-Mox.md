@@ -190,3 +190,5 @@ Stats based on ALL transcript contigs:
 	Average contig: 674.95
 	Total assembled bases: 3646089
 ```
+
+Interestingly, this assembly may actually be worse than the [previous Trinity assembly from 20200122](https://robertslab.github.io/sams-notebook/2020/01/22/Transcriptome-Assembly-Hematodinium-with-MEGAN6-Taxonomy-specific-Reads-with-Trinity-on-Mox.html). Although it has marginally greater numbers of trinity genes and trinity transcripts, virtually all other metrics have decreased (albeit, not by much). Will assess transcriptome completeness with BUSCO and see if there's any noticeable improvement on that front.
