@@ -196,9 +196,9 @@ report \
 
 #### RESULTS
 
-Rumtime was ~30mins:
+Rumtime was ~6mins:
 
-~[Hemat Trinotate runtime](https://github.com/RobertsLab/sams-notebook/blob/master/images/screencaps/20200126_hemat_trinotate_megan.png?raw=true)
+~[Hemat Trinotate runtime](https://github.com/RobertsLab/sams-notebook/blob/master/images/screencaps/20200126_hemat_trinotate_megan_runtime.png?raw=true)
 
 Output folder:
 
