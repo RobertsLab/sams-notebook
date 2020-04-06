@@ -10,7 +10,7 @@
 ## Walltime (days-hours:minutes:seconds format)
 #SBATCH --time=10-00:00:00
 ## Memory per node
-#SBATCH --mem=500G
+#SBATCH --mem=120G
 ##turn on e-mail notification
 #SBATCH --mail-type=ALL
 #SBATCH --mail-user=samwhite@uw.edu
@@ -75,7 +75,7 @@ R2_list=$(echo "${R2_array[@]}" | tr " " ",")
 ## Not running as "stranded", due to mix of library types
 ${trinity_dir}/Trinity \
 --seqType fq \
---max_memory 500G \
+--max_memory 120G \
 --CPU ${threads} \
 --left "${R1_list}" \
 --right "${R2_list}"
