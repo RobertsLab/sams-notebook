@@ -2,8 +2,8 @@
 ## Job Name
 #SBATCH --job-name=DEG_hemat_D12-vs-D26
 ## Allocation Definition
-#SBATCH --account=srlab
-#SBATCH --partition=srlab
+#SBATCH --account=coenv
+#SBATCH --partition=coenv
 ## Resources
 ## Nodes
 #SBATCH --nodes=1
