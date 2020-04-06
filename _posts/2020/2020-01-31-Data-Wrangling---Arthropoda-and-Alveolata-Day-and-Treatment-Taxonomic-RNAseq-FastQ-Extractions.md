@@ -58,4 +58,6 @@ Output folders:
 - [20200131.Hematodinium_megan_reads/](https://gannet.fish.washington.edu/Atumefaciens/20200131.Hematodinium_megan_reads/)
 
 
-We now have to distinct sets of RNAseq reads from _C.bairdi_ (_Arhtropoda_) and _Hematodinium_ (_Alveolata_), split by infection status and sample day! Will get some gene expression analysis going.
+We now have two distinct sets of RNAseq reads from _C.bairdi_ (_Arhtropoda_) and _Hematodinium_ (_Alveolata_), split by infection status and sample day! Will get some gene expression analysis going.
+
+Also of note, and this is a nice bit of confirmation, there are no reads present in the _Hematodinium_ extractions in either of the uninfected samples (D12 or D26). So, the only comparisons to be performed for them will be comparing D12 vs D26.
