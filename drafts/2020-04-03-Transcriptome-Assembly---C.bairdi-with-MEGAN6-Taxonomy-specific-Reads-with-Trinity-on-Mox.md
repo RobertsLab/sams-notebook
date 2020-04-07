@@ -126,6 +126,10 @@ trinity_out_dir/${fasta_name}
 
 #### RESULTS
 
+Took ~3.5hrs to run:
+
+![Trinity Mox runtime](https://github.com/RobertsLab/sams-notebook/blob/master/images/screencaps/20200330_cbai_trinity_megan_RNAseq_runtime.png?raw=true)
+
 Output folder:
 
 - [20200330_cbai_trinity_megan_RNAseq/](https://gannet.fish.washington.edu/Atumefaciens/20200330_cbai_trinity_megan_RNAseq/)
