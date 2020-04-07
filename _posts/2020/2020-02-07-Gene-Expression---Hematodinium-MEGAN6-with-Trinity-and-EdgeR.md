@@ -207,31 +207,17 @@ Output folder:
 
 D12-vs-D26
 
-Took ~40mins to run:
+Took ~17mins to run:
 
-![D12 vs D26 runtime]()
+![D12 vs D26 runtime](https://raw.githubusercontent.com/RobertsLab/sams-notebook/master/images/screencaps/20200207_hemat_DEG_D12-vs-D26_runtime.png)
 
 - [D12-vs-D26/](https://gannet.fish.washington.edu/Atumefaciens/20200207_hemat_DEG/D12-vs-D26)
 
-![D12 vs D26 expression heatmap](https://github.com/RobertsLab/sams-notebook/blob/master/images/screencaps/20200207_hemat_DEG_D12-vs-D26_trinity_heatmap.png?raw=true)
 
-D12 upregulated genes:
+No differentially expressed genes between these two groups.
 
-- [20200207_hemat_DEG/D12-vs-D26/edgeR.27819.dir/salmon.gene.counts.matrix.D12_vs_D26.edgeR.DE_results.P0.05_C1.D12-UP.subset](https://gannet.fish.washington.edu/Atumefaciens/20200207_hemat_DEG/D12-vs-D26/edgeR.27819.dir/salmon.gene.counts.matrix.D12_vs_D26.edgeR.DE_results.P0.05_C1.D12-UP.subset)
+NOTE: Since no DEGs, that's why this run shows as `FAILED` in the above runtime screencap. This log file captures the error message that kills the job and generates the `FAILED` indicator:
 
+- [20200207_hemat_DEG/D12-vs-D26/edgeR.28118.dir/diff_expr_stderr.txt](https://gannet.fish.washington.edu/Atumefaciens/20200207_hemat_DEG/D12-vs-D26/edgeR.28118.dir/diff_expr_stderr.txt)
 
-D12 GO enrichment identified zero enriched:
-
-- [20200207_hemat_DEG/D12-vs-D26/edgeR.21229.dir/salmon.gene.counts.matrix.D12_vs_D26.edgeR.DE_results.P0.05_C1.D12-UP.subset.GOseq.enriched](https://gannet.fish.washington.edu/Atumefaciens/20200207_hemat_DEG/D12-vs-D26/edgeR.21229.dir/salmon.gene.counts.matrix.D12_vs_D26.edgeR.DE_results.P0.05_C1.D12-UP.subset.GOseq.enriched)
-
-
-
-
-D26 upregulated genes:
-
-- [20200207_hemat_DEG/D12-vs-D26/edgeR.21229.dir/salmon.gene.counts.matrix.D12_vs_D26.edgeR.DE_results.P0.05_C1.D26-UP.subset](https://gannet.fish.washington.edu/Atumefaciens/20200207_hemat_DEG/D12-vs-D26/edgeR.21229.dir/salmon.gene.counts.matrix.D12_vs_D26.edgeR.DE_results.P0.05_C1.D26-UP.subset)
-
-- Three genes:
-
-
-- [20200207_hemat_DEG/D12-vs-D26/edgeR.21229.dir/salmon.gene.counts.matrix.D12_vs_D26.edgeR.DE_results.P0.05_C1.D26-UP.subset.GOseq.enriched](https://gannet.fish.washington.edu/Atumefaciens/20200207_hemat_DEG/D12-vs-D26/edgeR.21229.dir/salmon.gene.counts.matrix.D12_vs_D26.edgeR.DE_results.P0.05_C1.D26-UP.subset.GOseq.enriched)
+`Error, no differentially expressed transcripts identified at cuttoffs: P:0.05, C:1 at /gscratch/srlab/programs/trinityrnaseq-v2.9.0/Analysis/DifferentialExpression/analyze_diff_expr.pl line 203.`
