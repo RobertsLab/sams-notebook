@@ -186,3 +186,5 @@ Stats based on ALL transcript contigs:
 	Total assembled bases: 18193692
 
 ```
+
+When compared to [the previous assembly](https://robertslab.github.io/sams-notebook/2020/01/22/Transcriptome-Assembly-C.bairdi-with-MEGAN6-Taxonomy-specific-Reads-with-Trinity-on-Mox.html), this certainly has more genes (23,316 vs 12,803), more transcripts (40,204 vs 19,670), and more assembled bases. However, the median length, average length and N50 values are all lower.
