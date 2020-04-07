@@ -129,3 +129,59 @@ trinity_out_dir/${fasta_name}
 Output folder:
 
 - [20200330_cbai_trinity_megan_RNAseq/](https://gannet.fish.washington.edu/Atumefaciens/20200330_cbai_trinity_megan_RNAseq/)
+
+Assembly (FastA; 36MB):
+
+- [20200330_cbai_trinity_megan_RNAseq/trinity_out_dir/20200406.C_bairdi.megan.Trinity.fasta](https://gannet.fish.washington.edu/Atumefaciens/20200330_cbai_trinity_megan_RNAseq/trinity_out_dir/20200406.C_bairdi.megan.Trinity.fasta)
+
+FastA Index (FAI):
+
+- [20200330_cbai_trinity_megan_RNAseq/trinity_out_dir/20200406.C_bairdi.megan.Trinity.fasta.fai](https://gannet.fish.washington.edu/Atumefaciens/20200330_cbai_trinity_megan_RNAseq/trinity_out_dir/20200406.C_bairdi.megan.Trinity.fasta.fai)
+
+Trinity Gene Trans Map (txt):
+
+- [20200330_cbai_trinity_megan_RNAseq/trinity_out_dir/Trinity.fasta.gene_trans_map](https://gannet.fish.washington.edu/Atumefaciens/20200330_cbai_trinity_megan_RNAseq/trinity_out_dir/Trinity.fasta.gene_trans_map)
+
+Assembly Stats (txt):
+
+- [20200330_cbai_trinity_megan_RNAseq/assembly_stats.txt](https://gannet.fish.washington.edu/Atumefaciens/20200330_cbai_trinity_megan_RNAseq/assembly_stats.txt)
+
+```
+
+################################
+## Counts of transcripts, etc.
+################################
+Total trinity 'genes':	23316
+Total trinity transcripts:	40204
+Percent GC: 53.13
+
+########################################
+Stats based on ALL transcript contigs:
+########################################
+
+	Contig N10: 3498
+	Contig N20: 2557
+	Contig N30: 2007
+	Contig N40: 1653
+	Contig N50: 1369
+
+	Median contig length: 540.5
+	Average contig: 871.01
+	Total assembled bases: 35018058
+
+
+#####################################################
+## Stats based on ONLY LONGEST ISOFORM per 'GENE':
+#####################################################
+
+	Contig N10: 3307
+	Contig N20: 2433
+	Contig N30: 1939
+	Contig N40: 1590
+	Contig N50: 1298
+
+	Median contig length: 433
+	Average contig: 780.31
+	Total assembled bases: 18193692
+
+```
