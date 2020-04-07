@@ -15,7 +15,7 @@
 #SBATCH --mail-type=ALL
 #SBATCH --mail-user=samwhite@uw.edu
 ## Specify the working directory for this job
-#SBATCH --chdir=/gscratch/scrubbed/samwhite/outputs/202000407_hemat_transdecoder_megan
+#SBATCH --chdir=/gscratch/scrubbed/samwhite/outputs/20200407_hemat_transdecoder_megan
 
 
 # Exit script if a command fails
