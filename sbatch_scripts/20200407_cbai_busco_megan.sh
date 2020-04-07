@@ -45,7 +45,7 @@ prefix="${timestamp}.${species}"
 ## Input files and settings
 base_name="${prefix}.megan"
 busco_db=/gscratch/srlab/sam/data/databases/BUSCO/metazoa_odb9
-transcriptome_fasta=/gscratch/srlab/sam/data/C_bairdi/transcriptomes/20200331.hemat.megan.Trinity.fasta
+transcriptome_fasta=/gscratch/srlab/sam/data/C_bairdi/transcriptomes/20200406.C_bairdi.megan.Trinity.fasta
 augustus_species=fly
 threads=28
 
