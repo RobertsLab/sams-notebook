@@ -139,6 +139,7 @@ ${trinity_DE} \
 --matrix "${salmon_out_dir}"/salmon.gene.counts.matrix \
 --method edgeR \
 --samples_file "${samples}" \
+--dispersion 0.4 \
 1> ${trinity_DE_stdout} \
 2> ${trinity_DE_stderr}
 
