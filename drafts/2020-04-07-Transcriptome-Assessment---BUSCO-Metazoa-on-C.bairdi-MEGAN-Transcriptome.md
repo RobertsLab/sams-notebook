@@ -174,3 +174,5 @@ BUSCO short summary (text):
 	22	Missing BUSCOs (M)
 	978	Total BUSCO groups searched
 ```
+
+In terms of BUSCO scoring, this iteration of the transcriptome is "better" (i.e. more complete) than the [previous transcriptome BUSCO analysis on 20200207](https://robertslab.github.io/sams-notebook/2020/02/07/Transcriptome-Assessment-BUSCO-Metazoa-on-C.bairdi-MEGAN-Transcriptome.html): 91.8% vs 85.5% complete BUSCOs identified. However, this is increase is primarily due to an increase in duplicated BUSCOs (27.8% vs 20.8%).
