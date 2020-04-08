@@ -9,6 +9,9 @@ tags:
 categories:
   - Miscellaneous
 ---
+[Ran Trinity to _de novo_ assembly on the the _Alveolata_ MEGAN6 taxonomic-specific RNAseq data on 20120330](https://robertslab.github.io/sams-notebook/2020/03/30/Transcriptome-Assembly-Hematodinium-with-MEGAN6-Taxonomy-specific-Reads-with-Trinity-on-Mox.html) and now will begin annotating the transcriptome using TransDecoder on Mox.
+
+
 
 SBATCH script (GitHub):
 
@@ -126,6 +129,30 @@ mkdir "${pfam_out_dir}"
 
 #### RESULTS
 
+Took a bit over an hour to run:
+
+![Hemat transdecoder runtime](https://github.com/RobertsLab/sams-notebook/blob/master/images/screencaps/20200407_hemat_transdecoder_megan_runtime.png?raw=true)
+
 Output folder:
 
-- []()
+- [20200407_hemat_transdecoder_megan/](https://gannet.fish.washington.edu/Atumefaciens/20200407_hemat_transdecoder_megan/)
+
+
+
+Coding Sequences (FastA):
+
+- [20200408.hemat.megan.Trinity.fasta.transdecoder.cds](https://gannet.fish.washington.edu/Atumefaciens/20200407_hemat_transdecoder_megan/20200408.hemat.megan.Trinity.fasta.transdecoder.cds)
+
+Peptide Sequences (FastA):
+
+- [20200408.hemat.megan.Trinity.fasta.transdecoder.pep](https://gannet.fish.washington.edu/Atumefaciens/20200407_hemat_transdecoder_megan/20200408.hemat.megan.Trinity.fasta.transdecoder.pep)
+
+BLASTp output (tab):
+
+- [20200407_hemat_transdecoder_megan/blastp_out/20200408.hemat.blastp.outfmt6](https://gannet.fish.washington.edu/Atumefaciens/20200407_hemat_transdecoder_megan/blastp_out/20200408.hemat.blastp.outfmt6)
+
+Pfam output:
+
+- [20200407_hemat_transdecoder_megan/pfam_out/20200408.hemat.pfam.domtblout](https://gannet.fish.washington.edu/Atumefaciens/20200407_hemat_transdecoder_megan/pfam_out/20200408.hemat.pfam.domtblout)
+
+Will get ready to run Trinotate with these output files.
