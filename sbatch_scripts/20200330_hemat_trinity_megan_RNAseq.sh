@@ -35,6 +35,7 @@ echo "${PATH}" | tr : \\n
 
 # User-defined variables
 reads_dir=/gscratch/srlab/sam/data/Hematodinium/RNAseq
+transcriptome_dir=/gscratch/srlab/sam/data/Hematodinium/transcriptomes
 threads=27
 assembly_stats=assembly_stats.txt
 timestamp=$(date +%Y%m%d)
@@ -54,14 +55,14 @@ R1_list=""
 R2_list=""
 
 # Create array of fastq R1 files
-R1_array=(${reads_dir}/*_R1.fq)
+R1_array=("${reads_dir}"/*_R1.fq)
 
 # Create array of fastq R2 files
-R2_array=(${reads_dir}/*_R2.fq)
+R2_array=("${reads_dir}"/*_R2.fq)
 
 # Create list of fastq files used in analysis
 ## Uses parameter substitution to strip leading path from filename
-for fastq in ${reads_dir}/*.fq
+for fastq in "${reads_dir}"/*.fq
 do
   echo "${fastq##*/}" >> fastq.list.txt
 done
@@ -80,17 +81,27 @@ ${trinity_dir}/Trinity \
 --right "${R2_list}"
 
 # Rename generic assembly FastA
-mv trinity_out_dir/Trinity.fasta trinity_out_dir/${fasta_name}
+mv trinity_out_dir/Trinity.fasta trinity_out_dir/"${fasta_name}"
 
 # Assembly stats
-${trinity_dir}/util/TrinityStats.pl trinity_out_dir/${fasta_name} \
+${trinity_dir}/util/TrinityStats.pl trinity_out_dir/"${fasta_name}" \
 > ${assembly_stats}
 
 # Create gene map files
 ${trinity_dir}/util/support_scripts/get_Trinity_gene_to_trans_map.pl \
-trinity_out_dir/${fasta_name} \
-> trinity_out_dir/${fasta_name}.gene_trans_map
+trinity_out_dir/"${fasta_name}" \
+> trinity_out_dir/"${fasta_name}".gene_trans_map
+
+# Create sequence lengths file (used for differential gene expression)
+${trinity_dir}/util/misc/fasta_seq_length.pl \
+trinity_out_dir/"${fasta_name}" \
+> trinity_out_dir/"${fasta_name}".seq_lens
 
 # Create FastA index
 ${samtools} faidx \
-trinity_out_dir/${fasta_name}
+trinity_out_dir/"${fasta_name}"
+
+# Copy files to transcriptome directory
+rsync -av \
+trinity_out_dir/"${fasta_name}"* \
+${transcriptome_dir}
