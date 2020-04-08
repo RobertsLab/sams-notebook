@@ -139,15 +139,15 @@ Output folder:
 
 Assembly (FastA; 4.5MB):
 
-- [20200330_hemat_trinity_megan_RNAseq/trinity_out_dir/20200331.hemat.megan.Trinity.fasta](https://gannet.fish.washington.edu/Atumefaciens/20200330_hemat_trinity_megan_RNAseq/trinity_out_dir/20200331.hemat.megan.Trinity.fasta)
+- [20200330_hemat_trinity_megan_RNAseq/trinity_out_dir/20200408.hemat.megan.Trinity.fasta](https://gannet.fish.washington.edu/Atumefaciens/20200330_hemat_trinity_megan_RNAseq/trinity_out_dir/20200408.hemat.megan.Trinity.fasta)
 
 FastA Index (FAI):
 
-- [20200330_hemat_trinity_megan_RNAseq/trinity_out_dir/20200331.hemat.megan.Trinity.fasta.fai](https://gannet.fish.washington.edu/Atumefaciens/20200330_hemat_trinity_megan_RNAseq/trinity_out_dir/20200331.hemat.megan.Trinity.fasta.fai)
+- [20200330_hemat_trinity_megan_RNAseq/trinity_out_dir/20200408.hemat.megan.Trinity.fasta.fai](https://gannet.fish.washington.edu/Atumefaciens/20200330_hemat_trinity_megan_RNAseq/trinity_out_dir/20200408.hemat.megan.Trinity.fasta.fai)
 
 Trinity Gene Trans Map (txt):
 
-- [20200330_hemat_trinity_megan_RNAseq/trinity_out_dir/20200331.hemat.megan.Trinity.fasta.gene_trans_map](https://gannet.fish.washington.edu/Atumefaciens/20200330_hemat_trinity_megan_RNAseq/trinity_out_dir/20200331.hemat.megan.Trinity.fasta.gene_trans_map)
+- [20200330_hemat_trinity_megan_RNAseq/trinity_out_dir/20200408.hemat.megan.Trinity.fasta.gene_trans_map](https://gannet.fish.washington.edu/Atumefaciens/20200330_hemat_trinity_megan_RNAseq/trinity_out_dir/20200408.hemat.megan.Trinity.fasta.gene_trans_map)
 
 Assembly Stats (txt):
 
@@ -157,38 +157,38 @@ Assembly Stats (txt):
 ################################
 ## Counts of transcripts, etc.
 ################################
-Total trinity 'genes':	5402
-Total trinity transcripts:	6201
-Percent GC: 50.26
+Total trinity 'genes':	5632
+Total trinity transcripts:	6348
+Percent GC: 50.37
 
 ########################################
 Stats based on ALL transcript contigs:
 ########################################
 
-	Contig N10: 1884
-	Contig N20: 1488
-	Contig N30: 1214
-	Contig N40: 1013
-	Contig N50: 873
+	Contig N10: 1805
+	Contig N20: 1406
+	Contig N30: 1152
+	Contig N40: 961
+	Contig N50: 817
 
-	Median contig length: 587
-	Average contig: 704.10
-	Total assembled bases: 4366146
+	Median contig length: 530
+	Average contig: 656.83
+	Total assembled bases: 4169557
 
 
 #####################################################
 ## Stats based on ONLY LONGEST ISOFORM per 'GENE':
 #####################################################
 
-	Contig N10: 1814
-	Contig N20: 1434
-	Contig N30: 1172
-	Contig N40: 986
-	Contig N50: 841
+	Contig N10: 1770
+	Contig N20: 1386
+	Contig N30: 1131
+	Contig N40: 941
+	Contig N50: 797
 
-	Median contig length: 553.5
-	Average contig: 674.95
-	Total assembled bases: 3646089
+	Median contig length: 511
+	Average contig: 636.72
+	Total assembled bases: 3586009
 ```
 
 Interestingly, this assembly may actually be worse than the [previous Trinity assembly from 20200122](https://robertslab.github.io/sams-notebook/2020/01/22/Transcriptome-Assembly-Hematodinium-with-MEGAN6-Taxonomy-specific-Reads-with-Trinity-on-Mox.html). Although it has marginally greater numbers of trinity genes and trinity transcripts, virtually all other metrics have decreased (albeit, not by much). Will assess transcriptome completeness with BUSCO and see if there's any noticeable improvement on that front.
