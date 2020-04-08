@@ -126,7 +126,7 @@ trinity_out_dir/${fasta_name}
 
 #### RESULTS
 
-This was pretty quick, ~1.5hrs:
+This was quick, ~11 minutes:
 
 ![Trinity runtime for hematodinium assembly](https://github.com/RobertsLab/sams-notebook/blob/master/images/screencaps/20200122_hemat_trinity_megan_RNAseq_runtime.png?raw=true)
 
