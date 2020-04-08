@@ -68,7 +68,7 @@ prefix="${timestamp}.${species}"
 ## Input files and settings
 base_name="${prefix}.megan"
 busco_db=/gscratch/srlab/sam/data/databases/BUSCO/metazoa_odb9
-transcriptome_fasta=/gscratch/srlab/sam/data/Hematodinium/transcriptomes/20200331.hemat.megan.Trinity.fasta
+transcriptome_fasta=/gscratch/srlab/sam/data/Hematodinium/transcriptomes/20200408.hemat.megan.Trinity.fasta
 augustus_species=fly
 threads=28
 
@@ -145,7 +145,7 @@ ${busco} \
 
 #### RESULTS
 
-Very fast! 35 seconds:
+Very fast! 49 seconds:
 
 ![Hemat BUSCO runtime](https://github.com/RobertsLab/sams-notebook/blob/master/images/screencaps/20200331_hemat_busco_megan_runtime.png?raw=true)
 
@@ -155,25 +155,25 @@ Output folder:
 
 BUSCO short summary (text):
 
-- [20200331_hemat_busco_megan/run_20200331.hemat.megan/short_summary_20200331.hemat.megan.txt](https://gannet.fish.washington.edu/Atumefaciens/20200331_hemat_busco_megan/run_20200331.hemat.megan/short_summary_20200331.hemat.megan.txt)
+- [20200331_hemat_busco_megan/run_20200331.hemat.megan/short_summary_20200331.hemat.megan.txt](https://gannet.fish.washington.edu/Atumefaciens/20200331_hemat_busco_megan/run_20200408.hemat.megan/short_summary_20200408.hemat.megan.txt)
 
 ```
 # BUSCO version is: 3.0.2
 # The lineage dataset is: metazoa_odb9 (Creation date: 2016-02-13, number of species: 65, number of BUSCOs: 978)
-# To reproduce this run: python /gscratch/srlab/programs/busco-v3/scripts/run_BUSCO.py -i /gscratch/srlab/sam/data/Hematodinium/transcriptomes/20200331.hemat.megan.Trinity.fasta -o 20200331.hemat.megan -l /gscratch/srlab/sam/data/databases/BUSCO/metazoa_odb9/ -m transcriptome -c 28 --long -z
+# To reproduce this run: python /gscratch/srlab/programs/busco-v3/scripts/run_BUSCO.py -i /gscratch/srlab/sam/data/Hematodinium/transcriptomes/20200408.hemat.megan.Trinity.fasta -o 20200408.hemat.megan -l /gscratch/srlab/sam/data/databases/BUSCO/metazoa_odb9/ -m transcriptome -c 28 --long -z
 #
-# Summarized benchmarking in BUSCO notation for file /gscratch/srlab/sam/data/Hematodinium/transcriptomes/20200331.hemat.megan.Trinity.fasta
+# Summarized benchmarking in BUSCO notation for file /gscratch/srlab/sam/data/Hematodinium/transcriptomes/20200408.hemat.megan.Trinity.fasta
 # BUSCO was run in mode: transcriptome
 
-	C:26.6%[S:20.7%,D:5.9%],F:11.1%,M:62.3%,n:978
+	C:25.6%[S:20.7%,D:4.9%],F:11.7%,M:62.7%,n:978
 
-	260	Complete BUSCOs (C)
+	250	Complete BUSCOs (C)
 	202	Complete and single-copy BUSCOs (S)
-	58	Complete and duplicated BUSCOs (D)
-	109	Fragmented BUSCOs (F)
-	609	Missing BUSCOs (M)
+	48	Complete and duplicated BUSCOs (D)
+	114	Fragmented BUSCOs (F)
+	614	Missing BUSCOs (M)
 	978	Total BUSCO groups searched
 
 ```
 
-This current assembly shows only a slight increase in completeness (26.6% complete BUSCOS), [compared to the initial transcriptome assembly from 20200123](https://robertslab.github.io/sams-notebook/2020/02/07/Transcriptome-Assessment-BUSCO-Metazoa-on-Hematodinium-MEGAN-Transcriptome.html) (25.1%). 
+This current assembly shows only a slight increase in completeness (25.6% complete BUSCOS), [compared to the initial transcriptome assembly from 20200123](https://robertslab.github.io/sams-notebook/2020/02/07/Transcriptome-Assessment-BUSCO-Metazoa-on-Hematodinium-MEGAN-Transcriptome.html) (25.1%).
