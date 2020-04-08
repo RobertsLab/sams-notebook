@@ -42,8 +42,8 @@ wd="$(pwd)"
 timestamp=$(date +%Y%m%d)
 
 # Set input file locations and species designation
-trinity_fasta="/gscratch/srlab/sam/data/Hematodinium/transcriptomes/20200331.hemat.megan.Trinity.fasta"
-trinity_gene_map="/gscratch/srlab/sam/data/Hematodinium/transcriptomes/20200331.hemat.megan.Trinity.fasta.gene_trans_map"
+trinity_fasta="/gscratch/srlab/sam/data/Hematodinium/transcriptomes/20200408.hemat.megan.Trinity.fasta"
+trinity_gene_map="/gscratch/srlab/sam/data/Hematodinium/transcriptomes/20200408.hemat.megan.Trinity.fasta.gene_trans_map"
 species="hemat"
 
 # Capture trinity file name
