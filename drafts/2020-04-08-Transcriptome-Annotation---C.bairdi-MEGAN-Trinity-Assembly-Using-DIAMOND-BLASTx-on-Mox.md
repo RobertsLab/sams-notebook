@@ -11,7 +11,7 @@ tags:
 categories:
   - Miscellaneous
 ---
-As part of annotating the most recent [transcriptome assembly from the MEGAN6 _Arthropoda_ taxonomic-specific reads](https://robertslab.github.io/sams-notebook/2020/03/30/Transcriptome-Assembly-Hematodinium-with-MEGAN6-Taxonomy-specific-Reads-with-Trinity-on-Mox.html), I need to run DIAMOND BLASTx to use with Trinotate.
+As part of annotating the most recent [transcriptome assembly from the MEGAN6 _Arthropoda_ taxonomic-specific reads](https://robertslab.github.io/sams-notebook/2020/03/30/Transcriptome-Assembly-C.bairdi-with-MEGAN6-Taxonomy-specific-Reads-with-Trinity-on-Mox.html), I need to run DIAMOND BLASTx to use with Trinotate.
 
 Ran DIAMOND BLASTx against the UniProt/SwissProt database (downloaded 20200123) on Mox.
 
@@ -93,6 +93,16 @@ ${diamond} blastx \
 
 #### RESULTS
 
+Very fast, 13 seconds :
+
+![cbai diamond blastx runtime](https://github.com/RobertsLab/sams-notebook/blob/master/images/screencaps/20200408_cbai_diamond_blastx_megan_runtime.png?raw=true)
+
 Output folder:
 
-- []()
+- [20200408_cbai_diamond_blastx_megan/](https://gannet.fish.washington.edu/Atumefaciens/20200408_cbai_diamond_blastx_megan/)
+
+BLASTx output - BLAST format 6 (tab):
+
+- [20200408_cbai_diamond_blastx_megan/20200408.C_bairdi.megan.Trinity.blastx.outfmt6](https://gannet.fish.washington.edu/Atumefaciens/20200408_cbai_diamond_blastx_megan/20200408.C_bairdi.megan.Trinity.blastx.outfmt6)
+
+Will proceed with Trinotate.
