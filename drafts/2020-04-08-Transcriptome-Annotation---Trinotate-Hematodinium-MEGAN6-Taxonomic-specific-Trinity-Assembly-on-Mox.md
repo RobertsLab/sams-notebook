@@ -1,7 +1,7 @@
 ---
 layout: post
 title: Transcriptome Annotation - Trinotate Hematodinium MEGAN6 Taxonomic-specific Trinity Assembly on Mox
-date: '2020-04-09 09:22'
+date: '2020-04-08 09:22'
 tags:
   - Trinotate
   - Hematodinium
