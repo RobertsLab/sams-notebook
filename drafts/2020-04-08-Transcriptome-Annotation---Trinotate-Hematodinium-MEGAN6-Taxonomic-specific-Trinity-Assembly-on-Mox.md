@@ -202,4 +202,23 @@ Very quick, only 6.5 minutes:
 
 Output folder:
 
-- []()
+- [20200408_hemat_trinotate_megan/](https://gannet.fish.washington.edu/Atumefaciens/20200408_hemat_trinotate_megan/)
+
+
+Annotation feature map. [This can be used to update Trinity-based gene expression matrices like so](https://github.com/trinityrnaseq/trinityrnaseq/wiki/Functional-Annotation-of-Transcripts):
+
+- ```${TRINITY_HOME}/Analysis/DifferentialExpression/rename_matrix_feature_identifiers.pl Trinity_trans.counts.matrix annot_feature_map.txt > Trinity_trans.counts.wAnnot.matrix```
+
+- [20200408.hemat.trinotate.annotation_feature_map.txt](https://gannet.fish.washington.edu/Atumefaciens/20200408_hemat_trinotate_megan/20200408.hemat.trinotate.annotation_feature_map.txt)
+
+Annotation report (CSV)
+
+- [20200408.hemat.trinotate_annotation_report.txt](https://gannet.fish.washington.edu/Atumefaciens/20200408_hemat_trinotate_megan/20200408.hemat.trinotate_annotation_report.txt)
+
+Gene ontology (GO) annotations (TXT)
+
+- [20200408.hemat.trinotate.go_annotations.txt](https://gannet.fish.washington.edu/Atumefaciens/20200408_hemat_trinotate_megan/20200408.hemat.trinotate.go_annotations.txt)
+
+SQlite database:
+
+- [Trinotate.sqlite](https://gannet.fish.washington.edu/Atumefaciens/20200408_hemat_trinotate_megan/Trinotate.sqlite)
