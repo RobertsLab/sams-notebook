@@ -12,7 +12,9 @@ tags:
 categories:
   - Miscellaneous
 ---
+After performing [_de novo_ assembly on our Tanner crab MEGAN6 taxonomic-specific RNAseq data on 20200330](https://robertslab.github.io/sams-notebook/2020/03/30/Transcriptome-Assembly-C.bairdi-with-MEGAN6-Taxonomy-specific-Reads-with-Trinity-on-Mox.html) and performing [BLASTx annotation on 20200408](https://robertslab.github.io/sams-notebook/2020/04/08/Transcriptome-Annotation-C.bairdi-MEGAN-Trinity-Assembly-Using-DIAMOND-BLASTx-on-Mox.html), I continued the annotation process by running [Trinotate](https://github.com/Trinotate/Trinotate.github.io/wiki).
 
+Trinotate will perform functional annotation of the transcriptome assembly, including GO terms and an annotation feature map that can be used in subsequent Trinity-based differential gene expression analysis so that functional annotations are carried downstream through that process.
 
 SBATCH script (GitHub):
 
@@ -207,3 +209,21 @@ Took a little over 50 mins to run:
 Output folder:
 
 - [20200409_cbai_trinotate_megan/](https://gannet.fish.washington.edu/Atumefaciens/20200409_cbai_trinotate_megan/)
+
+Annotation feature map. [This can be used to update Trinity-based gene expression matrices like so](https://github.com/trinityrnaseq/trinityrnaseq/wiki/Functional-Annotation-of-Transcripts):
+
+- ```${TRINITY_HOME}/Analysis/DifferentialExpression/rename_matrix_feature_identifiers.pl Trinity_trans.counts.matrix annot_feature_map.txt > Trinity_trans.counts.wAnnot.matrix```
+
+- [20200409.cbai.trinotate.annotation_feature_map.txt](https://gannet.fish.washington.edu/Atumefaciens/20200409_cbai_trinotate_megan/20200409.cbai.trinotate.annotation_feature_map.txt)
+
+Annotation report (CSV)
+
+- [20200126.cbai.trinotate_annotation_report.txt](https://gannet.fish.washington.edu/Atumefaciens/20200409_cbai_trinotate_megan/20200126.cbai.trinotate_annotation_report.txt)
+
+Gene ontology (GO) annotations (TXT)
+
+- [20200409.cbai.trinotate.go_annotations.txt](https://gannet.fish.washington.edu/Atumefaciens/20200409_cbai_trinotate_megan/20200409.cbai.trinotate.go_annotations.txt)
+
+SQlite database:
+
+- [Trinotate.sqlite](https://gannet.fish.washington.edu/Atumefaciens/20200409_cbai_trinotate_megan/Trinotate.sqlite)
