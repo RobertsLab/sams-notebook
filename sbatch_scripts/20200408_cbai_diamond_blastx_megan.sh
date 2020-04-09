@@ -47,7 +47,7 @@ dmnd=/gscratch/srlab/blastdbs/uniprot_sprot_20200123/uniprot_sprot.dmnd
 
 
 # Trinity assembly (FastA)
-fasta=/gscratch/srlab/sam/data/Hematodinium/transcriptomes/20200408.C_bairdi.megan.Trinity.fasta
+fasta=/gscratch/srlab/sam/data/C_bairdi/transcriptomes/20200408.C_bairdi.megan.Trinity.fasta
 
 # Strip leading path and extensions
 no_path=$(echo "${fasta##*/}")
