@@ -137,7 +137,7 @@ ${transcriptome_dir}
 
 #### RESULTS
 
-Took ~3.5hrs to run:
+Took ~4hrs to run:
 
 ![Trinity Mox runtime](https://github.com/RobertsLab/sams-notebook/blob/master/images/screencaps/20200330_cbai_trinity_megan_RNAseq_runtime.png?raw=true)
 
@@ -147,11 +147,11 @@ Output folder:
 
 Assembly (FastA; 36MB):
 
-- [20200330_cbai_trinity_megan_RNAseq/trinity_out_dir/20200406.C_bairdi.megan.Trinity.fasta](https://gannet.fish.washington.edu/Atumefaciens/20200330_cbai_trinity_megan_RNAseq/trinity_out_dir/20200406.C_bairdi.megan.Trinity.fasta)
+- [20200330_cbai_trinity_megan_RNAseq/trinity_out_dir/20200408.C_bairdi.megan.Trinity.fasta](https://gannet.fish.washington.edu/Atumefaciens/20200330_cbai_trinity_megan_RNAseq/trinity_out_dir/20200408.C_bairdi.megan.Trinity.fasta)
 
 FastA Index (FAI):
 
-- [20200330_cbai_trinity_megan_RNAseq/trinity_out_dir/20200406.C_bairdi.megan.Trinity.fasta.fai](https://gannet.fish.washington.edu/Atumefaciens/20200330_cbai_trinity_megan_RNAseq/trinity_out_dir/20200406.C_bairdi.megan.Trinity.fasta.fai)
+- [20200330_cbai_trinity_megan_RNAseq/trinity_out_dir/20200408.C_bairdi.megan.Trinity.fasta.fai](https://gannet.fish.washington.edu/Atumefaciens/20200330_cbai_trinity_megan_RNAseq/trinity_out_dir/20200408.C_bairdi.megan.Trinity.fasta.fai)
 
 Trinity Gene Trans Map (txt):
 
@@ -163,43 +163,42 @@ Assembly Stats (txt):
 
 
 ```
-
 ################################
 ## Counts of transcripts, etc.
 ################################
-Total trinity 'genes':	23316
-Total trinity transcripts:	40204
-Percent GC: 53.13
+Total trinity 'genes':	24727
+Total trinity transcripts:	40435
+Percent GC: 53.17
 
 ########################################
 Stats based on ALL transcript contigs:
 ########################################
 
-	Contig N10: 3498
-	Contig N20: 2557
-	Contig N30: 2007
-	Contig N40: 1653
-	Contig N50: 1369
+	Contig N10: 3497
+	Contig N20: 2502
+	Contig N30: 1977
+	Contig N40: 1611
+	Contig N50: 1322
 
-	Median contig length: 540.5
-	Average contig: 871.01
-	Total assembled bases: 35018058
+	Median contig length: 488
+	Average contig: 824.28
+	Total assembled bases: 33329770
 
 
 #####################################################
 ## Stats based on ONLY LONGEST ISOFORM per 'GENE':
 #####################################################
 
-	Contig N10: 3307
-	Contig N20: 2433
-	Contig N30: 1939
-	Contig N40: 1590
-	Contig N50: 1298
+	Contig N10: 3196
+	Contig N20: 2364
+	Contig N30: 1885
+	Contig N40: 1534
+	Contig N50: 1239
 
-	Median contig length: 433
-	Average contig: 780.31
-	Total assembled bases: 18193692
+	Median contig length: 403
+	Average contig: 741.81
+	Total assembled bases: 18342751
 
 ```
 
-When compared to [the previous assembly](https://robertslab.github.io/sams-notebook/2020/01/22/Transcriptome-Assembly-C.bairdi-with-MEGAN6-Taxonomy-specific-Reads-with-Trinity-on-Mox.html), this certainly has more genes (23,316 vs 12,803), more transcripts (40,204 vs 19,670), and more assembled bases. However, the median length, average length and N50 values are all lower.
+When compared to [the previous assembly](https://robertslab.github.io/sams-notebook/2020/01/22/Transcriptome-Assembly-C.bairdi-with-MEGAN6-Taxonomy-specific-Reads-with-Trinity-on-Mox.html), this certainly has more genes (24,727 vs 12,803), more transcripts (40,435 vs 19,670), and more assembled bases. However, the median length, average length and N50 values are all lower.
