@@ -130,6 +130,28 @@ mkdir "${pfam_out_dir}"
 
 #### RESULTS
 
+Took about 7.75hrs:
+
+![cbai transdecoder runtime](https://github.com/RobertsLab/sams-notebook/blob/master/images/screencaps/20200407_cbai_transdecoder_megan_runtime.png?raw=true)
+
 Output folder:
 
-- []()
+- [20200407_cbai_transdecoder_megan/](https://gannet.fish.washington.edu/Atumefaciens/20200407_cbai_transdecoder_megan/)
+
+Coding Sequences (FastA):
+
+- [20200408.C_bairdi.megan.Trinity.fasta.transdecoder.cds](https://gannet.fish.washington.edu/Atumefaciens/20200407_cbai_transdecoder_megan/20200408.C_bairdi.megan.Trinity.fasta.transdecoder.cds)
+
+Peptide Sequences (FastA):
+
+- [20200408.C_bairdi.megan.Trinity.fasta.transdecoder.pep](https://gannet.fish.washington.edu/Atumefaciens/20200407_cbai_transdecoder_megan/20200408.C_bairdi.megan.Trinity.fasta.transdecoder.pep)
+
+BLASTp output (tab):
+
+- [20200407_cbai_transdecoder_megan/blastp_out/20200408.C_bairdi.blastp.outfmt6](https://gannet.fish.washington.edu/Atumefaciens/20200407_cbai_transdecoder_megan/blastp_out/20200408.C_bairdi.blastp.outfmt6)
+
+Pfam output:
+
+- [20200407_cbai_transdecoder_megan/pfam_out/20200408.C_bairdi.pfam.domtblout](https://gannet.fish.washington.edu/Atumefaciens/20200407_cbai_transdecoder_megan/pfam_out/20200408.C_bairdi.pfam.domtblout)
+
+Will get ready to run Trinotate with these output files.
