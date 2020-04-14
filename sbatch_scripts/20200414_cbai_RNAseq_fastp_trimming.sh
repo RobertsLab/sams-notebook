@@ -43,7 +43,7 @@ threads=27
 
 # Input/output files
 trimmed_checksums=trimmed_fastq_checksums.md5
-raw_reads_dir=/gscratch/scrubbed/samwhite/data/C_bairdi/RNAseq/
+raw_reads_dir=/gscratch/srlab/sam/data/C_bairdi/RNAseq/
 
 # Paths to programs
 fastp=/gscratch/srlab/programs/fastp-0.20.0/fastp
@@ -77,7 +77,7 @@ done
 
 # Sync raw FastQ files to working directory
 rsync --archive --verbose \
-"${raw_reads_dir}"*.fastq.gz .
+"${raw_reads_dir}"[3][8]*.fastq.gz .
 
 # Sync checkums file
 rsync --archive --verbose \
