@@ -142,7 +142,7 @@ do
 	} >> "${trimmed_checksums}"
 
 	# Run FastQC
-	fastqc --threads ${threads} \
+	${fastqc} --threads ${threads} \
 	"${R1_sample_name}".fastp-trim."${timestamp}".fq.gz \
 	"${R2_sample_name}".fastp-trim."${timestamp}".fq.gz
 
