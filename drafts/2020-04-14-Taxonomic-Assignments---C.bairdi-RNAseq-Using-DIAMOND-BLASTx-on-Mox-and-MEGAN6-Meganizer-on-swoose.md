@@ -15,6 +15,13 @@ tags:
 categories:
   - Miscellaneous
 ---
+[After receiving/trimming the latest round of _C.bairdi_ RNAseq data on 20200413](https://robertslab.github.io/sams-notebook/2020/04/13/Data-Received-C.bairdi-RNAseq-from-NWGSC.html), need to get the data ready to perform taxonomic selection of sequencing reads. To do this, I first need to run [DIAMOND BLASTx](https://github.com/bbuchfink/diamond), then "meganize" the output files in preparation for loading into [MEGAN6](https://uni-tuebingen.de/fakultaeten/mathematisch-naturwissenschaftliche-fakultaet/fachbereiche/informatik/lehrstuehle/algorithms-in-bioinformatics/software/megan6/), which will allow for taxonomic-specific read separation.
+
+DIAMOND BLASTx will be run on Mox. Meganization will be run on my computer (swoose), due to MEGAN6's reliance on Java X11 window (this is not available on Mox - throws an error when trying to run it).
+
+I fully anticipate this process to take a week or two (DIAMOND BLASTx will likely take a few days and read extraction will definitely take many days...)
+
+
 
 SBATCH script (GitHub):
 
@@ -117,4 +124,4 @@ done
 
 Output folder:
 
-- []()
+- [20200414_cbai_diamond_blastx/](https://gannet.fish.washington.edu/Atumefaciens/20200414_cbai_diamond_blastx/)
