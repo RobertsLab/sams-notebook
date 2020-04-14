@@ -61,7 +61,7 @@ echo ""
 } &>> program_options.log || true
 
 # Trimmed FastQ files directory
-fastq_dir=/gscratch/scrubbed/samwhite/outputs/20200414_cbai_RNAseq_fastp_trimming
+fastq_dir=/gscratch/scrubbed/samwhite/outputs/20200414_cbai_RNAseq_fastp_trimming/
 
 
 # Loop through FastQ files, log filenames to fastq_list.txt.
