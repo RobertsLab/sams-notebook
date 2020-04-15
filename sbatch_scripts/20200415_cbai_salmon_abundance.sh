@@ -17,6 +17,10 @@
 ## Specify the working directory for this job
 #SBATCH --chdir=/gscratch/scrubbed/samwhite/outputs/20200415_cbai_salmon_abundance
 
+## Script to get gene abundance estimates via salmon alignment-free
+## Specifically for Grace, per this GitHub issue: https://github.com/RobertsLab/resources/issues/902
+
+
 # Exit script if any command fails
 set -e
 
@@ -92,12 +96,12 @@ ${trimmed_reads_dir}/3297*trim*.gz .
 # Concatenate reads
 for fastq in *R1*.gz
 do
-  gunzip --to-stdout ${fastq} >> reads_1.fq
+  gunzip --to-stdout "${fastq}" >> reads_1.fq
 done
 
 for fastq in *R2*.gz
 do
-  gunzip --to-stdout ${fastq} >> reads_2.fq
+  gunzip --to-stdout "${fastq}" >> reads_2.fq
 done
 
 # Runs salmon and stranded library option
@@ -122,7 +126,7 @@ ${trinity_matrix} \
 --gene_trans_map ${gene_map} \
 --out_prefix salmon \
 --name_sample_by_basedir \
-${trin_matrix_list}
+"${trin_matrix_list}"
 1> ${matrix_stdout} \
 2> ${matrix_stderr}
 
