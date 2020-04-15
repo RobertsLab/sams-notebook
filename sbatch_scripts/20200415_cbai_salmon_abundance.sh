@@ -113,7 +113,6 @@ ${trinity_abundance} \
 --SS_lib_type RF \
 --est_method salmon \
 --gene_trans_map "${gene_map}" \
---prep_reference \
 --thread_count "${threads}" \
 --output_dir "${wd}" \
 1> ${salmon_stdout} \
