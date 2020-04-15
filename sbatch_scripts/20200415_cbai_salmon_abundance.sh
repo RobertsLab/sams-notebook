@@ -53,7 +53,7 @@ transcriptome="${transcriptome_dir}/${fasta_prefix}.fasta"
 
 trinotate_feature_map="${transcriptome_dir}/20200409.cbai.trinotate.annotation_feature_map.txt"
 gene_map="${transcriptome_dir}/${fasta_prefix}.fasta.gene_trans_map"
-
+salmon_index="${fasta_prefix}.salmon.idx"
 
 # Standard output/error files
 matrix_stdout="matrix_stdout.txt"
@@ -67,6 +67,22 @@ trinity_home=/gscratch/srlab/programs/trinityrnaseq-v2.9.0
 trinity_annotate_matrix="${trinity_home}/Analysis/DifferentialExpression/rename_matrix_feature_identifiers.pl"
 trinity_abundance=${trinity_home}/util/align_and_estimate_abundance.pl
 trinity_matrix=${trinity_home}/util/abundance_estimates_to_matrix.pl
+
+# Create salmon index of Trinity FastA
+# Useful for saving time if needed in future for
+# additional runs.
+${trinity_abundance} \
+--transcripts ${transcriptome} \
+--est_method salmon \
+--prep_reference \
+--thread_count "${threads}" \
+--output_dir "${transcriptome_dir}"
+
+# Rsync salmon index file
+rsync \
+--archive \
+--verbose \
+"${transcriptome_dir}/${salmon_index}" .
 
 
 # Rsync trimmed reads
@@ -109,6 +125,7 @@ ${trinity_matrix} \
 --est_method salmon \
 --gene_trans_map ${gene_map} \
 --out_prefix salmon \
+quant.sf \
 1> ${matrix_stdout} \
 2> ${matrix_stderr}
 
