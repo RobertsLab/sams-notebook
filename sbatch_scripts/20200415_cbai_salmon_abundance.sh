@@ -114,3 +114,6 @@ ${trinity_matrix} \
 "${trinotate_feature_map}" \
 salmon.gene.counts.matrix \
 > salmon.gene.counts.annotated.matrix
+
+# Clean up
+rm *trim*.gz
