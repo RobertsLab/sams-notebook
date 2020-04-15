@@ -130,4 +130,4 @@ salmon.gene.counts.matrix \
 
 # Clean up
 rm ./*trim*.gz
-rm *.fq
+rm ./*.fq
