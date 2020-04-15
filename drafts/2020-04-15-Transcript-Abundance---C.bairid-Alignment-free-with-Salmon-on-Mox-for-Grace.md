@@ -159,7 +159,7 @@ rm ./*.fq
 
 Nice and quick, only ~20mins:
 
-![runtime salmon abundance estimates]()
+![runtime salmon abundance estimates](https://github.com/RobertsLab/sams-notebook/blob/master/images/screencaps/20200415_cbai_salmon_abundance_runtime.png?raw=true)
 
 Output folder:
 
