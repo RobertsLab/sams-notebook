@@ -84,7 +84,7 @@ done
 
 for fastq in *R2*.gz
 do
-  echo "${fastq}" fastq.list.txt
+  echo "${fastq}" >> fastq.list.txt
   gunzip --to-stdout "${fastq}" >> reads_2.fq
 done
 
