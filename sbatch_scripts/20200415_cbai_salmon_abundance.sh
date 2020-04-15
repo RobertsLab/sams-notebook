@@ -53,7 +53,7 @@ transcriptome="${transcriptome_dir}/${fasta_prefix}.fasta"
 
 trinotate_feature_map="${transcriptome_dir}/20200409.cbai.trinotate.annotation_feature_map.txt"
 gene_map="${transcriptome_dir}/${fasta_prefix}.fasta.gene_trans_map"
-salmon_index="${fasta_prefix}.salmon.idx"
+salmon_index="${fasta_prefix}.salmon.idx/"
 
 # Standard output/error files
 matrix_stdout="matrix_stdout.txt"
@@ -76,13 +76,7 @@ ${trinity_abundance} \
 --est_method salmon \
 --prep_reference \
 --thread_count "${threads}" \
---output_dir "${transcriptome_dir}"
-
-# Rsync salmon index file
-rsync \
---archive \
---verbose \
-"${transcriptome_dir}/${salmon_index}" .
+--output_dir "${wd}"
 
 
 # Rsync trimmed reads
