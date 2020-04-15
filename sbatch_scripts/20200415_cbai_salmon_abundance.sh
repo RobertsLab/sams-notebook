@@ -1,6 +1,6 @@
 #!/bin/bash
 ## Job Name
-#SBATCH --job-name=DEG_cbai_inf-vs-uninf
+#SBATCH --job-name=cbai_salmon_abundance_estimates
 ## Allocation Definition
 #SBATCH --account=srlab
 #SBATCH --partition=srlab
