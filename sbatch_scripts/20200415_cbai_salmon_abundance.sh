@@ -39,7 +39,7 @@ printf "%0.s-" {1..10}
 echo "${PATH}" | tr : \\n
 } >> system_path.log
 
-
+wd="$(pwd)"
 threads=28
 
 
@@ -99,6 +99,7 @@ ${trinity_abundance} \
 --gene_trans_map "${gene_map}" \
 --prep_reference \
 --thread_count "${threads}" \
+--output_dir "${wd}" \
 1> ${salmon_stdout} \
 2> ${salmon_stderr}
 
