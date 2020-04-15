@@ -118,4 +118,4 @@ salmon.gene.counts.matrix \
 > salmon.gene.counts.annotated.matrix
 
 # Clean up
-rm *trim*.gz
+rm ./*trim*.gz
