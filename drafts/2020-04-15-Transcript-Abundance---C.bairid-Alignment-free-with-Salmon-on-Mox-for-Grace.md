@@ -12,6 +12,14 @@ tags:
 categories:
   - Miscellaneous
 ---
+[Per this GitHub Issue](https://github.com/RobertsLab/resources/issues/902), Grace and Steven asked if I could help by generating a transcript abundance file for Grace to use with EdgeR. To do so, I used [Salmon](https://salmon.readthedocs.io/en/latest/salmon.html) for alignment-free transcript abundance estimates due to its speed and its incorporation into [Trinity](https://github.com/trinityrnaseq/trinityrnaseq/wiki/Trinity-Transcript-Quantification#salmon-output) with the following files:
+
+- [FastQs from 20191025](https://robertslab.github.io/sams-notebook/2019/10/24/Data-Received-C.bairdi-RNAseq-Day9-12-26-Infected-Uninfected.html)
+
+- [_C.bairdi_ transcriptome from 20200409](https://robertslab.github.io/sams-notebook/2020/03/30/Transcriptome-Assembly-C.bairdi-with-MEGAN6-Taxonomy-specific-Reads-with-Trinity-on-Mox.html) (NOTE: Due to delays in running the initial assembly, FastA file is dated 20200408, despite notebook dated 20200330).
+
+- [Trinotate annotations from 20200409](https://robertslab.github.io/sams-notebook/2020/04/09/Transcriptome-Annotation-Trinotate-C.bairdi-MEGAN6-Taxonomic-specific-Trinity-Assembly-on-Mox.html)
+
 
 SBATCH script (GitHub):
 
@@ -164,3 +172,23 @@ Nice and quick, only ~20mins:
 Output folder:
 
 - [20200415_cbai_salmon_abundance/](https://gannet.fish.washington.edu/Atumefaciens/20200415_cbai_salmon_abundance/)
+
+Transcript abundances (text):
+
+- [20200415_cbai_salmon_abundance/quant.sf](https://gannet.fish.washington.edu/Atumefaciens/20200415_cbai_salmon_abundance/quant.sf)
+
+Transcript counts matrix (text):
+
+- [20200415_cbai_salmon_abundance/salmon.isoform.counts.matrix](https://gannet.fish.washington.edu/Atumefaciens/20200415_cbai_salmon_abundance/salmon.isoform.counts.matrix)
+
+Gene abundances (text):
+
+- [20200415_cbai_salmon_abundance/quant.sf.genes](https://gannet.fish.washington.edu/Atumefaciens/20200415_cbai_salmon_abundance/quant.sf.genes)
+
+Gene counts matrix (text):
+
+- [20200415_cbai_salmon_abundance/salmon.gene.counts.matrix](https://gannet.fish.washington.edu/Atumefaciens/20200415_cbai_salmon_abundance/salmon.gene.counts.matrix)
+
+Annotated (Trinotate) gene counts matrix (text):
+
+- [20200415_cbai_salmon_abundance/salmon.gene.counts.annotated.matrix](https://gannet.fish.washington.edu/Atumefaciens/20200415_cbai_salmon_abundance/salmon.gene.counts.annotated.matrix)
