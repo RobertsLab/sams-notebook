@@ -88,7 +88,7 @@ ${trimmed_reads_dir}/3297*trim*.gz .
 # Concatenate reads
 for fastq in *R1*.gz
 do
-  echo "${fastq}" fastq.list.txt
+  echo "${fastq}" >> fastq.list.txt
   gunzip --to-stdout "${fastq}" >> reads_1.fq
 done
 
