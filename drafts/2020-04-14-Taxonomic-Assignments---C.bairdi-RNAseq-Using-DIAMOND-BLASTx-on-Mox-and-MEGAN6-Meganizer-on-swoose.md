@@ -122,6 +122,10 @@ done
 
 #### RESULTS
 
+This didn't take terribly long, ~1.6 days :
+
+![diamond/meganization runtime](https://github.com/RobertsLab/sams-notebook/blob/master/images/screencaps/20200414_cbai_diamond_blastx_runtime.png?raw=true)
+
 Output folder:
 
 - [20200414_cbai_diamond_blastx/](https://gannet.fish.washington.edu/Atumefaciens/20200414_cbai_diamond_blastx/)
