@@ -42,6 +42,7 @@ echo "${PATH}" | tr : \\n
 wd="$(pwd)"
 threads=28
 
+samples=samples.txt
 
 fasta_prefix="20200408.C_bairdi.megan.Trinity"
 
@@ -53,7 +54,6 @@ transcriptome="${transcriptome_dir}/${fasta_prefix}.fasta"
 
 trinotate_feature_map="${transcriptome_dir}/20200409.cbai.trinotate.annotation_feature_map.txt"
 gene_map="${transcriptome_dir}/${fasta_prefix}.fasta.gene_trans_map"
-salmon_index="${fasta_prefix}.salmon.idx/"
 
 # Standard output/error files
 matrix_stdout="matrix_stdout.txt"
@@ -85,17 +85,39 @@ rsync \
 --verbose \
 ${trimmed_reads_dir}/3297*trim*.gz .
 
-# Concatenate reads
-for fastq in *R1*.gz
-do
-  echo "${fastq}" >> fastq.list.txt
-  gunzip --to-stdout "${fastq}" >> reads_1.fq
-done
+# Populate array with unique sample names
+## NOTE: Requires Bash >=v4.0
+mapfile -t samples_array < <( for fastq in 3297*.gz; do echo "${fastq}" | awk -F"_" '{print $1}'; done | sort -u )
 
-for fastq in *R2*.gz
+# Loop to concatenate same sample R1 and R2 reads
+# Also create sample list file
+for sample in "${!samples_array[@]}"
 do
-  echo "${fastq}" >> fastq.list.txt
-  gunzip --to-stdout "${fastq}" >> reads_2.fq
+  # Concatenate R1 reads for each sample
+  for fastq in *R1*.gz
+  do
+    fastq_sample=$(echo "${fastq}" | awk -F"_" '{print $1}')
+    if [ "${samples_array[sample]}" == "${fastq_sample}" ]; then
+      echo "${fastq}" >> fastq.list.txt
+      reads_1=${samples_array[sample]}_reads_1.fq
+      gunzip --to-stdout "${fastq}" >> "${reads_1}"
+    fi
+  done
+
+  # Concatenate R2 reads for each sample
+  for fastq in *R2*.gz
+  do
+    fastq_sample=$(echo "${fastq}" | awk -F"_" '{print $1}')
+    if [ "${samples_array[sample]}" == "${fastq_sample}" ]; then
+      echo "${fastq}" >> fastq.list.txt
+      reads_2=${samples_array[sample]}_reads_2.fq
+      gunzip --to-stdout "${fastq}" >> "${reads_2}"
+    fi
+  done
+
+  # Create tab-delimited samples file.
+  printf "%s\t%s\t%s\t%s\n" "${samples_array[sample]}" "${samples_array[sample]}_01" "${reads_1}" "${reads_2}" \
+  >> ${samples}
 done
 
 # Runs salmon and stranded library option
@@ -106,6 +128,7 @@ ${trinity_abundance} \
 --right reads_2.fq \
 --SS_lib_type RF \
 --est_method salmon \
+--samples_file "${samples}" \
 --gene_trans_map "${gene_map}" \
 --thread_count "${threads}" \
 --output_dir "${wd}" \
