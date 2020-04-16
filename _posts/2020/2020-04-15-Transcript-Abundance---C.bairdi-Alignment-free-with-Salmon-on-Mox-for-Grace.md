@@ -1,6 +1,6 @@
 ---
 layout: post
-title: Transcript Abundance - C.bairid Alignment-free with Salmon on Mox for Grace
+title: Transcript Abundance - C.bairdi Alignment-free with Salmon on Mox for Grace
 date: '2020-04-15 11:10'
 tags:
   - Trinity

@@ -1,6 +1,6 @@
 ---
 layout: post
-title: SRA Submission - C.bairid RNAseq Data
+title: SRA Submission - C.bairdi RNAseq Data
 date: '2020-04-15 10:57'
 tags:
   - Tanner crab
