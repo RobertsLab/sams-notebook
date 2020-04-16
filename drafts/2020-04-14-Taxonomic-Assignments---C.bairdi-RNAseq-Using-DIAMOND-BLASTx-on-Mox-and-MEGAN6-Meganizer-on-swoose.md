@@ -125,3 +125,57 @@ done
 Output folder:
 
 - [20200414_cbai_diamond_blastx/](https://gannet.fish.washington.edu/Atumefaciens/20200414_cbai_diamond_blastx/)
+
+
+Output files ("meganized" DAA files):
+
+- [380820_S1_L001_R1_001.blastx.daa](https://gannet.fish.washington.edu/Atumefaciens/380820_S1_L001_R1_001.blastx.daa)(25G)
+
+- [380820_S1_L001_R2_001.blastx.daa](https://gannet.fish.washington.edu/Atumefaciens/380820_S1_L001_R2_001.blastx.daa)(23G)
+
+- [380820_S1_L002_R1_001.blastx.daa](https://gannet.fish.washington.edu/Atumefaciens/380820_S1_L002_R1_001.blastx.daa)(25G)
+
+- [380820_S1_L002_R2_001.blastx.daa](https://gannet.fish.washington.edu/Atumefaciens/380820_S1_L002_R2_001.blastx.daa)(23G)
+
+- [380821_S2_L001_R1_001.blastx.daa](https://gannet.fish.washington.edu/Atumefaciens/380821_S2_L001_R1_001.blastx.daa)(21G)
+
+- [380821_S2_L001_R2_001.blastx.daa](https://gannet.fish.washington.edu/Atumefaciens/380821_S2_L001_R2_001.blastx.daa)(20G)
+
+- [380821_S2_L002_R1_001.blastx.daa](https://gannet.fish.washington.edu/Atumefaciens/380821_S2_L002_R1_001.blastx.daa)(21G)
+
+- [380821_S2_L002_R2_001.blastx.daa](https://gannet.fish.washington.edu/Atumefaciens/380821_S2_L002_R2_001.blastx.daa)(20G)
+
+- [380822_S3_L001_R1_001.blastx.daa](https://gannet.fish.washington.edu/Atumefaciens/380822_S3_L001_R1_001.blastx.daa)(22G)
+
+- [380822_S3_L001_R2_001.blastx.daa](https://gannet.fish.washington.edu/Atumefaciens/380822_S3_L001_R2_001.blastx.daa)(20G)
+
+- [380822_S3_L002_R1_001.blastx.daa](https://gannet.fish.washington.edu/Atumefaciens/380822_S3_L002_R1_001.blastx.daa)(22G)
+
+- [380822_S3_L002_R2_001.blastx.daa](https://gannet.fish.washington.edu/Atumefaciens/380822_S3_L002_R2_001.blastx.daa)(20G)
+
+- [380823_S4_L001_R1_001.blastx.daa](https://gannet.fish.washington.edu/Atumefaciens/380823_S4_L001_R1_001.blastx.daa)(19G)
+
+- [380823_S4_L001_R2_001.blastx.daa](https://gannet.fish.washington.edu/Atumefaciens/380823_S4_L001_R2_001.blastx.daa)(17G)
+
+- [380823_S4_L002_R1_001.blastx.daa](https://gannet.fish.washington.edu/Atumefaciens/380823_S4_L002_R1_001.blastx.daa)(19G)
+
+- [380823_S4_L002_R2_001.blastx.daa](https://gannet.fish.washington.edu/Atumefaciens/380823_S4_L002_R2_001.blastx.daa)(17G)
+
+- [380824_S5_L001_R1_001.blastx.daa](https://gannet.fish.washington.edu/Atumefaciens/380824_S5_L001_R1_001.blastx.daa)(24G)
+
+- [380824_S5_L001_R2_001.blastx.daa](https://gannet.fish.washington.edu/Atumefaciens/380824_S5_L001_R2_001.blastx.daa)(21G)
+
+- [380824_S5_L002_R1_001.blastx.daa](https://gannet.fish.washington.edu/Atumefaciens/380824_S5_L002_R1_001.blastx.daa)(23G)
+
+- [380824_S5_L002_R2_001.blastx.daa](https://gannet.fish.washington.edu/Atumefaciens/380824_S5_L002_R2_001.blastx.daa)(22G)
+
+- [380825_S6_L001_R1_001.blastx.daa](https://gannet.fish.washington.edu/Atumefaciens/380825_S6_L001_R1_001.blastx.daa)(22G)
+
+- [380825_S6_L001_R2_001.blastx.daa](https://gannet.fish.washington.edu/Atumefaciens/380825_S6_L001_R2_001.blastx.daa)(20G)
+
+- [380825_S6_L002_R1_001.blastx.daa](https://gannet.fish.washington.edu/Atumefaciens/380825_S6_L002_R1_001.blastx.daa)(22G)
+
+- [380825_S6_L002_R2_001.blastx.daa](https://gannet.fish.washington.edu/Atumefaciens/380825_S6_L002_R2_001.blastx.daa)(20G)
+
+
+These will be loaded into MEGAN6 and reads will be extracted based on classification to _Alveolata_ and/or _Arthropoda_ phyla.
