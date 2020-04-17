@@ -14,7 +14,7 @@ categories:
 ---
 [Per this GitHub Issue](https://github.com/RobertsLab/resources/issues/902), Grace and Steven asked if I could help by generating a transcript abundance file for Grace to use with EdgeR. To do so, I used [Salmon](https://salmon.readthedocs.io/en/latest/salmon.html) for alignment-free transcript abundance estimates due to its speed and its incorporation into [Trinity](https://github.com/trinityrnaseq/trinityrnaseq/wiki/Trinity-Transcript-Quantification#salmon-output) with the following files:
 
-- [FastQs from 20191025](https://robertslab.github.io/sams-notebook/2019/10/24/Data-Received-C.bairdi-RNAseq-Day9-12-26-Infected-Uninfected.html)
+- [Trimmed FastQs from 20191025](https://robertslab.github.io/sams-notebook/2019/12/18/TrimmingFastQCMultiQC-C.bairdi-RNAseq-FastQ-with-fastp-on-Mox.html)
 
 - [_C.bairdi_ transcriptome from 20200409](https://robertslab.github.io/sams-notebook/2020/03/30/Transcriptome-Assembly-C.bairdi-with-MEGAN6-Taxonomy-specific-Reads-with-Trinity-on-Mox.html) (NOTE: Due to delays in running the initial assembly, FastA file is dated 20200408, despite notebook dated 20200330).
 
