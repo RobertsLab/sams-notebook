@@ -193,7 +193,7 @@ rm ./*.fq
 
 #### RESULTS
 
-Nice and quick, only ~20mins:
+Pretty quick, ~46mins:
 
 ![runtime salmon abundance estimates](https://github.com/RobertsLab/sams-notebook/blob/master/images/screencaps/20200415_cbai_salmon_abundance_runtime.png?raw=true)
 
