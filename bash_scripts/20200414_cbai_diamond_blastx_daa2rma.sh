@@ -22,14 +22,44 @@ acc2eggnog=/home/sam/data/databases/MEGAN/acc2eggnog-Jul2019X.abin
 daa_array_R1=()
 daa_array_R2=()
 
+
+# Populate array with unique sample names
+## NOTE: Requires Bash >=v4.0
+mapfile -t samples_array < <( for daa in *.daa; do echo "${daa}" | awk -F"_" '{print $1}'; done | sort -u )
+
+# Loop to concatenate same sample R1 and R2 reads
+for sample in "${!samples_array[@]}"
+do
+  # Concatenate R1 reads for each sample
+  for daa in *R1*.daa
+  do
+    daa_sample=$(echo "${daa}" | awk -F"_" '{print $1}')
+    if [ "${samples_array[sample]}" == "${daa_sample}" ]; then
+      reads_1=${samples_array[sample]}_reads_1.daa
+      cat "${daa}" >> "${reads_1}"
+    fi
+  done
+
+  # Concatenate R2 reads for each sample
+  for daa in *R2*.gz
+  do
+    daa_sample=$(echo "${daa}" | awk -F"_" '{print $1}')
+    if [ "${samples_array[sample]}" == "${daa_sample}" ]; then
+      echo "${daa}" >> daa.list.txt
+      reads_2=${samples_array[sample]}_reads_2.daa
+      cat "${daa}" >> "${reads_2}"
+    fi
+  done
+done
+
 # Create array of DAA R1 files
-for daa in *R1*.daa
+for daa in *reads_1.daa
 do
   daa_array_R1+=("${daa}")
 done
 
 # Create array of DAA R2 files
-for daa in *R2*.daa
+for daa in *reads_2.daa
 do
   daa_array_R2+=("${daa}")
 done
