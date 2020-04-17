@@ -201,17 +201,11 @@ Output folder:
 
 - [20200415_cbai_salmon_abundance/](https://gannet.fish.washington.edu/Atumefaciens/20200415_cbai_salmon_abundance/)
 
-Transcript abundances (text):
-
-- [20200415_cbai_salmon_abundance/quant.sf](https://gannet.fish.washington.edu/Atumefaciens/20200415_cbai_salmon_abundance/quant.sf)
 
 Transcript counts matrix (text):
 
 - [20200415_cbai_salmon_abundance/salmon.isoform.counts.matrix](https://gannet.fish.washington.edu/Atumefaciens/20200415_cbai_salmon_abundance/salmon.isoform.counts.matrix)
 
-Gene abundances (text):
-
-- [20200415_cbai_salmon_abundance/quant.sf.genes](https://gannet.fish.washington.edu/Atumefaciens/20200415_cbai_salmon_abundance/quant.sf.genes)
 
 Gene counts matrix (text):
 
