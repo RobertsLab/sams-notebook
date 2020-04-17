@@ -41,17 +41,17 @@ do
     fi
   done
 
-# Concatenate R2 reads for each sample
-for daa in *R2*.daa
-do
-  daa_sample=$(echo "${daa}" | awk -F"_" '{print $1}')
-  if [ "${samples_array[sample]}" == "${daa_sample}" ]; then
-    reads_2=${samples_array[sample]}_reads_2.daa
-    echo "Concatenating ${daa} with ${reads_2}"
-    cat "${daa}" >> "${reads_2}"
-  fi
+  # Concatenate R2 reads for each sample
+  for daa in *R2*.daa
+  do
+    daa_sample=$(echo "${daa}" | awk -F"_" '{print $1}')
+    if [ "${samples_array[sample]}" == "${daa_sample}" ]; then
+      reads_2=${samples_array[sample]}_reads_2.daa
+      echo "Concatenating ${daa} with ${reads_2}"
+      cat "${daa}" >> "${reads_2}"
+    fi
+  done
 done
-
 
 # Create array of DAA R1 files
 for daa in *reads_1.daa
