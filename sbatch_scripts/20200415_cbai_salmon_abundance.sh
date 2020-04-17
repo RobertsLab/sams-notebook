@@ -121,7 +121,7 @@ do
 done
 
 # Create directory/sample list for ${trinity_matrix} command
-trin_matrix_list=$(awk '{printf "%s%s", $2, "/quant.sf " }' "${samples}")
+trin_matrix_list=$(awk '{printf "./%s%s", $2, "/quant.sf " }' "${samples}")
 
 
 # Runs salmon and stranded library option
@@ -145,7 +145,8 @@ ${trinity_matrix} \
 --est_method salmon \
 --gene_trans_map ${gene_map} \
 --out_prefix salmon \
-"${trin_matrix_list}" \
+--name_sample_by_basedir \
+${trin_matrix_list} \
 1> ${matrix_stdout} \
 2> ${matrix_stderr}
 
