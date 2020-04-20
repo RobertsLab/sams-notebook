@@ -15,6 +15,10 @@ do
   comparison=${comparisons[${comparison}]}
   mkdir "${comparison}"
   cd "${comparison}" || exit
+
+  cond1=$(echo "${comparison}" | awk -F"-" '{print $1}')
+  cond2=$(echo "${comparison}" | awk -F"-" '{print $2}')
+
   if [[ "${comparison}" == "infected-uninfected" ]]; then
     rsync --archive --verbose ${fastq_dir}*.fq .
   fi
@@ -88,4 +92,13 @@ do
   # Populate array with unique sample names
   ## NOTE: Requires Bash >=v4.0
   mapfile -t samples_array < <( for fastq in ./*.fq; do get_sample_id "${fastq}"; done | sort -u )
+
+  # Loop to create sample list file
+  for sample in "${!samples_array[@]}"
+  do
+    # Create tab-delimited samples file.
+    printf "%s\t%s\t%s\t%s\n" "${samples_array[sample]}" "${samples_array[sample]}_01" "${reads_1}" "${reads_2}" \
+    >> "${samples}"
+  done
+
 done
