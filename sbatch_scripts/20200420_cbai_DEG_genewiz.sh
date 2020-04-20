@@ -7,9 +7,11 @@ comparisons=(infected-uninfected D9-D12 D9-D26 D12-D26 ambient-cold ambient-warm
 get_day () { day=$(echo "$1" | awk -F"." '{print $4}'); }
 get_inf () { inf=$(echo "$1" | awk -F"." '{print $5}'); }
 get_temp () { temp=$(echo "$1" | awk -F"." '{print $6}'); }
+get_sample_id () { sample_id=$(echo "$1" | awk -F"." '{print $3}'); }
 
 for comparison in "${!comparisons[@]}"
 do
+  samples_array=()
   comparison=${comparisons[${comparison}]}
   mkdir "${comparison}"
   cd "${comparison}" || exit
@@ -83,4 +85,7 @@ do
     done
   fi
 
+  # Populate array with unique sample names
+  ## NOTE: Requires Bash >=v4.0
+  mapfile -t samples_array < <( for fastq in ./*.fq; do get_sample_id "${fastq}"; done | sort -u )
 done
