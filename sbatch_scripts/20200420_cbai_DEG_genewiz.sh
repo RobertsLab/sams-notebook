@@ -21,7 +21,15 @@ do
     #statements
   fi
 
-  if [[ condition ]]; then
+  if [[ "${comparison}" == "ambient-cold" ]]; then
+    #statements
+  fi
+
+  if [[ "${comparison}" == "ambient-warm" ]]; then
+    #statements
+  fi
+
+  if [[ "${comparison}" == "cold-warm" ]]; then
     #statements
   fi
 
