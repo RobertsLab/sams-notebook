@@ -54,8 +54,8 @@ do
     #statements
     for fastq in "${fastq_dir}"*.fq
     do
-      get_day "${fastq}"
-      if [[ "${day}" == "D9" || "${day}" == "D12" ]]; then
+      get_temp "${fastq}"
+      if [[ "${temp}" == "ambient" || "${temp}" == "cold" ]]; then
         rsync --archive --verbose "${fastq}" .
       fi
     done
