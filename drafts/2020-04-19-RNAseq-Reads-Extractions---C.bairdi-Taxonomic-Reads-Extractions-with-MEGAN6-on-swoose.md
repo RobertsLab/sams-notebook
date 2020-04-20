@@ -188,24 +188,22 @@ ${multiqc} .
 
 #### RESULTS
 
-Run time was just under three hours:
+Run time was just under 31 mins:
 
-![fastp runtime screencap]()
+![fastp runtime screencap](https://github.com/RobertsLab/sams-notebook/blob/master/images/screencaps/20200414_cbai_RNAseq_fastp_trimming_runtime.png?raw=true)
 
-NOTE: Although the job indicates "FAILED", this was simply due to a MultiQC failing (path to MultiQC was incorrect). Trimming proceeded/completed properly.
+
 
 Output folder:
 
-- []()
+- [20200414_cbai_RNAseq_fastp_trimming/](https://gannet.fish.washington.edu/Atumefaciens/20200414_cbai_RNAseq_fastp_trimming/)
 
-fastp MultiQC report (HTML):
+MultiQC report (HTML):
 
-- []()
+- Contains summary data for both fastp and FastQC
+
+- [20200414_cbai_RNAseq_fastp_trimming/multiqc_report.html](https://gannet.fish.washington.edu/Atumefaciens/20200414_cbai_RNAseq_fastp_trimming/multiqc_report.html)
 
 Individual fastp reports are also available (HTML). An example is below.
 
-
-
-FastQC MultiQC report (HTML):
-
-- []()
+https://gannet.fish.washington.edu/Atumefaciens/20200414_cbai_RNAseq_fastp_trimming/380820_S1_L001_R1_001.fastp-trim.202004143431.report.html
