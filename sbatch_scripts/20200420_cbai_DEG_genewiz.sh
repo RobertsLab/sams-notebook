@@ -11,7 +11,8 @@ get_sample_id () { sample_id=$(echo "$1" | awk -F"." '{print $3}'); }
 
 for comparison in "${!comparisons[@]}"
 do
-  samples_array=()
+  count=0
+  samples="${comparison}.samples.txt"
   comparison=${comparisons[${comparison}]}
   mkdir "${comparison}"
   cd "${comparison}" || exit
@@ -89,16 +90,27 @@ do
     done
   fi
 
-  # Populate array with unique sample names
-  ## NOTE: Requires Bash >=v4.0
-  mapfile -t samples_array < <( for fastq in ./*.fq; do get_sample_id "${fastq}"; done | sort -u )
+  # Create reads array
+  reads_array=(./*.fq)
 
   # Loop to create sample list file
-  for sample in "${!samples_array[@]}"
+  for (( i=0; i<${#reads_array[@]} ; i+=2 ))
   do
-    # Create tab-delimited samples file.
-    printf "%s\t%s\t%s\t%s\n" "${samples_array[sample]}" "${samples_array[sample]}_01" "${reads_1}" "${reads_2}" \
-    >> "${samples}"
+    (( count ++ ))
+
+    get_day "${reads_array[i]}"
+    get_inf "${reads_array[i]}"
+    get_temp "${reads_array[i]}"
+
+    if [[ "${cond1}" == "${day}" || "${cond1}" == "${inf}" || "${cond1}" || "${temp}" ]]; then
+      #statements
+      # Create tab-delimited samples file.
+      printf "%s\t%s%02d\t%s\t%s\n" "${cond1}" "${comparison}_" "${count}" "${reads_array[i]}" "${reads_array[i+1]}" \
+      >> "${samples}"
+    elif [[ "${cond2}" == "${day}" || "${cond2}" == "${inf}" || "${cond2}" || "${temp}" ]]; then
+      printf "%s\t%s%02d\t%s\t%s\n" "${cond2}" "${comparison}_" "${count}" "${reads_array[i]}" "${reads_array[i+1]}" \
+      >> "${samples}"
+    fi
   done
 
 done
