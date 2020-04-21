@@ -91,7 +91,7 @@ do
   fi
 
   # Create reads array
-  reads_array=(./*.fq)
+  reads_array=(*.fq)
 
   # Loop to create sample list file
   for (( i=0; i<${#reads_array[@]} ; i+=2 ))
