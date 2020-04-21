@@ -177,5 +177,7 @@ do
     fi
   done
 
-cd "${wd}"
+
+
+  cd "${wd}"
 done
