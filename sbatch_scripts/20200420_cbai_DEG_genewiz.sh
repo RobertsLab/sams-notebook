@@ -42,31 +42,50 @@ species="cbai"
 threads=28
 
 fastq_dir=/gscratch/srlab/sam/data/C_bairdi/RNAseq/
-comparisons=(infected-uninfected D9-D12 D9-D26 D12-D26 ambient-cold ambient-warm cold-warm)
+
+# Array of the various comparisons to evaluate
+# Each condition in each comparison should be separated by a "-"
+comparisons=(
+infected-uninfected \
+D9-D12 \
+D9-D26 \
+D12-D26 \
+ambient-cold \
+ambient-warm \
+cold-warm
+)
 
 # Functions
+# Expects input (i.e. "$1") to be in the following format:
+# e.g. 20200413.C_bairdi.113.D9.uninfected.cold.megan_R2.fq
 get_day () { day=$(echo "$1" | awk -F"." '{print $4}'); }
 get_inf () { inf=$(echo "$1" | awk -F"." '{print $5}'); }
 get_temp () { temp=$(echo "$1" | awk -F"." '{print $6}'); }
 get_sample_id () { sample_id=$(echo "$1" | awk -F"." '{print $3}'); }
 
-for comparison in "${!comparisons[@]}"
+for comparison in "${!comparisons_array[@]}"
 do
+
+  # Assign variables
   count=0
   samples="${comparison}.samples.txt"
-  comparison=${comparisons[${comparison}]}
-  mkdir "${comparison}"
-  cd "${comparison}" || exit
+  comparison=${comparisons_array[${comparison}]}
+  comparison_dir="${wd}/${comparison}/"
 
+  # Extract each comparison from comparisons array
+  # Conditions must be separated by a "-"
   cond1=$(echo "${comparison}" | awk -F"-" '{print $1}')
   cond2=$(echo "${comparison}" | awk -F"-" '{print $2}')
 
+  mkdir "${comparison}"
+  cd "${comparison}" || exit
+
+  # Series of if statements to identify which FastQ files to rsync to working directory
   if [[ "${comparison}" == "infected-uninfected" ]]; then
     rsync --archive --verbose ${fastq_dir}*.fq .
   fi
 
   if [[ "${comparison}" == "D9-D12" ]]; then
-    #statements
     for fastq in "${fastq_dir}"*.fq
     do
       get_day "${fastq}"
@@ -77,7 +96,6 @@ do
   fi
 
   if [[ "${comparison}" == "D9-D26" ]]; then
-    #statements
     for fastq in "${fastq_dir}"*.fq
     do
       get_day "${fastq}"
@@ -88,7 +106,6 @@ do
   fi
 
   if [[ "${comparison}" == "D12-D26" ]]; then
-    #statements
     for fastq in "${fastq_dir}"*.fq
     do
       get_day "${fastq}"
@@ -110,7 +127,6 @@ do
   fi
 
   if [[ "${comparison}" == "ambient-warm" ]]; then
-    #statements
     for fastq in "${fastq_dir}"*.fq
     do
       get_temp "${fastq}"
@@ -121,7 +137,6 @@ do
   fi
 
   if [[ "${comparison}" == "cold-warm" ]]; then
-    #statements
     for fastq in "${fastq_dir}"*.fq
     do
       get_temp "${fastq}"
