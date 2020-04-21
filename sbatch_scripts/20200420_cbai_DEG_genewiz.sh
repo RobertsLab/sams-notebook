@@ -1,4 +1,45 @@
 #!/bin/bash
+## Job Name
+#SBATCH --job-name=cbai_DEG_basic
+## Allocation Definition
+#SBATCH --account=srlab
+#SBATCH --partition=srlab
+## Resources
+## Nodes
+#SBATCH --nodes=1
+## Walltime (days-hours:minutes:seconds format)
+#SBATCH --time=04-00:00:00
+## Memory per node
+#SBATCH --mem=120G
+##turn on e-mail notification
+#SBATCH --mail-type=ALL
+#SBATCH --mail-user=samwhite@uw.edu
+## Specify the working directory for this job
+#SBATCH --chdir=/gscratch/scrubbed/samwhite/outputs/20200421_cbai_DEG_basic_comparisons
+
+# Exit script if any command fails
+set -e
+
+# Load Python Mox module for Python module availability
+
+module load intel-python3_2017
+
+# Document programs in PATH (primarily for program version ID)
+
+{
+date
+echo ""
+echo "System PATH for $SLURM_JOB_ID"
+echo ""
+printf "%0.s-" {1..10}
+echo "${PATH}" | tr : \\n
+} >> system_path.log
+
+
+wd="$(pwd)"
+timestamp=$(date +%Y%m%d)
+species="cbai"
+threads=28
 
 fastq_dir=/gscratch/srlab/sam/data/C_bairdi/RNAseq/
 comparisons=(infected-uninfected D9-D12 D9-D26 D12-D26 ambient-cold ambient-warm cold-warm)
