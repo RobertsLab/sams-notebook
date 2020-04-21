@@ -67,9 +67,10 @@ for comparison in "${!comparisons_array[@]}"
 do
 
   # Assign variables
-  count=0
-  samples="${comparison}.samples.txt"
+  cond1_count=0
+  cond2_count=0
   comparison=${comparisons_array[${comparison}]}
+  samples="${comparison}.samples.txt"
   comparison_dir="${wd}/${comparison}/"
 
   # Extract each comparison from comparisons array
@@ -77,15 +78,21 @@ do
   cond1=$(echo "${comparison}" | awk -F"-" '{print $1}')
   cond2=$(echo "${comparison}" | awk -F"-" '{print $2}')
 
+
+
   mkdir "${comparison}"
+
+
   cd "${comparison}" || exit
 
   # Series of if statements to identify which FastQ files to rsync to working directory
   if [[ "${comparison}" == "infected-uninfected" ]]; then
+
     rsync --archive --verbose ${fastq_dir}*.fq .
   fi
 
   if [[ "${comparison}" == "D9-D12" ]]; then
+
     for fastq in "${fastq_dir}"*.fq
     do
       get_day "${fastq}"
@@ -152,21 +159,23 @@ do
   # Loop to create sample list file
   for (( i=0; i<${#reads_array[@]} ; i+=2 ))
   do
-    (( count ++ ))
 
     get_day "${reads_array[i]}"
     get_inf "${reads_array[i]}"
     get_temp "${reads_array[i]}"
 
-    if [[ "${cond1}" == "${day}" || "${cond1}" == "${inf}" || "${cond1}" || "${temp}" ]]; then
+    if [[ "${cond1}" == "${day}" || "${cond1}" == "${inf}" || "${cond1}" == "${temp}" ]]; then
       #statements
+      ((cond1_count++))
       # Create tab-delimited samples file.
-      printf "%s\t%s%02d\t%s\t%s\n" "${cond1}" "${comparison}_" "${count}" "${reads_array[i]}" "${reads_array[i+1]}" \
+      printf "%s\t%s%02d\t%s\t%s\n" "${cond1}" "${cond1}_" "${cond1_count}" "${reads_array[i]}" "${reads_array[i+1]}" \
       >> "${samples}"
-    elif [[ "${cond2}" == "${day}" || "${cond2}" == "${inf}" || "${cond2}" || "${temp}" ]]; then
-      printf "%s\t%s%02d\t%s\t%s\n" "${cond2}" "${comparison}_" "${count}" "${comparison_dir}${reads_array[i]}" "${comparison_dir}${reads_array[i+1]}" \
+    elif [[ "${cond2}" == "${day}" || "${cond2}" == "${inf}" || "${cond2}" == "${temp}" ]]; then
+      ((cond2_count++))
+      printf "%s\t%s%02d\t%s\t%s\n" "${cond2}" "${cond2}_" "${cond2_count}" "${comparison_dir}${reads_array[i]}" "${comparison_dir}${reads_array[i+1]}" \
       >> "${samples}"
     fi
   done
 
+cd "${wd}"
 done
