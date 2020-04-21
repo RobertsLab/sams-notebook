@@ -178,6 +178,91 @@ do
   done
 
 
+  # Create directory/sample list for ${trinity_matrix} command
+  trin_matrix_list=$(awk '{printf "%s%s", $2, "/quant.sf " }' "${samples}")
+
+  cd ${trimmed_reads_dir}
+  time ${trinity_abundance} \
+  --output_dir "${salmon_out_dir}" \
+  --transcripts ${transcriptome} \
+  --seqType fq \
+  --samples_file "${samples}" \
+  --SS_lib_type RF \
+  --est_method salmon \
+  --aln_method bowtie2 \
+  --gene_trans_map "${gene_map}" \
+  --prep_reference \
+  --thread_count "${threads}" \
+  1> "${salmon_out_dir}"/${salmon_stdout} \
+  2> "${salmon_out_dir}"/${salmon_stderr}
+
+  # Move output folders
+  mv ${trimmed_reads_dir}/[iu]* \
+  "${salmon_out_dir}"
+
+  cd "${salmon_out_dir}"
+
+  # Convert abundance estimates to matrix
+  ${trinity_matrix} \
+  --est_method salmon \
+  --gene_trans_map ${gene_map} \
+  --out_prefix salmon \
+  --name_sample_by_basedir \
+  ${trin_matrix_list} \
+  1> ${matrix_stdout} \
+  2> ${matrix_stderr}
+
+  # Integrate functional Trinotate functional annotations
+  "${trinity_annotate_matrix}" \
+  "${trinotate_feature_map}" \
+  salmon.gene.counts.matrix \
+  > salmon.gene.counts.annotated.matrix
+
+
+  # Generate weighted gene lengths
+  "${trinity_tpm_length}" \
+  --gene_trans_map "${gene_map}" \
+  --trans_lengths "${fasta_seq_lengths}" \
+  --TPM_matrix "${salmon_iso_matrix}" \
+  > Trinity.gene_lengths.txt \
+  2> ${tpm_length_stderr}
+
+  # Differential expression analysis
+  cd ${transcriptome_dir}
+  ${trinity_DE} \
+  --matrix "${salmon_out_dir}"/salmon.gene.counts.matrix \
+  --method edgeR \
+  --samples_file "${samples}" \
+  1> ${trinity_DE_stdout} \
+  2> ${trinity_DE_stderr}
+
+  mv edgeR* "${salmon_out_dir}"
+
+
+  # Run differential expression on edgeR output matrix
+  # Set fold difference to 2-fold (ie. -C 1 = 2^1)
+  # P value <= 0.05
+  # Has to run from edgeR output directory
+
+  # Pulls edgeR directory name and removes leading ./ in find output
+  cd "${salmon_out_dir}"
+  edgeR_dir=$(find . -type d -name "edgeR*" | sed 's%./%%')
+  cd "${edgeR_dir}"
+  mv "${transcriptome_dir}/${trinity_DE_stdout}" .
+  mv "${transcriptome_dir}/${trinity_DE_stderr}" .
+  ${diff_expr} \
+  --matrix "${salmon_gene_matrix}" \
+  --samples "${samples}" \
+  --examine_GO_enrichment \
+  --GO_annots "${go_annotations}" \
+  --include_GOplot \
+  --gene_lengths "${salmon_out_dir}"/Trinity.gene_lengths.txt \
+  -C 1 \
+  -P 0.05 \
+  1> ${diff_expr_stdout} \
+  2> ${diff_expr_stderr}
+
+
 
   cd "${wd}"
 done
