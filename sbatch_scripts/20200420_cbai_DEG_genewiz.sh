@@ -45,7 +45,7 @@ fastq_dir=/gscratch/srlab/sam/data/C_bairdi/RNAseq/
 
 # Array of the various comparisons to evaluate
 # Each condition in each comparison should be separated by a "-"
-comparisons=(
+comparisons_array=(
 infected-uninfected \
 D9-D12 \
 D9-D26 \
@@ -164,7 +164,7 @@ do
       printf "%s\t%s%02d\t%s\t%s\n" "${cond1}" "${comparison}_" "${count}" "${reads_array[i]}" "${reads_array[i+1]}" \
       >> "${samples}"
     elif [[ "${cond2}" == "${day}" || "${cond2}" == "${inf}" || "${cond2}" || "${temp}" ]]; then
-      printf "%s\t%s%02d\t%s\t%s\n" "${cond2}" "${comparison}_" "${count}" "${reads_array[i]}" "${reads_array[i+1]}" \
+      printf "%s\t%s%02d\t%s\t%s\n" "${cond2}" "${comparison}_" "${count}" "${comparison_dir}${reads_array[i]}" "${comparison_dir}${reads_array[i+1]}" \
       >> "${samples}"
     fi
   done
