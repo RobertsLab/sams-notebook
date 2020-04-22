@@ -37,13 +37,11 @@ echo "${PATH}" | tr : \\n
 
 
 wd="$(pwd)"
-timestamp=$(date +%Y%m%d)
 threads=28
 
 ###################################################################################
 # These variables need to be set by user
-species="cbai"
-fastq_dir=/gscratch/srlab/sam/data/C_bairdi/RNAseq/
+fastq_dir="/gscratch/srlab/sam/data/C_bairdi/RNAseq/"
 fasta_prefix="20200408.C_bairdi.megan.Trinity"
 transcriptome_dir="/gscratch/srlab/sam/data/C_bairdi/transcriptomes"
 trinotate_feature_map="${transcriptome_dir}/20200409.cbai.trinotate.annotation_feature_map.txt"
@@ -67,7 +65,7 @@ cold-warm
 get_day () { day=$(echo "$1" | awk -F"." '{print $4}'); }
 get_inf () { inf=$(echo "$1" | awk -F"." '{print $5}'); }
 get_temp () { temp=$(echo "$1" | awk -F"." '{print $6}'); }
-get_sample_id () { sample_id=$(echo "$1" | awk -F"." '{print $3}'); }
+
 ###################################################################################
 
 
@@ -78,7 +76,6 @@ samples="${wd}/${comparison}.samples.txt"
 gene_map="${transcriptome_dir}/${fasta_prefix}.fasta.gene_trans_map"
 salmon_gene_matrix="${comparison_dir}/salmon.gene.TMM.EXPR.matrix"
 salmon_iso_matrix="${comparison_dir}/salmon.isoform.TMM.EXPR.matrix"
-trimmed_reads_dir="./"
 transcriptome="${transcriptome_dir}/${fasta_prefix}.fasta"
 
 
@@ -258,6 +255,7 @@ do
   --trans_lengths "${fasta_seq_lengths}" \
   --TPM_matrix "${salmon_iso_matrix}" \
   > Trinity.gene_lengths.txt \
+  1> ${tpm_length_stdout} \
   2> ${tpm_length_stderr}
 
   # Differential expression analysis
