@@ -72,13 +72,12 @@ get_sample_id () { sample_id=$(echo "$1" | awk -F"." '{print $3}'); }
 
 
 ## Designate input file locations
-salmon_out_dir="${wd}"
 transcriptome="${transcriptome_dir}/${fasta_prefix}.fasta"
 fasta_seq_lengths="${transcriptome_dir}/${fasta_prefix}.fasta.seq_lens"
 samples="${wd}/${comparison}.samples.txt"
 gene_map="${transcriptome_dir}/${fasta_prefix}.fasta.gene_trans_map"
-salmon_gene_matrix="${salmon_out_dir}/salmon.gene.TMM.EXPR.matrix"
-salmon_iso_matrix="${salmon_out_dir}/salmon.isoform.TMM.EXPR.matrix"
+salmon_gene_matrix="${comparison_dir}/salmon.gene.TMM.EXPR.matrix"
+salmon_iso_matrix="${comparison_dir}/salmon.isoform.TMM.EXPR.matrix"
 trimmed_reads_dir="./"
 transcriptome="${transcriptome_dir}/${fasta_prefix}.fasta"
 
@@ -224,7 +223,7 @@ do
   trin_matrix_list=$(awk '{printf "%s%s", $2, "/quant.sf " }' "${samples}")
 
   ${trinity_abundance} \
-  --output_dir "${salmon_out_dir}" \
+  --output_dir "${comparison_dir}" \
   --transcripts ${transcriptome} \
   --seqType fq \
   --samples_file "${samples}" \
@@ -233,14 +232,8 @@ do
   --gene_trans_map "${gene_map}" \
   --prep_reference \
   --thread_count "${threads}" \
-  1> "${salmon_out_dir}"/${salmon_stdout} \
-  2> "${salmon_out_dir}"/${salmon_stderr}
-
-  # Move output folders
-  mv ${trimmed_reads_dir}/[iu]* \
-  "${salmon_out_dir}"
-
-  cd "${salmon_out_dir}"
+  1> "${comparison_dir}"${salmon_stdout} \
+  2> "${comparison_dir}"${salmon_stderr}
 
   # Convert abundance estimates to matrix
   ${trinity_matrix} \
@@ -270,13 +263,13 @@ do
   # Differential expression analysis
   cd ${transcriptome_dir}
   ${trinity_DE} \
-  --matrix "${salmon_out_dir}"/salmon.gene.counts.matrix \
+  --matrix "${comparison_dir}"/salmon.gene.counts.matrix \
   --method edgeR \
   --samples_file "${samples}" \
   1> ${trinity_DE_stdout} \
   2> ${trinity_DE_stderr}
 
-  mv edgeR* "${salmon_out_dir}"
+  mv edgeR* "${comparison_dir}"
 
 
   # Run differential expression on edgeR output matrix
@@ -285,7 +278,7 @@ do
   # Has to run from edgeR output directory
 
   # Pulls edgeR directory name and removes leading ./ in find output
-  cd "${salmon_out_dir}"
+  cd "${comparison_dir}"
   edgeR_dir=$(find . -type d -name "edgeR*" | sed 's%./%%')
   cd "${edgeR_dir}"
   mv "${transcriptome_dir}/${trinity_DE_stdout}" .
@@ -296,7 +289,7 @@ do
   --examine_GO_enrichment \
   --GO_annots "${go_annotations}" \
   --include_GOplot \
-  --gene_lengths "${salmon_out_dir}"/Trinity.gene_lengths.txt \
+  --gene_lengths "${comparison_dir}"/Trinity.gene_lengths.txt \
   -C 1 \
   -P 0.05 \
   1> ${diff_expr_stdout} \
