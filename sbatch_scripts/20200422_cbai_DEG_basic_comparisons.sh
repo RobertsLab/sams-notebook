@@ -17,27 +17,8 @@
 ## Specify the working directory for this job
 #SBATCH --chdir=/gscratch/scrubbed/samwhite/outputs/20200422_cbai_DEG_basic_comparisons
 
-# Exit script if any command fails
-set -e
-
-# Load Python Mox module for Python module availability
-
-module load intel-python3_2017
-
-# Document programs in PATH (primarily for program version ID)
-
-{
-date
-echo ""
-echo "System PATH for $SLURM_JOB_ID"
-echo ""
-printf "%0.s-" {1..10}
-echo "${PATH}" | tr : \\n
-} >> system_path.log
-
-
-wd="$(pwd)"
-threads=28
+# This is a script to identify differentially expressed genes (DEGs) in C.bairid
+# in pairwise comparisions of from just the "2020-GW" (i.e. just Genewiz) RNAseq data.
 
 ###################################################################################
 # These variables need to be set by user
@@ -67,6 +48,29 @@ get_inf () { inf=$(echo "$1" | awk -F"." '{print $5}'); }
 get_temp () { temp=$(echo "$1" | awk -F"." '{print $6}'); }
 
 ###################################################################################
+
+
+# Exit script if any command fails
+set -e
+
+# Load Python Mox module for Python module availability
+
+module load intel-python3_2017
+
+# Document programs in PATH (primarily for program version ID)
+
+{
+date
+echo ""
+echo "System PATH for $SLURM_JOB_ID"
+echo ""
+printf "%0.s-" {1..10}
+echo "${PATH}" | tr : \\n
+} >> system_path.log
+
+
+wd="$(pwd)"
+threads=28
 
 
 ## Designate input file locations
