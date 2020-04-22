@@ -8,14 +8,14 @@
 ## Nodes
 #SBATCH --nodes=1
 ## Walltime (days-hours:minutes:seconds format)
-#SBATCH --time=04-00:00:00
+#SBATCH --time=10-00:00:00
 ## Memory per node
 #SBATCH --mem=120G
 ##turn on e-mail notification
 #SBATCH --mail-type=ALL
 #SBATCH --mail-user=samwhite@uw.edu
 ## Specify the working directory for this job
-#SBATCH --chdir=/gscratch/scrubbed/samwhite/outputs/20200421_cbai_DEG_basic_comparisons
+#SBATCH --chdir=/gscratch/scrubbed/samwhite/outputs/20200422_cbai_DEG_basic_comparisons
 
 # Exit script if any command fails
 set -e
