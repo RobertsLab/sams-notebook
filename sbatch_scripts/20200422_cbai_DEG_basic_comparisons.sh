@@ -57,9 +57,6 @@ get_temp () { temp=$(echo "$1" | awk -F"." '{print $6}'); }
 ###################################################################################
 
 
-# Exit script if any command fails
-set -e
-
 # Load Python Mox module for Python module availability
 
 module load intel-python3_2017
@@ -135,7 +132,7 @@ do
   cond2=$(echo "${comparison}" | awk -F"-" '{print $2}')
 
 
-  mkdir "${comparison}"
+  mkdir --parents "${comparison}"
 
   cd "${comparison}" || exit
 
@@ -209,6 +206,9 @@ do
   # Paired reads files will be sequentially listed in array (e.g. 111_R1 111_R2)
   reads_array=(*.fq)
 
+  echo ""
+  echo "Created reads_array"
+
   # Loop to create sample list file
   # Sample file list is tab-delimited like this:
 
@@ -222,24 +222,39 @@ do
   # Increment by 2 to process next pair of FastQ files
   for (( i=0; i<${#reads_array[@]} ; i+=2 ))
   do
-
+    echo ""
+    echo "Evaluating ${reads_array[i]} and ${reads_array[i+1]}"
     get_day "${reads_array[i]}"
     get_inf "${reads_array[i]}"
     get_temp "${reads_array[i]}"
 
+    echo ""
+    echo "Got day (${day}), infection status (${inf}), and temp (${temp})."
+    echo ""
+    echo "Condition 1 is: ${cond1}"
+    echo "condition 2 is: ${cond2}"
+
     # Evaluate specified treatment conditions and format sample file list appropriately.
     if [[ "${cond1}" == "${day}" || "${cond1}" == "${inf}" || "${cond1}" == "${temp}" ]]; then
       ((cond1_count++))
+
+      echo ""
+      echo "Condition 1 evaluated."
       # Create tab-delimited samples file.
       printf "%s\t%s%02d\t%s\t%s\n" "${cond1}" "${cond1}_" "${cond1_count}" "${reads_array[i]}" "${reads_array[i+1]}" \
       >> "${samples}"
     elif [[ "${cond2}" == "${day}" || "${cond2}" == "${inf}" || "${cond2}" == "${temp}" ]]; then
       ((cond2_count++))
+
+      echo ""
+      echo "Condition 2 evaluated."
       # Create tab-delimited samples file.
       printf "%s\t%s%02d\t%s\t%s\n" "${cond2}" "${cond2}_" "${cond2_count}" "${comparison_dir}${reads_array[i]}" "${comparison_dir}${reads_array[i+1]}" \
       >> "${samples}"
     fi
   done
+
+  echo "Created ${comparison} sample list file."
 
 
   # Create directory/sample list for ${trinity_matrix} command
