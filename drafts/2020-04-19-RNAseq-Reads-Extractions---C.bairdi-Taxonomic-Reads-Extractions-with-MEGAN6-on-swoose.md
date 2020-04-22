@@ -13,197 +13,97 @@ tags:
 categories:
   - Miscellaneous
 ---
-After [receiving our final set of RNAseq data from NWGSC earlier today](https://robertslab.github.io/sams-notebook/2020/04/13/Data-Received-C.bairdi-RNAseq-from-NWGSC.html), I need to trim and check trimmed reads with FastQC/MultiQC.
+[I previously annotated reads and converted them to the MEGAN6 format RMA6 on 20200414](https://robertslab.github.io/sams-notebook/2020/04/14/Taxonomic-Assignments-C.bairdi-RNAseq-Using-DIAMOND-BLASTx-on-Mox-and-MEGAN6-Meganizer-on-swoose.html).
 
-`fastp` trimming was run on Mox, followed by MultiQC.
+I'll use the MEGAN6 GUI to "Open" the RMA6 file. Once the file loads, you get a nice looking taxonomic tree! From here, you can select any part of the taxonomic tree by right-clicking on the desired taxonomy and "Extract reads...". Here, you have the option to include "Summarized reads". This option allows you to extract just the reads that are part of the exact classification you've selected or all those within and "below" the classification you've selected (i.e. summarized reads).
 
-FastQC on trimmed reads were run Mox, followed by MultiQC.
+Extracted reads will be generated as FastA files.
 
-SBATCH script (GitHub):
+Example:
 
-- [20200414_cbai_RNAseq_fastp_trimming.sh](https://github.com/RobertsLab/sams-notebook/blob/master/sbatch_scripts/20200414_cbai_RNAseq_fastp_trimming.sh)
+If you select _Arthropoda_ and _do not_ check the box for "Summarized Reads" you will _only get reads classified as Arthropoda_! You will not get any reads with more specific taxonomies. However, if you select _Arthropoda_ and you _do_ check the box for "Summarized Reads", you will get all reads classified as _Arthropoda_ _AND_ all reads in more specific taxonomic classifications, down to the species level.
 
-```shell
-#!/bin/bash
-## Job Name
-#SBATCH --job-name=cbai_fastp_trimming_RNAseq
-## Allocation Definition
-#SBATCH --account=coenv
-#SBATCH --partition=coenv
-## Resources
-## Nodes
-#SBATCH --nodes=1
-## Walltime (days-hours:minutes:seconds format)
-#SBATCH --time=10-00:00:00
-## Memory per node
-#SBATCH --mem=120G
-##turn on e-mail notification
-#SBATCH --mail-type=ALL
-#SBATCH --mail-user=samwhite@uw.edu
-## Specify the working directory for this job
-#SBATCH --chdir=/gscratch/scrubbed/samwhite/outputs/20200414_cbai_RNAseq_fastp_trimming
+I will extract reads from two phyla:
+
+- _Arthropoda_ (for crabs)
+
+- _Alveolata_ (for _Hematodinium_)
+
+After read extractions using MEGAN6, I'll need to extract the actual reads from the trimmed FastQ files from [20200414](https://robertslab.github.io/sams-notebook/2020/04/14/TrimmingFastQCMultiQC-C.bairdi-RNAseq-FastQ-with-fastp-on-Mox.html).
 
 
-### C.bairdi RNAseq trimming using fastp.
+It's a bit convoluted, but I realized that the FastA headers were incomplete and did not distinguish between paired reads. Here's an example:
 
-# Exit script if any command fails
-set -e
+R1 FastQ header:
 
-# Load Python Mox module for Python module availability
+`@A00147:37:HG2WLDMXX:1:1101:5303:1000 1:N:0:AGGCGAAG+AGGCGAAG`
 
-module load intel-python3_2017
+R2 FastQ header:
 
-# Document programs in PATH (primarily for program version ID)
+`@A00147:37:HG2WLDMXX:1:1101:5303:1000 2:N:0:AGGCGAAG+AGGCGAAG`
 
-{
-date
-echo ""
-echo "System PATH for $SLURM_JOB_ID"
-echo ""
-printf "%0.s-" {1..10}
-echo "${PATH}" | tr : \\n
-} >> system_path.log
+However, the reads extracted via MEGAN have FastA headers like this:
 
-# Set number of CPUs to use
-threads=27
-
-# Input/output files
-trimmed_checksums=trimmed_fastq_checksums.md5
-raw_reads_dir=/gscratch/srlab/sam/data/C_bairdi/RNAseq/
-
-# Paths to programs
-fastp=/gscratch/srlab/programs/fastp-0.20.0/fastp
-fastqc=/gscratch/srlab/programs/fastqc_v0.11.8/fastqc
-multiqc=/gscratch/srlab/programs/anaconda3/bin/multiqc
-
-## Inititalize arrays
-fastq_array_R1=()
-fastq_array_R2=()
-programs_array=()
-R1_names_array=()
-R2_names_array=()
-
-# Programs array
-programs_array=("${fastp}" "${multiqc}" "${fastqc}")
-
-# Capture program options
-for program in "${!programs_array[@]}"
-do
-	{
-  echo "Program options for ${programs_array[program]}: "
-	echo ""
-	${programs_array[program]} -h
-	echo ""
-	echo ""
-	echo "----------------------------------------------"
-	echo ""
-	echo ""
-} &>> program_options.log || true
-done
-
-# Sync raw FastQ files to working directory
-rsync --archive --verbose \
-"${raw_reads_dir}"[3][8]*.fastq.gz .
-
-# Sync checkums file
-rsync --archive --verbose \
-"${raw_reads_dir}"20200413_cbai_checkums.md5 .
-
-# Check md5 checksums
-md5sum --check 20200413_cbai_checkums.md5
-
-# Create array of fastq R1 files
-for fastq in *R1*.gz
-do
-  fastq_array_R1+=("${fastq}")
-done
-
-# Create array of fastq R2 files
-for fastq in *R2*.gz
-do
-  fastq_array_R2+=("${fastq}")
-done
-
-
-# Create array of sample names
-## Uses awk to parse out sample name from filename
-for R1_fastq in *R1*.gz
-do
-  R1_names_array+=($(echo "${R1_fastq}" | awk -F"." '{print $1}'))
-done
-
-# Create array of sample names
-## Uses awk to parse out sample name from filename
-for R2_fastq in *R2*.gz
-do
-  R2_names_array+=($(echo "${R2_fastq}" | awk -F"." '{print $1}'))
-done
-
-# Create list of fastq files used in analysis
-for fastq in *.gz
-do
-  echo "${fastq}" >> fastq.list.txt
-done
-
-# Run fastp on files
-for index in "${!fastq_array_R1[@]}"
-do
-	timestamp=$(date +%Y%m%d%M%S)
-  R1_sample_name=$(echo "${R1_names_array[index]}")
-	R2_sample_name=$(echo "${R2_names_array[index]}")
-	${fastp} \
-	--in1 "${fastq_array_R1[index]}" \
-	--in2 "${fastq_array_R2[index]}" \
-	--detect_adapter_for_pe \
-	--thread ${threads} \
-	--html "${R1_sample_name}".fastp-trim."${timestamp}".report.html \
-	--json "${R1_sample_name}".fastp-trim."${timestamp}".report.json \
-	--out1 "${R1_sample_name}".fastp-trim."${timestamp}".fq.gz \
-	--out2 "${R2_sample_name}".fastp-trim."${timestamp}".fq.gz
-
-	# Generate md5 checksums for newly trimmed files
-	{
-		md5sum "${R1_sample_name}".fastp-trim."${timestamp}".fq.gz
-		md5sum "${R2_sample_name}".fastp-trim."${timestamp}".fq.gz
-	} >> "${trimmed_checksums}"
-
-	# Run FastQC
-	${fastqc} --threads ${threads} \
-	"${R1_sample_name}".fastp-trim."${timestamp}".fq.gz \
-	"${R2_sample_name}".fastp-trim."${timestamp}".fq.gz
-
-	# Remove original FastQ files
-	rm "${fastq_array_R1[index]}" "${fastq_array_R2[index]}"
-done
-
-
-
-# Run MultiQC
-${multiqc} .
+```
+>A00147:37:HG2WLDMXX:1:1101:5303:1000
+SEQUENCE1
+>A00147:37:HG2WLDMXX:1:1101:5303:1000
+SEQUENCE2
 ```
 
+Those are a set of paired reads, but there's no way to distinguish between R1/R2. This may not be an issue, but I'm not sure how downstream programs (i.e. Trinity) will handle duplicate FastA IDs as inputs. To avoid any headaches, I've decided to parse out the corresponding FastQ reads which have the full header info.
+
+Here's a brief rundown of the approach:
+
+1. Create list of unique read headers from MEGAN6 FastA files.
+
+2. Use list with `seqtk` program to pull out corresponding FastQ reads from the trimmed FastQ R1 and R2 files.
+
+This aspect of read extractions/concatenations is documented in the following Jupyter notebook (GitHub):
+
+- [20200419_swoose_cbai_megan_day-treatment-temp_read_extractions.ipynb](https://github.com/RobertsLab/code/blob/master/notebooks/sam/20200419_swoose_cbai_megan_day-treatment-temp_read_extractions.ipynb)
 
 
 ---
 
 #### RESULTS
 
-Run time was just under 31 mins:
+OUTPUT FOLDERS
 
-![fastp runtime screencap](https://github.com/RobertsLab/sams-notebook/blob/master/images/screencaps/20200414_cbai_RNAseq_fastp_trimming_runtime.png?raw=true)
+Initial reads extracted as FastAs:
 
+- [20200419_cbai_MEGAN_read_extractions/](https://gannet.fish.washington.edu/Atumefaciens/20200419_cbai_MEGAN_read_extractions/)
 
+FastQ _C.bairdi_ read extractions:
 
-Output folder:
+- [20200419_C_bairdi_megan_reads](https://gannet.fish.washington.edu/Atumefaciens/20200419_C_bairdi_megan_reads/)
 
-- [20200414_cbai_RNAseq_fastp_trimming/](https://gannet.fish.washington.edu/Atumefaciens/20200414_cbai_RNAseq_fastp_trimming/)
+FastQ _Hematodinium_ read extractions:
 
-MultiQC report (HTML):
+- [20200419_Hematodinium_megan_reads](https://gannet.fish.washington.edu/Atumefaciens/20200419_Hematodinium_megan_reads/)
 
-- Contains summary data for both fastp and FastQC
+---
 
-- [20200414_cbai_RNAseq_fastp_trimming/multiqc_report.html](https://gannet.fish.washington.edu/Atumefaciens/20200414_cbai_RNAseq_fastp_trimming/multiqc_report.html)
+#### Taxonomic Trees
 
-Individual fastp reports are also available (HTML). An example is below.
+![(MEGAN taxonomic tree for 380820](https://raw.githubusercontent.com/RobertsLab/sams-notebook/master/images/screencaps/20200419_cbai_MEGAN_read_extractions_380820.png)
 
-https://gannet.fish.washington.edu/Atumefaciens/20200414_cbai_RNAseq_fastp_trimming/380820_S1_L001_R1_001.fastp-trim.202004143431.report.html
+---
+
+![(MEGAN taxonomic tree for 380821](https://raw.githubusercontent.com/RobertsLab/sams-notebook/master/images/screencaps/20200419_cbai_MEGAN_read_extractions_380821.png)
+
+---
+
+![(MEGAN taxonomic tree for 380822](https://raw.githubusercontent.com/RobertsLab/sams-notebook/master/images/screencaps/20200419_cbai_MEGAN_read_extractions_380822.png)
+
+---
+
+![(MEGAN taxonomic tree for 380823](https://raw.githubusercontent.com/RobertsLab/sams-notebook/master/images/screencaps/20200419_cbai_MEGAN_read_extractions_380823.png)
+
+---
+
+![(MEGAN taxonomic tree for 380824](https://raw.githubusercontent.com/RobertsLab/sams-notebook/master/images/screencaps/20200419_cbai_MEGAN_read_extractions_380824.png)
+
+---
+
+![(MEGAN taxonomic tree for 380825](https://raw.githubusercontent.com/RobertsLab/sams-notebook/master/images/screencaps/20200419_cbai_MEGAN_read_extractions_380825.png)
