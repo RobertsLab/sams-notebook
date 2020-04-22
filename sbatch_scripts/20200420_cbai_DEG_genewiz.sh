@@ -38,10 +38,16 @@ echo "${PATH}" | tr : \\n
 
 wd="$(pwd)"
 timestamp=$(date +%Y%m%d)
-species="cbai"
 threads=28
 
+###################################################################################
+# These variables need to be set by user
+species="cbai"
 fastq_dir=/gscratch/srlab/sam/data/C_bairdi/RNAseq/
+fasta_prefix="20200408.C_bairdi.megan.Trinity"
+transcriptome_dir="/gscratch/srlab/sam/data/C_bairdi/transcriptomes"
+trinotate_feature_map="${transcriptome_dir}/20200409.cbai.trinotate.annotation_feature_map.txt"
+go_annotations="${transcriptome_dir}/20200409.cbai.trinotate.go_annotations.txt"
 
 # Array of the various comparisons to evaluate
 # Each condition in each comparison should be separated by a "-"
@@ -62,6 +68,44 @@ get_day () { day=$(echo "$1" | awk -F"." '{print $4}'); }
 get_inf () { inf=$(echo "$1" | awk -F"." '{print $5}'); }
 get_temp () { temp=$(echo "$1" | awk -F"." '{print $6}'); }
 get_sample_id () { sample_id=$(echo "$1" | awk -F"." '{print $3}'); }
+###################################################################################
+
+
+## Designate input file locations
+salmon_out_dir="${wd}"
+transcriptome="${transcriptome_dir}/${fasta_prefix}.fasta"
+fasta_seq_lengths="${transcriptome_dir}/${fasta_prefix}.fasta.seq_lens"
+samples="${wd}/${comparison}.samples.txt"
+gene_map="${transcriptome_dir}/${fasta_prefix}.fasta.gene_trans_map"
+salmon_gene_matrix="${salmon_out_dir}/salmon.gene.TMM.EXPR.matrix"
+salmon_iso_matrix="${salmon_out_dir}/salmon.isoform.TMM.EXPR.matrix"
+trimmed_reads_dir="./"
+transcriptome="${transcriptome_dir}/${fasta_prefix}.fasta"
+
+
+# Standard output/error files
+diff_expr_stdout="diff_expr_stdout.txt"
+diff_expr_stderr="diff_expr_stderr.txt"
+matrix_stdout="matrix_stdout.txt"
+matrix_stderr="matrix_stderr.txt"
+salmon_stdout="salmon_stdout.txt"
+salmon_stderr="salmon_stderr.txt"
+tpm_length_stdout="tpm_length_stdout.txt"
+tpm_length_stderr="tpm_length_stderr.txt"
+trinity_DE_stdout="trinity_DE_stdout.txt"
+trinity_DE_stderr="trinity_DE_stderr.txt"
+
+edgeR_dir=""
+
+#programs
+trinity_home=/gscratch/srlab/programs/trinityrnaseq-v2.9.0
+trinity_annotate_matrix="${trinity_home}/Analysis/DifferentialExpression/rename_matrix_feature_identifiers.pl"
+trinity_abundance=${trinity_home}/util/align_and_estimate_abundance.pl
+trinity_matrix=${trinity_home}/util/abundance_estimates_to_matrix.pl
+trinity_DE=${trinity_home}/Analysis/DifferentialExpression/run_DE_analysis.pl
+diff_expr=${trinity_home}/Analysis/DifferentialExpression/analyze_diff_expr.pl
+trinity_tpm_length=${trinity_home}/util/misc/TPM_weighted_gene_length.py
+
 
 for comparison in "${!comparisons_array[@]}"
 do
@@ -79,9 +123,7 @@ do
   cond2=$(echo "${comparison}" | awk -F"-" '{print $2}')
 
 
-
   mkdir "${comparison}"
-
 
   cd "${comparison}" || exit
 
@@ -181,13 +223,11 @@ do
   # Create directory/sample list for ${trinity_matrix} command
   trin_matrix_list=$(awk '{printf "%s%s", $2, "/quant.sf " }' "${samples}")
 
-  cd ${trimmed_reads_dir}
-  time ${trinity_abundance} \
+  ${trinity_abundance} \
   --output_dir "${salmon_out_dir}" \
   --transcripts ${transcriptome} \
   --seqType fq \
   --samples_file "${samples}" \
-  --SS_lib_type RF \
   --est_method salmon \
   --aln_method bowtie2 \
   --gene_trans_map "${gene_map}" \
