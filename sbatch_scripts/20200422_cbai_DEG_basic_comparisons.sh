@@ -17,8 +17,10 @@
 ## Specify the working directory for this job
 #SBATCH --chdir=/gscratch/scrubbed/samwhite/outputs/20200422_cbai_DEG_basic_comparisons
 
-# This is a script to identify differentially expressed genes (DEGs) in C.bairid
-# in pairwise comparisions of from just the "2020-GW" (i.e. just Genewiz) RNAseq data.
+# This is a script to identify differentially expressed genes (DEGs) in C.bairdi
+# using pairwise comparisions of from just the "2020-GW" (i.e. just Genewiz) RNAseq data
+# which has been taxonomically selected for all Arthropoda reads. See Sam's notebook from 20200419
+# https://robertslab.github.io/sams-notebook/
 
 # Script will run Trinity's builtin differential gene expression analysis using:
 # - Salmon alignment-free transcript abundance estimation
