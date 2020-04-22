@@ -20,6 +20,11 @@
 # This is a script to identify differentially expressed genes (DEGs) in C.bairid
 # in pairwise comparisions of from just the "2020-GW" (i.e. just Genewiz) RNAseq data.
 
+# Script will run Trinity's builtin differential gene expression analysis using:
+# - Salmon alignment-free transcript abundance estimation
+# - edgeR
+# Cutoffs of 2-fold difference in expression and FDR of <=0.05.
+
 ###################################################################################
 # These variables need to be set by user
 fastq_dir="/gscratch/srlab/sam/data/C_bairdi/RNAseq/"
@@ -106,7 +111,12 @@ trinity_DE=${trinity_home}/Analysis/DifferentialExpression/run_DE_analysis.pl
 diff_expr=${trinity_home}/Analysis/DifferentialExpression/analyze_diff_expr.pl
 trinity_tpm_length=${trinity_home}/util/misc/TPM_weighted_gene_length.py
 
+# Loop through each comparison
+# Will create comparison-specific direcctories and copy
+# appropriate FastQ files for each comparison.
 
+# After file transfer, will create necessary sample list file for use
+# by Trinity for running differential gene expression analysis and GO enrichment.
 for comparison in "${!comparisons_array[@]}"
 do
 
@@ -129,12 +139,10 @@ do
 
   # Series of if statements to identify which FastQ files to rsync to working directory
   if [[ "${comparison}" == "infected-uninfected" ]]; then
-
     rsync --archive --verbose ${fastq_dir}*.fq .
   fi
 
   if [[ "${comparison}" == "D9-D12" ]]; then
-
     for fastq in "${fastq_dir}"*.fq
     do
       get_day "${fastq}"
@@ -196,9 +204,20 @@ do
   fi
 
   # Create reads array
+  # Paired reads files will be sequentially listed in array (e.g. 111_R1 111_R2)
   reads_array=(*.fq)
 
   # Loop to create sample list file
+  # Sample file list is tab-delimited like this:
+
+  # cond_A    cond_A_rep1    A_rep1_left.fq    A_rep1_right.fq
+  # cond_A    cond_A_rep2    A_rep2_left.fq    A_rep2_right.fq
+  # cond_B    cond_B_rep1    B_rep1_left.fq    B_rep1_right.fq
+  # cond_B    cond_B_rep2    B_rep2_left.fq    B_rep2_right.fq
+
+
+
+  # Increment by 2 to process next pair of FastQ files
   for (( i=0; i<${#reads_array[@]} ; i+=2 ))
   do
 
@@ -206,14 +225,15 @@ do
     get_inf "${reads_array[i]}"
     get_temp "${reads_array[i]}"
 
+    # Evaluate specified treatment conditions and format sample file list appropriately.
     if [[ "${cond1}" == "${day}" || "${cond1}" == "${inf}" || "${cond1}" == "${temp}" ]]; then
-      #statements
       ((cond1_count++))
       # Create tab-delimited samples file.
       printf "%s\t%s%02d\t%s\t%s\n" "${cond1}" "${cond1}_" "${cond1_count}" "${reads_array[i]}" "${reads_array[i+1]}" \
       >> "${samples}"
     elif [[ "${cond2}" == "${day}" || "${cond2}" == "${inf}" || "${cond2}" == "${temp}" ]]; then
       ((cond2_count++))
+      # Create tab-delimited samples file.
       printf "%s\t%s%02d\t%s\t%s\n" "${cond2}" "${cond2}_" "${cond2_count}" "${comparison_dir}${reads_array[i]}" "${comparison_dir}${reads_array[i+1]}" \
       >> "${samples}"
     fi
@@ -223,6 +243,9 @@ do
   # Create directory/sample list for ${trinity_matrix} command
   trin_matrix_list=$(awk '{printf "%s%s", $2, "/quant.sf " }' "${samples}")
 
+
+  # Determine transcript abundances using Salmon alignment-free
+  # abundance estimate.
   ${trinity_abundance} \
   --output_dir "${comparison_dir}" \
   --transcripts ${transcriptome} \
@@ -246,7 +269,7 @@ do
   1> ${matrix_stdout} \
   2> ${matrix_stderr}
 
-  # Integrate functional Trinotate functional annotations
+  # Integrate Trinotate functional annotations
   "${trinity_annotate_matrix}" \
   "${trinotate_feature_map}" \
   salmon.gene.counts.matrix \
@@ -263,6 +286,8 @@ do
   2> ${tpm_length_stderr}
 
   # Differential expression analysis
+  # Utilizes edgeR.
+  # Needs to be run in same directory as transcriptome.
   cd ${transcriptome_dir}
   ${trinity_DE} \
   --matrix "${comparison_dir}"/salmon.gene.counts.matrix \
@@ -280,6 +305,8 @@ do
   # Has to run from edgeR output directory
 
   # Pulls edgeR directory name and removes leading ./ in find output
+  # Using find is required because edgeR names directory using PID
+  # and I don't know how to find that out
   cd "${comparison_dir}"
   edgeR_dir=$(find . -type d -name "edgeR*" | sed 's%./%%')
   cd "${edgeR_dir}"
