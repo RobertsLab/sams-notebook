@@ -331,17 +331,18 @@ Output files ("meganized" DAA files):
 
 Output files for loading into MEGAN6 (RMA6):
 
-- [380820.daa2rma.rma6](https://gannet.fish.washington.edu/Atumefaciens/20200414_cbai_diamond_blastx/380820.daa2rma.rma6)
+- [380820.daa2rma.rma6](https://gannet.fish.washington.edu/Atumefaciens/20200414_cbai_diamond_blastx/380820.daa2rma.rma6) (5.0G)
 
-- [380821.daa2rma.rma6](https://gannet.fish.washington.edu/Atumefaciens/20200414_cbai_diamond_blastx/380821.daa2rma.rma6)
+- [380821.daa2rma.rma6](https://gannet.fish.washington.edu/Atumefaciens/20200414_cbai_diamond_blastx/380821.daa2rma.rma6) (4.7G)
 
-- [380822.daa2rma.rma6](https://gannet.fish.washington.edu/Atumefaciens/20200414_cbai_diamond_blastx/380822.daa2rma.rma6)
+- [380822.daa2rma.rma6](https://gannet.fish.washington.edu/Atumefaciens/20200414_cbai_diamond_blastx/380822.daa2rma.rma6) (4.6G)
 
-- [380823.daa2rma.rma6](https://gannet.fish.washington.edu/Atumefaciens/20200414_cbai_diamond_blastx/380823.daa2rma.rma6)
+- [380823.daa2rma.rma6](https://gannet.fish.washington.edu/Atumefaciens/20200414_cbai_diamond_blastx/380823.daa2rma.rma6) (4.1G)
 
-- [380824.daa2rma.rma6](https://gannet.fish.washington.edu/Atumefaciens/20200414_cbai_diamond_blastx/380824.daa2rma.rma6)
+- [380824.daa2rma.rma6](https://gannet.fish.washington.edu/Atumefaciens/20200414_cbai_diamond_blastx/380824.daa2rma.rma6) (5.0G)
 
-- [380825.daa2rma.rma6](https://gannet.fish.washington.edu/Atumefaciens/20200414_cbai_diamond_blastx/380825.daa2rma.rma6)
+- [380825.daa2rma.rma6](https://gannet.fish.washington.edu/Atumefaciens/20200414_cbai_diamond_blastx/380825.daa2rma.rma6) (5.1G)
+
 
 
 These will be loaded into MEGAN6 and reads will be extracted based on classification to _Alveolata_ and/or _Arthropoda_ phyla.
