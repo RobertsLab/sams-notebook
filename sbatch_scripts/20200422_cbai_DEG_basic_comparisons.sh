@@ -241,7 +241,7 @@ do
       echo ""
       echo "Condition 1 evaluated."
       # Create tab-delimited samples file.
-      printf "%s\t%s%02d\t%s\t%s\n" "${cond1}" "${cond1}_" "${cond1_count}" "${reads_array[i]}" "${reads_array[i+1]}" \
+      printf "%s\t%s%02d\t%s\t%s\n" "${cond1}" "${cond1}_" "${cond1_count}" "${comparison_dir}${reads_array[i]}" "${comparison_dir}${reads_array[i+1]}" \
       >> "${samples}"
     elif [[ "${cond2}" == "${day}" || "${cond2}" == "${inf}" || "${cond2}" == "${temp}" ]]; then
       ((cond2_count++))
