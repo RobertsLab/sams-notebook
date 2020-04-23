@@ -56,6 +56,8 @@ get_temp () { temp=$(echo "$1" | awk -F"." '{print $6}'); }
 
 ###################################################################################
 
+# Exit script if any command fails
+set -e
 
 # Load Python Mox module for Python module availability
 
@@ -236,7 +238,8 @@ do
 
     # Evaluate specified treatment conditions and format sample file list appropriately.
     if [[ "${cond1}" == "${day}" || "${cond1}" == "${inf}" || "${cond1}" == "${temp}" ]]; then
-      ((cond1_count++))
+      cond1_count=$((cond1_count+1))
+
 
       echo ""
       echo "Condition 1 evaluated."
@@ -244,7 +247,8 @@ do
       printf "%s\t%s%02d\t%s\t%s\n" "${cond1}" "${cond1}_" "${cond1_count}" "${comparison_dir}${reads_array[i]}" "${comparison_dir}${reads_array[i+1]}" \
       >> "${samples}"
     elif [[ "${cond2}" == "${day}" || "${cond2}" == "${inf}" || "${cond2}" == "${temp}" ]]; then
-      ((cond2_count++))
+      cond2_count=$((cond2_count+1))
+
 
       echo ""
       echo "Condition 2 evaluated."
