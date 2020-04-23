@@ -16,6 +16,37 @@ tags:
 categories:
   - Miscellaneous
 ---
+Per [a Slack request](https://genefish.slack.com/archives/D02MJDL5Y/p1587393166000200), Steven asked me to take the [Genewize RNAseq data (received 2020318)](https://robertslab.github.io/sams-notebook/2020/03/18/Data-Received-C.bairdi-RNAseq-Data-from-Genewiz.html) through [edgeR](https://bioconductor.org/packages/release/bioc/html/edgeR.html). Ran the analysis using the Trinity differential expression pipeline:
+
+- [Salmon alignment-free transcript quantification](https://github.com/trinityrnaseq/trinityrnaseq/wiki/Trinity-Transcript-Quantification)
+
+- [edgeR differential expression](https://github.com/trinityrnaseq/trinityrnaseq/wiki/Trinity-Differential-Expression)
+
+Here're the core input files used for this analysis:
+
+- Transcriptome: [cbai_transcriptome_v1.5.fasta](https://owl.fish.washington.edu/halfshell/genomic-databank/cbai_transcriptome_v1.5.fasta)
+
+- MEGAN6 _Arthropoda_ taxonomic reads: [20200413_C_bairdi_megan_reads/](https://gannet.fish.washington.edu/Atumefaciens/20200413_C_bairdi_megan_reads/)
+
+The analyses will perform the following pairwise comparisons:
+
+- infected-uninfected
+
+- D9-D12
+
+- D9-D26
+
+- D12-D26
+
+- ambient-cold
+
+- ambient-warm
+
+- cold-warm
+
+It will identify differentially expressed genes with >=2-fold log change in expression and a false discovery rate of <=0.05. Additionally, it will perform gene ontology (GO) enrichment analysis.
+
+As a brief aside, I'm pretty stoked about the script below! It automates FastQ file selection for each comparison, creates appropriately named subdirectories and creates proper Trinity samples list file needed.
 
 
 SBATCH script (GitHub):
