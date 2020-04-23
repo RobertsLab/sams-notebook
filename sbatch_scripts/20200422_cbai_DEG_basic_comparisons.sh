@@ -252,6 +252,9 @@ do
       printf "%s\t%s%02d\t%s\t%s\n" "${cond2}" "${cond2}_" "${cond2_count}" "${comparison_dir}${reads_array[i]}" "${comparison_dir}${reads_array[i+1]}" \
       >> "${samples}"
     fi
+
+    # Copy sample list file to transcriptome directory
+    cp "${samples}" "${transcriptome_dir}"
   done
 
   echo "Created ${comparison} sample list file."
@@ -305,7 +308,7 @@ do
   # Differential expression analysis
   # Utilizes edgeR.
   # Needs to be run in same directory as transcriptome.
-  cd ${transcriptome_dir}
+  cd ${transcriptome_dir} || exit
   ${trinity_DE} \
   --matrix "${comparison_dir}"/salmon.gene.counts.matrix \
   --method edgeR \
@@ -324,9 +327,9 @@ do
   # Pulls edgeR directory name and removes leading ./ in find output
   # Using find is required because edgeR names directory using PID
   # and I don't know how to find that out
-  cd "${comparison_dir}"
+  cd "${comparison_dir}" || exit
   edgeR_dir=$(find . -type d -name "edgeR*" | sed 's%./%%')
-  cd "${edgeR_dir}"
+  cd "${edgeR_dir}" || exit
   mv "${transcriptome_dir}/${trinity_DE_stdout}" .
   mv "${transcriptome_dir}/${trinity_DE_stderr}" .
   ${diff_expr} \
@@ -343,5 +346,5 @@ do
 
 
 
-  cd "${wd}"
+  cd "${wd}" || exit
 done
