@@ -306,7 +306,6 @@ do
   --trans_lengths "${fasta_seq_lengths}" \
   --TPM_matrix "${salmon_iso_matrix}" \
   > Trinity.gene_lengths.txt \
-  1> ${tpm_length_stdout} \
   2> ${tpm_length_stderr}
 
   # Differential expression analysis
@@ -314,7 +313,7 @@ do
   # Needs to be run in same directory as transcriptome.
   cd ${transcriptome_dir} || exit
   ${trinity_DE} \
-  --matrix "${comparison_dir}"/salmon.gene.counts.matrix \
+  --matrix "${comparison_dir}salmon.gene.counts.matrix" \
   --method edgeR \
   --samples_file "${samples}" \
   1> ${trinity_DE_stdout} \
@@ -342,7 +341,7 @@ do
   --examine_GO_enrichment \
   --GO_annots "${go_annotations}" \
   --include_GOplot \
-  --gene_lengths "${comparison_dir}"/Trinity.gene_lengths.txt \
+  --gene_lengths "${comparison_dir}Trinity.gene_lengths.txt" \
   -C 1 \
   -P 0.05 \
   1> ${diff_expr_stdout} \
