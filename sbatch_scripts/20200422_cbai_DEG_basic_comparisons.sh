@@ -82,10 +82,7 @@ threads=28
 ## Designate input file locations
 transcriptome="${transcriptome_dir}/${fasta_prefix}.fasta"
 fasta_seq_lengths="${transcriptome_dir}/${fasta_prefix}.fasta.seq_lens"
-samples=${wd}/${comparison}.samples.txt
 gene_map="${transcriptome_dir}/${fasta_prefix}.fasta.gene_trans_map"
-salmon_gene_matrix=${comparison_dir}/salmon.gene.TMM.EXPR.matrix
-salmon_iso_matrix=${comparison_dir}/salmon.isoform.TMM.EXPR.matrix
 transcriptome="${transcriptome_dir}/${fasta_prefix}.fasta"
 
 
@@ -125,8 +122,10 @@ do
   cond1_count=0
   cond2_count=0
   comparison=${comparisons_array[${comparison}]}
-  samples="${comparison}.samples.txt"
   comparison_dir=${wd}/${comparison}/
+  salmon_gene_matrix=${comparison_dir}/salmon.gene.TMM.EXPR.matrix
+  salmon_iso_matrix=${comparison_dir}/salmon.isoform.TMM.EXPR.matrix
+  samples=${comparison_dir}${comparison}.samples.txt
 
   # Extract each comparison from comparisons array
   # Conditions must be separated by a "-"
