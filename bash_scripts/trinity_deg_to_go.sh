@@ -22,6 +22,9 @@ for goseq in **/*UP.subset*.enriched
 do
 	# Capture path to file
 	dir=${goseq%/*}
+
+	cd "${dir}" || exit
+
 	tmp_file=$(mktemp)
 
 	# Count lines in file
@@ -39,7 +42,7 @@ do
 		# 3rd: Sort on Trinity IDs (column 10) and keep only uniques
 		awk 'BEGIN{FS="\t";OFS="\t"} {gsub(/, /, "\t", $10); print}' "${goseq}" \
 		| awk 'BEGIN{F="\t";OFS="\t"} NR==1; NR > 1 {gsub(/ /, "_", $0); print}' \
-		> ${tmp_file}
+		> "${tmp_file}"
 
 		# Identify the first line number which contains a gene_id
 		begin_goterms=$(grep --line-number "TRINITY" "${tmp_file}" \
@@ -82,4 +85,6 @@ do
 
   # Cleanup
   rm "${tmp_file}"
+
+	cd "${wd}" || exit
 done
