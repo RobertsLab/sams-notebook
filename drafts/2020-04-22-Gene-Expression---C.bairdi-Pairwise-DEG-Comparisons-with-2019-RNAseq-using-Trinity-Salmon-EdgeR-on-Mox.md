@@ -420,3 +420,88 @@ Took about 17.5hrs to run:
 Output folder:
 
 - [20200422_cbai_DEG_basic_comparisons/](https://gannet.fish.washington.edu/Atumefaciens/20200422_cbai_DEG_basic_comparisons/)
+
+
+#### D9-D12
+
+![D9-D12 deg heatmap](https://raw.githubusercontent.com/RobertsLab/sams-notebook/master/images/screencaps/20200422_cbai_DEG_basic_comparisons_D9-D12_DEG_heatmap.png)
+
+
+![D9-D12 volcano plot](https://raw.githubusercontent.com/RobertsLab/sams-notebook/master/images/screencaps/20200422_cbai_DEG_basic_comparisons_D9-D12_volcano.png)
+
+
+![D9-D12 correlation heatmap](https://raw.githubusercontent.com/RobertsLab/sams-notebook/master/images/screencaps/20200422_cbai_DEG_basic_comparisons_D9-D12_correlation_heatmap.png)
+
+---
+
+#### D9-D26
+
+![D9-D26 deg heatmap](https://raw.githubusercontent.com/RobertsLab/sams-notebook/master/images/screencaps/20200422_cbai_DEG_basic_comparisons_D9-D26_DEG_heatmap.png)
+
+
+![D9-D26 volcano plot](https://raw.githubusercontent.com/RobertsLab/sams-notebook/master/images/screencaps/20200422_cbai_DEG_basic_comparisons_D9-D26_volcano.png)
+
+
+![D9-D26 correlation heatmap](https://raw.githubusercontent.com/RobertsLab/sams-notebook/master/images/screencaps/20200422_cbai_DEG_basic_comparisons_D9-D26_correlation_heatmap.png)
+
+---
+
+#### D12-D26
+
+![D12-D26 deg heatmap](https://raw.githubusercontent.com/RobertsLab/sams-notebook/master/images/screencaps/20200422_cbai_DEG_basic_comparisons_D12-D26_DEG_heatmap.png)
+
+
+![D12-D26 volcano plot](https://raw.githubusercontent.com/RobertsLab/sams-notebook/master/images/screencaps/20200422_cbai_DEG_basic_comparisons_D12-D26_volcano.png)
+
+
+![D12-D26 correlation heatmap](https://raw.githubusercontent.com/RobertsLab/sams-notebook/master/images/screencaps/20200422_cbai_DEG_basic_comparisons_D12-D26_correlation_heatmap.png)
+
+---
+
+#### ambient-cold
+
+![ambient-cold deg heatmap](https://raw.githubusercontent.com/RobertsLab/sams-notebook/master/images/screencaps/20200422_cbai_DEG_basic_comparisons_ambient-cold_DEG_heatmap.png)
+
+
+![ambient-cold volcano plot](https://raw.githubusercontent.com/RobertsLab/sams-notebook/master/images/screencaps/20200422_cbai_DEG_basic_comparisons_ambient-cold_volcano.png)
+
+
+![ambient-cold correlation heatmap](https://raw.githubusercontent.com/RobertsLab/sams-notebook/master/images/screencaps/20200422_cbai_DEG_basic_comparisons_ambient-cold_correlation_heatmap.png)
+
+---
+
+#### ambient-warm
+
+![ambient-warm deg heatmap](https://raw.githubusercontent.com/RobertsLab/sams-notebook/master/images/screencaps/20200422_cbai_DEG_basic_comparisons_ambient-warm_DEG_heatmap.png)
+
+
+![ambient-warm volcano plot](https://raw.githubusercontent.com/RobertsLab/sams-notebook/master/images/screencaps/20200422_cbai_DEG_basic_comparisons_ambient-warm_volcano.png)
+
+
+![ambient-warm correlation heatmap](https://raw.githubusercontent.com/RobertsLab/sams-notebook/master/images/screencaps/20200422_cbai_DEG_basic_comparisons_ambient-warm_correlation_heatmap.png)
+
+---
+
+#### cold-warm
+
+![cold-warm deg heatmap](https://raw.githubusercontent.com/RobertsLab/sams-notebook/master/images/screencaps/20200422_cbai_DEG_basic_comparisons_cold-warm_DEG_heatmap.png)
+
+
+![cold-warm volcano plot](https://raw.githubusercontent.com/RobertsLab/sams-notebook/master/images/screencaps/20200422_cbai_DEG_basic_comparisons_cold-warm_volcano.png)
+
+
+![cold-warm correlation heatmap](https://raw.githubusercontent.com/RobertsLab/sams-notebook/master/images/screencaps/20200422_cbai_DEG_basic_comparisons_cold-warm_correlation_heatmap.png)
+
+---
+
+#### infected-uninfected
+
+![infected-uninfected deg heatmap](https://raw.githubusercontent.com/RobertsLab/sams-notebook/master/images/screencaps/20200422_cbai_DEG_basic_comparisons_infected-uninfected_DEG_heatmap.png)
+
+
+![infected-uninfected volcano plot](https://raw.githubusercontent.com/RobertsLab/sams-notebook/master/images/screencaps/20200422_cbai_DEG_basic_comparisons_infected-uninfected_volcano.png)
+
+
+![infected-uninfected correlation heatmap](https://raw.githubusercontent.com/RobertsLab/sams-notebook/master/images/screencaps/20200422_cbai_DEG_basic_comparisons_infected-uninfected_correlation_heatmap.png)
+
+---
