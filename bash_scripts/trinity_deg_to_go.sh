@@ -6,20 +6,28 @@
 # and associated GO term
 #############################################################
 
+# Enable globstar for recursive searching
+shopt -s globstar
+
 # Declare variables
 output_file=""
+wd=$(pwd)
 
 # Input file
 ## Expects Trinity edgeR GOseq enrichment format:
 ## category	over_represented_pvalue	under_represented_pvalue	numDEInCat	numInCat	term	ontology	over_represented_FDR	go_term	gene_ids
 ## Field 10 (gene_ids) contains comma separated gene_ids that fall in the given GO term in the "category" column
 
-for goseq in *-UP.subset.GOseq.enriched
+for goseq in **/*UP.subset*.enriched
 do
-
+	# Capture path to file
+	dir=${goseq%/*}
 	tmp_file=$(mktemp)
+
+	# Count lines in file
   linecount=$(cat "${goseq}" | wc -l)
 
+	# If file is not empty
   if (( "${linecount}" > 1 ))
 	then
 		output_file="${goseq}.flattened"
