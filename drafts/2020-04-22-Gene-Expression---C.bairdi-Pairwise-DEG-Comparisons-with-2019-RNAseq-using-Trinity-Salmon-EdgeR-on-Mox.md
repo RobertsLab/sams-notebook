@@ -139,10 +139,7 @@ threads=28
 ## Designate input file locations
 transcriptome="${transcriptome_dir}/${fasta_prefix}.fasta"
 fasta_seq_lengths="${transcriptome_dir}/${fasta_prefix}.fasta.seq_lens"
-samples="${wd}/${comparison}.samples.txt"
 gene_map="${transcriptome_dir}/${fasta_prefix}.fasta.gene_trans_map"
-salmon_gene_matrix="${comparison_dir}/salmon.gene.TMM.EXPR.matrix"
-salmon_iso_matrix="${comparison_dir}/salmon.isoform.TMM.EXPR.matrix"
 transcriptome="${transcriptome_dir}/${fasta_prefix}.fasta"
 
 
@@ -182,8 +179,10 @@ do
   cond1_count=0
   cond2_count=0
   comparison=${comparisons_array[${comparison}]}
-  samples="${comparison}.samples.txt"
-  comparison_dir="${wd}/${comparison}/"
+  comparison_dir=${wd}/${comparison}/
+  salmon_gene_matrix=${comparison_dir}/salmon.gene.TMM.EXPR.matrix
+  salmon_iso_matrix=${comparison_dir}/salmon.isoform.TMM.EXPR.matrix
+  samples=${comparison_dir}${comparison}.samples.txt
 
   # Extract each comparison from comparisons array
   # Conditions must be separated by a "-"
@@ -363,7 +362,6 @@ do
   --trans_lengths "${fasta_seq_lengths}" \
   --TPM_matrix "${salmon_iso_matrix}" \
   > Trinity.gene_lengths.txt \
-  1> ${tpm_length_stdout} \
   2> ${tpm_length_stderr}
 
   # Differential expression analysis
@@ -371,7 +369,7 @@ do
   # Needs to be run in same directory as transcriptome.
   cd ${transcriptome_dir} || exit
   ${trinity_DE} \
-  --matrix "${comparison_dir}"/salmon.gene.counts.matrix \
+  --matrix "${comparison_dir}salmon.gene.counts.matrix" \
   --method edgeR \
   --samples_file "${samples}" \
   1> ${trinity_DE_stdout} \
@@ -399,7 +397,7 @@ do
   --examine_GO_enrichment \
   --GO_annots "${go_annotations}" \
   --include_GOplot \
-  --gene_lengths "${comparison_dir}"/Trinity.gene_lengths.txt \
+  --gene_lengths "${comparison_dir}Trinity.gene_lengths.txt" \
   -C 1 \
   -P 0.05 \
   1> ${diff_expr_stdout} \
@@ -415,6 +413,10 @@ done
 
 #### RESULTS
 
+Took about 17.5hrs to run:
+
+![runtime screencap](https://github.com/RobertsLab/sams-notebook/blob/master/images/screencaps/20200422_cbai_DEG_basic_comparisons_runtime.png?raw=true)
+
 Output folder:
 
-- []()
+- [20200422_cbai_DEG_basic_comparisons/](https://gannet.fish.washington.edu/Atumefaciens/20200422_cbai_DEG_basic_comparisons/)
