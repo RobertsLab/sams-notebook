@@ -44,7 +44,7 @@ The analyses will perform the following pairwise comparisons:
 
 - cold-warm
 
-It will identify differentially expressed genes with >=2-fold log change in expression and a false discovery rate of <=0.05. Additionally, it will perform gene ontology (GO) enrichment analysis.
+It will identify differentially expressed genes with >=2-fold log change in expression and a false discovery rate of <=0.05. Additionally, it will perform gene ontology (GO) enrichment analysis using GOseq.
 
 As a brief aside, I'm pretty stoked about the SBATCH script below! It automates FastQ file selection for each comparison, creates appropriately named subdirectories and creates proper Trinity samples list file needed.
 
