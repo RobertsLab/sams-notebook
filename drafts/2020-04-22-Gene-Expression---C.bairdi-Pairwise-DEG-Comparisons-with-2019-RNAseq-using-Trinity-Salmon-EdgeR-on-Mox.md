@@ -424,6 +424,13 @@ Output folder:
 
 #### D9-D12
 
+Up-regulated genes:
+
+- [salmon.gene.counts.matrix.D12_vs_D9.edgeR.DE_results.P0.05_C1.D9-UP.subset](https://gannet.fish.washington.edu/Atumefaciens/20200422_cbai_DEG_basic_comparisons/D9-D12/edgeR.169728.dir/salmon.gene.counts.matrix.D12_vs_D9.edgeR.DE_results.P0.05_C1.D9-UP.subset)
+
+- [salmon.gene.counts.matrix.D12_vs_D9.edgeR.DE_results.P0.05_C1.D12-UP.subset](https://gannet.fish.washington.edu/Atumefaciens/20200422_cbai_DEG_basic_comparisons/D9-D12/edgeR.169728.dir/salmon.gene.counts.matrix.D12_vs_D9.edgeR.DE_results.P0.05_C1.D12-UP.subset)
+
+
 ![D9-D12 deg heatmap](https://raw.githubusercontent.com/RobertsLab/sams-notebook/master/images/screencaps/20200422_cbai_DEG_basic_comparisons_D9-D12_DEG_heatmap.png)
 
 
@@ -435,6 +442,13 @@ Output folder:
 ---
 
 #### D9-D26
+
+Up-regulated genes:
+
+- [salmon.gene.counts.matrix.D26_vs_D9.edgeR.DE_results.P0.05_C1.D9-UP.subset](https://gannet.fish.washington.edu/Atumefaciens/20200422_cbai_DEG_basic_comparisons/D9-D26/edgeR.200352.dir/salmon.gene.counts.matrix.D26_vs_D9.edgeR.DE_results.P0.05_C1.D9-UP.subset)
+
+- [salmon.gene.counts.matrix.D26_vs_D9.edgeR.DE_results.P0.05_C1.D26-UP.subset](https://gannet.fish.washington.edu/Atumefaciens/20200422_cbai_DEG_basic_comparisons/D9-D26/edgeR.200352.dir/salmon.gene.counts.matrix.D26_vs_D9.edgeR.DE_results.P0.05_C1.D26-UP.subset)
+
 
 ![D9-D26 deg heatmap](https://raw.githubusercontent.com/RobertsLab/sams-notebook/master/images/screencaps/20200422_cbai_DEG_basic_comparisons_D9-D26_DEG_heatmap.png)
 
@@ -448,6 +462,13 @@ Output folder:
 
 #### D12-D26
 
+Up-regulated genes:
+
+- [salmon.gene.counts.matrix.D12_vs_D26.edgeR.DE_results.P0.05_C1.D26-UP.subset](https://gannet.fish.washington.edu/Atumefaciens/20200422_cbai_DEG_basic_comparisons/D12-D26/edgeR.230922.dir/salmon.gene.counts.matrix.D12_vs_D26.edgeR.DE_results.P0.05_C1.D26-UP.subset)
+
+- [salmon.gene.counts.matrix.D12_vs_D26.edgeR.DE_results.P0.05_C1.D12-UP.subset](https://gannet.fish.washington.edu/Atumefaciens/20200422_cbai_DEG_basic_comparisons/D12-D26/edgeR.230922.dir/salmon.gene.counts.matrix.D12_vs_D26.edgeR.DE_results.P0.05_C1.D12-UP.subset)
+
+
 ![D12-D26 deg heatmap](https://raw.githubusercontent.com/RobertsLab/sams-notebook/master/images/screencaps/20200422_cbai_DEG_basic_comparisons_D12-D26_DEG_heatmap.png)
 
 
@@ -459,6 +480,13 @@ Output folder:
 ---
 
 #### ambient-cold
+
+Up-regulated genes:
+
+- [salmon.gene.counts.matrix.ambient_vs_cold.edgeR.DE_results.P0.05_C1.cold-UP.subset](https://gannet.fish.washington.edu/Atumefaciens/20200422_cbai_DEG_basic_comparisons/ambient-cold/edgeR.267393.dir/salmon.gene.counts.matrix.ambient_vs_cold.edgeR.DE_results.P0.05_C1.cold-UP.subset)
+
+- [salmon.gene.counts.matrix.ambient_vs_cold.edgeR.DE_results.P0.05_C1.ambient-UP.subset](https://gannet.fish.washington.edu/Atumefaciens/20200422_cbai_DEG_basic_comparisons/ambient-cold/edgeR.267393.dir/salmon.gene.counts.matrix.ambient_vs_cold.edgeR.DE_results.P0.05_C1.ambient-UP.subset)
+
 
 ![ambient-cold deg heatmap](https://raw.githubusercontent.com/RobertsLab/sams-notebook/master/images/screencaps/20200422_cbai_DEG_basic_comparisons_ambient-cold_DEG_heatmap.png)
 
@@ -472,6 +500,12 @@ Output folder:
 
 #### ambient-warm
 
+Up-regulated genes:
+
+- [salmon.gene.counts.matrix.ambient_vs_warm.edgeR.DE_results.P0.05_C1.ambient-UP.subset](https://gannet.fish.washington.edu/Atumefaciens/20200422_cbai_DEG_basic_comparisons/ambient-warm/edgeR.297991.dir/salmon.gene.counts.matrix.ambient_vs_warm.edgeR.DE_results.P0.05_C1.ambient-UP.subset)
+
+- [salmon.gene.counts.matrix.ambient_vs_warm.edgeR.DE_results.P0.05_C1.warm-UP.subset](https://gannet.fish.washington.edu/Atumefaciens/20200422_cbai_DEG_basic_comparisons/ambient-warm/edgeR.297991.dir/salmon.gene.counts.matrix.ambient_vs_warm.edgeR.DE_results.P0.05_C1.warm-UP.subset)
+
 ![ambient-warm deg heatmap](https://raw.githubusercontent.com/RobertsLab/sams-notebook/master/images/screencaps/20200422_cbai_DEG_basic_comparisons_ambient-warm_DEG_heatmap.png)
 
 
@@ -484,6 +518,13 @@ Output folder:
 
 #### cold-warm
 
+Up-regulated genes:
+
+- [salmon.gene.counts.matrix.cold_vs_warm.edgeR.DE_results.P0.05_C1.warm-UP.subset](https://gannet.fish.washington.edu/Atumefaciens/20200422_cbai_DEG_basic_comparisons/cold-warm/edgeR.328585.dir/salmon.gene.counts.matrix.cold_vs_warm.edgeR.DE_results.P0.05_C1.warm-UP.subset)
+
+- [salmon.gene.counts.matrix.cold_vs_warm.edgeR.DE_results.P0.05_C1.cold-UP.subset](https://gannet.fish.washington.edu/Atumefaciens/20200422_cbai_DEG_basic_comparisons/cold-warm/edgeR.328585.dir/salmon.gene.counts.matrix.cold_vs_warm.edgeR.DE_results.P0.05_C1.cold-UP.subset)
+
+
 ![cold-warm deg heatmap](https://raw.githubusercontent.com/RobertsLab/sams-notebook/master/images/screencaps/20200422_cbai_DEG_basic_comparisons_cold-warm_DEG_heatmap.png)
 
 
@@ -495,6 +536,13 @@ Output folder:
 ---
 
 #### infected-uninfected
+
+Up-regulated genes:
+
+- [salmon.gene.counts.matrix.infected_vs_uninfected.edgeR.DE_results.P0.05_C1.infected-UP.subset](https://gannet.fish.washington.edu/Atumefaciens/20200422_cbai_DEG_basic_comparisons/infected-uninfected/edgeR.132470.dir/salmon.gene.counts.matrix.infected_vs_uninfected.edgeR.DE_results.P0.05_C1.infected-UP.subset)
+
+- [salmon.gene.counts.matrix.infected_vs_uninfected.edgeR.DE_results.P0.05_C1.uninfected-UP.subset](https://gannet.fish.washington.edu/Atumefaciens/20200422_cbai_DEG_basic_comparisons/infected-uninfected/edgeR.132470.dir/salmon.gene.counts.matrix.infected_vs_uninfected.edgeR.DE_results.P0.05_C1.uninfected-UP.subset)
+
 
 ![infected-uninfected deg heatmap](https://raw.githubusercontent.com/RobertsLab/sams-notebook/master/images/screencaps/20200422_cbai_DEG_basic_comparisons_infected-uninfected_DEG_heatmap.png)
 
