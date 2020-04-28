@@ -278,7 +278,9 @@ Output folder (GitHub; R Project):
 
 - [20200427_cbai_deg_go-goslims](https://github.com/RobertsLab/code/tree/master/r_projects/sam/20200427_cbai_deg_go-goslims)
 
-Images of each of the plots are below. Larger versions of the images can be viewed by clicking on the image. All images are 1200x600 pixels, so should expand to reasonble sizes for easy viewing.
+Images of each of the plots are below. Larger versions of the images can be viewed by clicking on the image. All images are 1200x600 pixels, so should be a reasonable size for viewing.
+
+Also, it should be noted that the GOslim term "biological_process" was omitted from the plotting. This GOslim category is a "catchall" for any GO terms that do not fall into a GOslim category. As such, "biological_process" almost always makes up the bulk of the GOslim and this effectively compresses the plots, making it difficult to see any differences between the remaining GOslim categories. Knowing this explains why the percentages in each comparison never add up to 100%!
 
 #### D9-D12
 
