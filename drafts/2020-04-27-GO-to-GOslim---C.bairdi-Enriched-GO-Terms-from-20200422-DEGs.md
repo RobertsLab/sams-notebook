@@ -278,6 +278,7 @@ Output folder (GitHub; R Project):
 
 - [20200427_cbai_deg_go-goslims](https://github.com/RobertsLab/code/tree/master/r_projects/sam/20200427_cbai_deg_go-goslims)
 
+Images of each of the plots are below. Larger versions of the images can be viewed by clicking on the image. All images are 1200x600 pixels, so should expand to reasonble sizes for easy viewing.
 
 #### D9-D12
 
