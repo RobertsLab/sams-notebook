@@ -19,9 +19,9 @@ categories:
 
 #### RESULTS
 
-Output folder:
+Output folder (GitHub; R Project):
 
-- []()
+- [20200427_cbai_deg_go-goslims](https://github.com/RobertsLab/code/tree/master/r_projects/sam/20200427_cbai_deg_go-goslims)
 
 
 #### D9-D12
