@@ -102,8 +102,11 @@ do
 	echo "${reads_array[i+1]}"
 } >> fastq-list.txt
 
-  # Strip path and save just filename
-  sample=${reads_array[i]##*/}
+  # Strip path and save just sample number
+	# Expects sample name to be like:
+	# 20200413.C_bairdi.359.D12.infected.ambient.megan_R2.fq
+	# Will pull out '359'
+  sample=$(echo ${reads_array[fastq]##*/} | awk -F"." '{print $3}')
 
 	# Run salmon
 	# Library type (stranded or not) is set to auto (A)
