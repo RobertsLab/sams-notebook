@@ -76,11 +76,11 @@ echo "${PATH}" | tr : \\n
 for program in "${!programs_array[@]}"
 do
 	{
-  echo "Program options for ${programs_array[program]}: "
+  echo "Program options for ${programs_array[$program]}: "
 	echo ""
-	${programs_array[program]} quant --help
+	${programs_array[$program]} quant --help
 	echo ""
-	${programs_array[program]} quant --help-reads
+	${programs_array[$program]} quant --help-reads
 	echo ""
 	echo "----------------------------------------------"
 	echo ""
@@ -107,9 +107,11 @@ do
 
 	# Run salmon
 	# Library type (stranded or not) is set to auto (A)
-	${programs_array[salmon]} \
+	${programs_array[salmon]} quant \
 	--index ${salmon_index} \
 	--libType A \
 	--validateMappings \
-	--output quants/"${sample}"_quant
+	--output quants/"${sample}"_quant \
+	-1 ${reads_array[i]} \
+	-2 ${reads_array[i+1]}
 done
