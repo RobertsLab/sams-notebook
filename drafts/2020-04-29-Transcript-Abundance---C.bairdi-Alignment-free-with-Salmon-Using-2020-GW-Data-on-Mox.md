@@ -143,9 +143,9 @@ done
 
 #### RESULTS
 
-Extremely fast:
+Extremely fast, ~3mins:
 
-![]()
+![salmon runtime](https://github.com/RobertsLab/sams-notebook/blob/master/images/screencaps/20200429_cbai_salmon_2020GW_transcript_abundances_runtime.png?raw=true)
 
 Output folder:
 
