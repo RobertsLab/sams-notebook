@@ -106,7 +106,7 @@ do
 	# Expects sample name to be like:
 	# 20200413.C_bairdi.359.D12.infected.ambient.megan_R2.fq
 	# Will pull out '359'
-  sample=$(echo ${reads_array[fastq]##*/} | awk -F"." '{print $3}')
+  sample=$(echo ${reads_array[i]##*/} | awk -F"." '{print $3}')
 
 	# Run salmon
 	# Library type (stranded or not) is set to auto (A)
@@ -114,7 +114,7 @@ do
 	--index ${salmon_index} \
 	--libType A \
 	--validateMappings \
-	--output quants/"${sample}"_quant \
+	--output "${sample}"_quant \
 	-1 ${reads_array[i]} \
 	-2 ${reads_array[i+1]}
 done
