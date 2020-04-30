@@ -10,7 +10,9 @@ tags:
 categories:
   - Miscellneous
 ---
+Clarified with Steven an approach for tackling multi-condition comparisons (see this [GitHub Issue](https://github.com/RobertsLab/resources/issues/921)). As such, I need to have individual transcript abundances for each sample from the 2020 Genewiz RNAseq data before I can proceed. So, I ran [salmon (v1.2.1)](https://combine-lab.github.io/salmon/) to perform an alignment-free set of transcript abundances. It's ridiculously fast, btw...
 
+This was run on Mox and used the _C.bairdi_-specific reads that were [extracted using MEGAN6 on 202020330](https://robertslab.github.io/sams-notebook/2020/03/30/RNAseq-Reads-Extractions-C.bairdi-Taxonomic-Reads-Extractions-with-MEGAN6-on-swoose.html).
 
 SBATCH script (GitHub):
 
