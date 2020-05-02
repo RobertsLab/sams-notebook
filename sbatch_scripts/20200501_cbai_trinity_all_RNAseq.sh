@@ -76,7 +76,7 @@ R2_list=$(echo "${R2_array[@]}" | tr " " ",")
 ## Not running as "stranded", due to mix of library types
 ${trinity_dir}/Trinity \
 --seqType fq \
---max_memory 120G \
+--max_memory 500G \
 --CPU ${threads} \
 --left "${R1_list}" \
 --right "${R2_list}"
