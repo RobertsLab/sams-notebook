@@ -8,9 +8,9 @@
 ## Nodes
 #SBATCH --nodes=1
 ## Walltime (days-hours:minutes:seconds format)
-#SBATCH --time=6-00:00:00
+#SBATCH --time=14-00:00:00
 ## Memory per node
-#SBATCH --mem=120G
+#SBATCH --mem=500G
 ##turn on e-mail notification
 #SBATCH --mail-type=ALL
 #SBATCH --mail-user=samwhite@uw.edu
