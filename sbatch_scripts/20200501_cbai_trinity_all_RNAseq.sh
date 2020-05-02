@@ -15,7 +15,7 @@
 #SBATCH --mail-type=ALL
 #SBATCH --mail-user=samwhite@uw.edu
 ## Specify the working directory for this job
-#SBATCH --chdir=/gscratch/scrubbed/samwhite/outputs/20200501_cbai_trinity_all_RNAseq
+#SBATCH --chdir=/gscratch/scrubbed/samwhite/outputs/20200502_cbai_trinity_all_RNAseq
 
 # Exit script if a command fails
 set -e
