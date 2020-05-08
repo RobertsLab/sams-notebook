@@ -98,4 +98,10 @@ I'll never _not_ be amazed at how fast this runs! 51 seconds!
 
 Output folder:
 
-- []()
+- [20200508_cbai_diamond_blastx_transcriptome-v2.0/](https://gannet.fish.washington.edu/Atumefaciens/20200508_cbai_diamond_blastx_transcriptome-v2.0/)
+
+BLASTx output - BLAST format 6 (tab):
+
+- [20200508_cbai_diamond_blastx_transcriptome-v2.0/20200507.C_bairdi.Trinity.blastx.outfmt6](https://gannet.fish.washington.edu/Atumefaciens/20200508_cbai_diamond_blastx_transcriptome-v2.0/20200507.C_bairdi.Trinity.blastx.outfmt6)
+
+Will proceed with Trinotate.
