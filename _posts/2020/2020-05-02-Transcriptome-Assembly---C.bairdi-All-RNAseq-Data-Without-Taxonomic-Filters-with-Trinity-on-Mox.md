@@ -150,13 +150,15 @@ FastA (904MB):
 
 - [20200502_cbai_trinity_all_RNAseq/trinity_out_dir/20200507.C_bairdi.Trinity.fasta](https://gannet.fish.washington.edu/Atumefaciens/20200502_cbai_trinity_all_RNAseq/trinity_out_dir/20200507.C_bairdi.Trinity.fasta)
 
-FastA MD5 checksum:
+  - FastA MD5 checksum:
 
-`01adbd54298495c147767b19ee5c0de9`
+    `01adbd54298495c147767b19ee5c0de9`
 
-FastA Index (text):
+  - FastA Index (text):
 
-- [20200502_cbai_trinity_all_RNAseq/trinity_out_dir/20200507.C_bairdi.Trinity.fasta.fai](https://gannet.fish.washington.edu/Atumefaciens/20200502_cbai_trinity_all_RNAseq/trinity_out_dir/20200507.C_bairdi.Trinity.fasta.fai)
+    - [20200502_cbai_trinity_all_RNAseq/trinity_out_dir/20200507.C_bairdi.Trinity.fasta.fai](https://gannet.fish.washington.edu/Atumefaciens/20200502_cbai_trinity_all_RNAseq/trinity_out_dir/20200507.C_bairdi.Trinity.fasta.fai)
+
+##### NOTE: The transcriptome will be referred to as `cbai_transcriptome_v2.0.fasta` and has been added to our [Genomic Resources wiki](https://github.com/RobertsLab/resources/wiki/Genomic-Resources).
 
 
 Trinity gene trans map (text; useful for downstream gene expression/annotation with Trinity/Trinotate):
