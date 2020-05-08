@@ -13,7 +13,7 @@ tags:
 categories:
   - Miscellaneous
 ---
-[Steven asked that I assemble an unfiltered (i.e. no taxonomic selection) transcriptome](https://github.com/RobertsLab/resources/issues/923) with all of our _C.bairdi_ RNAseq data.
+[Steven asked that I assemble an unfiltered (i.e. no taxonomic selection) transcriptome](https://github.com/RobertsLab/resources/issues/923) with all of our _C.bairdi_ RNAseq data (see the FastQ list file linked in the Results section below). A _de novo_ assembly was run using Trinity on Mox. It should be noted that this assembly is a mixture of stranded/non-stranded library preps.
 
 
 SBATCH Script (GitHub):
