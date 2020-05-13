@@ -132,21 +132,30 @@ mkdir "${pfam_out_dir}"
 
 #### RESULTS
 
+Took a bit over four days to run (not including short downtime due to the initial job running out of time):
+
+![TransDecoder runtime for v2.0 transcriptome](https://github.com/RobertsLab/sams-notebook/blob/master/images/screencaps/20200508_cbai_transdecoder_transcriptome-v2.0_runtime.png?raw=true)
+
 Output folder:
 
 - [20200508_cbai_transdecoder_transcriptome-v2.0/](https://gannet.fish.washington.edu/Atumefaciens/20200508_cbai_transdecoder_transcriptome-v2.0/)
 
+BED (text; 102MB)
+
 - [20200507.C_bairdi.Trinity.fasta.transdecoder.bed](https://gannet.fish.washington.edu/Atumefaciens/20200508_cbai_transdecoder_transcriptome-v2.0/20200507.C_bairdi.Trinity.fasta.transdecoder.bed]
 
+CDS (FastA; 357MB)
 
 - [20200507.C_bairdi.Trinity.fasta.transdecoder.cds](https://gannet.fish.washington.edu/Atumefaciens/20200508_cbai_transdecoder_transcriptome-v2.0/20200507.C_bairdi.Trinity.fasta.transdecoder.cds]
 
+GFF3 (text; 367MB)
 
 - [20200507.C_bairdi.Trinity.fasta.transdecoder.gff3](https://gannet.fish.washington.edu/Atumefaciens/20200508_cbai_transdecoder_transcriptome-v2.0/20200507.C_bairdi.Trinity.fasta.transdecoder.gff3]
 
+Peptides (FastA; 184MB)
 
 - [20200507.C_bairdi.Trinity.fasta.transdecoder.pep](https://gannet.fish.washington.edu/Atumefaciens/20200508_cbai_transdecoder_transcriptome-v2.0/20200507.C_bairdi.Trinity.fasta.transdecoder.pep]
-  
+
 ---
 
 The files linked below are needed as inputs for Trinotate:
