@@ -136,7 +136,17 @@ Output folder:
 
 - [20200508_cbai_transdecoder_transcriptome-v2.0/](https://gannet.fish.washington.edu/Atumefaciens/20200508_cbai_transdecoder_transcriptome-v2.0/)
 
+- [20200507.C_bairdi.Trinity.fasta.transdecoder.bed](https://gannet.fish.washington.edu/Atumefaciens/20200508_cbai_transdecoder_transcriptome-v2.0/20200507.C_bairdi.Trinity.fasta.transdecoder.bed]
 
+
+- [20200507.C_bairdi.Trinity.fasta.transdecoder.cds](https://gannet.fish.washington.edu/Atumefaciens/20200508_cbai_transdecoder_transcriptome-v2.0/20200507.C_bairdi.Trinity.fasta.transdecoder.cds]
+
+
+- [20200507.C_bairdi.Trinity.fasta.transdecoder.gff3](https://gannet.fish.washington.edu/Atumefaciens/20200508_cbai_transdecoder_transcriptome-v2.0/20200507.C_bairdi.Trinity.fasta.transdecoder.gff3]
+
+
+- [20200507.C_bairdi.Trinity.fasta.transdecoder.pep](https://gannet.fish.washington.edu/Atumefaciens/20200508_cbai_transdecoder_transcriptome-v2.0/20200507.C_bairdi.Trinity.fasta.transdecoder.pep]
+  
 ---
 
 The files linked below are needed as inputs for Trinotate:
