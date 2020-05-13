@@ -134,4 +134,21 @@ mkdir "${pfam_out_dir}"
 
 Output folder:
 
-- []()
+- [20200508_cbai_transdecoder_transcriptome-v2.0/](https://gannet.fish.washington.edu/Atumefaciens/20200508_cbai_transdecoder_transcriptome-v2.0/)
+
+
+---
+
+The files linked below are needed as inputs for Trinotate:
+
+BLASTp (text; outfmt6; 16MB):
+
+- [20200508_cbai_transdecoder_transcriptome-v2.0/blastp_out/20200508.cbai.blastp.outfmt6](https://gannet.fish.washington.edu/Atumefaciens/20200508_cbai_transdecoder_transcriptome-v2.0/blastp_out/20200508.cbai.blastp.outfmt6)
+
+pfam (420MB):
+
+- [20200508_cbai_transdecoder_transcriptome-v2.0/pfam_out/20200508.cbai.pfam.domtblout](https://gannet.fish.washington.edu/Atumefaciens/20200508_cbai_transdecoder_transcriptome-v2.0/pfam_out/20200508.cbai.pfam.domtblout)
+
+Longest Peptide ORFs (FastA; 209MB):
+
+- [20200508_cbai_transdecoder_transcriptome-v2.0/20200507.C_bairdi.Trinity.fasta.transdecoder_dir/longest_orfs.pep](https://gannet.fish.washington.edu/Atumefaciens/20200508_cbai_transdecoder_transcriptome-v2.0/20200507.C_bairdi.Trinity.fasta.transdecoder_dir/longest_orfs.pep)
