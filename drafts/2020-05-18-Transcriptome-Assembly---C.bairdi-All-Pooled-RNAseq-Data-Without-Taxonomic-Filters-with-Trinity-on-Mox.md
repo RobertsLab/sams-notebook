@@ -12,7 +12,7 @@ tags:
 categories:
   - Miscellaneous
 ---
-[Steven asked that I assemble a transcriptome](https://github.com/RobertsLab/resources/issues/936) with just  our pooled _C.bairdi_ RNAseq data (see the FastQ list file linked in the Results section below). This constitutes samples we have designated: 2018, 2019, 2020-UW. A _de novo_ assembly was run using Trinity on Mox. Since all pooled RNAseq libraries were stranded, I added this option to Trinty command.
+[Steven asked that I assemble a transcriptome](https://github.com/RobertsLab/resources/issues/936) with just  our pooled _C.bairdi_ RNAseq data (_not_ taxonomically filtered; see the FastQ list file linked in the Results section below). This constitutes samples we have designated: 2018, 2019, 2020-UW. A _de novo_ assembly was run using Trinity on Mox. Since all pooled RNAseq libraries were stranded, I added this option to Trinity command.
 
 
 SBATCH script (GitHub):
