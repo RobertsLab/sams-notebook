@@ -21,6 +21,8 @@ To start this process, the trimmed reads need to be annotated using DIAMOND BLAS
 
 DIAMOND BLASTx took place on Mox, while "meganization" took place on my lab computer (`swoose`); this is due to the way that MEGAN6 uses Java - it doesn't run properly on Mox.
 
+For reference, these include RNAseq data using a newly established "shorthand": 2018, 2019.
+
 SBATCH script (GitHub):
 
 - [20200103_cbai_diamond_blastx.sh](https://github.com/RobertsLab/sams-notebook/blob/master/sbatch_scripts/20200103_cbai_diamond_blastx.sh)

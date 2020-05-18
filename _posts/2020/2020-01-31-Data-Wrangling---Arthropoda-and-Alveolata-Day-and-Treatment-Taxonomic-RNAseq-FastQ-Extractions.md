@@ -14,6 +14,8 @@ After using MEGAN6 to [extract _Arthropoda_ and _Alveolata_ reads from our RNAse
 
 For gene expression analysis, I need the FastQs based on infection status and sample days. So, I need to modify the read extraction procedure to parse reads based on those conditions. I could've/should've done this originally, as I could've just assembled the transcriptome from the FastQs I'm going to generate now. Oh well.
 
+For reference, these include RNAseq data using a newly established "shorthand": 2019)
+
 As a reminder, the reason I'm doing this is that I realized that the FastA headers were incomplete and did not distinguish between paired reads. Here's an example:
 
 R1 FastQ header:
