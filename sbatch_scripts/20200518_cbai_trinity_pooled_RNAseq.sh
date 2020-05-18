@@ -17,6 +17,11 @@
 ## Specify the working directory for this job
 #SBATCH --chdir=/gscratch/scrubbed/samwhite/outputs/20200518_cbai_trinity_pooled_RNAseq
 
+
+### Trinity de novo assembly of all pooled C.bairdi RNAseq data.
+### Includes "descriptor_1" short-hand of: 2020-UW, 2019
+### See fastq.list.txt file for list of input files used for assembly.
+
 # Exit script if a command fails
 set -e
 
