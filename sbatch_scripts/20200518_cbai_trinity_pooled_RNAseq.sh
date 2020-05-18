@@ -19,7 +19,7 @@
 
 
 ### Trinity de novo assembly of all pooled C.bairdi RNAseq data.
-### Includes "descriptor_1" short-hand of: 2020-UW, 2019
+### Includes "descriptor_1" short-hand of: 2020-UW, 2019, 2018.
 ### See fastq.list.txt file for list of input files used for assembly.
 
 # Exit script if a command fails
