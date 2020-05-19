@@ -153,16 +153,35 @@ Pretty quick; only ~3.5hrs (NOTE: Job indicates it failed. This is due to wrong 
 
 ![Trinity all Arthropoda-specific RNAseq runtime](https://github.com/RobertsLab/sams-notebook/blob/master/images/screencaps/20200518_cbai_trinity_all_Arthropoda_RNAseq_runtime.png?raw=true)
 
-NOTE: The resulting FastA will be referred to as `cbai_transcriptome_v1.6.fasta` in future references.
 
 Output folder:
 
 - [20200518_cbai_trinity_all_Arthropoda_RNAseq/](https://gannet.fish.washington.edu/Atumefaciens/20200518_cbai_trinity_all_Arthropoda_RNAseq/)
 
+Input FastQ list (text):
+
+- [fastq.list.txt](https://gannet.fish.washington.edu/Atumefaciens/20200518_cbai_trinity_all_Arthropoda_RNAseq/fastq.list.txt)
+
+FastA (412MB):
+
+- [cbai_transcriptome_v1.6.fasta](https://gannet.fish.washington.edu/Atumefaciens/20200518_cbai_trinity_all_Arthropoda_RNAseq/trinity_out_dir/cbai_transcriptome_v1.6.fasta)
+
+FastA Index (text):
+
+- [cbai_transcriptome_v1.6.fasta.fai](https://gannet.fish.washington.edu/Atumefaciens/20200518_cbai_trinity_all_Arthropoda_RNAseq/trinity_out_dir/cbai_transcriptome_v1.6.fasta.fai)
+
+The following sets of files are useful for downstream gene expression and annotation using Trinity.
+
+Trinity FastA Gene Trans Map (text):
+
+- [cbai_transcriptome_v1.6.fasta.gene_trans_map](https://gannet.fish.washington.edu/Atumefaciens/20200518_cbai_trinity_all_Arthropoda_RNAseq/trinity_out_dir/cbai_transcriptome_v1.6.fasta.gene_trans_map)
+
+Trinity FastA Sequence Lengths (text):
+
+- [cbai_transcriptome_v1.6.fasta.seq_lens](https://gannet.fish.washington.edu/Atumefaciens/20200518_cbai_trinity_all_Arthropoda_RNAseq/trinity_out_dir/cbai_transcriptome_v1.6.fasta.seq_lens)
 
 
-
-Asembly stats (text):
+Assembly stats (text):
 
 - [20200518_cbai_trinity_all_Arthropoda_RNAseq/assembly_stats.txt](https://gannet.fish.washington.edu/Atumefaciens/20200518_cbai_trinity_all_Arthropoda_RNAseq/assembly_stats.txt)
 
