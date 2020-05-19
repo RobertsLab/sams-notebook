@@ -162,6 +162,8 @@ FastA (412MB):
 
 - [20200518.C_bairdi.Trinity.fasta](https://gannet.fish.washington.edu/Atumefaciens/20200518_cbai_trinity_pooled_RNAseq/trinity_out_dir/20200518.C_bairdi.Trinity.fasta)
 
+  - MD5 = `5516789cbad5fa9009c3566003557875`
+
 FastA Index (text):
 
 - [20200518.C_bairdi.Trinity.fasta.fai](https://gannet.fish.washington.edu/Atumefaciens/20200518_cbai_trinity_pooled_RNAseq/trinity_out_dir/20200518.C_bairdi.Trinity.fasta.fai)
