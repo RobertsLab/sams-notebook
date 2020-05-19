@@ -11,7 +11,7 @@ tags:
 categories:
   - Miscellaneous
 ---
-[I previously created a _C.bairdi_ _de novo_ transcriptome assembly with Trinity from all our _C.bairdi_ pooled RNAseq (not taxonomically filtered) on 20200518]() and decided to assess its "completeness" using BUSCO and the `metazoa_odb9` database.
+[I previously created a _C.bairdi_ _de novo_ transcriptome assembly with Trinity from all our _C.bairdi_ pooled RNAseq (not taxonomically filtered) on 20200518](https://robertslab.github.io/sams-notebook/2020/05/18/Transcriptome-Assembly-C.bairdi-All-Pooled-RNAseq-Data-Without-Taxonomic-Filters-with-Trinity-on-Mox.html) and decided to assess its "completeness" using BUSCO and the `metazoa_odb9` database.
 
 BUSCO was run with the `--mode transcriptome` option on Mox.
 
@@ -149,4 +149,27 @@ ${busco} \
 
 Output folder:
 
-- []()
+- [20200519_cbai_busco_transcriptome_v3.0/](https://gannet.fish.washington.edu/Atumefaciens/20200519_cbai_busco_transcriptome_v3.0/)
+
+
+BUSCO short summary (text):
+
+- [20200519_cbai_busco_transcriptome_v3.0/run_20200519.cbai/short_summary_20200519.cbai.txt](https://gannet.fish.washington.edu/Atumefaciens/20200519_cbai_busco_transcriptome_v3.0/run_20200519.cbai/short_summary_20200519.cbai.txt)
+
+```
+# BUSCO version is: 3.0.2
+# The lineage dataset is: metazoa_odb9 (Creation date: 2016-02-13, number of species: 65, number of BUSCOs: 978)
+# To reproduce this run: python /gscratch/srlab/programs/busco-v3/scripts/run_BUSCO.py -i /gscratch/srlab/sam/data/C_bairdi/transcriptomes/20200518.C_bairdi.Trinity.fasta -o 20200519.cbai -l /gscratch/srlab/sam/data/databases/BUSCO/metazoa_odb9/ -m transcriptome -c 28 --long -z
+#
+# Summarized benchmarking in BUSCO notation for file /gscratch/srlab/sam/data/C_bairdi/transcriptomes/20200518.C_bairdi.Trinity.fasta
+# BUSCO was run in mode: transcriptome
+
+	C:97.6%[S:39.1%,D:58.5%],F:1.6%,M:0.8%,n:978
+
+	954	Complete BUSCOs (C)
+	382	Complete and single-copy BUSCOs (S)
+	572	Complete and duplicated BUSCOs (D)
+	16	Fragmented BUSCOs (F)
+	8	Missing BUSCOs (M)
+	978	Total BUSCO groups searched
+  ```
