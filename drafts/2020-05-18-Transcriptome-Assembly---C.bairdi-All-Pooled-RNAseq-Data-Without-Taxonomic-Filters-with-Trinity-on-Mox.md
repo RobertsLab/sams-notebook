@@ -148,23 +148,38 @@ Pretty quick; only ~18hrs:
 
 ![Trinity pooled RNAseq runtime](https://github.com/RobertsLab/sams-notebook/blob/master/images/screencaps/20200518_cbai_trinity_pooled_RNAseq_runtime.png?raw=true)
 
+NOTE: The resulting FastA will be referred to as `cbai_transcriptome_v3.0.fasta` in future references.
+
 Output folder:
 
 - [20200518_cbai_trinity_pooled_RNAseq](https://gannet.fish.washington.edu/Atumefaciens/20200518_cbai_trinity_pooled_RNAseq/)
 
+Input FastQ list (text):
 
+- [fastq.list.txt](https://gannet.fish.washington.edu/Atumefaciens/20200518_cbai_trinity_pooled_RNAseq/fastq.list.txt)
 
+FastA (412MB):
 
+- [20200518.C_bairdi.Trinity.fasta](https://gannet.fish.washington.edu/Atumefaciens/20200518_cbai_trinity_pooled_RNAseq/trinity_out_dir/20200518.C_bairdi.Trinity.fasta)
 
+FastA Index (text):
 
+- [20200518.C_bairdi.Trinity.fasta.fai](https://gannet.fish.washington.edu/Atumefaciens/20200518_cbai_trinity_pooled_RNAseq/trinity_out_dir/20200518.C_bairdi.Trinity.fasta.fai)
 
+The following sets of files are useful for downstream gene expression and annotation using Trinity.
 
+Trinity FastA Gene Trans Map (text):
 
+- [20200518.C_bairdi.Trinity.fasta.gene_trans_map](https://gannet.fish.washington.edu/Atumefaciens/20200518_cbai_trinity_pooled_RNAseq/trinity_out_dir/20200518.C_bairdi.Trinity.fasta.gene_trans_map)
+
+Trinity FastA Sequence Lengths (text):
+
+- [20200518.C_bairdi.Trinity.fasta.seq_lens](https://gannet.fish.washington.edu/Atumefaciens/20200518_cbai_trinity_pooled_RNAseq/trinity_out_dir/20200518.C_bairdi.Trinity.fasta.seq_lens)
 
 
 Assembly stats (text):
 
-- []()
+- [assembly_stats.txt](https://gannet.fish.washington.edu/Atumefaciens/20200518_cbai_trinity_pooled_RNAseq/assembly_stats.txt)
 
 ```
 ################################
