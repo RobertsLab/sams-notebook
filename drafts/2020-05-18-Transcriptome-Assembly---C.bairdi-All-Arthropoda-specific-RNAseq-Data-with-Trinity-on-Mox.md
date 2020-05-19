@@ -98,6 +98,14 @@ ${diamond} blastx \
 
 #### RESULTS
 
+As usual, runtime was ridiculously fast: 23 seconds
+
+![diamond blastx runtime](https://github.com/RobertsLab/sams-notebook/blob/master/images/screencaps/20200519_cbai_diamond_blastx_transcriptome_v3.0_runtime.png?raw=true)
+
 Output folder:
 
-- []()
+- [20200519_cbai_diamond_blastx_transcriptome_v3.0/](https://gannet.fish.washington.edu/Atumefaciens/20200519_cbai_diamond_blastx_transcriptome_v3.0/)
+
+BLASTx output (outfmt6; text; 5.7MB):
+
+- [20200519_cbai_diamond_blastx_transcriptome_v3.0/20200518.C_bairdi.Trinity.blastx.outfmt6](https://gannet.fish.washington.edu/Atumefaciens/20200519_cbai_diamond_blastx_transcriptome_v3.0/20200518.C_bairdi.Trinity.blastx.outfmt6)
