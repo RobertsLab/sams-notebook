@@ -13,50 +13,47 @@ tags:
 categories:
   - Miscellaneous
 ---
-As part of annotating [cbai_transcriptome_v3.0.fasta from 20200518](https://robertslab.github.io/sams-notebook/2020/05/18/Transcriptome-Assembly-C.bairdi-All-Pooled-RNAseq-Data-Without-Taxonomic-Filters-with-Trinity-on-Mox.html), I need to run DIAMOND BLASTx to use with Trinotate.
+[I realized I hadn't performed taxonomic read separation from one set of RNAseq data we had](https://robertslab.github.io/sams-notebook/2020/05/18/Data-Wrangling-Arthropoda-and-Alveolata-D26-Pool-RNAseq-FastQ-Extractions.html). And, since I was on a transcriptome assembly kick, I figured I'd generate another _C.bairdi_ transcriptome that included only Arthropoda-specific sequence data from all of our RNAseq.  
 
-Ran DIAMOND BLASTx against the UniProt/SwissProt database (downloaded 20200123) on Mox.
+shorthand: 2018, 2019, GW-2020, UW-2020
+
+It's quick and doesn't require much effort, so why not?
 
 SBATCH script (GitHub):
 
-- [20200519_cbai_diamond_blastx_transcriptome_v3.0.sh](https://github.com/RobertsLab/sams-notebook/blob/master/sbatch_scripts/20200519_cbai_diamond_blastx_transcriptome_v3.0.sh)
+- [20200518_cbai_trinity_all_Arthropoda_RNAseq.sh](https://github.com/RobertsLab/sams-notebook/blob/master/sbatch_scripts/20200518_cbai_trinity_all_Arthropoda_RNAseq.sh)
 
 ```shell
 #!/bin/bash
 ## Job Name
-#SBATCH --job-name=cbai_blastx_DIAMOND
+#SBATCH --job-name=trinity_cbai
 ## Allocation Definition
-#SBATCH --account=coenv
-#SBATCH --partition=coenv
+#SBATCH --account=srlab
+#SBATCH --partition=srlab
 ## Resources
 ## Nodes
 #SBATCH --nodes=1
 ## Walltime (days-hours:minutes:seconds format)
-#SBATCH --time=10-00:00:00
+#SBATCH --time=9-00:00:00
 ## Memory per node
-#SBATCH --mem=120G
+#SBATCH --mem=500G
 ##turn on e-mail notification
 #SBATCH --mail-type=ALL
 #SBATCH --mail-user=samwhite@uw.edu
 ## Specify the working directory for this job
-#SBATCH --chdir=/gscratch/scrubbed/samwhite/outputs/20200519_cbai_diamond_blastx_transcriptome_v3.0
+#SBATCH --chdir=/gscratch/scrubbed/samwhite/outputs/20200518_cbai_trinity_all_Arthropoda_RNAseq
 
-### BLASTx of Trinity de novo assembly of all pooled C.bairdi RNAseq data:
-### cbai_transcriptome_v3.0.fasta (orginal name, used below, is 20200518.C_bairdi.Trinity.fasta)
-### Includes "descriptor_1" short-hand of: 2020-UW, 2019, 2018.
+### De novo transcriptome assembly of all Arthropoda-specific reads
+### Includes "descriptor_1" short-hand of: 2020-GW, 2020-UW, 2019, 2018.
+### See fastq.list.txt file for list of input files used for assembly.
 
-# Exit script if any command fails
+# Exit script if a command fails
 set -e
 
 # Load Python Mox module for Python module availability
-
 module load intel-python3_2017
 
-# SegFault fix?
-export THREADS_DAEMON_MODEL=1
-
 # Document programs in PATH (primarily for program version ID)
-
 {
 date
 echo ""
@@ -66,46 +63,84 @@ printf "%0.s-" {1..10}
 echo "${PATH}" | tr : \\n
 } >> system_path.log
 
+# User-defined variables
+reads_dir=/gscratch/srlab/sam/data/C_bairdi/RNAseq
+transcriptome_dir=/gscratch/srlab/sam/data/C_bairdi/transcriptomes
+threads=28
+assembly_stats=assembly_stats.txt
+fasta_name="cbai_transcriptome_v1.6.fasta"
 
-# Program paths
-diamond=/gscratch/srlab/programs/diamond-0.9.29/diamond
-
-# DIAMOND UniProt database
-dmnd=/gscratch/srlab/blastdbs/uniprot_sprot_20200123/uniprot_sprot.dmnd
+# Paths to programs
+trinity_dir="/gscratch/srlab/programs/trinityrnaseq-v2.9.0"
+samtools="/gscratch/srlab/programs/samtools-1.10/samtools"
 
 
-# Trinity assembly (FastA)
-fasta=/gscratch/srlab/sam/data/C_bairdi/transcriptomes/20200518.C_bairdi.Trinity.fasta
+## Inititalize arrays
+R1_array=()
+R2_array=()
 
-# Strip leading path and extensions
-no_path=$(echo "${fasta##*/}")
-no_ext=$(echo "${no_path%.*}")
+# Variables for R1/R2 lists
+R1_list=""
+R2_list=""
 
-# Run DIAMOND with blastx
-# Output format 6 produces a standard BLAST tab-delimited file
-${diamond} blastx \
---db ${dmnd} \
---query "${fasta}" \
---out "${no_ext}".blastx.outfmt6 \
---outfmt 6 \
---evalue 1e-4 \
---max-target-seqs 1 \
---block-size 15.0 \
---index-chunks 4
+# Create array of fastq R1 files
+R1_array=("${reads_dir}"/*megan_R1*.fq)
+
+# Create array of fastq R2 files
+R2_array=("${reads_dir}"/*megan_R2*.fq)
+
+# Create list of fastq files used in analysis
+## Uses parameter substitution to strip leading path from filename
+for fastq in "${!R1_array[@]}"
+do
+  {
+    echo "${R1_array[${fastq}]##*/}"
+    echo "${R2_array[${fastq}]##*/}"
+  } >> fastq.list.txt
+done
+
+# Create comma-separated lists of FastQ reads
+R1_list=$(echo "${R1_array[@]}" | tr " " ",")
+R2_list=$(echo "${R2_array[@]}" | tr " " ",")
+
+
+# Run Trinity
+## Not running as "stranded", due to mix of library types
+${trinity_dir}/Trinity \
+--seqType fq \
+--max_memory 500G \
+--CPU ${threads} \
+--left "${R1_list}" \
+--right "${R2_list}"
+
+# Rename generic assembly FastA
+mv trinity_out_dir/Trinity.fasta trinity_out_dir/"${fasta_name}"
+
+# Assembly stats
+${trinity_dir}/util/TrinityStats.pl trinity_out_dir/"${fasta_name}" \
+> ${assembly_stats}
+
+# Create gene map files
+${trinity_dir}/util/support_scripts/get_Trinity_gene_to_trans_map.pl \
+trinity_out_dir/"${fasta_name}" \
+> trinity_out_dir/"${fasta_name}".gene_trans_map
+
+# Create sequence lengths file (used for differential gene expression)
+${trinity_dir}/util/misc/fasta_seq_length.pl \
+trinity_out_dir/"${fasta_name}" \
+> trinity_out_dir/"${fasta_name}".seq_lens
+
+# Create FastA index
+${samtools} faidx \
+trinity_out_dir/"${fasta_name}"
+
+# Copy files to transcriptome directory
+rsync -av \
+trinity_out_dir/"${fasta_name}"* \
+${transcriptome_dir}
+
+# Generate FastA MD5 checksum
+# See last line of SLURM output file
+cd trinity_out_dir
+md5sum trinity_out_dir/"${fasta_name}"
 ```
-
----
-
-#### RESULTS
-
-As usual, runtime was ridiculously fast: 23 seconds
-
-![diamond blastx runtime](https://github.com/RobertsLab/sams-notebook/blob/master/images/screencaps/20200519_cbai_diamond_blastx_transcriptome_v3.0_runtime.png?raw=true)
-
-Output folder:
-
-- [20200519_cbai_diamond_blastx_transcriptome_v3.0/](https://gannet.fish.washington.edu/Atumefaciens/20200519_cbai_diamond_blastx_transcriptome_v3.0/)
-
-BLASTx output (outfmt6; text; 5.7MB):
-
-- [20200519_cbai_diamond_blastx_transcriptome_v3.0/20200518.C_bairdi.Trinity.blastx.outfmt6](https://gannet.fish.washington.edu/Atumefaciens/20200519_cbai_diamond_blastx_transcriptome_v3.0/20200518.C_bairdi.Trinity.blastx.outfmt6)
