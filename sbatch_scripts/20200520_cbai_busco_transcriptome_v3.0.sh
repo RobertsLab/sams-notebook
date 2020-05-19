@@ -15,7 +15,7 @@
 #SBATCH --mail-type=ALL
 #SBATCH --mail-user=${USER}@uw.edu
 ## Specify the working directory for this job
-#SBATCH --chdir=/gscratch/scrubbed/samwhite/outputs/20200520_cbai_busco_transcriptome_v3.0
+#SBATCH --chdir=/gscratch/scrubbed/samwhite/outputs/20200519_cbai_busco_transcriptome_v3.0
 
 ### C.bairdi transcriptome assembly completeness assessment using BUSCO.
 ### This is checking cbai_transcriptome_v3.0.fasta (orginal name, used below, is 20200518.C_bairdi.Trinity.fasta)
