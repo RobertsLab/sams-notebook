@@ -144,6 +144,62 @@ md5sum trinity_out_dir/"${fasta_name}"
 
 #### RESULTS
 
+Pretty quick; only ~18hrs:
+
+![Trinity pooled RNAseq runtime](https://github.com/RobertsLab/sams-notebook/blob/master/images/screencaps/20200518_cbai_trinity_pooled_RNAseq_runtime.png?raw=true)
+
 Output folder:
 
+- [20200518_cbai_trinity_pooled_RNAseq](https://gannet.fish.washington.edu/Atumefaciens/20200518_cbai_trinity_pooled_RNAseq/)
+
+
+
+
+
+
+
+
+
+
+
+Assembly stats (text):
+
 - []()
+
+```
+################################
+## Counts of transcripts, etc.
+################################
+Total trinity 'genes':	127738
+Total trinity transcripts:	344944
+Percent GC: 46.21
+
+########################################
+Stats based on ALL transcript contigs:
+########################################
+
+	Contig N10: 4597
+	Contig N20: 3479
+	Contig N30: 2835
+	Contig N40: 2375
+	Contig N50: 1985
+
+	Median contig length: 650
+	Average contig: 1132.95
+	Total assembled bases: 390805991
+
+
+#####################################################
+## Stats based on ONLY LONGEST ISOFORM per 'GENE':
+#####################################################
+
+	Contig N10: 4680
+	Contig N20: 3487
+	Contig N30: 2791
+	Contig N40: 2266
+	Contig N50: 1791
+
+	Median contig length: 381
+	Average contig: 845.46
+	Total assembled bases: 107996989
+  ```
