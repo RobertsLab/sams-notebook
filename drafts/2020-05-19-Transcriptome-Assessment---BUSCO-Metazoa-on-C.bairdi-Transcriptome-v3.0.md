@@ -147,6 +147,8 @@ ${busco} \
 
 #### RESULTS
 
+Run time was quick, ~9mins (no screencap due to use of `${USER}` in email of SBATCH script. Whoops.)
+
 Output folder:
 
 - [20200519_cbai_busco_transcriptome_v3.0/](https://gannet.fish.washington.edu/Atumefaciens/20200519_cbai_busco_transcriptome_v3.0/)
