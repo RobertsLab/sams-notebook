@@ -144,3 +144,62 @@ ${transcriptome_dir}
 cd trinity_out_dir
 md5sum trinity_out_dir/"${fasta_name}"
 ```
+
+---
+
+#### RESULTS
+
+Pretty quick; only ~3.5hrs (NOTE: Job indicates it failed. This is due to wrong path for `md5sum` command on last line of script. Trinity _de novo_ assembly completed without issue.):
+
+![Trinity all Arthropoda-specific RNAseq runtime](https://github.com/RobertsLab/sams-notebook/blob/master/images/screencaps/20200518_cbai_trinity_all_Arthropoda_RNAseq_runtime.png?raw=true)
+
+NOTE: The resulting FastA will be referred to as `cbai_transcriptome_v1.6.fasta` in future references.
+
+Output folder:
+
+- [20200518_cbai_trinity_all_Arthropoda_RNAseq/](https://gannet.fish.washington.edu/Atumefaciens/20200518_cbai_trinity_all_Arthropoda_RNAseq/)
+
+
+
+
+Asembly stats (text):
+
+- [20200518_cbai_trinity_all_Arthropoda_RNAseq/assembly_stats.txt](https://gannet.fish.washington.edu/Atumefaciens/20200518_cbai_trinity_all_Arthropoda_RNAseq/assembly_stats.txt)
+
+```
+################################
+## Counts of transcripts, etc.
+################################
+Total trinity 'genes':	23690
+Total trinity transcripts:	39946
+Percent GC: 53.27
+
+########################################
+Stats based on ALL transcript contigs:
+########################################
+
+	Contig N10: 3686
+	Contig N20: 2593
+	Contig N30: 2032
+	Contig N40: 1680
+	Contig N50: 1385
+
+	Median contig length: 528
+	Average contig: 869.18
+	Total assembled bases: 34720115
+
+
+#####################################################
+## Stats based on ONLY LONGEST ISOFORM per 'GENE':
+#####################################################
+
+	Contig N10: 3334
+	Contig N20: 2441
+	Contig N30: 1940
+	Contig N40: 1596
+	Contig N50: 1296
+
+	Median contig length: 429
+	Average contig: 779.00
+	Total assembled bases: 18454479
+  ```
