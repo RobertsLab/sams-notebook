@@ -162,9 +162,11 @@ Input FastQ list (text):
 
 - [fastq.list.txt](https://gannet.fish.washington.edu/Atumefaciens/20200518_cbai_trinity_all_Arthropoda_RNAseq/fastq.list.txt)
 
-FastA (412MB):
+FastA (36MB):
 
 - [cbai_transcriptome_v1.6.fasta](https://gannet.fish.washington.edu/Atumefaciens/20200518_cbai_trinity_all_Arthropoda_RNAseq/trinity_out_dir/cbai_transcriptome_v1.6.fasta)
+
+  - MD5 = `6d419f521de6a8d25d4f96eae9a23c06`
 
 FastA Index (text):
 
