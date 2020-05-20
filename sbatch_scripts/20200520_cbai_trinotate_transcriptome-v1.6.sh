@@ -1,14 +1,14 @@
 #!/bin/bash
 ## Job Name
-#SBATCH --job-name=trinotate_cbai
+#SBATCH --job-name=trinotate_cbai_v1.6
 ## Allocation Definition
-#SBATCH --account=srlab
-#SBATCH --partition=srlab
+#SBATCH --account=coenv
+#SBATCH --partition=coenv
 ## Resources
 ## Nodes
 #SBATCH --nodes=1
 ## Walltime (days-hours:minutes:seconds format)
-#SBATCH --time=05-00:00:00
+#SBATCH --time=10-00:00:00
 ## Memory per node
 #SBATCH --mem=120G
 ##turn on e-mail notification
