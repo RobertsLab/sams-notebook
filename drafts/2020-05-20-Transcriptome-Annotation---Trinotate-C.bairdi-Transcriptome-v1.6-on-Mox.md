@@ -203,6 +203,10 @@ report \
 
 #### RESULTS
 
+Pretty quick, just under 45 mins:
+
+![cbai v1.6 trinotate runtime](https://github.com/RobertsLab/sams-notebook/blob/master/images/screencaps/20200520_cbai_trinotate_transcriptome-v1.6_runtime.png?raw=true)
+
 Output folder:
 
 - [20200520_cbai_trinotate_transcriptome-v1.6/](https://gannet.fish.washington.edu/Atumefaciens/20200520_cbai_trinotate_transcriptome-v1.6/)
