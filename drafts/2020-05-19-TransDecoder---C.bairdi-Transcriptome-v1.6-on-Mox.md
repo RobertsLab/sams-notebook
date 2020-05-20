@@ -134,6 +134,28 @@ mkdir "${pfam_out_dir}"
 
 #### RESULTS
 
+Took about 8hrs:
+
+![cbai v1.6 transdecoder runtime](https://github.com/RobertsLab/sams-notebook/blob/master/images/screencaps/20200519_cbai_transdecoder_transcriptome-v1.6_runtime.png?raw=true)
+
 Output folder:
 
-- []()
+- [20200519_cbai_transdecoder_transcriptome-v1.6/](https://gannet.fish.washington.edu/Atumefaciens/20200519_cbai_transdecoder_transcriptome-v1.6/)
+
+Coding Sequences (FastA):
+
+- [cbai_transcriptome_v1.6.fasta.transdecoder.cds](https://gannet.fish.washington.edu/Atumefaciens/20200519_cbai_transdecoder_transcriptome-v1.6/cbai_transcriptome_v1.6.fasta.transdecoder.cds)
+
+Peptide Sequences (FastA):
+
+- [cbai_transcriptome_v1.6.fasta.transdecoder.pep](https://gannet.fish.washington.edu/Atumefaciens/20200519_cbai_transdecoder_transcriptome-v1.6/cbai_transcriptome_v1.6.fasta.transdecoder.pep)
+
+BLASTp output (tab):
+
+- [20200519_cbai_transdecoder_transcriptome-v1.6/blastp_out/20200519.cbai.blastp.outfmt6](https://gannet.fish.washington.edu/Atumefaciens/20200519_cbai_transdecoder_transcriptome-v1.6/blastp_out/20200519.cbai.blastp.outfmt6)
+
+Pfam output:
+
+- [20200519_cbai_transdecoder_transcriptome-v1.6/pfam_out/20200519.cbai.pfam.domtblout](https://gannet.fish.washington.edu/Atumefaciens/20200519_cbai_transdecoder_transcriptome-v1.6/pfam_out/20200519.cbai.pfam.domtblout)
+
+Will get ready to run Trinotate with these output files.
