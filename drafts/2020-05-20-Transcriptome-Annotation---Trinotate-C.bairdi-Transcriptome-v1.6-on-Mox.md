@@ -12,7 +12,7 @@ tags:
 categories:
   - Miscellaneous
 ---
-After creating a [_de novo_ assembly of _C.bairdi_ transcriptome v1.6 on 20200330](https://robertslab.github.io/sams-notebook/2020/05/18/Transcriptome-Assembly-C.bairdi-All-Arthropoda-specific-RNAseq-Data-with-Trinity-on-Mox.html), performing [BLASTx annotation on 202000519](https://robertslab.github.io/sams-notebook/2020/05/19/Transcriptome-Annotation-C.bairdi-Transcriptome-v1.6-Using-DIAMOND-BLASTx-on-Mox.html), and [TransDecoder for ORF identification on 20200519](https://robertslab.github.io/sams-notebook/2020/05/19/TransDecoder-C.bairdi-Transcriptome-v1.6-on-Mox.html), I continued the annotation process by running [Trinotate](https://github.com/Trinotate/Trinotate.github.io/wiki).
+After creating a [_de novo_ assembly of _C.bairdi_ transcriptome v1.6 on 20200518](https://robertslab.github.io/sams-notebook/2020/05/18/Transcriptome-Assembly-C.bairdi-All-Arthropoda-specific-RNAseq-Data-with-Trinity-on-Mox.html), performing [BLASTx annotation on 202000519](https://robertslab.github.io/sams-notebook/2020/05/19/Transcriptome-Annotation-C.bairdi-Transcriptome-v1.6-Using-DIAMOND-BLASTx-on-Mox.html), and [TransDecoder for ORF identification on 20200519](https://robertslab.github.io/sams-notebook/2020/05/19/TransDecoder-C.bairdi-Transcriptome-v1.6-on-Mox.html), I continued the annotation process by running [Trinotate](https://github.com/Trinotate/Trinotate.github.io/wiki).
 
 Trinotate will perform functional annotation of the transcriptome assembly, including GO terms and an annotation feature map that can be used in subsequent Trinity-based differential gene expression analysis so that functional annotations are carried downstream through that process.
 
@@ -205,4 +205,22 @@ report \
 
 Output folder:
 
-- []()
+- [20200520_cbai_trinotate_transcriptome-v1.6/](https://gannet.fish.washington.edu/Atumefaciens/20200520_cbai_trinotate_transcriptome-v1.6/)
+
+Annotation feature map. [This can be used to update Trinity-based gene expression matrices like so](https://github.com/trinityrnaseq/trinityrnaseq/wiki/Functional-Annotation-of-Transcripts):
+
+- ```${TRINITY_HOME}/Analysis/DifferentialExpression/rename_matrix_feature_identifiers.pl Trinity_trans.counts.matrix annot_feature_map.txt > Trinity_trans.counts.wAnnot.matrix```
+
+- [20200520.cbai_transcriptome_v1.6.fasta.trinotate.annotation_feature_map.txt](https://gannet.fish.washington.edu/Atumefaciens/20200520_cbai_trinotate_transcriptome-v1.6/20200520.cbai_transcriptome_v1.6.fasta.trinotate.annotation_feature_map.txt)
+
+Annotation report (CSV)
+
+- [20200126.cbai.trinotate_annotation_report.txt](https://gannet.fish.washington.edu/Atumefaciens/20200520_cbai_trinotate_transcriptome-v1.6/20200126.cbai.trinotate_annotation_report.txt)
+
+Gene ontology (GO) annotations (TXT)
+
+- [20200520.cbai_transcriptome_v1.6.fasta.trinotate.go_annotations.txt](https://gannet.fish.washington.edu/Atumefaciens/20200520_cbai_trinotate_transcriptome-v1.6/20200520.cbai_transcriptome_v1.6.fasta.trinotate.go_annotations.txt)
+
+SQlite database:
+
+- [Trinotate.sqlite](https://gannet.fish.washington.edu/Atumefaciens/20200520_cbai_trinotate_transcriptome-v1.6/Trinotate.sqlite)
