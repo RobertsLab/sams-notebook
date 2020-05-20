@@ -4,7 +4,7 @@ title: Transcriptome Annotation - Trinotate C.bairdi MEGAN6 Taxonomic-specific T
 date: '2020-04-09 09:17'
 tags:
   - Trinotate
-  - annoation
+  - annotation
   - transcriptome
   - Tanner crab
   - mox
