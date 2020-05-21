@@ -81,6 +81,6 @@ do
   --split-files \
   --threads 27 \
   --mem 100GB \
-  --progress
+  --progres
 done
 ```
