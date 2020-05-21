@@ -77,7 +77,6 @@ Get FastQ files from the SRA file(s). This can be run on a build node, an intera
 for file in *.sra
 do
   /gscratch/srlab/programs/sratoolkit.2.10.6-centos_linux64/bin/fasterq-dump.2.10.6 \
-  --option-file SRR_Acc_List.txt \
   --outdir . \
   --split-files \
   --threads 27 \
