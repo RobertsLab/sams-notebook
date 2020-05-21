@@ -17,7 +17,7 @@ As a side note, I found this helpful page which tracks arthropod genome data pre
 
 - [i5k](https://i5k.github.io/arthropod_genomes_at_ncbi)
 
-Let's get started. I'll start by visiting the SRA BioProject page for a particular SRA.
+Start by visiting the SRA BioProject page for a particular SRA.
 
 
 1. BioProject Page:
@@ -44,3 +44,44 @@ Let's get started. I'll start by visiting the SRA BioProject page for a particul
 ![sra_tools_tutorial_all-runs](https://github.com/RobertsLab/sams-notebook/blob/master/images/screencaps/sra_tools_tutorial_all-runs.png?raw=true)
 
 ---
+
+
+That file will look like this:
+
+```shell
+$ head SRR_Acc_List.txt
+SRR10757136
+SRR10757128
+SRR10757129
+SRR10757130
+SRR10757131
+SRR10757132
+SRR10757133
+SRR10757134
+SRR10757135
+SRR10757137
+```
+
+Use that file to download the actual SRA files.
+
+```shell
+ /gscratch/srlab/programs/sratoolkit.2.10.6-centos_linux64/bin/prefetch.2.10.6 --output-directory . --option-file SRR_Acc_List.txt
+ ```
+ - If running on Mox, you'll need to [use a build node](https://github.com/RobertsLab/hyak_mox/wiki/Node-Types), as the processing will be more than allowed with the default login node _and_ you need internet access (which is not avaiable on an interactive/execute node).
+
+  - If no output directory is specified, the files will end up in: `/gscratch/srlab/data/ncbi/sra/`
+
+Get FastQ files from the SRA file(s). This can be run on a build node, an interactive node, or via an execute node using an SBATCH script. The settings used in the example below will produce a set of paired FastQ files for each SRA file (assuming the SRA consists of paired-end reads).
+
+```shell
+for file in *.sra
+do
+  /gscratch/srlab/programs/sratoolkit.2.10.6-centos_linux64/bin/fasterq-dump.2.10.6 \
+  --option-file SRR_Acc_List.txt \
+  --outdir . \
+  --split-files \
+  --threads 27 \
+  --mem 100GB \
+  --progress
+done
+```
