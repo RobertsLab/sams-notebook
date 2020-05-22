@@ -46,6 +46,7 @@ assembly_stats=assembly_stats.txt
 trinity_dir="/gscratch/srlab/programs/trinityrnaseq-v2.9.0"
 samtools="/gscratch/srlab/programs/samtools-1.10/samtools"
 trinity_bowtie="${trinity_dir}/util/misc/run_bowtie2.pl"
+trinity_strand="${trinity_dir}/util/misc/examine_strand_specificity.pl"
 
 
 ## Inititalize arrays
@@ -93,3 +94,18 @@ ${trinity_dir}/util/TrinityStats.pl trinity_out_dir/Trinity.fasta \
 # Create FastA index
 ${samtools} faidx \
 trinity_out_dir/Trinity.fasta
+
+# Align reads to assembly
+${trinity_bowtie} \
+--target trinity_out_dir/Trinity.fasta \
+--left "${R1_list}" \
+--right --right "${R2_list}" \
+| ${samtools} view \
+--threads ${threads} \
+-Sb - \
+| ${samtools} sort \
+--threads ${threads} \
+- -o bowtie2.coordSorted.bam
+
+# Examine strand specificity
+${trinity_strand} bowtie2.coordSorted.bam
