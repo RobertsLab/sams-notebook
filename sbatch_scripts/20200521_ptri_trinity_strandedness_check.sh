@@ -99,7 +99,7 @@ trinity_out_dir/Trinity.fasta
 ${trinity_bowtie} \
 --target trinity_out_dir/Trinity.fasta \
 --left "${R1_list}" \
---right --right "${R2_list}" \
+--right "${R2_list}" \
 | ${samtools} view \
 --threads ${threads} \
 -Sb - \
