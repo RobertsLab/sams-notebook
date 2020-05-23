@@ -80,7 +80,7 @@ R2_list=$(echo "${R2_array[@]}" | tr " " ",")
 
 # Run Trinity
 # Running as stranded, based off of analysis on 20200521:
-# 
+# https://robertslab.github.io/sams-notebook/2020/05/21/SRA-Library-Assessment-Determine-RNAseq-Library-Strandedness-from-P.trituberculatus-SRA-BioProject-PRJNA597187.html
 ${trinity_dir}/Trinity \
 --seqType fq \
 --max_memory 500G \
