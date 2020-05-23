@@ -133,6 +133,10 @@ mkdir "${pfam_out_dir}"
 
 #### RESULTS
 
+Took about 2.5 days to complete:
+
+![cbai v3.0 TransDecoder runtime](https://github.com/RobertsLab/sams-notebook/blob/master/images/screencaps/20200519_cbai_transdecoder_transcriptome-v3.0_runtime.png?raw=true)
+
 Output folder:
 
 
