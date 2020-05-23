@@ -145,6 +145,24 @@ ${trinity_strand} bowtie2.coordSorted.bam
 
 #### RESULTS
 
+This took a surprisingly long time to run, considering I was only using a single set of paired-end reads; ~15hrs.
+
 Output folder:
 
-- []()
+- [20200521_ptri_trinity_strandedness_check](https://gannet.fish.washington.edu/Atumefaciens/20200521_ptri_trinity_strandedness_check/)
+
+Violin plots (PDF):
+
+- [ss_analysis.dat.vioplot.pdf](https://gannet.fish.washington.edu/Atumefaciens/20200521_ptri_trinity_strandedness_check/ss_analysis.dat.vioplot.pdf)
+
+![ptri strandedness violin plots](https://github.com/RobertsLab/sams-notebook/blob/master/images/screencaps/20200521_ptri_trinity_strandedness_check_violin-plots.png?raw=true)
+
+---
+
+Trinity Example:
+
+![Trinity example of stranded library aligned to non-stranded assembly](https://github.com/RobertsLab/sams-notebook/blob/master/images/screencaps/20200521_ptri_trinity_strandedness_check_trinity_violin-plots.png?raw=true)
+
+---
+
+The shape of my violin plots ("barbell") match the Trinity example of stranded libraries aligned to an assembly created with the non-stranded setting, indicating that the libraries for these RNAseq reads are stranded. I will create a transcriptome assembly from all of the reads using the stranded setting in Trinity.
