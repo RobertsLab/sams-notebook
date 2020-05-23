@@ -78,7 +78,6 @@ R2_list=$(echo "${R2_array[@]}" | tr " " ",")
 
 
 # Run Trinity
-## Not running as "stranded", due to mix of library types
 ${trinity_dir}/Trinity \
 --seqType fq \
 --max_memory 500G \
