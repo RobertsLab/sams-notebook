@@ -135,4 +135,23 @@ mkdir "${pfam_out_dir}"
 
 Output folder:
 
-- []()
+
+- [20200519_cbai_transdecoder_transcriptome-v3.0/](https://gannet.fish.washington.edu/Atumefaciens/20200519_cbai_transdecoder_transcriptome-v3.0/)
+
+Coding Sequences (FastA):
+
+- [cbai_transcriptome_v3.0.fasta.transdecoder.cds](https://gannet.fish.washington.edu/Atumefaciens/20200519_cbai_transdecoder_transcriptome-v3.0/cbai_transcriptome_v3.0.fasta.transdecoder.cds)
+
+Peptide Sequences (FastA):
+
+- [cbai_transcriptome_v3.0.fasta.transdecoder.pep](https://gannet.fish.washington.edu/Atumefaciens/20200519_cbai_transdecoder_transcriptome-v3.0/cbai_transcriptome_v3.0.fasta.transdecoder.pep)
+
+BLASTp output (tab):
+
+- [20200519_cbai_transdecoder_transcriptome-v3.0/blastp_out/20200519.cbai.blastp.outfmt6](https://gannet.fish.washington.edu/Atumefaciens/20200519_cbai_transdecoder_transcriptome-v3.0/blastp_out/20200519.cbai.blastp.outfmt6)
+
+Pfam output:
+
+- [20200519_cbai_transdecoder_transcriptome-v3.0/pfam_out/20200519.cbai.pfam.domtblout](https://gannet.fish.washington.edu/Atumefaciens/20200519_cbai_transdecoder_transcriptome-v3.0/pfam_out/20200519.cbai.pfam.domtblout)
+
+Will get ready to run Trinotate with these output files.
