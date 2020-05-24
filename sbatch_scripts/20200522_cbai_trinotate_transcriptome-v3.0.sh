@@ -49,7 +49,7 @@ tmhmm_out_dir="${wd}/tmhmm_out"
 
 # Input files
 ## BLASTx
-blastx_out="/gscratch/scrubbed/samwhite/outputs/20200519_cbai_diamond_blastx_transcriptome_v3.0/cbai_transcriptome_v3.0.blastx.outfmt6"
+blastx_out="/gscratch/scrubbed/samwhite/outputs/20200519_cbai_diamond_blastx_transcriptome_v3.0/20200518.C_bairdi.Trinity.blastx.outfmt6"
 
 ## TransDecoder
 blastp_out="/gscratch/scrubbed/samwhite/outputs/20200519_cbai_transdecoder_transcriptome-v3.0/blastp_out/20200519.cbai.blastp.outfmt6"
