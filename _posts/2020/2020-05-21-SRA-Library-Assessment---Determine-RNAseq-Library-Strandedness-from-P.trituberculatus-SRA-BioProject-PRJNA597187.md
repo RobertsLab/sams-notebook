@@ -145,7 +145,9 @@ ${trinity_strand} bowtie2.coordSorted.bam
 
 #### RESULTS
 
-This took a surprisingly long time to run, considering I was only using a single set of paired-end reads; ~15hrs.
+This took a surprisingly long time to run, considering I was only using a single set of paired-end reads; ~15hrs (note: failure shown below was due to a missin R package (`vioplot`) needed for plotting)
+
+![strandedness runtime](https://github.com/RobertsLab/sams-notebook/blob/master/images/screencaps/20200521_ptri_trinity_strandedness_check_runtime.png?raw=true)
 
 Output folder:
 
