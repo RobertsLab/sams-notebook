@@ -8,14 +8,14 @@
 ## Nodes
 #SBATCH --nodes=1
 ## Walltime (days-hours:minutes:seconds format)
-#SBATCH --time=14-00:00:00
+#SBATCH --time=13-00:00:00
 ## Memory per node
 #SBATCH --mem=500G
 ##turn on e-mail notification
 #SBATCH --mail-type=ALL
 #SBATCH --mail-user=samwhite@uw.edu
 ## Specify the working directory for this job
-#SBATCH --chdir=/gscratch/scrubbed/samwhite/outputs/20200522_cbai_trinotate_transcriptome-v3.0
+#SBATCH --chdir=/gscratch/scrubbed/samwhite/outputs/20200526_cbai_trinotate_transcriptome-v3.0
 
 # Exit script if any command fails
 set -e
