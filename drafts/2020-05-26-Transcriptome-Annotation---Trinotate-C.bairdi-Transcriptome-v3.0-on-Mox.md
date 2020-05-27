@@ -12,6 +12,12 @@ tags:
 categories:
   - Miscellaneous
 ---
+After performing [_de novo_ assembly on _all_ of our Tanner crab RNAseq data (no taxonomic filter applied, either) on 20200518](https://robertslab.github.io/sams-notebook/2020/05/18/Transcriptome-Assembly-C.bairdi-All-Pooled-RNAseq-Data-Without-Taxonomic-Filters-with-Trinity-on-Mox.html), I continued the annotation process by running [Trinotate](https://github.com/Trinotate/Trinotate.github.io/wiki).
+
+
+Trinotate will perform functional annotation of the transcriptome assembly, including GO terms and an annotation feature map that can be used in subsequent Trinity-based differential gene expression analysis so that functional annotations are carried downstream through that process.
+
+
 
 SBATCH script (GitHub):
 
@@ -206,4 +212,4 @@ This was faster than I anticipated and completed in ~7.5hrs:
 
 Output folder:
 
-- []()
+- [20200526_cbai_trinotate_transcriptome-v3.0/](https://gannet.fish.washington.edu/Atumefaciens/20200526_cbai_trinotate_transcriptome-v3.0/)
