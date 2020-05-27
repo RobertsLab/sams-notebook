@@ -151,6 +151,70 @@ md5sum "${fasta_name}" > "${fasta_name}".checksum.md5
 
 #### RESULTS
 
+Took ~2 days to run:
+
+![ptri trinity assembly runtime](https://github.com/RobertsLab/sams-notebook/blob/master/images/screencaps/20200523_ptri_trinity_transcriptome_runtime.png?raw=true)
+
+This assembly did hit a small hiccup during the Butterfly portion where it hung indefinitely. I [posted an issue on the Trinity GitHub Issues](https://github.com/trinityrnaseq/trinityrnaseq/issues/849) and received instructions on how to resolve it. Apparently, it was due to a very high number of low complexity sequences. Check that issue for info on how it was resolved.
+
+Also, while this was running, I ended up tracking down two additional crab transcriptomes on NCBI:
+
+- [_Carcinus maenas_](https://www.ncbi.nlm.nih.gov/Traces/wgs/?val=GBXE01) (European green crab; Thanks to Grace)
+
+- [_Portunus trituberculatus_](https://www.ncbi.nlm.nih.gov/Traces/wgs/?val=GFFJ01)
+
+So, I don't really need the resulting transcriptome assembly... Oh well, here it is anyway!
+
 Output folder:
 
-- []()
+- [20200523_ptri_trinity_transcriptome](https://gannet.fish.washington.edu/Atumefaciens/20200523_ptri_trinity_transcriptome)
+
+FastA:
+
+- [20200523_ptri_trinity_transcriptome/trinity_out_dir/20200526.P_trituberculatus.Trinity.fasta](https://gannet.fish.washington.edu/Atumefaciens/20200523_ptri_trinity_transcriptome/trinity_out_dir/20200526.P_trituberculatus.Trinity.fasta) (386MB)
+
+FastA Index:
+
+- [20200523_ptri_trinity_transcriptome/trinity_out_dir/20200526.P_trituberculatus.Trinity.fasta.fai](https://gannet.fish.washington.edu/Atumefaciens/20200523_ptri_trinity_transcriptome/trinity_out_dir/20200526.P_trituberculatus.Trinity.fasta.fai)
+
+Assembly stats (text):
+
+- [20200523_ptri_trinity_transcriptome/assembly_stats.txt](https://gannet.fish.washington.edu/Atumefaciens/20200523_ptri_trinity_transcriptome/assembly_stats.txt)
+
+```
+################################
+## Counts of transcripts, etc.
+################################
+Total trinity 'genes':	408543
+Total trinity transcripts:	580098
+Percent GC: 44.63
+
+########################################
+Stats based on ALL transcript contigs:
+########################################
+
+	Contig N10: 3865
+	Contig N20: 2697
+	Contig N30: 1980
+	Contig N40: 1442
+	Contig N50: 1012
+
+	Median contig length: 331
+	Average contig: 628.37
+	Total assembled bases: 364514830
+
+
+#####################################################
+## Stats based on ONLY LONGEST ISOFORM per 'GENE':
+#####################################################
+
+	Contig N10: 3226
+	Contig N20: 2047
+	Contig N30: 1310
+	Contig N40: 840
+	Contig N50: 564
+
+	Median contig length: 284
+	Average contig: 483.10
+	Total assembled bases: 197366539
+  ```
