@@ -1,6 +1,6 @@
 #!/bin/bash
 ## Job Name
-#SBATCH --job-name=trinity_cbai
+#SBATCH --job-name=trinity_cbai_v1.7
 ## Allocation Definition
 #SBATCH --account=srlab
 #SBATCH --partition=srlab
