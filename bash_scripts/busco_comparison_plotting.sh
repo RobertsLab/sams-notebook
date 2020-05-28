@@ -2,7 +2,7 @@
 
 ## Script to run the BUSCO short summary comparison script on Mox
 ## Will generate R code and resulting bar plot of all
-## summary files in the working directory
+## summary files in the same directory as this script.
 
 ### NOTE: A lot of this code is not needed (e.g. Augustus settings),
 ### but was faster/easier to copy/paste and add what I needed
