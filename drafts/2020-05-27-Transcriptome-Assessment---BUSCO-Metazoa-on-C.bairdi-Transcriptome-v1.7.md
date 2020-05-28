@@ -146,4 +146,28 @@ ${busco} \
 
 Output folder:
 
-- []()
+- [20200527_cbai_busco_transcriptome_v1.7](https://gannet.fish.washington.edu/Atumefaciens/20200527_cbai_busco_transcriptome_v1.7/)
+
+
+Short summary (text):
+
+- [20200527_cbai_busco_transcriptome_v1.7/run_cbai_transcriptome_v1.7.fasta/short_summary_cbai_transcriptome_v1.7.fasta.txt](https://gannet.fish.washington.edu/Atumefaciens/20200527_cbai_busco_transcriptome_v1.7/run_cbai_transcriptome_v1.7.fasta/short_summary_cbai_transcriptome_v1.7.fasta.txt)
+
+
+```
+# BUSCO version is: 3.0.2
+# The lineage dataset is: metazoa_odb9 (Creation date: 2016-02-13, number of species: 65, number of BUSCOs: 978)
+# To reproduce this run: python /gscratch/srlab/programs/busco-v3/scripts/run_BUSCO.py -i /gscratch/srlab/sam/data/C_bairdi/transcriptomes/cbai_transcriptome_v1.7.fasta -o cbai_transcriptome_v1.7.fasta -l /gscratch/srlab/sam/data/databases/BUSCO/metazoa_odb9/ -m transcriptome -c 28 --long -z
+#
+# Summarized benchmarking in BUSCO notation for file /gscratch/srlab/sam/data/C_bairdi/transcriptomes/cbai_transcriptome_v1.7.fasta
+# BUSCO was run in mode: transcriptome
+
+	C:81.9%[S:66.9%,D:15.0%],F:11.1%,M:7.0%,n:978
+
+	801	Complete BUSCOs (C)
+	654	Complete and single-copy BUSCOs (S)
+	147	Complete and duplicated BUSCOs (D)
+	109	Fragmented BUSCOs (F)
+	68	Missing BUSCOs (M)
+	978	Total BUSCO groups searched
+  ```
