@@ -59,14 +59,14 @@ R1_list=""
 R2_list=""
 
 # Create array of fastq R1 files
-R1_array=("${reads_dir}"/*3[80][804]*R1.fq)
+R1_array=("${reads_dir}"/*3[280][9804]*R1.fq)
 
 # Create array of fastq R2 files
-R2_array=("${reads_dir}"/*3[80][804]*R2.fq)
+R2_array=("${reads_dir}"/*3[280][9804]*R2.fq)
 
 # Create list of fastq files used in analysis
 ## Uses parameter substitution to strip leading path from filename
-for fastq in "${reads_dir}"/*3[80][804]*.fq
+for fastq in "${reads_dir}"/*3[280][9804]*.fq
 do
   echo "${fastq##*/}" >> fastq.list.txt
 done
