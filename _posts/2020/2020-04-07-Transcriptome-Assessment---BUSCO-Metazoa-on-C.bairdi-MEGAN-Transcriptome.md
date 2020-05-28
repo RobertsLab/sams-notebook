@@ -155,7 +155,7 @@ Output folder:
 
 BUSCO short summary (text):
 
-- [20200407_cbai_busco_megan/run_20200407.cbai.megan/short_summary_20200407.cbai.megan.txt](https://gannet.fish.washington.edu/Atumefaciens/20200407_cbai_busco_megan/run_20200407.cbai.megan/short_summary_20200407.cbai.megan.txt)
+- [20200407_cbai_busco_megan/run_20200408.cbai.megan/short_summary_20200408.cbai.megan.txt](https://gannet.fish.washington.edu/Atumefaciens/20200407_cbai_busco_megan/run_20200408.cbai.megan/short_summary_20200408.cbai.megan.txt)
 
 ```
 # BUSCO version is: 3.0.2
