@@ -166,12 +166,12 @@ Short summary (text):
 # Summarized benchmarking in BUSCO notation for file /gscratch/srlab/sam/data/C_bairdi/transcriptomes/cbai_transcriptome_v1.7.fasta
 # BUSCO was run in mode: transcriptome
 
-	C:81.9%[S:66.9%,D:15.0%],F:11.1%,M:7.0%,n:978
+	C:86.2%[S:67.2%,D:19.0%],F:8.7%,M:5.1%,n:978
 
-	801	Complete BUSCOs (C)
-	654	Complete and single-copy BUSCOs (S)
-	147	Complete and duplicated BUSCOs (D)
-	109	Fragmented BUSCOs (F)
-	68	Missing BUSCOs (M)
+	843	Complete BUSCOs (C)
+	657	Complete and single-copy BUSCOs (S)
+	186	Complete and duplicated BUSCOs (D)
+	85	Fragmented BUSCOs (F)
+	50	Missing BUSCOs (M)
 	978	Total BUSCO groups searched
   ```
