@@ -1,6 +1,6 @@
 #!/bin/bash
 
-## Script to run the BUSCO short summary comparison script
+## Script to run the BUSCO short summary comparison script on Mox
 ## Will generate R code and resulting bar plot of all
 ## summary files in the working directory
 
