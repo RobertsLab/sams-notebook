@@ -103,4 +103,8 @@ As usual, ridiculously fast - 13 seconds!
 
 Output folder:
 
-- []()
+- [20200527_cbai_diamond_blastx_transcriptome_v1.7/](https://gannet.fish.washington.edu/Atumefaciens/20200527_cbai_diamond_blastx_transcriptome_v1.7/)
+
+BLASTx output (outfmt6; text; 1.9MB):
+
+- [20200527_cbai_diamond_blastx_transcriptome_v1.7/cbai_transcriptome_v1.6.blastx.outfmt6](https://gannet.fish.washington.edu/Atumefaciens/20200527_cbai_diamond_blastx_transcriptome_v1.7/cbai_transcriptome_v1.7.blastx.outfmt6)
