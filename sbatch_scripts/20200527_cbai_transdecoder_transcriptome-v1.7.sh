@@ -38,13 +38,11 @@ echo "${PATH}" | tr : \\n
 # Set workind directory as current directory
 wd="$(pwd)"
 
-# Capture date as YYYYMMDD
-timestamp=$(date +%Y%m%d)
 
-# Set input file locations and species designation
+# Set input file locations
 trinity_fasta="/gscratch/srlab/sam/data/C_bairdi/transcriptomes/cbai_transcriptome_v1.7.fasta"
 trinity_gene_map="/gscratch/srlab/sam/data/C_bairdi/transcriptomes/cbai_transcriptome_v1.7.fasta.gene_trans_map"
-species="cbai"
+
 
 # Capture trinity file name
 trinity_fasta_name=${trinity_fasta##*/}
@@ -55,8 +53,8 @@ trinity_fasta_name=${trinity_fasta##*/}
 blastp_out_dir="${wd}/blastp_out"
 transdecoder_out_dir="${wd}/${trinity_fasta_name}.transdecoder_dir"
 pfam_out_dir="${wd}/pfam_out"
-blastp_out="${blastp_out_dir}/${timestamp}.${species}.blastp.outfmt6"
-pfam_out="${pfam_out_dir}/${timestamp}.${species}.pfam.domtblout"
+blastp_out="${blastp_out_dir}/${trinity_fasta_name}.blastp.outfmt6"
+pfam_out="${pfam_out_dir}/${timestamp}.pfam.domtblout"
 lORFs_pep="${transdecoder_out_dir}/longest_orfs.pep"
 pfam_db="/gscratch/srlab/programs/Trinotate-v3.1.1/admin/Pfam-A.hmm"
 sp_db="/gscratch/srlab/programs/Trinotate-v3.1.1/admin/uniprot_sprot.pep"
