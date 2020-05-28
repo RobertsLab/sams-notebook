@@ -11,7 +11,7 @@ tags:
 categories:
   - Miscellaneous
 ---
-[I previously created a _C.bairdi_ _de novo_ transcriptome assembly v1.7 with Trinity from all our _C.bairdi_ taxonomically filtered pooled RNAseq samples on 20200527](https://robertslab.github.io/sams-notebook/2020/05/18/Transcriptome-Assembly---C.bairdi-All-Pooled-Arthropoda-only-RNAseq-Data-with-Trinity-on-Mox.html) and decided to assess its "completeness" using BUSCO and the `metazoa_odb9` database.
+[I previously created a _C.bairdi_ _de novo_ transcriptome assembly v1.7 with Trinity from all our _C.bairdi_ taxonomically filtered pooled RNAseq samples on 20200527](https://robertslab.github.io/sams-notebook/2020/05/27/Transcriptome-Assembly---C.bairdi-All-Pooled-Arthropoda-only-RNAseq-Data-with-Trinity-on-Mox.html) and decided to assess its "completeness" using BUSCO and the `metazoa_odb9` database.
 
 BUSCO was run with the `--mode transcriptome` option on Mox.
 
