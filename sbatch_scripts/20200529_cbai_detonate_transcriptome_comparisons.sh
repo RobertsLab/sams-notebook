@@ -60,7 +60,6 @@ set -e
 module load intel-python3_2017
 
 # Document programs in PATH (primarily for program version ID)
-
 {
 date
 echo ""
@@ -69,10 +68,6 @@ echo ""
 printf "%0.s-" {1..10}
 echo "${PATH}" | tr : \\n
 } >> system_path.log
-
-
-wd="$(pwd)"
-threads=28
 
 
 #programs
@@ -94,17 +89,17 @@ do
     comparison2=$(echo "${transcriptome2}.vs.${transcriptome1}")
 
     # Run blat
-    ${blat} -minIdentity=80 ${transcriptome2} ${transcriptome2} ${comparison1}.psl
-    ${blat} -minIdentity=80 ${transcriptome1} ${transcriptome2} ${comparison2}.psl
+    ${blat} -minIdentity=80 "${transcriptome2}" "${transcriptome2}" "${comparison1}".psl
+    ${blat} -minIdentity=80 "${transcriptome1}" "${transcriptome2}" "${comparison2}".psl
 
     # Run ref-eval, unweighted scores only
     ${detonate} \
     --scores=nucl,pair,contg \
     --weighted=no \
-    --A-seqs ${transcriptome1} \
-    --B-seqs ${transcriptome2} \
-    --A-to-B ${comparison2}.psl \
-    --B-to-A ${comparison1}.psl \
+    --A-seqs "${transcriptome1}" \
+    --B-seqs "${transcriptome2}" \
+    --A-to-B "${comparison2}".psl \
+    --B-to-A "${comparison1}".psl \
     | tee "${comparison1}.scores.txt"
   done
 done
