@@ -83,13 +83,13 @@ for (( i=0; i < ${transcriptomes_array_length}; i++ ))
 do
   for (( j=$((i+1)); j < ${transcriptomes_array_length}; j++ ))
   do
-    transcriptome1=$(get_version "${transcriptomes_array[$i]}")
-    transcriptome2=$(get_version "${transcriptomes_array[*]:$j:1}")
-    comparison1=$(echo "${transcriptome1}.vs.${transcriptome2}")
-    comparison2=$(echo "${transcriptome2}.vs.${transcriptome1}")
+    transcriptome1="${transcriptomes_array[$i]}"
+    transcriptome2="${transcriptomes_array[*]:$j:1}"
+    comparison1="${transcriptome1}-vs-${transcriptome2}"
+    comparison2="${transcriptome2}-vs-${transcriptome1}"
 
     # Run blat
-    ${blat} -minIdentity=80 "${transcriptome2}" "${transcriptome2}" "${comparison1}".psl
+    ${blat} -minIdentity=80 "${transcriptome2}" "${transcriptome1}" "${comparison1}".psl
     ${blat} -minIdentity=80 "${transcriptome1}" "${transcriptome2}" "${comparison2}".psl
 
     # Run ref-eval, unweighted scores only
@@ -98,8 +98,8 @@ do
     --weighted=no \
     --A-seqs "${transcriptome1}" \
     --B-seqs "${transcriptome2}" \
-    --A-to-B "${comparison2}".psl \
-    --B-to-A "${comparison1}".psl \
+    --A-to-B "${comparison1}".psl \
+    --B-to-A "${comparison2}".psl \
     | tee "${comparison1}.scores.txt"
   done
 done
