@@ -94,7 +94,7 @@ do
 
     # Run ref-eval, unweighted scores only
     ${detonate} \
-    --scores=nucl,pair,contg \
+    --scores=nucl,pair,contig \
     --weighted=no \
     --A-seqs "${transcriptome1}" \
     --B-seqs "${transcriptome2}" \
