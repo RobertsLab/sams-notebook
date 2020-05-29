@@ -35,19 +35,18 @@ GFFJ01.1.fa \
 GBXE01.1.fa
 )
 
-transcriptomes_array_length=${#transcriptomes_array[@]}
 
 # Function
 # Expects input (i.e. "$1") to be in the following format:
 # e.g. cbai_transcriptome_v3.0.fa
 get_version () {
   prefix=$(echo "$1" | awk -F[_.] '{print $1}')
-  if [[ "${prefix}" == "20200526"]]; then
+  if [[ "${prefix}" == "20200526" ]]; then
     transcriptome=$(echo "$1" | awk -F[_.] '{print $2 "_" $3}')
   elif [[ "${prefix}" == "cbai" ]]; then
     transcriptome=$(echo "$1" |awk -F[_.] '{print $3 "." $4}')
   else
-    transcriptome=$(echo "$1" | awk -F[_.] '{print $1}'
+    transcriptome=$(echo "$1" | awk -F[_.] '{print $1}')
   fi
 }
 
@@ -80,6 +79,10 @@ threads=28
 blat="/gscratch/srlab/programs/blat-v36x5"
 detonate="/gscratch/srlab/programs/detonate-1.11/ref-eval/ref-eval"
 
+
+# Determine length of transcriptomes array
+transcriptomes_array_length=${#transcriptomes_array[@]}
+
 # Loop through each comparison
 for (( i=0; i < ${transcriptomes_array_length}; i++ ))
 do
@@ -91,8 +94,8 @@ do
     comparison2=$(echo "${transcriptome2}.vs.${transcriptome1}")
 
     # Run blat
-    blat -minIdentity=80 ${transcriptome2} ${transcriptome2} ${comparison1}.psl
-    blat -minIdentity=80 ${transcriptome1} ${transcriptome2} ${comparison2}.psl
+    ${blat} -minIdentity=80 ${transcriptome2} ${transcriptome2} ${comparison1}.psl
+    ${blat} -minIdentity=80 ${transcriptome1} ${transcriptome2} ${comparison2}.psl
 
     # Run ref-eval, unweighted scores only
     ${detonate} \
