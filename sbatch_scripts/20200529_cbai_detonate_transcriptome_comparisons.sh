@@ -57,7 +57,7 @@ echo "${PATH}" | tr : \\n
 
 
 #programs
-blat="/gscratch/srlab/programs/blat-v36x5"
+pblat="/gscratch/srlab/programs/pblat-2.1/pblat"
 detonate="/gscratch/srlab/programs/detonate-1.11/ref-eval/ref-eval"
 
 
@@ -68,7 +68,7 @@ transcriptomes_array_length=${#transcriptomes_array[@]}
 for (( i=0; i < transcriptomes_array_length; i++ ))
 do
   transcriptome1="${transcriptomes_array[$i]}"
-  
+
   # Capture FastA checksums for verification
   echo "Generating checksum for ${transcriptome1}"
   md5sum ${transcriptome1} >> fasta.checksums.md5
@@ -82,15 +82,15 @@ do
     comparison2="${transcriptome2}-vs-${transcriptome1}"
 
 
-    # Run blat
-    echo "Starting blat: ${comparison1}"
-    ${blat} -minIdentity=80 "${transcriptome2}" "${transcriptome1}" "${comparison1}".psl
-    echo "Finished blat: ${comparison1}"
+    # Run pblat
+    echo "Starting pblat: ${comparison1}"
+    ${pblat} -minIdentity=80 "${transcriptome2}" "${transcriptome1}" "${comparison1}".psl
+    echo "Finished pblat: ${comparison1}"
     echo ""
 
-    echo "Starting blat: ${comparison2}"
-    ${blat} -minIdentity=80 "${transcriptome1}" "${transcriptome2}" "${comparison2}".psl
-    echo "Finished blat: ${comparison2}"
+    echo "Starting pblat: ${comparison2}"
+    ${pblat} -minIdentity=80 "${transcriptome1}" "${transcriptome2}" "${comparison2}".psl
+    echo "Finished pblat: ${comparison2}"
     echo ""
 
     # Run ref-eval, unweighted scores only
