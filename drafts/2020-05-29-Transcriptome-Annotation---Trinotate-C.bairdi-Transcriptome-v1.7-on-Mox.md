@@ -203,6 +203,28 @@ report \
 
 #### RESULTS
 
+Pretty quick, ~36 mins:
+
+![cbai v1.7 trinotate runtime](https://github.com/RobertsLab/sams-notebook/blob/master/images/screencaps/20200529_cbai_trinotate_transcriptome-v1.7_runtime.png?raw=true)
+
 Output folder:
 
-- []()
+- [20200529_cbai_trinotate_transcriptome-v1.7/](https://gannet.fish.washington.edu/Atumefaciens/20200529_cbai_trinotate_transcriptome-v1.7/)
+
+Annotation feature map. [This can be used to update Trinity-based gene expression matrices like so](https://github.com/trinityrnaseq/trinityrnaseq/wiki/Functional-Annotation-of-Transcripts):
+
+- ```${TRINITY_HOME}/Analysis/DifferentialExpression/rename_matrix_feature_identifiers.pl Trinity_trans.counts.matrix annot_feature_map.txt > Trinity_trans.counts.wAnnot.matrix```
+
+- [20200529.cbai_transcriptome_v1.7.fasta.trinotate.annotation_feature_map.txt](https://gannet.fish.washington.edu/Atumefaciens/20200529_cbai_trinotate_transcriptome-v1.7/20200529.cbai_transcriptome_v1.7.fasta.trinotate.annotation_feature_map.txt)
+
+Annotation report (CSV)
+
+- [20200529.cbai_transcriptome_v1.7.fasta.trinotate_annotation_report.txt](https://gannet.fish.washington.edu/Atumefaciens/20200529_cbai_trinotate_transcriptome-v1.7/20200529.cbai_transcriptome_v1.7.fasta.trinotate_annotation_report.txt)
+
+Gene ontology (GO) annotations (TXT)
+
+- [20200529.cbai_transcriptome_v1.7.fasta.trinotate.go_annotations.txt](https://gannet.fish.washington.edu/Atumefaciens/20200529_cbai_trinotate_transcriptome-v1.7/20200529.cbai_transcriptome_v1.7.fasta.trinotate.go_annotations.txt)
+
+SQlite database:
+
+- [Trinotate.sqlite](https://gannet.fish.washington.edu/Atumefaciens/20200529_cbai_trinotate_transcriptome-v1.7/Trinotate.sqlite)
