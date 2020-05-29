@@ -93,6 +93,8 @@ do
     echo ""
 
     # Run ref-eval, unweighted scores only
+
+    echo "Running DETONATE with ${transcriptome1} and ${transcriptome2}."
     ${detonate} \
     --scores=nucl,pair,contig \
     --weighted=no \
@@ -101,5 +103,7 @@ do
     --A-to-B "${comparison1}".psl \
     --B-to-A "${comparison2}".psl \
     | tee "${comparison1}.scores.txt"
+    echo "Finished DETONATE with ${transcriptome1} and ${transcriptome2}."
+    echo ""
   done
 done
