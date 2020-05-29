@@ -65,9 +65,9 @@ detonate="/gscratch/srlab/programs/detonate-1.11/ref-eval/ref-eval"
 transcriptomes_array_length=${#transcriptomes_array[@]}
 
 # Loop through each comparison
-for (( i=0; i < ${transcriptomes_array_length}; i++ ))
+for (( i=0; i < transcriptomes_array_length; i++ ))
 do
-  for (( j=$((i+1)); j < ${transcriptomes_array_length}; j++ ))
+  for (( j=$((i+1)); j < transcriptomes_array_length; j++ ))
   do
     transcriptome1="${transcriptomes_array[$i]}"
     transcriptome2="${transcriptomes_array[*]:$j:1}"
