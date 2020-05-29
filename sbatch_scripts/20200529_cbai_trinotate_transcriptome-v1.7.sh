@@ -1,6 +1,6 @@
 #!/bin/bash
 ## Job Name
-#SBATCH --job-name=trinotate_cbai_v1.6
+#SBATCH --job-name=trinotate_cbai_v1.7
 ## Allocation Definition
 #SBATCH --account=coenv
 #SBATCH --partition=coenv
