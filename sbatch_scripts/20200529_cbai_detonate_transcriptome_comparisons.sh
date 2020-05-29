@@ -67,18 +67,18 @@ transcriptomes_array_length=${#transcriptomes_array[@]}
 # Loop through each comparison
 for (( i=0; i < transcriptomes_array_length; i++ ))
 do
+  # Capture FastA checksums for verification
+  echo "Generating checksum for ${transcriptome1}"
+  md5sum ${transcriptome1} >> fasta.checksums.md5
+  echo "Finished generating checksum for ${transcriptome1}"
+  echo ""
+  
   for (( j=$((i+1)); j < transcriptomes_array_length; j++ ))
   do
     transcriptome1="${transcriptomes_array[$i]}"
     transcriptome2="${transcriptomes_array[*]:$j:1}"
     comparison1="${transcriptome1}-vs-${transcriptome2}"
     comparison2="${transcriptome2}-vs-${transcriptome1}"
-
-    # Capture FastA checksums for verification
-    echo "Generating checksum for ${transcriptome1}"
-    md5sum ${transcriptome1} >> fasta.checksums.md5
-    echo "Finished generating checksum for ${transcriptome1}"
-    echo ""
 
 
     # Run blat
