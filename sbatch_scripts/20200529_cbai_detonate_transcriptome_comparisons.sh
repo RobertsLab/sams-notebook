@@ -46,7 +46,7 @@ get_version () {
   elif [[ "${prefix}" == "cbai" ]]; then
     transcriptome=$(echo "$1" |awk -F[_.] '{print $3 "." $4}')
   else
-    transcriptome=$(echo "$1" | awk -F[_.] '{print $1}')
+    transcriptome=$(echo "$1" | awk -F[_.] '{print $1 "." $2}')
   fi
 }
 
@@ -83,8 +83,8 @@ for (( i=0; i < ${transcriptomes_array_length}; i++ ))
 do
   for (( j=$((i+1)); j < ${transcriptomes_array_length}; j++ ))
   do
-    transcriptome1="${transcriptomes_array[$i]}"
-    transcriptome2="${transcriptomes_array[*]:$j:1}"
+    transcriptome1=$(get_version "${transcriptomes_array[$i]}")
+    transcriptome2=$(get_version "${transcriptomes_array[*]:$j:1}")
     comparison1=$(echo "${transcriptome1}.vs.${transcriptome2}")
     comparison2=$(echo "${transcriptome2}.vs.${transcriptome1}")
 
