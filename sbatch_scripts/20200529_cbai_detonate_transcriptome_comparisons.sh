@@ -36,20 +36,6 @@ GBXE01.1.fa
 )
 
 
-# Function
-# Expects input (i.e. "$1") to be in the following format:
-# e.g. cbai_transcriptome_v3.0.fa
-get_version () {
-  prefix=$(echo "$1" | awk -F[_.] '{print $1}')
-  if [[ "${prefix}" == "20200526" ]]; then
-    transcriptome=$(echo "$1" | awk -F[_.] '{print $2 "_" $3}')
-  elif [[ "${prefix}" == "cbai" ]]; then
-    transcriptome=$(echo "$1" |awk -F[_.] '{print $3 "." $4}')
-  else
-    transcriptome=$(echo "$1" | awk -F[_.] '{print $1 "." $2}')
-  fi
-}
-
 ###################################################################################
 
 # Exit script if any command fails
