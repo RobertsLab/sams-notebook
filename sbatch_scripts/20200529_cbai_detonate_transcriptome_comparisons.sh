@@ -75,12 +75,22 @@ do
     comparison2="${transcriptome2}-vs-${transcriptome1}"
 
     # Capture FastA checksums for verification
+    echo "Generating checksum for ${transcriptome1}"
     md5sum ${transcriptome1} >> fasta.checksums.md5
+    echo "Finished generating checksum for ${transcriptome1}"
+    echo ""
 
 
     # Run blat
+    echo "Starting blat: ${comparison1}"
     ${blat} -minIdentity=80 "${transcriptome2}" "${transcriptome1}" "${comparison1}".psl
+    echo "Finished blat: ${comparison1}"
+    echo ""
+
+    echo "Starting blat: ${comparison2}"
     ${blat} -minIdentity=80 "${transcriptome1}" "${transcriptome2}" "${comparison2}".psl
+    echo "Finished blat: ${comparison2}"
+    echo ""
 
     # Run ref-eval, unweighted scores only
     ${detonate} \
