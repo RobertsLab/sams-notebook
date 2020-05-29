@@ -74,6 +74,10 @@ do
     comparison1="${transcriptome1}-vs-${transcriptome2}"
     comparison2="${transcriptome2}-vs-${transcriptome1}"
 
+    # Capture FastA checksums for verification
+    md5sum ${transcriptome1} >> fasta.checksums.md5
+
+
     # Run blat
     ${blat} -minIdentity=80 "${transcriptome2}" "${transcriptome1}" "${comparison1}".psl
     ${blat} -minIdentity=80 "${transcriptome1}" "${transcriptome2}" "${comparison2}".psl
