@@ -56,6 +56,8 @@ echo "${PATH}" | tr : \\n
 } >> system_path.log
 
 
+threads=28
+
 #programs
 pblat="/gscratch/srlab/programs/pblat-2.1/pblat"
 detonate="/gscratch/srlab/programs/detonate-1.11/ref-eval/ref-eval"
@@ -84,12 +86,12 @@ do
 
     # Run pblat
     echo "Starting pblat: ${comparison1}"
-    ${pblat} -minIdentity=80 "${transcriptome2}" "${transcriptome1}" "${comparison1}".psl
+    ${pblat} -minIdentity=80 -threads=${threads} "${transcriptome2}" "${transcriptome1}" "${comparison1}".psl
     echo "Finished pblat: ${comparison1}"
     echo ""
 
     echo "Starting pblat: ${comparison2}"
-    ${pblat} -minIdentity=80 "${transcriptome1}" "${transcriptome2}" "${comparison2}".psl
+    ${pblat} -minIdentity=80 -threads=${threads} "${transcriptome1}" "${transcriptome2}" "${comparison2}".psl
     echo "Finished pblat: ${comparison2}"
     echo ""
 
