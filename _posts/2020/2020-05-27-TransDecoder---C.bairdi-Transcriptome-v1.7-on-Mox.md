@@ -134,7 +134,7 @@ mkdir "${pfam_out_dir}"
 
 #### RESULTS
 
-Took about 4hrs:
+Took about 5hrs:
 
 ![cbai v1.7 transdecoder runtime](https://github.com/RobertsLab/sams-notebook/blob/master/images/screencaps/20200527_cbai_transdecoder_transcriptome-v1.7_runtime.png?raw=true)
 
