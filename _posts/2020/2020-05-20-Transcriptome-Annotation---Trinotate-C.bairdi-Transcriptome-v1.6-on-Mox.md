@@ -219,7 +219,7 @@ Annotation feature map. [This can be used to update Trinity-based gene expressio
 
 Annotation report (CSV)
 
-- [20200126.cbai.trinotate_annotation_report.txt](https://gannet.fish.washington.edu/Atumefaciens/20200520_cbai_trinotate_transcriptome-v1.6/20200126.cbai.trinotate_annotation_report.txt)
+- [20200520.cbai_transcriptome_v1.6.fasta.trinotate_annotation_report.txt](https://gannet.fish.washington.edu/Atumefaciens/20200520_cbai_trinotate_transcriptome-v1.6/20200520.cbai_transcriptome_v1.6.fasta.trinotate_annotation_report.txt)
 
 Gene ontology (GO) annotations (TXT)
 
