@@ -2,8 +2,8 @@
 ## Job Name
 #SBATCH --job-name=cbai_detonate_transcriptome_comparisons
 ## Allocation Definition
-#SBATCH --account=coenv
-#SBATCH --partition=coenv
+#SBATCH --account=srlab
+#SBATCH --partition=srlab
 ## Resources
 ## Nodes
 #SBATCH --nodes=1
