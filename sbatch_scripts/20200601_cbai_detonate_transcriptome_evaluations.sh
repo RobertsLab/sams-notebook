@@ -30,12 +30,12 @@ threads=28
 # Array of the various comparisons to evaluate
 # Each condition in each comparison should be separated by a "-"
 transcriptomes_array=(
-${reads_dir}/cbai_transcriptome_v1.0.fa \
-${reads_dir}/cbai_transcriptome_v1.5.fa \
-${reads_dir}/cbai_transcriptome_v1.6.fa \
-${reads_dir}/cbai_transcriptome_v1.7.fa \
-${reads_dir}/cbai_transcriptome_v2.0.fa \
-${reads_dir}/cbai_transcriptome_v3.0.fa
+"${reads_dir}"/cbai_transcriptome_v1.0.fa \
+"${reads_dir}"/cbai_transcriptome_v1.5.fa \
+"${reads_dir}"/cbai_transcriptome_v1.6.fa \
+"${reads_dir}"/cbai_transcriptome_v1.7.fa \
+"${reads_dir}"/cbai_transcriptome_v2.0.fa \
+"${reads_dir}"/cbai_transcriptome_v3.0.fa
 )
 
 
@@ -110,65 +110,65 @@ do
 
   if [[ "${transcriptome_name}" == "cbai_transcriptome_v1.0.fa" ]]; then
 
-    reads_array=(${reads_dir}/20200[15][13][138]*megan*.fq)
+    reads_array=("${reads_dir}"/20200[15][13][138]*megan*.fq)
 
     # Create array of fastq R1 files
-    R1_array=(${reads_dir}/20200[15][13][138]*megan*R1.fq)
+    R1_array=("${reads_dir}"/20200[15][13][138]*megan*R1.fq)
 
     # Create array of fastq R2 files
-    R2_array=(${reads_dir}/20200[15][13][138]*megan*R2.fq)
+    R2_array=("${reads_dir}"/20200[15][13][138]*megan*R2.fq)
 
 
 
   elif [[ "${transcriptome_name}" == "cbai_transcriptome_v1.5.fa" ]]; then
 
-    reads_array=(${reads_dir}/20200[145][13][138]*megan*.fq)
+    reads_array=("${reads_dir}"/20200[145][13][138]*megan*.fq)
 
     # Create array of fastq R1 files
-    R1_array=(${reads_dir}/20200[145][13][138]*megan*R1.fq)
+    R1_array=("${reads_dir}"/20200[145][13][138]*megan*R1.fq)
 
     # Create array of fastq R2 files
-    R2_array=(${reads_dir}/20200[145][13][138]*megan*R2.fq)
+    R2_array=("${reads_dir}"/20200[145][13][138]*megan*R2.fq)
 
   elif [[ "${transcriptome_name}" == "cbai_transcriptome_v1.6.fa" ]]; then
 
-    reads_array=(${reads_dir}/*megan*.fq)
+    reads_array=("${reads_dir}"/*megan*.fq)
 
     # Create array of fastq R1 files
-    R1_array=(${reads_dir}/*megan*R1.fq)
+    R1_array=("${reads_dir}"/*megan*R1.fq)
 
     # Create array of fastq R2 files
-    R2_array=(${reads_dir}/*megan*R2.fq)
+    R2_array=("${reads_dir}"/*megan*R2.fq)
 
   elif [[ "${transcriptome_name}" == "cbai_transcriptome_v1.7.fa" ]]; then
 
-    reads_array=(${reads_dir}/20200[145][13][189]*megan*.fq)
+    reads_array=("${reads_dir}"/20200[145][13][189]*megan*.fq)
 
     # Create array of fastq R1 files
-    R1_array=(${reads_dir}/20200[145][13][189]*megan*R1.fq)
+    R1_array=("${reads_dir}"/20200[145][13][189]*megan*R1.fq)
 
     # Create array of fastq R2 files
-    R2_array=(${reads_dir}/20200[145][13][189]*megan*R2.fq)
+    R2_array=("${reads_dir}"/20200[145][13][189]*megan*R2.fq)
 
   elif [[ "${transcriptome_name}" == "cbai_transcriptome_v2.0.fa" ]]; then
 
-    reads_array=(${reads_dir}/*fastp-trim*.fq)
+    reads_array=("${reads_dir}"/*fastp-trim*.fq)
 
     # Create array of fastq R1 files
-    R1_array=(${reads_dir}/*R1*fastp-trim*.fq)
+    R1_array=("${reads_dir}"/*R1*fastp-trim*.fq)
 
     # Create array of fastq R2 files
-    R2_array=(${reads_dir}/*R2*fastp-trim*.fq)
+    R2_array=("${reads_dir}"/*R2*fastp-trim*.fq)
 
   elif [[ "${transcriptome_name}" == "cbai_transcriptome_v3.0.fa" ]]; then
 
-    reads_array=(${reads_dir}/*fastp-trim*20[12][09][01][24]1[48]*.fq)
+    reads_array=("${reads_dir}"/*fastp-trim*20[12][09][01][24]1[48]*.fq)
 
     # Create array of fastq R1 files
-    R1_array=(${reads_dir}/*R1*fastp-trim*20[12][09][01][24]1[48]*.fq)
+    R1_array=("${reads_dir}"/*R1*fastp-trim*20[12][09][01][24]1[48]*.fq)
 
     # Create array of fastq R2 files
-    R2_array=(${reads_dir}/*R2*fastp-trim*20[12][09][01][24]1[48]*.fq)
+    R2_array=("${reads_dir}"/*R2*fastp-trim*20[12][09][01][24]1[48]*.fq)
 
 
   fi
@@ -183,22 +183,22 @@ do
 
   # Determine transcript length
   ${programs_array[detonate_trans_length]} \
-  ${transcriptomes_array[$transcriptome]} \
-  ${rsem_eval_dist_mean_sd}
+  "${transcriptomes_array[$transcriptome]}" \
+  "${rsem_eval_dist_mean_sd}"
 
 
   # Run rsem-eval
   # Use bowtie2 and paired-end options
   ${programs_array[detonate]} \
   --bowtie2 \
-  --bowtie2-path ${programs_array[bowtie2]} \
+  --bowtie2-path "${programs_array[bowtie2]}" \
   --num-threads ${threads} \
-  --transcript-length-parameters ${rsem_eval_dist_mean_sd} \
+  --transcript-length-parameters "${rsem_eval_dist_mean_sd}" \
   --paired-end \
-  ${R1_list} \
-  ${R2_list} \
-  ${transcriptomes_array[$transcriptome]} \
-  ${transcriptome_name} \
+  "${R1_list}" \
+  "${R2_list}" \
+  "${transcriptomes_array[$transcriptome]}" \
+  "${transcriptome_name}" \
   ${frag_size}
 
 
