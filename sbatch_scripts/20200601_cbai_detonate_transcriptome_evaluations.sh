@@ -59,10 +59,29 @@ echo "${PATH}" | tr : \\n
 } >> system_path.log
 
 
-#programs
-bowtie2="/gscratch/srlab/programs/bowtie2-2.3.5.1-linux-x86_64/bowtie2"
-detonate_trans_length="/gscratch/srlab/programs/detonate-1.11/rsem-eval/rsem-eval-estimate-transcript-length-distribution"
-detonate="/gscratch/srlab/programs/detonate-1.11/rsem-eval/rsem-eval"
+# Programs array
+declare -A programs_array
+programs_array=(
+[bowtie2]="/gscratch/srlab/programs/bowtie2-2.3.5.1-linux-x86_64/bowtie2" \
+[detonate_trans_length]="/gscratch/srlab/programs/detonate-1.11/rsem-eval/rsem-eval-estimate-transcript-length-distribution" \
+[detonate]="/gscratch/srlab/programs/detonate-1.11/rsem-eval/rsem-eval"
+)
+
+# Capture program options
+for program in "${!programs_array[@]}"
+do
+	{
+  echo "Program options for ${programs_array[program]}: "
+	echo ""
+	${programs_array[program]} --help
+	echo ""
+	echo ""
+	echo "----------------------------------------------"
+	echo ""
+	echo ""
+} &>> program_options.log || true
+done
+
 
 
 # Loop through each comparison
@@ -163,16 +182,16 @@ do
   R2_list=$(echo "${R2_array[@]}" | tr " " ",")
 
   # Determine transcript length
-  ${detonate_trans_length} \
+  ${programs_array[detonate_trans_length]} \
   ${transcriptomes_array[$transcriptome]} \
   ${rsem_eval_dist_mean_sd}
 
 
   # Run rsem-eval
   # Use bowtie2 and paired-end options
-  ${detonate} \
+  ${programs_array[detonate]} \
   --bowtie2 \
-  --bowtie2-path ${bowtie2} \
+  --bowtie2-path ${programs_array[bowtie2]} \
   --num-threads ${threads} \
   --transcript-length-parameters ${rsem_eval_dist_mean_sd} \
   --paired-end \
