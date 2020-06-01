@@ -77,36 +77,41 @@ do
   echo "Finished generating checksum for ${transcriptome1}"
   echo ""
 
-  for (( j=$((i+1)); j < transcriptomes_array_length; j++ ))
+  for (( j=0; j < transcriptomes_array_length; j++ ))
   do
-    transcriptome2="${transcriptomes_array[*]:$j:1}"
+    transcriptome2="${transcriptomes_array[$j]}"
     comparison1="${transcriptome1}-vs-${transcriptome2}"
     comparison2="${transcriptome2}-vs-${transcriptome1}"
 
+    # Check if pblat output files are not present
+    if [[ ! -f "${comparison1}.psl" ]] && [[  -f "${comparison2}".psl ]]; then
+      # Run pblat
+      echo "Starting pblat: ${comparison1}"
+      ${pblat} -minIdentity=80 -threads=${threads} "${transcriptome2}" "${transcriptome1}" "${comparison1}".psl
+      echo "Finished pblat: ${comparison1}"
+      echo ""
 
-    # Run pblat
-    echo "Starting pblat: ${comparison1}"
-    ${pblat} -minIdentity=80 -threads=${threads} "${transcriptome2}" "${transcriptome1}" "${comparison1}".psl
-    echo "Finished pblat: ${comparison1}"
-    echo ""
+      echo "Starting pblat: ${comparison2}"
+      ${pblat} -minIdentity=80 -threads=${threads} "${transcriptome1}" "${transcriptome2}" "${comparison2}".psl
+      echo "Finished pblat: ${comparison2}"
+      echo ""
+    fi
 
-    echo "Starting pblat: ${comparison2}"
-    ${pblat} -minIdentity=80 -threads=${threads} "${transcriptome1}" "${transcriptome2}" "${comparison2}".psl
-    echo "Finished pblat: ${comparison2}"
-    echo ""
+    # Check if DETONATE output file exists
+    if [[ ! -f "${comparison1}.scores.txt" ]]; then
+      # Run ref-eval, unweighted scores only
+      echo "Running DETONATE with ${transcriptome1} and ${transcriptome2}."
+      ${detonate} \
+      --scores=nucl,pair,contig \
+      --weighted=no \
+      --A-seqs "${transcriptome1}" \
+      --B-seqs "${transcriptome2}" \
+      --A-to-B "${comparison1}".psl \
+      --B-to-A "${comparison2}".psl \
+      | tee "${comparison1}.scores.txt"
+      echo "Finished DETONATE with ${transcriptome1} and ${transcriptome2}."
+      echo ""
+    fi
 
-    # Run ref-eval, unweighted scores only
-
-    echo "Running DETONATE with ${transcriptome1} and ${transcriptome2}."
-    ${detonate} \
-    --scores=nucl,pair,contig \
-    --weighted=no \
-    --A-seqs "${transcriptome1}" \
-    --B-seqs "${transcriptome2}" \
-    --A-to-B "${comparison1}".psl \
-    --B-to-A "${comparison2}".psl \
-    | tee "${comparison1}.scores.txt"
-    echo "Finished DETONATE with ${transcriptome1} and ${transcriptome2}."
-    echo ""
   done
 done
