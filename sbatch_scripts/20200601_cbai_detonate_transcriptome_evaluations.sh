@@ -54,7 +54,7 @@ echo "${PATH}" | tr : \\n
 } >> system_path.log
 
 
-
+reads_dir=/gscratch/srlab/sam/data/C_bairdi/RNAseq
 threads=28
 
 #programs
@@ -75,7 +75,7 @@ do
   # Variables
   R1_list=""
   R2_list=""
-  
+
   transcriptome="${transcriptomes_array[$transcriptome]}"
 
   # Capture FastA checksums for verification
@@ -86,23 +86,67 @@ do
 
   if [[ "${transcriptome}" == "cbai_transcriptome_v1.0.fa" ]]; then
 
-    reads_array=(*.3[02]*megan*.fq)
+    reads_array=(20200[15][13][138]*megan*.fq)
+
     # Create array of fastq R1 files
-    R1_array=(*.3[02]*megan*R1.fq)
+    R1_array=(20200[15][13][138]*megan*R1.fq)
 
     # Create array of fastq R2 files
-    R2_array=(*.3[02]*megan*R2.fq)
+    R2_array=(20200[15][13][138]*megan*R2.fq)
 
 
 
   elif [[ "${transcriptome}" == "cbai_transcriptome_v1.5.fa" ]]; then
 
-    reads_array=(*.3[02]*megan*.fq)
+    reads_array=(20200[145][13][138]*megan*.fq)
+
     # Create array of fastq R1 files
-    R1_array=(*.3[02]*megan*R1.fq)
+    R1_array=(20200[145][13][138]*megan*R1.fq)
 
     # Create array of fastq R2 files
-    R2_array=(*.3[02]*megan*R2.fq)
+    R2_array=(20200[145][13][138]*megan*R2.fq)
+
+  elif [[ "${transcriptome}" == "cbai_transcriptome_v1.6.fa" ]]; then
+
+    reads_array=(*megan*.fq)
+
+    # Create array of fastq R1 files
+    R1_array=(*megan*R1.fq)
+
+    # Create array of fastq R2 files
+    R2_array=(*megan*R2.fq)
+
+  elif [[ "${transcriptome}" == "cbai_transcriptome_v1.7.fa" ]]; then
+
+    reads_array=(20200[145][13][189]*megan*.fq)
+
+    # Create array of fastq R1 files
+    R1_array=(20200[145][13][189]*megan*R1.fq)
+
+    # Create array of fastq R2 files
+    R2_array=(20200[145][13][189]*megan*R2.fq)
+
+  elif [[ "${transcriptome}" == "cbai_transcriptome_v2.0.fa" ]]; then
+
+    reads_array=(*fastp-trim*.fq)
+
+    # Create array of fastq R1 files
+    R1_array=(*R1*fastp-trim*.fq)
+
+    # Create array of fastq R2 files
+    R2_array=(*R2*fastp-trim*.fq)
+
+  elif [[ "${transcriptome}" == "cbai_transcriptome_v3.0.fa" ]]; then
+
+    reads_array=(*fastp-trim*20[12][09][01][24]1[48]*.fq)
+
+    # Create array of fastq R1 files
+    R1_array=(*R1*fastp-trim*20[12][09][01][24]1[48]*.fq)
+
+    # Create array of fastq R2 files
+    R2_array=(*R2*fastp-trim*20[12][09][01][24]1[48]*.fq)
+
+
   fi
 
   # Create list of fastq files used in analysis
