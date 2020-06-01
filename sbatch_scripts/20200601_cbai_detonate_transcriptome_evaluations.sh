@@ -166,4 +166,22 @@ do
   ${detonate_trans_length} \
   ${transcriptomes_array[$transcriptome]} \
   ${rsem_eval_dist_mean_sd}
+
+
+  # Run rsem-eval
+  # Use bowtie2 and paired-end options
+  ${detonate} \
+  --bowtie2 \
+  --bowtie2-path ${bowtie2} \
+  --num-threads ${threads} \
+  --transcript-length-parameters ${rsem_eval_dist_mean_sd} \
+  --paired-end \
+  ${R1_list} \
+  ${R2_list} \
+  ${transcriptomes_array[$transcriptome]} \
+  ${transcriptome_name} \
+  ${frag_size}
+
+
+
 done
