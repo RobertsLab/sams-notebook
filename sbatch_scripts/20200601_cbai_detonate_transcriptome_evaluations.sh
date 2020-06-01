@@ -89,10 +89,10 @@ do
     reads_array=(${reads_dir}/20200[15][13][138]*megan*.fq)
 
     # Create array of fastq R1 files
-    R1_array=(20200[15][13][138]*megan*R1.fq)
+    R1_array=(${reads_dir}/20200[15][13][138]*megan*R1.fq)
 
     # Create array of fastq R2 files
-    R2_array=(${reads_dir}/=(20200[15][13][138]*megan*R2.fq)
+    R2_array=(${reads_dir}/20200[15][13][138]*megan*R2.fq)
 
 
 
@@ -104,7 +104,7 @@ do
     R1_array=(${reads_dir}/20200[145][13][138]*megan*R1.fq)
 
     # Create array of fastq R2 files
-    R2_array=(${reads_dir}/=(20200[145][13][138]*megan*R2.fq)
+    R2_array=(${reads_dir}/20200[145][13][138]*megan*R2.fq)
 
   elif [[ "${transcriptome}" == "cbai_transcriptome_v1.6.fa" ]]; then
 
@@ -114,7 +114,7 @@ do
     R1_array=(${reads_dir}/*megan*R1.fq)
 
     # Create array of fastq R2 files
-    R2_array=(${reads_dir}/=(*megan*R2.fq)
+    R2_array=(${reads_dir}/*megan*R2.fq)
 
   elif [[ "${transcriptome}" == "cbai_transcriptome_v1.7.fa" ]]; then
 
@@ -124,7 +124,7 @@ do
     R1_array=(${reads_dir}/20200[145][13][189]*megan*R1.fq)
 
     # Create array of fastq R2 files
-    R2_array=(${reads_dir}/=(20200[145][13][189]*megan*R2.fq)
+    R2_array=(${reads_dir}/20200[145][13][189]*megan*R2.fq)
 
   elif [[ "${transcriptome}" == "cbai_transcriptome_v2.0.fa" ]]; then
 
@@ -134,7 +134,7 @@ do
     R1_array=(${reads_dir}/*R1*fastp-trim*.fq)
 
     # Create array of fastq R2 files
-    R2_array=(${reads_dir}/=(*R2*fastp-trim*.fq)
+    R2_array=(${reads_dir}/*R2*fastp-trim*.fq)
 
   elif [[ "${transcriptome}" == "cbai_transcriptome_v3.0.fa" ]]; then
 
@@ -144,7 +144,7 @@ do
     R1_array=(${reads_dir}/*R1*fastp-trim*20[12][09][01][24]1[48]*.fq)
 
     # Create array of fastq R2 files
-    R2_array=(${reads_dir}/=(*R2*fastp-trim*20[12][09][01][24]1[48]*.fq)
+    R2_array=(${reads_dir}/*R2*fastp-trim*20[12][09][01][24]1[48]*.fq)
 
 
   fi
