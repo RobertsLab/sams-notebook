@@ -76,7 +76,7 @@ do
   R1_list=""
   R2_list=""
 
-  transcriptome="${transcriptomes_array[$transcriptome]}"
+  transcriptome="${transcriptomes_array[$transcriptome]##*/}"
 
   # Capture FastA checksums for verification
   echo "Generating checksum for ${transcriptome}"
