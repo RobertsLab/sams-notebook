@@ -73,7 +73,7 @@ do
 
   # Capture FastA checksums for verification
   echo "Generating checksum for ${transcriptome1}"
-  md5sum ${transcriptome1} >> fasta.checksums.md5
+  md5sum "${transcriptome1}" >> fasta.checksums.md5
   echo "Finished generating checksum for ${transcriptome1}"
   echo ""
 
