@@ -78,17 +78,18 @@ do
   R1_list=""
   R2_list=""
 
-  transcriptome="${transcriptomes_array[$transcriptome]##*/}"
+  transcriptome_name="${transcriptomes_array[$transcriptome]##*/}"
 
 
+  rsem_eval_dist_mean_sd="${transcriptome_name}_true_length_dis_mean_sd.txt"
 
   # Capture FastA checksums for verification
-  echo "Generating checksum for ${transcriptome}"
-  md5sum "${transcriptome}" >> fasta.checksums.md5
-  echo "Finished generating checksum for ${transcriptome}"
+  echo "Generating checksum for ${transcriptome_name}"
+  md5sum "${transcriptome_name}" >> fasta.checksums.md5
+  echo "Finished generating checksum for ${transcriptome_name}"
   echo ""
 
-  if [[ "${transcriptome}" == "cbai_transcriptome_v1.0.fa" ]]; then
+  if [[ "${transcriptome_name}" == "cbai_transcriptome_v1.0.fa" ]]; then
 
     reads_array=(${reads_dir}/20200[15][13][138]*megan*.fq)
 
@@ -100,7 +101,7 @@ do
 
 
 
-  elif [[ "${transcriptome}" == "cbai_transcriptome_v1.5.fa" ]]; then
+  elif [[ "${transcriptome_name}" == "cbai_transcriptome_v1.5.fa" ]]; then
 
     reads_array=(${reads_dir}/20200[145][13][138]*megan*.fq)
 
@@ -110,7 +111,7 @@ do
     # Create array of fastq R2 files
     R2_array=(${reads_dir}/20200[145][13][138]*megan*R2.fq)
 
-  elif [[ "${transcriptome}" == "cbai_transcriptome_v1.6.fa" ]]; then
+  elif [[ "${transcriptome_name}" == "cbai_transcriptome_v1.6.fa" ]]; then
 
     reads_array=(${reads_dir}/*megan*.fq)
 
@@ -120,7 +121,7 @@ do
     # Create array of fastq R2 files
     R2_array=(${reads_dir}/*megan*R2.fq)
 
-  elif [[ "${transcriptome}" == "cbai_transcriptome_v1.7.fa" ]]; then
+  elif [[ "${transcriptome_name}" == "cbai_transcriptome_v1.7.fa" ]]; then
 
     reads_array=(${reads_dir}/20200[145][13][189]*megan*.fq)
 
@@ -130,7 +131,7 @@ do
     # Create array of fastq R2 files
     R2_array=(${reads_dir}/20200[145][13][189]*megan*R2.fq)
 
-  elif [[ "${transcriptome}" == "cbai_transcriptome_v2.0.fa" ]]; then
+  elif [[ "${transcriptome_name}" == "cbai_transcriptome_v2.0.fa" ]]; then
 
     reads_array=(${reads_dir}/*fastp-trim*.fq)
 
@@ -140,7 +141,7 @@ do
     # Create array of fastq R2 files
     R2_array=(${reads_dir}/*R2*fastp-trim*.fq)
 
-  elif [[ "${transcriptome}" == "cbai_transcriptome_v3.0.fa" ]]; then
+  elif [[ "${transcriptome_name}" == "cbai_transcriptome_v3.0.fa" ]]; then
 
     reads_array=(${reads_dir}/*fastp-trim*20[12][09][01][24]1[48]*.fq)
 
@@ -155,7 +156,7 @@ do
 
   # Create list of fastq files used in analysis
   ## Uses parameter substitution to strip leading path from filename
-  printf "%s\n" "${reads_array[@]##*/}" >> "${transcriptome}".fastq.list.txt
+  printf "%s\n" "${reads_array[@]##*/}" >> "${transcriptome_name}".fastq.list.txt
 
   # Create comma-separated lists of FastQ reads
   R1_list=$(echo "${R1_array[@]}" | tr " " ",")
