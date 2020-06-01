@@ -87,15 +87,20 @@ do
     # Create array of fastq R2 files
     R2_array=(${reads_dir}/*.3[02]*megan*R2.fq)
 
-    # Create list of fastq files used in analysis
-    ## Uses parameter substitution to strip leading path from filename
-    for fastq in ${reads_dir}/*.fq
-      do
-      echo "${fastq##*/}" >> "${transcriptome}".fastq.list.txt
-    done
 
-    # Create comma-separated lists of FastQ reads
-    R1_list=$(echo "${R1_array[@]}" | tr " " ",")
-    R2_list=$(echo "${R2_array[@]}" | tr " " ",")
+
+  elif [[ "${transcriptome}" == "cbai_transcriptome_v1.5.fa" ]]; then
+
   fi
+
+  # Create list of fastq files used in analysis
+  ## Uses parameter substitution to strip leading path from filename
+  for fastq in ${reads_dir}/*.fq
+    do
+    echo "${fastq##*/}" >> "${transcriptome}".fastq.list.txt
+  done
+
+  # Create comma-separated lists of FastQ reads
+  R1_list=$(echo "${R1_array[@]}" | tr " " ",")
+  R2_list=$(echo "${R2_array[@]}" | tr " " ",")
 done
