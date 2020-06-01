@@ -54,13 +54,7 @@ echo "${PATH}" | tr : \\n
 } >> system_path.log
 
 
-## Inititalize arrays
-R1_array=()
-R2_array=()
 
-# Variables
-R1_list=""
-R2_list=""
 threads=28
 
 #programs
@@ -72,6 +66,16 @@ detonate="/gscratch/srlab/programs/detonate-1.11/rsem-eval/rsem-eval"
 # Loop through each comparison
 for transcriptome in "${!transcriptomes_array[@]}"
 do
+
+  ## Inititalize arrays
+  R1_array=()
+  R2_array=()
+  reads_array=()
+
+  # Variables
+  R1_list=""
+  R2_list=""
+  
   transcriptome="${transcriptomes_array[$transcriptome]}"
 
   # Capture FastA checksums for verification
@@ -81,24 +85,29 @@ do
   echo ""
 
   if [[ "${transcriptome}" == "cbai_transcriptome_v1.0.fa" ]]; then
+
+    reads_array=(*.3[02]*megan*.fq)
     # Create array of fastq R1 files
-    R1_array=(${reads_dir}/*.3[02]*megan*R1.fq)
+    R1_array=(*.3[02]*megan*R1.fq)
 
     # Create array of fastq R2 files
-    R2_array=(${reads_dir}/*.3[02]*megan*R2.fq)
+    R2_array=(*.3[02]*megan*R2.fq)
 
 
 
   elif [[ "${transcriptome}" == "cbai_transcriptome_v1.5.fa" ]]; then
 
+    reads_array=(*.3[02]*megan*.fq)
+    # Create array of fastq R1 files
+    R1_array=(*.3[02]*megan*R1.fq)
+
+    # Create array of fastq R2 files
+    R2_array=(*.3[02]*megan*R2.fq)
   fi
 
   # Create list of fastq files used in analysis
   ## Uses parameter substitution to strip leading path from filename
-  for fastq in ${reads_dir}/*.fq
-    do
-    echo "${fastq##*/}" >> "${transcriptome}".fastq.list.txt
-  done
+  printf "%s\n" "${reads_array[@]##*/}" >> "${transcriptome}".fastq.list.txt
 
   # Create comma-separated lists of FastQ reads
   R1_list=$(echo "${R1_array[@]}" | tr " " ",")
