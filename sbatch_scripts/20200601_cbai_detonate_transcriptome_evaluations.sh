@@ -21,16 +21,21 @@
 ###################################################################################
 # These variables need to be set by user
 
+# Assign Variables
+## frag_size is guesstimate of library fragment sizes
+frag_size=500
+reads_dir=/gscratch/srlab/sam/data/C_bairdi/RNAseq
+threads=28
+
 # Array of the various comparisons to evaluate
 # Each condition in each comparison should be separated by a "-"
 transcriptomes_array=(
-cbai_transcriptome_v1.0.fa \
-cbai_transcriptome_v1.5.fa \
-cbai_transcriptome_v1.6.fa \
-cbai_transcriptome_v1.7.fa \
-cbai_transcriptome_v2.0.fa \
-cbai_transcriptome_v3.0.fa \
-20200526.P_trituberculatus.Trinity.fa
+${reads_dir}/cbai_transcriptome_v1.0.fa \
+${reads_dir}/cbai_transcriptome_v1.5.fa \
+${reads_dir}/cbai_transcriptome_v1.6.fa \
+${reads_dir}/cbai_transcriptome_v1.7.fa \
+${reads_dir}/cbai_transcriptome_v2.0.fa \
+${reads_dir}/cbai_transcriptome_v3.0.fa
 )
 
 
@@ -54,9 +59,6 @@ echo "${PATH}" | tr : \\n
 } >> system_path.log
 
 
-reads_dir=/gscratch/srlab/sam/data/C_bairdi/RNAseq
-threads=28
-
 #programs
 bowtie2="/gscratch/srlab/programs/bowtie2-2.3.5.1-linux-x86_64/bowtie2"
 detonate_trans_length="/gscratch/srlab/programs/detonate-1.11/rsem-eval/rsem-eval-estimate-transcript-length-distribution"
@@ -77,6 +79,8 @@ do
   R2_list=""
 
   transcriptome="${transcriptomes_array[$transcriptome]##*/}"
+
+
 
   # Capture FastA checksums for verification
   echo "Generating checksum for ${transcriptome}"
@@ -156,4 +160,9 @@ do
   # Create comma-separated lists of FastQ reads
   R1_list=$(echo "${R1_array[@]}" | tr " " ",")
   R2_list=$(echo "${R2_array[@]}" | tr " " ",")
+
+  # Determine transcript length
+  ${detonate_trans_length} \
+  ${transcriptomes_array[$transcriptome]} \
+  ${rsem_eval_dist_mean_sd}
 done
