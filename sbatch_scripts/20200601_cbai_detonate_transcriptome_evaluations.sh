@@ -71,9 +71,9 @@ programs_array=(
 for program in "${!programs_array[@]}"
 do
 	{
-  echo "Program options for ${programs_array[program]}: "
+  echo "Program options for ${program}: "
 	echo ""
-	${programs_array[program]} --help
+	${programs_array[$program]} --help
 	echo ""
 	echo ""
 	echo "----------------------------------------------"
