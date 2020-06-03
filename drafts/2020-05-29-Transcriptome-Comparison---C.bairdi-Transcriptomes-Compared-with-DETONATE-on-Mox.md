@@ -14,6 +14,25 @@ tags:
 categories:
   - Miscellaneous
 ---
+We've produced a number of [_C.bairdi_ transcriptomes](https://github.com/RobertsLab/resources/wiki/Genomic-Resources#transcriptomes) and we're interested in doing some comparisons to try to determine which one might be "best". I previously [compared the BUSCO scores of each of these transcriptomes](https://robertslab.github.io/sams-notebook/2020/05/28/Transcriptome-Comparisons-C.bairdi-BUSCO-Scores.html) and now will be using the [DETONATE](http://deweylab.biostat.wisc.edu/detonate) software package to perform two different types of comparisons: compared to a reference ([REF-EVAL](http://deweylab.biostat.wisc.edu/detonate/ref-eval.html)) and determine an overall quality "score" ([RSEM-EVAL](http://deweylab.biostat.wisc.edu/detonate/rsem-eval.html)). I'll running [REF-EVAL](http://deweylab.biostat.wisc.edu/detonate/ref-eval.html) in this notebook.
+
+A link to the paper is here and explains both:
+
+- [Evaluation of de novo transcriptome assemblies from RNA-Seq data](https://genomebiology.biomedcentral.com/articles/10.1186/s13059-014-0553-5)
+
+I opted to just "quickly" run through [REF-EVAL](http://deweylab.biostat.wisc.edu/detonate/ref-eval.html), as it only requires (minimally) transcriptome FastAs for performing assembly comparisons; although it probably provides more accurate comparisons if you generate a "true assembly" first. However, this can't always be done if using a publicly available transcriptome which doesn't have the corresponding FastQ files used for the assembly.
+
+Since this is designed to compare a transcriptome assembly to a "reference" transcriptome of a related species, I did a couple of things:
+
+1. Downloaded Japanese blue crab (_Portunus trituberculatus_) transcriptome from NCBI (accession: GFFJ01.1).
+
+2. Downloaded green crab (_Carcinus maenas_) transcriptome from NCBI (accession: GBXE01.1).
+
+3. Downloaded and [assembled _Portunus trituberculatus_ NCBI SRA RNAseq data](https://robertslab.github.io/sams-notebook/2020/05/23/Transcriptome-Assembly-P.trituberculatus-(Japanese-blue-crab)-NCBI-SRA-BioProject-PRJNA597187-Data-with-Trinity-on-Mox.html).
+
+I then compared all of our assemblies to each other, to the three "reference" sequences, and the three "reference" sequences to our _C.bairdi_ assemblies (i.e. using our assemblies as the "reference" in the comparison).
+
+This job was run on Mox.
 
 
 SBATCH script (GitHub):
