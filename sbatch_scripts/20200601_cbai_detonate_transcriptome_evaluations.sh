@@ -8,7 +8,7 @@
 ## Nodes
 #SBATCH --nodes=1
 ## Walltime (days-hours:minutes:seconds format)
-#SBATCH --time=6-00:00:00
+#SBATCH --time=5-00:00:00
 ## Memory per node
 #SBATCH --mem=500G
 ##turn on e-mail notification
@@ -25,17 +25,18 @@
 ## frag_size is guesstimate of library fragment sizes
 frag_size=500
 reads_dir=/gscratch/srlab/sam/data/C_bairdi/RNAseq
+transcriptomes_dir=/gscratch/srlab/sam/data/C_bairdi/transcriptomes
 threads=28
 
 # Array of the various comparisons to evaluate
 # Each condition in each comparison should be separated by a "-"
 transcriptomes_array=(
-"${reads_dir}"/cbai_transcriptome_v1.0.fa \
-"${reads_dir}"/cbai_transcriptome_v1.5.fa \
-"${reads_dir}"/cbai_transcriptome_v1.6.fa \
-"${reads_dir}"/cbai_transcriptome_v1.7.fa \
-"${reads_dir}"/cbai_transcriptome_v2.0.fa \
-"${reads_dir}"/cbai_transcriptome_v3.0.fa
+"${transcriptomes_dir}"/cbai_transcriptome_v1.0.fasta \
+"${transcriptomes_dir}"/cbai_transcriptome_v1.5.fasta \
+"${transcriptomes_dir}"/cbai_transcriptome_v1.6.fasta \
+"${transcriptomes_dir}"/cbai_transcriptome_v1.7.fasta \
+"${transcriptomes_dir}"/cbai_transcriptome_v2.0.fasta \
+"${transcriptomes_dir}"/cbai_transcriptome_v3.0.fasta
 )
 
 
@@ -62,9 +63,9 @@ echo "${PATH}" | tr : \\n
 # Programs array
 declare -A programs_array
 programs_array=(
-[bowtie2]="/gscratch/srlab/programs/bowtie2-2.3.5.1-linux-x86_64/bowtie2" \
+[bowtie2]="/gscratch/srlab/programs/bowtie2-2.3.5.1-linux-x86_64" \
 [detonate_trans_length]="/gscratch/srlab/programs/detonate-1.11/rsem-eval/rsem-eval-estimate-transcript-length-distribution" \
-[detonate]="/gscratch/srlab/programs/detonate-1.11/rsem-eval/rsem-eval"
+[detonate]="/gscratch/srlab/programs/detonate-1.11/rsem-eval/rsem-eval-calculate-score"
 )
 
 # Capture program options
@@ -104,11 +105,11 @@ do
 
   # Capture FastA checksums for verification
   echo "Generating checksum for ${transcriptome_name}"
-  md5sum "${transcriptome}" >> fasta.checksums.md5
+  md5sum "${transcriptomes_array[transcriptome]}" >> fasta.checksums.md5
   echo "Finished generating checksum for ${transcriptome_name}"
   echo ""
 
-  if [[ "${transcriptome_name}" == "cbai_transcriptome_v1.0.fa" ]]; then
+  if [[ "${transcriptome_name}" == "cbai_transcriptome_v1.0.fasta" ]]; then
 
     reads_array=("${reads_dir}"/20200[15][13][138]*megan*.fq)
 
@@ -120,7 +121,7 @@ do
 
 
 
-  elif [[ "${transcriptome_name}" == "cbai_transcriptome_v1.5.fa" ]]; then
+  elif [[ "${transcriptome_name}" == "cbai_transcriptome_v1.5.fasta" ]]; then
 
     reads_array=("${reads_dir}"/20200[145][13][138]*megan*.fq)
 
@@ -130,7 +131,7 @@ do
     # Create array of fastq R2 files
     R2_array=("${reads_dir}"/20200[145][13][138]*megan*R2.fq)
 
-  elif [[ "${transcriptome_name}" == "cbai_transcriptome_v1.6.fa" ]]; then
+  elif [[ "${transcriptome_name}" == "cbai_transcriptome_v1.6.fasta" ]]; then
 
     reads_array=("${reads_dir}"/*megan*.fq)
 
@@ -140,7 +141,7 @@ do
     # Create array of fastq R2 files
     R2_array=("${reads_dir}"/*megan*R2.fq)
 
-  elif [[ "${transcriptome_name}" == "cbai_transcriptome_v1.7.fa" ]]; then
+  elif [[ "${transcriptome_name}" == "cbai_transcriptome_v1.7.fasta" ]]; then
 
     reads_array=("${reads_dir}"/20200[145][13][189]*megan*.fq)
 
@@ -150,7 +151,7 @@ do
     # Create array of fastq R2 files
     R2_array=("${reads_dir}"/20200[145][13][189]*megan*R2.fq)
 
-  elif [[ "${transcriptome_name}" == "cbai_transcriptome_v2.0.fa" ]]; then
+  elif [[ "${transcriptome_name}" == "cbai_transcriptome_v2.0.fasta" ]]; then
 
     reads_array=("${reads_dir}"/*fastp-trim*.fq)
 
@@ -160,7 +161,7 @@ do
     # Create array of fastq R2 files
     R2_array=("${reads_dir}"/*R2*fastp-trim*.fq)
 
-  elif [[ "${transcriptome_name}" == "cbai_transcriptome_v3.0.fa" ]]; then
+  elif [[ "${transcriptome_name}" == "cbai_transcriptome_v3.0.fasta" ]]; then
 
     reads_array=("${reads_dir}"/*fastp-trim*20[12][09][01][24]1[48]*.fq)
 
