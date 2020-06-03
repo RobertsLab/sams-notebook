@@ -148,6 +148,12 @@ done
 
 #### RESULTS
 
+Took a bit over 3 days to complete:
+
+![cbai transcriptome comparisons runtime](https://github.com/RobertsLab/sams-notebook/blob/master/images/screencaps/20200529_cbai_detonate_transcriptome_comparisons_runtime.png?raw=true)
+
+NOTE: There are two jobs associated with this because I had to modify SBATCH script after initial run to account for missed reference comparisons.
+
 Output folder:
 
 - [20200529_cbai_detonate_transcriptome_comparisons/](https://gannet.fish.washington.edu/Atumefaciens/20200529_cbai_detonate_transcriptome_comparisons/)
