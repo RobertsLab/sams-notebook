@@ -9,9 +9,6 @@
 # Exit script if any command fails
 set -e
 
-# Program path
-=/home/sam/programs/megan/tools/daa2rma
-
 # MEGAN mapping files
 prot_acc2tax=/home/sam/data/databases/MEGAN/prot_acc2tax-Jul2019X1.abin
 acc2interpro=/home/sam/data/databases/MEGAN/acc2interpro-Jul2019X.abin
