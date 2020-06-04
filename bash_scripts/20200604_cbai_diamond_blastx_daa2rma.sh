@@ -20,7 +20,7 @@ acc2eggnog=/home/sam/data/databases/MEGAN/acc2eggnog-Jul2019X.abin
 # Programs array
 declare -A programs_array
 programs_array=(
-[meganizer]="/home/sam/programs/megan/tools/daa2rma"
+[daa2ma]="/home/sam/programs/megan/tools/daa2rma"
 )
 
 # Capture program options
@@ -54,7 +54,7 @@ do
   echo ""
 
   # Run daa2rma with paired option
-  ${programs_array[$program]} \
+  ${programs_array[daa2ma]} \
   --paired \
   --in "${daa}" \
 	--acc2taxa ${prot_acc2tax} \
