@@ -74,14 +74,13 @@ do
 
 	# Strip leading path and extensions
 	no_path=$(echo "${fasta##*/}")
-	no_ext=$(echo "${no_path%%.*}")
 
 	# Run DIAMOND with blastx
 	# Output format 100 produces a DAA binary file for use with MEGAN
 	${diamond} blastx \
 	--db ${dmnd} \
 	--query "${fasta}" \
-	--out "${no_ext}".blastx.daa \
+	--out "${no_path}".blastx.daa \
 	--outfmt 100 \
 	--top 5 \
 	--block-size 15.0 \
