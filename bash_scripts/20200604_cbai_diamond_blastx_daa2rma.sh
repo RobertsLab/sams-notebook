@@ -20,7 +20,7 @@ acc2eggnog=/home/sam/data/databases/MEGAN/acc2eggnog-Jul2019X.abin
 # Programs array
 declare -A programs_array
 programs_array=(
-[daa2ma]="/home/sam/programs/megan/tools/daa2rma"
+[daa2rma]="/home/sam/programs/megan/tools/daa2rma"
 )
 
 # Capture program options
