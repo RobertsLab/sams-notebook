@@ -54,7 +54,7 @@ do
   echo ""
 
   # Run daa2rma with paired option
-  ${meganizer} \
+  ${programs_array[$program]} \
   --paired \
   --in "${daa}" \
 	--acc2taxa ${prot_acc2tax} \
