@@ -10,12 +10,33 @@
 set -e
 
 # Program path
-meganizer=/home/sam/programs/megan/tools/daa2rma
+=/home/sam/programs/megan/tools/daa2rma
 
 # MEGAN mapping files
 prot_acc2tax=/home/sam/data/databases/MEGAN/prot_acc2tax-Jul2019X1.abin
 acc2interpro=/home/sam/data/databases/MEGAN/acc2interpro-Jul2019X.abin
 acc2eggnog=/home/sam/data/databases/MEGAN/acc2eggnog-Jul2019X.abin
+
+# Programs array
+declare -A programs_array
+programs_array=(
+[meganizer]="/home/sam/programs/megan/tools/daa2rma"
+)
+
+# Capture program options
+for program in "${!programs_array[@]}"
+do
+	{
+  echo "Program options for ${program}: "
+	echo ""
+	${programs_array[$program]} --help
+	echo ""
+	echo ""
+	echo "----------------------------------------------"
+	echo ""
+	echo ""
+} &>> program_options.log || true
+done
 
 
 ## Run MEGANIZER
