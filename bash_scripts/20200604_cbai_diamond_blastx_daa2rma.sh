@@ -52,7 +52,6 @@ do
 
   # Run daa2rma with paired option
   ${programs_array[daa2ma]} \
-  --paired \
   --in "${daa}" \
 	--acc2taxa ${prot_acc2tax} \
 	--acc2interpro2go ${acc2interpro} \
