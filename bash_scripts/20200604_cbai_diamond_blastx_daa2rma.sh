@@ -51,7 +51,7 @@ do
   echo ""
 
   # Run daa2rma with paired option
-  ${programs_array[daa2ma]} \
+  ${programs_array[daa2rma]} \
   --in "${daa}" \
 	--acc2taxa ${prot_acc2tax} \
 	--acc2interpro2go ${acc2interpro} \
