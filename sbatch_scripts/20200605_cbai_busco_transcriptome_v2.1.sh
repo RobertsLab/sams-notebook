@@ -116,3 +116,6 @@ ${busco} \
 --species ${augustus_species} \
 --tarzip \
 --augustus_parameters='--progress=true'
+
+# Create checksum for potential verification
+md5sum "${fasta}" >> "${fasta_name}".checksum.md5
