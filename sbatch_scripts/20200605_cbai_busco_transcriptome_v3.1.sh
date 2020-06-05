@@ -1,6 +1,6 @@
 #!/bin/bash
 ## Job Name
-#SBATCH --job-name=cbai_busco_v2.1_transcriptome
+#SBATCH --job-name=cbai_busco_v3.1_transcriptome
 ## Allocation Definition
 #SBATCH --account=coenv
 #SBATCH --partition=coenv
