@@ -118,4 +118,4 @@ ${busco} \
 --augustus_parameters='--progress=true'
 
 # Create checksum for potential verification
-md5sum "${fasta}" >> "${fasta_name}".checksum.md5
+md5sum "${transcriptome_fasta}" >> "${fasta_name}".checksum.md5
