@@ -135,3 +135,11 @@ Took a little over 2hrs:
 Output folder:
 
 - [20200604_cbai_v2.0_v3.0_diamond_blastx](https://gannet.fish.washington.edu/Atumefaciens/20200604_cbai_v2.0_v3.0_diamond_blastx/)
+
+MEGAN6 RMA6 files:
+
+- [20200604_cbai_v2.0_v3.0_diamond_blastx/cbai_transcriptome_v3.0.daa2rma.rma6](https://gannet.fish.washington.edu/Atumefaciens/20200604_cbai_v2.0_v3.0_diamond_blastx/cbai_transcriptome_v3.0.daa2rma.rma6) (168MB)
+
+- [20200604_cbai_v2.0_v3.0_diamond_blastx/cbai_transcriptome_v2.0.daa2rma.rma6](https://gannet.fish.washington.edu/Atumefaciens/20200604_cbai_v2.0_v3.0_diamond_blastx/cbai_transcriptome_v2.0.daa2rma.rma6) (328MB)
+
+Will import the RMA6 files into MEGAN6 and extract sequences.
