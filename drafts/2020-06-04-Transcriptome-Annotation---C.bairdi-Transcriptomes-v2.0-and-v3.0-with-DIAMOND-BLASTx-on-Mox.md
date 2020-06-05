@@ -13,7 +13,19 @@ tags:
 categories:
   - Miscellaneous
 ---
+Continuing to try to identify the best [_C.bairdi_ transcriptome](https://github.com/RobertsLab/resources/wiki/Genomic-Resources#transcriptomes), we decided to extract all non-dinoflagellate sequences from `cbai_transcriptome_v2.0` (RNAseq shorthand: 2018, 2019, 2020-GW, 2020-UW) and `cbai_transcriptome_v3.0` (RNAseq shorthand: 2018, 2019, 2020-UW). Both of these transcriptomes were assembled _without_ any taxonomic filter applied.
 
+We'll do this by:
+
+1. Running BLASTx on the transcriptomes (this notebook).
+
+2. Converting BLASTx output to MEGAN6 RMA6 format (this notebook).
+
+3. Use MEGAN6 to extract all non-dinoflagellate sequences (different notebook).
+
+Initial DIAMOND BLASTx was run on Mox.
+
+Due to usage of X11, the subsequent conversion of the DIAMOND BLASTx output to RMA6 can't be performed on Mox, so was performed on my computer, swoose. Scripts for both jobs are below.
 
 
 SBATCH script (GitHub):
