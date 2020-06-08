@@ -58,7 +58,7 @@ do
 
 # Run DIAMOND with blastx
 # Output format 6 produces a standard BLAST tab-delimited file
-${diamond} blastx \
+${programs_array[$diamond]} blastx \
 --db ${dmnd} \
 --query "${transcriptomes[$fasta]}" \
 --out "${no_ext}".blastx.outfmt6 \
