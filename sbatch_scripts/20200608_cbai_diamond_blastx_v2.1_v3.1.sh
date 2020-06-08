@@ -60,17 +60,17 @@ do
   no_path="${transcriptomes[$fasta]##*/}"
   no_ext="${no_path%.*}"
 
-# Run DIAMOND with blastx
-# Output format 6 produces a standard BLAST tab-delimited file
-${programs_array[$diamond]} blastx \
---db ${dmnd} \
---query "${transcriptomes[$fasta]}" \
---out "${no_ext}".blastx.outfmt6 \
---outfmt 6 \
---evalue 1e-4 \
---max-target-seqs 1 \
---block-size 15.0 \
---index-chunks 4
+  # Run DIAMOND with blastx
+  # Output format 6 produces a standard BLAST tab-delimited file
+  ${programs_array[diamond]} blastx \
+  --db ${dmnd} \
+  --query "${transcriptomes[$fasta]}" \
+  --out "${no_ext}".blastx.outfmt6 \
+  --outfmt 6 \
+  --evalue 1e-4 \
+  --max-target-seqs 1 \
+  --block-size 15.0 \
+  --index-chunks 4
 done
 
 
