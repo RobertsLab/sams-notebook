@@ -25,11 +25,13 @@ Output folder:
 
 - [20200605_cbai_v2.0_v3.0_megan_seq_extractions](https://gannet.fish.washington.edu/Atumefaciens/20200605_cbai_v2.0_v3.0_megan_seq_extractions/)
 
+- [20200605_cbai_v2.0_v3.0_megan_seq_extractions/megan_log.txt](https://gannet.fish.washington.edu/Atumefaciens/20200605_cbai_v2.0_v3.0_megan_seq_extractions/megan_log.txt)
+
 ---
 
 ##### _C.bairdi_ Transcritpomes:
 
-- [cbai_transcriptome_v2.1.fasta)](https://gannet.fish.washington.edu/Atumefaciens/20200605_cbai_v2.0_v3.0_megan_seq_extractions/cbai_transcriptome_v2.1.fasta) (241MB)
+- [cbai_transcriptome_v2.1.fasta](https://gannet.fish.washington.edu/Atumefaciens/20200605_cbai_v2.0_v3.0_megan_seq_extractions/cbai_transcriptome_v2.1.fasta) (241MB)
 
 - [cbai_transcriptome_v3.1.fasta](https://gannet.fish.washington.edu/Atumefaciens/20200605_cbai_v2.0_v3.0_megan_seq_extractions/cbai_transcriptome_v3.1.fasta) (139MB)
 
@@ -41,10 +43,32 @@ Output folder:
 
 - [hemat_transcriptome_v3.1.fasta](https://gannet.fish.washington.edu/Atumefaciens/20200605_cbai_v2.0_v3.0_megan_seq_extractions/hemat_transcriptome_v3.1.fasta) (65MB)
 
+---
 
 Screenshots of taxonomic trees in MEGAN6 used to extract sequences for each new transcriptome:
 
+#### `cbai_transcriptome_v2.0 MEGAN non-Alveolota taxonomic tree`
+
+![cbai_transcriptome_v2.0 MEGAN non-alveolota taxonomic tree](https://github.com/RobertsLab/sams-notebook/blob/master/images/screencaps/20200605_cbai_v2.0_megan_non-alveolata_seq_extractions.png?raw=true)
+
+---
 
 
+#### `cbai_transcriptome_v3.0 MEGAN non-Alveolota taxonomic tree`
 
-Both transcriptomes will be added to our [Genomic Resources wiki](https://github.com/RobertsLab/resources/wiki/Genomic-Resources).
+![cbai_transcriptome_v3.0 MEGAN non-alveolota taxonomic tree](https://github.com/RobertsLab/sams-notebook/blob/master/images/screencaps/20200605_cbai_v3.0_megan_non-alveolata_seq_extractions.png?raw=true)
+
+---
+
+#### `hemat_transcriptome_v2.0 MEGAN Alveolata only taxonomic tree`
+
+![hemat_transcriptome_v2.0 MEGAN Alveolata only taxonomic tree](https://github.com/RobertsLab/sams-notebook/blob/master/images/screencaps/20200605_cbai_v2.0_megan_alveolata_seq_extractions.png?raw=true)
+
+---
+
+#### `hemat_transcriptome_v3.0 MEGAN Alveolata only taxonomic tree`
+
+![hemat_transcriptome_v3.0 MEGAN Alveolata only taxonomic tree](https://github.com/RobertsLab/sams-notebook/blob/master/images/screencaps/20200605_cbai_v3.0_megan_alveolata_seq_extractions.png?raw=true)
+
+
+The transcriptomes will be added to our [Genomic Resources wiki](https://github.com/RobertsLab/resources/wiki/Genomic-Resources). Next up is to run BUSCO and generate BUSCO comparisons to previous transcriptome assemblies.
