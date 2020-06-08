@@ -163,7 +163,21 @@ Short summary file (text):
 - [20200605_cbai_busco_transcriptome_v3.1/run_cbai_transcriptome_v3.1.fasta/short_summary_cbai_transcriptome_v3.1.fasta.txt](https://gannet.fish.washington.edu/Atumefaciens/20200605_cbai_busco_transcriptome_v3.1/run_cbai_transcriptome_v3.1.fasta/short_summary_cbai_transcriptome_v3.1.fasta.txt)
 
 ```
+# BUSCO version is: 3.0.2
+# The lineage dataset is: metazoa_odb9 (Creation date: 2016-02-13, number of species: 65, number of BUSCOs: 978)
+# To reproduce this run: python /gscratch/srlab/programs/busco-v3/scripts/run_BUSCO.py -i /gscratch/srlab/sam/data/C_bairdi/transcriptomes/cbai_transcriptome_v3.1.fasta -o cbai_transcriptome_v3.1.fasta -l /gscratch/srlab/sam/data/databases/BUSCO/metazoa_odb9/ -m transcriptome -c 28 --long -z
+#
+# Summarized benchmarking in BUSCO notation for file /gscratch/srlab/sam/data/C_bairdi/transcriptomes/cbai_transcriptome_v3.1.fasta
+# BUSCO was run in mode: transcriptome
 
+	C:96.5%[S:40.3%,D:56.2%],F:2.2%,M:1.3%,n:978
+
+	944	Complete BUSCOs (C)
+	394	Complete and single-copy BUSCOs (S)
+	550	Complete and duplicated BUSCOs (D)
+	22	Fragmented BUSCOs (F)
+	12	Missing BUSCOs (M)
+	978	Total BUSCO groups searched
 ```
 
 Will add scores to [Genomic Resources wiki](https://github.com/RobertsLab/resources/wiki/Genomic-Resources). Also, after running BUSCO on the `cbai_transcriptome_v3.1` transcriptome, I will update [my BUSCO comparision notebook entry from 20200528](https://robertslab.github.io/sams-notebook/2020/05/28/Transcriptome-Comparisons-C.bairdi-BUSCO-Scores.html).
