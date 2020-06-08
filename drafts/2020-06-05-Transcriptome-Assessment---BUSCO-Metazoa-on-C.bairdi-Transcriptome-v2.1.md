@@ -13,7 +13,7 @@ categories:
 ---
 Continuing to try to identify the best [_C.bairdi_ transcriptome](https://github.com/RobertsLab/resources/wiki/Genomic-Resources#transcriptomes), we decided to [extract all non-dinoflagellate sequences from `cbai_transcriptome_v2.0` (RNAseq shorthand: 2018, 2019, 2020-GW, 2020-UW) and `cbai_transcriptome_v3.0`](https://robertslab.github.io/sams-notebook/2020/06/05/Sequence-Extractions-C.bairdi-Transcriptomes-v2.0-and-v3.0-Excluding-Alveolata-with-MEGAN6-on-Swoose.html) (RNAseq shorthand: 2018, 2019, 2020-UW).
 
-Now, want to assess its `cbai_transcriptome_v2.0` "completeness" using BUSCO and the `metazoa_odb9` database.
+Now, want to assess `cbai_transcriptome_v2.1` "completeness" using BUSCO and the `metazoa_odb9` database.
 
 BUSCO was run with the `--mode transcriptome` option on Mox.
 
