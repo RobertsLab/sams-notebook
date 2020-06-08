@@ -20,6 +20,10 @@ categories:
 
 #### RESULTS
 
+Super fast - 40 seconds to process both transcriptomes:
+
+![cbai v2.1 and v3.1 diamond blastx runtime](https://github.com/RobertsLab/sams-notebook/blob/master/images/screencaps/20200608_cbai_diamond_blastx_v2.1_v3.1_runtime.png?raw=true)
+
 Output folder:
 
 - [20200608_cbai_diamond_blastx_v2.1_v3.1](https://gannet.fish.washington.edu/Atumefaciens/20200608_cbai_diamond_blastx_v2.1_v3.1)
