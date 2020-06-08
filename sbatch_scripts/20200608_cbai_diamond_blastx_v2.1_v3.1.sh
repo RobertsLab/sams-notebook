@@ -18,6 +18,10 @@
 #SBATCH --chdir=/gscratch/scrubbed/samwhite/outputs/20200608_cbai_diamond_blastx_v2.1_v3.1
 
 
+## Script for running BLASTx (using DIAMOND) to annotate
+## C.bairdi transcriptomes v2.1 and v3.1 against SwissProt database.
+## Output will be in standard BLAST output format 6.
+
 ###################################################################################
 # These variables need to be set by user
 
