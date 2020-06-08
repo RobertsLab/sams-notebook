@@ -13,7 +13,7 @@ tags:
 categories:
   - Miscellaneous
 ---
-Decided to annotate the two _C.bairdi_ transcriptomes , `cbai_transcriptome_v2.1` and `cbai_transcriptome_v3.1`, [generated on 20200605](https://robertslab.github.io/sams-notebook/2020/06/05/Sequence-Extractions-C.bairdi-Transcriptomes-v2.0-and-v3.0-Excluding-Alveolata-with-MEGAN6-on-Swoose.html)
+Decided to annotate the two _C.bairdi_ transcriptomes , `cbai_transcriptome_v2.1` and `cbai_transcriptome_v3.1`, [generated on 20200605](https://robertslab.github.io/sams-notebook/2020/06/05/Sequence-Extractions-C.bairdi-Transcriptomes-v2.0-and-v3.0-Excluding-Alveolata-with-MEGAN6-on-Swoose.html) using DIAMOND BLASTx on Mox.
 
 SBATCH script (GitHub):
 
@@ -143,3 +143,5 @@ BLASTx output files (BLAST output format 6 text):
 - [cbai_transcriptome_v2.1.blastx.outfmt6](https://gannet.fish.washington.edu/Atumefaciens/20200608_cbai_diamond_blastx_v2.1_v3.1/cbai_transcriptome_v2.1.blastx.outfmt6)
 
 - [cbai_transcriptome_v3.1.blastx.outfmt6](https://gannet.fish.washington.edu/Atumefaciens/20200608_cbai_diamond_blastx_v2.1_v3.1/cbai_transcriptome_v3.1.blastx.outfmt6)
+
+Will put link to each annotation on the [Genomic Resources wiki](https://github.com/RobertsLab/resources/wiki/Genomic-Resources).
