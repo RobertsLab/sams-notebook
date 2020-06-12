@@ -49,16 +49,6 @@ set -e
 
 module load intel-python3_2017
 
-# Document programs in PATH (primarily for program version ID)
-{
-date
-echo ""
-echo "System PATH for $SLURM_JOB_ID"
-echo ""
-printf "%0.s-" {1..10}
-echo "${PATH}" | tr : \\n
-} >> system_path.log
-
 # Program directories
 hisat2_dir="/gscratch/srlab/programs/hisat2-2.2.0/"
 samtools_dir="/gscratch/srlab/programs/samtools-1.10/samtools"
@@ -173,6 +163,16 @@ do
 
 
 done
+
+# Document programs in PATH (primarily for program version ID)
+{
+date
+echo ""
+echo "System PATH for $SLURM_JOB_ID"
+echo ""
+printf "%0.s-" {1..10}
+echo "${PATH}" | tr : \\n
+} >> system_path.log
 
 
 # Capture program options
