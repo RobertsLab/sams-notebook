@@ -177,7 +177,7 @@ do
   -1 "${R1_list}" \
   -2 "${R2_list}" \
   -S "${transcriptome_name}".sam \
-  | tee "${transcriptome_name}".alignment_stats.txt
+  2>&1 | tee "${transcriptome_name}".alignment_stats.txt
 
   # Convert SAM file to BAM
   ${programs_array[samtools_view]} \
