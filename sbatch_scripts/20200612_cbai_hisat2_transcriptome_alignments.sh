@@ -179,20 +179,20 @@ do
   -S "${transcriptome_name}".sam
 
   # Convert SAM file to BAM
-  "${programs_array[samtools_view]}" \
+  ${programs_array[samtools_view]} \
   --threads ${threads} \
   -b "${transcriptome_name}".sam \
   > "${transcriptome_name}".bam
 
   # Sort BAM
-  "${programs_array[samtools_sort]}" \
+  ${programs_array[samtools_sort]} \
   --threads ${threads} \
   "${transcriptome_name}".bam \
   -o "${transcriptome_name}".sorted.bam
 
   # Index for use in IGV
   ##-@ specifies thread count; --thread option not available in samtools index
-  "${programs_array[samtools_index]}" \
+  ${programs_array[samtools_index]} \
   -@ ${threads} \
   "${transcriptome_name}".sorted.bam
 
