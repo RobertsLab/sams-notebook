@@ -46,8 +46,9 @@ transcriptomes_array=(
 set -e
 
 # Load Python Mox module for Python module availability
-
-module load intel-python3_2017
+## Hisat2 requires Python2. Fails with syntax error if using Python3
+#module load intel-python3_2017
+module load intel-python2_2017
 
 # Program directories
 hisat2_dir="/gscratch/srlab/programs/hisat2-2.2.0/"
