@@ -59,7 +59,8 @@ programs_array=(
 [hisat2]="${hisat2_dir}hisat2" \
 [hisat2_build]="${hisat2_dir}hisat2-build" \
 [samtools_view]="${samtools_dir} view" \
-[samtools_sort]="${samtools_dir} sort"
+[samtools_sort]="${samtools_dir} sort" \
+[samtools_index]="${samtools_dir} index"
 )
 
 
@@ -153,6 +154,12 @@ do
 
   fi
 
+  # Build hisat2 transcriptome index
+  ${programs_array[hisat2_build]} \
+  -f "${transcriptomes_array[$transcriptome]}" \
+  "${transcriptome_name}" \
+  -p ${threads}
+
   # Create list of fastq files used in analysis
   ## Uses parameter substitution to strip leading path from filename
   printf "%s\n" "${reads_array[@]##*/}" >> "${transcriptome_name}".fastq.list.txt
@@ -160,6 +167,36 @@ do
   # Create comma-separated lists of FastQ reads
   R1_list=$(echo "${R1_array[@]}" | tr " " ",")
   R2_list=$(echo "${R2_array[@]}" | tr " " ",")
+
+  # Align reads to oly genome assembly
+  ${programs_array[hisat2]} \
+  --threads ${threads} \
+  -x "${transcriptome_name}" \
+  -q \
+  -1 "${R1_list}" \
+  -2 "${R2_list}" \
+  -S "${transcriptome_name}".sam
+
+  # Convert SAM file to BAM
+  "${programs_array[samtools_view]}" \
+  --threads ${threads} \
+  -b "${transcriptome_name}".sam \
+  > "${transcriptome_name}".bam
+
+  # Sort BAM
+  "${programs_array[samtools_sort]}" \
+  --threads ${threads} \
+  "${transcriptome_name}".bam \
+  -o "${transcriptome_name}".sorted.bam
+
+  # Index for use in IGV
+  ##-@ specifies thread count; --thread option not available in samtools index
+  "${programs_array[samtools_index]}" \
+  -@ ${threads} \
+  "${transcriptome_name}".sorted.bam
+
+  # Remove original SAM and unsorted BAM
+  rm "${transcriptome_name}".bam "${transcriptome_name}".sam
 
 
 done
@@ -187,5 +224,5 @@ do
 	echo "----------------------------------------------"
 	echo ""
 	echo ""
-} &>> program_options.log || true
+  } &>> program_options.log || true
 done
