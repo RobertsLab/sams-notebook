@@ -87,7 +87,7 @@ do
   echo "Finished generating checksum for ${transcriptome_name}"
   echo ""
 
-  if [[ "${transcriptome_name}" == "cbai_transcriptome_v1.0.fasta" ]]; then
+	if [[ "${transcriptome_name}" == "cbai_transcriptome_v1.0.fasta" ]]; then
 
     reads_array=("${reads_dir}"/20200[15][13][138]*megan*.fq)
 
@@ -129,7 +129,8 @@ do
     # Create array of fastq R2 files
     R2_array=("${reads_dir}"/20200[145][13][189]*megan*R2.fq)
 
-  elif [[ "${transcriptome_name}" == "cbai_transcriptome_v2.0.fasta" ]]; then
+  elif [[ "${transcriptome_name}" == "cbai_transcriptome_v2.0.fasta" ]] \
+  || [[ "${transcriptome_name}" == "cbai_transcriptome_v2.1.fasta" ]]; then
 
     reads_array=("${reads_dir}"/*fastp-trim*.fq)
 
@@ -139,7 +140,8 @@ do
     # Create array of fastq R2 files
     R2_array=("${reads_dir}"/*R2*fastp-trim*.fq)
 
-  elif [[ "${transcriptome_name}" == "cbai_transcriptome_v3.0.fasta" ]]; then
+  elif [[ "${transcriptome_name}" == "cbai_transcriptome_v3.0.fasta" ]] \
+  || [[ "${transcriptome_name}" == "cbai_transcriptome_v3.1.fasta" ]]; then
 
     reads_array=("${reads_dir}"/*fastp-trim*20[12][09][01][24]1[48]*.fq)
 
