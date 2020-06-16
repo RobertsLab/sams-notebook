@@ -167,7 +167,7 @@ FastA (412MB):
 
 - [cbai_transcriptome_v1.7.fasta](https://gannet.fish.washington.edu/Atumefaciens/20200527_cbai_trinity_arthropoda_pooled_RNAseq/trinity_out_dir/cbai_transcriptome_v1.7.fasta)
 
-  - MD5 = `af543720630e976ca41be3587dde242b`
+  - MD5 = `032d1f81c7744736ebeefe7f63ed6d95`
 
 FastA Index (text):
 
