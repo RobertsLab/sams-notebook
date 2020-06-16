@@ -36,7 +36,9 @@ transcriptomes_array=(
 "${transcriptomes_dir}"/cbai_transcriptome_v1.6.fasta \
 "${transcriptomes_dir}"/cbai_transcriptome_v1.7.fasta \
 "${transcriptomes_dir}"/cbai_transcriptome_v2.0.fasta \
-"${transcriptomes_dir}"/cbai_transcriptome_v3.0.fasta
+"${transcriptomes_dir}"/cbai_transcriptome_v2.1.fasta \
+"${transcriptomes_dir}"/cbai_transcriptome_v3.0.fasta \
+"${transcriptomes_dir}"/cbai_transcriptome_v3.1.fasta
 )
 
 
