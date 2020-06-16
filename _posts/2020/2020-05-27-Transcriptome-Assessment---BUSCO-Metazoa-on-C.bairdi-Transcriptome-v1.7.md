@@ -144,7 +144,7 @@ ${busco} \
 
 #### RESULTS
 
-As usual, super quick - 1m45s:
+As usual, super quick - 1m14s:
 
 ![cbai v1.7 busco runtime](https://github.com/RobertsLab/sams-notebook/blob/master/images/screencaps/20200527_cbai_busco_transcriptome_v1.7_runtime.png?raw=true)
 
