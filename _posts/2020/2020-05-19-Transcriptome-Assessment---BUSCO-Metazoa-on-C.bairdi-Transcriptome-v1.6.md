@@ -162,17 +162,17 @@ BUSCO short summary (text):
 ```
 # BUSCO version is: 3.0.2
 # The lineage dataset is: metazoa_odb9 (Creation date: 2016-02-13, number of species: 65, number of BUSCOs: 978)
-# To reproduce this run: python /gscratch/srlab/programs/busco-v3/scripts/run_BUSCO.py -i /gscratch/srlab/sam/data/C_bairdi/transcriptomes/cbai_transcriptome_v1.6.fasta -o 20200519.cbai -l /gscratch/srlab/sam/data/databases/BUSCO/metazoa_odb9/ -m transcriptome -c 28 --long -z
+# To reproduce this run: python /gscratch/srlab/programs/busco-v3/scripts/run_BUSCO.py -i /gscratch/srlab/sam/data/C_bairdi/transcriptomes/cbai_transcriptome_v1.6.fasta -o 20200615.cbai -l /gscratch/srlab/sam/data/databases/BUSCO/metazoa_odb9/ -m transcriptome -c 28 --long -z
 #
 # Summarized benchmarking in BUSCO notation for file /gscratch/srlab/sam/data/C_bairdi/transcriptomes/cbai_transcriptome_v1.6.fasta
 # BUSCO was run in mode: transcriptome
 
-	C:91.7%[S:67.2%,D:24.5%],F:6.1%,M:2.2%,n:978
+	C:91.7%[S:62.6%,D:29.1%],F:6.2%,M:2.1%,n:978
 
 	897	Complete BUSCOs (C)
-	657	Complete and single-copy BUSCOs (S)
-	240	Complete and duplicated BUSCOs (D)
-	60	Fragmented BUSCOs (F)
-	21	Missing BUSCOs (M)
+	612	Complete and single-copy BUSCOs (S)
+	285	Complete and duplicated BUSCOs (D)
+	61	Fragmented BUSCOs (F)
+	20	Missing BUSCOs (M)
 	978	Total BUSCO groups searched
   ```
