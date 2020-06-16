@@ -15,7 +15,7 @@
 #SBATCH --mail-type=ALL
 #SBATCH --mail-user=samwhite@uw.edu
 ## Specify the working directory for this job
-#SBATCH --chdir=/gscratch/scrubbed/samwhite/outputs/20200612_cbai_hisat2_transcriptome_alignments
+#SBATCH --chdir=/gscratch/scrubbed/samwhite/outputs/20200616_cbai_hisat2_transcriptome_alignments
 
 
 ###################################################################################
