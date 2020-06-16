@@ -203,7 +203,7 @@ report \
 
 #### RESULTS
 
-Pretty quick, ~36 mins:
+Pretty quick, ~28 mins:
 
 ![cbai v1.7 trinotate runtime](https://github.com/RobertsLab/sams-notebook/blob/master/images/screencaps/20200529_cbai_trinotate_transcriptome-v1.7_runtime.png?raw=true)
 
