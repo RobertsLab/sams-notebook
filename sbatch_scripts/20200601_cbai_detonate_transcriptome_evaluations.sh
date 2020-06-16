@@ -51,16 +51,6 @@ set -e
 
 module load intel-python3_2017
 
-# Document programs in PATH (primarily for program version ID)
-{
-date
-echo ""
-echo "System PATH for $SLURM_JOB_ID"
-echo ""
-printf "%0.s-" {1..10}
-echo "${PATH}" | tr : \\n
-} >> system_path.log
-
 
 # Programs array
 declare -A programs_array
@@ -70,20 +60,6 @@ programs_array=(
 [detonate]="/gscratch/srlab/programs/detonate-1.11/rsem-eval/rsem-eval-calculate-score"
 )
 
-# Capture program options
-for program in "${!programs_array[@]}"
-do
-	{
-  echo "Program options for ${program}: "
-	echo ""
-	${programs_array[$program]} --help
-	echo ""
-	echo ""
-	echo "----------------------------------------------"
-	echo ""
-	echo ""
-} &>> program_options.log || true
-done
 
 
 
@@ -206,4 +182,29 @@ do
 
 
 
+done
+
+# Document programs in PATH (primarily for program version ID)
+{
+date
+echo ""
+echo "System PATH for $SLURM_JOB_ID"
+echo ""
+printf "%0.s-" {1..10}
+echo "${PATH}" | tr : \\n
+} >> system_path.log
+
+# Capture program options
+for program in "${!programs_array[@]}"
+do
+	{
+  echo "Program options for ${program}: "
+	echo ""
+	${programs_array[$program]} --help
+	echo ""
+	echo ""
+	echo "----------------------------------------------"
+	echo ""
+	echo ""
+} &>> program_options.log || true
 done
