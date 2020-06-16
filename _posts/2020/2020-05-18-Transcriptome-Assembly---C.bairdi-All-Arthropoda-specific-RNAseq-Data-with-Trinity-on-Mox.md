@@ -149,7 +149,7 @@ md5sum trinity_out_dir/"${fasta_name}"
 
 #### RESULTS
 
-Pretty quick; only ~3.5hrs (NOTE: Job indicates it failed. This is due to wrong path for `md5sum` command on last line of script. Trinity _de novo_ assembly completed without issue.):
+Pretty quick; only ~2.5hrs (NOTE: Job indicates it failed. This is due to wrong path for `md5sum` command on last line of script. Trinity _de novo_ assembly completed without issue.):
 
 ![Trinity all Arthropoda-specific RNAseq runtime](https://github.com/RobertsLab/sams-notebook/blob/master/images/screencaps/20200518_cbai_trinity_all_Arthropoda_RNAseq_runtime.png?raw=true)
 
