@@ -97,7 +97,7 @@ ${diamond} blastx \
 
 #### RESULTS
 
-As usual, ridiculously fast - 13 seconds!
+As usual, ridiculously fast - 6 seconds!
 
 ![cbai v1.7 diamond blastx runtime](https://github.com/RobertsLab/sams-notebook/blob/master/images/screencaps/20200527_cbai_diamond_blastx_transcriptome_v1.7_runtime.png?raw=true)
 
