@@ -13,11 +13,16 @@ categories:
 ---
 After a meeting on this project yesterda, we decided to try a few things to continue with various approaches to assessing the metagenome. One of the approaches is to run BLASTx on the individual water sample MEGAHIT assemblies [from 20190327 ](https://robertslab.github.io/sams-notebook/2019/03/27/Metagenome-Assemblies-P.generosa-Water-Samples-Trimmed-HiSeqX-Data-Using-Megahit-on-Mox.html) and obtain taxonomy info for them, so that's what I did here.
 
-Samples breakdown like so, for reference:
+Here's how the sample names breakdown:
 
-- pH=7.1: MG3, MG6, MG7
-
-- pH=8.2: MG1, MG2, MG5
+| Sample | Develomental Stage (days post-fertilization) | pH Treatment |
+|--------|-------------------------|--------------|
+| MG1    | 13                      | 8.2          |
+| MG2    | 17                      | 8.2          |
+| MG3    | 6                       | 7.1          |
+| MG5    | 10                      | 8.2          |
+| MG6    | 13                      | 7.1          |
+| MG7    | 17                      | 7.1          |
 
 SBATCH script (GitHub):
 

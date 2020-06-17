@@ -17,6 +17,16 @@ After a meeting on this project around the middle of May, we decided to try vari
 
 Briefly, I parsed out and joined the data to generate the appropriate input file needed for visualizations using [Krona Tools](https://github.com/marbl/Krona/wiki) and then ran the `ktImportTaxonomy` Krona Tools program. This is all detailed in the Jupyter Notebook below.
 
+Here's how the sample names breakdown:
+
+| Sample | Develomental Stage (days post-fertilization) | pH Treatment |
+|--------|-------------------------|--------------|
+| MG1    | 13                      | 8.2          |
+| MG2    | 17                      | 8.2          |
+| MG3    | 6                       | 7.1          |
+| MG5    | 10                      | 8.2          |
+| MG6    | 13                      | 7.1          |
+| MG7    | 17                      | 7.1          |
 
 Jupyter Notebook (GitHub):
 

@@ -19,6 +19,17 @@ A report involving our work on the geoduck water metagenomics is due later this 
 
 - pH=8.2
 
+Here's how the sample names breakdown:
+
+| Sample | Develomental Stage (days post-fertilization) | pH Treatment |
+|--------|-------------------------|--------------|
+| MG1    | 13                      | 8.2          |
+| MG2    | 17                      | 8.2          |
+| MG3    | 6                       | 7.1          |
+| MG5    | 10                      | 8.2          |
+| MG6    | 13                      | 7.1          |
+| MG7    | 17                      | 7.1          |
+
 I ran [MEGAHIT](https://github.com/voutcn/megahit) on the [trimmed HiSeqX data](https://robertslab.github.io/sams-notebook/2018/12/11/FastQC-and-Trimming-Metagenomics-(Geoduck)-HiSeqX-Reads-from-20180809.html), but concatenated the corresponding pH treatment FastQ files to create a single assembly for each pH treatment.
 
 SBATCH script (GitHub):

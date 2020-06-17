@@ -13,7 +13,18 @@ categories:
 ---
 Continuing with a relatively quick comparison of pH treatments (pH=7.1 vs. pH=8.2), I wanted to run gene prediction on the [MEGAHIT assemblies I made yesterday](https://robertslab.github.io/sams-notebook/2019/04/15/Metagenome-Assemblies-P.generosa-Water-Samples-Trimmed-HiSeqX-Data-Using-Megahit-on-Mox-to-Compare-pH-Treatments.html). I ran [MetaGeneMark](http://opal.biology.gatech.edu/GeneMark/) on the two pH-specific assemblies on Mox. This should be a _very_ fast process (I'm talking, like a couple of minutes fast), so it enhances the annotation with very little effort and time.
 
-This will output a nucleotides FastA, proteins FastA, and a GFF for each of the two assemblies (i.e. pH treatments)
+This will output a nucleotides FastA, proteins FastA, and a GFF for each of the two assemblies (i.e. pH treatments).
+
+Here's how the sample names breakdown:
+
+| Sample | Develomental Stage (days post-fertilization) | pH Treatment |
+|--------|-------------------------|--------------|
+| MG1    | 13                      | 8.2          |
+| MG2    | 17                      | 8.2          |
+| MG3    | 6                       | 7.1          |
+| MG5    | 10                      | 8.2          |
+| MG6    | 13                      | 7.1          |
+| MG7    | 17                      | 7.1          |
 
 SBATCH script (GitHub):
 

@@ -30,6 +30,17 @@ Jupyter Notebook (GitHub):
 
 This was followed up by using [Krona](https://github.com/marbl/Krona/wiki) to plot the data in an interactive fashion, according to NCBI taxonomic ID abundance (see Results below).
 
+Here's how the sample names breakdown:
+
+| Sample | Develomental Stage (days post-fertilization) | pH Treatment |
+|--------|-------------------------|--------------|
+| MG1    | 13                      | 8.2          |
+| MG2    | 17                      | 8.2          |
+| MG3    | 6                       | 7.1          |
+| MG5    | 10                      | 8.2          |
+| MG6    | 13                      | 7.1          |
+| MG7    | 17                      | 7.1          |
+
 ---
 
 #### RESULTS

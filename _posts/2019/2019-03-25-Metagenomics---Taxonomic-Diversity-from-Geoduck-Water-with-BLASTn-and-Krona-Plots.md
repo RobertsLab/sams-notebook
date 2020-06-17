@@ -15,6 +15,17 @@ Continuing on getting the metagenomics sequencing project written up as a manusc
 
 - [20190103-mgm-nucleotides.fa](http://gannet.fish.washington.edu/Atumefaciens/20190103_metagenomics_geo_metagenemark/20190103-mgm-nucleotides.fa) (1.6GB)
 
+Here's how the sample names breakdown:
+
+| Sample | Develomental Stage (days post-fertilization) | pH Treatment |
+|--------|-------------------------|--------------|
+| MG1    | 13                      | 8.2          |
+| MG2    | 17                      | 8.2          |
+| MG3    | 6                       | 7.1          |
+| MG5    | 10                      | 8.2          |
+| MG6    | 13                      | 7.1          |
+| MG7    | 17                      | 7.1          |
+
 SBATCH script:
 
 - [20190325_blastn_metagenomics_geoduck_metagenemark.sh](https://github.com/RobertsLab/sams-notebook/blob/master/sbatch_scripts/20190325_blastn_metagenomics_geoduck_metagenemark.sh)

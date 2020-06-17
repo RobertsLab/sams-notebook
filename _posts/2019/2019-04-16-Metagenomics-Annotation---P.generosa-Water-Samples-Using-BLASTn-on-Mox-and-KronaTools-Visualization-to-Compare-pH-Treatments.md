@@ -17,6 +17,17 @@ Nearing the end of this quick metagenomics comparison of taxonomic differences b
 
 - [MetaGeneMark gene prediction](https://robertslab.github.io/sams-notebook/2019/04/16/Metagenomics-Gene-Prediction-P.generosa-Water-Samples-Using-MetaGeneMark-on-Mox-to-Compare-pH-Treatments.html)
 
+Here's how the sample names breakdown:
+
+| Sample | Develomental Stage (days post-fertilization) | pH Treatment |
+|--------|-------------------------|--------------|
+| MG1    | 13                      | 8.2          |
+| MG2    | 17                      | 8.2          |
+| MG3    | 6                       | 7.1          |
+| MG5    | 10                      | 8.2          |
+| MG6    | 13                      | 7.1          |
+| MG7    | 17                      | 7.1          |
+
 After this completes, I'll run [KronaTools](https://github.com/marbl/Krona/wiki/KronaTools) to get a rundown on taxonomic makeup of these two different pH treatments. I don't expect BLASTn to take terribly long (based on previous metagenomics runs wit this data set); I'd guess around 6hrs.
 
 SBATCH script (GitHub):

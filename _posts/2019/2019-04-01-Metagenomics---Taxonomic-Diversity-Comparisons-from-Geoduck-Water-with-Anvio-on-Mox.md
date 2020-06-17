@@ -16,6 +16,17 @@ I decided to give [Anvi'o](http://merenlab.org/software/anvio/) a shot for this 
 
 I used my [MEGAHIT assembly of all samples combined (from 20190102 )](https://robertslab.github.io/sams-notebook/2019/01/02/Metagenome-Assembly-P.generosa-Water-Sample-HiSeqX-Data-Using-Megahit.html) as the reference assembly and those trimmed FastQs for mapping each water sample to the reference assembly.
 
+Here's how the sample names breakdown:
+
+| Sample | Develomental Stage (days post-fertilization) | pH Treatment |
+|--------|-------------------------|--------------|
+| MG1    | 13                      | 8.2          |
+| MG2    | 17                      | 8.2          |
+| MG3    | 6                       | 7.1          |
+| MG5    | 10                      | 8.2          |
+| MG6    | 13                      | 7.1          |
+| MG7    | 17                      | 7.1          |
+
 I did hit a bit of a snag after I initially started this on 20190401:
 
 ![Anvi'o's screencap showing memory requirement and skull](https://github.com/RobertsLab/sams-notebook/blob/master/images/screencaps/20190404_metagenomics_pgen_anvio-01.png?raw=true)
