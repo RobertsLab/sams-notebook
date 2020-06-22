@@ -4,7 +4,7 @@
 ### a list of UniProt accessions.
 
 # Initialize variables
-base_url=""
+base_url="https://www.uniprot.org/uniprot/"
 descriptor=""
 error_count=0
 go_line=""
@@ -20,7 +20,7 @@ do
   uniprot_file="${line}.txt"
 
   # Record GET response code and download target file.
-  response=$(curl --write-out %{http_code} --silent --output "${uniprot_file}" https://www.uniprot.org/uniprot/${uniprot_file})
+  response=$(curl --write-out %{http_code} --silent --output "${uniprot_file}" https://www.uniprot.org/uniprot/"${uniprot_file}")
 
   # Vefrify file was able to be retrieved, based on succesful HTTP server response code
   if [[ "${response}" -eq 200 ]]; then
@@ -42,7 +42,8 @@ do
 
       # Append GO IDs to array
       if [[ "${go_line}" == "GO;" ]]; then
-        echo "${line}" | awk '{print $3}' | tr --delete ";"
+        go_id=$(echo "${line}" | awk '{print $3}')
+        go_ids_array+=("${go_id}")
       fi
     done < "${uniprot_file}"
 
