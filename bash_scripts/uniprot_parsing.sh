@@ -69,10 +69,10 @@ do
   else
     error_count=$((error_count+1))
     printf "%s\n" "${accession}" >> failed_accessions.txt
-    rm "${uniprot_file}"
   fi
 
-
+# If a file was downloaded, remove it.
+test -f "${uniprot_file}" && rm "${uniprot_file}"
 
 
 done < "${input_file}"
