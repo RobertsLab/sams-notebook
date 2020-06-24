@@ -29,7 +29,7 @@ do
   # Record GET response code and download target file.
   # --ciphers argument seems to be needed when using Ubuntu 20.04.
   response=$(curl \
-  --write-out %{http_code}
+  --write-out %{http_code} \
   --ciphers 'DEFAULT:@SECLEVEL=1' \
   --silent \
   --output "${uniprot_file}" \
@@ -74,3 +74,8 @@ do
 
 
 done < "${input_file}"
+
+if [[ "${error_count}" -gt 0 ]]; then
+  echo "${error_count} accessions were not processed."
+  echo "Please see failed_accessions.txt file "
+fi
