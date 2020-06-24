@@ -81,6 +81,6 @@ done < "${input_file}"
 if [[ "${error_count}" -gt 0 ]]; then
   {
     echo "${error_count} accessions were not processed."
-    echo "Please see failed_accessions.txt file."
+    echo "Please see: failed_accessions.txt"
   } 1>&2
 fi
