@@ -3,8 +3,10 @@
 ### Bash script for batch retrieval of Gene Ontology terms from uniprot.org from
 ### a list of UniProt accessions.
 
-### Expected input is a newline separated file of UniProt accessions.
+### Expected input is a newline-separated file of UniProt accessions.
 ### Output is: UniProt_accession<tab>GOID1;GOID2;..GOIDn;
+
+### Run script like this: ./uniprot2go.sh accessions.txt > uniprot2go_out.txt
 
 # Save first argument as variable.
 input_file="$1"
@@ -75,6 +77,8 @@ done < "${input_file}"
 
 # Print error message if any accessions failed to download.
 if [[ "${error_count}" -gt 0 ]]; then
-  echo "${error_count} accessions were not processed."
-  echo "Please see failed_accessions.txt file."
+  {
+    echo "${error_count} accessions were not processed."
+    echo "Please see failed_accessions.txt file."
+  } 1>&2
 fi
