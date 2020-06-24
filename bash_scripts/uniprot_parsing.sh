@@ -62,6 +62,9 @@ do
 
     done < "${uniprot_file}"
 
+    # Prints accession<tab>GOID1;GOID2;GOIDn; followed by newline
+    (IFS=; printf "%s\t%s" "${accession}" "${go_ids_array[*]}"; echo)
+
   # Record accession numbers of those that failed to download.
   else
     error_count=$((error_count+1))
@@ -69,8 +72,7 @@ do
     rm "${uniprot_file}"
   fi
 
-  # Prints accession<tab>GOID1;GOID2;GOIDn; followed by newline
-  (IFS=; printf "%s\t%s" "${accession}" "${go_ids_array[*]}"; echo)
+
 
 
 done < "${input_file}"
