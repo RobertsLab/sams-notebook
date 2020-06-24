@@ -3,6 +3,10 @@
 ### Bash script for batch retrieval of Gene Ontology terms from uniprot.org from
 ### a list of UniProt accessions.
 
+### Expected input is a newline separated file of UniProt accessions.
+### Output is: UniProt_accession<tab>GOID1;GOID2;..GOIDn;
+
+# Save first argument as variable.
 input_file="$1"
 
 # Initialize variables
@@ -26,7 +30,7 @@ do
   uniprot_file="${accession}.txt"
 
 
-  # Record GET response code and download target file.
+  # Record HTTP GET response code and download target file.
   # --ciphers argument seems to be needed when using Ubuntu 20.04.
   response=$(curl \
   --write-out %{http_code} \
@@ -35,7 +39,7 @@ do
   --output "${uniprot_file}" \
   "${base_url}${uniprot_file}")
 
-  # Vefrify file was able to be retrieved, based on succesful HTTP server response code
+  # Verify file was able to be retrieved, based on succesful HTTP server response code = 200
   if [[ "${response}" -eq 200 ]]; then
 
     # Process downloaded UniProt accession text file.
@@ -48,11 +52,6 @@ do
       # Capture second field for evaluation
       go_line=$(echo "${line}" | awk '{print $2}')
 
-      # Print abbreviated protein name
-      if [[ "${descriptor}" == "ID" ]]; then
-        echo "${line}" | awk '{print $2}'
-      fi
-
       # Append GO IDs to array
       if [[ "${go_line}" == "GO;" ]]; then
         go_id=$(echo "${line}" | awk '{print $3}')
@@ -61,21 +60,21 @@ do
 
     done < "${uniprot_file}"
 
-
-
+  # Record accession numbers of those that failed to download.
   else
     error_count=$((error_count+1))
     printf "%s\n" "${accession}" >> failed_accessions.txt
     rm "${uniprot_file}"
   fi
 
-  # Prints accession <tab> GOID1;GOID2;GOIDn; followed by newline
+  # Prints accession<tab>GOID1;GOID2;GOIDn; followed by newline
   (IFS=; printf "%s\t%s" "${accession}" "${go_ids_array[*]}"; echo)
 
 
 done < "${input_file}"
 
+# Print error message if any accessions failed to download.
 if [[ "${error_count}" -gt 0 ]]; then
   echo "${error_count} accessions were not processed."
-  echo "Please see failed_accessions.txt file "
+  echo "Please see failed_accessions.txt file."
 fi
