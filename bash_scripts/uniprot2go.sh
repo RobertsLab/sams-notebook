@@ -62,8 +62,10 @@ do
 
     done < "${uniprot_file}"
 
-    # Prints accession<tab>GOID1;GOID2;GOIDn; followed by newline
-    (IFS=; printf "%s\t%s" "${accession}" "${go_ids_array[*]}"; echo)
+    # Prints accession<tab>GOID1;GOID2;GOIDn
+    # IFS prevents spaces from being added between GO IDs
+    # sed removes ";" after final GO ID
+    (IFS=; printf "%s\t%s" "${accession}" "${go_ids_array[*]}" | sed 's/.$//')
 
   # Record accession numbers of those that failed to download.
   else
