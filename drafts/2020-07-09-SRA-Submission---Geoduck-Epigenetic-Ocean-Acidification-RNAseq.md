@@ -10,7 +10,16 @@ tags:
 categories:
   - SRA Submission
 ---
+Can't remember where it was discussed (probably lab meeting), but I created a [GitHub Issue to add all of geoduck RNAseq data to NCBI Short Read Archive (SRA)](https://github.com/RobertsLab/resources/issues/963). Anyway, got all the remaining RNAseq data uploaded to the NCBI SRA and organized into the correct BioSamples and BioProjects.
 
+The table below has links to each corresponding NCBI BioSample and BioProject. NCBI indicates that references should point to a particular BioProject; not individual Short Read References (SRR).
+
+I've added the corresponding links to the NCBI BioProjects to our sequencing database, [Nightingales (Google Sheet)](http://b.link/nightingales).
+
+Below is a table sorted by BioProject that also includes links to each BioSample for each "SeqID" (the SeqID is a unique identifier, usually the FastQ filename prefix) used in [Nightingales (Google Sheet)](http://b.link/nightingales).
+
+
+---
 
 | SeqID                                                        | BioSample                                                   | Tissue   | BioProject                                                         |
 |--------------------------------------------------------------|-------------------------------------------------------------|----------|--------------------------------------------------------------------|
