@@ -26,11 +26,22 @@ Samples were pulverized under liquid nitrogen (LN2). Samples were _not_ weighed 
 
 DNA was quantified using the Roberts Lab Qubit 3.0 using the dsDNA BR Assay (Invitrogen) and 1uL of each sample.
 
+Resulting DNA was stored in [Sam's gDNA Box #3, Positions I4 - I8](https://docs.google.com/spreadsheets/d/1SWzKMKh7LBOgTfvEhJamE6pZFsTpRXY7otzXUC5fZSM/edit?usp=sharing)
+
 
 ---
 
 #### RESULTS
 
-Output folder:
+Qubit results (Google Sheet):
 
-- []()
+- [20200722_qubit_DNA_gigas_ploidy](https://docs.google.com/spreadsheets/d/1JhG0lAn9JjFQgJPjq67cOMrtqDT03nQuNSpRR_i7ojU/edit?usp=sharing)
+
+
+| Sample             | Original sample conc. (ng/uL) | Elution volume (uL) | Yield (ng) |
+|--------------------|-------------------------------|---------------------|------------|
+| Nisbet #1 adductor | 50.4                          | 100                 | 5040       |
+| Nisbet #1 ctenidia | 80.2                          | 100                 | 8020       |
+| Nisbet #1 gonad    | 14.8                          | 100                 | 1480       |
+| Nisbet #1 mantle   | 18.8                          | 100                 | 1880       |
+| Ronit D05 C2       | 89.4                          | 100                 | 8940       |
