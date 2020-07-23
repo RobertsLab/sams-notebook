@@ -26,7 +26,7 @@ Samples were pulverized under liquid nitrogen (LN2). Samples were _not_ weighed 
 
 DNA was quantified using the Roberts Lab Qubit 3.0 using the dsDNA BR Assay (Invitrogen) and 1uL of each sample.
 
-Resulting DNA was stored in [Sam's gDNA Box #3, Positions I4 - I8](https://docs.google.com/spreadsheets/d/1SWzKMKh7LBOgTfvEhJamE6pZFsTpRXY7otzXUC5fZSM/edit?usp=sharing)
+Resulting DNA was stored in [Sam's gDNA Box #3, Positions I4 - I9](https://docs.google.com/spreadsheets/d/1SWzKMKh7LBOgTfvEhJamE6pZFsTpRXY7otzXUC5fZSM/edit?usp=sharing)
 
 
 ---
@@ -45,3 +45,4 @@ Qubit results (Google Sheet):
 | Nisbet #1 gonad    | 14.8                          | 100                 | 1480       |
 | Nisbet #1 mantle   | 18.8                          | 100                 | 1880       |
 | Ronit D05 C2       | 89.4                          | 100                 | 8940       |
+| Ronit D04 C        | 97.0                          | 100                 | 9700       |
