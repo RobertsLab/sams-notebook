@@ -66,6 +66,25 @@ CFX Results File (CSV):
 
 - [sam_2020-07-23_09-33-48_BR006896-Quantification-Cq-Results.csv](https://owl.fish.washington.edu/Athaliana/qPCR_data/sam_2020-07-23_09-33-48_BR006896-Quantification-Cq-Results.csv)
 
+---
+
+Plot color legend:
+
+- APLP: BLACK
+
+- GSK3B: CHARTREUSE
+
+- NFIP1: POWDER BLUE
+
+- RPL5: BLUE
+
+- SPTN1: LIGHT GREEN
+
+- TIF3s6B: MAGENTA
+
+- No Template Controls: RED
+
+
 
 #### Amplifcation plots
 
@@ -73,3 +92,15 @@ CFX Results File (CSV):
 
 #### Melt curves
 ![Melt curves](https://owl.fish.washington.edu/Athaliana/qPCR_data/sam_2020-07-23%2009-33-48_melt_plots.png)
+
+---
+
+No template controls (NTCs) did not generate any amplification in any of the primer sets.
+
+All primer sets generated amplification in both cDNA and gDNA.
+
+There are only two primer sets that produced acceptable melt curves:
+
+- APLP (BLACK melt plot)
+
+- NFIP1 (POWDER BLUE melt plot)
