@@ -53,6 +53,23 @@ Master mix calcs are here:
 
 #### RESULTS
 
-Output folder:
+qPCR Report (PDF):
 
-- []()
+- [sam_2020-07-23_09-33-48_BR006896.pdf](https://owl.fish.washington.edu/Athaliana/qPCR_data/qPCR_reports/sam_2020-07-23_09-33-48_BR006896.pdf)
+
+CFX Data File (PCRD):
+
+- [sam_2020-07-23%2009-33-48_BR006896.pcrd](https://owl.fish.washington.edu/Athaliana/qPCR_data/sam_2020-07-23%2009-33-48_BR006896.pcrd)
+
+
+CFX Results File (CSV):
+
+- [sam_2020-07-23_09-33-48_BR006896-Quantification-Cq-Results.csv](https://owl.fish.washington.edu/Athaliana/qPCR_data/sam_2020-07-23_09-33-48_BR006896-Quantification-Cq-Results.csv)
+
+
+#### Amplifcation plots
+
+![Amplifcation plots](https://owl.fish.washington.edu/Athaliana/qPCR_data/sam_2020-07-23%2009-33-48_amp_plots.png)
+
+#### Melt curves
+![Melt curves](https://owl.fish.washington.edu/Athaliana/qPCR_data/sam_2020-07-23%2009-33-48_melt_plots.png)
