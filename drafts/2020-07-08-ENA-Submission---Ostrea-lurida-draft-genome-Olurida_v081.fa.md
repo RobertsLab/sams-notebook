@@ -30,9 +30,9 @@ I wasn't entirely sure how much coverage we had, so I entered 10x as a value, si
 
 Links to the `STUDY` and `SAMPLE` used for submission:
 
-Study: [PRJEB39287]
-Sample: [ERS4809621]
+Study: [PRJEB39287](https://www.ebi.ac.uk/ena/browser/view/PRJEB39287)
+Sample: [SAMEA7048989](https://www.ebi.ac.uk/ena/browser/view/SAMEA7048989)
 
----
+Link to the assembly accession:
 
-#### RESULTS
+[GCA_903981925](https://www.ebi.ac.uk/ena/data/view/GCA_903981925)
