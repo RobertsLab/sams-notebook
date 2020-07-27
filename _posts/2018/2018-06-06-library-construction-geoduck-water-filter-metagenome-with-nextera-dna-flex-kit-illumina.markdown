@@ -90,11 +90,11 @@ Links to the Illumina manuals are below:
 
 
 
-  * [Nextera DNA Flex Kit Manual (PDF)(https://github.com/RobertsLab/resources/blob/master/protocols/Commercial_Protocols/Illumina_nextera-dna-flex-library-prep-reference-guide-1000000025416-01_20180523.pdf)
+  * [Nextera DNA Flex Kit Manual (PDF)](https://github.com/RobertsLab/resources/blob/master/protocols/Commercial_Protocols/Illumina_nextera-dna-flex-library-prep-reference-guide-1000000025416-01_20180523.pdf)
 
 
 
-  * [Illumina Index Adapters Pooling Guide (PDF)(https://github.com/RobertsLab/resources/blob/master/protocols/Commercial_Protocols/Illumina_index-adapters-pooling-guide-1000000041074-02_20180523.pdf)
+  * [Illumina Index Adapters Pooling Guide (PDF)](https://github.com/RobertsLab/resources/blob/master/protocols/Commercial_Protocols/Illumina_index-adapters-pooling-guide-1000000041074-02_20180523.pdf)
 
 
 
@@ -160,9 +160,9 @@ Except for one library (Library Geoduck MG #04 is bad), the other libraries look
 
 When selecting the range listed in the Nextera Kit manual, the average fragment size is ~530bp - the expected size should be ~600bp.
 
-  
 
-  
+
+
 
 ![](https://owl.fish.washington.edu/Athaliana/20180606_bioanalyzer_all_electropherograms_geoduck_mg_libraries.PNG)
 
@@ -192,32 +192,32 @@ Email from Illumina is below. Even though he specifically references the H705 ad
 
 <blockquote>
   Hi Sam,
-  
+
   Thanks for the clarification! For the index sequence H705, this sequence is incorrect in the Index Adapters Pooling Guide. The correct information is found on page 12 of the same document and should be:
-  
+
   H705 “AGGAGTCC” (Bases in Adapter) and “GGACTCCT” (bases for sample sheet.
-  
+
   This is also consistent with the Illumina Adapters letter.
-  
+
   We have provided this feed back to our colleagues to update the document so that all the information is consistent.
-  
+
   Thanks for your patience and understanding while we evaluated this issue. If we do have any other questions or concerns, please let us know and we would be happy to discuss this further.
-  
+
   Best,
-  
+
   Russell
-  
+
   Russell Chan, Ph.D.
-  
+
   Technical Applications Scientist
-  
+
   Illumina Technical Support
-  
+
   Telephone available 24 hours
-  
+
   Monday through Friday
-  
+
   Technical Bulletins: https://support.illumina.com/bulletins.html
-  
+
   Trainings: https://support.illumina.com/traidexes
 </blockquote>
