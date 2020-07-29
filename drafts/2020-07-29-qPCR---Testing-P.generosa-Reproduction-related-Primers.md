@@ -67,3 +67,47 @@ CFX Results Files (CSV):
 - [sam_2020-07-29_05-36-56_BR006896-Quantification-Cq-Results.csv](https://owl.fish.washington.edu/Athaliana/qPCR_data/sam_2020-07-29_05-36-56_BR006896-Quantification-Cq-Results.csv) (`TIF3s8_FWD/REV-2` and `TIF3s12_FWD/REV`)
 
 - [sam_2020-07-29_06-54-35_BR00689_Quantification-Cq-Results.csv](https://owl.fish.washington.edu/Athaliana/qPCR_data/sam_2020-07-29_06-54-35_BR00689_Quantification-Cq-Results.csv) (`TIF3s8_FWD/REV-1`)
+
+
+---
+
+Plot color legend:
+
+- `TIF3s8_FWD/REV-2`: BLUE
+
+- `TIF3s12_FWD/REV`: GREEN
+
+- No Template Controls: RED
+
+
+#### Amplification plots
+
+![TIF3s8_FWD/REV-2 (blue) and TIF3s12_FWD/REV (green) amplifcation plots](https://owl.fish.washington.edu/Athaliana/qPCR_data/sam_2020-07-29%2005-36-56_BR006896_amp_plots.png)
+
+#### Melt curves
+![TIF3s8_FWD/REV-2 (blue) and TIF3s12_FWD/REV (green) melt curves](https://owl.fish.washington.edu/Athaliana/qPCR_data/sam_2020-07-29%2005-36-56_BR006896_melt_plots.png)
+
+---
+
+Plot color legend:
+
+- `TIF3s8_FWD/REV-1`: BLUE
+
+- No Template Controls: RED
+
+#### Amplification plots
+
+![TIF3s8_FWD/REV-1 amplifcation plots](https://owl.fish.washington.edu/Athaliana/qPCR_data/sam_2020-07-29_06-54-35_BR006896_amp_plots.png)
+
+#### Melt curves
+![TIF3s8_FWD/REV-1 melt curves](https://owl.fish.washington.edu/Athaliana/qPCR_data/sam_2020-07-29_06-54-35_BR00689_melt_plots.png)
+
+---
+
+Alrighty, so if it's not _too_ confusing looking at the plots above, here's how it breaks down, by primer set:
+
+- `TIF3s8_FWD/REV-1` (bottom pair of plots): Looks great. Come up ~34 Cq and has single, narrow melt curve peak. gDNA also amplifies and produces similar results, suggesting no intron present.
+
+- `TIF3s8_FWD/REV-2`: Looks bad; has very broad melt curve. Not usable.
+
+- `TIF3s12_FWD/REV`: Looks good. Comes up ~37 Cq and has single, narrow melt curve peak. No template control seems to begin amplifying very late (>40 Cq), but produce no detectable melt curve. gDNA also amplifies and produces similar results, suggesting no intron present. Due to late relatively late amplification, it might be preferable to use `TIF3s8_FWD/REV-1` as normalizing gene instead.
