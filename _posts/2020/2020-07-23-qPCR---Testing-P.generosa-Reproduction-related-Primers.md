@@ -86,7 +86,7 @@ Plot color legend:
 
 
 
-#### Amplifcation plots
+#### Amplification plots
 
 ![Amplifcation plots](https://owl.fish.washington.edu/Athaliana/qPCR_data/sam_2020-07-23%2009-33-48_amp_plots.png)
 
