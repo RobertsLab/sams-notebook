@@ -49,3 +49,21 @@ Used the same master mix calcs from 20200723:
 ---
 
 #### RESULTS
+
+qPCR Reports (PDF):
+
+- [sam_2020-07-29_05-36-56_BR006896.pdf](https://owl.fish.washington.edu/Athaliana/qPCR_data/qPCR_reports/sam_2020-07-29_05-36-56_BR006896.pdf) (`TIF3s8_FWD/REV-2` and `TIF3s12_FWD/REV`)
+
+- [sam_2020-07-29_06-54-35_BR00689.pdf](https://owl.fish.washington.edu/Athaliana/qPCR_data/qPCR_reports/sam_2020-07-29_06-54-35_BR00689.pdf) (`TIF3s8_FWD/REV-1`)
+
+CFX Data Files (PCRD):
+
+- [sam_2020-07-29_05-36-56_BR006896.pcrd](https://owl.fish.washington.edu/scaphapoda/qPCR_data/cfx_connect_data/sam_2020-07-29_05-36-56_BR006896.pcrd) (`TIF3s8_FWD/REV-2` and `TIF3s12_FWD/REV`)
+
+- [sam_2020-07-29_06-54-35_BR006896.pcrd](https://owl.fish.washington.edu/scaphapoda/qPCR_data/cfx_connect_data/sam_2020-07-29_06-54-35_BR006896.pcrd) (`TIF3s8_FWD/REV-1`)
+
+CFX Results Files (CSV):
+
+- [sam_2020-07-29_05-36-56_BR006896-Quantification-Cq-Results.csv](https://owl.fish.washington.edu/Athaliana/qPCR_data/sam_2020-07-29_05-36-56_BR006896-Quantification-Cq-Results.csv) (`TIF3s8_FWD/REV-2` and `TIF3s12_FWD/REV`)
+
+- [sam_2020-07-29_06-54-35_BR00689_Quantification-Cq-Results.csv](https://owl.fish.washington.edu/Athaliana/qPCR_data/sam_2020-07-29_06-54-35_BR00689_Quantification-Cq-Results.csv) (`TIF3s8_FWD/REV-1`)
