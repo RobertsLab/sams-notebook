@@ -69,11 +69,6 @@ md5sum "${assembly}" >> fasta.checksums.md5
 echo "Finished generating checksum for ${assembly}"
 echo ""
 
-# Build hisat2 index
-${programs_array[hisat2_build]} \
--f "${assembly}" \
-"${hisat2_basename}" \
--p ${threads}
 
 # Loop through each library
 for library in "${libraries_array[@]}"
