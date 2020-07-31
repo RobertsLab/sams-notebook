@@ -1,6 +1,6 @@
 #!/bin/bash
 ## Job Name
-#SBATCH --job-name=cbai_hisat2_transcriptome_alignments
+#SBATCH --job-name=metagenome_hisat2_alignments
 ## Allocation Definition
 #SBATCH --account=coenv
 #SBATCH --partition=coenv
