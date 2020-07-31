@@ -61,6 +61,7 @@ programs_array=(
 [samtools_view]="${samtools_dir} view" \
 [samtools_sort]="${samtools_dir} sort" \
 [samtools_index]="${samtools_dir} index"
+[samtools_idxstats]="${samtools_dir} idxstats"
 )
 
 # Capture FastA checksums for verification
@@ -184,6 +185,13 @@ do
   ${programs_array[samtools_index]} \
   -@ ${threads} \
   "${library}".sorted.bam
+
+  # Get index stats from sorted bam
+  # Third column is number of reads
+  ${programs_array[samtools_idxstats]} \
+  --threads ${threads} \
+  "${library}".sorted.bam \
+  > "${library}".sorted.bam.stats.txt
 
   # Remove original SAM and unsorted BAM
   rm "${library}".bam "${library}".sam
