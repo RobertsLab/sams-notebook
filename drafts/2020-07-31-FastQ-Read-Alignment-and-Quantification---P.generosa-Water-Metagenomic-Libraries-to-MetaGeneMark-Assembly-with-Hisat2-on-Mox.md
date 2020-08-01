@@ -261,4 +261,17 @@ done
 
 Output folder:
 
-- []()
+- [20200731_metagenome_hisat2_alignments/](https://gannet.fish.washington.edu/Atumefaciens/20200731_metagenome_hisat2_alignments/)
+
+
+- [MG_1.sorted.bam.stats.txt](https://gannet.fish.washington.edu/Atumefaciens/20200731_metagenome_hisat2_alignments/MG_1.sorted.bam.stats.txt)
+
+- [MG_2.sorted.bam.stats.txt](https://gannet.fish.washington.edu/Atumefaciens/20200731_metagenome_hisat2_alignments/MG_2.sorted.bam.stats.txt)
+
+- [MG_3.sorted.bam.stats.txt](https://gannet.fish.washington.edu/Atumefaciens/20200731_metagenome_hisat2_alignments/MG_3.sorted.bam.stats.txt)
+
+- [MG_5.sorted.bam.stats.txt](https://gannet.fish.washington.edu/Atumefaciens/20200731_metagenome_hisat2_alignments/MG_5.sorted.bam.stats.txt)
+
+- [MG_6.sorted.bam.stats.txt](https://gannet.fish.washington.edu/Atumefaciens/20200731_metagenome_hisat2_alignments/MG_6.sorted.bam.stats.txt)
+
+- [MG_7.sorted.bam.stats.txt](https://gannet.fish.washington.edu/Atumefaciens/20200731_metagenome_hisat2_alignments/MG_7.sorted.bam.stats.txt)
