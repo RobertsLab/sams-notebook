@@ -15,6 +15,19 @@ categories:
 ---
 
 
+Here's how the sample names breakdown:
+
+| Sample | Develomental Stage (days post-fertilization) | pH Treatment |
+|--------|-------------------------|--------------|
+| MG1    | 13                      | 8.2          |
+| MG2    | 17                      | 8.2          |
+| MG3    | 6                       | 7.1          |
+| MG5    | 10                      | 8.2          |
+| MG6    | 13                      | 7.1          |
+| MG7    | 17                      | 7.1          |
+
+
+
 SBATCH script (GitHub):
 
 - [20200731_metagenome_hisat2_alignments.sh](https://github.com/RobertsLab/sams-notebook/blob/master/sbatch_scripts/20200731_metagenome_hisat2_alignments.sh)
