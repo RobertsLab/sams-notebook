@@ -280,7 +280,13 @@ Output folder:
 
 - [20200731_metagenome_hisat2_alignments/](https://gannet.fish.washington.edu/Atumefaciens/20200731_metagenome_hisat2_alignments/)
 
+Samtools idxstats output files. They are tab-delimited.
 
+Format:
+
+`<sequence name> <sequence length> <# mapped read-segments> <# unmapped read-segments>`
+
+NOTE: The last line of each file begins with an asterisk and seems to have a total read count? It's not clear what this line is, as it is not described [in the `samtools idxstats` documentation](http://www.htslib.org/doc/samtools-idxstats.html).
 
 - [MG_1.sorted.bam.stats.txt](https://gannet.fish.washington.edu/Atumefaciens/20200731_metagenome_hisat2_alignments/MG_1.sorted.bam.stats.txt)
 
