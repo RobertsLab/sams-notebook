@@ -84,6 +84,7 @@ programs_array=(
 [samtools_view]="${samtools_dir} view" \
 [samtools_sort]="${samtools_dir} sort" \
 [samtools_index]="${samtools_dir} index"
+[samtools_idxstats]="${samtools_dir} idxstats"
 )
 
 # Capture FastA checksums for verification
@@ -114,65 +115,65 @@ do
 
   if [[ "${library}" == "MG_1" ]]; then
 
-    reads_array=("${reads_dir}"/*MG_1*.fastq.gz)
+    reads_array=("${reads_dir}"/*MG_1*fastq.gz)
 
     # Create array of fastq R1 files
-    R1_array=("${reads_dir}"/*MG_1*R1.fastq.gz)
+    R1_array=("${reads_dir}"/*MG_1*R1*fastq.gz)
 
     # Create array of fastq R2 files
-    R2_array=("${reads_dir}"/*MG_1*R2.fastq.gz)
+    R2_array=("${reads_dir}"/*MG_1*R2*fastq.gz)
 
 
 
   elif [[ "${library}" == "MG_2" ]]; then
 
-    reads_array=("${reads_dir}"/*MG_2*.fastq.gz)
+    reads_array=("${reads_dir}"/*MG_2*fastq.gz)
 
     # Create array of fastq R1 files
-    R1_array=("${reads_dir}"/*MG_2*R1.fastq.gz)
+    R1_array=("${reads_dir}"/*MG_2*R1*fastq.gz)
 
     # Create array of fastq R2 files
-    R2_array=("${reads_dir}"/*MG_2*R2.fastq.gz)
+    R2_array=("${reads_dir}"/*MG_2*R2*fastq.gz)
 
   elif [[ "${library}" == "MG_3" ]]; then
 
-    reads_array=("${reads_dir}"/*MG_3*.fastq.gz)
+    reads_array=("${reads_dir}"/*MG_3*fastq.gz)
 
     # Create array of fastq R1 files
-    R1_array=("${reads_dir}"/*MG_3*R1.fastq.gz)
+    R1_array=("${reads_dir}"/*MG_3*R1*fastq.gz)
 
     # Create array of fastq R2 files
-    R2_array=("${reads_dir}"/*MG_3*R2.fastq.gz)
+    R2_array=("${reads_dir}"/*MG_3*R2*fastq.gz)
 
   elif [[ "${library}" == "MG_5" ]]; then
 
-    reads_array=("${reads_dir}"/*MG_5*.fastq.gz)
+    reads_array=("${reads_dir}"/*MG_5*fastq.gz)
 
     # Create array of fastq R1 files
-    R1_array=("${reads_dir}"/*MG_5*R1.fastq.gz)
+    R1_array=("${reads_dir}"/*MG_5*R1*fastq.gz)
 
     # Create array of fastq R2 files
-    R2_array=("${reads_dir}"/*MG_5*R2.fastq.gz)
+    R2_array=("${reads_dir}"/*MG_5*R2*fastq.gz)
 
   elif [[ "${library}" == "MG_6" ]]; then
 
-    reads_array=("${reads_dir}"/*MG_6*.fastq.gz)
+    reads_array=("${reads_dir}"/*MG_6*fastq.gz)
 
     # Create array of fastq R1 files
-    R1_array=("${reads_dir}"/*MG_6*R1.fastq.gz)
+    R1_array=("${reads_dir}"/*MG_6*R1*fastq.gz)
 
     # Create array of fastq R2 files
-    R2_array=("${reads_dir}"/*MG_6*R2.fastq.gz)
+    R2_array=("${reads_dir}"/*MG_6*R2*fastq.gz)
 
   elif [[ "${library}" == "MG_7" ]]; then
 
-    reads_array=("${reads_dir}"/*MG_7*.fastq.gz)
+    reads_array=("${reads_dir}"/*MG_7*fastq.gz)
 
     # Create array of fastq R1 files
-    R1_array=("${reads_dir}"/*MG_7*R1.fastq.gz)
+    R1_array=("${reads_dir}"/*MG_7*R1*fastq.gz)
 
     # Create array of fastq R2 files
-    R2_array=("${reads_dir}"/*MG_7*R2.fastq.gz)
+    R2_array=("${reads_dir}"/*MG_7*R2*fastq.gz)
 
 
   fi
@@ -212,6 +213,13 @@ do
   ${programs_array[samtools_index]} \
   -@ ${threads} \
   "${library}".sorted.bam
+
+  # Get index stats from sorted bam
+  # Third column is number of reads
+  ${programs_array[samtools_idxstats]} \
+  --threads ${threads} \
+  "${library}".sorted.bam \
+  > "${library}".sorted.bam.stats.txt
 
   # Remove original SAM and unsorted BAM
   rm "${library}".bam "${library}".sam
