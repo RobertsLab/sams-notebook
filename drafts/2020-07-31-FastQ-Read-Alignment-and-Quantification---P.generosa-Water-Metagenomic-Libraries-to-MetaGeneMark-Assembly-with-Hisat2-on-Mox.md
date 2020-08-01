@@ -13,7 +13,11 @@ tags:
 categories:
   - Miscellaneous
 ---
+Continuing working on the manuscript for this data, Emma wanted the number of reads aligned to each gene. [I previously created and assembly with genes/proteins using MetaGeneMark on 20190103](https://robertslab.github.io/sams-notebook/2019/01/02/Metagenome-Assembly-P.generosa-Water-Sample-HiSeqX-Data-Using-Megahit.html), but the assemby process didn't output any sort of stastics on read counts.
 
+So, to get this data, I used [Hisat2](https://ccb.jhu.edu/software/hisat2/manual.shtml#running-hisat2) to align reads (creating a BAM file) and then used [`samtools idxstats`](http://www.htslib.org/doc/samtools-idxstats.html) to generate a file with read counts aligned to each gene.
+
+This was all done on Mox.
 
 Here's how the sample names breakdown:
 
@@ -275,6 +279,7 @@ done
 Output folder:
 
 - [20200731_metagenome_hisat2_alignments/](https://gannet.fish.washington.edu/Atumefaciens/20200731_metagenome_hisat2_alignments/)
+
 
 
 - [MG_1.sorted.bam.stats.txt](https://gannet.fish.washington.edu/Atumefaciens/20200731_metagenome_hisat2_alignments/MG_1.sorted.bam.stats.txt)
