@@ -276,6 +276,10 @@ done
 
 #### RESULTS
 
+Runtime: Took about 5hrs:
+
+![Runtime](https://github.com/RobertsLab/sams-notebook/blob/master/images/screencaps/20200731_metagenome_hisat2_alignments_runtime.png?raw=true)
+
 Output folder:
 
 - [20200731_metagenome_hisat2_alignments/](https://gannet.fish.washington.edu/Atumefaciens/20200731_metagenome_hisat2_alignments/)
