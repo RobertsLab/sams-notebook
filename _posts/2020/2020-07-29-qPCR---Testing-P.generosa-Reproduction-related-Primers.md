@@ -80,11 +80,11 @@ Plot color legend:
 - No Template Controls: RED
 
 
-#### Amplification plots
+#### TIF3s8_FWD/REV-2 and TIF3s12_FWD/REV Amplification plots
 
 ![TIF3s8_FWD/REV-2 (blue) and TIF3s12_FWD/REV (green) amplifcation plots](https://owl.fish.washington.edu/Athaliana/qPCR_data/sam_2020-07-29%2005-36-56_BR006896_amp_plots.png)
 
-#### Melt curves
+#### TIF3s8_FWD/REV-2 and TIF3s12_FWD/REV Melt curves
 ![TIF3s8_FWD/REV-2 (blue) and TIF3s12_FWD/REV (green) melt curves](https://owl.fish.washington.edu/Athaliana/qPCR_data/sam_2020-07-29%2005-36-56_BR006896_melt_plots.png)
 
 ---
@@ -95,11 +95,11 @@ Plot color legend:
 
 - No Template Controls: RED
 
-#### Amplification plots
+#### TIF3s8_FWD/REV-1 Amplification plots
 
 ![TIF3s8_FWD/REV-1 amplifcation plots](https://owl.fish.washington.edu/Athaliana/qPCR_data/sam_2020-07-29_06-54-35_BR006896_amp_plots.png)
 
-#### Melt curves
+#### TIF3s8_FWD/REV-1 Melt curves
 ![TIF3s8_FWD/REV-1 melt curves](https://owl.fish.washington.edu/Athaliana/qPCR_data/sam_2020-07-29_06-54-35_BR00689_melt_plots.png)
 
 ---
