@@ -18,7 +18,7 @@
 #SBATCH --chdir=/gscratch/scrubbed/samwhite/outputs/20200605_cbai_busco_transcriptome_v3.1
 
 ### C.bairdi transcriptome assembly completeness assessment using BUSCO.
-### This is checking cbai_transcriptome_v1.7.fasta
+### This is checking cbai_transcriptome_v3.1 fasta
 
 # Load Python Mox module for Python module availability
 module load intel-python3_2017
