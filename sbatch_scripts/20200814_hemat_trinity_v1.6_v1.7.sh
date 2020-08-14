@@ -166,7 +166,7 @@ do
   # Copy files to transcriptome directory
   rsync -av \
   ${trinity_out_dir}/"${transcriptome_name}"* \
-  ${transcriptome_dir}
+  ${transcriptomes_dir}
 
   # Capture FastA checksums for verification
   cd ${trinity_out_dir}/
