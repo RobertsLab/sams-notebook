@@ -322,7 +322,7 @@ Stats based on ALL transcript contigs:
 
 Input FastQ list (text):
 
-
+- [20200814_hemat_trinity_v1.6_v1.7/hemat_transcriptome_v1.7.fasta.fastq.list.txt](https://gannet.fish.washington.edu/Atumefaciens/20200814_hemat_trinity_v1.6_v1.7/hemat_transcriptome_v1.7.fasta.fastq.list.txt)
 
 FastA ():
 
@@ -341,3 +341,43 @@ Trinity FastA Sequence Lengths (text):
 
 
 Assembly stats:
+
+ - [20200814_hemat_trinity_v1.6_v1.7/hemat_transcriptome_v1.7.fasta_assembly_stats.txt](https://gannet.fish.washington.edu/Atumefaciens/20200814_hemat_trinity_v1.6_v1.7/hemat_transcriptome_v1.7.fasta_assembly_stats.txt)
+
+ ```
+ ################################
+ ## Counts of transcripts, etc.
+ ################################
+ Total trinity 'genes':	14237
+ Total trinity transcripts:	20543
+ Percent GC: 53.56
+
+ ########################################
+ Stats based on ALL transcript contigs:
+ ########################################
+
+ 	Contig N10: 3724
+ 	Contig N20: 2726
+ 	Contig N30: 2146
+ 	Contig N40: 1791
+ 	Contig N50: 1516
+
+ 	Median contig length: 781
+ 	Average contig: 1058.93
+ 	Total assembled bases: 21753667
+
+
+ #####################################################
+ ## Stats based on ONLY LONGEST ISOFORM per 'GENE':
+ #####################################################
+
+ 	Contig N10: 3385
+ 	Contig N20: 2456
+ 	Contig N30: 1958
+ 	Contig N40: 1641
+ 	Contig N50: 1375
+
+ 	Median contig length: 658
+ 	Average contig: 930.95
+ 	Total assembled bases: 13253981
+ ```
