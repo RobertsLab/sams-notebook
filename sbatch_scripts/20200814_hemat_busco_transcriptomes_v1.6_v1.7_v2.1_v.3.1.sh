@@ -40,13 +40,18 @@ busco_db=/gscratch/srlab/sam/data/databases/BUSCO/metazoa_odb9
 augustus_species=fly
 threads=28
 
+# Programs array
+declare -A programs_array
+programs_array=(
+[busco]="/gscratch/srlab/programs/busco-v3/scripts/run_BUSCO.py"
+)
+
 
 ## Set program paths
 augustus_bin=/gscratch/srlab/programs/Augustus-3.3.2/bin
 augustus_orig_config_dir=/gscratch/srlab/programs/Augustus-3.3.2/config
 augustus_scripts=/gscratch/srlab/programs/Augustus-3.3.2/scripts
 blast_dir=/gscratch/srlab/programs/ncbi-blast-2.8.1+/bin/
-busco=/gscratch/srlab/programs/busco-v3/scripts/run_BUSCO.py
 hmm_dir=/gscratch/srlab/programs/hmmer-3.2.1/src/
 
 # Export Augustus variable
@@ -114,7 +119,7 @@ do
 
 
   # Run BUSCO/Augustus training
-  ${busco} \
+  ${programs_array[busco]} \
   --in ${transcriptomes_array[$transcriptome]} \
   --out ${transcriptome_name} \
   --lineage_path ${busco_db} \
@@ -144,3 +149,18 @@ echo ""
 printf "%0.s-" {1..10}
 echo "${PATH}" | tr : \\n
 } >> system_path.log
+
+# Capture program options
+for program in "${!programs_array[@]}"
+do
+	{
+  echo "Program options for ${program}: "
+	echo ""
+	${programs_array[$program]} --help
+	echo ""
+	echo ""
+	echo "----------------------------------------------"
+	echo ""
+	echo ""
+} &>> program_options.log || true
+done
