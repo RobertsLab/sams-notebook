@@ -27,7 +27,7 @@
 # These variables need to be set by user
 
 # Assign Variables
-script_path=/gscratch/scrubbed/samwhite/20200814_hemat_trinity_v1.6_v1.7.sh
+script_path=/gscratch/scrubbed/samwhite/outputs/20200814_hemat_trinity_v1.6_v1.7.sh
 reads_dir=/gscratch/srlab/sam/data/C_bairdi/RNAseq
 transcriptomes_dir=/gscratch/srlab/sam/data/Hematodinium/transcriptomes
 threads=28
