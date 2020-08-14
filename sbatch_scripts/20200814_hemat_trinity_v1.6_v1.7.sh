@@ -15,7 +15,7 @@
 #SBATCH --mail-type=ALL
 #SBATCH --mail-user=samwhite@uw.edu
 ## Specify the working directory for this job
-#SBATCH --chdir=/gscratch/scrubbed/samwhite/
+#SBATCH --chdir=/gscratch/scrubbed/samwhite/outputs/20200814_hemat_trinity_v1.6_v1.7
 
 
 ###################################################################################
@@ -27,8 +27,6 @@ reads_dir=/gscratch/srlab/sam/data/C_bairdi/RNAseq
 transcriptomes_dir=/gscratch/srlab/sam/data/Hematodinium/RNAseq
 threads=28
 max_mem=$(grep "#SBATCH --mem=" ${script_path} | awk -F [=] '{print $2}')
-
-assembly_stats=assembly_stats.txt
 
 # Paths to programs
 trinity_dir="/gscratch/srlab/programs/trinityrnaseq-v2.9.0"
@@ -81,6 +79,7 @@ do
   trinity_out_dir=""
 
   transcriptome_name="${transcriptomes_array[$transcriptome]##*/}"
+  assembly_stats="${transcriptome_name}_assembly_stats.txt"
   trinity_out_dir="${transcriptome_name}_trinity_out_dir"
 
 
