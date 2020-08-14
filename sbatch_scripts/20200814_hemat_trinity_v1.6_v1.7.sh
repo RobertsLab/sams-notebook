@@ -64,7 +64,10 @@ set -e
 
 module load intel-python3_2017
 
-# Loop through each comparison
+# Set working directory
+wd="/gscratch/scrubbed/samwhite/outputs/20200814_hemat_trinity_v1.6_v1.7"
+
+# Loop through each transcriptome
 for transcriptome in "${!transcriptomes_array[@]}"
 do
 
@@ -171,6 +174,8 @@ do
   md5sum "${transcriptome_name}" > "${transcriptome_name}".checksum.md5
   echo "Finished generating checksum for ${transcriptome_name}"
   echo ""
+
+  cd ${wd}
 
 
 done
