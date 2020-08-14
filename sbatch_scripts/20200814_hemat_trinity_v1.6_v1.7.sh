@@ -122,9 +122,9 @@ do
     # Run Trinity without stranded RNAseq option
     ${programs_array[trinity]} \
     --seqType fq \
-    --max_memory ${max_mem} \
+    --max_memory "${max_mem}" \
     --CPU ${threads} \
-    --output ${trinity_out_dir} \
+    --output "${trinity_out_dir}" \
     --left "${R1_list}" \
     --right "${R2_list}"
 
@@ -133,9 +133,9 @@ do
     # Run Trinity with stranded RNAseq option
     ${programs_array[trinity]} \
     --seqType fq \
-    --max_memory ${max_mem} \
+    --max_memory "${max_mem}" \
     --CPU ${threads} \
-    --output ${trinity_out_dir} \
+    --output "${trinity_out_dir}" \
     --SS_lib_type RF \
     --left "${R1_list}" \
     --right "${R2_list}"
@@ -143,33 +143,33 @@ do
   fi
 
   # Rename generic assembly FastA
-  mv ${trinity_out_dir}/Trinity.fasta ${trinity_out_dir}/"${transcriptome_name}"
+  mv "${trinity_out_dir}"/Trinity.fasta "${trinity_out_dir}"/"${transcriptome_name}"
 
   # Assembly stats
-  ${programs_array[trinity_stats]} ${trinity_out_dir}/"${transcriptome_name}" \
-  > ${assembly_stats}
+  ${programs_array[trinity_stats]} "${trinity_out_dir}"/"${transcriptome_name}" \
+  > "${assembly_stats}"
 
   # Create gene map files
   ${programs_array[trinity_gene_trans_map]} \
-  ${trinity_out_dir}/"${transcriptome_name}" \
-  > ${trinity_out_dir}/"${transcriptome_name}".gene_trans_map
+  "${trinity_out_dir}"/"${transcriptome_name}" \
+  > "${trinity_out_dir}"/"${transcriptome_name}".gene_trans_map
 
   # Create sequence lengths file (used for differential gene expression)
   ${programs_array[trinity_fasta_seq_length]} \
-  ${trinity_out_dir}/"${transcriptome_name}" \
-  > ${trinity_out_dir}/"${transcriptome_name}".seq_lens
+  "${trinity_out_dir}"/"${transcriptome_name}" \
+  > "${trinity_out_dir}"/"${transcriptome_name}".seq_lens
 
   # Create FastA index
   ${programs_array[samtools_faidx]} \
-  ${trinity_out_dir}/"${transcriptome_name}"
+  "${trinity_out_dir}"/"${transcriptome_name}"
 
   # Copy files to transcriptome directory
   rsync -av \
-  ${trinity_out_dir}/"${transcriptome_name}"* \
+  "${trinity_out_dir}"/"${transcriptome_name}"* \
   ${transcriptomes_dir}
 
   # Capture FastA checksums for verification
-  cd ${trinity_out_dir}/
+  cd "${trinity_out_dir}"/
   echo "Generating checksum for ${transcriptome_name}"
   md5sum "${transcriptome_name}" > "${transcriptome_name}".checksum.md5
   echo "Finished generating checksum for ${transcriptome_name}"
