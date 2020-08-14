@@ -48,9 +48,11 @@ transcriptomes_array=(
 # Programs array
 declare -A programs_array
 programs_array=(
-[trinity]="${trinity_dir}/Trinity" \
 [samtools_faidx]="${samtools} faidx" \
-[trinity_stats]="${trinity_dir}/util/TrinityStats.pl"
+[trinity]="${trinity_dir}/Trinity" \
+[trinity_stats]="${trinity_dir}/util/TrinityStats.pl" \
+[trinity_gene_trans_map]="${trinity_dir}/util/support_scripts/get_Trinity_gene_to_trans_map.pl" \
+[trinity_fasta_seq_length]="${trinity_dir}/util/misc/fasta_seq_length.pl"
 )
 
 
