@@ -38,8 +38,8 @@ samtools="/gscratch/srlab/programs/samtools-1.10/samtools"
 # Array of the various comparisons to evaluate
 # Each condition in each comparison should be separated by a "-"
 transcriptomes_array=(
-"${transcriptomes_dir}"/cbai_transcriptome_v1.6.fasta \
-"${transcriptomes_dir}"/cbai_transcriptome_v1.7.fasta
+"${transcriptomes_dir}"/hemat_transcriptome_v1.6.fasta \
+"${transcriptomes_dir}"/hemat_transcriptome_v1.7.fasta
 )
 
 
@@ -51,7 +51,6 @@ programs_array=(
 [trinity]="${trinity_dir}/Trinity" \
 [samtools_faidx]="${samtools} faidx" \
 [trinity_stats]="${trinity_dir}/util/TrinityStats.pl"
-[detonate]="/gscratch/srlab/programs/detonate-1.11/rsem-eval/rsem-eval-calculate-score"
 )
 
 
@@ -81,7 +80,7 @@ do
   transcriptome_name="${transcriptomes_array[$transcriptome]##*/}"
 
 
-  if [[ "${transcriptome_name}" == "cbai_transcriptome_v1.6.fasta" ]]; then
+  if [[ "${transcriptome_name}" == "hemat_transcriptome_v1.6.fasta" ]]; then
 
     reads_array=("${reads_dir}"/*megan*.fq)
 
@@ -91,7 +90,7 @@ do
     # Create array of fastq R2 files
     R2_array=("${reads_dir}"/*megan*R2.fq)
 
-  elif [[ "${transcriptome_name}" == "cbai_transcriptome_v1.7.fasta" ]]; then
+  elif [[ "${transcriptome_name}" == "hemat_transcriptome_v1.7.fasta" ]]; then
 
     reads_array=("${reads_dir}"/20200[145][13][189]*megan*.fq)
 
