@@ -23,6 +23,9 @@
 ## Save working directory
 wd=$(pwd)
 
+# Establish variables for more readable code
+transcriptomes_dir=/gscratch/srlab/sam/data/Hematodinium/transcriptomes
+
 # Array of the various comparisons to evaluate
 # Each condition in each comparison should be separated by a "-"
 transcriptomes_array=(
@@ -32,8 +35,7 @@ transcriptomes_array=(
 "${transcriptomes_dir}"/hemat_transcriptome_v3.1.fasta
 )
 
-# Establish variables for more readable code
-transcriptomes_dir=/gscratch/srlab/sam/data/Hematodinium/transcriptomes
+
 
 ## Input files and settings
 busco_db=/gscratch/srlab/sam/data/databases/BUSCO/metazoa_odb9
