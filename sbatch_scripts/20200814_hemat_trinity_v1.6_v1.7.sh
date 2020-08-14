@@ -10,7 +10,7 @@
 ## Walltime (days-hours:minutes:seconds format)
 #SBATCH --time=15-00:00:00
 ## Memory per node
-#SBATCH --mem=500G
+#SBATCH --mem=120G
 ##turn on e-mail notification
 #SBATCH --mail-type=ALL
 #SBATCH --mail-user=samwhite@uw.edu
@@ -18,13 +18,18 @@
 #SBATCH --chdir=/gscratch/scrubbed/samwhite/outputs/20200814_hemat_trinity_v1.6_v1.7
 
 
+# Script to generate Hematodinium Trinity transcriptome assemblies:
+# v1.6 libaries: 2018	2019	2020-GW	2020-UW
+# v1.7 libraries: 2018	2019	2020-UW
+# See corresponding FastQ list for each assembly to see FastQ used in each assembly.
+
 ###################################################################################
 # These variables need to be set by user
 
 # Assign Variables
 script_path=/gscratch/scrubbed/samwhite/20200814_hemat_trinity_v1.6_v1.7.sh
 reads_dir=/gscratch/srlab/sam/data/C_bairdi/RNAseq
-transcriptomes_dir=/gscratch/srlab/sam/data/Hematodinium/RNAseq
+transcriptomes_dir=/gscratch/srlab/sam/data/Hematodinium/transcriptomes
 threads=28
 max_mem=$(grep "#SBATCH --mem=" ${script_path} | awk -F [=] '{print $2}')
 
@@ -86,6 +91,7 @@ do
   trinity_out_dir="${transcriptome_name}_trinity_out_dir"
 
 
+  # v1.6 libraries: 2018	2019	2020-GW	2020-UW
   if [[ "${transcriptome_name}" == "hemat_transcriptome_v1.6.fasta" ]]; then
 
     reads_array=("${reads_dir}"/*megan*.fq)
@@ -96,6 +102,7 @@ do
     # Create array of fastq R2 files
     R2_array=("${reads_dir}"/*megan*R2.fq)
 
+  # v.17 libraries: 2018	2019	2020-UW
   elif [[ "${transcriptome_name}" == "hemat_transcriptome_v1.7.fasta" ]]; then
 
     reads_array=("${reads_dir}"/20200[145][13][189]*megan*.fq)
@@ -163,7 +170,7 @@ do
   ${programs_array[samtools_faidx]} \
   "${trinity_out_dir}"/"${transcriptome_name}"
 
-  # Copy files to transcriptome directory
+  # Copy files to transcriptomes directory
   rsync -av \
   "${trinity_out_dir}"/"${transcriptome_name}"* \
   ${transcriptomes_dir}
@@ -191,6 +198,7 @@ echo "${PATH}" | tr : \\n
 } >> system_path.log
 
 # Capture program options
+## Note: Trinity util/support scripts don't have options/help menus
 for program in "${!programs_array[@]}"
 do
 	{
