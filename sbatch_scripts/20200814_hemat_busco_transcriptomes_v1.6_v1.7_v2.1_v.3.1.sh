@@ -2,8 +2,8 @@
 ## Job Name
 #SBATCH --job-name=cbai_busco_megan_transcriptomes
 ## Allocation Definition
-#SBATCH --account=srlab
-#SBATCH --partition=srlab
+#SBATCH --account=coenv
+#SBATCH --partition=coenv
 ## Resources
 ## Nodes
 #SBATCH --nodes=1
