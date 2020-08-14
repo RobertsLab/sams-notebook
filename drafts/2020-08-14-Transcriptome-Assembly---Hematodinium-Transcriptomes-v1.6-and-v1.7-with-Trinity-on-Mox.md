@@ -249,4 +249,95 @@ done
 
 Output folder:
 
-- []()
+- [20200814_hemat_trinity_v1.6_v1.7/](https://gannet.fish.washington.edu/Atumefaciens/20200814_hemat_trinity_v1.6_v1.7/)
+
+
+#### hemat_transcriptome_v1.6
+
+Input FastQ list (text):
+
+- [20200814_hemat_trinity_v1.6_v1.7/hemat_transcriptome_v1.6.fasta.fastq.list.txt](https://gannet.fish.washington.edu/Atumefaciens/20200814_hemat_trinity_v1.6_v1.7/hemat_transcriptome_v1.6.fasta.fastq.list.txt)
+
+FastA (38MB):
+
+- [20200814_hemat_trinity_v1.6_v1.7/hemat_transcriptome_v1.6.fasta_trinity_out_dir/hemat_transcriptome_v1.6.fasta](https://gannet.fish.washington.edu/Atumefaciens/20200814_hemat_trinity_v1.6_v1.7/hemat_transcriptome_v1.6.fasta_trinity_out_dir/hemat_transcriptome_v1.6.fasta)
+
+FastA Index (text):
+
+- [20200814_hemat_trinity_v1.6_v1.7/hemat_transcriptome_v1.6.fasta_trinity_out_dir/hemat_transcriptome_v1.6.fasta.fai](https://gannet.fish.washington.edu/Atumefaciens/20200814_hemat_trinity_v1.6_v1.7/hemat_transcriptome_v1.6.fasta_trinity_out_dir/hemat_transcriptome_v1.6.fasta.fai)
+
+The following sets of files are useful for downstream gene expression and annotation using Trinity.
+
+Trinity FastA Gene Trans Map (text):
+
+- [20200814_hemat_trinity_v1.6_v1.7/hemat_transcriptome_v1.6.fasta_trinity_out_dir/hemat_transcriptome_v1.6.fasta.gene_trans_map](https://gannet.fish.washington.edu/Atumefaciens/20200814_hemat_trinity_v1.6_v1.7/hemat_transcriptome_v1.6.fasta_trinity_out_dir/hemat_transcriptome_v1.6.fasta.gene_trans_map)
+
+Trinity FastA Sequence Lengths (text):
+
+-  [20200814_hemat_trinity_v1.6_v1.7/hemat_transcriptome_v1.6.fasta_trinity_out_dir/hemat_transcriptome_v1.6.fasta.seq_lens](https://gannet.fish.washington.edu/Atumefaciens/20200814_hemat_trinity_v1.6_v1.7/hemat_transcriptome_v1.6.fasta_trinity_out_dir/hemat_transcriptome_v1.6.fasta.seq_lens)
+
+Assembly stats:
+
+- [hemat_transcriptome_v1.6.fasta_assembly_stats.txt](https://gannet.fish.washington.edu/Atumefaciens/20200814_hemat_trinity_v1.6_v1.7/hemat_transcriptome_v1.6.fasta_assembly_stats.txt)
+
+```
+################################
+## Counts of transcripts, etc.
+################################
+Total trinity 'genes':	23131
+Total trinity transcripts:	40247
+Percent GC: 53.25
+
+########################################
+Stats based on ALL transcript contigs:
+########################################
+
+	Contig N10: 3703
+	Contig N20: 2669
+	Contig N30: 2110
+	Contig N40: 1738
+	Contig N50: 1431
+
+	Median contig length: 560
+	Average contig: 903.38
+	Total assembled bases: 36358146
+
+
+#####################################################
+## Stats based on ONLY LONGEST ISOFORM per 'GENE':
+#####################################################
+
+	Contig N10: 3393
+	Contig N20: 2502
+	Contig N30: 1990
+	Contig N40: 1639
+	Contig N50: 1337
+
+	Median contig length: 437
+	Average contig: 796.47
+	Total assembled bases: 18423041
+```
+
+#### hemat_transcriptome_v1.7
+
+Input FastQ list (text):
+
+
+
+FastA ():
+
+
+
+FastA Index (text):
+
+
+The following sets of files are useful for downstream gene expression and annotation using Trinity.
+
+Trinity FastA Gene Trans Map (text):
+
+
+
+Trinity FastA Sequence Lengths (text):
+
+
+Assembly stats:
