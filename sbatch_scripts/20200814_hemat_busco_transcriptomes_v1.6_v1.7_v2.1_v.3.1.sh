@@ -125,4 +125,11 @@ do
   --tarzip \
   --augustus_parameters='--progress=true'
 
+  # Capture FastA checksums for verification
+  cho ""
+  echo "Generating checksum for ${transcriptome_name}"
+  md5sum "${transcriptomes_array[$transcriptome]}" > "${transcriptome_name}".checksum.md5
+  echo "Finished generating checksum for ${transcriptome_name}"
+  echo ""
+
 done
