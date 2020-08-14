@@ -115,8 +115,8 @@ do
 
   # Run BUSCO/Augustus training
   ${busco} \
-  --in ${transcriptome_fasta} \
-  --out ${base_name} \
+  --in ${transcriptomes_array[$transcriptome]} \
+  --out ${transcriptome_name} \
   --lineage_path ${busco_db} \
   --mode transcriptome \
   --cpu ${threads} \
