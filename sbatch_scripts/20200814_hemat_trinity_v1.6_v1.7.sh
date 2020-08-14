@@ -26,7 +26,7 @@ script_path=/gscratch/scrubbed/samwhite/20200814_hemat_trinity_v1.6_v1.7.sh
 reads_dir=/gscratch/srlab/sam/data/C_bairdi/RNAseq
 transcriptomes_dir=/gscratch/srlab/sam/data/Hematodinium/RNAseq
 threads=28
-max_mem=$(grep "#SBATCH --mem=" ${script_path} | awk -F [=G] '{print $2}')
+max_mem=$(grep "#SBATCH --mem=" ${script_path} | awk -F [=] '{print $2}')
 
 assembly_stats=assembly_stats.txt
 
@@ -78,8 +78,10 @@ do
   # Variables
   R1_list=""
   R2_list=""
+  trinity_out_dir=""
 
   transcriptome_name="${transcriptomes_array[$transcriptome]##*/}"
+  trinity_out_dir="${transcriptome_name}_trinity_out_dir"
 
 
   if [[ "${transcriptome_name}" == "hemat_transcriptome_v1.6.fasta" ]]; then
@@ -112,17 +114,65 @@ do
   R1_list=$(echo "${R1_array[@]}" | tr " " ",")
   R2_list=$(echo "${R2_array[@]}" | tr " " ",")
 
-  # Determine transcript length
-  ${programs_array[detonate_trans_length]} \
-  "${transcriptomes_array[$transcriptome]}" \
-  "${rsem_eval_dist_mean_sd}"
 
+  if [[ "${transcriptome_name}" == "hemat_transcriptome_v1.6.fasta" ]]; then
+
+    # Run Trinity without stranded RNAseq option
+    ${programs_array[trinity]} \
+    --seqType fq \
+    --max_memory ${max_mem} \
+    --CPU ${threads} \
+    --output ${trinity_out_dir} \
+    --left "${R1_list}" \
+    --right "${R2_list}"
+
+  else
+
+    # Run Trinity with stranded RNAseq option
+    ${programs_array[trinity]} \
+    --seqType fq \
+    --max_memory ${max_mem} \
+    --CPU ${threads} \
+    --output ${trinity_out_dir} \
+    --SS_lib_type RF \
+    --left "${R1_list}" \
+    --right "${R2_list}"
+
+  fi
+
+  # Rename generic assembly FastA
+  mv ${trinity_out_dir}/Trinity.fasta ${trinity_out_dir}/"${transcriptome_name}"
+
+  # Assembly stats
+  ${programs_array[trinity_stats]} ${trinity_out_dir}/"${transcriptome_name}" \
+  > ${assembly_stats}
+
+  # Create gene map files
+  ${programs_array[trinity_gene_trans_map]} \
+  ${trinity_out_dir}/"${transcriptome_name}" \
+  > ${trinity_out_dir}/"${transcriptome_name}".gene_trans_map
+
+  # Create sequence lengths file (used for differential gene expression)
+  ${programs_array[trinity_fasta_seq_length]} \
+  ${trinity_out_dir}/"${transcriptome_name}" \
+  > ${trinity_out_dir}/"${transcriptome_name}".seq_lens
+
+  # Create FastA index
+  ${programs_array[samtools_faidx]} \
+  ${trinity_out_dir}/"${transcriptome_name}"
+
+  # Copy files to transcriptome directory
+  rsync -av \
+  ${trinity_out_dir}/"${transcriptome_name}"* \
+  ${transcriptome_dir}
 
   # Capture FastA checksums for verification
+  cd ${trinity_out_dir}/
   echo "Generating checksum for ${transcriptome_name}"
-  md5sum "${transcriptomes_array[transcriptome]}" >> fasta.checksums.md5
+  md5sum "${transcriptome_name}" > "${transcriptome_name}".checksum.md5
   echo "Finished generating checksum for ${transcriptome_name}"
   echo ""
+
 
 done
 
