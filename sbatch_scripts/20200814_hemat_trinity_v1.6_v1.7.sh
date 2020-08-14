@@ -27,11 +27,13 @@
 # These variables need to be set by user
 
 # Assign Variables
-script_path=/gscratch/scrubbed/samwhite/outputs/20200814_hemat_trinity_v1.6_v1.7.sh
+script_path=/gscratch/scrubbed/samwhite/outputs/20200814_hemat_trinity_v1.6_v1.7/20200814_hemat_trinity_v1.6_v1.7.sh
 reads_dir=/gscratch/srlab/sam/data/C_bairdi/RNAseq
 transcriptomes_dir=/gscratch/srlab/sam/data/Hematodinium/transcriptomes
 threads=28
-max_mem=$(grep "#SBATCH --mem=" ${script_path} | awk -F [=] '{print $2}')
+# Carrot needed to limit grep to line starting with #SBATCH
+# Avoids grep-ing the command below.
+max_mem=$(grep "^#SBATCH --mem=" ${script_path} | awk -F [=] '{print $2}')
 
 # Paths to programs
 trinity_dir="/gscratch/srlab/programs/trinityrnaseq-v2.9.0"
@@ -129,9 +131,9 @@ do
     # Run Trinity without stranded RNAseq option
     ${programs_array[trinity]} \
     --seqType fq \
-    --max_memory "${max_mem}" \
+    --max_memory ${max_mem} \
     --CPU ${threads} \
-    --output "${trinity_out_dir}" \
+    --output ${trinity_out_dir} \
     --left "${R1_list}" \
     --right "${R2_list}"
 
@@ -140,9 +142,9 @@ do
     # Run Trinity with stranded RNAseq option
     ${programs_array[trinity]} \
     --seqType fq \
-    --max_memory "${max_mem}" \
+    --max_memory ${max_mem} \
     --CPU ${threads} \
-    --output "${trinity_out_dir}" \
+    --output ${trinity_out_dir} \
     --SS_lib_type RF \
     --left "${R1_list}" \
     --right "${R2_list}"
