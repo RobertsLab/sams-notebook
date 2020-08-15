@@ -247,6 +247,10 @@ done
 
 #### RESULTS
 
+Just under 5hrs to run both assemblies:
+
+![Hemat Trinity assemblies v1.6 and v1.7 combined runtime](https://github.com/RobertsLab/sams-notebook/blob/master/images/screencaps/20200814_hemat_trinity_v1.6_v1.7_runtime.png?raw=true)
+
 Output folder:
 
 - [20200814_hemat_trinity_v1.6_v1.7/](https://gannet.fish.washington.edu/Atumefaciens/20200814_hemat_trinity_v1.6_v1.7/)
