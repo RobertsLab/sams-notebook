@@ -25,8 +25,6 @@
 ###################################################################################
 # These variables need to be set by user
 
-threads=28
-
 # Programs array
 declare -A programs_array
 programs_array=(
@@ -62,16 +60,16 @@ for fasta in "${!transcriptomes_array[@]}"
 do
 
   # Remove path from transcriptome using parameter substitution
-  transcriptome_name="${transcriptomes_array[$transcriptome]##*/}"
+  transcriptome_name="${transcriptomes_array[$fasta]##*/}"
 
   # Generate checksums for reference
-  md5sum "${transcriptomes[$fasta]}">> fasta.checksums.md5
+  md5sum "${transcriptomes_array[$fasta]}">> fasta.checksums.md5
 
   # Run DIAMOND with blastx
   # Output format 6 produces a standard BLAST tab-delimited file
   ${programs_array[diamond]} blastx \
   --db ${dmnd} \
-  --query "${transcriptomes[$fasta]}" \
+  --query "${transcriptomes_array[$fasta]}" \
   --out "${transcriptome_name}".blastx.outfmt6 \
   --outfmt 6 \
   --evalue 1e-4 \
