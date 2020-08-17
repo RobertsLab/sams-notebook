@@ -23,7 +23,9 @@ Roberto's samples match the following filename pattern:
 
 `[035]*.gz`
 
+
 Will generate new FastQC analysis for these files. Since the additional data was simply appended to the previous data, I fully expect the "Per Tile Sequence Quality" to fail again. However, this additional data should help compensate for data loss we will experience after quality trimming.
+
 ---
 
 #### Updated sequencing report:
