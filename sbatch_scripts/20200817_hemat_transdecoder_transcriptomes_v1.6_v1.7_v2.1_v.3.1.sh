@@ -18,15 +18,7 @@
 #SBATCH --chdir=/gscratch/scrubbed/samwhite/outputs/20200817_hemat_transdecoder_transcriptomes_v1.6_v1.7_v2.1_v.3.1
 
 
-# Exit script if a command fails
-set -e
 
-# Load Python Mox module for Python module availability
-
-module load intel-python3_2017
-
-# Set working directory as current directory
-wd="$(pwd)"
 
 transcriptomes_dir=/gscratch/srlab/sam/data/Hematodinium/transcriptomes
 
@@ -37,21 +29,14 @@ transdecoder_dir="/gscratch/srlab/programs/TransDecoder-v5.5.0"
 
 # Array of the various comparisons to evaluate
 # Each condition in each comparison should be separated by a "-"
-declare -A transcriptomes_array
-transcriptomes_array=(
-[hemat_transcriptome_v1.6.fasta]="${transcriptomes_dir}/hemat_transcriptome_v1.6.fasta" \
-[hemat_transcriptome_v1.7.fasta]="${transcriptomes_dir}/hemat_transcriptome_v1.7.fasta" \
-[hemat_transcriptome_v2.1.fasta]="${transcriptomes_dir}/hemat_transcriptome_v2.1.fasta" \
-[hemat_transcriptome_v3.1.fasta]="${transcriptomes_dir}/hemat_transcriptome_v3.1.fasta"
+declare -A transcriptomes_gene_maps_array
+transcriptomes_gene_maps_array=(
+["${transcriptomes_dir}/hemat_transcriptome_v1.6.fasta"]="${transcriptomes_dir}/hemat_transcriptome_v1.6.fasta.gene_trans_map" \
+["${transcriptomes_dir}/hemat_transcriptome_v1.7.fasta"]="${transcriptomes_dir}/hemat_transcriptome_v1.7.fasta.gene_trans_map" \
+["${transcriptomes_dir}/hemat_transcriptome_v2.1.fasta"]="${transcriptomes_dir}/emat_transcriptome_v2.1.fasta.gene_trans_map" \
+["${transcriptomes_dir}/hemat_transcriptome_v3.1.fasta"]="${transcriptomes_dir}/hemat_transcriptome_v3.1.fasta.gene_trans_map"
 )
 
-declare -A gene_trans_map_array
-gene_trans_map_array=(
-[hemat_transcriptome_v1.6.fasta.gene_trans_map]="${transcriptomes_dir}/hemat_transcriptome_v1.6.fasta.gene_trans_map" \
-[hemat_transcriptome_v1.7.fasta.gene_trans_map]="${transcriptomes_dir}/hemat_transcriptome_v1.7.fasta.gene_trans_map" \
-[hemat_transcriptome_v2.1.fasta.gene_trans_map]="${transcriptomes_dir}/emat_transcriptome_v2.1.fasta.gene_trans_map" \
-[hemat_transcriptome_v3.1.fasta.gene_trans_map]="${transcriptomes_dir}/hemat_transcriptome_v3.1.fasta.gene_trans_map"
-)
 
 declare -A programs_array
 programs_array=(
@@ -62,7 +47,15 @@ programs_array=(
 )
 
 
+# Exit script if a command fails
+set -e
 
+# Load Python Mox module for Python module availability
+
+module load intel-python3_2017
+
+
+for program in "${!programs_array[@]}"
 
 # Paths to input/output files
 blastp_out_dir="${wd}/blastp_out"
