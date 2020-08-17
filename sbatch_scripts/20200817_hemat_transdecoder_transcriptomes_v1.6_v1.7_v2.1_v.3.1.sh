@@ -8,7 +8,7 @@
 ## Nodes
 #SBATCH --nodes=1
 ## Walltime (days-hours:minutes:seconds format)
-#SBATCH --time=8-00:00:00
+#SBATCH --time=14-00:00:00
 ## Memory per node
 #SBATCH --mem=120G
 ##turn on e-mail notification
@@ -17,6 +17,11 @@
 ## Specify the working directory for this job
 #SBATCH --chdir=/gscratch/scrubbed/samwhite/outputs/20200817_hemat_transdecoder_transcriptomes_v1.6_v1.7_v2.1_v.3.1
 
+# Script to run TransDecoder on Hematodinium transcriptomes:
+# v1.6, v1.7, v2.1, v3.1
+
+###################################################################################
+# These variables need to be set by user
 
 # Capture date. E.g. format is: 20190820
 timestamp=$(date +"%Y%m%d")
@@ -53,6 +58,8 @@ programs_array=(
 
 threads=28
 
+###################################################################################
+
 # Exit script if a command fails
 set -e
 
@@ -67,9 +74,10 @@ do
   # Remove path from transcriptome using parameter substitution
   transcriptome_name="${transcriptome]##*/}"
 
+  # Set a prefix that utilizes timestamp and name of transcriptome
   prefix="${timestamp}_${transcriptome_name}"
 
-  # Make output directories
+  # Make output directory and change to directory
   mkdir --parents "${prefix}.transdecoder" && cd "$_"
 
   # Paths to input/output files
@@ -82,11 +90,6 @@ do
   # Make output directories
   mkdir "${blastp_out_dir}"
   mkdir "${pfam_out_dir}"
-
-  # Capture FastA MD5 checksum for future reference
-  md5sum "${transcriptome}" > "${prefix}".checksum.md5
-
-
 
   # Extract long open reading frames
   "${programs_array[transdecoder_lORFs]}" \
@@ -116,6 +119,10 @@ do
   --retain_pfam_hits "${pfam_out}" \
   --retain_blastp_hits "${blastp_out}"
 
+  # Capture FastA MD5 checksum for future reference
+  md5sum "${transcriptome}" > "${prefix}".checksum.md5
+
+  # Move back up to main directory
   cd ..
 
 done
