@@ -43,7 +43,7 @@ declare -A transcriptomes_gene_maps_array
 transcriptomes_gene_maps_array=(
 ["${transcriptomes_dir}/hemat_transcriptome_v1.6.fasta"]="${transcriptomes_dir}/hemat_transcriptome_v1.6.fasta.gene_trans_map" \
 ["${transcriptomes_dir}/hemat_transcriptome_v1.7.fasta"]="${transcriptomes_dir}/hemat_transcriptome_v1.7.fasta.gene_trans_map" \
-["${transcriptomes_dir}/hemat_transcriptome_v2.1.fasta"]="${transcriptomes_dir}/emat_transcriptome_v2.1.fasta.gene_trans_map" \
+["${transcriptomes_dir}/hemat_transcriptome_v2.1.fasta"]="${transcriptomes_dir}/hemat_transcriptome_v2.1.fasta.gene_trans_map" \
 ["${transcriptomes_dir}/hemat_transcriptome_v3.1.fasta"]="${transcriptomes_dir}/hemat_transcriptome_v3.1.fasta.gene_trans_map"
 )
 
@@ -72,7 +72,7 @@ for transcriptome in "${!transcriptomes_gene_maps_array[@]}"
 do
 
   # Remove path from transcriptome using parameter substitution
-  transcriptome_name="${transcriptome]##*/}"
+  transcriptome_name="${transcriptome##*/}"
 
   # Set a prefix that utilizes timestamp and name of transcriptome
   prefix="${timestamp}_${transcriptome_name}"
