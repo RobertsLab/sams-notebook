@@ -198,4 +198,99 @@ Just under 7mins to assess the four transcriptomes:
 
 Output folder:
 
-- []()
+- [20200814_hemat_busco_transcriptomes_v1.6_v1.7_v2.1_v.3.1/](https://gannet.fish.washington.edu/Atumefaciens/20200814_hemat_busco_transcriptomes_v1.6_v1.7_v2.1_v.3.1/)
+
+All data below has been added to a transcriptome comparison spreadsheet:
+
+- [hemat_transcriptome_comp](https://docs.google.com/spreadsheets/d/1A81cFdFw5Mlks5DWMmq0-8eVqyTXqmoCsHNWs95N_p4/edit?usp=sharing) (Google Sheet)
+
+
+##### `hemat_transcriptome_v1.6.fasta` BUSCO Short Summary
+
+- [20200814_hemat_busco_transcriptomes_v1.6_v1.7_v2.1_v.3.1/run_hemat_transcriptome_v1.6.fasta/short_summary_hemat_transcriptome_v1.6.fasta.txt](https://gannet.fish.washington.edu/Atumefaciens/20200814_hemat_busco_transcriptomes_v1.6_v1.7_v2.1_v.3.1/run_hemat_transcriptome_v1.6.fasta/short_summary_hemat_transcriptome_v1.6.fasta.txt)
+
+```
+# BUSCO version is: 3.0.2
+# The lineage dataset is: metazoa_odb9 (Creation date: 2016-02-13, number of species: 65, number of BUSCOs: 978)
+# To reproduce this run: python /gscratch/srlab/programs/busco-v3/scripts/run_BUSCO.py -i /gscratch/srlab/sam/data/Hematodinium/transcriptomes/hemat_transcriptome_v1.6.fasta -o hemat_transcriptome_v1.6.fasta -l /gscratch/srlab/sam/data/databases/BUSCO/metazoa_odb9/ -m transcriptome -c 28 --long -z
+#
+# Summarized benchmarking in BUSCO notation for file /gscratch/srlab/sam/data/Hematodinium/transcriptomes/hemat_transcriptome_v1.6.fasta
+# BUSCO was run in mode: transcriptome
+
+	C:91.8%[S:64.9%,D:26.9%],F:6.0%,M:2.2%,n:978
+
+	898	Complete BUSCOs (C)
+	635	Complete and single-copy BUSCOs (S)
+	263	Complete and duplicated BUSCOs (D)
+	59	Fragmented BUSCOs (F)
+	21	Missing BUSCOs (M)
+	978	Total BUSCO groups searched
+```
+
+
+##### `hemat_transcriptome_v1.7.fasta` BUSCO Short Summary
+
+- [https://gannet.fish.washington.edu/Atumefaciens/20200814_hemat_busco_transcriptomes_v1.6_v1.7_v2.1_v.3.1/run_hemat_transcriptome_v1.7.fasta/short_summary_hemat_transcriptome_v1.7.fasta.txt](https://gannet.fish.washington.edu/Atumefaciens/20200814_hemat_busco_transcriptomes_v1.6_v1.7_v2.1_v.3.1/run_hemat_transcriptome_v1.7.fasta/short_summary_hemat_transcriptome_v1.7.fasta.txt)
+
+```
+# BUSCO version is: 3.0.2
+# The lineage dataset is: metazoa_odb9 (Creation date: 2016-02-13, number of species: 65, number of BUSCOs: 978)
+# To reproduce this run: python /gscratch/srlab/programs/busco-v3/scripts/run_BUSCO.py -i /gscratch/srlab/sam/data/Hematodinium/transcriptomes/hemat_transcriptome_v1.7.fasta -o hemat_transcriptome_v1.7.fasta -l /gscratch/srlab/sam/data/databases/BUSCO/metazoa_odb9/ -m transcriptome -c 28 --long -z
+#
+# Summarized benchmarking in BUSCO notation for file /gscratch/srlab/sam/data/Hematodinium/transcriptomes/hemat_transcriptome_v1.7.fasta
+# BUSCO was run in mode: transcriptome
+
+	C:86.5%[S:65.5%,D:21.0%],F:8.3%,M:5.2%,n:978
+
+	846	Complete BUSCOs (C)
+	641	Complete and single-copy BUSCOs (S)
+	205	Complete and duplicated BUSCOs (D)
+	81	Fragmented BUSCOs (F)
+	51	Missing BUSCOs (M)
+	978	Total BUSCO groups searched
+```
+
+
+##### `hemat_transcriptome_v2.1.fasta` BUSCO Short Summary
+
+- [https://gannet.fish.washington.edu/Atumefaciens/20200814_hemat_busco_transcriptomes_v1.6_v1.7_v2.1_v.3.1/run_hemat_transcriptome_v2.1.fasta/short_summary_hemat_transcriptome_v2.1.fasta.txt](https://gannet.fish.washington.edu/Atumefaciens/20200814_hemat_busco_transcriptomes_v1.6_v1.7_v2.1_v.3.1/run_hemat_transcriptome_v2.1.fasta/short_summary_hemat_transcriptome_v2.1.fasta.txt)
+
+```
+# BUSCO version is: 3.0.2
+# The lineage dataset is: metazoa_odb9 (Creation date: 2016-02-13, number of species: 65, number of BUSCOs: 978)
+# To reproduce this run: python /gscratch/srlab/programs/busco-v3/scripts/run_BUSCO.py -i /gscratch/srlab/sam/data/Hematodinium/transcriptomes/hemat_transcriptome_v2.1.fasta -o hemat_transcriptome_v2.1.fasta -l /gscratch/srlab/sam/data/databases/BUSCO/metazoa_odb9/ -m transcriptome -c 28 --long -z
+#
+# Summarized benchmarking in BUSCO notation for file /gscratch/srlab/sam/data/Hematodinium/transcriptomes/hemat_transcriptome_v2.1.fasta
+# BUSCO was run in mode: transcriptome
+
+	C:33.7%[S:6.2%,D:27.5%],F:2.9%,M:63.4%,n:978
+
+	330	Complete BUSCOs (C)
+	61	Complete and single-copy BUSCOs (S)
+	269	Complete and duplicated BUSCOs (D)
+	28	Fragmented BUSCOs (F)
+	620	Missing BUSCOs (M)
+	978	Total BUSCO groups searched
+```
+
+##### `hemat_transcriptome_v3.1.fasta` BUSCO Short Summary
+
+- [https://gannet.fish.washington.edu/Atumefaciens/20200814_hemat_busco_transcriptomes_v1.6_v1.7_v2.1_v.3.1/run_hemat_transcriptome_v3.1.fasta/short_summary_hemat_transcriptome_v3.1.fasta.txt](https://gannet.fish.washington.edu/Atumefaciens/20200814_hemat_busco_transcriptomes_v1.6_v1.7_v2.1_v.3.1/run_hemat_transcriptome_v3.1.fasta/short_summary_hemat_transcriptome_v3.1.fasta.txt)
+
+```
+# BUSCO version is: 3.0.2
+# The lineage dataset is: metazoa_odb9 (Creation date: 2016-02-13, number of species: 65, number of BUSCOs: 978)
+# To reproduce this run: python /gscratch/srlab/programs/busco-v3/scripts/run_BUSCO.py -i /gscratch/srlab/sam/data/Hematodinium/transcriptomes/hemat_transcriptome_v3.1.fasta -o hemat_transcriptome_v3.1.fasta -l /gscratch/srlab/sam/data/databases/BUSCO/metazoa_odb9/ -m transcriptome -c 28 --long -z
+#
+# Summarized benchmarking in BUSCO notation for file /gscratch/srlab/sam/data/Hematodinium/transcriptomes/hemat_transcriptome_v3.1.fasta
+# BUSCO was run in mode: transcriptome
+
+	C:34.3%[S:6.3%,D:28.0%],F:3.2%,M:62.5%,n:978
+
+	336	Complete BUSCOs (C)
+	62	Complete and single-copy BUSCOs (S)
+	274	Complete and duplicated BUSCOs (D)
+	31	Fragmented BUSCOs (F)
+	611	Missing BUSCOs (M)
+	978	Total BUSCO groups searched
+```
