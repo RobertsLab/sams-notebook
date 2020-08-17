@@ -119,3 +119,29 @@ do
   cd ..
 
 done
+
+
+# Document programs in PATH (primarily for program version ID)
+{
+date
+echo ""
+echo "System PATH for $SLURM_JOB_ID"
+echo ""
+printf "%0.s-" {1..10}
+echo "${PATH}" | tr : \\n
+} >> system_path.log
+
+# Capture program options
+for program in "${!programs_array[@]}"
+do
+	{
+  echo "Program options for ${program}: "
+	echo ""
+	${programs_array[$program]} -h
+	echo ""
+	echo ""
+	echo "----------------------------------------------"
+	echo ""
+	echo ""
+} &>> program_options.log || true
+done
