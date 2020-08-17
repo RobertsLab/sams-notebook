@@ -27,7 +27,6 @@
 
 # Assign Variables
 transcriptomes_dir=/gscratch/srlab/sam/data/Hematodinium/transcriptomes
-threads=28
 
 
 # Paths to programs
@@ -65,8 +64,6 @@ set -e
 
 module load intel-python3_2017
 
-# Set working directory
-wd="/gscratch/scrubbed/samwhite/outputs/20200814_hemat_trinity_v1.6_v1.7"
 
 # Loop through each transcriptome
 for transcriptome in "${!transcriptomes_array[@]}"
@@ -79,26 +76,27 @@ do
 
 
   # Assembly stats
-  ${programs_array[trinity_stats]} "${trinity_out_dir}"/"${transcriptome_name}" \
+  ${programs_array[trinity_stats]} "${transcriptomes_array[$transcriptome]}" \
   > "${assembly_stats}"
 
   # Create gene map files
   ${programs_array[trinity_gene_trans_map]} \
-  "${trinity_out_dir}"/"${transcriptome_name}" \
-  > "${trinity_out_dir}"/"${transcriptome_name}".gene_trans_map
+  "${transcriptomes_array[$transcriptome]}" \
+  > "${transcriptome_name}".gene_trans_map
 
   # Create sequence lengths file (used for differential gene expression)
   ${programs_array[trinity_fasta_seq_length]} \
-  "${trinity_out_dir}"/"${transcriptome_name}" \
-  > "${trinity_out_dir}"/"${transcriptome_name}".seq_lens
+  "${transcriptomes_array[$transcriptome]}" \
+  > "${transcriptome_name}".seq_lens
 
   # Create FastA index
   ${programs_array[samtools_faidx]} \
-  "${trinity_out_dir}"/"${transcriptome_name}"
+  "${transcriptomes_array[$transcriptome]}" \
+  > "${transcriptome_name}".fai
 
   # Copy files to transcriptomes directory
   rsync -av \
-  "${trinity_out_dir}"/"${transcriptome_name}"* \
+  "${transcriptome_name}"* \
   ${transcriptomes_dir}
 
   # Capture FastA checksums for verification
