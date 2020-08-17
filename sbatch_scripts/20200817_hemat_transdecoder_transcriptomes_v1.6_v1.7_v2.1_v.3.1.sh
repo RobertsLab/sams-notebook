@@ -81,15 +81,19 @@ do
   mkdir --parents "${prefix}.transdecoder" && cd "$_"
 
   # Paths to input/output files
-  blastp_out="${blastp_out_dir}/${prefix}.blastp.outfmt6"
+
   blastp_out_dir="${prefix}.blastp_out"
   pfam_out_dir="${prefix}.pfam_out"
-  pfam_out="${pfam_out_dir}/${prefix}.pfam.domtblout"
-  lORFs_pep="${prefix}.longest_orfs.pep"
 
   # Make output directories
   mkdir "${blastp_out_dir}"
   mkdir "${pfam_out_dir}"
+
+  blastp_out="${blastp_out_dir}/${prefix}.blastp.outfmt6"
+  pfam_out="${pfam_out_dir}/${prefix}.pfam.domtblout"
+  lORFs_pep="${prefix}.longest_orfs.pep"
+
+
 
   # Extract long open reading frames
   "${programs_array[transdecoder_lORFs]}" \
