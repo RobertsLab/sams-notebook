@@ -18,7 +18,8 @@
 #SBATCH --chdir=/gscratch/scrubbed/samwhite/outputs/20200817_hemat_transdecoder_transcriptomes_v1.6_v1.7_v2.1_v.3.1
 
 
-
+# Capture date. E.g. format is: 20190820
+timestamp=$(date +"%Y%m%d")
 
 transcriptomes_dir=/gscratch/srlab/sam/data/Hematodinium/transcriptomes
 
@@ -26,6 +27,10 @@ transcriptomes_dir=/gscratch/srlab/sam/data/Hematodinium/transcriptomes
 blast_dir="/gscratch/srlab/programs/ncbi-blast-2.8.1+/bin"
 hmmer_dir="/gscratch/srlab/programs/hmmer-3.2.1/src"
 transdecoder_dir="/gscratch/srlab/programs/TransDecoder-v5.5.0"
+
+# Paths to Trinotate databases
+pfam_db="/gscratch/srlab/programs/Trinotate-v3.1.1/admin/Pfam-A.hmm"
+sp_db="/gscratch/srlab/programs/Trinotate-v3.1.1/admin/uniprot_sprot.pep"
 
 # Array of the various comparisons to evaluate
 # Each condition in each comparison should be separated by a "-"
@@ -46,6 +51,7 @@ programs_array=(
 [transdecoder_predict]="${transdecoder_dir}/TransDecoder.Predict"
 )
 
+threads=28
 
 # Exit script if a command fails
 set -e
@@ -55,51 +61,61 @@ set -e
 module load intel-python3_2017
 
 
-for program in "${!programs_array[@]}"
+for transcriptome in "${!transcriptomes_gene_maps_array[@]}"
+do
 
-# Paths to input/output files
-blastp_out_dir="${wd}/blastp_out"
-transdecoder_out_dir="${wd}/${trinity_fasta_name}.transdecoder_dir"
-pfam_out_dir="${wd}/pfam_out"
-blastp_out="${blastp_out_dir}/${trinity_fasta_name}.blastp.outfmt6"
-pfam_out="${pfam_out_dir}/${trinity_fasta_name}.pfam.domtblout"
-lORFs_pep="${transdecoder_out_dir}/longest_orfs.pep"
-pfam_db="/gscratch/srlab/programs/Trinotate-v3.1.1/admin/Pfam-A.hmm"
-sp_db="/gscratch/srlab/programs/Trinotate-v3.1.1/admin/uniprot_sprot.pep"
+  # Remove path from transcriptome using parameter substitution
+  transcriptome_name="${transcriptome]##*/}"
+
+  prefix="${timestamp}_${transcriptome_name}"
+
+  # Make output directories
+  mkdir --parents "${prefix}.transdecoder" && cd "$_"
+
+  # Paths to input/output files
+  blastp_out="${blastp_out_dir}/${prefix}.blastp.outfmt6"
+  blastp_out_dir="${prefix}.blastp_out"
+  pfam_out_dir="${prefix}.pfam_out"
+  pfam_out="${pfam_out_dir}/${prefix}.pfam.domtblout"
+  lORFs_pep="${prefix}.longest_orfs.pep"
+
+  # Make output directories
+  mkdir "${blastp_out_dir}"
+  mkdir "${pfam_out_dir}"
+
+  # Capture FastA MD5 checksum for future reference
+  md5sum "${transcriptome}" > "${prefix}".checksum.md5
 
 
 
-# Capture FastA MD5 checksum for future reference
-md5sum "${trinity_fasta}" >> "${trinity_fasta_name}".checksum.md5
+  # Extract long open reading frames
+  "${programs_array[transdecoder_lORFs]}" \
+  --gene_trans_map "${transcriptomes_gene_maps_array[$transcriptome]}" \
+  -t "${transcriptome}"
 
-# Make output directories
-mkdir "${blastp_out_dir}"
-mkdir "${pfam_out_dir}"
+  # Run blastp on long ORFs
+  "${programs_array[blastp]}" \
+  -query "${lORFs_pep}" \
+  -db "${sp_db}" \
+  -max_target_seqs 1 \
+  -outfmt 6 \
+  -evalue 1e-5 \
+  -num_threads ${threads} \
+  > "${blastp_out}"
 
-# Extract long open reading frames
-"${transdecoder_lORFs}" \
---gene_trans_map "${trinity_gene_map}" \
--t "${trinity_fasta}"
+  # Run pfam search
+  "${programs_array[hmmscan]}" \
+  --cpu ${threads} \
+  --domtblout "${pfam_out}" \
+  "${pfam_db}" \
+  "${lORFs_pep}"
 
-# Run blastp on long ORFs
-"${blastp}" \
--query "${lORFs_pep}" \
--db "${sp_db}" \
--max_target_seqs 1 \
--outfmt 6 \
--evalue 1e-5 \
--num_threads 28 \
-> "${blastp_out}"
+  # Run Transdecoder with blastp and Pfam results
+  "${programs_array[transdecoder_predict]}" \
+  -t "${transcriptome}" \
+  --retain_pfam_hits "${pfam_out}" \
+  --retain_blastp_hits "${blastp_out}"
 
-# Run pfam search
-"${hmmscan}" \
---cpu 28 \
---domtblout "${pfam_out}" \
-"${pfam_db}" \
-"${lORFs_pep}"
+  cd ..
 
-# Run Transdecoder with blastp and Pfam results
-"${transdecoder_predict}" \
--t "${trinity_fasta}" \
---retain_pfam_hits "${pfam_out}" \
---retain_blastp_hits "${blastp_out}"
+done
