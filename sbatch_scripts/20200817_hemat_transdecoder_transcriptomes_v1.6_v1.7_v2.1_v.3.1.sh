@@ -37,11 +37,20 @@ transdecoder_dir="/gscratch/srlab/programs/TransDecoder-v5.5.0"
 
 # Array of the various comparisons to evaluate
 # Each condition in each comparison should be separated by a "-"
+declare -A transcriptomes_array
 transcriptomes_array=(
-"${transcriptomes_dir}"/hemat_transcriptome_v1.6.fasta \
-"${transcriptomes_dir}"/hemat_transcriptome_v1.7.fasta \
-"${transcriptomes_dir}"/hemat_transcriptome_v2.1.fasta \
-"${transcriptomes_dir}"/hemat_transcriptome_v3.1.fasta
+[hemat_transcriptome_v1.6.fasta]="${transcriptomes_dir}/hemat_transcriptome_v1.6.fasta" \
+[hemat_transcriptome_v1.7.fasta]="${transcriptomes_dir}/hemat_transcriptome_v1.7.fasta" \
+[hemat_transcriptome_v2.1.fasta]="${transcriptomes_dir}/hemat_transcriptome_v2.1.fasta" \
+[hemat_transcriptome_v3.1.fasta]="${transcriptomes_dir}/hemat_transcriptome_v3.1.fasta"
+)
+
+declare -A gene_trans_map_array
+gene_trans_map_array=(
+[hemat_transcriptome_v1.6.fasta.gene_trans_map]="${transcriptomes_dir}/hemat_transcriptome_v1.6.fasta.gene_trans_map" \
+[hemat_transcriptome_v1.7.fasta.gene_trans_map]="${transcriptomes_dir}/hemat_transcriptome_v1.7.fasta.gene_trans_map" \
+[hemat_transcriptome_v2.1.fasta.gene_trans_map]="${transcriptomes_dir}/emat_transcriptome_v2.1.fasta.gene_trans_map" \
+[hemat_transcriptome_v3.1.fasta.gene_trans_map]="${transcriptomes_dir}/hemat_transcriptome_v3.1.fasta.gene_trans_map"
 )
 
 declare -A programs_array
@@ -52,14 +61,6 @@ programs_array=(
 [transdecoder_predict]="${transdecoder_dir}/TransDecoder.Predict"
 )
 
-
-# Set input file locations
-trinity_fasta="/gscratch/srlab/sam/data/C_bairdi/transcriptomes/cbai_transcriptome_v1.7.fasta"
-trinity_gene_map="/gscratch/srlab/sam/data/C_bairdi/transcriptomes/cbai_transcriptome_v1.7.fasta.gene_trans_map"
-
-
-# Capture trinity file name
-trinity_fasta_name=${trinity_fasta##*/}
 
 
 
