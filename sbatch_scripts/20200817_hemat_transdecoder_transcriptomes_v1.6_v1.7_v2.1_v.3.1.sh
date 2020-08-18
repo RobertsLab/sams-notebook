@@ -91,7 +91,7 @@ do
 
   blastp_out="${blastp_out_dir}/${prefix}.blastp.outfmt6"
   pfam_out="${pfam_out_dir}/${prefix}.pfam.domtblout"
-  lORFs_pep="${prefix}.longest_orfs.pep"
+  lORFs_pep="${transcriptome_name}.transdecoder_dir/longest_orfs.pep"
 
 
 
