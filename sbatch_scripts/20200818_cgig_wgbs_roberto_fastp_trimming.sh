@@ -17,10 +17,27 @@
 ## Specify the working directory for this job
 #SBATCH --chdir=/gscratch/scrubbed/samwhite/outputs/20200818_cgig_wgbs_roberto_fastp_trimming
 
+### Roberto's C.gigas WGBS trimming using fastp.
 
-timestamp=$(date +%Y%m%d)
 
-### C.gigas WGBS trimming using fastp.
+###################################################################################
+# These variables need to be set by user
+
+# Set number of CPUs to use
+threads=28
+
+# Input/output files
+trimmed_checksums=trimmed_fastq_checksums.md5
+raw_reads_dir=/gscratch/srlab/sam/data/C_gigas/wgbs/
+
+# Paths to programs
+fastp=/gscratch/srlab/programs/fastp-0.20.0/fastp
+fastqc=/gscratch/srlab/programs/fastqc_v0.11.8/fastqc
+multiqc=/gscratch/srlab/programs/anaconda3/bin/multiqc
+
+
+###################################################################################
+
 
 # Exit script if any command fails
 set -e
@@ -29,18 +46,8 @@ set -e
 
 module load intel-python3_2017
 
-
-# Set number of CPUs to use
-threads=28
-
-# Input/output files
-trimmed_checksums=trimmed_fastq_checksums.md5
-raw_reads_dir=/gscratch/srlab/sam/data/C_bairdi/RNAseq/
-
-# Paths to programs
-fastp=/gscratch/srlab/programs/fastp-0.20.0/fastp
-fastqc=/gscratch/srlab/programs/fastqc_v0.11.8/fastqc
-multiqc=/gscratch/srlab/programs/anaconda3/bin/multiqc
+# Capture date
+timestamp=$(date +%Y%m%d)
 
 ## Inititalize arrays
 fastq_array_R1=()
@@ -75,14 +82,14 @@ done
 ## Uses awk to parse out sample name from filename
 for R1_fastq in *R1*.gz
 do
-  R1_names_array+=($(echo "${R1_fastq}" | awk -F"." '{print $1}'))
+  R1_names_array+=($(echo "${R1_fastq}" | awk -F"_" '{print $1}'))
 done
 
 # Create array of sample names
 ## Uses awk to parse out sample name from filename
 for R2_fastq in *R2*.gz
 do
-  R2_names_array+=($(echo "${R2_fastq}" | awk -F"." '{print $1}'))
+  R2_names_array+=($(echo "${R2_fastq}" | awk -F"_" '{print $1}'))
 done
 
 # Create list of fastq files used in analysis
@@ -93,13 +100,13 @@ done
 
 # Run fastp on files
 # Trim 10bp from 5' from each read
-for index in "${!fastq_array_R1[@]}"
+for fastq in "${!fastq_array_R1[@]}"
 do
-  R1_sample_name=$(echo "${R1_names_array[index]}")
-	R2_sample_name=$(echo "${R2_names_array[index]}")
+  R1_sample_name=$(echo "${R1_names_array[fastq]}")
+	R2_sample_name=$(echo "${R2_names_array[fastq]}")
 	${fastp} \
-	--in1 "${fastq_array_R1[index]}" \
-	--in2 "${fastq_array_R2[index]}" \
+	--in1 "${fastq_array_R1[fastq]}" \
+	--in2 "${fastq_array_R2[fastq]}" \
 	--detect_adapter_for_pe \
   --trim_front1 10 \
   --trim_front2 10 \
@@ -121,7 +128,7 @@ do
 	"${R2_sample_name}".fastp-trim."${timestamp}".fq.gz
 
 	# Remove original FastQ files
-	rm "${fastq_array_R1[index]}" "${fastq_array_R2[index]}"
+	rm "${fastq_array_R1[fastq]}" "${fastq_array_R2[fastq]}"
 done
 
 
@@ -145,7 +152,6 @@ do
 done
 
 # Document programs in PATH (primarily for program version ID)
-
 {
 date
 echo ""
