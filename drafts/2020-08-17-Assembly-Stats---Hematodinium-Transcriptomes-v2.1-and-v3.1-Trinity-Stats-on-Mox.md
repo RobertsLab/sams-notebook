@@ -165,9 +165,14 @@ As expected, very fast; 27 seconds:
 
 ![cumulative runtime of running Trinity stats scripts on Hemat transcriptomes v2.1 and v3.1](https://github.com/RobertsLab/sams-notebook/blob/master/images/screencaps/20200817_hemat_trinity_stats_v2.1_3.1_runtime.png?raw=true)
 
+
 Output folder:
 
 - [20200817_hemat_trinity_stats_v2.1_3.1/](https://gannet.fish.washington.edu/Atumefaciens/20200817_hemat_trinity_stats_v2.1_3.1/)
+
+All stats below have been added to the _Hematodinium_ assembly comparison spreadsheet:
+
+- [hemat_transcriptome_comp](https://docs.google.com/spreadsheets/d/1A81cFdFw5Mlks5DWMmq0-8eVqyTXqmoCsHNWs95N_p4/edit#gid=0) (Google Sheet)
 
 
 ##### hemat_transcriptome_v2.1.fasta
