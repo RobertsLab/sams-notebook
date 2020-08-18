@@ -168,3 +168,109 @@ As expected, very fast; 27 seconds:
 Output folder:
 
 - [20200817_hemat_trinity_stats_v2.1_3.1/](https://gannet.fish.washington.edu/Atumefaciens/20200817_hemat_trinity_stats_v2.1_3.1/)
+
+
+##### hemat_transcriptome_v2.1.fasta
+
+
+- [20200817_hemat_trinity_stats_v2.1_3.1/hemat_transcriptome_v2.1.fasta_assembly_stats.txt](https://gannet.fish.washington.edu/Atumefaciens/20200817_hemat_trinity_stats_v2.1_3.1/hemat_transcriptome_v2.1.fasta_assembly_stats.txt)
+
+```
+################################
+## Counts of transcripts, etc.
+################################
+Total trinity 'genes':	5967
+Total trinity transcripts:	30612
+Percent GC: 47.40
+
+########################################
+Stats based on ALL transcript contigs:
+########################################
+
+	Contig N10: 4850
+	Contig N20: 3944
+	Contig N30: 3360
+	Contig N40: 2936
+	Contig N50: 2598
+
+	Median contig length: 2018
+	Average contig: 2245.91
+	Total assembled bases: 68751815
+
+
+#####################################################
+## Stats based on ONLY LONGEST ISOFORM per 'GENE':
+#####################################################
+
+	Contig N10: 5158
+	Contig N20: 4254
+	Contig N30: 3613
+	Contig N40: 3162
+	Contig N50: 2806
+
+	Median contig length: 2075
+	Average contig: 2268.13
+	Total assembled bases: 13533919
+```
+
+Other useful files for downstream annotation using Trinotate:
+
+Trinity Gene Trans Map:
+
+- [20200817_hemat_trinity_stats_v2.1_3.1/hemat_transcriptome_v2.1.fasta.gene_trans_map](https://gannet.fish.washington.edu/Atumefaciens/20200817_hemat_trinity_stats_v2.1_3.1/hemat_transcriptome_v2.1.fasta.gene_trans_map)
+
+Trinity FastA Sequence Lengths:
+
+- [20200817_hemat_trinity_stats_v2.1_3.1/hemat_transcriptome_v2.1.fasta.seq_lens](https://gannet.fish.washington.edu/Atumefaciens/20200817_hemat_trinity_stats_v2.1_3.1/hemat_transcriptome_v2.1.fasta.seq_lens)
+
+##### hemat_transcriptome_v3.1.fasta
+
+- [20200817_hemat_trinity_stats_v2.1_3.1/hemat_transcriptome_v3.1.fasta_assembly_stats.txt](https://gannet.fish.washington.edu/Atumefaciens/20200817_hemat_trinity_stats_v2.1_3.1/hemat_transcriptome_v3.1.fasta_assembly_stats.txt)
+
+```
+################################
+## Counts of transcripts, etc.
+################################
+Total trinity 'genes':	5702
+Total trinity transcripts:	29863
+Percent GC: 47.43
+
+########################################
+Stats based on ALL transcript contigs:
+########################################
+
+	Contig N10: 4805
+	Contig N20: 3890
+	Contig N30: 3353
+	Contig N40: 2939
+	Contig N50: 2598
+
+	Median contig length: 2034
+	Average contig: 2258.74
+	Total assembled bases: 67452749
+
+
+#####################################################
+## Stats based on ONLY LONGEST ISOFORM per 'GENE':
+#####################################################
+
+	Contig N10: 5235
+	Contig N20: 4213
+	Contig N30: 3619
+	Contig N40: 3174
+	Contig N50: 2805
+
+	Median contig length: 2129.5
+	Average contig: 2333.10
+	Total assembled bases: 13303359
+```
+
+Other useful files for downstream annotation using Trinotate:
+
+Trinity Gene Trans Map:
+
+- [20200817_hemat_trinity_stats_v2.1_3.1/hemat_transcriptome_v3.1.fasta.gene_trans_map](https://gannet.fish.washington.edu/Atumefaciens/20200817_hemat_trinity_stats_v2.1_3.1/hemat_transcriptome_v3.1.fasta.gene_trans_map)
+
+Trinity FastA Sequence Lengths:
+
+- [20200817_hemat_trinity_stats_v2.1_3.1/hemat_transcriptome_v3.1.fasta.seq_lens](https://gannet.fish.washington.edu/Atumefaciens/20200817_hemat_trinity_stats_v2.1_3.1/hemat_transcriptome_v3.1.fasta.seq_lens)
