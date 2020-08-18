@@ -1,6 +1,6 @@
 ---
 layout: post
-title: TransDecoder - Hematodinium Transcriptomes v2.1 and v3.1 on Mox
+title: TransDecoder - Hematodinium Transcriptomes v1.6, v1.7, v2.1 and v3.1 on Mox
 date: '2020-08-17 06:35'
 tags:
   - Chionoecetes bairdi
@@ -12,7 +12,7 @@ tags:
 categories:
   - Miscellaneous
 ---
-To continue annotation of our _Hematodinium_ v2.1 & v3.1 transcriptome assemblies, I needed to run [TransDecoder](https://github.com/TransDecoder/TransDecoder/wiki) before performing the more thorough annotation with [Trinotate](https://github.com/Trinotate/Trinotate.github.io/wiki).
+To continue annotation of our _Hematodinium_ v1.6, v1.7, v2.1 & v3.1 transcriptome assemblies, I needed to run [TransDecoder](https://github.com/TransDecoder/TransDecoder/wiki) before performing the more thorough annotation with [Trinotate](https://github.com/Trinotate/Trinotate.github.io/wiki).
 
 Info for each transcriptome version (library composition, assembly dates, BUSCO, etc) can be found in this table:
 
