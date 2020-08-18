@@ -11,7 +11,9 @@ tags:
 categories:
   - Miscellaneous
 ---
+Working on dealing with our various _Hematodinium sp._ transcriptomes and realized that transcriptomes v2.1 and v3.1 ([extracted from BLASTx-annotated FastAs from 20200605](https://robertslab.github.io/sams-notebook/2020/06/05/Sequence-Extractions-C.bairdi-Transcriptomes-v2.0-and-v3.0-Excluding-Alveolata-with-MEGAN6-on-Swoose.html)) didn't have any associated stats.
 
+Used built-in Trinity scripts to generate assembly stats on Mox.
 
 SBATCH script (GitHub):
 
