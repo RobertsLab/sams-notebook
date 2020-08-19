@@ -1,6 +1,6 @@
 #!/bin/bash
 ## Job Name
-#SBATCH --job-name=20200819_cbai_trinity_stats_v2.1
+#SBATCH --job-name=cbai_trinity_stats_v2.1_v3.1
 ## Allocation Definition
 #SBATCH --account=coenv
 #SBATCH --partition=coenv
@@ -15,10 +15,10 @@
 #SBATCH --mail-type=ALL
 #SBATCH --mail-user=samwhite@uw.edu
 ## Specify the working directory for this job
-#SBATCH --chdir=/gscratch/scrubbed/samwhite/outputs/20200819_cbai_trinity_stats_v2.1
+#SBATCH --chdir=/gscratch/scrubbed/samwhite/outputs/20200819_cbai_trinity_stats_v2.1_v3.1
 
 
-# Script to generate C.bairdi transcriptome v2.1 Trinity stats.
+# Script to generate C.bairdi transcriptome v2.1 and v3.1 Trinity stats.
 
 ###################################################################################
 # These variables need to be set by user
@@ -35,7 +35,8 @@ samtools="/gscratch/srlab/programs/samtools-1.10/samtools"
 # Array of the various comparisons to evaluate
 # Each condition in each comparison should be separated by a "-"
 transcriptomes_array=(
-"${transcriptomes_dir}"/cbai_transcriptome_v2.1.fasta
+"${transcriptomes_dir}"/cbai_transcriptome_v2.1.fasta \
+"${transcriptomes_dir}"/cbai_transcriptome_v3.1.fasta
 )
 
 
