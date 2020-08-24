@@ -1,28 +1,28 @@
 ---
 layout: post
-title: Assembly Stats - Hematodinium Transcriptomes v2.1 and v3.1 Trinity Stats on Mox
+title: Assembly Stats - cbaiodinium Transcriptomes v2.1 and v3.1 Trinity Stats on Mox
 date: '2020-08-17 06:31'
 tags:
   - Tanner crab
   - mox
   - transcriptome assembly
   - Chionoecetes bairdi
-  - Hematodinium
+  - cbaiodinium
 categories:
   - Miscellaneous
 ---
-Working on dealing with our various _Hematodinium sp._ transcriptomes and realized that transcriptomes v2.1 and v3.1 ([extracted from BLASTx-annotated FastAs from 20200605](https://robertslab.github.io/sams-notebook/2020/06/05/Sequence-Extractions-C.bairdi-Transcriptomes-v2.0-and-v3.0-Excluding-Alveolata-with-MEGAN6-on-Swoose.html)) didn't have any associated stats.
+Working on dealing with our various _cbaiodinium sp._ transcriptomes and realized that transcriptomes v2.1 and v3.1 ([extracted from BLASTx-annotated FastAs from 20200605](https://robertslab.github.io/sams-notebook/2020/06/05/Sequence-Extractions-C.bairdi-Transcriptomes-v2.0-and-v3.0-Excluding-Alveolata-with-MEGAN6-on-Swoose.html)) didn't have any associated stats.
 
 Used built-in Trinity scripts to generate assembly stats on Mox.
 
 SBATCH script (GitHub):
 
-- [20200817_hemat_trinity_stats_v2.1_3.1.sh](https://github.com/RobertsLab/sams-notebook/blob/master/sbatch_scripts/20200817_hemat_trinity_stats_v2.1_3.1.sh)
+- [20200819_cbai_trinity_stats_v2.1_3.1.sh](https://github.com/RobertsLab/sams-notebook/blob/master/sbatch_scripts/20200819_cbai_trinity_stats_v2.1_3.1.sh)
 
 ```shell
 #!/bin/bash
 ## Job Name
-#SBATCH --job-name=20200817_hemat_trinity_stats_v2.1_3.1
+#SBATCH --job-name=20200819_cbai_trinity_stats_v2.1_3.1
 ## Allocation Definition
 #SBATCH --account=coenv
 #SBATCH --partition=coenv
@@ -37,10 +37,10 @@ SBATCH script (GitHub):
 #SBATCH --mail-type=ALL
 #SBATCH --mail-user=samwhite@uw.edu
 ## Specify the working directory for this job
-#SBATCH --chdir=/gscratch/scrubbed/samwhite/outputs/20200817_hemat_trinity_stats_v2.1_3.1
+#SBATCH --chdir=/gscratch/scrubbed/samwhite/outputs/20200819_cbai_trinity_stats_v2.1_3.1
 
 
-# Script to generate Hematodinium Trinity transcriptome stats:
+# Script to generate cbaiodinium Trinity transcriptome stats:
 # v2.1
 # v3.1
 
@@ -48,7 +48,7 @@ SBATCH script (GitHub):
 # These variables need to be set by user
 
 # Assign Variables
-transcriptomes_dir=/gscratch/srlab/sam/data/Hematodinium/transcriptomes
+transcriptomes_dir=/gscratch/srlab/sam/data/cbaiodinium/transcriptomes
 
 
 # Paths to programs
@@ -59,8 +59,8 @@ samtools="/gscratch/srlab/programs/samtools-1.10/samtools"
 # Array of the various comparisons to evaluate
 # Each condition in each comparison should be separated by a "-"
 transcriptomes_array=(
-"${transcriptomes_dir}"/hemat_transcriptome_v2.1.fasta \
-"${transcriptomes_dir}"/hemat_transcriptome_v3.1.fasta
+"${transcriptomes_dir}"/cbai_transcriptome_v2.1.fasta \
+"${transcriptomes_dir}"/cbai_transcriptome_v3.1.fasta
 )
 
 
@@ -161,121 +161,121 @@ done
 
 #### RESULTS
 
-As expected, very fast; 27 seconds:
+As expected, very fast; ~2mins:
 
-![cumulative runtime of running Trinity stats scripts on Hemat transcriptomes v2.1 and v3.1](https://github.com/RobertsLab/sams-notebook/blob/master/images/screencaps/20200817_hemat_trinity_stats_v2.1_3.1_runtime.png?raw=true)
+![cumulative runtime of running Trinity stats scripts on C.bairdi transcriptomes v2.1 and v3.1](https://github.com/RobertsLab/sams-notebook/blob/master/images/screencaps/20200819_cbai_trinity_stats_v2.1_v3.1_runtime.png?raw=true)
 
 
 Output folder:
 
-- [20200817_hemat_trinity_stats_v2.1_3.1/](https://gannet.fish.washington.edu/Atumefaciens/20200817_hemat_trinity_stats_v2.1_3.1/)
+- [20200819_cbai_trinity_stats_v2.1_3.1/](https://gannet.fish.washington.edu/Atumefaciens/20200819_cbai_trinity_stats_v2.1_3.1/)
 
-All stats below have been added to the _Hematodinium_ assembly comparison spreadsheet:
+All stats below have been added to the _C.bairdi_ assembly comparison spreadsheet:
 
-- [hemat_transcriptome_comp](https://docs.google.com/spreadsheets/d/1A81cFdFw5Mlks5DWMmq0-8eVqyTXqmoCsHNWs95N_p4/edit#gid=0) (Google Sheet)
-
-
-##### hemat_transcriptome_v2.1.fasta
+- [cbai_transcriptome_comp](https://docs.google.com/spreadsheets/d/1XAgU_xQKJjWk4ThJHn1wLDtPuW6X7s6Jjh_373bMc0U/edit?usp=sharing) (Google Sheet)
 
 
-- [20200817_hemat_trinity_stats_v2.1_3.1/hemat_transcriptome_v2.1.fasta_assembly_stats.txt](https://gannet.fish.washington.edu/Atumefaciens/20200817_hemat_trinity_stats_v2.1_3.1/hemat_transcriptome_v2.1.fasta_assembly_stats.txt)
+##### cbai_transcriptome_v2.1.fasta
+
+
+- [20200819_cbai_trinity_stats_v2.1_3.1/cbai_transcriptome_v2.1.fasta_assembly_stats.txt](https://gannet.fish.washington.edu/Atumefaciens/20200819_cbai_trinity_stats_v2.1_3.1/cbai_transcriptome_v2.1.fasta_assembly_stats.txt)
 
 ```
 ################################
 ## Counts of transcripts, etc.
 ################################
-Total trinity 'genes':	5967
-Total trinity transcripts:	30612
-Percent GC: 47.40
+Total trinity 'genes':	131239
+Total trinity transcripts:	237494
+Percent GC: 50.37
 
 ########################################
 Stats based on ALL transcript contigs:
 ########################################
 
-	Contig N10: 4850
-	Contig N20: 3944
-	Contig N30: 3360
-	Contig N40: 2936
-	Contig N50: 2598
+	Contig N10: 5347
+	Contig N20: 3867
+	Contig N30: 3024
+	Contig N40: 2457
+	Contig N50: 1996
 
-	Median contig length: 2018
-	Average contig: 2245.91
-	Total assembled bases: 68751815
+	Median contig length: 494
+	Average contig: 1037.76
+	Total assembled bases: 246461881
 
 
 #####################################################
 ## Stats based on ONLY LONGEST ISOFORM per 'GENE':
 #####################################################
 
-	Contig N10: 5158
-	Contig N20: 4254
-	Contig N30: 3613
-	Contig N40: 3162
-	Contig N50: 2806
+	Contig N10: 5047
+	Contig N20: 3463
+	Contig N30: 2579
+	Contig N40: 1938
+	Contig N50: 1388
 
-	Median contig length: 2075
-	Average contig: 2268.13
-	Total assembled bases: 13533919
+	Median contig length: 344
+	Average contig: 722.72
+	Total assembled bases: 94849243
 ```
 
 Other useful files for downstream annotation using Trinotate:
 
 Trinity Gene Trans Map:
 
-- [20200817_hemat_trinity_stats_v2.1_3.1/hemat_transcriptome_v2.1.fasta.gene_trans_map](https://gannet.fish.washington.edu/Atumefaciens/20200817_hemat_trinity_stats_v2.1_3.1/hemat_transcriptome_v2.1.fasta.gene_trans_map)
+- [20200819_cbai_trinity_stats_v2.1_3.1/cbai_transcriptome_v2.1.fasta.gene_trans_map](https://gannet.fish.washington.edu/Atumefaciens/20200819_cbai_trinity_stats_v2.1_3.1/cbai_transcriptome_v2.1.fasta.gene_trans_map)
 
 Trinity FastA Sequence Lengths:
 
-- [20200817_hemat_trinity_stats_v2.1_3.1/hemat_transcriptome_v2.1.fasta.seq_lens](https://gannet.fish.washington.edu/Atumefaciens/20200817_hemat_trinity_stats_v2.1_3.1/hemat_transcriptome_v2.1.fasta.seq_lens)
+- [20200819_cbai_trinity_stats_v2.1_3.1/cbai_transcriptome_v2.1.fasta.seq_lens](https://gannet.fish.washington.edu/Atumefaciens/20200819_cbai_trinity_stats_v2.1_3.1/cbai_transcriptome_v2.1.fasta.seq_lens)
 
-##### hemat_transcriptome_v3.1.fasta
+##### cbai_transcriptome_v3.1.fasta
 
-- [20200817_hemat_trinity_stats_v2.1_3.1/hemat_transcriptome_v3.1.fasta_assembly_stats.txt](https://gannet.fish.washington.edu/Atumefaciens/20200817_hemat_trinity_stats_v2.1_3.1/hemat_transcriptome_v3.1.fasta_assembly_stats.txt)
+- [20200819_cbai_trinity_stats_v2.1_3.1/cbai_transcriptome_v3.1.fasta_assembly_stats.txt](https://gannet.fish.washington.edu/Atumefaciens/20200819_cbai_trinity_stats_v2.1_3.1/cbai_transcriptome_v3.1.fasta_assembly_stats.txt)
 
 ```
 ################################
 ## Counts of transcripts, etc.
 ################################
-Total trinity 'genes':	5702
-Total trinity transcripts:	29863
-Percent GC: 47.43
+Total trinity 'genes':	27399
+Total trinity transcripts:	78649
+Percent GC: 48.83
 
 ########################################
 Stats based on ALL transcript contigs:
 ########################################
 
-	Contig N10: 4805
-	Contig N20: 3890
-	Contig N30: 3353
-	Contig N40: 2939
-	Contig N50: 2598
+	Contig N10: 5638
+	Contig N20: 4370
+	Contig N30: 3580
+	Contig N40: 3016
+	Contig N50: 2580
 
-	Median contig length: 2034
-	Average contig: 2258.74
-	Total assembled bases: 67452749
+	Median contig length: 1522
+	Average contig: 1825.11
+	Total assembled bases: 143543003
 
 
 #####################################################
 ## Stats based on ONLY LONGEST ISOFORM per 'GENE':
 #####################################################
 
-	Contig N10: 5235
-	Contig N20: 4213
-	Contig N30: 3619
-	Contig N40: 3174
-	Contig N50: 2805
+	Contig N10: 5753
+	Contig N20: 4423
+	Contig N30: 3622
+	Contig N40: 3052
+	Contig N50: 2597
 
-	Median contig length: 2129.5
-	Average contig: 2333.10
-	Total assembled bases: 13303359
+	Median contig length: 979
+	Average contig: 1505.44
+	Total assembled bases: 41247546
 ```
 
 Other useful files for downstream annotation using Trinotate:
 
 Trinity Gene Trans Map:
 
-- [20200817_hemat_trinity_stats_v2.1_3.1/hemat_transcriptome_v3.1.fasta.gene_trans_map](https://gannet.fish.washington.edu/Atumefaciens/20200817_hemat_trinity_stats_v2.1_3.1/hemat_transcriptome_v3.1.fasta.gene_trans_map)
+- [20200819_cbai_trinity_stats_v2.1_3.1/cbai_transcriptome_v3.1.fasta.gene_trans_map](https://gannet.fish.washington.edu/Atumefaciens/20200819_cbai_trinity_stats_v2.1_3.1/cbai_transcriptome_v3.1.fasta.gene_trans_map)
 
 Trinity FastA Sequence Lengths:
 
-- [20200817_hemat_trinity_stats_v2.1_3.1/hemat_transcriptome_v3.1.fasta.seq_lens](https://gannet.fish.washington.edu/Atumefaciens/20200817_hemat_trinity_stats_v2.1_3.1/hemat_transcriptome_v3.1.fasta.seq_lens)
+- [20200819_cbai_trinity_stats_v2.1_3.1/cbai_transcriptome_v3.1.fasta.seq_lens](https://gannet.fish.washington.edu/Atumefaciens/20200819_cbai_trinity_stats_v2.1_3.1/cbai_transcriptome_v3.1.fasta.seq_lens)
