@@ -194,4 +194,15 @@ echo "${PATH}" | tr : \\n
 
 Output folder:
 
-- []()
+- [20200818_cgig_wgbs_roberto_fastp_trimming/](https://gannet.fish.washington.edu/Atumefaciens/20200818_cgig_wgbs_roberto_fastp_trimming/)
+
+  - Trimmed files can be found with this pattern: `*fastp-trim*.fq.gz`
+
+
+MultiQC Report (HTML):
+
+- [20200818_cgig_wgbs_roberto_fastp_trimming/multiqc_report.html](https://gannet.fish.washington.edu/Atumefaciens/20200818_cgig_wgbs_roberto_fastp_trimming/multiqc_report.html)
+
+  - NOTE: Report contains summaries from both `fastp` and `FastQC` results
+
+  - Each trimmed file has a corresponding `*_fastqc.html`
