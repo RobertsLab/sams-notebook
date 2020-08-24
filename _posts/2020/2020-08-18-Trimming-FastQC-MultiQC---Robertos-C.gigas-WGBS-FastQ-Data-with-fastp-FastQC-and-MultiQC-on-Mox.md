@@ -192,6 +192,10 @@ echo "${PATH}" | tr : \\n
 
 #### RESULTS
 
+Actually took longer than I expected; ~3.5hrs:
+
+![fastp trimming runtime](https://github.com/RobertsLab/sams-notebook/blob/master/images/screencaps/20200818_cgig_wgbs_roberto_fastp_trimming_runtime.png?raw=true)
+
 Output folder:
 
 - [20200818_cgig_wgbs_roberto_fastp_trimming/](https://gannet.fish.washington.edu/Atumefaciens/20200818_cgig_wgbs_roberto_fastp_trimming/)

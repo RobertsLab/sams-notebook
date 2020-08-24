@@ -190,6 +190,10 @@ done
 
 #### RESULTS
 
+Took 1.25 days to process:
+
+![Cumulative Transdecoder runtime for all transcriptomes](https://github.com/RobertsLab/sams-notebook/blob/master/images/screencaps/20200817_hemat_transdecoder_transcriptomes_v1.6_v1.7_v2.1_v.3.1_runtime.png?raw=true)
+
 Output folder:
 
 - [20200817_hemat_transdecoder_transcriptomes_v1.6_v1.7_v2.1_v.3.1](https://gannet.fish.washington.edu/Atumefaciens/20200817_hemat_transdecoder_transcriptomes_v1.6_v1.7_v2.1_v.3.1)
