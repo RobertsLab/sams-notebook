@@ -197,3 +197,82 @@ Took 1.25 days to process:
 Output folder:
 
 - [20200817_hemat_transdecoder_transcriptomes_v1.6_v1.7_v2.1_v.3.1](https://gannet.fish.washington.edu/Atumefaciens/20200817_hemat_transdecoder_transcriptomes_v1.6_v1.7_v2.1_v.3.1)
+
+
+##### `hemat_transcriptome_v1.6`
+
+
+Coding Sequences (FastA):
+
+- [hemat_transcriptome_v1.6.fasta.transdecoder.cds](https://gannet.fish.washington.edu/Atumefaciens/20200817_hemat_transdecoder_transcriptomes_v1.6_v1.7_v2.1_v.3.1/20200817_hemat_transcriptome_v1.6.fasta.transdecoder/hemat_transcriptome_v1.6.fasta.transdecoder.cds)
+
+Peptide Sequences (FastA):
+
+- [hemat_transcriptome_v1.6.fasta.transdecoder.pep](https://gannet.fish.washington.edu/Atumefaciens/20200817_hemat_transdecoder_transcriptomes_v1.6_v1.7_v2.1_v.3.1/20200817_hemat_transcriptome_v1.6.fasta.transdecoder/hemat_transcriptome_v1.6.fasta.transdecoder.pep)
+
+BLASTp output (tab):
+
+- [20200817_hemat_transcriptome_v1.6.fasta.blastp.outfmt6](https://gannet.fish.washington.edu/Atumefaciens/20200817_hemat_transdecoder_transcriptomes_v1.6_v1.7_v2.1_v.3.1/20200817_hemat_transcriptome_v1.6.fasta.transdecoder/20200817_hemat_transcriptome_v1.6.fasta.blastp_out/20200817_hemat_transcriptome_v1.6.fasta.blastp.outfmt6)
+
+Pfam output:
+
+- [20200817_hemat_transcriptome_v1.6.fasta.pfam.domtblout](https://gannet.fish.washington.edu/Atumefaciens/20200817_hemat_transdecoder_transcriptomes_v1.6_v1.7_v2.1_v.3.1/20200817_hemat_transcriptome_v1.6.fasta.transdecoder/20200817_hemat_transcriptome_v1.6.fasta.pfam_out/20200817_hemat_transcriptome_v1.6.fasta.pfam.domtblout)
+
+
+##### `hemat_transcriptome_v1.7`
+
+Coding Sequences (FastA):
+
+- [hemat_transcriptome_v1.7.fasta.transdecoder.cds](https://gannet.fish.washington.edu/Atumefaciens/20200817_hemat_transdecoder_transcriptomes_v1.6_v1.7_v2.1_v.3.1/20200817_hemat_transcriptome_v1.7.fasta.transdecoder/hemat_transcriptome_v1.7.fasta.transdecoder.cds)
+
+Peptide Sequences (FastA):
+
+- [hemat_transcriptome_v1.7.fasta.transdecoder.pep](https://gannet.fish.washington.edu/Atumefaciens/20200817_hemat_transdecoder_transcriptomes_v1.6_v1.7_v2.1_v.3.1/20200817_hemat_transcriptome_v1.7.fasta.transdecoder/hemat_transcriptome_v1.7.fasta.transdecoder.pep)
+
+BLASTp output (tab):
+
+- [20200817_hemat_transcriptome_v1.7.fasta.blastp.outfmt6](https://gannet.fish.washington.edu/Atumefaciens/20200817_hemat_transdecoder_transcriptomes_v1.6_v1.7_v2.1_v.3.1/20200817_hemat_transcriptome_v1.7.fasta.transdecoder/20200817_hemat_transcriptome_v1.7.fasta.blastp_out/20200817_hemat_transcriptome_v1.7.fasta.blastp.outfmt6)
+
+Pfam output:
+
+- [20200817_hemat_transcriptome_v1.7.fasta.pfam.domtblout](https://gannet.fish.washington.edu/Atumefaciens/20200817_hemat_transdecoder_transcriptomes_v1.6_v1.7_v2.1_v.3.1/20200817_hemat_transcriptome_v1.7.fasta.transdecoder/20200817_hemat_transcriptome_v1.7.fasta.pfam_out/20200817_hemat_transcriptome_v1.7.fasta.pfam.domtblout)
+
+
+
+##### `hemat_transcriptome_v2.1`
+
+Coding Sequences (FastA):
+
+- [hemat_transcriptome_v2.1.fasta.transdecoder.cds](https://gannet.fish.washington.edu/Atumefaciens/20200817_hemat_transdecoder_transcriptomes_v1.6_v1.7_v2.1_v.3.1/20200817_hemat_transcriptome_v2.1.fasta.transdecoder/hemat_transcriptome_v2.1.fasta.transdecoder.cds)
+
+Peptide Sequences (FastA):
+
+- [hemat_transcriptome_v2.1.fasta.transdecoder.pep](https://gannet.fish.washington.edu/Atumefaciens/20200817_hemat_transdecoder_transcriptomes_v1.6_v1.7_v2.1_v.3.1/20200817_hemat_transcriptome_v2.1.fasta.transdecoder/hemat_transcriptome_v2.1.fasta.transdecoder.pep)
+
+BLASTp output (tab):
+
+- [20200817_hemat_transcriptome_v2.1.fasta.blastp.outfmt6](https://gannet.fish.washington.edu/Atumefaciens/20200817_hemat_transdecoder_transcriptomes_v1.6_v1.7_v2.1_v.3.1/20200817_hemat_transcriptome_v2.1.fasta.transdecoder/20200817_hemat_transcriptome_v2.1.fasta.blastp_out/20200817_hemat_transcriptome_v2.1.fasta.blastp.outfmt6)
+
+Pfam output:
+
+- [20200817_hemat_transcriptome_v2.1.fasta.pfam.domtblout](https://gannet.fish.washington.edu/Atumefaciens/20200817_hemat_transdecoder_transcriptomes_v1.6_v1.7_v2.1_v.3.1/20200817_hemat_transcriptome_v2.1.fasta.transdecoder/20200817_hemat_transcriptome_v2.1.fasta.pfam_out/20200817_hemat_transcriptome_v2.1.fasta.pfam.domtblout)
+
+
+
+##### `hemat_transcriptome_v3.1`
+
+Coding Sequences (FastA):
+
+- [hemat_transcriptome_v3.1.fasta.transdecoder.cds](https://gannet.fish.washington.edu/Atumefaciens/20200817_hemat_transdecoder_transcriptomes_v1.6_v1.7_v2.1_v.3.1/20200817_hemat_transcriptome_v3.1.fasta.transdecoder/hemat_transcriptome_v3.1.fasta.transdecoder.cds)
+
+Peptide Sequences (FastA):
+
+- [hemat_transcriptome_v3.1.fasta.transdecoder.pep](https://gannet.fish.washington.edu/Atumefaciens/20200817_hemat_transdecoder_transcriptomes_v1.6_v1.7_v2.1_v.3.1/20200817_hemat_transcriptome_v3.1.fasta.transdecoder/hemat_transcriptome_v3.1.fasta.transdecoder.pep)
+
+BLASTp output (tab):
+
+- [20200817_hemat_transcriptome_v3.1.fasta.blastp.outfmt6](https://gannet.fish.washington.edu/Atumefaciens/20200817_hemat_transdecoder_transcriptomes_v1.6_v1.7_v2.1_v.3.1/20200817_hemat_transcriptome_v3.1.fasta.transdecoder/20200817_hemat_transcriptome_v3.1.fasta.blastp_out/20200817_hemat_transcriptome_v3.1.fasta.blastp.outfmt6)
+
+Pfam output:
+
+- [20200817_hemat_transcriptome_v3.1.fasta.pfam.domtblout](https://gannet.fish.washington.edu/Atumefaciens/20200817_hemat_transdecoder_transcriptomes_v1.6_v1.7_v2.1_v.3.1/20200817_hemat_transcriptome_v3.1.fasta.transdecoder/20200817_hemat_transcriptome_v3.1.fasta.pfam_out/20200817_hemat_transcriptome_v3.1.fasta.pfam.domtblout)
