@@ -35,9 +35,9 @@ pfam_out="${transdecoder_dir}/20200826_cbai_transcriptome_v3.1.fasta.pfam_out/20
 lORFs_pep="${transdecoder_dir}/cbai_transcriptome_v3.1.fasta.transdecoder_dir/longest_orfs.pep"
 
 ## Transcriptomics
-transcriptomes_dir="/gscratch/srlab/sam/data/Hematodinium/transcriptomes"
-trinity_fasta="${transcriptomes_dir}/hemat_transcriptome_v2.1.fasta"
-trinity_gene_map="${transcriptomes_dir}/hemat_transcriptome_v2.1.fasta.gene_trans_map"
+transcriptomes_dir="/gscratch/srlab/sam/data/C_bairdi/transcriptomes"
+trinity_fasta="${transcriptomes_dir}/cbai_transcriptome_v3.1.fasta"
+trinity_gene_map="${transcriptomes_dir}/cbai_transcriptome_v3.1.fasta.gene_trans_map"
 
 ###################################################################################
 
