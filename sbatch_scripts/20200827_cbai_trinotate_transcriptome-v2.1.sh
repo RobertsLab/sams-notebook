@@ -1,6 +1,6 @@
 #!/bin/bash
 ## Job Name
-#SBATCH --job-name=cbai_trinotate_transcriptome-v2.1
+#SBATCH --job-name=cbai_trinotate_transcriptome-v3.1
 ## Allocation Definition
 #SBATCH --account=srlab
 #SBATCH --partition=srlab
@@ -15,7 +15,7 @@
 #SBATCH --mail-type=ALL
 #SBATCH --mail-user=samwhite@uw.edu
 ## Specify the working directory for this job
-#SBATCH --chdir=/gscratch/scrubbed/samwhite/outputs/20200827_cbai_trinotate_transcriptome-v2.1
+#SBATCH --chdir=/gscratch/scrubbed/samwhite/outputs/20200827_cbai_trinotate_transcriptome-v3.1
 
 
 # Script to run Trinotate on C.bairdi transcriptome:
@@ -26,7 +26,7 @@
 
 # Input files
 ## BLASTx
-blastx_out="/gscratch/scrubbed/samwhite/outputs/20200608_cbai_diamond_blastx_v2.1_v3.1/cbai_transcriptome_v2.1.blastx.outfmt6"
+blastx_out="/gscratch/scrubbed/samwhite/outputs/20200608_cbai_diamond_blastx_v2.1_v3.1/cbai_transcriptome_v3.1.blastx.outfmt6"
 
 ## TransDecoder
 transdecoder_dir="/gscratch/scrubbed/samwhite/outputs/20200826_cbai_transdecoder_transcriptomes_v2.1_v.3.1/20200826_cbai_transcriptome_v3.1.fasta.transdecoder"
