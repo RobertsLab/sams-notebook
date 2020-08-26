@@ -53,10 +53,10 @@ SBATCH script (GitHub):
 
 # Input files
 ## BLASTx
-blastx_out="/gscratch/scrubbed/samwhite/outputs/20200814_hemat_diamond_blastx_v1.6_v1.7_v2.1_v3.1/hemat_transcriptome_v1.7.fasta.blastx.outfmt6"
+blastx_out="/gscratch/scrubbed/samwhite/outputs/20200814_hemat_diamond_blastx_v1.7_v1.7_v2.1_v3.1/hemat_transcriptome_v1.7.fasta.blastx.outfmt6"
 
 ## TransDecoder
-transdecoder_dir="/gscratch/scrubbed/samwhite/outputs/20200817_hemat_transdecoder_transcriptomes_v1.6_v1.7_v2.1_v.3.1/20200817_hemat_transcriptome_v1.7.fasta.transdecoder"
+transdecoder_dir="/gscratch/scrubbed/samwhite/outputs/20200817_hemat_transdecoder_transcriptomes_v1.7_v1.7_v2.1_v.3.1/20200817_hemat_transcriptome_v1.7.fasta.transdecoder"
 blastp_out="${transdecoder_dir}/20200817_hemat_transcriptome_v1.7.fasta.blastp_out/20200817_hemat_transcriptome_v1.7.fasta.blastp.outfmt6"
 pfam_out="${transdecoder_dir}/20200817_hemat_transcriptome_v1.7.fasta.pfam_out/20200817_hemat_transcriptome_v1.7.fasta.pfam.domtblout"
 lORFs_pep="${transdecoder_dir}/hemat_transcriptome_v1.7.fasta.transdecoder_dir/longest_orfs.pep"
@@ -209,6 +209,30 @@ echo "${PATH}" | tr : \\n
 
 #### RESULTS
 
+Took ~36mins to run:
+
+![Runtime for Hemat v1.7 Trinotate job](https://github.com/RobertsLab/sams-notebook/blob/master/images/screencaps/20200826_hemat_trinotate_transcriptome-v1.7_runtime.png?raw=true)
+
 Output folder:
 
-- []()
+- [20200826_hemat_trinotate_transcriptome-v1.7/](https://gannet.fish.washington.edu/Atumefaciens/20200826_hemat_trinotate_transcriptome-v1.7/)
+
+Annotation feature map (2.3MB; TXT):
+
+- [20200826.hemat_transcriptome_v1.7.fasta.trinotate.annotation_feature_map.txt](https://gannet.fish.washington.edu/Atumefaciens/20200826_hemat_trinotate_transcriptome-v1.7/20200826.hemat_transcriptome_v1.7.fasta.trinotate.annotation_feature_map.txt)
+
+  - [This can be used to update Trinity-based gene expression matrices like so](https://github.com/trinityrnaseq/trinityrnaseq/wiki/Functional-Annotation-of-Transcripts):
+
+    - ```${TRINITY_HOME}/Analysis/DifferentialExpression/rename_matrix_feature_identifiers.pl Trinity_trans.counts.matrix annot_feature_map.txt > Trinity_trans.counts.wAnnot.matrix```
+
+Gene ontology (GO) annotations (7.9MB; TXT):
+
+- [20200826.hemat_transcriptome_v1.7.fasta.trinotate.go_annotations.txt](https://gannet.fish.washington.edu/Atumefaciens/20200826_hemat_trinotate_transcriptome-v1.7/20200826.hemat_transcriptome_v1.7.fasta.trinotate.go_annotations.txt)
+
+Annotation report (25MB; CSV):
+
+- [20200826.hemat_transcriptome_v1.7.fasta.trinotate_annotation_report.txt](https://gannet.fish.washington.edu/Atumefaciens/20200826_hemat_trinotate_transcriptome-v1.7/20200826.hemat_transcriptome_v1.7.fasta.trinotate_annotation_report.txt)
+
+SQlite database (442MB; SQLITE):
+
+- [Trinotate.sqlite](https://gannet.fish.washington.edu/Atumefaciens/20200826_hemat_trinotate_transcriptome-v1.7/Trinotate.sqlite)
