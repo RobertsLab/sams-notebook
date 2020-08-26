@@ -8,7 +8,7 @@
 ## Nodes
 #SBATCH --nodes=1
 ## Walltime (days-hours:minutes:seconds format)
-#SBATCH --time=14-00:00:00
+#SBATCH --time=7-00:00:00
 ## Memory per node
 #SBATCH --mem=120G
 ##turn on e-mail notification
