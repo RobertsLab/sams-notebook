@@ -19,7 +19,7 @@
 
 
 # Script to run Trinotate on C.bairdi transcriptome:
-# v2.1
+# v3.1
 
 ###################################################################################
 # These variables need to be set by user
