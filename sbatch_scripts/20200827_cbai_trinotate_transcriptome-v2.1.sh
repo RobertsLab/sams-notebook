@@ -15,7 +15,7 @@
 #SBATCH --mail-type=ALL
 #SBATCH --mail-user=samwhite@uw.edu
 ## Specify the working directory for this job
-#SBATCH --chdir=/gscratch/scrubbed/samwhite/outputs/20200827_cbai_trinotate_transcriptome-v2.1
+#SBATCH --chdir=/gscratch/scrubbed/samwhite/outputs/20200831_cbai_trinotate_transcriptome-v2.1
 
 
 # Script to run Trinotate on C.bairdi transcriptome:
