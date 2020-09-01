@@ -21,6 +21,10 @@ categories:
 
 #### RESULTS
 
+Qubit results (Google Sheet):
+
+- [20200901_qubit_DNA_gigas_ronit_ploidy](https://docs.google.com/spreadsheets/d/1bhqnSDA1o8xa0Fg4iMcL-uxs9g2hc6_tRhKY7zZNt-Y/edit?usp=sharing)
+
 
 | Sample_ID | [initial](ng/uL) | [Zymo](ng/uL) | [20200901](ng/uL) | Vol_for_1ug(uL) |
 |-----------|------------------|---------------|-------------------|-----------------|
