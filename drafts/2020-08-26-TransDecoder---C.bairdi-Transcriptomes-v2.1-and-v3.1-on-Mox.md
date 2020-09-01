@@ -187,6 +187,10 @@ done
 
 #### RESULTS
 
+Took a bit over 3 days to process both transcriptomes:
+
+![combined transdecoder runtimes for v2.1 and v3.1 transcriptomes](https://github.com/RobertsLab/sams-notebook/blob/master/images/screencaps/20200826_cbai_transdecoder_transcriptomes_v2.1_v.3.1_runtime.png?raw=true)
+
 Output folder:
 
-- []()
+- [20200826_cbai_transdecoder_transcriptomes_v2.1_v.3.1/](https://gannet.fish.washington.edu/Atumefaciens/20200826_cbai_transdecoder_transcriptomes_v2.1_v.3.1/)
