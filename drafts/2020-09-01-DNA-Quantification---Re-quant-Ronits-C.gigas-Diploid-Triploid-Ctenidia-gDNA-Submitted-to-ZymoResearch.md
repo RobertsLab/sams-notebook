@@ -15,6 +15,9 @@ categories:
   - Miscellaneous
 ---
 
+Original sample quants (Google Sheet):
+
+- [Ronit's Samples](https://docs.google.com/spreadsheets/d/12c79wmH6pUida7fg_e_Y1QS6bc2Ve_cyb-KL41jMfxY/edit?usp=sharing)
 
 
 ---
