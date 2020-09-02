@@ -218,7 +218,7 @@ Output folder:
 
 - [20200828_cbai_trinotate_transcriptome-v3.1](https://gannet.fish.washington.edu/Atumefaciens/20200828_cbai_trinotate_transcriptome-v3.1)
 
-Annotation feature map (2.6MB; text):
+Annotation feature map (7.0MB; text):
 
 - [20200828.cbai_transcriptome_v3.1.fasta.trinotate.annotation_feature_map.txt](https://gannet.fish.washington.edu/Atumefaciens/20200828_cbai_trinotate_transcriptome-v3.1/20200828.cbai_transcriptome_v3.1.fasta.trinotate.annotation_feature_map.txt)
 
@@ -226,14 +226,14 @@ Annotation feature map (2.6MB; text):
 
     - ```${TRINITY_HOME}/Analysis/DifferentialExpression/rename_matrix_feature_identifiers.pl Trinity_trans.counts.matrix annot_feature_map.txt > Trinity_trans.counts.wAnnot.matrix```
 
-Annotation report (35MB; CSV)
+Annotation report (92MB; CSV)
 
 - [20200828.cbai_transcriptome_v3.1.fasta.trinotate_annotation_report.txt](https://gannet.fish.washington.edu/Atumefaciens/20200828_cbai_trinotate_transcriptome-v3.1/20200828.cbai_transcriptome_v3.1.fasta.trinotate_annotation_report.txt)
 
-Gene ontology (GO) annotations (2.8MB; text)
+Gene ontology (GO) annotations (12MB; text)
 
 - [20200828.cbai_transcriptome_v3.1.fasta.trinotate.go_annotations.txt](https://gannet.fish.washington.edu/Atumefaciens/20200828_cbai_trinotate_transcriptome-v3.1/20200828.cbai_transcriptome_v3.1.fasta.trinotate.go_annotations.txt)
 
-SQlite database (543MB; SQLITE):
+SQlite database (788MB; SQLITE):
 
 - [Trinotate.sqlite](https://gannet.fish.washington.edu/Atumefaciens/20200828_cbai_trinotate_transcriptome-v3.1/Trinotate.sqlite)
