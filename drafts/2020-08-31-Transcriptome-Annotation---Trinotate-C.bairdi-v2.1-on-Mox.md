@@ -54,7 +54,7 @@ SBATCH script (GitHub):
 
 # Input files
 ## BLASTx
-blastx_out="/gscratch/scrubbed/samwhite/outputs/20200608_cbai_diamond_blastx_v2.1_v3.1/cbai_transcriptome_v2.1.blastx.outfmt6"
+blastx_out="/gscratch/scrubbed/samwhite/outputs/20200608_cbai_diamond_blastx_v2.1_v2.1/cbai_transcriptome_v2.1.blastx.outfmt6"
 
 ## TransDecoder
 transdecoder_dir="/gscratch/scrubbed/samwhite/outputs/20200826_cbai_transdecoder_transcriptomes_v2.1_v.3.1/20200826_cbai_transcriptome_v2.1.fasta.transdecoder"
@@ -97,7 +97,7 @@ signalp_dir="/gscratch/srlab/programs/signalp-4.1"
 signalp="${signalp_dir}/signalp"
 tmhmm_dir="/gscratch/srlab/programs/tmhmm-2.0c/bin"
 tmhmm="${tmhmm_dir}/tmhmm"
-trinotate_dir="/gscratch/srlab/programs/Trinotate-v3.1.1"
+trinotate_dir="/gscratch/srlab/programs/Trinotate-v2.1.1"
 trinotate="${trinotate_dir}/Trinotate"
 trinotate_rnammer="${trinotate_dir}/util/rnammer_support/RnammerTranscriptome.pl"
 trinotate_GO="${trinotate_dir}/util/extract_GO_assignments_from_Trinotate_xls.pl"
@@ -211,6 +211,30 @@ echo "${PATH}" | tr : \\n
 
 #### RESULTS
 
+Runtime was surprisingly long; ~6hrs:
+
+![cbai v2.1 Trinotate runtime](https://github.com/RobertsLab/sams-notebook/blob/master/images/screencaps/20200831_cbai_trinotate_transcriptome-v2.1_runtime.png?raw=true)
+
 Output folder:
 
-- []()
+- [20200831_cbai_trinotate_transcriptome-v2.1](https://gannet.fish.washington.edu/Atumefaciens/20200831_cbai_trinotate_transcriptome-v2.1)
+
+Annotation feature map (20MB; text):
+
+- [20200831.cbai_transcriptome_v2.1.fasta.trinotate.annotation_feature_map.txt](https://gannet.fish.washington.edu/Atumefaciens/20200831_cbai_trinotate_transcriptome-v2.1/20200831.cbai_transcriptome_v2.1.fasta.trinotate.annotation_feature_map.txt)
+
+  - [This can be used to update Trinity-based gene expression matrices like so](https://github.com/trinityrnaseq/trinityrnaseq/wiki/Functional-Annotation-of-Transcripts):
+
+    - ```${TRINITY_HOME}/Analysis/DifferentialExpression/rename_matrix_feature_identifiers.pl Trinity_trans.counts.matrix annot_feature_map.txt > Trinity_trans.counts.wAnnot.matrix```
+
+Annotation report (190MB; CSV)
+
+- [20200831.cbai_transcriptome_v2.1.fasta.trinotate_annotation_report.txt](https://gannet.fish.washington.edu/Atumefaciens/20200831_cbai_trinotate_transcriptome-v2.1/20200831.cbai_transcriptome_v2.1.fasta.trinotate_annotation_report.txt)
+
+Gene ontology (GO) annotations (37MB; text)
+
+- [20200831.cbai_transcriptome_v2.1.fasta.trinotate.go_annotations.txt](https://gannet.fish.washington.edu/Atumefaciens/20200831_cbai_trinotate_transcriptome-v2.1/20200831.cbai_transcriptome_v2.1.fasta.trinotate.go_annotations.txt)
+
+SQlite database (1.1GB; SQLITE):
+
+- [Trinotate.sqlite](https://gannet.fish.washington.edu/Atumefaciens/20200831_cbai_trinotate_transcriptome-v2.1/Trinotate.sqlite)
