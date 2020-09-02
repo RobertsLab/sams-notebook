@@ -194,3 +194,42 @@ Took a bit over 3 days to process both transcriptomes:
 Output folder:
 
 - [20200826_cbai_transdecoder_transcriptomes_v2.1_v.3.1/](https://gannet.fish.washington.edu/Atumefaciens/20200826_cbai_transdecoder_transcriptomes_v2.1_v.3.1/)
+
+
+##### `cbai_transcriptome_v2.1`
+
+
+Coding Sequences (FastA):
+
+- [20200826_cbai_transcriptome_v2.1.fasta.transdecoder.cds](https://gannet.fish.washington.edu/Atumefaciens/20200826_cbai_transdecoder_transcriptomes_v2.1_v.3.1/20200826_cbai_transcriptome_v2.1.fasta.transdecoder/20200826_cbai_transcriptome_v2.1.fasta.transdecoder.cds)
+
+Peptide Sequences (FastA):
+
+- [20200826_cbai_transcriptome_v2.1.fasta.transdecoder.pep](https://gannet.fish.washington.edu/Atumefaciens/20200826_cbai_transdecoder_transcriptomes_v2.1_v.3.1/20200826_cbai_transcriptome_v2.1.fasta.transdecoder/20200826_cbai_transcriptome_v2.1.fasta.transdecoder.pep)
+
+BLASTp output (tab):
+
+- [20200826_cbai_transcriptome_v2.1.fasta.blastp.outfmt6](https://gannet.fish.washington.edu/Atumefaciens/20200826_cbai_transdecoder_transcriptomes_v2.1_v.3.1/20200826_cbai_transcriptome_v2.1.fasta.transdecoder/20200826_cbai_transcriptome_v2.1.fasta.blastp_out/20200826_cbai_transcriptome_v2.1.fasta.blastp.outfmt6)
+
+Pfam output:
+
+- [20200826_cbai_transcriptome_v2.1.fasta.pfam.domtblout](https://gannet.fish.washington.edu/Atumefaciens/20200826_cbai_transdecoder_transcriptomes_v2.1_v.3.1/20200826_cbai_transcriptome_v2.1.fasta.transdecoder/20200826_cbai_transcriptome_v2.1.fasta.pfam_out/20200826_cbai_transcriptome_v2.1.fasta.pfam.domtblout)
+
+
+##### `cbai_transcriptome_v3.1`
+
+Coding Sequences (FastA):
+
+- [20200826_cbai_transcriptome_v3.1.fasta.transdecoder.cds](https://gannet.fish.washington.edu/Atumefaciens/20200826_cbai_transdecoder_transcriptomes_v2.1_v.3.1/20200826_cbai_transcriptome_v3.1.fasta.transdecoder/20200826_cbai_transcriptome_v3.1.fasta.transdecoder.cds)
+
+Peptide Sequences (FastA):
+
+- [20200826_cbai_transcriptome_v3.1.fasta.transdecoder.pep](https://gannet.fish.washington.edu/Atumefaciens/20200826_cbai_transdecoder_transcriptomes_v2.1_v.3.1/20200826_cbai_transcriptome_v3.1.fasta.transdecoder/20200826_cbai_transcriptome_v3.1.fasta.transdecoder.pep)
+
+BLASTp output (tab):
+
+- [20200826_cbai_transcriptome_v3.1.fasta.blastp.outfmt6](https://gannet.fish.washington.edu/Atumefaciens/20200826_cbai_transdecoder_transcriptomes_v2.1_v.3.1/20200826_cbai_transcriptome_v3.1.fasta.transdecoder/20200826_cbai_transcriptome_v3.1.fasta.blastp_out/20200826_cbai_transcriptome_v3.1.fasta.blastp.outfmt6)
+
+Pfam output:
+
+- [20200826_cbai_transcriptome_v3.1.fasta.pfam.domtblout](https://gannet.fish.washington.edu/Atumefaciens/20200826_cbai_transdecoder_transcriptomes_v2.1_v.3.1/20200826_cbai_transcriptome_v3.1.fasta.transdecoder/20200826_cbai_transcriptome_v3.1.fasta.pfam_out/20200826_cbai_transcriptome_v3.1.fasta.pfam.domtblout)
