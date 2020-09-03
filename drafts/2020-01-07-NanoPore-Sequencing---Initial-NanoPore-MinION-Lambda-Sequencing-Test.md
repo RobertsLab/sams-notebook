@@ -47,4 +47,18 @@ Fast5 format reads:
 
  - [20200107_nanopore-minION_lambda_test/20200107_2035_MN29908_FAL48614_885ed0db/EPI2ME_Report_224980-02.pdf](https://gannet.fish.washington.edu/Atumefaciens/20200107_nanopore-minION_lambda_test/20200107_2035_MN29908_FAL48614_885ed0db/EPI2ME_Report_224980-02.pdf)
 
- 
+
+Overall, the run went as expected and yielded >8,000x coverage of the Lambda genome, with only ~2.8% of reads failing to map to the genome. Will proceed to running an actual sample! 
+
+Screencaps below are taken directly from the two EPI2ME reports linked above.
+
+
+![minION Lamba read count per hour plot](https://github.com/RobertsLab/sams-notebook/blob/master/images/screencaps/20200107_nanopore-minION_lambda_test-01.png?raw=true)
+
+![minION Lamba reads stats: num reads, mean quality, mean length, total bases](https://github.com/RobertsLab/sams-notebook/blob/master/images/screencaps/20200107_nanopore-minION_lambda_test-02.png?raw=true)
+
+![minION Lamba read quality scores and read lengths plots](https://github.com/RobertsLab/sams-notebook/blob/master/images/screencaps/20200107_nanopore-minION_lambda_test-03.png?raw=true)
+
+![minION Lamba read quality scores and read lengths plots](https://github.com/RobertsLab/sams-notebook/blob/master/images/screencaps/20200107_nanopore-minION_lambda_test-03.png?raw=true)
+
+![minION Lamba alignment and coverage plots/stats](https://github.com/RobertsLab/sams-notebook/blob/master/images/screencaps/20200107_nanopore-minION_lambda_test-04.png?raw=true)
