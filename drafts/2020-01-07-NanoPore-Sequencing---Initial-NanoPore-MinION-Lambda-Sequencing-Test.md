@@ -30,3 +30,21 @@ Anyway, I set up the Lambda Control experiment sequencing run and ran it for the
 Output folder:
 
 - [20200107_nanopore-minION_lambda_test/20200107_2035_MN29908_FAL48614_885ed0db/](https://gannet.fish.washington.edu/Atumefaciens/20200107_nanopore-minION_lambda_test/20200107_2035_MN29908_FAL48614_885ed0db/)
+
+Fast5 format reads:
+
+ - [20200107_nanopore-minION_lambda_test/20200107_2035_MN29908_FAL48614_885ed0db/fast5_pass/](https://gannet.fish.washington.edu/Atumefaciens/20200107_nanopore-minION_lambda_test/20200107_2035_MN29908_FAL48614_885ed0db/fast5_pass/)
+
+ FastQ format reads:
+
+ - [20200107_nanopore-minION_lambda_test/20200107_2035_MN29908_FAL48614_885ed0db/fastq_pass/](https://gannet.fish.washington.edu/Atumefaciens/20200107_nanopore-minION_lambda_test/20200107_2035_MN29908_FAL48614_885ed0db/fastq_pass/)
+
+ EPI2ME Report \#1 (Flow cell performance; PDF):
+
+ - [20200107_nanopore-minION_lambda_test/20200107_2035_MN29908_FAL48614_885ed0db/EPI2ME_Report_224980.pdf](https://gannet.fish.washington.edu/Atumefaciens/20200107_nanopore-minION_lambda_test/20200107_2035_MN29908_FAL48614_885ed0db/EPI2ME_Report_224980.pdf)
+
+ EPI2ME Report \#2 (Alignment stats; PDF):
+
+ - [20200107_nanopore-minION_lambda_test/20200107_2035_MN29908_FAL48614_885ed0db/EPI2ME_Report_224980-02.pdf](https://gannet.fish.washington.edu/Atumefaciens/20200107_nanopore-minION_lambda_test/20200107_2035_MN29908_FAL48614_885ed0db/EPI2ME_Report_224980-02.pdf)
+
+ 
