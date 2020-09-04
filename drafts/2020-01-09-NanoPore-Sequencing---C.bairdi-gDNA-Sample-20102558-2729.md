@@ -32,3 +32,11 @@ Prepared a fresh library as before and ran as before on the FLO-MIN106 (ID: FAL5
 Output folder:
 
 - [20200109_cbai_nanopore_20102558-2729/](https://gannet.fish.washington.edu/Atumefaciens/20200109_cbai_nanopore_20102558-2729/)
+
+First run report (PDF):
+
+- [20200109_cbai_nanopore_20102558-2729/20102558-2729/3d288d14-89d6-4ae4-8a76-18ec6ff63fc7--report.pdf](https://gannet.fish.washington.edu/Atumefaciens/20200109_cbai_nanopore_20102558-2729/20102558-2729/3d288d14-89d6-4ae4-8a76-18ec6ff63fc7--report.pdf)
+
+Second run report (PDF):
+
+- [20200109_cbai_nanopore_20102558-2729/cbaI_20102558-2729/a909f60a-d49f-4564-8cd3-3c8a31e8c572--report.pdf](https://gannet.fish.washington.edu/Atumefaciens/20200109_cbai_nanopore_20102558-2729/cbaI_20102558-2729/a909f60a-d49f-4564-8cd3-3c8a31e8c572--report.pdf)
