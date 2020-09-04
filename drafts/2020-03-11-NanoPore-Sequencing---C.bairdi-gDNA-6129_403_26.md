@@ -35,3 +35,14 @@ Run report (PDF):
 ![cbai nanopore cumulative read plots](https://github.com/RobertsLab/sams-notebook/blob/master/images/screencaps/20200311_cbai_nanopore_6129_403_26_output-plots.png?raw=true)
 
 ![cbai nanopore read length histograms](https://github.com/RobertsLab/sams-notebook/blob/master/images/screencaps/20200311_cbai_nanopore_6129_403_26_read-length-histo-plots.png?raw=true)
+
+
+Well, the data looks fine to me, but I don't have much to compare to. Compared to our previous run (which had degraded gDNA as an input), this is certainly a significant improvement:
+
+- ~7x the total number of reads
+
+- ~30x the total number of bases
+
+- ~4x the N50
+
+Will get the data converted to FastQ for downstream handling.
