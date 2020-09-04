@@ -14,6 +14,16 @@ tags:
 categories:
   - Miscellaneous
 ---
+Continuing to work with [the NanoPore data that I generated back in _January_(???!!!)](https://robertslab.github.io/sams-notebook/2020/01/09/NanoPore-Sequencing-C.bairdi-gDNA-Sample-20102558-2729.html). In order to proceed, I first need to convert the raw Fast5 files to FastQ. To do so, I'll use the NanoPore program `guppy`. I converted the [first run from this flowcell earlier today](https://robertslab.github.io/sams-notebook/2020/09/04/Data-Wrangling-NanoPore-Fast5-Conversion-to-FastQ-of-C.bairdi-20102558-2729-Run-01-on-Mox-with-GPU-Node.html).
+
+As noted in that previous conversion, using a Mox GPU node decreases processing time by a ridiculous amount, compared to using CPUs. The only rub is that since we don't own a GPU node, any jobs we submit are:
+
+- lowest priority in any queue
+
+- can get interrupted at any time by jobs submitted by the node owner
+
+I'll be submitting these very early in the morning and with runtimes this fast, I shouldn't encounter any issues. Exciting!
+
 
 SBATCH script (GitHub):
 
@@ -139,6 +149,24 @@ done
 
 #### RESULTS
 
+Took ~6mins to process the convert the six Fast5 files:
+
+![Fast5 to FastQ conversion runtime with Mox GPU node](https://github.com/RobertsLab/sams-notebook/blob/master/images/screencaps/20200114_cbai_guppy_nanopore_20102558-2729_runtime.png?raw=true)
+
 Output folder:
 
-- []()
+- [20200114_cbai_guppy_nanopore_20102558-2729/](https://gannet.fish.washington.edu/Atumefaciens/20200114_cbai_guppy_nanopore_20102558-2729/)
+
+Sequencing Summary (4.7MB; TXT)
+
+- [20200114_cbai_guppy_nanopore_20102558-2729/sequencing_summary.txt](https://gannet.fish.washington.edu/Atumefaciens/20200114_cbai_guppy_nanopore_20102558-2729/sequencing_summary.txt)
+
+  - Useful with downstream analysis tools, like [NanoPlot](https://github.com/wdecoster/NanoPlot).
+
+All the resulting FastQ files can be accessed in the output folder linked above with this pattern:
+
+- `*.fastq`
+
+Unbeknownst to me, I misinterpreted the behavior of the program. I thought the FastQs from all of the Fast5 would be concatenated into a single FastQ. However, that's not the case. Each Fast5 got converted to its own FastQ. So, I now have six FastQ files instead of just one. Not a big deal as I can concatenate these at a later date.
+
+Now, I'll get these run through some QC software (FastQC, NanoPlot) to get an idea of how things look before processing them further.
