@@ -12,7 +12,15 @@ tags:
 categories:
   - Miscellaneous
 ---
+Time to start working with [the NanoPore data that I generated back in March (???!!!)](https://robertslab.github.io/sams-notebook/2020/03/11/NanoPore-Sequencing-C.bairdi-gDNA-6129_403_26.html). In order to proceed, I first need to convert the raw Fast5 files to FastQ. To do so, I'll use the NanoPore program `guppy`.
 
+As noted in [a previous conversion](https://robertslab.github.io/sams-notebook/2020/09/04/Data-Wrangling-NanoPore-Fast5-Conversion-to-FastQ-of-C.bairdi-20102558-2729-Run-01-on-Mox-with-GPU-Node.html), I'll b processing this with a GPU node on Mox. Using a Mox GPU node decreases processing time by a ridiculous amount, compared to using CPUs. The only rub is that since we don't own a GPU node, any jobs we submit are:
+
+- lowest priority in any queue
+
+- can get interrupted at any time by jobs submitted by the node owner
+
+I'll be submitting these very early in the morning and with runtimes this fast, I shouldn't encounter any issues. Exciting!
 
 SBATCH script (GitHub):
 
@@ -156,6 +164,6 @@ All the resulting FastQ files can be accessed in the output folder linked above 
 
 - `*.fastq`
 
-Unbeknownst to me, I misinterpreted the behavior of the program. I thought the FastQs from all of the Fast5 would be concatenated into a single FastQ. However, that's not the case. Each Fast5 got converted to its own FastQ. So, I now have six FastQ files instead of just one. Not a big deal as I can concatenate these at a later date.
+Unbeknownst to me, I misinterpreted the behavior of the program. I thought the FastQs from all of the Fast5 would be concatenated into a single FastQ. However, that's not the case. Each Fast5 got converted to its own FastQ. So, I now have 126 FastQ files instead of just one. Not a big deal as I can concatenate these at a later date.
 
 Now, I'll get these run through some QC software (FastQC, NanoPlot) to get an idea of how things look before processing them further.
