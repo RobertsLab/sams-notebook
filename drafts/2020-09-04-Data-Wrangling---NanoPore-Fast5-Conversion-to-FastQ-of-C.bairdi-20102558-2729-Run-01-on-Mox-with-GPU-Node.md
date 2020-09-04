@@ -14,7 +14,17 @@ tags:
 categories:
   - Miscellaneous
 ---
+Time to start working with [the NanoPore data that I generated back in _January_(???!!!)](https://robertslab.github.io/sams-notebook/2020/01/09/NanoPore-Sequencing-C.bairdi-gDNA-Sample-20102558-2729.html). In order to proceed, I first need to convert the raw Fast5 files to FastQ. To do so, I'll use the NanoPore program `guppy`.
 
+Prior to running this, I did some quick test runs on Mox using different settings for `--num_callers` and `--cpu_threads_per_caller` to gauge how long the job might take. Using a small (~45MB) Fast5 file, conversion ranged from ~1 - 1.5hrs! Considering there are 26 files in this set, this might take a while. Poking around a bit to see how I could leverage multiple nodes in an high performance computing (HPC) environment like Mox, I came across the fact that using a GPU instead of a CPU could cut the runtime by a factor of 10!
+
+I decided to see if we could access a GPU node on Mox and it turns out that we can! A quick test with the GPU node confirmed a _massive_ time reduction! The same Fast5 used in the CPU threads/callers test converted in <10 _seconds_!! Amazing! The only rub is that since we don't own a GPU node, any jobs we submit are:
+
+- lowest priority in any queue
+
+- can get interrupted at any time by jobs submitted by the node owner
+
+I'll be submitting these very early in the morning and with runtimes this fast, I shouldn't encounter any issues. Exciting!
 
 SBATCH script (GitHub):
 
