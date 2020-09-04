@@ -5,6 +5,8 @@
 #SBATCH --account=srlab-ckpt
 #SBATCH --partition=ckpt
 ## Resources
+## GPU
+#SBATCH --gres=gpu:P100:1
 ## Nodes
 #SBATCH --nodes=1
 ## Walltime (days-hours:minutes:seconds format)
