@@ -18,7 +18,8 @@
 #SBATCH --chdir=/gscratch/scrubbed/samwhite/outputs/20200110_cbai_guppy_nanopore_20102558-2729
 
 ## Script for running ONT guppy to perform
-## basecalling (i.e. convert raw ONT Fast5 to FastQ)
+## basecalling (i.e. convert raw ONT Fast5 to FastQ) of NanaPore data generated
+## on 20200109 from C.bairdi 20102558-2729 gDNA.
 
 ## This script utilizes a GPU node. These nodes are only available as part of the checkpoint
 ## partition/account. Since we don't own a GPU node, our GPU jobs are lowest priority and
