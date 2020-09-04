@@ -33,10 +33,25 @@ Output folder:
 
 - [20200109_cbai_nanopore_20102558-2729/](https://gannet.fish.washington.edu/Atumefaciens/20200109_cbai_nanopore_20102558-2729/)
 
-First run report (PDF):
+##### First run outputs:
+
+Fast5 directory:
+
+- [20200109_cbai_nanopore_20102558-2729/20102558-2729/20200109_2223_MN29908_FAL58500_3d288d14/fast5/](https://gannet.fish.washington.edu/Atumefaciens/20200109_cbai_nanopore_20102558-2729/20102558-2729/20200109_2223_MN29908_FAL58500_3d288d14/fast5/)
+
+Run report (PDF):
 
 - [20200109_cbai_nanopore_20102558-2729/20102558-2729/3d288d14-89d6-4ae4-8a76-18ec6ff63fc7--report.pdf](https://gannet.fish.washington.edu/Atumefaciens/20200109_cbai_nanopore_20102558-2729/20102558-2729/3d288d14-89d6-4ae4-8a76-18ec6ff63fc7--report.pdf)
 
-Second run report (PDF):
+
+
+
+##### Second run outputs:
+
+Fast5 directory:
+
+- [20200109_cbai_nanopore_20102558-2729/cbaI_20102558-2729/20200110_1705_MN29908_FAL58500_a909f60a/fast5/](https://gannet.fish.washington.edu/Atumefaciens/20200109_cbai_nanopore_20102558-2729/cbaI_20102558-2729/20200110_1705_MN29908_FAL58500_a909f60a/fast5/)
+
+Run report (PDF):
 
 - [20200109_cbai_nanopore_20102558-2729/cbaI_20102558-2729/a909f60a-d49f-4564-8cd3-3c8a31e8c572--report.pdf](https://gannet.fish.washington.edu/Atumefaciens/20200109_cbai_nanopore_20102558-2729/cbaI_20102558-2729/a909f60a-d49f-4564-8cd3-3c8a31e8c572--report.pdf)
