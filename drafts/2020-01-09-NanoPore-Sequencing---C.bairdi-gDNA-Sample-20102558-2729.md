@@ -67,4 +67,16 @@ Run report (PDF):
 
 Alrighty, here's how I interpret things.
 
-First
+First run:
+
+- ~3x more reads
+
+- ~3x more bases
+
+- Lower N50 (1.29Kbp vs 1.46Kbp)
+
+- Run time was 4.5x _shorter_
+
+Everything's as expected, except maybe the N50, and demonstrates the importance of the available sequencing pores in data acquisition.
+
+Next up, convert the raw Fast5 files to FastQ.
