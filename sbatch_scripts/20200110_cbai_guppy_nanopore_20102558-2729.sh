@@ -7,6 +7,7 @@
 ## Resources
 ## GPU
 #SBATCH --gres=gpu:P100:1
+#SBATCH --constraint=gpu_default
 ## Nodes
 #SBATCH --nodes=1
 ## Walltime (days-hours:minutes:seconds format)
