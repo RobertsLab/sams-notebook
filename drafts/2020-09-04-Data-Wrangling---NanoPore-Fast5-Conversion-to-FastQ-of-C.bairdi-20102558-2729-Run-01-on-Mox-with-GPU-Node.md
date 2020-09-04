@@ -162,4 +162,12 @@ Sequencing Summary (17MB; TXT)
 
 - [20200110_cbai_guppy_nanopore_20102558-2729/sequencing_summary.txt](https://gannet.fish.washington.edu/Atumefaciens/20200110_cbai_guppy_nanopore_20102558-2729/sequencing_summary.txt)
 
-  - Useful for use with downstream analysis tools, like [NanoPlot](https://github.com/wdecoster/NanoPlot).
+  - Useful with downstream analysis tools, like [NanoPlot](https://github.com/wdecoster/NanoPlot).
+
+All the resulting FastQ files can be accessed in the output folder linked above with this pattern:
+
+- `*.fastq`
+
+Unbeknownst to me, I misinterpreted the behavior of the program. I thought the FastQs from all of the Fast5 would be concatenated into a single FastQ. However, that's not the case. Each Fast5 got converted to its own FastQ. So, I now have 26 FastQ files instead of just one. Not a big deal as I can concatenate these at a later date.
+
+Now, I'll get these run through some QC software (FastQC, NanoPlot) to get an idea of how things look before processing them further.
