@@ -22,4 +22,12 @@ The sample DNA was prepared according to [the protocol for the Rapid Sequencing 
 
 Output folder:
 
-- []()
+- [20200311_cbai_nanopore_6129_403_26/](https://gannet.fish.washington.edu/Atumefaciens/20200311_cbai_nanopore_6129_403_26/)
+
+Fast5 directory:
+
+- [20200311_cbai_nanopore_6129_403_26/cbai_6129_403_26/20200311_1343_MN29908_FAL86873_d8db260e/fast5/](https://gannet.fish.washington.edu/Atumefaciens/20200311_cbai_nanopore_6129_403_26/cbai_6129_403_26/20200311_1343_MN29908_FAL86873_d8db260e/fast5/)
+
+Run report (PDF):
+
+- [20200311_cbai_nanopore_6129_403_26/cbai_6129_403_26/20200311_1343_MN29908_FAL86873_d8db260e/d8db260e-6ed1-43ce-8d8e-c03a376d4cb1--report.pdf](https://gannet.fish.washington.edu/Atumefaciens/20200311_cbai_nanopore_6129_403_26/cbai_6129_403_26/20200311_1343_MN29908_FAL86873_d8db260e/d8db260e-6ed1-43ce-8d8e-c03a376d4cb1--report.pdf)
