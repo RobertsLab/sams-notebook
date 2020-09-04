@@ -44,7 +44,10 @@ Run report (PDF):
 - [20200109_cbai_nanopore_20102558-2729/20102558-2729/3d288d14-89d6-4ae4-8a76-18ec6ff63fc7--report.pdf](https://gannet.fish.washington.edu/Atumefaciens/20200109_cbai_nanopore_20102558-2729/20102558-2729/3d288d14-89d6-4ae4-8a76-18ec6ff63fc7--report.pdf)
 
 
+![cbai nanopore first run cumulative read plots](https://github.com/RobertsLab/sams-notebook/blob/master/images/screencaps/20200109_cbai_nanopore_20102558-2729_output-plots_run-01.png?raw=true)
 
+
+![cbai nanopore first run read length histograms](https://github.com/RobertsLab/sams-notebook/blob/master/images/screencaps/20200109_cbai_nanopore_20102558-2729_read-length-histo-plot_run-01.png?raw=true)
 
 ##### Second run outputs:
 
@@ -55,3 +58,13 @@ Fast5 directory:
 Run report (PDF):
 
 - [20200109_cbai_nanopore_20102558-2729/cbaI_20102558-2729/a909f60a-d49f-4564-8cd3-3c8a31e8c572--report.pdf](https://gannet.fish.washington.edu/Atumefaciens/20200109_cbai_nanopore_20102558-2729/cbaI_20102558-2729/a909f60a-d49f-4564-8cd3-3c8a31e8c572--report.pdf)
+
+![cbai nanopore second run cumulative read plots](https://github.com/RobertsLab/sams-notebook/blob/master/images/screencaps/20200109_cbai_nanopore_20102558-2729_output-plots_run-02.png?raw=true)
+
+![cbai nanopore second run read length histograms](https://github.com/RobertsLab/sams-notebook/blob/master/images/screencaps/20200109_cbai_nanopore_20102558-2729_read-length-histo-plot_run-02.png?raw=true)
+
+---
+
+Alrighty, here's how I interpret things.
+
+First
