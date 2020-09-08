@@ -35,6 +35,9 @@ transcriptomes_array=(
 )
 
 
+# IF samtools isn't in PATH, set location here:
+export PATH="$PATH:/home/sam/programs/samtools-1.10/"
+
 ###################################################################################
 
 # Exit script if any command fails
