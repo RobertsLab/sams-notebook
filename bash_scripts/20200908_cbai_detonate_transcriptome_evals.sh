@@ -1,5 +1,16 @@
 #!/bin/bash
 
+# Script to compare all C.bairdi transcriptomes using "detonate" to
+# generate a "score".
+
+# Note: The source code for "rsem-eval-calculate-score" Perl script has been
+# modified to hard code the number of threads; otherwises, the program seems to ignore the threads
+# argument.
+
+# Note: The source code for "rsem-eval-calculate-score" Perl script has been
+# modified to hard code the amount of RAM to use per thread. For this computer (swoose)
+# it has been set to 2GB RAM/thread.
+
 ###################################################################################
 # These variables need to be set by user
 
