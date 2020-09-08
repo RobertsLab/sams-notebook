@@ -43,10 +43,6 @@ export PATH="$PATH:/home/sam/programs/samtools-1.10/"
 # Exit script if any command fails
 set -e
 
-# Load Python Mox module for Python module availability
-
-module load intel-python3_2017
-
 
 # Programs array
 declare -A programs_array
