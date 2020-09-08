@@ -53,8 +53,10 @@ programs_array=(
 )
 
 
-
-
+# Surrounding with curly braces allows capture
+# of all stderr/stdout commands within
+# and directs the output to a log file.
+{
 # Loop through each comparison
 for transcriptome in "${!transcriptomes_array[@]}"
 do
@@ -177,6 +179,8 @@ do
 
 
 done
+} 2>&1 | tee messages-log.txt
+
 
 # Document programs in PATH (primarily for program version ID)
 {
