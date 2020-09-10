@@ -52,6 +52,9 @@ set -e
 # Capture date
 timestamp=$(date +%Y%m%d)
 
+# Capture this directory
+wd=$(pwd)
+
 # Inititalize array
 programs_array=()
 
@@ -67,77 +70,50 @@ raw_reads_dir_array=(
 
 for directory in "${!raw_reads_dir_array[@]}"
 do
+
   ## Inititalize arrays
-  fastq_array_R1=()
-  fastq_array_R2=()
-  R1_names_array=()
-  R2_names_array=()
+  fastq_array=()
 
-  # Create array of fastq R1 files
-  for fastq in ${raw_reads_dir_array[directory]}/*R1*.gz
+  # Capture NanoPore directory name
+  dir_name=${raw_reads_dir_array[directory]##*/}
+
+  # Make new directory and change to that directory
+  mkdir ${dir_name} $$ cd $_
+
+
+  # Run NanoPlot
+  ${programs_array[nanoplot]} \
+
+
+  # Create array of fastq files
+  for fastq in ${raw_reads_dir_array[directory]}/*.fastq
   do
-    fastq_array_R1+=("${fastq}")
-  done
+    fastq_array+=("${fastq}")
 
-  # Create array of fastq R2 files
-  for fastq in ${raw_reads_dir_array[directory]}/*R2*.gz
-  do
-    fastq_array_R2+=("${fastq}")
-  done
-
-
-  # Create array of sample names
-  ## Uses awk to parse out sample name from filename
-  for R1_fastq in ${raw_reads_dir_array[directory]}/*R1*.gz
-  do
-    R1_fastq=${R1_fastq##*/}
-    R1_names_array+=($(echo "${R1_fastq}" | awk -F"." '{print $1}'))
-  done
-
-  # Create array of sample names
-  ## Uses awk to parse out sample name from filename
-  for R2_fastq in ${raw_reads_dir_array[directory]}/*R2*.gz
-  do
-    R2_fastq=${R2_fastq##*/}
-    R2_names_array+=($(echo "${R2_fastq}" | awk awk -F"." '{print $1, $2}'))
-  done
-
-  # Create list of fastq files used in analysis
-  for fastq in ${raw_reads_dir_array[directory]}/*.gz
-  do
+    # Create list of fastq files used in analysis
     echo "${fastq}" >> fastq.list.txt
-  done
 
-  # Run fastp on files
-  # Trim 10bp from 5' from each read
-  for fastq in "${!fastq_array_R1[@]}"
-  do
-    R1_sample_name=$(echo "${R1_names_array[fastq]}")
-  	R2_sample_name=$(echo "${R2_names_array[fastq]}")
-  	${fastp} \
-  	--in1 "${fastq_array_R1[fastq]}" \
-  	--in2 "${fastq_array_R2[fastq]}" \
-  	--detect_adapter_for_pe \
-    --trim_front1 10 \
-    --trim_front2 10 \
-  	--thread ${threads} \
-  	--html "${R1_sample_name}".fastp-trim."${timestamp}".report.html \
-  	--json "${R1_sample_name}".fastp-trim."${timestamp}".report.json \
-  	--out1 "${R1_sample_name}".fastp-trim."${timestamp}".fq.gz \
-  	--out2 "${R2_sample_name}".fastp-trim."${timestamp}".fq.gz
+    # Create checksums
+    md5sum "${fastq}" >> checksums.md5
 
-  	# Run FastQC
-  	${fastqc} --threads ${threads} \
-  	"${R1_sample_name}".fastp-trim."${timestamp}".fq.gz \
-  	"${R2_sample_name}".fastp-trim."${timestamp}".fq.gz
+    # Run FastQC
+    ## Pass array contents to new variable in a space-delimited list
+    fastqc_list=$(echo "${fastq_array[*]}")
+
+    ${fastqc} --threads ${threads} \
+    ${fastqc_list}
+
+
+    # Run MultiQC
+    ${multiqc} .
 
   done
+
+  # Change back to working directory
+  cd ${wd}
+
 done
 
-
-
-# Run MultiQC
-${multiqc} .
 
 # Capture program options
 for program in "${!programs_array[@]}"
