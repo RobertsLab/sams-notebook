@@ -75,7 +75,7 @@ do
   dir_name=${raw_reads_dir_array[directory]##*/}
 
   # Make new directory and change to that directory
-  mkdir "${dir_name}" $$ cd "$_"
+  mkdir "${dir_name}" && cd $_
 
   current_dir=$(pwd)
 
