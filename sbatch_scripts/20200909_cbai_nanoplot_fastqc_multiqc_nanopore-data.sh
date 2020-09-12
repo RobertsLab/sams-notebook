@@ -23,11 +23,24 @@
 ###################################################################################
 # These variables need to be set by user
 
-# Load Miniconda Mox module for Anaconda module availability
-module load contrib/Miniconda3/3.0
+# >>> conda initialize >>>
+# !! Contents within this block are managed by 'conda init' !!
+__conda_setup="$('/gscratch/srlab/programs/anaconda3/bin/conda' 'shell.bash' 'hook' 2> /dev/null)"
+if [ $? -eq 0 ]; then
+    eval "$__conda_setup"
+else
+    if [ -f "/gscratch/srlab/programs/anaconda3/etc/profile.d/conda.sh" ]; then
+        . "/gscratch/srlab/programs/anaconda3/etc/profile.d/conda.sh"
+    else
+        export PATH="/gscratch/srlab/programs/anaconda3/bin:$PATH"
+    fi
+fi
+unset __conda_setup
+# <<< conda initialize <<<
+
 
 # Activate the NanoPlot Anaconda environment
-conda activate /gscratch/srlab/programs/miniconda3/envs/nanoplot/
+conda activate nanoplot_env
 
 # Set number of CPUs to use
 threads=28
@@ -40,7 +53,7 @@ raw_reads_dir_array=(
 )
 
 # Paths to programs
-nanoplot=/gscratch/srlab/programs/miniconda3/envs/nanoplot/bin/NanoPlot
+nanoplot=NanoPlot
 fastqc=/gscratch/srlab/programs/fastqc_v0.11.8/fastqc
 multiqc=/gscratch/srlab/programs/anaconda3/bin/multiqc
 
