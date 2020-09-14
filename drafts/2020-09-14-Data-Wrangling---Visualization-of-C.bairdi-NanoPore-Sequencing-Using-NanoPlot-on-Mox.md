@@ -158,6 +158,10 @@ echo "${PATH}" | tr : \\n
 
 #### RESULTS
 
+Very fast, 50s:
+
+![NanoPlot cumulative runtime for all three C.bairdi NanoPore data sets](https://github.com/RobertsLab/sams-notebook/blob/master/images/screencaps/20200914_cbai_nanoplot_nanopore-data.png?raw=true)
+
 Output folder:
 
 - []()
