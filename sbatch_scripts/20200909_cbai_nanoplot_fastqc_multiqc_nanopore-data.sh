@@ -43,8 +43,6 @@ raw_reads_dir_array=(
 
 # Paths to programs
 nanoplot=NanoPlot
-fastqc=/gscratch/srlab/programs/fastqc_v0.11.8/fastqc
-multiqc=/gscratch/srlab/programs/anaconda3/bin/multiqc
 
 
 ###################################################################################
@@ -62,7 +60,7 @@ programs_array=()
 
 
 # Programs array
-programs_array=("${nanoplot}" "${multiqc}" "${fastqc}")
+programs_array=("${nanoplot}")
 
 
 # Loop through NanoPore data directories
