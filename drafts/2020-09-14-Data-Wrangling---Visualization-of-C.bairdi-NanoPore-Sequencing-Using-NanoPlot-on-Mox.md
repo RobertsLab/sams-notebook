@@ -14,7 +14,15 @@ tags:
 categories:
   - Miscellaneous
 ---
+I previously converting our _C.bairdi_ NanoPre sequencing data from the raw Fast5 format to FastQ format for our three sets of data:
 
+- [C.bairdi-20102558-2729-Run-01](https://robertslab.github.io/sams-notebook/2020/09/04/Data-Wrangling-NanoPore-Fast5-Conversion-to-FastQ-of-C.bairdi-20102558-2729-Run-01-on-Mox-with-GPU-Node.html)
+
+- [C.bairdi-20102558-2729-Run-02](https://robertslab.github.io/sams-notebook/2020/09/04/Data-Wrangling-NanoPore-Fast5-Conversion-to-FastQ-of-C.bairdi-20102558-2729-Run-02-on-Mox-with-GPU-Node.html)
+
+- [C.bairdi-6129_403_26](https://robertslab.github.io/sams-notebook/2020/09/04/Data-Wrangling-NanoPore-Fast5-Conversion-to-FastQ-of-C.bairdi-6129_403_26-on-Mox-with-GPU-Node.html)
+
+Before proceeding with assembly and/or trying to tease out taxonomic differences (the C.bairdi-6129_403_26 is from an individual infected with _Hematodinium_), I want to get an idea of how the data looks. So, I've decided to process the `sequencing_summary.txt` file from each Fast5 conversion with [NanoPlot](https://github.com/wdecoster/NanoPlot). This software spits out some tables and some very nice visualizations to help get a better idea of how the sequencing runs look. This was run on Mox.
 
 SBATCH script (GitHub):
 
