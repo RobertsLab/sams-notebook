@@ -164,4 +164,4 @@ Very fast, 50s:
 
 Output folder:
 
-- []()
+- [20200914_cbai_nanoplot_nanopore-data/](https://gannet.fish.washington.edu/Atumefaciens/20200914_cbai_nanoplot_nanopore-data/)
