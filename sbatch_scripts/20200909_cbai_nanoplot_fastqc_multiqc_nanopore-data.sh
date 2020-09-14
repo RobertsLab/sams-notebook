@@ -70,14 +70,12 @@ programs_array=("${nanoplot}" "${multiqc}" "${fastqc}")
 for directory in "${!raw_reads_dir_array[@]}"
 do
 
-  ## Inititalize arrays
-  fastq_array=()
 
   # Capture NanoPore directory name
   dir_name=${raw_reads_dir_array[directory]##*/}
 
   # Make new directory and change to that directory
-  mkdir "${dir_name}" && cd $_
+  mkdir "${dir_name}" && cd "$_"
 
   current_dir=$(pwd)
 
@@ -92,35 +90,7 @@ do
   --outdir ${current_dir} \
   --readtype 1D \
   --N50 \
-  --summary ${raw_reads_dir_array[directory]}/sequencing_summary.txt
-
-
-
-  # Prep for FastQC
-  ## Create array of fastq files
-  for fastq in "${raw_reads_dir_array[directory]}"/*.fastq
-  do
-    fastq_array+=("${fastq}")
-
-    # Create list of fastq files used in analysis
-    echo "${fastq}" >> fastq.list.txt
-
-    # Create checksums for future reference
-    md5sum "${fastq}" >> checksums.md5
-
-    ## Pass array contents to new variable in a space-delimited list
-    fastqc_list=$(echo "${fastq_array[*]}")
-  done
-
-
-  ## Run FastQC
-  ${fastqc} \
-  --threads ${threads} \
-  --outdir ${current_dir} \
-  ${fastqc_list}
-
-  # Run MultiQC
-  ${multiqc} .
+  --summary "${raw_reads_dir_array[directory]}"/sequencing_summary.txt
 
   # Change back to working directory
   cd "${wd}"
