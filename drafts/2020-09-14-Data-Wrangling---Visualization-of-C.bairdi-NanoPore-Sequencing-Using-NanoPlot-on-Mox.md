@@ -177,6 +177,9 @@ Full report (HTML):
 
 - [20200914_cbai_nanoplot_nanopore-data/ont_FAL58500_94244ffd_20102558-2729/NanoPlot-report.html](https://gannet.fish.washington.edu/Atumefaciens/20200914_cbai_nanoplot_nanopore-data/ont_FAL58500_94244ffd_20102558-2729/NanoPlot-report.html)
 
+
+![FAL58500_94244ffd NanoPlot read density plot](https://github.com/RobertsLab/sams-notebook/blob/master/images/screencaps/20200914_cbai_nanoplot_nanopore-data_ont_FAL58500_94244ffd_20102558-2729_density-plot.png?raw=true)
+
 ---
 
 ##### Run-02 (FAL58500_04bb4d86)
@@ -232,6 +235,8 @@ Top 5 longest reads and their mean basecall quality score:
 | 4    | 24304           | (3.6)              |
 | 5    | 15552           | (2.9)              |
 
+![FAL58500_04bb4d86 NanoPlot read density plot](https://github.com/RobertsLab/sams-notebook/blob/master/images/screencaps/20200914_cbai_nanoplot_nanopore-data_ont_FAL58500_04bb4d86_20102558-2729_density-plot.png?raw=true)
+
 ---
 
 #### Run-03 (FAL86873_d8db260e)
@@ -243,3 +248,6 @@ Output folder:
 Full report (HTML):
 
 - [20200914_cbai_nanoplot_nanopore-data/ont_FAL86873_d8db260e_cbai_6129_403_26/NanoPlot-report.html](https://gannet.fish.washington.edu/Atumefaciens/20200914_cbai_nanoplot_nanopore-data/ont_FAL86873_d8db260e_cbai_6129_403_26/NanoPlot-report.html)
+
+
+![FAL86873_d8db260e NanoPlot read density plot](https://github.com/RobertsLab/sams-notebook/blob/master/images/screencaps/20200914_cbai_nanoplot_nanopore-data_ont_FAL86873_d8db260e_cbai_6129_403_26_density-plot.png?raw=true)
