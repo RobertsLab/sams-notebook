@@ -166,6 +166,8 @@ Output folder:
 
 - [20200914_cbai_nanoplot_nanopore-data/](https://gannet.fish.washington.edu/Atumefaciens/20200914_cbai_nanoplot_nanopore-data/)
 
+Each of the NanoPore NanoPlot analyses are in individual folders, linked below. Although I've only linked to the full report (in HTML format) for each, the plots and data present in the full report are also available in individual images/files within those folders.
+
 
 ##### C.bairdi-20102558-2729_Run-01 (FAL58500_94244ffd)
 
@@ -234,16 +236,16 @@ Full report (HTML):
 
 - [20200914_cbai_nanoplot_nanopore-data/ont_FAL58500_04bb4d86_20102558-2729/NanoPlot-report.html](https://gannet.fish.washington.edu/Atumefaciens/20200914_cbai_nanoplot_nanopore-data/ont_FAL58500_04bb4d86_20102558-2729/NanoPlot-report.html)
 
-| GENERAL SUMMARY     |          |
-|---------------------|----------|
-| Active channels     | 424      |
-| Mean read length    | 845.5    |
-| Mean read quality   | 8.7      |
-| Median read length  | 521      |
-| Median read quality | 9.3      |
-| Number of reads     | 21519    |
-| Read length N50     | 1406     |
-| Total bases         | 18195027 |
+| GENERAL SUMMARY     |              |
+|---------------------|--------------|
+| Active channels     | 424.0        |
+| Mean read length    | 845.5        |
+| Mean read quality   | 8.7          |
+| Median read length  | 521.0        |
+| Median read quality | 9.3          |
+| Number of reads     | 21,519.0     |
+| Read length N50     | 1,406.0      |
+| Total bases         | 18,195,027.0 |
 
 Number, percentage and megabases of reads above quality cutoffs:
 
@@ -335,3 +337,15 @@ Top 5 longest reads and their mean basecall quality score:
 | 5    | 49825           | (12.9)             |
 
 ![FAL86873_d8db260e NanoPlot read density plot](https://github.com/RobertsLab/sams-notebook/blob/master/images/screencaps/20200914_cbai_nanoplot_nanopore-data_ont_FAL86873_d8db260e_cbai_6129_403_26_density-plot.png?raw=true)
+
+---
+
+First, we should compare the two C.bairdi-20102558-2729 runs (degraded input DNA, no _Hematodinium_ infection), as these were the same sample, run on the same flowcell.
+
+Basically, the second run on the flowcell performs worse in every metric: fewer reads, lower quality scores, shorter read lengths, etc. This is despite the fact that this flowcell was run for nearly 4.5x longer period of time (72hrs vs. 16hrs). This isn't terribly surprising, as [the second run started with only 414 available pores](https://robertslab.github.io/sams-notebook/2020/01/09/NanoPore-Sequencing-C.bairdi-gDNA-Sample-20102558-2729.html), which is well below the ONT-suggested minimum of 800 pores for a "good" flowcell, but it is interesting to see the actual impacts on sequencing that this has.
+
+The C.bairdi-6129_403_26 run (high quality input DNA, with _Hematodinium_ infection) is a better example of what to expect when using non-degraded DNA. Every metric is _substantially_ better than the C.bairdi-20102558-2729 runs.
+
+Now, how to proceed? First, I think I'll just get an assembly made, utilizing all three sets of data, despite the presence of _Hematodinium_ in the C.bairdi-6129_403_26 run. I'll tackle the assembly using [Flye](https://github.com/fenderglass/Flye), as it seems straightforward, is specifically designed for long read assembly, and has built-in assembly "polishing". This will be a start.
+
+In regards to teasing out _Hematodinium_ sequences, I'll probably go through the DIAMOND BLASTx -> MEGAN6 process that I've used throughout our _C.baird_ RNAseq project for transcriptome assemblies. MEGAN6 can handle long reads and makes taxonomic read extraction straightforward.
