@@ -292,4 +292,46 @@ Full report (HTML):
 - [20200914_cbai_nanoplot_nanopore-data/ont_FAL86873_d8db260e_cbai_6129_403_26/NanoPlot-report.html](https://gannet.fish.washington.edu/Atumefaciens/20200914_cbai_nanoplot_nanopore-data/ont_FAL86873_d8db260e_cbai_6129_403_26/NanoPlot-report.html)
 
 
+| GENERAL SUMMARY     |            |
+|---------------------|------------|
+| Active channels     | 503        |
+| Mean read length    | 2254.5     |
+| Mean read quality   | 10.9       |
+| Median read length  | 965        |
+| Median read quality | 11.2       |
+| Number of reads     | 506495     |
+| Read length N50     | 5232       |
+| Total bases         | 1141890358 |
+
+Number, percentage and megabases of reads above quality cutoffs:
+
+| Quality_cutoff | reads(count) | percentage | bases(count) |
+|----------------|--------------|------------|--------------|
+| >Q5            | 493598       | (97.5%)    | 1124.9Mb     |
+| >Q7            | 465033       | (91.8%)    | 1075.5Mb     |
+| >Q10           | 343296       | (67.8%)    | 880.9Mb      |
+| >Q12           | 186709       | (36.9%)    | 568.7Mb      |
+| >Q15           | 7394         | (1.5%)     | 17.9Mb       |
+
+Top 5 highest mean basecall quality scores and their read lengths:
+
+| Rank | mean_quality | read_length(bp) |
+|------|--------------|-----------------|
+| 1    | 20.6         | (980)           |
+| 2    | 20.2         | (1228)          |
+| 3    | 19.7         | (902)           |
+| 4    | 19.6         | (466)           |
+| 5    | 19.6         | (757)           |
+
+
+Top 5 longest reads and their mean basecall quality score:
+
+| Rank | read_length(bp) | mean_quality_score |
+|------|-----------------|--------------------|
+| 1    | 58854           | (11.8)             |
+| 2    | 57315           | (10.8)             |
+| 3    | 51351           | (11.5)             |
+| 4    | 51326           | (13.7)             |
+| 5    | 49825           | (12.9)             |
+
 ![FAL86873_d8db260e NanoPlot read density plot](https://github.com/RobertsLab/sams-notebook/blob/master/images/screencaps/20200914_cbai_nanoplot_nanopore-data_ont_FAL86873_d8db260e_cbai_6129_403_26_density-plot.png?raw=true)
