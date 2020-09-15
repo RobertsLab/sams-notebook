@@ -51,6 +51,18 @@ All qPCR reactions were run in duplicate. See qPCR Report (Results section below
 
 #### RESULTS
 
+qPCR Report (PDF):
+
+- [sam_2020-09-14_10-15-48_BR006896.pdf](https://owl.fish.washington.edu/Athaliana/qPCR_data/qPCR_reports/sam_2020-09-14_10-15-48_BR006896.pdf)
+
+CFX Data File (PCRD):
+
+- [sam_2020-09-14_10-15-48_BR006896.pcrd](https://owl.fish.washington.edu/scaphapoda/qPCR_data/cfx_connect_data/sam_2020-09-14_10-15-48_BR006896.pcrd)
+
+
+CFX Results File (CSV):
+
+- [sam_2020-09-14_10-15-48_BR006896_Quantification-Cq-Results.csv](https://owl.fish.washington.edu/Athaliana/qPCR_data/sam_2020-09-14_10-15-48_BR006896_Quantification-Cq-Results.csv)
 
 
 ![28s-v1 amp plots.png ](https://owl.fish.washington.edu/Athaliana/qPCR_data/sam_2020-09-14_10-15-48_BR006896_28s-v1_amp_plots.png)
