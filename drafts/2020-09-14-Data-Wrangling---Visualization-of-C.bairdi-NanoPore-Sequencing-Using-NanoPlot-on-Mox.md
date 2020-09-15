@@ -167,7 +167,7 @@ Output folder:
 - [20200914_cbai_nanoplot_nanopore-data/](https://gannet.fish.washington.edu/Atumefaciens/20200914_cbai_nanoplot_nanopore-data/)
 
 
-##### Run-01 (FAL58500_94244ffd)
+##### C.bairdi-20102558-2729_Run-01 (FAL58500_94244ffd)
 
 Output folder:
 
@@ -182,7 +182,7 @@ Full report (HTML):
 
 ---
 
-##### Run-02 (FAL58500_04bb4d86)
+##### C.bairdi-20102558-2729_Run-02 (FAL58500_04bb4d86)
 
 Output folder:
 
@@ -239,7 +239,7 @@ Top 5 longest reads and their mean basecall quality score:
 
 ---
 
-#### Run-03 (FAL86873_d8db260e)
+#### C.bairdi-6129_403_26 (FAL86873_d8db260e)
 
 Output folder:
 
