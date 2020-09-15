@@ -178,6 +178,48 @@ Full report (HTML):
 - [20200914_cbai_nanoplot_nanopore-data/ont_FAL58500_94244ffd_20102558-2729/NanoPlot-report.html](https://gannet.fish.washington.edu/Atumefaciens/20200914_cbai_nanoplot_nanopore-data/ont_FAL58500_94244ffd_20102558-2729/NanoPlot-report.html)
 
 
+| General summary     |              |
+|---------------------|--------------|
+| Active channels     | 491.0        |
+| Mean read length    | 821.6        |
+| Mean read quality   | 10.1         |
+| Median read length  | 533.0        |
+| Median read quality | 10.6         |
+| Number of reads     | 78,720.0     |
+| Read length N50     | 1,254.0      |
+| Total bases         | 64,672,912.0 |
+
+Number, percentage and megabases of reads above quality cutoffs:
+
+| Quality_cutoff | reads(count) | percentage | bases(count) |
+|----------------|--------------|------------|--------------|
+| >Q5            | 73315        | (93.1%)    | 60.5Mb       |
+| >Q7            | 67186        | (85.3%)    | 56.5Mb       |
+| >Q10           | 46724        | (59.4%)    | 41.4Mb       |
+| >Q12           | 20961        | (26.6%)    | 20.6Mb       |
+| >Q15           | 966          | (1.2%)     | 0.8Mb        |
+
+
+Top 5 highest mean basecall quality scores and their read lengths:
+
+| Rank | mean_quality | read_length(bp) | bases(count) |
+|------|--------------|-----------------|--------------|
+| 1    | 22           | (682)           | 60.5Mb       |
+| 2    | 19.8         | (471)           | 56.5Mb       |
+| 3    | 19.1         | (414)           | 41.4Mb       |
+| 4    | 19.1         | (1539)          | 20.6Mb       |
+| 5    | 19           | (234)           | 0.8Mb        |
+
+Top 5 longest reads and their mean basecall quality score:
+
+| Rank | read_length(bp) | mean_quality_score |
+|------|-----------------|--------------------|
+| 1    | 62629           | (3.3)              |
+| 2    | 51173           | (3.5)              |
+| 3    | 45909           | (3.0)              |
+| 4    | 44689           | (3.4)              |
+| 5    | 42633           | (3.0)              |
+
 ![FAL58500_94244ffd NanoPlot read density plot](https://github.com/RobertsLab/sams-notebook/blob/master/images/screencaps/20200914_cbai_nanoplot_nanopore-data_ont_FAL58500_94244ffd_20102558-2729_density-plot.png?raw=true)
 
 ---
