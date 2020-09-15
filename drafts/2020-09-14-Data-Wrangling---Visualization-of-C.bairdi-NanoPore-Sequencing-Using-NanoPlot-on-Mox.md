@@ -165,3 +165,81 @@ Very fast, 50s:
 Output folder:
 
 - [20200914_cbai_nanoplot_nanopore-data/](https://gannet.fish.washington.edu/Atumefaciens/20200914_cbai_nanoplot_nanopore-data/)
+
+
+##### Run-01 (FAL58500_94244ffd)
+
+Output folder:
+
+- [20200914_cbai_nanoplot_nanopore-data/ont_FAL58500_94244ffd_20102558-2729/](https://gannet.fish.washington.edu/Atumefaciens/20200914_cbai_nanoplot_nanopore-data/ont_FAL58500_94244ffd_20102558-2729/)
+
+Full report (HTML):
+
+- [20200914_cbai_nanoplot_nanopore-data/ont_FAL58500_94244ffd_20102558-2729/NanoPlot-report.html](https://gannet.fish.washington.edu/Atumefaciens/20200914_cbai_nanoplot_nanopore-data/ont_FAL58500_94244ffd_20102558-2729/NanoPlot-report.html)
+
+---
+
+##### Run-02 (FAL58500_04bb4d86)
+
+Output folder:
+
+- [20200914_cbai_nanoplot_nanopore-data/ont_FAL58500_04bb4d86_20102558-2729/](https://gannet.fish.washington.edu/Atumefaciens/20200914_cbai_nanoplot_nanopore-data/ont_FAL58500_04bb4d86_20102558-2729/)
+
+Full report (HTML):
+
+- [20200914_cbai_nanoplot_nanopore-data/ont_FAL58500_04bb4d86_20102558-2729/NanoPlot-report.html](https://gannet.fish.washington.edu/Atumefaciens/20200914_cbai_nanoplot_nanopore-data/ont_FAL58500_04bb4d86_20102558-2729/NanoPlot-report.html)
+
+| GENERAL SUMMARY     |          |
+|---------------------|----------|
+| Active channels     | 424      |
+| Mean read length    | 845.5    |
+| Mean read quality   | 8.7      |
+| Median read length  | 521      |
+| Median read quality | 9.3      |
+| Number of reads     | 21519    |
+| Read length N50     | 1406     |
+| Total bases         | 18195027 |
+
+Number, percentage and megabases of reads above quality cutoffs:
+
+| Quality_cutoff | reads(count) | percentage | bases(count) |
+|----------------|--------------|------------|--------------|
+| >Q5            | 17207        | (80.0%)    | 15.4Mb       |
+| >Q7            | 14864        | (69.1%)    | 13.9Mb       |
+| >Q10           | 8797         | (40.9%)    | 8.9Mb        |
+| >Q12           | 3257         | (15.1%)    | 3.6Mb        |
+| >Q15           | 121          | (0.6%)     | 0.1Mb        |
+
+
+Top 5 highest mean basecall quality scores and their read lengths:
+
+| Rank | mean_quality | read_length(bp) |
+|------|--------------|-----------------|
+| 1    | 18.3         | (323)           |
+| 2    | 17.8         | (1064)          |
+| 3    | 17.4         | (201)           |
+| 4    | 17.3         | (761)           |
+| 5    | 16.9         | (642)           |
+
+
+Top 5 longest reads and their mean basecall quality score:
+
+| Rank | read_length(bp) | mean_quality_score |
+|------|-----------------|--------------------|
+| 1    | 31170           | (3.4)              |
+| 2    | 28158           | (3.2)              |
+| 3    | 27016           | (3.3)              |
+| 4    | 24304           | (3.6)              |
+| 5    | 15552           | (2.9)              |
+
+---
+
+#### Run-03 (FAL86873_d8db260e)
+
+Output folder:
+
+- [20200914_cbai_nanoplot_nanopore-data/ont_FAL86873_d8db260e_cbai_6129_403_26/](https://gannet.fish.washington.edu/Atumefaciens/20200914_cbai_nanoplot_nanopore-data/ont_FAL86873_d8db260e_cbai_6129_403_26/)
+
+Full report (HTML):
+
+- [20200914_cbai_nanoplot_nanopore-data/ont_FAL86873_d8db260e_cbai_6129_403_26/NanoPlot-report.html](https://gannet.fish.washington.edu/Atumefaciens/20200914_cbai_nanoplot_nanopore-data/ont_FAL86873_d8db260e_cbai_6129_403_26/NanoPlot-report.html)
