@@ -17,6 +17,8 @@
 ## Specify the working directory for this job
 #SBATCH --chdir=/gscratch/scrubbed/samwhite/outputs/20200916_cbai_diamond_blastx_nanopore_all
 
+# Script to run DIAMOND BLASTx on all C.bairdi NanoPore reads using the --long-reads option
+# for subsequent import into MEGAN6 to try to separate reads taxonomically.
 
 ###################################################################################
 # These variables need to be set by user
