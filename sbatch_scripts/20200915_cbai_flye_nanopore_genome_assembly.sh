@@ -66,7 +66,7 @@ programs_array=("${flye}")
 
 # Loop through NanoPore data directories
 # to create array of FastQ files from each flowcell
-for fastq in "${raw_reads_dir_array[@]}/*.fastq"
+for fastq in "${raw_reads_dir_array[@]}/"*.fastq
 do
   # Populate array with FastQ files
   fastq_array+=("${fastq}")

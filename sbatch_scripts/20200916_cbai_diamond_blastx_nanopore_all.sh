@@ -68,7 +68,7 @@ programs_array=("${diamond}")
 
 # Loop through NanoPore data directories
 # to create array of FastQ files from each flowcell
-for fastq in "${raw_reads_dir_array[@]}/*.fastq"
+for fastq in "${raw_reads_dir_array[@]}/"*.fastq
 do
   # Concatenate all FastQ files into single file
   # for DIAMOND BLASTx
@@ -78,6 +78,8 @@ do
   md5sum "${fastq}" >> fastq_checksums.md5
 
 done
+
+md5sum "${fastq_cat}" >> fastq_checksums.md5
 
 
 # Run DIAMOND with blastx
