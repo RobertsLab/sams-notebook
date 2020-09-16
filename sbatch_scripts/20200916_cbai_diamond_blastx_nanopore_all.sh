@@ -55,11 +55,9 @@ module load intel-python3_2017
 # SegFault fix?
 export THREADS_DAEMON_MODEL=1
 
-wd=$(pwd)
 
 # Inititalize arrays
 programs_array=()
-fastq_array=()
 
 
 # Programs array
@@ -70,15 +68,14 @@ programs_array=("${diamond}")
 # to create array of FastQ files from each flowcell
 for fastq in "${raw_reads_dir_array[@]}/*.fastq"
 do
-  # Populate array with FastQ files
-  fastq_array+=("${fastq}")
+  # Concatenate all FastQ files into single file
+  # for DIAMOND BLASTx
+  cat "${fastq}" >> ${fastq_cat}
 
   # Create checksums file
   md5sum "${fastq}" >> fastq_checksums.md5
-done
 
-# Create space-delimited list of FastQ files
-fastq_list="${fastq_array[*]}"
+done
 
 
 # Run DIAMOND with blastx
@@ -86,13 +83,15 @@ fastq_list="${fastq_array[*]}"
 # Run DIAMOND with blastx
 # Output format 100 produces a DAA binary file for use with MEGAN
 ${diamond} blastx \
---db ${dmnd} \
---query "${fastq}" \
---out "${no_ext}".blastx.daa \
+--long-reads \
+--db ${dmnd_db} \
+--query "${fastq_cat}" \
+--out "${prefix}".blastx.daa \
 --outfmt 100 \
 --top 5 \
 --block-size 15.0 \
---index-chunks 4
+--index-chunks 4 \
+--threads ${threads}
 
 # Capture program options
 for program in "${!programs_array[@]}"
