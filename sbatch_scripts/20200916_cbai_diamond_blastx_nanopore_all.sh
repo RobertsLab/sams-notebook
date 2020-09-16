@@ -32,6 +32,9 @@ prefix=20200916_cbai_diamond_blastx_nanopore_all
 # Set number of CPUs to use
 threads=28
 
+# Declare array
+raw_reads_dir_array=()
+
 # Paths to reads
 raw_reads_dir_array=(
 "/gscratch/srlab/sam/data/C_bairdi/DNAseq/ont_FAL58500_04bb4d86_20102558-2729" \
@@ -68,14 +71,15 @@ programs_array=("${diamond}")
 
 # Loop through NanoPore data directories
 # to create array of FastQ files from each flowcell
-for fastq in "${raw_reads_dir_array[@]}/"*.fastq
+for fastq in "${!raw_reads_dir_array[@]}"
 do
-  # Concatenate all FastQ files into single file
-  # for DIAMOND BLASTx
-  cat "${fastq}" >> ${fastq_cat}
 
-  # Create checksums file
-  md5sum "${fastq}" >> fastq_checksums.md5
+  # Concatenate all FastQ files into single file
+  # for DIAMOND BLASTx and generate MD5 checksums
+  find ${fastq} \
+  -name "*.fastq" \
+  -exec cat {} >> ${fastq_cat} \; \
+  -exec md5sum {} >> fastq_checksums.md5 \;
 
 done
 
