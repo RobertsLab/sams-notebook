@@ -71,7 +71,7 @@ programs_array=("${diamond}")
 
 # Loop through NanoPore data directories
 # to create array of FastQ files from each flowcell
-for fastq in "${!raw_reads_dir_array[@]}"
+for fastq in "${raw_reads_dir_array[@]}"
 do
 
   # Concatenate all FastQ files into single file
