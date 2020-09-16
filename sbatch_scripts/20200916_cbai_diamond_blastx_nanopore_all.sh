@@ -74,16 +74,19 @@ programs_array=("${diamond}")
 for fastq in "${raw_reads_dir_array[@]}"
 do
 
-  # Concatenate all FastQ files into single file
-  # for DIAMOND BLASTx and generate MD5 checksums
-  find ${fastq} \
-  -name "*.fastq" \
-  -exec cat {} >> ${fastq_cat} \; \
-  -exec md5sum {} >> fastq_checksums.md5 \;
+  while IFS= read -r -d '' filename
+  do
+    # Concatenate all FastQ files into single file
+    # for DIAMOND BLASTx and generate MD5 checksums
+    cat "${filename}" >> ${fastq_cat}
+    # Create checksums file
+    md5sum "${filename}" >> fastq_checksums.md5
+
+  done < <(find "${fastq}" -name "*.fastq" -type f -print0)
 
 done
 
-md5sum "${fastq_cat}" >> fastq_checksums.md5
+md5sum "${fastq_cat}" > fastq_checksums.md5
 
 
 # Run DIAMOND with blastx

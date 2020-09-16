@@ -68,11 +68,18 @@ programs_array=("${flye}")
 # to create array of FastQ files from each flowcell
 for fastq in "${raw_reads_dir_array[@]}/"*.fastq
 do
-  # Populate array with FastQ files
-  fastq_array+=("${fastq}")
 
-  # Create checksums file
-  md5sum "${fastq}" >> fastq_checksums.md5
+  while IFS= read -r -d '' filename
+  do
+    # Populate array with FastQ files
+    fastq_array+=("${filename}")
+
+    # Create checksums file
+    md5sum "${filename}" >> fastq_checksums.md5
+
+  done < <(find ${fastq} -name "*.fastq" -type f -print0)
+
+
 done
 
 # Create space-delimited list of FastQ files
