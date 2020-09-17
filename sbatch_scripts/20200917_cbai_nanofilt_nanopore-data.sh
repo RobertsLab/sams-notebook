@@ -1,6 +1,6 @@
 #!/bin/bash
 ## Job Name
-#SBATCH --job-name=cbai_nanofilt_nanopore-data
+#SBATCH --job-name=cbai_nanofilt_Q7_nanopore-data
 ## Allocation Definition
 #SBATCH --account=coenv
 #SBATCH --partition=coenv
@@ -15,7 +15,7 @@
 #SBATCH --mail-type=ALL
 #SBATCH --mail-user=samwhite@uw.edu
 ## Specify the working directory for this job
-#SBATCH --chdir=/gscratch/scrubbed/samwhite/outputs/20200917_cbai_nanofilt_nanopore-data
+#SBATCH --chdir=/gscratch/scrubbed/samwhite/outputs/20200917_cbai_nanofilt_Q7_nanopore-data
 
 
 
