@@ -98,13 +98,14 @@ md5sum "${fastq_cat}" >> fastq_checksums.md5
 # Run NanoFilt
 ## Sets readtype to 1D (default)
 ## Filters on mean quality >= 7 (ONT "standard")
+## FYI: seems to require piping stdin (i.e. cat fastq |)to NanoFilt...
 echo "Running ${programs_array[nanofilt]}"
 echo ""
-${programs_array[nanofilt]} \
+cat ${fastq_cat} \
+| ${programs_array[nanofilt]} \
 --threads ${threads} \
 --readtype 1D \
 --quality ${quality} \
-${fastq_cat} \
 > ${fastq_filtered}
 echo "${programs_array[nanofilt]} complete."
 echo ""
