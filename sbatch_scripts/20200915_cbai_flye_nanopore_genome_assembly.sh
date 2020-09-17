@@ -17,8 +17,8 @@
 ## Specify the working directory for this job
 #SBATCH --chdir=/gscratch/scrubbed/samwhite/outputs/20200915_cbai_flye_nanopore_genome_assembly
 
-
-
+# Script to run Flye long read assembler on all quality filtered (Q7) C.bairdi NanoPore reads
+# from 20200917
 
 ###################################################################################
 # These variables need to be set by user
@@ -34,16 +34,11 @@ conda activate flye-2.8.1_env
 # Set number of CPUs to use
 threads=28
 
-# Paths to reads
-raw_reads_dir_array=(
-"/gscratch/srlab/sam/data/C_bairdi/DNAseq/ont_FAL58500_04bb4d86_20102558-2729" \
-"/gscratch/srlab/sam/data/C_bairdi/DNAseq/ont_FAL58500_94244ffd_20102558-2729" \
-"/gscratch/srlab/sam/data/C_bairdi/DNAseq/ont_FAL86873_d8db260e_cbai_6129_403_26"
-)
-
 # Paths to programs
 flye=flye
 
+# Input FastQ
+fastq=/gscratch/srlab/sam/data/C_bairdi/DNAseq/20200917_cbai_nanopore_all_quality-7.fastq
 
 ###################################################################################
 
@@ -57,41 +52,19 @@ wd=$(pwd)
 
 # Inititalize arrays
 programs_array=()
-fastq_array=()
 
 
 # Programs array
 programs_array=("${flye}")
 
-
-# Loop through NanoPore data directories
-# to create array of FastQ files from each flowcell
-for fastq in "${raw_reads_dir_array[@]}/"*.fastq
-do
-
-  while IFS= read -r -d '' filename
-  do
-    # Populate array with FastQ files
-    fastq_array+=("${filename}")
-
-    # Create checksums file
-    md5sum "${filename}" >> fastq_checksums.md5
-
-  done < <(find ${fastq} -name "*.fastq" -type f -print0)
-
-
-done
-
-# Create space-delimited list of FastQ files
-fastq_list="${fastq_array[*]}"
-
 # Run flye
 ${flye} \
---nano-raw ${fastq_list} \
+--nano-raw ${fastq} \
 --out-dir ${wd} \
 --threads ${threads}
 
-
+# Generate checksum file
+md5sum "${fastq}" > fastq_checksums.md5
 
 # Capture program options
 for program in "${!programs_array[@]}"
