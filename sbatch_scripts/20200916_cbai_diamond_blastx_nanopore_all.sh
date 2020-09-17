@@ -15,32 +15,23 @@
 #SBATCH --mail-type=ALL
 #SBATCH --mail-user=samwhite@uw.edu
 ## Specify the working directory for this job
-#SBATCH --chdir=/gscratch/scrubbed/samwhite/outputs/20200916_cbai_diamond_blastx_nanopore_all
+#SBATCH --chdir=/gscratch/scrubbed/samwhite/outputs/20200917_cbai_diamond_blastx_nanopore_all_Q7
 
-# Script to run DIAMOND BLASTx on all C.bairdi NanoPore reads using the --long-reads option
+# Script to run DIAMOND BLASTx on all quality filtered (Q7) C.bairdi NanoPore reads
+# from 20200917 using the --long-reads option
 # for subsequent import into MEGAN6 to try to separate reads taxonomically.
 
 ###################################################################################
 # These variables need to be set by user
 
-# FastQ concatenation filename
-fastq_cat=20200916_cbai_nanopore_all.fastq
+# Input FastQ file
+fastq=/gscratch/srlab/sam/data/C_bairdi/DNAseq/20200917_cbai_nanopore_all_quality-7.fastq
 
 # DIAMOND Output filename prefix
-prefix=20200916_cbai_diamond_blastx_nanopore_all
+prefix=20200917_cbai_diamond_blastx_nanopore_all_Q7
 
 # Set number of CPUs to use
 threads=28
-
-# Declare array
-raw_reads_dir_array=()
-
-# Paths to reads
-raw_reads_dir_array=(
-"/gscratch/srlab/sam/data/C_bairdi/DNAseq/ont_FAL58500_04bb4d86_20102558-2729" \
-"/gscratch/srlab/sam/data/C_bairdi/DNAseq/ont_FAL58500_94244ffd_20102558-2729" \
-"/gscratch/srlab/sam/data/C_bairdi/DNAseq/ont_FAL86873_d8db260e_cbai_6129_403_26"
-)
 
 # Program paths
 diamond=/gscratch/srlab/programs/diamond-0.9.29/diamond
@@ -69,24 +60,7 @@ programs_array=()
 programs_array=("${diamond}")
 
 
-# Loop through NanoPore data directories
-# to create array of FastQ files from each flowcell
-for fastq in "${raw_reads_dir_array[@]}"
-do
-
-  while IFS= read -r -d '' filename
-  do
-    # Concatenate all FastQ files into single file
-    # for DIAMOND BLASTx and generate MD5 checksums
-    cat "${filename}" >> ${fastq_cat}
-    # Create checksums file
-    md5sum "${filename}" >> fastq_checksums.md5
-
-  done < <(find "${fastq}" -name "*.fastq" -type f -print0)
-
-done
-
-md5sum "${fastq_cat}" > fastq_checksums.md5
+md5sum "${fastq}" > fastq_checksums.md5
 
 
 # Run DIAMOND with blastx
@@ -96,7 +70,7 @@ md5sum "${fastq_cat}" > fastq_checksums.md5
 ${diamond} blastx \
 --long-reads \
 --db ${dmnd_db} \
---query "${fastq_cat}" \
+--query "${fastq}" \
 --out "${prefix}".blastx.daa \
 --outfmt 100 \
 --top 5 \
