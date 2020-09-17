@@ -59,10 +59,6 @@ nanofilt=/gscratch/srlab/programs/anaconda3/envs/nanofilt_2.6.0_env/bin/NanoFilt
 # Exit script if any command fails
 set -e
 
-
-# Capture this directory
-wd=$(pwd)
-
 # Inititalize array
 programs_array=()
 
@@ -84,7 +80,7 @@ do
     # Create checksums file
     md5sum "${filename}" >> fastq_checksums.md5
 
-  done < <(find "${fastq}" -name "*.fastq" -type f -print0)
+  done < <(find "${directory}" -name "*.fastq" -type f -print0)
 
 done
 
@@ -96,7 +92,6 @@ md5sum "${fastq_cat}" >> fastq_checksums.md5
 ## Filters on mean quality >= 7 (ONT "standard")
 ${programs_array[nanofilt]} \
 --threads ${threads} \
---outdir ${current_dir} \
 --readtype 1D \
 --quality \
 ${fastq_cat} \
