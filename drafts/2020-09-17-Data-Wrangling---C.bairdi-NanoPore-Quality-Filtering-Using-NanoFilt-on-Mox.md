@@ -178,4 +178,14 @@ echo "${PATH}" | tr : \\n
 
 Output folder:
 
-- []()
+- [20200917_cbai_nanofilt_Q7_nanopore-data/](https://gannet.fish.washington.edu/Atumefaciens/20200917_cbai_nanofilt_Q7_nanopore-data/)
+
+Q7 Filtered FastQ file (2.2GB):
+
+- [20200917_cbai_nanofilt_Q7_nanopore-data/20200917_cbai_nanopore_all_quality-7.fastq](https://gannet.fish.washington.edu/Atumefaciens/20200917_cbai_nanofilt_Q7_nanopore-data/20200917_cbai_nanopore_all_quality-7.fastq)
+
+  - MD5 checksum:
+
+    - `2f3b651bb0b875b0287e71e315cad59a`
+
+Will use this data set for all downstream manipulations.
