@@ -76,8 +76,12 @@ do
   do
     # Concatenate all FastQ files into single file
     # for NanoFilt and generate MD5 checksums
+    echo "Now concatenating ${filename} to ${fastq_cat}..."
     cat "${filename}" >> ${fastq_cat}
+
     # Create checksums file
+    echo "Now generating checksum for ${filename}..."
+    echo ""
     md5sum "${filename}" >> fastq_checksums.md5
 
   done < <(find "${directory}" -name "*.fastq" -type f -print0)
@@ -85,6 +89,8 @@ do
 done
 
 # Generate MD5 checksum for concatenated FastQ file
+echo "Now generating checksum for ${fastq_cat}..."
+echo ""
 md5sum "${fastq_cat}" >> fastq_checksums.md5
 
 # Run NanoFilt
@@ -98,6 +104,8 @@ ${fastq_cat} \
 > ${fastq_filtered}
 
 # Generate MD5 checksum for concatenated FastQ file
+echo "Now generating checksum for ${fastq_filtered}..."
+echo ""
 md5sum "${fastq_filtered}" >> fastq_checksums.md5
 
 
