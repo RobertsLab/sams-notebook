@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # Script to run MEGAN6 daa2rma on DIAMOND DAA files from
-# 20200916_cbai_diamond_blastx_nanopore_all.blastx.
+# 20200917_cbai_diamond_blastx_nanopore_all_Q7.
 # Utilizes the --longReads option
 
 # Requires MEGAN mapping file from:
