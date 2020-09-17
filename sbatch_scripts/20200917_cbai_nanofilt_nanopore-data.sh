@@ -50,7 +50,7 @@ fastq_cat=20200917_cbai_nanopore_all.fastq
 fastq_filtered=20200917_cbai_nanopore_all_quality-7.fastq
 
 # Paths to programs
-nanofilt=/gscratch/srlab/programs/anaconda3/envs/nanofilt_2.6.0_env/bin/NanoFilt
+nanofilt=NanoFilt
 
 
 ###################################################################################
