@@ -29,7 +29,7 @@
 
 
 # Activate the NanoPlot Anaconda environment
-conda activate nanoplot_env
+conda activate nanofilt_2.6.0_env
 
 # Set number of CPUs to use
 threads=28
