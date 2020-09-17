@@ -52,6 +52,8 @@ fastq_filtered=20200917_cbai_nanopore_all_quality-7.fastq
 # Paths to programs
 nanofilt=NanoFilt
 
+# Set mean quality filter (integer)
+quality=7
 
 ###################################################################################
 
@@ -96,12 +98,16 @@ md5sum "${fastq_cat}" >> fastq_checksums.md5
 # Run NanoFilt
 ## Sets readtype to 1D (default)
 ## Filters on mean quality >= 7 (ONT "standard")
+echo "Running ${programs_array[nanofilt]}"
+echo ""
 ${programs_array[nanofilt]} \
 --threads ${threads} \
 --readtype 1D \
---quality \
+--quality ${quality} \
 ${fastq_cat} \
 > ${fastq_filtered}
+echo "${programs_array[nanofilt]} complete."
+echo ""
 
 # Generate MD5 checksum for concatenated FastQ file
 echo "Now generating checksum for ${fastq_filtered}..."
