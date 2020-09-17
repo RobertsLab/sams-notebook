@@ -1,7 +1,7 @@
 ---
 layout: post
 title: Genome Assembly - C.bairdi - cbai_v1.0 - Using All NanoPore Data With Flye on Mox
-date: '2020-09-15 07:08'
+date: '2020-09-17 11:08'
 tags:
   - genome assembly
   - Tanner crab
