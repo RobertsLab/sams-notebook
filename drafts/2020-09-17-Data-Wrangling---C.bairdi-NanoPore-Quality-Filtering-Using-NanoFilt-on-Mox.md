@@ -176,6 +176,10 @@ echo "${PATH}" | tr : \\n
 
 #### RESULTS
 
+Runtime was short, ~5.5mins:
+
+![NanoFilt runtime on C.bairdi Q7 filtered NanoPore reads](https://github.com/RobertsLab/sams-notebook/blob/master/images/screencaps/20200917_cbai_nanofilt_Q7_nanopore-data_runtime.png?raw=true)
+
 Output folder:
 
 - [20200917_cbai_nanofilt_Q7_nanopore-data/](https://gannet.fish.washington.edu/Atumefaciens/20200917_cbai_nanofilt_Q7_nanopore-data/)
