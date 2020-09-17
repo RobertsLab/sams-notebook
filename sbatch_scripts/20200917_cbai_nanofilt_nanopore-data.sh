@@ -31,8 +31,6 @@
 # Activate the NanoPlot Anaconda environment
 conda activate nanofilt_2.6.0_env
 
-# Set number of CPUs to use
-threads=28
 
 # Declare array
 raw_reads_dir_array=()
@@ -103,7 +101,6 @@ echo "Running ${programs_array[nanofilt]}"
 echo ""
 cat ${fastq_cat} \
 | ${programs_array[nanofilt]} \
---threads ${threads} \
 --readtype 1D \
 --quality ${quality} \
 > ${fastq_filtered}
