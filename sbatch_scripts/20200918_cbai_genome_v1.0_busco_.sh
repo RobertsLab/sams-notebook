@@ -17,16 +17,20 @@
 ## Specify the working directory for this job
 #SBATCH --chdir=/gscratch/scrubbed/samwhite/outputs/20200918_cbai_genome_v1.0_busco
 ###################################################################################
+
+
+
+
+
 # These variables need to be set by user
 
 ## Save working directory
 wd=$(pwd)
 
-# Establish variables for more readable code
+# Genomes directory
 genomes_dir=/gscratch/srlab/sam/data/C_bairdi/genomes
 
-# Array of the various comparisons to evaluate
-# Each condition in each comparison should be separated by a "-"
+# Genomes array
 genomes_array=(
 "${genomes_dir}"/cbai_genome_v1.0.fasta \
 )
@@ -38,7 +42,7 @@ busco_db=/gscratch/srlab/sam/data/databases/BUSCO/metazoa_odb9
 augustus_species=fly
 threads=28
 
-# Programs array
+# Programs associative array
 declare -A programs_array
 programs_array=(
 [busco]="/gscratch/srlab/programs/busco-v3/scripts/run_BUSCO.py"
