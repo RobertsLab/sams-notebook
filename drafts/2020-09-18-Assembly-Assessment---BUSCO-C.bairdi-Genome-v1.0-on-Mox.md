@@ -196,4 +196,32 @@ done
 
 Output folder:
 
-- []()
+- [20200918_cbai_genome_v1.0_busco/](https://gannet.fish.washington.edu/Atumefaciens/20200918_cbai_genome_v1.0_busco/)
+
+  - Summary file (text):
+
+    - [20200918_cbai_genome_v1.0_busco/run_cbai_genome_v1.0.fasta/short_summary_cbai_genome_v1.0.fasta.txt](https://gannet.fish.washington.edu/Atumefaciens/20200918_cbai_genome_v1.0_busco/run_cbai_genome_v1.0.fasta/short_summary_cbai_genome_v1.0.fasta.txt)
+
+    ```
+    # BUSCO version is: 3.0.2
+# The lineage dataset is: metazoa_odb9 (Creation date: 2016-02-13, number of species: 65, number of BUSCOs: 978)
+# To reproduce this run: python /gscratch/srlab/programs/busco-v3/scripts/run_BUSCO.py -i /gscratch/srlab/sam/data/C_bairdi/genomes/cbai_genome_v1.0.fasta -o cbai_genome_v1.0.fasta -l /gscratch/srlab/sam/data/databases/BUSCO/metazoa_odb9/ -m genome -c 28 --long -z -sp fly --augustus_parameters '--progress=true'
+#
+# Summarized benchmarking in BUSCO notation for file /gscratch/srlab/sam/data/C_bairdi/genomes/cbai_genome_v1.0.fasta
+# BUSCO was run in mode: genome
+
+	C:0.4%[S:0.3%,D:0.1%],F:0.3%,M:99.3%,n:978
+
+	4	Complete BUSCOs (C)
+	3	Complete and single-copy BUSCOs (S)
+	1	Complete and duplicated BUSCOs (D)
+	3	Fragmented BUSCOs (F)
+	971	Missing BUSCOs (M)
+	978	Total BUSCO groups searched
+    ```
+
+The results are a tad disappointing (would've been awesome if we had actually gotten a nearly complete genome), but not terribly surprising. Crab/crustacean genomes are known to be rather large, the NanoPore runs didn't generate a ton of data, and the assembly didn't produce any appreciably large scaffolds/contigs.
+
+Despite this, I'm still interested in seeing what a graph-based assembly looks like using a visualization package like [Bandage](https://github.com/rrwick/Bandage) to gain a better understanding of what to expect.
+
+It would also be great to perform some additional NanoPore sequencing. The flowcells aren't terribly expensive, the library prep/sequencing is fast, and the downstream analysis is pretty quick and painless (assuming what I've done so far is the appropriate way to process this data).
