@@ -133,7 +133,7 @@ do
   --augustus_parameters='--progress=true'
 
   # Capture FastA checksums for verification
-  cho ""
+  echo ""
   echo "Generating checksum for ${genome_name}"
   md5sum "${genomes_array[$genome]}" > "${genome_name}".checksum.md5
   echo "Finished generating checksum for ${genome_name}"
