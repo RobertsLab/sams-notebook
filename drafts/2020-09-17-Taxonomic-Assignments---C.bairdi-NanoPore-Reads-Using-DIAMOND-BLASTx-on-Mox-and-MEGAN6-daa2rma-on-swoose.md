@@ -255,3 +255,11 @@ daa2rma Output folder:
   - RMA6 file:
 
     - [20200917_cbai_nanopore_diamond_blastx_daa2rma/20200917_cbai_diamond_blastx_nanopore_all_Q7.daa2rma.rma6](https://gannet.fish.washington.edu/Atumefaciens/20200917_cbai_nanopore_diamond_blastx_daa2rma/20200917_cbai_diamond_blastx_nanopore_all_Q7.daa2rma.rma6)
+
+I opened the RMA6 file in MEGAN6 to see the taxonomic breakdown and this is what I got:
+
+![screencap of MEGAN6 C.bairdi NanoPore Q7 - no taxonomic assignments](https://github.com/RobertsLab/sams-notebook/blob/master/images/screencaps/20200917_cbai_nanopore_Q7_MEGAN6_no-assignments.png?raw=true)
+
+No taxonomic assignments!!
+
+Well, that was anti-climatic (and unhelpful)... Maybe after I complete the assembly, I can try again using the FastA...
