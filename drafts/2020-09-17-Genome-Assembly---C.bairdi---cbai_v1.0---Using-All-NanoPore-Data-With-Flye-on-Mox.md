@@ -165,6 +165,8 @@ contig_4015	104	15091851	60	61
 
 Column #2 is the sequence length. The first two "contigs" have lengths of < 5bp! Obviously, this is useless. I know we can just filter out small contigs for subsequent analyses, but it's disconcerting that [Flye](https://github.com/fenderglass/Flye) actually spit these out as "contigs" instead of discarding them. I've [submitted an issue](https://github.com/fenderglass/Flye/issues/304) to see if I can obtain some understanding about why this occurred.
 
+Regardless, I'll get this posted to the [Genomic Resources wiki](https://github.com/RobertsLab/resources/wiki/Genomic-Resources).
+
 So, where do we go from here? A couple of things:
 
 - Visualize the assembly graphs with something like [Bandage](https://github.com/rrwick/Bandage). I'm hoping this will lead to a better understanding of how these graph assemblies (as opposed to alignment-based assemblies) work.
