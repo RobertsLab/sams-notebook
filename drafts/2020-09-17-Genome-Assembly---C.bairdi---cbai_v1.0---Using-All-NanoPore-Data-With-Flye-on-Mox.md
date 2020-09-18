@@ -124,4 +124,53 @@ Runtime was very fast; just over 1hr!
 
 Output folder:
 
-- []()
+- [20200917_cbai_flye_nanopore_genome_assembly/](https://gannet.fish.washington.edu/Atumefaciens/20200917_cbai_flye_nanopore_genome_assembly/)
+
+Genome Assembly (FastA; 19MB)
+
+- [20200917_cbai_flye_nanopore_genome_assembly/cbai_genome_v1.0.fasta](https://gannet.fish.washington.edu/Atumefaciens/20200917_cbai_flye_nanopore_genome_assembly/cbai_genome_v1.0.fasta)
+
+  - MD5 checksum (text):
+
+    - `2f3b651bb0b875b0287e71e315cad59a`
+
+NOTE: The output files were named `assembly_*`. At the time I ran this, I didn't realize that was the case, so I had to rename them to reflect the `cba_genome_v1.0` notation after the fact; thus this step is not present in the SBATCH script.
+
+Well, this is pretty exciting! Here's a quick assembly summary (found at the end of the [SLURM output file](https://gannet.fish.washington.edu/Atumefaciens/20200917_cbai_flye_nanopore_genome_assembly/slurm-294008.out)):
+
+```
+INFO: Assembly statistics:
+
+	Total length:	19216531
+	Fragments:	3294
+	Fragments N50:	14130
+	Largest frg:	141601
+	Scaffolds:	6
+	Mean coverage:	17
+```
+Admittedly, there are definitely some issues with the assembly. For example, here's a portion of the FastA index file:
+
+```
+contig_3421	1	11083798	1	2
+contig_2582	3	4548025	3	4
+contig_3109	46	8747210	46	47
+contig_2139	49	3182267	49	50
+contig_4287	58	16100814	58	59
+contig_3575	66	12248950	60	61
+contig_793	69	18935471	60	61
+contig_3976	84	14959281	60	61
+contig_2281	104	3633003	60	61
+contig_4015	104	15091851	60	61
+```
+
+Column #2 is the sequence length. The first two "contigs" have lengths of < 5bp! Obviously, this is useless. I know we can just filter out small contigs for subsequent analyses, but it's disconcerting that [Flye](https://github.com/fenderglass/Flye) actually spit these out as "contigs" instead of discarding them. I've [submitted an issue](https://github.com/fenderglass/Flye/issues/304) to see if I can obtain some understanding about why this occurred.
+
+So, where do we go from here? A couple of things:
+
+- Visualize the assembly graphs with something like [Bandage](https://github.com/rrwick/Bandage). I'm hoping this will lead to a better understanding of how these graph assemblies (as opposed to alignment-based assemblies) work.
+
+- Run BUSCO to assess genome "completeness".
+
+- Attempt to separate out _Hematodinium_ sequences.
+
+- Annotate the assembly with GenSAS and/or BLAST or something.
