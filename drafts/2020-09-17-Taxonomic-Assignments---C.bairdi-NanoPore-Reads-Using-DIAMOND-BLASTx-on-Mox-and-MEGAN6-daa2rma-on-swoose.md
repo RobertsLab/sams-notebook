@@ -236,6 +236,22 @@ echo "${PATH}" | tr : \\n
 
 #### RESULTS
 
-Output folder:
+DIAMOND runtime was quick (as usual), 53s:
 
-- []()
+![DIAMOND BLASTx runtime of C.baird Q7 NanoPore reads on Mox](https://github.com/RobertsLab/sams-notebook/blob/master/images/screencaps/20200917_cbai_diamond_blastx_nanopore_all_Q7_runtime.png?raw=true)
+
+DIAMOND BLASTx Output folder:
+
+- [20200917_cbai_diamond_blastx_nanopore_all_Q7/](https://gannet.fish.washington.edu/Atumefaciens/20200917_cbai_diamond_blastx_nanopore_all_Q7/)
+
+  - DIAMOND BLASTx DAA file:
+
+    - [20200917_cbai_diamond_blastx_nanopore_all_Q7/20200917_cbai_diamond_blastx_nanopore_all_Q7.blastx.daa](https://gannet.fish.washington.edu/Atumefaciens/20200917_cbai_diamond_blastx_nanopore_all_Q7/20200917_cbai_diamond_blastx_nanopore_all_Q7.blastx.daa) (47MB)
+
+daa2rma Output folder:
+
+- [20200917_cbai_nanopore_diamond_blastx_daa2rma/](https://gannet.fish.washington.edu/Atumefaciens/20200917_cbai_nanopore_diamond_blastx_daa2rma/)
+
+  - RMA6 file:
+
+    - [20200917_cbai_nanopore_diamond_blastx_daa2rma/20200917_cbai_diamond_blastx_nanopore_all_Q7.daa2rma.rma6](https://gannet.fish.washington.edu/Atumefaciens/20200917_cbai_nanopore_diamond_blastx_daa2rma/20200917_cbai_diamond_blastx_nanopore_all_Q7.daa2rma.rma6)
