@@ -118,6 +118,10 @@ echo "${PATH}" | tr : \\n
 
 #### RESULTS
 
+Runtime was very fast; just over 1hr!
+
+![Flye runtime for C.bairdi Q7 NanoPore assembly](https://github.com/RobertsLab/sams-notebook/blob/master/images/screencaps/20200917_cbai_flye_nanopore_genome_assembly_runtime.png?raw=true)
+
 Output folder:
 
 - []()
