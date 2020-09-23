@@ -46,7 +46,7 @@ CFX Data File (PCRD):
 
 CFX Results File (CSV):
 
-- [sam_2020-09-16_04-57-06_BR006896_Quantification-Cq-Results.csv](https://owl.fish.washington.edu/Athaliana/qPCR_data/sam_2020-09-16_04-57-06_BR006896_Quantification-Cq-Results.csv)
+- [sam_2020-09-16_04-57-06_BR006896-Quantification-Cq-Results.csv](https://owl.fish.washington.edu/Athaliana/qPCR_data/sam_2020-09-16_04-57-06_BR006896-Quantification-Cq-Results.csv)
 
 28s-v4 melt plots aren't great and might even possibly have a slight shoulder, suggesting a secondary product. Not great. Additionally, the samples have a fairly large Cq range; not good for a normalizing gene.
 
