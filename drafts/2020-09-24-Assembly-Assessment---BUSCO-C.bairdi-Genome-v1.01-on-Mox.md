@@ -12,7 +12,9 @@ tags:
 categories:
   - Miscellaneous
 ---
+After creating a [subset of the `cbai_genome_v1.0` of contigs >100bp yesterday (subset named `cbai_genome_v1.01`)](https://robertslab.github.io/sams-notebook/2020/09/23/Data-Wrangling-Subsetting-cbai_genome_v1.0-Assembly-with-faidx.html), I wanted to generate BUSCO scores for `cbai_genome_v1.01`. This is primarily just to keep info consistent on our [Genomic Resources wiki](https://github.com/RobertsLab/resources/wiki/Genomic-Resources), as I don't expect these scores to differ at all from [the `cbai_genome_v1.0` BUSCO scores](https://robertslab.github.io/sams-notebook/2020/09/18/Assembly-Assessment-BUSCO-C.bairdi-Genome-v1.0-on-Mox.html).
 
+Analysis was run on Mox.
 
 
 SBATCH script (GitHub):
@@ -223,3 +225,4 @@ Output folder:
 	972	Missing BUSCOs (M)
 	978	Total BUSCO groups searched
 ```
+As expected, no differences in BUSCO scores between `cbai_genome_v1.0` and `cbai_genome_v1.01`. Will add info to [Genomic Resources wiki](https://github.com/RobertsLab/resources/wiki/Genomic-Resources).
