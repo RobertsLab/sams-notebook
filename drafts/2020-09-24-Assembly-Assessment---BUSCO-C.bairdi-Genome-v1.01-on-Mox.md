@@ -19,6 +19,10 @@ categories:
 
 #### RESULTS
 
+As usual, very fast, ~1.5mins:
+
+![BUSCO runtime on Mox](https://github.com/RobertsLab/sams-notebook/blob/master/images/screencaps/20200924_cbai_genome_v1.01_busco.png?raw=true)
+
 Output folder:
 
 - [20200924_cbai_genome_v1.01_busco/](https://gannet.fish.washington.edu/Atumefaciens/20200924_cbai_genome_v1.01_busco/)
