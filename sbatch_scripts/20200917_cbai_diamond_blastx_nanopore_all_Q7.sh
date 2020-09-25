@@ -10,7 +10,7 @@
 ## Walltime (days-hours:minutes:seconds format)
 #SBATCH --time=10-00:00:00
 ## Memory per node
-#SBATCH --mem=120G
+#SBATCH --mem=200G
 ##turn on e-mail notification
 #SBATCH --mail-type=ALL
 #SBATCH --mail-user=samwhite@uw.edu
@@ -34,10 +34,10 @@ prefix=20200917_cbai_diamond_blastx_nanopore_all_Q7
 threads=28
 
 # Program paths
-diamond=/gscratch/srlab/programs/diamond-0.9.29/diamond
+diamond=/gscratch/srlab/programs/diamond-2.0.4/diamond
 
-# DIAMOND UniProt database
-dmnd_db=/gscratch/srlab/blastdbs/uniprot_sprot_20200123/uniprot_sprot.dmnd
+# DIAMOND NCBI nr database with taxonomy dumps
+dmnd_db=/gscratch/srlab/blastdbs/ncbi-nr-20190925/nr.dmnd
 
 
 ###################################################################################
@@ -74,8 +74,8 @@ ${diamond} blastx \
 --out "${prefix}".blastx.daa \
 --outfmt 100 \
 --top 5 \
---block-size 15.0 \
---index-chunks 4 \
+--block-size 8.0 \
+--index-chunks 1 \
 --threads ${threads}
 
 # Capture program options
