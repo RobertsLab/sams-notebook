@@ -259,3 +259,30 @@ daa2rma Output folder:
 I opened the RMA6 file in MEGAN6 to see the taxonomic breakdown and this is what I got:
 
 ![screencap of MEGAN6 C.bairdi NanoPore Q7 taxonomic assignments; Alveolata, Arthropoda, and E.canceri highlighted](https://github.com/RobertsLab/sams-notebook/blob/master/images/screencaps/20200917_cbai_nanopore_Q7_MEGAN6_no-assignments.png?raw=true)
+
+NOTE: When using `--long-read` mode, taxonomic assignments counts are always in aligned bases, _not_ aligned reads!
+
+
+Well, the results are pretty intriguing. Here's a short table of the most intriguing data:
+
+| Taxonomy              | Bases      |
+|-----------------------|------------|
+| _Alveolata_           | 436,841    |
+| _Arthropoda_          | 35,864,420 |
+| _Enterospora canceri_ | 18,134,246 |
+
+
+
+A few things to note:
+
+- As expected, _Arthropoda_ comprises the bulk of assignments.
+
+- _Alveolata_ is far fewer than I expected, but it is important to remember that the NanoPore data analyzed here is from two samples: one uninfected, the other infected, so _Hematodinium_ sequence is going to make up a much smaller proportion of reads/bases.
+
+- _Enterospora canceri_ (a [known microsporidian agent of infection in crabs](https://academic.oup.com/icesjms/article/65/9/1578/629544)) ha the second most number of bases assigned. AND, this is at the _species_ level, not Phylum level like _Arthropoda_ and _Alveolata_!
+
+  - I think I've previously noticed a relatively high abundance of _Enterospora canceri_ read assignments in some previous RNAseq taxonomic assignment I performed, but I'll have to double check...
+
+- Although not highlighted in the tree/table above, I should not ignore _Aquifex sp._, which has 6,338,292 bases assigned to it! It turns out that members of the Aquifex genus are thermophylic bacteria... Crabs live on the sea floor (which is where one would find hydrothermal vents), but why would we see such a high abundance of these bacteria in muscle/hemolymph? Very curious!
+
+Where to go from here. Well, I think I might extract the reads and, well, I don't know what. Individual genome assemblies? I need to think about this a bit more and probably discuss with Steven.
