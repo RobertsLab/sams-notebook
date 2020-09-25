@@ -34,7 +34,7 @@ SBATCH script (GitHub) for DIAMOND BLASTx on Mox:
 ## Walltime (days-hours:minutes:seconds format)
 #SBATCH --time=10-00:00:00
 ## Memory per node
-#SBATCH --mem=120G
+#SBATCH --mem=200G
 ##turn on e-mail notification
 #SBATCH --mail-type=ALL
 #SBATCH --mail-user=samwhite@uw.edu
@@ -58,10 +58,10 @@ prefix=20200917_cbai_diamond_blastx_nanopore_all_Q7
 threads=28
 
 # Program paths
-diamond=/gscratch/srlab/programs/diamond-0.9.29/diamond
+diamond=/gscratch/srlab/programs/diamond-2.0.4/diamond
 
-# DIAMOND UniProt database
-dmnd_db=/gscratch/srlab/blastdbs/uniprot_sprot_20200123/uniprot_sprot.dmnd
+# DIAMOND NCBI nr database with taxonomy dumps
+dmnd_db=/gscratch/srlab/blastdbs/ncbi-nr-20190925/nr.dmnd
 
 
 ###################################################################################
@@ -98,8 +98,8 @@ ${diamond} blastx \
 --out "${prefix}".blastx.daa \
 --outfmt 100 \
 --top 5 \
---block-size 15.0 \
---index-chunks 4 \
+--block-size 8.0 \
+--index-chunks 1 \
 --threads ${threads}
 
 # Capture program options
@@ -236,7 +236,7 @@ echo "${PATH}" | tr : \\n
 
 #### RESULTS
 
-DIAMOND runtime was quick (as usual), 53s:
+DIAMOND runtime was pretty quick, 37mins:
 
 ![DIAMOND BLASTx runtime of C.baird Q7 NanoPore reads on Mox](https://github.com/RobertsLab/sams-notebook/blob/master/images/screencaps/20200917_cbai_diamond_blastx_nanopore_all_Q7_runtime.png?raw=true)
 
@@ -258,8 +258,4 @@ daa2rma Output folder:
 
 I opened the RMA6 file in MEGAN6 to see the taxonomic breakdown and this is what I got:
 
-![screencap of MEGAN6 C.bairdi NanoPore Q7 - no taxonomic assignments](https://github.com/RobertsLab/sams-notebook/blob/master/images/screencaps/20200917_cbai_nanopore_Q7_MEGAN6_no-assignments.png?raw=true)
-
-No taxonomic assignments!!
-
-Well, that was anti-climatic (and unhelpful)... Maybe after I complete the assembly, I can try again using the FastA...
+![screencap of MEGAN6 C.bairdi NanoPore Q7 taxonomic assignments; Alveolata, Arthropoda, and E.canceri highlighted](https://github.com/RobertsLab/sams-notebook/blob/master/images/screencaps/20200917_cbai_nanopore_Q7_MEGAN6_no-assignments.png?raw=true)
