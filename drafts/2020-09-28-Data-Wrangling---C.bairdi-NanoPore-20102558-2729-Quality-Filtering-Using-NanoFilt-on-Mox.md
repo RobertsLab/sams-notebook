@@ -186,4 +186,15 @@ Runtime was very fast, 43s:
 
 Output folder:
 
-- []()
+- [20200928_cbai_nanofilt_Q7_20102558-2729_nanopore-data/](https://gannet.fish.washington.edu/Atumefaciens/20200928_cbai_nanofilt_Q7_20102558-2729_nanopore-data/)
+
+
+Q7 Filtered FastQ file (148MB):
+
+- [20200928_cbai_nanofilt_Q7_20102558-2729_nanopore-data/20200928_cbai_nanopore_20102558-2729_quality-7.fastq](https://gannet.fish.washington.edu/Atumefaciens/20200928_cbai_nanofilt_Q7_20102558-2729_nanopore-data/20200928_cbai_nanopore_20102558-2729_quality-7.fastq)
+
+  - MD5 checksum:
+
+    - `eb439470cbc765052b4b190e837fcdd7`
+
+Will get taxonomy assignments using MEGAN6.
