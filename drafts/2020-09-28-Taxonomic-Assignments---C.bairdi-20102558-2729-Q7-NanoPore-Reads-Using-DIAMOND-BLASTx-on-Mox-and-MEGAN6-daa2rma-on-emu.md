@@ -240,6 +240,14 @@ Pretty quick, a little over 17mins:
 
 ![DIAMOND BLASTx and MEGAN daa2rma conversion for 20102558-2729-Q7 runtime](https://github.com/RobertsLab/sams-notebook/blob/master/images/screencaps/20200928_cbai_diamond_blastx_nanopore_20102558-2729_Q7_runtime.png?raw=true)
 
-Output folder:
+DIAMOND BLASTx Output folder:
 
-- []()
+- [20200928_cbai_nanopore_20102558-2729-Q7_diamond_blastx_daa2rma/](https://gannet.fish.washington.edu/Atumefaciens/20200928_cbai_nanopore_20102558-2729-Q7_diamond_blastx_daa2rma/)
+
+  - DIAMOND BLASTx DAA file:
+
+    - [20200928_cbai_nanopore_20102558-2729-Q7_diamond_blastx_daa2rma/20200928_cbai_nanopore_20102558-2729_Q7.blastx.daa](https://gannet.fish.washington.edu/Atumefaciens/20200928_cbai_nanopore_20102558-2729-Q7_diamond_blastx_daa2rma/20200928_cbai_nanopore_20102558-2729_Q7.blastx.daa) (9.3MB)
+
+  - RMA6 file:
+
+    - [20200928_cbai_nanopore_20102558-2729-Q7_diamond_blastx_daa2rma/20200928_cbai_nanopore_20102558-2729_Q7.daa2rma.rma6](https://gannet.fish.washington.edu/Atumefaciens/20200928_cbai_nanopore_20102558-2729-Q7_diamond_blastx_daa2rma/20200928_cbai_nanopore_20102558-2729_Q7.daa2rma.rma6) (8.1MB)
