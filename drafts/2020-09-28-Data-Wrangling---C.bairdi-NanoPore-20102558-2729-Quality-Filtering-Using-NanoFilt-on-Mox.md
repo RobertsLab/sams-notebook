@@ -11,7 +11,17 @@ tags:
 categories:
   - Miscellaneous
 ---
+Last week, I [ran all of our Q7-filtered _C.baird_ NanoPore reads through MEGAN6 to evaluate the taxonomic breakdown (on 20200917)](https://robertslab.github.io/sams-notebook/2020/09/17/Taxonomic-Assignments-C.bairdi-NanoPore-Reads-Using-DIAMOND-BLASTx-on-Mox-and-MEGAN6-daa2rma-on-swoose.html) and noticed that there were a large quantity of bases assigned to _E.canceri_ (a [known microsporidian agent of infection in crabs](https://academic.oup.com/icesjms/article/65/9/1578/629544)) and _Aquifex sp._ (a genus of thermophylic bacteria), in addition to the expected _Arthropoda_ assignments. Notably, _Alveolata_ assignments were remarkably low.
 
+Since our NanoPore data was a combination of an uninfected sample and a _Hematodinium_-infected sample, I decided to find out which of the two samples was contributing to the _E.canceri_ and _Aquifex sp._ assignments. To do so, first I need to generate a singular Q7-filtered FastQ using [NanoFilt](https://github.com/wdecoster/nanofilt).
+
+This set was the uninfected muscle sample:
+
+- [C.bairdi-20102558-2729-Run-01](https://robertslab.github.io/sams-notebook/2020/09/04/Data-Wrangling-NanoPore-Fast5-Conversion-to-FastQ-of-C.bairdi-20102558-2729-Run-01-on-Mox-with-GPU-Node.html)
+
+- [C.bairdi-20102558-2729-Run-02](https://robertslab.github.io/sams-notebook/2020/09/04/Data-Wrangling-NanoPore-Fast5-Conversion-to-FastQ-of-C.bairdi-20102558-2729-Run-02-on-Mox-with-GPU-Node.html)
+
+Job was run on Mox.
 
 
 SBATCH script (GitHub):
