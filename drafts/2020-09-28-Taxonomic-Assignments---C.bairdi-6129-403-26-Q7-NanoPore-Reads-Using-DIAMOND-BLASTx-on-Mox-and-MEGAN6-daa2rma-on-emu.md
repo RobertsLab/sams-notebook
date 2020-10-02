@@ -250,3 +250,8 @@ DIAMOND BLASTx Output folder:
   - RMA6 file:
 
     - [20200928_cbai_nanopore_6129-403-26-Q7_diamond_blastx_daa2rma/20200928_cbai_nanopore_6129-403-26_Q7.daa2rma.rma6](https://gannet.fish.washington.edu/Atumefaciens/20200928_cbai_nanopore_6129-403-26-Q7_diamond_blastx_daa2rma/20200928_cbai_nanopore_6129-403-26_Q7.daa2rma.rma6) (256MB)
+
+
+##### Taxonomic tree
+
+![6129-403-26-Q7 MEGAN6 taxonomic assignments](https://github.com/RobertsLab/sams-notebook/blob/master/images/screencaps/20200928_cbai_nanopore_6129-403-26-Q7_diamond_blastx_daa2rma_megan-taxonomic-tree.png?raw=true)
