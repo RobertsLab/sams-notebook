@@ -14,7 +14,9 @@ tags:
 categories:
   - Miscellaneous
 ---
+After noticing that the [initial MEGAN6 taxonomic assignments for our combined _C.bairdi_ NanoPore data from 20200917](https://robertslab.github.io/sams-notebook/2020/09/17/Taxonomic-Assignments-C.bairdi-NanoPore-Reads-Using-DIAMOND-BLASTx-on-Mox-and-MEGAN6-daa2rma-on-swoose.html) revealed a high number of bases assigned to _E.canceri_ and _Aquifex sp._, I decided to explore the taxonomic breakdown of just the individual samples to see which of the samples was contributing to these taxonomic assignments most.
 
+Ran the muscle (no _Hematodinium_ infection; (20102558-2729-Q7) NanoPore sequencing data through DIAMOND BLASTx (on Mox) and subsequent output conversion to the MEGAN6 RMA6 format (on swoose due to program Java X11 requirement which is not functional on Mox) to obtain taxonomic assignments.
 
 SBATCH script (GitHub):
 
