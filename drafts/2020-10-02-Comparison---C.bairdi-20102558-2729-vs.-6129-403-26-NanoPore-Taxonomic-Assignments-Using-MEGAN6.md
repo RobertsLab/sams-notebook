@@ -29,3 +29,20 @@ After completing the individual taxonomic assignments, I compared the two sets o
 
 
 ![20201002_cbai_nanopore_20102558-2729-Q7-vs-6129-403-26-Q7_megan-taxonomic-comparison-bar-plot](https://github.com/RobertsLab/sams-notebook/blob/master/images/screencaps/20201002_cbai_nanopore_20102558-2729-Q7-vs-6129-403-26_megan-taxonomic-comparison-bar-plot.png?raw=true)
+
+
+Comparison table:
+
+| Taxa                | 20102558-2729-Q7_base-counts | 20102558-2729-Q7_base-counts(%) | 6129-403-26-Q7_base-counts | 6129-403-26-Q7_base-counts(%) |
+|---------------------|------------------------------|---------------------------------|----------------------------|-------------------------------|
+| Aquifex sp.         | 221,823.00                   | 10.25                           | 199,287.06                 | 10.43                         |
+| Arthropoda          | 1,046,619.00                 | 48.38                           | 1,134,731.00               | 59.40                         |
+| Enterospora canceri | 889,082.00                   | 41.10                           | 561,754.19                 | 29.41                         |
+| Sar                 | 5,855.00                     | 0.27                            | 14,582.56                  | 0.76                          |
+| TOTAL               | 2,163,379.00                 |                                 | 1,910,354.81               |                               |
+
+Some observations:
+
+- _Aquifex sp._ account for approximately the same percentage of assignments in both samples.
+
+-
