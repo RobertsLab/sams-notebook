@@ -10,9 +10,22 @@ tags:
 categories:
   - Miscellaneous
 ---
+After noticing that the [initial MEGAN6 taxonomic assignments for our combined _C.bairdi_ NanoPore data from 20200917](https://robertslab.github.io/sams-notebook/2020/09/17/Taxonomic-Assignments-C.bairdi-NanoPore-Reads-Using-DIAMOND-BLASTx-on-Mox-and-MEGAN6-daa2rma-on-swoose.html) revealed a high number of bases assigned to _E.canceri_ and _Aquifex sp._, I decided to explore the taxonomic breakdown of just the individual samples to see which of the samples was contributing to these taxonomic assignments most.
+
+- [20102558-2729-Q7 on 20200928](https://robertslab.github.io/sams-notebook/2020/09/28/Taxonomic-Assignments-C.bairdi-20102558-2729-Q7-NanoPore-Reads-Using-DIAMOND-BLASTx-on-Mox-and-MEGAN6-daa2rma-on-emu.html): uninfected muscle
 
 
+- [6129-403-26-Q7 on 20200928](https://robertslab.github.io/sams-notebook/2020/09/28/Taxonomic-Assignments-C.bairdi-6129-403-26-Q7-NanoPore-Reads-Using-DIAMOND-BLASTx-on-Mox-and-MEGAN6-daa2rma-on-emu.html) : _Hematodinium_-infected hemolymph
+
+After completing the individual taxonomic assignments, I compared the two sets of assignments using MEGAN6 and generated this bar plot showing percentage of normalized base counts assigned to the following groups _within each sample_:
+
+- _Aquifex sp._
+
+- _Arthropoda_
+
+- _E.canceri_
+
+- _SAR_ (Supergroup within which _Alveolata_/_Hematodinium sp._ falls)
 
 
-
-![20201002_cbai_nanopore_20102558-2729-Q7-vs-6129-403-26_megan-taxonomic-comparison-bar-plot](https://github.com/RobertsLab/sams-notebook/blob/master/images/screencaps/20201002_cbai_nanopore_20102558-2729-Q7-vs-6129-403-26_megan-taxonomic-comparison-bar-plot.png?raw=true)
+![20201002_cbai_nanopore_20102558-2729-Q7-vs-6129-403-26-Q7_megan-taxonomic-comparison-bar-plot](https://github.com/RobertsLab/sams-notebook/blob/master/images/screencaps/20201002_cbai_nanopore_20102558-2729-Q7-vs-6129-403-26_megan-taxonomic-comparison-bar-plot.png?raw=true)
