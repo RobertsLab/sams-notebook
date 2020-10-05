@@ -257,3 +257,9 @@ DIAMOND BLASTx Output folder:
 ##### Taxonomic tree
 
 ![6129-403-26-Q7 MEGAN6 taxonomic assignments](https://github.com/RobertsLab/sams-notebook/blob/master/images/screencaps/20200928_cbai_nanopore_6129-403-26-Q7_diamond_blastx_daa2rma_megan-taxonomic-tree.png?raw=true)
+
+Alrighty, we see both _Alveolata_/_Hematodinium sp._, E.canceri_ _Aquifex sp._ taxonomic assignments (and, of course _Arthropoda_).
+
+A large number of bases (~34Mbp) are assigned to _Arthropoda_. _Alveolata_ only has ~400kbp assigned, while _E.canceri_ has ~17Mbp (!) and _Aquifex sp._ has ~6Mbp!
+
+Very surprising. Next, I'll run a comparison of the two sets of sequencing read taxonomic assignments for an easier overview.
