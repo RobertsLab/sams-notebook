@@ -260,7 +260,9 @@ DIAMOND BLASTx Output folder:
 ![20102558-2729-Q7 MEGAN6 taxonomic assignments](https://github.com/RobertsLab/sams-notebook/blob/master/images/screencaps/20200928_cbai_nanopore_20102558-2729-Q7_diamond_blastx_daa2rma_megan-taxonomic-tree.png?raw=true)
 
 
-Alrighty, we see both _E.canceri_ and _Aquifex sp._ taxonomic assignments (and, of course _Arthropoda_). Surprisingly, there're a relatively low number of bases assigned to _Arthropoda_ (~1Mbp) and nearly the same assigned to _E.canceri_ (~900kbp). 
+Alrighty, we see both _E.canceri_ and _Aquifex sp._ taxonomic assignments (and, of course _Arthropoda_). Surprisingly, there're a relatively low number of bases assigned to _Arthropoda_ (~1Mbp) and nearly the same assigned to _E.canceri_ (~900kbp).
 
 
-I've also highlighted the _SAR_ supergroup (this is where we'd find _Alveolata_/_Hematodinium_), just to show that there's essentially no assignments there. Now, need to see what the other sample looks like...
+I've also highlighted the _SAR_ supergroup (this is where we'd find _Alveolata_/_Hematodinium_), just to show that there's essentially no assignments there. [Now, need to see what the other sample looks like...](https://robertslab.github.io/sams-notebook/2020/09/28/Taxonomic-Assignments-C.bairdi-6129-403-26-Q7-NanoPore-Reads-Using-DIAMOND-BLASTx-on-Mox-and-MEGAN6-daa2rma-on-emu.html)
+
+UPDATE 20201006: [Taxonomic comparison between the two samples is here.](https://robertslab.github.io/sams-notebook/2020/10/02/Comparison-C.bairdi-20102558-2729-vs.-6129-403-26-NanoPore-Taxonomic-Assignments-Using-MEGAN6.html)
