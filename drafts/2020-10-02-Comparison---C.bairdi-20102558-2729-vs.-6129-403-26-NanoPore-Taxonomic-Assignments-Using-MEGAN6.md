@@ -54,3 +54,18 @@ Some observations:
 - _E.canceri_ makes up ~41% of assigned bases in the uninfected muscle sample (20102558-2729), but only ~30% in the _Hematodinium_-infected hemolymph sample.
 
 - _SAR_ contributes a very small percentage to each of the two samples, but has ~2.8x the number of assigned bases. Additionally, as noted in the taxonomic assignment analysis of [20102558-2729-Q7 on 20200928](https://robertslab.github.io/sams-notebook/2020/09/28/Taxonomic-Assignments-C.bairdi-20102558-2729-Q7-NanoPore-Reads-Using-DIAMOND-BLASTx-on-Mox-and-MEGAN6-daa2rma-on-emu.html), no bases are assigned to descendants of this Supergroup, whereas in the taxonomic analysis of [6129-403-26-Q7 on 20200928](https://robertslab.github.io/sams-notebook/2020/09/28/Taxonomic-Assignments-C.bairdi-6129-403-26-Q7-NanoPore-Reads-Using-DIAMOND-BLASTx-on-Mox-and-MEGAN6-daa2rma-on-emu.html), there _are_ bases assigned within the descendants of this Supergroup, down the level of _Hematodinium sp._ Genus.
+
+
+Pretty interesting stuff!
+
+I also briefly looked at the taxonomic assignments from all of our hemolymph RNAseq samples to see if if _Aquifex sp._ and/or _E.canceri_ appear:
+
+- [20200114](https://robertslab.github.io/sams-notebook/2020/01/14/RNAseq-Reads-Extractions-C.bairdi-Taxonomic-Reads-Extractions-with-MEGAN6-on-swoose.html)
+
+- [202020330](https://robertslab.github.io/sams-notebook/2020/03/30/RNAseq-Reads-Extractions-C.bairdi-Taxonomic-Reads-Extractions-with-MEGAN6-on-swoose.html)
+
+- [20200419](https://robertslab.github.io/sams-notebook/2020/04/19/RNAseq-Reads-Extractions-C.bairdi-Taxonomic-Reads-Extractions-with-MEGAN6-on-swoose.html)
+
+Interestingly, a high number of reads are assigned to _E.canceri_ in _all_ samples, but no reads are assigned to _Aquifex sp._. Another observation is that a fair number of reads get assigned to _Vibrio parahemolyticus_, but very few number of NanoPore DNA bases get assigned to _V.parahemolyticus_.
+
+Next up I think I might try to identify which contigs/scaffolds from the [cbai_genome_v1.0 Flye assembly](https://robertslab.github.io/sams-notebook/2020/09/17/Genome-Assembly-C.bairdi-cbai_v1.0-Using-All-NanoPore-Data-With-Flye-on-Mox.html) correspond to these taxa. The approach would be to create a BLAST database (DB) from the [cbai_genome_v1.0.fasta](https://owl.fish.washington.edu/halfshell/genomic-databank/cbai_genome_v1.0.fasta) (19MB). Then extract the NanoPore reads assigned to each of the taxa above, then BLAST them against the cbai_genome_v1.0 BLAST DB.
