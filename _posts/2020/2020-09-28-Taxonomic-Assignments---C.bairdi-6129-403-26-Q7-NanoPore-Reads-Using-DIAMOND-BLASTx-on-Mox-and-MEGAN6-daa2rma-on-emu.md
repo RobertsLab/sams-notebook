@@ -262,4 +262,8 @@ Alrighty, we see both _Alveolata_/_Hematodinium sp._, E.canceri_ _Aquifex sp._ t
 
 A large number of bases (~34Mbp) are assigned to _Arthropoda_. _Alveolata_ only has ~400kbp assigned, while _E.canceri_ has ~17Mbp (!) and _Aquifex sp._ has ~6Mbp!
 
-Very surprising. Next, I'll run a comparison of the two sets of sequencing read taxonomic assignments for an easier overview.
+Very surprising.
+
+[The other sample is here.](https://robertslab.github.io/sams-notebook/2020/09/28/Taxonomic-Assignments-C.bairdi-20102558-2729-Q7-NanoPore-Reads-Using-DIAMOND-BLASTx-on-Mox-and-MEGAN6-daa2rma-on-emu.html)
+
+[Next, I'll run a comparison of the two sets of sequencing read taxonomic assignments for an easier overview.](https://robertslab.github.io/sams-notebook/2020/10/02/Comparison-C.bairdi-20102558-2729-vs.-6129-403-26-NanoPore-Taxonomic-Assignments-Using-MEGAN6.html)
