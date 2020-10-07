@@ -21,4 +21,24 @@ Used MEGAN6 to extract reads from the MEGAN6 RMA6 files from [201002558-2729-Q7 
 
 Output folders:
 
-- []()
+- [20201007_cbai_megan-read-extractions_201002558-2729-Q7/](https://gannet.fish.washington.edu/Atumefaciens/20201007_cbai_megan-read-extractions_201002558-2729-Q7/)
+
+  - [20201007_cbai_megan-read-extractions_201002558-2729-Q7/201002558-2729-Q7_summarized-reads-Arthropoda.fasta](https://gannet.fish.washington.edu/Atumefaciens/20201007_cbai_megan-read-extractions_201002558-2729-Q7)
+
+  - [20201007_cbai_megan-read-extractions_201002558-2729-Q7/201002558-2729-Q7_summarized-reads-Enterospora_canceri.fasta](https://gannet.fish.washington.edu/Atumefaciens/20201007_cbai_megan-read-extractions_201002558-2729-Q7)
+
+  - [20201007_cbai_megan-read-extractions_201002558-2729-Q7/201002558-2729-Q7_summarized-reads-Aquifex_sp..fasta](https://gannet.fish.washington.edu/Atumefaciens/20201007_cbai_megan-read-extractions_201002558-2729-Q7)
+
+  - [20201007_cbai_megan-read-extractions_201002558-2729-Q7/201002558-2729-Q7_summarized-reads-Sar.fasta](https://gannet.fish.washington.edu/Atumefaciens/20201007_cbai_megan-read-extractions_201002558-2729-Q7)
+
+
+
+- [20201007_cbai_megan-read-extractions_6129-403-26-Q7/](https://gannet.fish.washington.edu/Atumefaciens/20201007_cbai_megan-read-extractions_6129-403-26-Q7/)
+
+  - [20201007_cbai_megan-read-extractions_6129-403-26-Q7/6129-403-26-Q7_summarized-reads-Arthropoda.fasta](https://gannet.fish.washington.edu/Atumefaciens/20201007_cbai_megan-read-extractions_6129-403-26-Q7)
+
+  - [20201007_cbai_megan-read-extractions_6129-403-26-Q7/6129-403-26-Q7_summarized-reads-Alveolata.fasta](https://gannet.fish.washington.edu/Atumefaciens/20201007_cbai_megan-read-extractions_6129-403-26-Q7)
+
+  - [20201007_cbai_megan-read-extractions_6129-403-26-Q7/6129-403-26-Q7_summarized-reads-Aquifex_sp..fasta](https://gannet.fish.washington.edu/Atumefaciens/20201007_cbai_megan-read-extractions_6129-403-26-Q7)
+
+  - [20201007_cbai_megan-read-extractions_6129-403-26-Q7/6129-403-26-Q7_summarized-reads-Enterospora_canceri.fasta](https://gannet.fish.washington.edu/Atumefaciens/20201007_cbai_megan-read-extractions_6129-403-26-Q7)
