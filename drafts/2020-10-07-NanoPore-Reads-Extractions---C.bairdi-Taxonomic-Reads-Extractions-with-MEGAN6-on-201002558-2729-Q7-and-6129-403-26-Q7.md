@@ -42,3 +42,20 @@ Output folders:
   - [20201007_cbai_megan-read-extractions_6129-403-26-Q7/6129-403-26-Q7_summarized-reads-Aquifex_sp..fasta](https://gannet.fish.washington.edu/Atumefaciens/20201007_cbai_megan-read-extractions_6129-403-26-Q7)
 
   - [20201007_cbai_megan-read-extractions_6129-403-26-Q7/6129-403-26-Q7_summarized-reads-Enterospora_canceri.fasta](https://gannet.fish.washington.edu/Atumefaciens/20201007_cbai_megan-read-extractions_6129-403-26-Q7)
+
+
+  Here are stats on the extracted FastAs, generated with the [BBTools](https://jgi.doe.gov/data-and-tools/bbtools/bb-tools-user-guide/) `stats.sh` script, using the `format=5` output format.
+
+  NOTE: The L50 and N50 values are swapped! This seems to be a long-standing "bug" in this program.
+
+
+  | file                                                         | n_contigs | contig_bp | gap_pct | ctg_N50 | ctg_L50 | ctg_N90 | ctg_L90 | ctg_max | gc_avg  | gc_std  |
+|--------------------------------------------------------------|-----------|-----------|---------|---------|---------|---------|---------|---------|---------|---------|
+| 201002558-2729-Q7_summarized-reads-Aquifex_sp..fasta         | 280       | 444988    | 0       | 70      | 2050    | 196     | 846     | 8255    | 0.40435 | 0.03572 |
+| 201002558-2729-Q7_summarized-reads-Arthropoda.fasta          | 1850      | 3398935   | 0       | 432     | 2495    | 1294    | 957     | 19092   | 0.42579 | 0.06937 |
+| 201002558-2729-Q7_summarized-reads-Enterospora_canceri.fasta | 1554      | 2409480   | 0       | 349     | 2216    | 1074    | 771     | 8849    | 0.40246 | 0.04166 |
+| 201002558-2729-Q7_summarized-reads-Sar.fasta                 | 6         | 14692     | 0       | 3       | 2729    | 5       | 1559    | 3969    | 0.49442 | 0.04577 |
+| 6129-403-26-Q7_summarized-reads-Alveolata.fasta              | 461       | 1753568   | 0       | 95      | 5681    | 293     | 1997    | 19921   | 0.45848 | 0.06894 |
+| 6129-403-26-Q7_summarized-reads-Aquifex_sp..fasta            | 4187      | 20911232  | 0       | 877     | 7839    | 2615    | 2662    | 32879   | 0.41532 | 0.03779 |
+| 6129-403-26-Q7_summarized-reads-Arthropoda.fasta             | 29649     | 160465929 | 0       | 6130    | 8336    | 18669   | 2802    | 51326   | 0.43271 | 0.05866 |
+| 6129-403-26-Q7_summarized-reads-Enterospora_canceri.fasta    | 18111     | 83280155  | 0       | 3589    | 7369    | 11022   | 2357    | 49825   | 0.41499 | 0.04149 |
