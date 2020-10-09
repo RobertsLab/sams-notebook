@@ -75,7 +75,11 @@ do
   fi
 
   ${programs_array[$minimap2]} \
-
+  -ax map-ont \
+  ${genome_fasta} \
+  | ${programs_array[$samtools_view]} -u --threads ${threads} \
+  | ${programs_array[$samtools_sort]} --threads ${threads} \
+  > ${prefix}.sorted.bam
 
 
   # Capture FastA checksums for verification
