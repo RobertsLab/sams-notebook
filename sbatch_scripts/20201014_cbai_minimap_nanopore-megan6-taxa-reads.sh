@@ -10,12 +10,12 @@
 ## Walltime (days-hours:minutes:seconds format)
 #SBATCH --time=15-00:00:00
 ## Memory per node
-#SBATCH --mem=12G
+#SBATCH --mem=120G
 ##turn on e-mail notification
 #SBATCH --mail-type=ALL
 #SBATCH --mail-user=samwhite@uw.edu
 ## Specify the working directory for this job
-#SBATCH --chdir=/gscratch/scrubbed/samwhite/outputs/20201014__cbai_minimap_nanopore-megan6-taxa-reads
+#SBATCH --chdir=/gscratch/scrubbed/samwhite/outputs/20201014_cbai_minimap_nanopore-megan6-taxa-reads
 
 
 ###################################################################################
@@ -73,12 +73,12 @@ do
 
   # Run Minimap2 with Oxford NanoPore Technologies (ONT) option
   # Using SAM output format (-a option)
-  ${programs_array[$minimap2]} \
+  ${programs_array[minimap2]} \
   -ax map-ont \
   ${genome_fasta} \
   ${fastq} \
-  | ${programs_array[$samtools_view]} -u --threads ${threads} \
-  | ${programs_array[$samtools_sort]} --threads ${threads} \
+  | ${programs_array[samtools_view]} -u --threads ${threads} \
+  | ${programs_array[samtools_sort]} --threads ${threads} \
   > "${prefix}".sorted.bam
 
 
