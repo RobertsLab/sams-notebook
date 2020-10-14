@@ -55,37 +55,34 @@ set -e
 
 module load intel-python3_2017
 
+# Capture date
+timestamp=$(date +%Y%m%d)
 
-# Loop through each transcriptome
-for fasta in *.fasta
+# Loop through each FastQ
+for fastq in *.fq
 do
 
-  # Capture filename prefix
-  prefix=$(echo "${fasta}" | awk -F"." '{print $1}')
-
-  # Capture sample ID
-  sample_id=$(echo "${fasta}" | awk -F"-" '{print $1}')
-
+  # Parse out sample name
+  sample=$(echo "${fastq}" | awk -F"_" '{print $2}')
 
   # Caputure taxa
-  if [[ ${sample_id} = "201002558"]]; then
-    taxa=$(echo "${fasta}" | awk -F [-.] '{print $5}')
-  else
-    taxa=$(echo "${fasta}" | awk -F [-.] '{print $6}')
-  fi
+  taxa=$(echo "${fastq}" | awk -F"_" '{print $3}')
+
+  # Capture filename prefix
+  prefix="${timestamp}_${sample}_${taxa}"
 
   ${programs_array[$minimap2]} \
   -ax map-ont \
   ${genome_fasta} \
   | ${programs_array[$samtools_view]} -u --threads ${threads} \
   | ${programs_array[$samtools_sort]} --threads ${threads} \
-  > ${prefix}.sorted.bam
+  > "${prefix}".sorted.bam
 
 
-  # Capture FastA checksums for verification
-  echo "Generating checksum for ${transcriptome_name}"
-  md5sum "${transcriptomes_array[$transcriptome]}" > "${transcriptome_name}".checksum.md5
-  echo "Finished generating checksum for ${transcriptome_name}"
+  # Capture FastA checksums for verification ()
+  echo "Generating checksum for ${genome_fasta}"
+  md5sum "${genome_fasta}" > fasta_checksum.md5
+  echo "Finished generating checksum for ${genome_fasta}"
   echo ""
 
 
