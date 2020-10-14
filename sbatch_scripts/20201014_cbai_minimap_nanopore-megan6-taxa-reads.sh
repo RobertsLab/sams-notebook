@@ -77,9 +77,9 @@ do
   -ax map-ont \
   ${genome_fasta} \
   ${fastq} \
-  | ${programs_array[samtools_view]} -u --threads ${threads} \
   | ${programs_array[samtools_sort]} --threads ${threads} \
-  > "${prefix}".sorted.bam
+  -O sam \
+  > "${prefix}".sorted.sam
 
 
   # Capture FastA checksums for verification ()
