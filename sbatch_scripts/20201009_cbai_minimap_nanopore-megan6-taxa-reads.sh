@@ -1,21 +1,21 @@
 #!/bin/bash
 ## Job Name
-#SBATCH --job-name=20201009_cbai_minimap_nanopore-megan6-taxa-reads
+#SBATCH --job-name=20201014__cbai_minimap_nanopore-megan6-taxa-reads
 ## Allocation Definition
-#SBATCH --account=coenv
-#SBATCH --partition=coenv
+#SBATCH --account=srlab
+#SBATCH --partition=srlab
 ## Resources
 ## Nodes
 #SBATCH --nodes=1
 ## Walltime (days-hours:minutes:seconds format)
 #SBATCH --time=15-00:00:00
 ## Memory per node
-#SBATCH --mem=200G
+#SBATCH --mem=12G
 ##turn on e-mail notification
 #SBATCH --mail-type=ALL
 #SBATCH --mail-user=samwhite@uw.edu
 ## Specify the working directory for this job
-#SBATCH --chdir=/gscratch/scrubbed/samwhite/outputs/20201009_cbai_minimap_nanopore-megan6-taxa-reads
+#SBATCH --chdir=/gscratch/scrubbed/samwhite/outputs/20201014__cbai_minimap_nanopore-megan6-taxa-reads
 
 
 ###################################################################################
@@ -71,18 +71,21 @@ do
   # Capture filename prefix
   prefix="${timestamp}_${sample}_${taxa}"
 
+  # Run Minimap2 with Oxford NanoPore Technologies (ONT) option
+  # Using SAM output format (-a option)
   ${programs_array[$minimap2]} \
   -ax map-ont \
   ${genome_fasta} \
+  ${fastq} \
   | ${programs_array[$samtools_view]} -u --threads ${threads} \
   | ${programs_array[$samtools_sort]} --threads ${threads} \
   > "${prefix}".sorted.bam
 
 
   # Capture FastA checksums for verification ()
-  echo "Generating checksum for ${genome_fasta}"
-  md5sum "${genome_fasta}" > fasta_checksum.md5
-  echo "Finished generating checksum for ${genome_fasta}"
+  echo "Generating checksum for ${fastq}"
+  md5sum "${fastq}" > fastq_checksums.md5
+  echo "Finished generating checksum for ${fastq}"
   echo ""
 
 
