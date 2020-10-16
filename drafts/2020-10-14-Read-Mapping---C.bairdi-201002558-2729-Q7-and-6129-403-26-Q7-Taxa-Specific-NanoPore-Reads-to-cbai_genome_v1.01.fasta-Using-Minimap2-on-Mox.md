@@ -167,3 +167,7 @@ Output folder and files:
   - [20201014_6129-403-26-Q7_Arthropoda.sorted.sam](20201014_6129-403-26-Q7_Arthropoda.sorted.sam) (491M)
 
   - [20201014_6129-403-26-Q7_Enterospora.sorted.sam](20201014_6129-403-26-Q7_Enterospora.sorted.sam) (261M)
+
+I left the output files as SAM files (instead of compressing them to the standard BAM format) so that they would be human readable. I haven't actually explored SAM/BAM manipulation too much in the past and felt that this was a good excuse and being able to view the SAM files without the need to use `samtools` seemed easier. Also, I knew these would be relatively small files, so compressing them wasn't a huge priority.
+
+Next up, messing around with these SAM files and identifying contigs/scaffolds where these various reads map.
