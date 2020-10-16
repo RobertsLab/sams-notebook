@@ -28,7 +28,7 @@ Output folders/files:
 
 - The ID list supplied to `seqtk` ends with the suffix `seqtk-read-id-list`. It is a simple text file.
 
-##### 201002558-2729-Q7
+##### 201002558-2729-Q7 (_Hematodinium_-free _C.bairdi_ muscle)
 
 - [20201013_201002558-2729-Q7_megan-reads/](https://gannet.fish.washington.edu/Atumefaciens/20201013_201002558-2729-Q7_megan-reads/)
 
@@ -48,7 +48,7 @@ Output folders/files:
 
   - [20201013_201002558-2729-Q7_Sar_seqtk-read-id-list](20201013_201002558-2729-Q7_Sar_seqtk-read-id-list)
 
-##### 6129-403-26-Q7
+##### 6129-403-26-Q7 (_Hematodinium_-infected _C.bairdi_ hemolymph)
 
 - [20201013_6129-403-26-Q7_megan-reads/](https://gannet.fish.washington.edu/Atumefaciens/20201013_6129-403-26-Q7_megan-reads/)
 
@@ -67,3 +67,7 @@ Output folders/files:
   - [20201013_6129-403-26-Q7_Enterospora_canceri_megan.fq](20201013_6129-403-26-Q7_Enterospora_canceri_megan.fq)
 
   - [20201013_6129-403-26-Q7_Enterospora_canceri_seqtk-read-id-list](20201013_6129-403-26-Q7_Enterospora_canceri_seqtk-read-id-list)
+
+Next up, use [Minimap2](https://github.com/lh3/minimap2) to map these reads to the [`cbai_genome_v1.01.fasta`](https://owl.fish.washington.edu/halfshell/genomic-databank/cbai_genome_v1.01.fasta) (18MB). After that's complete I want to see which contigs/scaffolds [generated in the assembly using Flye on 20200917](https://robertslab.github.io/sams-notebook/2020/09/17/Genome-Assembly-C.bairdi-cbai_v1.0-Using-All-NanoPore-Data-With-Flye-on-Mox.html) have reads mapped to them by each of the taxa. 
+
+Admittedly, I'm not entirely sure where I'm going with this, or if there's even a point any more. However, it's an interesting exercise in bioinformatics stuff (new tools/software, data "munging" practice).
