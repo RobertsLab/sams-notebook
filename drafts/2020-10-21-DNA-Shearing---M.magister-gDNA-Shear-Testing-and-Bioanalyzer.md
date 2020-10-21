@@ -23,9 +23,18 @@ Samples were run on High Sensitivity DNA Assay chips in the Bioanalyzer 2100 (Ag
 
 #### RESULTS
 
-Output folder:
+Output folder/files:
 
 - [20201021_mmag_bioanalyzer/](https://gannet.fish.washington.edu/Atumefaciens/20201021_mmag_bioanalyzer/)
+
+  - Bioanalyzer files (XAD; require 2100 Expert software to open)
+
+	  - [2100 expert_High Sensitivity DNA Assay_DE72902486_2020-10-21_07-26-05.xad](https://gannet.fish.washington.edu/Atumefaciens/20201021_mmag_bioanalyzer/2100 expert_High Sensitivity DNA Assay_DE72902486_2020-10-21_07-26-05.xad)
+
+  - [2100 expert_High Sensitivity DNA Assay_DE72902486_2020-10-21_08-23-22.xad](https://gannet.fish.washington.edu/Atumefaciens/20201021_mmag_bioanalyzer/2100 expert_High Sensitivity DNA Assay_DE72902486_2020-10-21_08-23-22.xad)
+
+  - [2100 expert_High Sensitivity DNA Assay_DE72902486_2020-10-21_09-50-46.xad](https://gannet.fish.washington.edu/Atumefaciens/20201021_mmag_bioanalyzer/2100 expert_High Sensitivity DNA Assay_DE72902486_2020-10-21_09-50-46.xad)
+
 
 
 ##### Electropherogram: 35 cycles
@@ -54,28 +63,32 @@ Output folder:
 
 ##### Electropherogram: 55 cycles
 
-![Bioanalyzer electropherogram for _M.magister_ gDNA sheared for 55 cycles]()
+![Bioanalyzer electropherogram for _M.magister_ gDNA sheared for 55 cycles](https://gannet.fish.washington.edu/Atumefaciens/20201021_mmag_bioanalyzer/20201021_mmag_bioanalyzer_electropherogram_CHO5-21_shear-55-cycles.JPG)
 
 
 ##### Electropherogram: 60 cycles
 
-![Bioanalyzer electropherogram for _M.magister_ gDNA sheared for 60 cycles]()
+![Bioanalyzer electropherogram for _M.magister_ gDNA sheared for 60 cycles](https://gannet.fish.washington.edu/Atumefaciens/20201021_mmag_bioanalyzer/20201021_mmag_bioanalyzer_electropherogram_CHO5-21_shear-60-cycles.JPG)
 
 ##### Electropherogram: 65 cycles
 
-![Bioanalyzer electropherogram for _M.magister_ gDNA sheared for 65 cycles]()
+![Bioanalyzer electropherogram for _M.magister_ gDNA sheared for 65 cycles](https://gannet.fish.washington.edu/Atumefaciens/20201021_mmag_bioanalyzer/20201021_mmag_bioanalyzer_electropherogram_CHO5-21_shear-65-cycles.JPG)
 
 
 ##### Electropherogram: 70 cycles
 
-![Bioanalyzer electropherogram for _M.magister_ gDNA sheared for 70 cycles]()
+![Bioanalyzer electropherogram for _M.magister_ gDNA sheared for 70 cycles](https://gannet.fish.washington.edu/Atumefaciens/20201021_mmag_bioanalyzer/20201021_mmag_bioanalyzer_electropherogram_CHO5-21_shear-70-cycles.JPG)
 
 
 ##### Electropherogram: 75 cycles
 
-![Bioanalyzer electropherogram for _M.magister_ gDNA sheared for 75 cycles]()
+![Bioanalyzer electropherogram for _M.magister_ gDNA sheared for 75 cycles](https://gannet.fish.washington.edu/Atumefaciens/20201021_mmag_bioanalyzer/20201021_mmag_bioanalyzer_electropherogram_CHO5-21_shear-75-cycles.JPG)
 
 
-##### Electropherogram:80 cycles
+##### Electropherogram: 80 cycles
 
-![Bioanalyzer electropherogram for _M.magister_ gDNA sheared for 80 cycles]()
+![Bioanalyzer electropherogram for _M.magister_ gDNA sheared for 80 cycles](https://gannet.fish.washington.edu/Atumefaciens/20201021_mmag_bioanalyzer/20201021_mmag_bioanalyzer_electropherogram_CHO5-21_shear-80-cycles.JPG)
+
+##### Gel comparison: 55, 60, 65, 70, 75, and 80 cycles
+
+![Bioanalyzer gel representation and comparison for _M.magister_ gDNA sheared for 40, 45, and 50 cycles](https://gannet.fish.washington.edu/Atumefaciens/20201021_mmag_bioanalyzer/20201021_mmag_bioanalyzer_gel_CHO5-21_shear-40-45-50-cycles.jpg)
