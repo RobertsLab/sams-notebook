@@ -26,3 +26,56 @@ Samples were run on High Sensitivity DNA Assay chips in the Bioanalyzer 2100 (Ag
 Output folder:
 
 - [20201021_mmag_bioanalyzer/](https://gannet.fish.washington.edu/Atumefaciens/20201021_mmag_bioanalyzer/)
+
+
+##### Electropherogram: 35 cycles
+
+![Bioanalyzer electropherogram for _M.magister_ gDNA sheared for 35 cycles](https://gannet.fish.washington.edu/Atumefaciens/20201021_mmag_bioanalyzer/20201021_mmag_bioanalyzer_electropherogram_CHO5-21_shear-35-cycles.jpg)
+
+
+##### Electropherogram: 40 cycles
+
+![Bioanalyzer electropherogram for _M.magister_ gDNA sheared for 40 cycles](https://gannet.fish.washington.edu/Atumefaciens/20201021_mmag_bioanalyzer/20201021_mmag_bioanalyzer_electropherogram_CHO5-21_shear-40-cycles.JPG)
+
+
+##### Electropherogram: 45 cycles
+
+![Bioanalyzer electropherogram for _M.magister_ gDNA sheared for 45 cycles](https://gannet.fish.washington.edu/Atumefaciens/20201021_mmag_bioanalyzer/20201021_mmag_bioanalyzer_electropherogram_CHO5-21_shear-45-cycles.JPG)
+
+##### Electropherogram: 50 cycles
+
+![Bioanalyzer electropherogram for _M.magister_ gDNA sheared for 50 cycles](https://gannet.fish.washington.edu/Atumefaciens/20201021_mmag_bioanalyzer/20201021_mmag_bioanalyzer_electropherogram_CHO5-21_shear-50-cycles.JPG)
+
+
+##### Gel comparison: 40, 45, and 50 cycles
+
+![Bioanalyzer gel representation and comparison for _M.magister_ gDNA sheared for 40, 45, and 50 cycles](https://gannet.fish.washington.edu/Atumefaciens/20201021_mmag_bioanalyzer/20201021_mmag_bioanalyzer_gel_CHO5-21_shear-40-45-50-cycles.jpg)
+
+
+##### Electropherogram: 55 cycles
+
+![Bioanalyzer electropherogram for _M.magister_ gDNA sheared for 55 cycles]()
+
+
+##### Electropherogram: 60 cycles
+
+![Bioanalyzer electropherogram for _M.magister_ gDNA sheared for 60 cycles]()
+
+##### Electropherogram: 65 cycles
+
+![Bioanalyzer electropherogram for _M.magister_ gDNA sheared for 65 cycles]()
+
+
+##### Electropherogram: 70 cycles
+
+![Bioanalyzer electropherogram for _M.magister_ gDNA sheared for 70 cycles]()
+
+
+##### Electropherogram: 75 cycles
+
+![Bioanalyzer electropherogram for _M.magister_ gDNA sheared for 75 cycles]()
+
+
+##### Electropherogram:80 cycles
+
+![Bioanalyzer electropherogram for _M.magister_ gDNA sheared for 80 cycles]()
