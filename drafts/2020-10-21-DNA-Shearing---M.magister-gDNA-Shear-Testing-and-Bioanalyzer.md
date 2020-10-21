@@ -35,7 +35,9 @@ Output folder/files:
 
     - [2100 expert_High Sensitivity DNA Assay_DE72902486_2020-10-21_09-50-46.xad](https://gannet.fish.washington.edu/Atumefaciens/20201021_mmag_bioanalyzer/2100 expert_High Sensitivity DNA Assay_DE72902486_2020-10-21_09-50-46.xad)
 
-Quick summary: Potentially need to cycle for 70 cycles (!!!!) to achieve desired average fragment length.
+##### Quick summary: Potentially need to cycle for 70 cycles (!!!!) to achieve desired average fragment length.
+
+Will test an uninterrupted run tomorrow to confirm that these settings are accurate.
 
 
 Below are all of the electropherograms from each of the total cycles the CHO5-21 gDNA was subjected to: 35 - 80 cycles, increments of 5 cycles. Directly underneath each electropherogram (it's small - you'll need to open the image in a new tab to see better) is data showing the mean fragment size within the regions of 50 - 8000bp for each sample.
