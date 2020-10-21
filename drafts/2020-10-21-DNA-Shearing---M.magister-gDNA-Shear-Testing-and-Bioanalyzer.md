@@ -14,9 +14,9 @@ categories:
 
 I used 1ug of DNA in a volume of 50uL, using 0.65mL prelubricated snap cap tubes (Costar; Cat# 3206).
 
-Initially, I just did a 35 cycle (30s ON, 30s OFF) run and determined it was insufficient, so ran increments of 5 cycles and pulled out 1.5uL after each one to run on the Bioanalyzer.
+Initially, I did a 35 cycle (30s ON, 30s OFF; low intensity setting) run and determined it was insufficient, so ran increments of 5 cycles and pulled out 1.5uL after each one to run on the Bioanalyzer.
 
-Samples were run on High Sensitivity DNA Assay chips in the Bioanalyzer 2100 (Agilent).
+Post-sonication/shearing, samples were run on High Sensitivity DNA Assay chips in the Bioanalyzer 2100 (Agilent).
 
 
 ---
@@ -31,10 +31,18 @@ Output folder/files:
 
 	  - [2100 expert_High Sensitivity DNA Assay_DE72902486_2020-10-21_07-26-05.xad](https://gannet.fish.washington.edu/Atumefaciens/20201021_mmag_bioanalyzer/2100 expert_High Sensitivity DNA Assay_DE72902486_2020-10-21_07-26-05.xad)
 
-  - [2100 expert_High Sensitivity DNA Assay_DE72902486_2020-10-21_08-23-22.xad](https://gannet.fish.washington.edu/Atumefaciens/20201021_mmag_bioanalyzer/2100 expert_High Sensitivity DNA Assay_DE72902486_2020-10-21_08-23-22.xad)
+    - [2100 expert_High Sensitivity DNA Assay_DE72902486_2020-10-21_08-23-22.xad](https://gannet.fish.washington.edu/Atumefaciens/20201021_mmag_bioanalyzer/2100 expert_High Sensitivity DNA Assay_DE72902486_2020-10-21_08-23-22.xad)
 
-  - [2100 expert_High Sensitivity DNA Assay_DE72902486_2020-10-21_09-50-46.xad](https://gannet.fish.washington.edu/Atumefaciens/20201021_mmag_bioanalyzer/2100 expert_High Sensitivity DNA Assay_DE72902486_2020-10-21_09-50-46.xad)
+    - [2100 expert_High Sensitivity DNA Assay_DE72902486_2020-10-21_09-50-46.xad](https://gannet.fish.washington.edu/Atumefaciens/20201021_mmag_bioanalyzer/2100 expert_High Sensitivity DNA Assay_DE72902486_2020-10-21_09-50-46.xad)
 
+Quick summary: Potentially need to cycle for 70 cycles (!!!!) to achieve desired average fragment length.
+
+
+Below are all of the electropherograms from each of the total cycles the CHO5-21 gDNA was subjected to: 35 - 80 cycles, increments of 5 cycles. Directly underneath each electropherogram (it's small - you'll need to open the image in a new tab to see better) is data showing the mean fragment size within the regions of 50 - 8000bp for each sample.
+
+There are also two "pseudo-colored" (this is the software verbiage for heatmap-like coloration) gel representation comparisons of samples. It's an easy way to see the progression of fragmentation as the cycle number increases.
+
+Also, I ended up running three chips (gah!) to accommodate all of this (was not expecting to need to fragment for this number of cycles) and that is why there is not a singular gel representation image allowing for the comparison of all the samples together.
 
 
 ##### Electropherogram: 35 cycles
