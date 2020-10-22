@@ -10,8 +10,13 @@ tags:
 categories:
   - Miscellaneous
 ---
+Yesterday, I did some [shearing of _Metacarcinus magister_ gill gDNA](https://robertslab.github.io/sams-notebook/2020/10/21/DNA-Shearing-M.magister-gDNA-Shear-Testing-and-Bioanalyzer.html) on a test sample (CH05-21) to determine how many cycles to run on the sonicator (Bioruptor 300; Diagenode) to achieve an average fragment length of ~350 - 500bp in preparation for MBD-BSseq. The determination from yesterday was 70 cycles (30s ON, 30s OFF; low intensity). That determination was made by first sonicating for 35 cycles, followed by successive rounds of 5 cycles each. I decided to repeat this, except by doing it in a single round of sonication.
 
+I used 1ug of DNA in a volume of 50uL, using 0.65mL prelubricated snap cap tubes (Costar; Cat# 3206).
 
+It turns out the Bioruptor has a maximum cycle setting of 60 cycles, so I decided to do 35 cycles, immediately followed by another 35 cycles.
+
+Post-sonication/shearing, samples were run on High Sensitivity DNA Assay chips in the Bioanalyzer 2100 (Agilent).
 
 ---
 
@@ -26,6 +31,8 @@ Output folder:
 			- [2100 expert_High Sensitivity DNA Assay_DE72902486_2020-10-22_07-27-24.xad](https://gannet.fish.washington.edu/Atumefaciens/20201021_mmag_bioanalyzer/2100 expert_High Sensitivity DNA Assay_DE72902486_2020-10-22_07-27-24.xad)
 
 			- [2100 expert_High Sensitivity DNA Assay_DE72902486_2020-10-22_08-47-27.xad](https://gannet.fish.washington.edu/Atumefaciens/20201021_mmag_bioanalyzer/2100 expert_High Sensitivity DNA Assay_DE72902486_2020-10-22_08-47-27.xad)
+
+
 
 ##### Initial 35 + 35 cycles:
 
