@@ -30,8 +30,13 @@ All samples and volumes used are listed in the following Google Sheet (originall
 
 Output folder:
 
-- []()
+- [20201026_mmag_bioanalyzer_all-samples](https://gannet.fish.washington.edu/Atumefaciens/20201026_mmag_bioanalyzer_all-samples)
 
+	- [2100 expert_High Sensitivity DNA Assay_DE72902486_2020-10-26_07-43-19.xad](https://gannet.fish.washington.edu/Atumefaciens/20201026_mmag_bioanalyzer_all-samples/2100 expert_High Sensitivity DNA Assay_DE72902486_2020-10-26_07-43-19.xad)
+
+	- [2100 expert_High Sensitivity DNA Assay_DE72902486_2020-10-26_10-22-41.xad](https://gannet.fish.washington.edu/Atumefaciens/20201026_mmag_bioanalyzer_all-samples/2100 expert_High Sensitivity DNA Assay_DE72902486_2020-10-26_10-22-41.xad)
+
+	- [2100 expert_High Sensitivity DNA Assay_DE72902486_2020-10-26_11-09-26.xad](https://gannet.fish.washington.edu/Atumefaciens/20201026_mmag_bioanalyzer_all-samples/2100 expert_High Sensitivity DNA Assay_DE72902486_2020-10-26_11-09-26.xad)
 
 ###### all-01
 
