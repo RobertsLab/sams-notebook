@@ -15,7 +15,7 @@ categories:
 ---
 [I previously ran some shearing tests on 20201022](https://robertslab.github.io/sams-notebook/2020/10/22/DNA-Shearing-M.magister-CH05-21-gDNA-Full-Shearing-Test-and-Bioanalyzer.html) to determine how many cycles to run on the sonicator (Bioruptor 300; Diagenode) to achieve an average fragment length of ~350 - 500bp in preparation for MBD-BSseq. The determination was 70 cycles (30s ON, 30s OFF; low intensity), sonicating for 35 cycles, followed by successive rounds of 5 cycles each.
 
-I used 1ug of DNA in a volume of 50uL, using 0.65mL prelubricated snap cap tubes (Costar; Cat# 3206).
+I used 1ug of DNA in a volume of 51uL (this volume was selected to simplify downstream calculations, after using 1uL for the Bioanalyzer after shearing), using 0.65mL prelubricated snap cap tubes (Costar; Cat# 3206).
 
 Post-sonication/shearing, samples were run on High Sensitivity DNA Assay chips in the Bioanalyzer 2100 (Agilent).
 
@@ -38,7 +38,7 @@ Output folder:
 
 	- [2100 expert_High Sensitivity DNA Assay_DE72902486_2020-10-26_11-09-26.xad](https://gannet.fish.washington.edu/Atumefaciens/20201026_mmag_bioanalyzer_all-samples/2100 expert_High Sensitivity DNA Assay_DE72902486_2020-10-26_11-09-26.xad)
 
-Electropherograms are beneath the discussion that follows.
+Images of all electropherograms (shown in a single image), as well as individual sample electropherograms, are beneath the discussion that follows.
 
 Overall, most samples look pretty good and fall within a range of ~250 - 550bp, which is acceptable for library prep. Admittedly, some of those on the lower end will likely end up having overlapping reads (assuming we sequence >100bp paired ends), but the software we use should easily handle these overlaps.
 
