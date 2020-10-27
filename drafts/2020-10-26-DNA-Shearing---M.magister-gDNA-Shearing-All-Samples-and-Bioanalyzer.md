@@ -38,14 +38,30 @@ Output folder:
 
 	- [2100 expert_High Sensitivity DNA Assay_DE72902486_2020-10-26_11-09-26.xad](https://gannet.fish.washington.edu/Atumefaciens/20201026_mmag_bioanalyzer_all-samples/2100 expert_High Sensitivity DNA Assay_DE72902486_2020-10-26_11-09-26.xad)
 
+Electropherograms are beneath the discussion that follows.
+
+Overall, most samples look pretty good and fall within a range of ~250 - 550bp, which is acceptable for library prep. Admittedly, some of those on the lower end will likely end up having overlapping reads (assuming we sequence >100bp paired ends), but the software we use should easily handle these overlaps.
+
+There are three samples that need additional sonication:
+
+- CH05-01
+
+- CH05-21
+
+- CH07-11
+
+I will perform additional round of sonication these tomorrow.
+
+
+
 ###### all-01
 
-![Sheared all-03 Bioanalyzer electropherogram](https://gannet.fish.washington.edu/Atumefaciens/20201026_mmag_bioanalyzer_all-samples/20201026_mmag_bioanalyzer-electropherogram_all-01.JPG)
+![Sheared all-01 Bioanalyzer electropherogram](https://gannet.fish.washington.edu/Atumefaciens/20201026_mmag_bioanalyzer_all-samples/20201026_mmag_bioanalyzer-electropherogram_all-01.JPG)
 
 
 ###### all-02
 
-![Sheared all-03 Bioanalyzer electropherogram](https://gannet.fish.washington.edu/Atumefaciens/20201026_mmag_bioanalyzer_all-samples/20201026_mmag_bioanalyzer-electropherogram_all-02.JPG)
+![Sheared all-02 Bioanalyzer electropherogram](https://gannet.fish.washington.edu/Atumefaciens/20201026_mmag_bioanalyzer_all-samples/20201026_mmag_bioanalyzer-electropherogram_all-02.JPG)
 
 
 ###### all-03
@@ -56,119 +72,119 @@ Output folder:
 
 ###### CH01-06
 
-![Sheared all-03 Bioanalyzer electropherogram](https://gannet.fish.washington.edu/Atumefaciens/20201026_mmag_bioanalyzer_all-samples/20201026_mmag_bioanalyzer-electropherogram_CH01-06.JPG)
+![Sheared CH01-06 Bioanalyzer electropherogram](https://gannet.fish.washington.edu/Atumefaciens/20201026_mmag_bioanalyzer_all-samples/20201026_mmag_bioanalyzer-electropherogram_CH01-06.JPG)
 
 
 ###### CH01-14
 
-![Sheared all-03 Bioanalyzer electropherogram](https://gannet.fish.washington.edu/Atumefaciens/20201026_mmag_bioanalyzer_all-samples/20201026_mmag_bioanalyzer-electropherogram_CH01-14.JPG)
+![Sheared CH01-14 Bioanalyzer electropherogram](https://gannet.fish.washington.edu/Atumefaciens/20201026_mmag_bioanalyzer_all-samples/20201026_mmag_bioanalyzer-electropherogram_CH01-14.JPG)
 
 
 ###### CH01-22
 
-![Sheared all-03 Bioanalyzer electropherogram](https://gannet.fish.washington.edu/Atumefaciens/20201026_mmag_bioanalyzer_all-samples/20201026_mmag_bioanalyzer-electropherogram_CH01-22.JPG)
+![Sheared CH01-22 Bioanalyzer electropherogram](https://gannet.fish.washington.edu/Atumefaciens/20201026_mmag_bioanalyzer_all-samples/20201026_mmag_bioanalyzer-electropherogram_CH01-22.JPG)
 
 
 ###### CH01-38
 
-![Sheared all-03 Bioanalyzer electropherogram](https://gannet.fish.washington.edu/Atumefaciens/20201026_mmag_bioanalyzer_all-samples/20201026_mmag_bioanalyzer-electropherogram_CH01-38.JPG)
+![Sheared CH01-38 Bioanalyzer electropherogram](https://gannet.fish.washington.edu/Atumefaciens/20201026_mmag_bioanalyzer_all-samples/20201026_mmag_bioanalyzer-electropherogram_CH01-38.JPG)
 
 
 ###### CH03-04
 
-![Sheared all-03 Bioanalyzer electropherogram](https://gannet.fish.washington.edu/Atumefaciens/20201026_mmag_bioanalyzer_all-samples/20201026_mmag_bioanalyzer-electropherogram_CH03-04.JPG)
+![Sheared CH03-04 Bioanalyzer electropherogram](https://gannet.fish.washington.edu/Atumefaciens/20201026_mmag_bioanalyzer_all-samples/20201026_mmag_bioanalyzer-electropherogram_CH03-04.JPG)
 
 
 ###### CH03-15
 
-![Sheared all-03 Bioanalyzer electropherogram](https://gannet.fish.washington.edu/Atumefaciens/20201026_mmag_bioanalyzer_all-samples/20201026_mmag_bioanalyzer-electropherogram_CH03-15.JPG)
+![Sheared CH03-15 Bioanalyzer electropherogram](https://gannet.fish.washington.edu/Atumefaciens/20201026_mmag_bioanalyzer_all-samples/20201026_mmag_bioanalyzer-electropherogram_CH03-15.JPG)
 
 
 ###### CH03-33
 
-![Sheared all-03 Bioanalyzer electropherogram](https://gannet.fish.washington.edu/Atumefaciens/20201026_mmag_bioanalyzer_all-samples/20201026_mmag_bioanalyzer-electropherogram_CH03-33.JPG)
+![Sheared CH03-33 Bioanalyzer electropherogram](https://gannet.fish.washington.edu/Atumefaciens/20201026_mmag_bioanalyzer_all-samples/20201026_mmag_bioanalyzer-electropherogram_CH03-33.JPG)
 
 
 ###### CH05-01
 
-![Sheared all-03 Bioanalyzer electropherogram](https://gannet.fish.washington.edu/Atumefaciens/20201026_mmag_bioanalyzer_all-samples/20201026_mmag_bioanalyzer-electropherogram_CH05-01.JPG)
+![Sheared CH05-01 Bioanalyzer electropherogram](https://gannet.fish.washington.edu/Atumefaciens/20201026_mmag_bioanalyzer_all-samples/20201026_mmag_bioanalyzer-electropherogram_CH05-01.JPG)
 
 
 ###### CH05-06
 
-![Sheared all-03 Bioanalyzer electropherogram](https://gannet.fish.washington.edu/Atumefaciens/20201026_mmag_bioanalyzer_all-samples/20201026_mmag_bioanalyzer-electropherogram_CH05-06.JPG)
+![Sheared CH05-06 Bioanalyzer electropherogram](https://gannet.fish.washington.edu/Atumefaciens/20201026_mmag_bioanalyzer_all-samples/20201026_mmag_bioanalyzer-electropherogram_CH05-06.JPG)
 
 
 ###### CH05-21
 
-![Sheared all-03 Bioanalyzer electropherogram](https://gannet.fish.washington.edu/Atumefaciens/20201026_mmag_bioanalyzer_all-samples/20201026_mmag_bioanalyzer-electropherogram_CH05-21.JPG)
+![Sheared CH05-21 Bioanalyzer electropherogram](https://gannet.fish.washington.edu/Atumefaciens/20201026_mmag_bioanalyzer_all-samples/20201026_mmag_bioanalyzer-electropherogram_CH05-21.JPG)
 
 
 ###### CH05-24
 
-![Sheared all-03 Bioanalyzer electropherogram](https://gannet.fish.washington.edu/Atumefaciens/20201026_mmag_bioanalyzer_all-samples/20201026_mmag_bioanalyzer-electropherogram_CH05-24.JPG)
+![Sheared CH05-24 Bioanalyzer electropherogram](https://gannet.fish.washington.edu/Atumefaciens/20201026_mmag_bioanalyzer_all-samples/20201026_mmag_bioanalyzer-electropherogram_CH05-24.JPG)
 
 
 ###### CH05-26
 
-![Sheared all-03 Bioanalyzer electropherogram](https://gannet.fish.washington.edu/Atumefaciens/20201026_mmag_bioanalyzer_all-samples/20201026_mmag_bioanalyzer-electropherogram_CH05-26.JPG)
+![Sheared CH05-26 Bioanalyzer electropherogram](https://gannet.fish.washington.edu/Atumefaciens/20201026_mmag_bioanalyzer_all-samples/20201026_mmag_bioanalyzer-electropherogram_CH05-26.JPG)
 
 
 ###### CH07-06
 
-![Sheared all-03 Bioanalyzer electropherogram](https://gannet.fish.washington.edu/Atumefaciens/20201026_mmag_bioanalyzer_all-samples/20201026_mmag_bioanalyzer-electropherogram_CH07-06.JPG)
+![Sheared CH07-06 Bioanalyzer electropherogram](https://gannet.fish.washington.edu/Atumefaciens/20201026_mmag_bioanalyzer_all-samples/20201026_mmag_bioanalyzer-electropherogram_CH07-06.JPG)
 
 
 ###### CH07-11
 
-![Sheared all-03 Bioanalyzer electropherogram](https://gannet.fish.washington.edu/Atumefaciens/20201026_mmag_bioanalyzer_all-samples/20201026_mmag_bioanalyzer-electropherogram_CH07-11.JPG)
+![Sheared CH07-11 Bioanalyzer electropherogram](https://gannet.fish.washington.edu/Atumefaciens/20201026_mmag_bioanalyzer_all-samples/20201026_mmag_bioanalyzer-electropherogram_CH07-11.JPG)
 
 
 ###### CH07-24
 
-![Sheared all-03 Bioanalyzer electropherogram](https://gannet.fish.washington.edu/Atumefaciens/20201026_mmag_bioanalyzer_all-samples/20201026_mmag_bioanalyzer-electropherogram_CH07-24.JPG)
+![Sheared CH07-24 Bioanalyzer electropherogram](https://gannet.fish.washington.edu/Atumefaciens/20201026_mmag_bioanalyzer_all-samples/20201026_mmag_bioanalyzer-electropherogram_CH07-24.JPG)
 
 
 ###### CH09-02
 
-![Sheared all-03 Bioanalyzer electropherogram](https://gannet.fish.washington.edu/Atumefaciens/20201026_mmag_bioanalyzer_all-samples/20201026_mmag_bioanalyzer-electropherogram_CH09-02.JPG)
+![Sheared CH09-02 Bioanalyzer electropherogram](https://gannet.fish.washington.edu/Atumefaciens/20201026_mmag_bioanalyzer_all-samples/20201026_mmag_bioanalyzer-electropherogram_CH09-02.JPG)
 
 
 ###### CH09-11
 
-![Sheared all-03 Bioanalyzer electropherogram](https://gannet.fish.washington.edu/Atumefaciens/20201026_mmag_bioanalyzer_all-samples/20201026_mmag_bioanalyzer-electropherogram_CH09-11.JPG)
+![Sheared CH09-11 Bioanalyzer electropherogram](https://gannet.fish.washington.edu/Atumefaciens/20201026_mmag_bioanalyzer_all-samples/20201026_mmag_bioanalyzer-electropherogram_CH09-11.JPG)
 
 
 ###### CH09-13
 
-![Sheared all-03 Bioanalyzer electropherogram](https://gannet.fish.washington.edu/Atumefaciens/20201026_mmag_bioanalyzer_all-samples/20201026_mmag_bioanalyzer-electropherogram_CH09-13.JPG)
+![Sheared CH09-13 Bioanalyzer electropherogram](https://gannet.fish.washington.edu/Atumefaciens/20201026_mmag_bioanalyzer_all-samples/20201026_mmag_bioanalyzer-electropherogram_CH09-13.JPG)
 
 
 ###### CH09-28
 
-![Sheared all-03 Bioanalyzer electropherogram](https://gannet.fish.washington.edu/Atumefaciens/20201026_mmag_bioanalyzer_all-samples/20201026_mmag_bioanalyzer-electropherogram_CH09-28.JPG)
+![Sheared CH09-28 Bioanalyzer electropherogram](https://gannet.fish.washington.edu/Atumefaciens/20201026_mmag_bioanalyzer_all-samples/20201026_mmag_bioanalyzer-electropherogram_CH09-28.JPG)
 
 
 ###### CH09-29
 
-![Sheared all-03 Bioanalyzer electropherogram](https://gannet.fish.washington.edu/Atumefaciens/20201026_mmag_bioanalyzer_all-samples/20201026_mmag_bioanalyzer-electropherogram_CH09-29.JPG)
+![Sheared CH09-29 Bioanalyzer electropherogram](https://gannet.fish.washington.edu/Atumefaciens/20201026_mmag_bioanalyzer_all-samples/20201026_mmag_bioanalyzer-electropherogram_CH09-29.JPG)
 
 
 ###### CH10-01
 
-![Sheared all-03 Bioanalyzer electropherogram](https://gannet.fish.washington.edu/Atumefaciens/20201026_mmag_bioanalyzer_all-samples/20201026_mmag_bioanalyzer-electropherogram_CH10-01.JPG)
+![Sheared CH10-01 Bioanalyzer electropherogram](https://gannet.fish.washington.edu/Atumefaciens/20201026_mmag_bioanalyzer_all-samples/20201026_mmag_bioanalyzer-electropherogram_CH10-01.JPG)
 
 
 ###### CH10-08
 
-![Sheared all-03 Bioanalyzer electropherogram](https://gannet.fish.washington.edu/Atumefaciens/20201026_mmag_bioanalyzer_all-samples/20201026_mmag_bioanalyzer-electropherogram_CH10-08.JPG)
+![Sheared CH10-08 Bioanalyzer electropherogram](https://gannet.fish.washington.edu/Atumefaciens/20201026_mmag_bioanalyzer_all-samples/20201026_mmag_bioanalyzer-electropherogram_CH10-08.JPG)
 
 
 ###### CH10-11
 
-![Sheared all-03 Bioanalyzer electropherogram](https://gannet.fish.washington.edu/Atumefaciens/20201026_mmag_bioanalyzer_all-samples/20201026_mmag_bioanalyzer-electropherogram_CH10-11.JPG)
+![Sheared CH10-11 Bioanalyzer electropherogram](https://gannet.fish.washington.edu/Atumefaciens/20201026_mmag_bioanalyzer_all-samples/20201026_mmag_bioanalyzer-electropherogram_CH10-11.JPG)
 
 
 ###### CH10-19
 
-![Sheared all-03 Bioanalyzer electropherogram](https://gannet.fish.washington.edu/Atumefaciens/20201026_mmag_bioanalyzer_all-samples/20201026_mmag_bioanalyzer-electropherogram_CH10-19.JPG)
+![Sheared CH10-19 Bioanalyzer electropherogram](https://gannet.fish.washington.edu/Atumefaciens/20201026_mmag_bioanalyzer_all-samples/20201026_mmag_bioanalyzer-electropherogram_CH10-19.JPG)
