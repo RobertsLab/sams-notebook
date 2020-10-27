@@ -13,7 +13,23 @@ tags:
 categories:
   - Miscellaneous
 ---
+After [shearing all of the _M.magister_ gill gDNA on 20201026](https://robertslab.github.io/sams-notebook/2020/10/26/DNA-Shearing-M.magister-gDNA-Shearing-All-Samples-and-Bioanalyzer.html), there were still three samples that still had average fragment lengths that were a bit longer than desired (~750bp, but want ~250 - 550bp):
 
+- CH05-01
+
+- CH05-21
+
+- CH07-11
+
+I initially chose to run them on the sonicator (Bioruptor 300; Diagenode) for two successive rounds of 5 cycles (30s ON, 30s OFF; low intensity). This proved to be insufficient (see RESULTS section below), so I ran three additional successive rounds of 5 cycles (30s ON, 30s OFF; low intensity).
+
+The original samples used 1ug of DNA in a volume of 51uL (this volume was selected to simplify downstream calculations, after using 1uL for the Bioanalyzer after shearing), using 0.65mL prelubricated snap cap tubes (Costar; Cat# 3206). Have ended up using a total of 3uL (includes two rounds of Bioanalyzer from today's assays), leaving these three samples with a volume of 48uL.
+
+Post-sonication/shearing, samples were run on High Sensitivity DNA Assay chips in the Bioanalyzer 2100 (Agilent).
+
+All samples and volumes used are listed in the following Google Sheet (originally provided by Mackenzie Gavery):
+
+- [OA Crab Sample Collection 071119](https://docs.google.com/spreadsheets/d/1ym0XnYVts98tIUCn0kIaU6VuvqxzV7LoSx9RHwLdiIs/edit#gid=1430155532)
 
 
 ---
