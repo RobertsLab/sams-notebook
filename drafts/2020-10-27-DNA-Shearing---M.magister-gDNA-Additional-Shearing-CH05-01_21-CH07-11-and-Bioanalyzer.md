@@ -24,9 +24,11 @@ Output folder:
 
 - [20201027_mmag_bioanazlyer_CH05-01-21_CH07-11/](https://gannet.fish.washington.edu/Atumefaciens/20201027_mmag_bioanazlyer_CH05-01-21_CH07-11/)
 
-	- [2100 expert_High Sensitivity DNA Assay_DE72902486_2020-10-27_06-28-10.xad](https://gannet.fish.washington.edu/Atumefaciens/20201027_mmag_bioanazlyer_CH05-01-21_CH07-11/2100 expert_High Sensitivity DNA Assay_DE72902486_2020-10-27_06-28-10.xad)
+  - Bioanalyzer files (XAD; require 2100 Expert software to open):
 
-	- [2100 expert_High Sensitivity DNA Assay_DE72902486_2020-10-27_07-41-41.xad](https://gannet.fish.washington.edu/Atumefaciens/20201027_mmag_bioanazlyer_CH05-01-21_CH07-11/2100 expert_High Sensitivity DNA Assay_DE72902486_2020-10-27_07-41-41.xad)
+		- [2100 expert_High Sensitivity DNA Assay_DE72902486_2020-10-27_06-28-10.xad](https://gannet.fish.washington.edu/Atumefaciens/20201027_mmag_bioanazlyer_CH05-01-21_CH07-11/2100 expert_High Sensitivity DNA Assay_DE72902486_2020-10-27_06-28-10.xad)
+
+		- [2100 expert_High Sensitivity DNA Assay_DE72902486_2020-10-27_07-41-41.xad](https://gannet.fish.washington.edu/Atumefaciens/20201027_mmag_bioanazlyer_CH05-01-21_CH07-11/2100 expert_High Sensitivity DNA Assay_DE72902486_2020-10-27_07-41-41.xad)
 
 ---
 
