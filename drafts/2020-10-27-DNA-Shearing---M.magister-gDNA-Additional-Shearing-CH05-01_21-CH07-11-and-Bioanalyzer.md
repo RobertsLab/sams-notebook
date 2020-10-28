@@ -46,6 +46,17 @@ Output folder:
 
 		- [2100 expert_High Sensitivity DNA Assay_DE72902486_2020-10-27_07-41-41.xad](https://gannet.fish.washington.edu/Atumefaciens/20201027_mmag_bioanazlyer_CH05-01-21_CH07-11/2100 expert_High Sensitivity DNA Assay_DE72902486_2020-10-27_07-41-41.xad)
 
+Images of all electropherograms (shown in a single image), as well as individual sample electropherograms, are beneath the discussion that follows.
+
+
+I initially sheared the samples for an additional 10 cycles and the average fragment lengths of all three samples was still ~750bp; still a bit longer than desired. So I sheared all three samples for an additional 15 cycles (in successive 5 cycle runs).
+
+Samples CH05-01 and CH05-21 looked great after these additional 15 cycles.
+
+Sample CH07-11 is still a bit stubborn, but the mean fragment length is ~640bp. A tad long still, but I think it's acceptable.
+
+Will proceed with MDB enrichment using the MethylMiner Kit (Invitrogen) tomorrow.
+
 ---
 
 Samples sheared on 20201026 + 10 additional cycles:
