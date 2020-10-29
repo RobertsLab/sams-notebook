@@ -15,7 +15,7 @@
 #SBATCH --mail-type=ALL
 #SBATCH --mail-user=samwhite@uw.edu
 ## Specify the working directory for this job
-#SBATCH --chdir=/gscratch/scrubbed/samwhite/outputs/202001029_ssal_RNAseq_fastp_trimming
+#SBATCH --chdir=/gscratch/scrubbed/samwhite/outputs/20201029_ssal_RNAseq_fastp_trimming
 
 
 ### S.salar RNAseq trimming using fastp, and MultiQC.
