@@ -20,6 +20,9 @@
 
 ### S.salar RNAseq trimming using fastp, and MultiQC.
 
+### FastQ files provided by Shelly Trigg. See this GitHub issue for deets:
+### https://github.com/RobertsLab/resources/issues/1016#issuecomment-718812876
+
 ### Expects input FastQ files to be in format: Pool26_16_P_31_1.fastq.gz
 
 
