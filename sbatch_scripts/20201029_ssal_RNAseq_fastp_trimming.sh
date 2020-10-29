@@ -78,14 +78,14 @@ rsync --archive --verbose \
 for fastq in *_1.fastq.gz
 do
   fastq_array_R1+=("${fastq}")
-	R1_names_array+=("$(echo "${R1_fastq}" | awk 'BEGIN {FS = "_";OFS = "_"} {print $1, $2, $3, $4}')")
+	R1_names_array+=("$(echo "${fastq}" | awk 'BEGIN {FS = "[._]";OFS = "_"} {print $1, $2, $3, $4, $5}')")
 done
 
 # Create array of fastq R2 files
 for fastq in *_2.fastq.gz
 do
   fastq_array_R2+=("${fastq}")
-	R2_names_array+=("$(echo "${R2_fastq}" | awk 'BEGIN {FS = "_";OFS = "_"} {print $1, $2, $3, $4}')")
+	R2_names_array+=("$(echo "${fastq}" |awk 'BEGIN {FS = "[._]";OFS = "_"} {print $1, $2, $3, $4, $5}')")
 done
 
 # Create list of fastq files used in analysis
@@ -103,8 +103,8 @@ do
   R1_sample_name=$(echo "${R1_names_array[index]}")
 	R2_sample_name=$(echo "${R2_names_array[index]}")
 	${fastp} \
-	--in1 "${fastq_array_R1[index]}" \
-	--in2 "${fastq_array_R2[index]}" \
+	--in1 ${fastq_array_R1[index]} \
+	--in2 ${fastq_array_R2[index]} \
 	--detect_adapter_for_pe \
 	--thread ${threads} \
 	--html "${R1_sample_name}".fastp-trim."${timestamp}".report.html \
