@@ -59,6 +59,9 @@ set -e
 # Load Python Mox module for Python module availability
 module load intel-python3_2017
 
+# Capture date
+timestamp=$(date +%Y%m%d)
+
 # Sync raw FastQ files to working directory
 rsync --archive --verbose \
 "${raw_reads_dir}"*.gz .
@@ -89,7 +92,6 @@ done
 # Adds JSON report output for downstream usage by MultiQC
 for index in "${!fastq_array_R1[@]}"
 do
-	timestamp=$(date +%Y%m%d%M%S)
   R1_sample_name=$(echo "${R1_names_array[index]}")
 	R2_sample_name=$(echo "${R2_names_array[index]}")
 	${fastp} \
