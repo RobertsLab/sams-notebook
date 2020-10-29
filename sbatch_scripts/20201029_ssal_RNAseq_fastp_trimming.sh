@@ -92,7 +92,7 @@ done
 # Create MD5 checksum for reference
 for fastq in *.gz
 do
-  echo "${fastq}" >> fastq.list.txt
+  echo "${fastq}" >> input.fastq.list.txt
 	md5sum >> ${fastq_checksums}
 done
 
@@ -156,3 +156,11 @@ echo ""
 printf "%0.s-" {1..10}
 echo "${PATH}" | tr : \\n
 } >> system_path.log
+
+# Remove raw FastQ file
+while read -r line
+do
+	echo ""
+	echo "Removing ${line}"
+	rm "${line}"
+done < input.fastq.list.txt
