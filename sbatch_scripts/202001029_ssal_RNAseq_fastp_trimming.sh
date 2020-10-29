@@ -48,8 +48,14 @@ programs_array=()
 R1_names_array=()
 R2_names_array=()
 
-# Programs array
-programs_array=("${fastp}" "${multiqc}")
+
+# Programs associative array
+declare -A programs_array
+programs_array=(
+[fastp]="${fastp}" \
+[multiqc]="${multiqc}"
+)
+
 
 ###################################################################################
 
@@ -122,15 +128,20 @@ ${multiqc} .
 for program in "${!programs_array[@]}"
 do
 	{
-  echo "Program options for ${programs_array[program]}: "
+  echo "Program options for ${program}: "
 	echo ""
-	${programs_array[program]} -h
+	${programs_array[$program]} -h
 	echo ""
 	echo ""
 	echo "----------------------------------------------"
 	echo ""
 	echo ""
 } &>> program_options.log || true
+
+  # If MultiQC is in programs_array, copy the config file to this directory.
+  if [[ "${program}" == "multiqc" ]]; then
+  	cp --preserve ~/.multiqc_config.yaml "${timestamp}_multiqc_config.yaml"
+  fi
 done
 
 
