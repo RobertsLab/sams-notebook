@@ -47,7 +47,6 @@ multiqc=/gscratch/srlab/programs/anaconda3/bin/multiqc
 ## Inititalize arrays
 fastq_array_R1=()
 fastq_array_R2=()
-programs_array=()
 R1_names_array=()
 R2_names_array=()
 
