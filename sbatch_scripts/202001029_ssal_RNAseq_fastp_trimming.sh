@@ -70,14 +70,14 @@ rsync --archive --verbose \
 for fastq in *_1.fastq.gz
 do
   fastq_array_R1+=("${fastq}")
-	R1_names_array+=($(echo "${R1_fastq}" | awk -F"." '{print $1}'))
+	R1_names_array+=($(echo "${R1_fastq}" | awk 'BEGIN {FS = "_";OFS = "_"} {print $1, $2, $3, $4}'))
 done
 
 # Create array of fastq R2 files
 for fastq in *_2.fastq.gz
 do
   fastq_array_R2+=("${fastq}")
-	R2_names_array+=($(echo "${R2_fastq}" | awk -F"." '{print $1}'))
+	R2_names_array+=($(echo "${R2_fastq}" | awk 'BEGIN {FS = "_";OFS = "_"} {print $1, $2, $3, $4}'))
 done
 
 # Create list of fastq files used in analysis
