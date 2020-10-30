@@ -200,4 +200,38 @@ NOTE: Despite the "FAILED" indication, the script ran to completion. The last co
 
 Output folder:
 
-- []()
+- [20201029_ssal_RNAseq_fastp_trimming/](https://gannet.fish.washington.edu/Atumefaciens/20201029_ssal_RNAseq_fastp_trimming/)
+
+MultiQC Report (HTML; can open link in browser):
+
+- NOTE: Sample names listed in the report are inaccurate and reflect a filename parsing issue, however, the data/results are fine.
+
+- [multiqc_report.html](https://gannet.fish.washington.edu/Atumefaciens/20201029_ssal_RNAseq_fastp_trimming/multiqc_report.html)
+
+##### Trimmed FastQ files and corresponding `fastp` HTML reportj:
+
+- NOTE: The same naming issue applies here for the `fastp` reports. The report name is only named after the first of the two samples, but the report encompasses the two pairs of FastQ files.
+
+- [Pool26_16_P_31_1.fastp-trim.20201029.fq.gz](https://gannet.fish.washington.edu/Atumefaciens/20201029_ssal_RNAseq_fastp_trimming/Pool26_16_P_31_1.fastp-trim.20201029.fq.gz)
+
+- [Pool26_16_P_31_2.fastp-trim.20201029.fq.gz](https://gannet.fish.washington.edu/Atumefaciens/20201029_ssal_RNAseq_fastp_trimming/Pool26_16_P_31_2.fastp-trim.20201029.fq.gz)
+
+  - [Pool26_16_P_31_1.fastp-trim.20201029.report.html](https://gannet.fish.washington.edu/Atumefaciens/20201029_ssal_RNAseq_fastp_trimming/Pool26_16_P_31_1.fastp-trim.20201029.report.html)
+
+- [Pool26_8_P_31_1.fastp-trim.20201029.fq.gz](https://gannet.fish.washington.edu/Atumefaciens/20201029_ssal_RNAseq_fastp_trimming/Pool26_8_P_31_1.fastp-trim.20201029.fq.gz)
+
+- [Pool26_8_P_31_2.fastp-trim.20201029.fq.gz](https://gannet.fish.washington.edu/Atumefaciens/20201029_ssal_RNAseq_fastp_trimming/Pool26_8_P_31_2.fastp-trim.20201029.fq.gz)
+
+  - [Pool26_8_P_31_1.fastp-trim.20201029.report.html](https://gannet.fish.washington.edu/Atumefaciens/20201029_ssal_RNAseq_fastp_trimming/Pool26_8_P_31_1.fastp-trim.20201029.report.html)
+
+- [Pool32_16_P_31_1.fastp-trim.20201029.fq.gz](https://gannet.fish.washington.edu/Atumefaciens/20201029_ssal_RNAseq_fastp_trimming/Pool32_16_P_31_1.fastp-trim.20201029.fq.gz)
+
+- [Pool32_16_P_31_2.fastp-trim.20201029.fq.gz](https://gannet.fish.washington.edu/Atumefaciens/20201029_ssal_RNAseq_fastp_trimming/Pool32_16_P_31_2.fastp-trim.20201029.fq.gz)
+
+  - [Pool32_16_P_31_1.fastp-trim.20201029.report.html](https://gannet.fish.washington.edu/Atumefaciens/20201029_ssal_RNAseq_fastp_trimming/Pool32_16_P_31_1.fastp-trim.20201029.report.html)
+
+- [Pool32_8_P_31_1.fastp-trim.20201029.fq.gz](https://gannet.fish.washington.edu/Atumefaciens/20201029_ssal_RNAseq_fastp_trimming/Pool32_8_P_31_1.fastp-trim.20201029.fq.gz)
+
+- [Pool32_8_P_31_2.fastp-trim.20201029.fq.gz](https://gannet.fish.washington.edu/Atumefaciens/20201029_ssal_RNAseq_fastp_trimming/Pool32_8_P_31_2.fastp-trim.20201029.fq.gz)
+
+  - [Pool32_8_P_31_1.fastp-trim.20201029.report.html](https://gannet.fish.washington.edu/Atumefaciens/20201029_ssal_RNAseq_fastp_trimming/Pool32_8_P_31_1.fastp-trim.20201029.report.html)
