@@ -22,7 +22,7 @@ Followed the manufacturer's protocol for using \<= 1ug of DNA (I'm using 1ug) wi
 
 - Ethanol precipitations were incubated at -80<sup>oC</sup> overnight (~20hrs).
 
-- Precipitated DNA was resusupended in 21uL of H<sub>2</sub>O (this allows the usage of 1uL for Qubit and leave 20uL as the maximum input volume for the subsequent PicoMethylSeq Kit (ZymoResearch)).
+- Precipitated DNA was resuspended in 21uL of H<sub>2</sub>O (this allows the usage of 1uL for Qubit and leave 20uL as the maximum input volume for the subsequent PicoMethylSeq Kit (ZymoResearch)).
 
 Samples were quantified using the Roberts Lab Qubit 3.0 with the Qubit 1x dsDNA HS Assay (Invitrogen), using 1uL of sample.
 
@@ -33,6 +33,16 @@ All samples were stored temporarily at 4<sup>o</sup>C.
 
 #### RESULTS
 
-Output folder:
 
-- []()
+
+
+| Sample_ID | Resuspension_vol(uL) | Total_recovery(ng) | Percent_recovery |
+|-----------|----------------------|--------------------|------------------|
+| CH01-06   | 21                   | 2.90               | 0.29             |
+| CH01-14   | 21                   | 2.98               | 0.30             |
+| CH01-22   | 21                   | 3.40               | 0.34             |
+| CH01-38   | 21                   | 6.05               | 0.60             |
+| CH03-04   | 21                   | 25.20              | 2.52             |
+| CH03-15   | 21                   | 2.69               | 0.27             |
+| CH03-33   | 21                   | 3.53               | 0.35             |
+| CH05-01   | 21                   | 14.62              | 1.46             |
