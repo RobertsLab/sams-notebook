@@ -28,12 +28,19 @@ Samples were quantified using the Roberts Lab Qubit 3.0 with the Qubit 1x dsDNA 
 
 All samples were stored temporarily at 4<sup>o</sup>C.
 
+For reference, all sample info for this project is here (Google Sheet):
+
+- [OA Crab Sample Collection 071119](https://docs.google.com/spreadsheets/d/1ym0XnYVts98tIUCn0kIaU6VuvqxzV7LoSx9RHwLdiIs/edit#gid=1430155532)
+
 
 ---
 
 #### RESULTS
 
 
+Qubit results (Google Sheet):
+
+- [20201030_qubit_DNA_mmag_MBD](https://docs.google.com/spreadsheets/d/1_Met4UuW537OC6dEGgZaD2q8XTDBYISwtagynt7lMCU/edit?usp=sharing)
 
 
 | Sample_ID | Resuspension_vol(uL) | Total_recovery(ng) | Percent_recovery |
@@ -46,3 +53,6 @@ All samples were stored temporarily at 4<sup>o</sup>C.
 | CH03-15   | 21                   | 2.69               | 0.27             |
 | CH03-33   | 21                   | 3.53               | 0.35             |
 | CH05-01   | 21                   | 14.62              | 1.46             |
+
+
+Yields are much lower than expected, as Mac indicated that the _M.magister_ genome was ~7% methylated. However, there is more than enough DNA for the subsequent library prep with the Pico MethylSeq Kit (Zymo).
