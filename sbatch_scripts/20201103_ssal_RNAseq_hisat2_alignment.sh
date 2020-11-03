@@ -122,14 +122,14 @@ do
   -S "${sample_name}".sam \
   2> "${sample_name}"_hisat2.err
 # Sort SAM files, convert to BAM
-  "${programs_array[samtools_view]}" \
+  ${programs_array[samtools_view]} \
   -@ "${threads}" \
   -Su "${sample_name}".sam \
-  | "${programs_array[samtools_sort]}" - \
+  | ${programs_array[samtools_sort]} - \
   -@ "${threads}" \
   -o "${sample_name}".sorted.bam
   # Index sorted BAM file
-  "${programs_array[samtools_index]}" "${sample_name}".sorted.bam
+  ${programs_array[samtools_index]} "${sample_name}".sorted.bam
 done
 
 # Create list of fastq files used in analysis
@@ -146,6 +146,13 @@ do
 	{
   echo "Program options for ${program}: "
 	echo ""
+  # Handle samtools help menus
+  if [[ "${program}" == "samtools_index" ]] \
+  || [[ "${program}" == "samtools_sort" ]] \
+  || [[ "${program}" == "samtools_view" ]]
+  then
+    ${programs_array[$program]}
+  fi
 	${programs_array[$program]} -h
 	echo ""
 	echo ""
