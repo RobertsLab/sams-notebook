@@ -20,6 +20,12 @@
 
 ### S.salar RNAseq Hisat2 alignment.
 
+### Uses fastp-trimmed FastQ files from 20201029.
+
+### Uses GCF_000233375.1_ICSASG_v2_genomic.fa as reference,
+### created by Shelly Trigg.
+### This is a subset of the NCBI RefSeq GCF_000233375.1_ICSASG_v2_genomic.fna.
+### Includes only "chromosome" sequence entries.
 
 
 
