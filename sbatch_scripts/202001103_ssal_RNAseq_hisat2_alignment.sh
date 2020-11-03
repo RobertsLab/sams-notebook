@@ -32,7 +32,6 @@
 threads=27
 
 # Input/output files
-trimmed_checksums=trimmed_fastq_checksums.md5
 fastq_checksums=fastq_checksums.md5
 fastq_dir="/gscratch/srlab/sam/data/S_salar/RNAseq/"
 genome_fasta="/gscratch/srlab/sam/data/S_salar/genomes/GCF_000233375.1_ICSASG_v2_genomic.fa"
@@ -48,8 +47,8 @@ samtools="/gscratch/srlab/programs/samtools-1.10/samtools"
 ## Inititalize arrays
 fastq_array_R1=()
 fastq_array_R2=()
-R1_names_array=()
-R2_names_array=()
+names_array=()
+
 
 
 # Programs associative array
@@ -75,19 +74,19 @@ module load intel-python3_2017
 timestamp=$(date +%Y%m%d)
 
 # Create array of fastq R1 files
-for fastq in ${fastq_dir}*_1.fastp-trim.20201029.fq.gz
+for fastq in "${fastq_dir}"*_1.fastp-trim.20201029.fq.gz
 do
-    fastq_array_R1+=(${fastq})
+    fastq_array_R1+=("${fastq}")
   # Create array of sample names
   ## Uses parameter substitution to strip leading path from filename
   ## Uses awk to parse out sample name from filename
-  names_array+=($(echo ${fastq#${fastq_dir}} | awk -F"[_]" '{print $1 "_" $2}'))
+  names_array+=($(echo "${fastq#${fastq_dir}}" | awk -F"[_]" '{print $1 "_" $2}'))
 done
 
 # Create array of fastq R2 files
-for fastq in ${fastq_dir}*_2.fastp-trim.20201029.fq.gz
+for fastq in "${fastq_dir}"*_2.fastp-trim.20201029.fq.gz
 do
-  fastq_array_R2+=(${fastq})
+  fastq_array_R2+=("${fastq}")
 done
 
 
@@ -129,10 +128,10 @@ done
 
 # Create list of fastq files used in analysis
 ## Uses parameter substitution to strip leading path from filename
-for fastq in ${fastq_dir}*fastp-trim.20201029.fq.gz
+for fastq in "${fastq_dir}"*fastp-trim.20201029.fq.gz
 do
   echo "${fastq#${fastq_dir}}" >> fastq.list.txt
-  md5sum ${fastq} >> ${fastq_checksums}
+  md5sum "${fastq}" >> ${fastq_checksums}
 done
 
 # Capture program options
