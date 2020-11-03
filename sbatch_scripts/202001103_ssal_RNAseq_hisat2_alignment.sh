@@ -1,6 +1,6 @@
 #!/bin/bash
 ## Job Name
-#SBATCH --job-name=202001103_ssal_RNAseq_hisat2_alignment
+#SBATCH --job-name=20201103_ssal_RNAseq_hisat2_alignment
 ## Allocation Definition
 #SBATCH --account=coenv
 #SBATCH --partition=coenv
@@ -15,7 +15,7 @@
 #SBATCH --mail-type=ALL
 #SBATCH --mail-user=samwhite@uw.edu
 ## Specify the working directory for this job
-#SBATCH --chdir=/gscratch/scrubbed/samwhite/outputs/202001103_ssal_RNAseq_hisat2_alignment
+#SBATCH --chdir=/gscratch/scrubbed/samwhite/outputs/20201103_ssal_RNAseq_hisat2_alignment
 
 
 ### S.salar RNAseq Hisat2 alignment.
