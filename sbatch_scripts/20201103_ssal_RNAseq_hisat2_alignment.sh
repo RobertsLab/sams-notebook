@@ -97,7 +97,7 @@ done
 
 
 # Build Hisat2 reference index
-"${programs_array[$hisat2_build]}" \
+"${programs_array[hisat2-build]}" \
 "${genome_fasta}" \
 "${genome_index_name}" \
 -p "${threads}" \
@@ -113,7 +113,7 @@ do
   # Run Hisat2
   # Sets --dta which tailors output for downstream transcriptome assemblers (e.g. Stringtie)
   # Sets --new-summary option for use with MultiQC
-  "${programs_array[$hisat2]}" \
+  "${programs_array[hisat2]}" \
   -x "${genome_index_name}" \
   --dta \
   --new-summary \
@@ -122,14 +122,14 @@ do
   -S "${sample_name}".sam \
   2> "${sample_name}"_hisat2.err
 # Sort SAM files, convert to BAM
-  "${programs_array[$samtools_view]}" \
+  "${programs_array[samtools_view]}" \
   -@ "${threads}" \
   -Su "${sample_name}".sam \
-  | "${programs_array[$samtools_sort]}" - \
+  | "${programs_array[samtools_sort]}" - \
   -@ "${threads}" \
   -o "${sample_name}".sorted.bam
   # Index sorted BAM file
-  "${programs_array[$samtools_index]}" "${sample_name}".sorted.bam
+  "${programs_array[samtools_index]}" "${sample_name}".sorted.bam
 done
 
 # Create list of fastq files used in analysis
