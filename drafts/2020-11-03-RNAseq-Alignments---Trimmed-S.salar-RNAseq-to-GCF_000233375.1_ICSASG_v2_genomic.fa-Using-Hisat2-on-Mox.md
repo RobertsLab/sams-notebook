@@ -13,6 +13,13 @@ categories:
 ---
 This is a continuation of addressing [Shelly Trigg's (regarding some _Salmo salar_ RNAseq data) request (GitHub Issue)](https://github.com/RobertsLab/resources/issues/1016) to trim ([completed 20201029](https://robertslab.github.io/sams-notebook/2020/10/29/Trimming-Shelly-S.salar-RNAseq-Using-fastp-and-MultiQC-on-Mox.html)), perform genome alignment, and transcriptome alignment.
 
+Ran [`HISAT2`](https://daehwankimlab.github.io/hisat2/) with the [trimmed FastQ files from 20201029](https://robertslab.github.io/sams-notebook/2020/10/29/Trimming-Shelly-S.salar-RNAseq-Using-fastp-and-MultiQC-on-Mox.html) with the following options:
+
+- `--dta`: This stands for "downstream transcriptome alignment". Since we'll be sending performing a subsequent alignment using the transcriptome and [`StringTie`](https://ccb.jhu.edu/software/stringtie/), I decided to add this option.
+
+- `--new-summary`: This creates a summary file that can be easily read by [`MultiQC`](https://multiqc.info/).
+
+This was run on Mox.
 
 
 SBATCH script (GitHub):
