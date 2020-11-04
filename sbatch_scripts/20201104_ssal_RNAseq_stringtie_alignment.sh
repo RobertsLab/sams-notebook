@@ -39,6 +39,7 @@ threads=27
 
 # Input/output files
 transcriptome="/gscratch/srlab/sam/data/S_salar/transcriptomes/GCF_000233375.1_ICSASG_v2_genomic.gtf"
+genome="/gscratch/srlab/sam/data/S_salar/genomes/GCF_000233375.1_ICSASG_v2_genomic.fa"
 
 # Paths to programs
 stringtie="/gscratch/srlab/programs/stringtie-2.1.4.Linux_x86_64"
@@ -67,8 +68,49 @@ module load intel-python3_2017
 timestamp=$(date +%Y%m%d)
 
 
+# Create array of chromosome IDs from Shelly's genome subset
+chromosome_array=($(grep ">" ${genome} | awk '{print $1}' | tr -d '>'))
 
-chromosome_array=($(grep "^NC" ${transcriptome} | awk '{print $1}' | sort -u))
-
-
+# Create comma-separated list of IDs for StringTie to use for alignment
 ref_list=$(echo ${chromosome_array[@]}| sed 's/ /,/g')
+
+
+
+
+# Capture program options
+for program in "${!programs_array[@]}"
+do
+	{
+  echo "Program options for ${program}: "
+	echo ""
+  # Handle samtools help menus
+  if [[ "${program}" == "samtools_index" ]] \
+  || [[ "${program}" == "samtools_sort" ]] \
+  || [[ "${program}" == "samtools_view" ]]
+  then
+    ${programs_array[$program]}
+  fi
+	${programs_array[$program]} -h
+	echo ""
+	echo ""
+	echo "----------------------------------------------"
+	echo ""
+	echo ""
+} &>> program_options.log || true
+
+  # If MultiQC is in programs_array, copy the config file to this directory.
+  if [[ "${program}" == "multiqc" ]]; then
+  	cp --preserve ~/.multiqc_config.yaml "${timestamp}_multiqc_config.yaml"
+  fi
+done
+
+
+# Document programs in PATH (primarily for program version ID)
+{
+date
+echo ""
+echo "System PATH for $SLURM_JOB_ID"
+echo ""
+printf "%0.s-" {1..10}
+echo "${PATH}" | tr : \\n
+} >> system_path.log
