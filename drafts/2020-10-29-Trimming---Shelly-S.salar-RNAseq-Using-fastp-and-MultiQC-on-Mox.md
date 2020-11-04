@@ -208,6 +208,8 @@ Cumulative runtime for `fastp` and `MultiQC` was very fast; ~18mins:
 
 NOTE: Despite the "FAILED" indication, the script ran to completion. The last command in the script is a redundant file removal step, which triggered the script "failure". Left the command in the SBATCH script above for reproducibility.
 
+Overall, the results look good to me. Will proceed with Hisat2 alignment to the custome genome provided by Shelly.
+
 Output folder:
 
 - [20201029_ssal_RNAseq_fastp_trimming/](https://gannet.fish.washington.edu/Atumefaciens/20201029_ssal_RNAseq_fastp_trimming/)
