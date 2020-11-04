@@ -13,7 +13,17 @@ tags:
 categories:
   - Miscellaneous
 ---
+Shelly asked that I trim, align to a genome, and perform transcriptome alignment counts [in this GitHub issue](https://github.com/RobertsLab/resources/issues/1016) with some _Salmo salar_ RNAseq data she had and, using a subset of the NCBI _Salmo salar_ RefSeq genome, [GCF_000233375.1](https://www.ncbi.nlm.nih.gov/assembly/GCF_000233375.1/). She created a subset of this genome using only sequences designated as "chromosomes." A link to the FastA (and a link to her notebook on creating this file) are in that GitHub issue link above. The transcriptome she has provided has _not_ been subsetted in a similar fashion; maybe I'll do that prior to alignment.
 
+Here, I performed adapter trimming using [`fastp`](https://github.com/OpenGene/fastp). I opt for this trimmer as:
+
+- It's fast (duh).
+
+- It automatically generates trimming reports similar to FastQC without the need for FastQC.
+
+- The results can be read by MultiQC.
+
+I'll run `fastp`, followed by [MultiQC](https://multiqc.info/) on Mox.
 
 SBATCH script (GitHub):
 
