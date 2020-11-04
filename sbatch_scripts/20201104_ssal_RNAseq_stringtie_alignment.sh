@@ -40,6 +40,7 @@ threads=27
 # Input/output files
 transcriptome="/gscratch/srlab/sam/data/S_salar/transcriptomes/GCF_000233375.1_ICSASG_v2_genomic.gtf"
 genome="/gscratch/srlab/sam/data/S_salar/genomes/GCF_000233375.1_ICSASG_v2_genomic.fa"
+bam_dir="/gscratch/scrubbed/samwhite/outputs/20201103_ssal_RNAseq_hisat2_alignment/"
 
 # Paths to programs
 stringtie="/gscratch/srlab/programs/stringtie-2.1.4.Linux_x86_64"
@@ -74,7 +75,18 @@ chromosome_array=($(grep ">" ${genome} | awk '{print $1}' | tr -d '>'))
 # Create comma-separated list of IDs for StringTie to use for alignment
 ref_list=$(echo ${chromosome_array[@]}| sed 's/ /,/g')
 
-
+# Run StringTie
+for bam in ${bam_dir}*.bam
+do
+  sample_name=${file%%.*}
+  ${programs_array[stringtie]} \
+  ${bam} \
+  -o "${sample_name}" \
+  -G ${transcriptome} \
+  -A ${sample_name}_gene-abund.tab \
+  -x ${ref_list} \
+  -p ${threads}
+done
 
 
 # Capture program options
