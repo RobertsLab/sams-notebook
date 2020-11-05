@@ -151,6 +151,10 @@ echo "${PATH}" | tr : \\n
 
 #### RESULTS
 
+Runtime was pretty quick, just under 18mins:
+
+![Runtime of StringTie RNAseq alignments on Mox](https://github.com/RobertsLab/sams-notebook/blob/master/images/screencaps/20201104_ssal_RNAseq_stringtie_alignment_runtime.png?raw=true)
+
 Output folder:
 
 - []()
