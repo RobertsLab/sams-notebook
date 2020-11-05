@@ -18,15 +18,10 @@
 #SBATCH --chdir=/gscratch/scrubbed/samwhite/outputs/20201104_ssal_RNAseq_stringtie_alignment
 
 
-### S.salar RNAseq Hisat2 alignment.
+### S.salar RNAseq StringTie alignment.
 
-### Uses fastp-trimmed FastQ files from 20201029.
-
-### Uses GCF_000233375.1_ICSASG_v2_genomic.fa as reference,
-### created by Shelly Trigg.
-### This is a subset of the NCBI RefSeq GCF_000233375.1_ICSASG_v2_genomic.fna.
-### Includes only "chromosome" sequence entries.
-
+### Uses BAM alignment files from 20201103 and transcriptome
+### GTF provided by Shelly (presumably GTF is from NCBI).
 
 
 ###################################################################################
@@ -38,9 +33,11 @@
 threads=27
 
 # Input/output files
-transcriptome="/gscratch/srlab/sam/data/S_salar/transcriptomes/GCF_000233375.1_ICSASG_v2_genomic.gtf"
-genome="/gscratch/srlab/sam/data/S_salar/genomes/GCF_000233375.1_ICSASG_v2_genomic.fa"
 bam_dir="/gscratch/scrubbed/samwhite/outputs/20201103_ssal_RNAseq_hisat2_alignment/"
+bam_md5s=bam_checksums.md5
+genome="/gscratch/srlab/sam/data/S_salar/genomes/GCF_000233375.1_ICSASG_v2_genomic.fa"
+gtf_md5=gtf_checksum.md5
+transcriptome="/gscratch/srlab/sam/data/S_salar/transcriptomes/GCF_000233375.1_ICSASG_v2_genomic.gtf"
 
 # Paths to programs
 stringtie="/gscratch/srlab/programs/stringtie-2.1.4.Linux_x86_64"
@@ -48,14 +45,11 @@ stringtie="/gscratch/srlab/programs/stringtie-2.1.4.Linux_x86_64"
 ## Inititalize arrays
 chromosome_array=()
 
-
-
 # Programs associative array
 declare -A programs_array
 programs_array=(
 [stringtie]="${stringtie}"
 )
-
 
 ###################################################################################
 
@@ -65,29 +59,36 @@ set -e
 # Load Python Mox module for Python module availability
 module load intel-python3_2017
 
-# Capture date
-timestamp=$(date +%Y%m%d)
-
-
 # Create array of chromosome IDs from Shelly's genome subset
 chromosome_array=($(grep ">" ${genome} | awk '{print $1}' | tr -d '>'))
 
 # Create comma-separated list of IDs for StringTie to use for alignment
-ref_list=$(echo ${chromosome_array[@]}| sed 's/ /,/g')
+ref_list=$(echo "${chromosome_array[@]}" | sed 's/ /,/g')
 
 # Run StringTie
-for bam in ${bam_dir}*.bam
+for bam in "${bam_dir}"*.bam
 do
-  sample_name=${file%%.*}
+  # Parse out sample name by removing all text up to and including the last period.
+  sample_name=${bam%%.*}
+
+  # Exectute StringTie
+  # Use list of of chromosome IDs (ref_list)
+  # Output an abundance file with TPM and FPKM data in dedicated columns
   ${programs_array[stringtie]} \
   ${bam} \
-  -o "${sample_name}" \
+  -o ${sample_name} \
   -G ${transcriptome} \
   -A ${sample_name}_gene-abund.tab \
   -x ${ref_list} \
   -p ${threads}
+
+  # Generate BAM MD5 checksums
+  md5sum "${bam}" >> "${bam_md5s}"
 done
 
+
+# Generate GTF MD5 checksum
+md5sum "${transcriptome}" >> "${gtf_md5}"
 
 # Capture program options
 for program in "${!programs_array[@]}"
@@ -112,7 +113,7 @@ do
 
   # If MultiQC is in programs_array, copy the config file to this directory.
   if [[ "${program}" == "multiqc" ]]; then
-  	cp --preserve ~/.multiqc_config.yaml "${timestamp}_multiqc_config.yaml"
+  	cp --preserve ~/.multiqc_config.yaml .
   fi
 done
 
