@@ -38,14 +38,11 @@ threads=27
 bam_dir="/gscratch/scrubbed/samwhite/outputs/20201103_ssal_RNAseq_hisat2_alignment/"
 bam_md5s=bam_checksums.md5
 genome="/gscratch/srlab/sam/data/S_salar/genomes/GCF_000233375.1_ICSASG_v2_genomic.fa"
-gtf_md5=gtf_checksum.md5
-transcriptome="/gscratch/srlab/sam/data/S_salar/transcriptomes/GCF_000233375.1_ICSASG_v2_genomic.gtf"
-
+gtf_md5=gtf_checksums.md5
+ncbi_transcriptome="/gscratch/srlab/sam/data/S_salar/transcriptomes/GCF_000233375.1_ICSASG_v2_genomic.gtf"
+chr_only_transriptome="GCF_000233375.1_ICSASG_v2_genomic_NC-chr-only.gtf"
 # Paths to programs
 stringtie="/gscratch/srlab/programs/stringtie-2.1.4.Linux_x86_64/stringtie"
-
-## Inititalize arrays
-chromosome_array=()
 
 # Programs associative array
 declare -A programs_array
@@ -61,11 +58,10 @@ set -e
 # Load Python Mox module for Python module availability
 module load intel-python3_2017
 
-# Create array of chromosome IDs from Shelly's genome subset
-chromosome_array=($(grep ">" ${genome} | awk '{print $1}' | tr -d '>'))
+# Subset transcriptome with NC_ only entries to match Shelly's genome
+# Only lines beginning with "NC_"
+grep "^NC_" "${ncbi_transcriptome}" >> "${chr_only_transriptome}"
 
-# Create comma-separated list of IDs for StringTie to use for alignment
-ref_list=$(echo "${chromosome_array[@]}" | sed 's/ /,/g')
 
 # Run StringTie
 for bam in "${bam_dir}"*.bam
@@ -79,9 +75,8 @@ do
   # Output an abundance file with TPM and FPKM data in dedicated columns
   ${programs_array[stringtie]} \
   ${bam} \
-  -G ${transcriptome} \
+  -G ${chr_only_transriptome} \
   -A ${sample_name}_gene-abund.tab \
-  -x ${ref_list} \
   -p ${threads}
 
   # Generate BAM MD5 checksums
@@ -90,7 +85,8 @@ done
 
 
 # Generate GTF MD5 checksum
-md5sum "${transcriptome}" >> "${gtf_md5}"
+md5sum "${ncbi_transcriptome}" >> "${gtf_md5}"
+md5sum "${chr_only_transriptome}" >> "${gtf_md5}"
 
 # Capture program options
 for program in "${!programs_array[@]}"
