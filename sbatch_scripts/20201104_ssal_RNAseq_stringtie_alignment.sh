@@ -40,7 +40,7 @@ gtf_md5=gtf_checksum.md5
 transcriptome="/gscratch/srlab/sam/data/S_salar/transcriptomes/GCF_000233375.1_ICSASG_v2_genomic.gtf"
 
 # Paths to programs
-stringtie="/gscratch/srlab/programs/stringtie-2.1.4.Linux_x86_64"
+stringtie="/gscratch/srlab/programs/stringtie-2.1.4.Linux_x86_64/stringtie"
 
 ## Inititalize arrays
 chromosome_array=()
