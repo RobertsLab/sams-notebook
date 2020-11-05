@@ -29,6 +29,8 @@
 
 ## Assign Variables
 
+wd=$(pwd)
+
 # Set number of CPUs to use
 threads=27
 
@@ -69,14 +71,14 @@ ref_list=$(echo "${chromosome_array[@]}" | sed 's/ /,/g')
 for bam in "${bam_dir}"*.bam
 do
   # Parse out sample name by removing all text up to and including the last period.
-  sample_name=${bam%%.*}
+  sample_name_no_path=${bam##*/}
+  sample_name=${sample_name_no_path%%.*}
 
   # Exectute StringTie
   # Use list of of chromosome IDs (ref_list)
   # Output an abundance file with TPM and FPKM data in dedicated columns
   ${programs_array[stringtie]} \
   ${bam} \
-  -o ${sample_name} \
   -G ${transcriptome} \
   -A ${sample_name}_gene-abund.tab \
   -x ${ref_list} \
