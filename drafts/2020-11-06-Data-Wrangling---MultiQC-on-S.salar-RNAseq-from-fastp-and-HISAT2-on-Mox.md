@@ -23,4 +23,14 @@ I ran [`MultiQC`](https://multiqc.info/) on Mox using a build node and no script
 
 Output folder:
 
-- []()
+- [20201106_ssalar_multiqc_fastp-hisat2/](https://gannet.fish.washington.edu/Atumefaciens/20201106_ssalar_multiqc_fastp-hisat2/)
+
+##### [`MultiQC`](https://multiqc.info/) report (HTML)
+
+- [20201106_ssalar_multiqc_fastp-hisat2/multiqc_report.html](https://gannet.fish.washington.edu/Atumefaciens/20201106_ssalar_multiqc_fastp-hisat2/multiqc_report.html)
+
+A couple of notes:
+
+1. The `[`fastp`](https://github.com/OpenGene/fastp)` trimming results are reported with sample names with a `_1`. This is an unfortunate mistake with name parsing. The results are comprised of both Read 1 and Read 2 FastQ data; not just Read 1.
+
+2. The [`HISAT2`](https://daehwankimlab.github.io/hisat2/) results also suffer from a poor filename that ends with `.err`. Despite the name, these files actually contain the alignment summary data.
