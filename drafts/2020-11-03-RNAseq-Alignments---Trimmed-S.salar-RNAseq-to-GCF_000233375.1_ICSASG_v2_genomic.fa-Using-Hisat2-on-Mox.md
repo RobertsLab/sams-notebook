@@ -15,7 +15,7 @@ This is a continuation of addressing [Shelly Trigg's (regarding some _Salmo sala
 
 Ran [`HISAT2`](https://daehwankimlab.github.io/hisat2/) with the [trimmed FastQ files from 20201029](https://robertslab.github.io/sams-notebook/2020/10/29/Trimming-Shelly-S.salar-RNAseq-Using-fastp-and-MultiQC-on-Mox.html) with the following options:
 
-- `--dta`: This stands for "downstream transcriptome alignment". Since we'll be sending performing a subsequent alignment using the transcriptome and [`StringTie`](https://ccb.jhu.edu/software/stringtie/), I decided to add this option.
+- `--dta`: This stands for "downstream transcriptome alignment". Since we'll be performing a subsequent alignment using the transcriptome using [`StringTie`](https://ccb.jhu.edu/software/stringtie/), I decided to add this option.
 
 - `--new-summary`: This creates a summary file that can be easily read by [`MultiQC`](https://multiqc.info/).
 
@@ -209,10 +209,17 @@ echo "${PATH}" | tr : \\n
 } >> system_path.log
 ```
 
+NOTE: I manually removed the SAM files that were generated during this process. This step was not included in the SBATCH script above because I didn't realize the SAM files would remain after creating the (desired) BAM files. The SAM files were very large and not necessary for downstream analysis.
+
 ---
 
 #### RESULTS
 
+Runtime was close to 3hrs:
+
+![Cumulative HISAT2 runtime on Mox](https://github.com/RobertsLab/sams-notebook/blob/master/images/screencaps/20201103_ssal_RNAseq_hisat2_alignment_runtime.png?raw=true)
+
+
 Output folder:
 
-- []()
+- [20201103_ssal_RNAseq_hisat2_alignment/](https://gannet.fish.washington.edu/Atumefaciens/20201103_ssal_RNAseq_hisat2_alignment/)
