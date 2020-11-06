@@ -42,3 +42,17 @@ For reference, all sample info for this project is here (Google Sheet):
 Qubit results (Google Sheet):
 
 - [20201104_qubit_DNA_mmag_MBD](https://docs.google.com/spreadsheets/d/1ECBqSs6G-6pvYY2eby_jM5EP9fSC7Zl1ykvaFvopytQ/edit?usp=sharing)
+
+
+| Sample ID | Resuspension_vol(uL) | Total_recovery(ng) | Percent_recovery(%) |
+|-----------|----------------------|--------------------|---------------------|
+| CH05-06   | 21                   | 2.44               | 0.24                |
+| CH05-21   | 21                   | 7.18               | 0.72                |
+| CH05-24   | 21                   | 3.99               | 0.40                |
+| CH05-26   | 21                   | 2.52               | 0.25                |
+| CH07-06   | 21                   | 3.02               | 0.30                |
+| CH07-11   | 21                   | 2.98               | 0.30                |
+| CH07-24   | 21                   | 2.44               | 0.24                |
+| CH09-02   | 21                   | 4.24               | 0.42                |
+
+Yields are in line with what I got with [the first set of samples(https://robertslab.github.io/sams-notebook/2020/10/28/MBD-Selection-M.magister-Sheared-Gill-gDNA-8-of-24-Samples-Set-1-of-3.html)].
