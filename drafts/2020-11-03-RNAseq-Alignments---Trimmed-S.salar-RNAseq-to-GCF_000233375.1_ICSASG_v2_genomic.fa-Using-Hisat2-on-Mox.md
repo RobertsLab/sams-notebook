@@ -223,3 +223,29 @@ Runtime was close to 3hrs:
 Output folder:
 
 - [20201103_ssal_RNAseq_hisat2_alignment/](https://gannet.fish.washington.edu/Atumefaciens/20201103_ssal_RNAseq_hisat2_alignment/)
+
+BAM files for each alignment are linked below. The BAM files will be used for subsequent usage in [`StringTie`](https://ccb.jhu.edu/software/stringtie/). Additionally, each BAM file has an associated index file and a [`HISAT2`](https://daehwankimlab.github.io/hisat2/) "error" file. This "error" file is actually the summary report of the alignment and will be used by [`MultiQC`](https://multiqc.info/) later on. In the future, I'll try to remember to change the labelling for this...
+
+  - [Pool26_16.sorted.bam](https://gannet.fish.washington.edu/Atumefaciens/20201103_ssal_RNAseq_hisat2_alignment/Pool26_16.sorted.bam) (2.4G)
+
+    - [Pool26_16.sorted.bam.bai](https://gannet.fish.washington.edu/Atumefaciens/20201103_ssal_RNAseq_hisat2_alignment/Pool26_16.sorted.bam.bai) (2.3M)
+
+    - [Pool26_16_hisat2.err](https://gannet.fish.washington.edu/Atumefaciens/20201103_ssal_RNAseq_hisat2_alignment/Pool26_16_hisat2.err) (4.0K)
+
+  - [Pool26_8.sorted.bam](https://gannet.fish.washington.edu/Atumefaciens/20201103_ssal_RNAseq_hisat2_alignment/Pool26_8.sorted.bam) (2.5G)
+
+    - [Pool26_8.sorted.bam.bai](https://gannet.fish.washington.edu/Atumefaciens/20201103_ssal_RNAseq_hisat2_alignment/Pool26_8.sorted.bam.bai) (2.3M)
+
+    - [Pool26_8_hisat2.err](https://gannet.fish.washington.edu/Atumefaciens/20201103_ssal_RNAseq_hisat2_alignment/Pool26_8_hisat2.err) (4.0K)
+
+  - [Pool32_16.sorted.bam](https://gannet.fish.washington.edu/Atumefaciens/20201103_ssal_RNAseq_hisat2_alignment/Pool32_16.sorted.bam) (1.9G)
+
+    - [Pool32_16.sorted.bam.bai](https://gannet.fish.washington.edu/Atumefaciens/20201103_ssal_RNAseq_hisat2_alignment/Pool32_16.sorted.bam.bai) (2.2M)
+
+    - [Pool32_16_hisat2.err](https://gannet.fish.washington.edu/Atumefaciens/20201103_ssal_RNAseq_hisat2_alignment/Pool32_16_hisat2.err) (4.0K)
+
+  - [Pool32_8.sorted.bam](https://gannet.fish.washington.edu/Atumefaciens/20201103_ssal_RNAseq_hisat2_alignment/Pool32_8.sorted.bam) (2.4G)
+
+    - [Pool32_8.sorted.bam.bai](https://gannet.fish.washington.edu/Atumefaciens/20201103_ssal_RNAseq_hisat2_alignment/Pool32_8.sorted.bam.bai) (2.3M)
+
+    - [Pool32_8_hisat2.err](https://gannet.fish.washington.edu/Atumefaciens/20201103_ssal_RNAseq_hisat2_alignment/Pool32_8_hisat2.err) (4.0K)
