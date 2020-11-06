@@ -11,6 +11,15 @@ tags:
 categories:
   - Miscellaneous
 ---
+This is a continuation of addressing [Shelly Trigg's (regarding some _Salmo salar_ RNAseq data) request (GitHub Issue)](https://github.com/RobertsLab/resources/issues/1016) to trim ([completed 20201029](https://robertslab.github.io/sams-notebook/2020/10/29/Trimming-Shelly-S.salar-RNAseq-Using-fastp-and-MultiQC-on-Mox.html)), perform genome alignment ([completed on 20201103](https://robertslab.github.io/sams-notebook/2020/11/03/RNAseq-Alignments-Trimmed-S.salar-RNAseq-to-GCF_000233375.1_ICSASG_v2_genomic.fa-Using-Hisat2-on-Mox.html)), and transcriptome alignment.
+
+To finish this up, I used [`StringTie`](https://ccb.jhu.edu/software/stringtie/) to align to a subset of the `GCF_000233375.1_ICSASG_v2_genomic.gtf` provided by Shelly. I created a subset (see SBATCH script below for deets) that only included the same sequence IDs in Shelly's subsetted genome Fasta (see genome alignment [completed on 20201103](https://robertslab.github.io/sams-notebook/2020/11/03/RNAseq-Alignments-Trimmed-S.salar-RNAseq-to-GCF_000233375.1_ICSASG_v2_genomic.fa-Using-Hisat2-on-Mox.html) for more info on that.).
+
+Shelly indicated she really just needed the FPKM and/or TPM values, so I ran [`StringTie`](https://ccb.jhu.edu/software/stringtie/) with the `-A` option which spits out a tab-delimited table with both of those values in columns 8 and 9.
+
+This was run on Mox.
+
+
 
 SBATCH script (GitHub):
 
