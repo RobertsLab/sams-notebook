@@ -166,9 +166,18 @@ Runtime was pretty quick, just under 18mins:
 
 Output folder/files:
 
+Runtime was fast; just under 18mins:
+
+![Cumulative StringTie runtime on Mox](https://github.com/RobertsLab/sams-notebook/blob/master/images/screencaps/20201104_ssal_RNAseq_stringtie_alignment_runtime.png?raw=true)
+
 - [20201104_ssal_RNAseq_stringtie_alignment](https://gannet.fish.washington.edu/Atumefaciens/20201104_ssal_RNAseq_stringtie_alignment)
 
+
+  ##### Subsetted GTF file used for alignment:
+
   - [GCF_000233375.1_ICSASG_v2_genomic_NC-chr-only.gtf](https://gannet.fish.washington.edu/Atumefaciens/20201104_ssal_RNAseq_stringtie_alignment/GCF_000233375.1_ICSASG_v2_genomic_NC-chr-only.gtf)
+
+  ##### Abundance files with FPKM and TPM in columns 8 & 9.
 
   - [Pool26_16_gene-abund.tab](https://gannet.fish.washington.edu/Atumefaciens/20201104_ssal_RNAseq_stringtie_alignment/Pool26_16_gene-abund.tab)
 
