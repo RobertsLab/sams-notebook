@@ -1,4 +1,3 @@
-
 #!/bin/bash
 ## Job Name
 #SBATCH --job-name=20201110_cgig_fastqc_ronit-ploidy-wgbs
@@ -17,17 +16,23 @@
 #SBATCH --mail-user=samwhite@uw.edu
 ## Specify the working directory for this job
 #SBATCH --chdir=/gscratch/scrubbed/samwhite/outputs/20201110_cgig_fastqc_ronit-ploidy-wgbs
-### Roberto's C.gigas WGBS trimming using fastp.
+
+
+### FastQC assessment of raw sequencing from Ronit's ploidy WGBS.
 
 
 ###################################################################################
 # These variables need to be set by user
+
+# FastQC output directory
+output_dir=$(pwd)
 
 # Set number of CPUs to use
 threads=28
 
 # Input/output files
 checksums=fastq_checksums.md5
+fastq_list=fastq_list.txt
 raw_reads_dir=/gscratch/srlab/sam/data/C_gigas/wgbs/
 
 # Paths to programs
@@ -50,8 +55,46 @@ set -e
 # Load Python Mox module for Python module availability
 module load intel-python3_2017
 
+# Sync raw FastQ files to working directory
+rsync --archive --verbose \
+"${raw_reads_dir}"zr3534*.fq.gz .
+
+# Populate array with FastQ files
+fastq_array=(*.fq.gz)
+
+# Pass array contents to new variable
+fastqc_list=$(echo "${fastq_array[*]}")
+
+# Run FastQC
+# NOTE: Do NOT quote ${fastqc_list}
+${programs_array[fastqc]} \
+--threads ${threads} \
+--outdir ${output_dir} \
+${fastqc_list}
 
 
+# Create list of fastq files used in analysis
+echo "${fastqc_list}" | tr " " "\n" >> ${fastq_list}
+
+# Generate checksums for reference
+while read -r line
+do
+
+	# Generate MD5 checksums for each input FastQ file
+	echo "Generating MD5 checksum for ${line}."
+	md5sum "${line}" >> "${checksums}"
+	echo "Completed: MD5 checksum for ${line}."
+	echo ""
+
+	# Remove fastq files from working directory
+	echo "Removing ${line} from directory"
+	rm "${line}"
+	echo "Removed ${line} from directory"
+	echo ""
+done < ${fastq_list}
+
+# Run MultiQC
+${programs_array[multiqc]} .
 
 
 # Capture program options
