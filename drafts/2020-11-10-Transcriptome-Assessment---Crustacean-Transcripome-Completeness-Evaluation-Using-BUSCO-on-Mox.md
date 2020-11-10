@@ -187,6 +187,10 @@ done
 
 #### RESULTS
 
+As usual, runtime was very quick ~8mins:
+
+![Cumulative runtime for BUSCO evaluation of L.vannamei and C.maenas transcriptomes on Mox](https://github.com/RobertsLab/sams-notebook/blob/master/images/screencaps/20201110_crustacean-transcriptomes_busco_runtime.png?raw=true)
+
 Output folder:
 
 - []()
