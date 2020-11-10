@@ -193,4 +193,49 @@ As usual, runtime was very quick ~8mins:
 
 Output folder:
 
-- []()
+- [20201110_crustacean-transcriptomes_busco/](https://gannet.fish.washington.edu/Atumefaciens/20201110_crustacean-transcriptomes_busco/)
+
+##### _C.maenas_
+
+- [20201110_crustacean-transcriptomes_busco/run_GBXE01.1.fsa_nt/short_summary_GBXE01.1.fsa_nt.txt](https://gannet.fish.washington.edu/Atumefaciens/20201110_crustacean-transcriptomes_busco/run_GBXE01.1.fsa_nt/short_summary_GBXE01.1.fsa_nt.txt)
+
+
+```
+# BUSCO version is: 3.0.2
+# The lineage dataset is: metazoa_odb9 (Creation date: 2016-02-13, number of species: 65, number of BUSCOs: 978)
+# To reproduce this run: python /gscratch/srlab/programs/busco-v3/scripts/run_BUSCO.py -i /gscratch/srlab/sam/data/C_maenas/transcriptomes/GBXE01.1.fsa_nt -o GBXE01.1.fsa_nt -l /gscratch/srlab/sam/data/databases/BUSCO/metazoa_odb9/ -m transcriptome -c 28 --long -z
+#
+# Summarized benchmarking in BUSCO notation for file /gscratch/srlab/sam/data/C_maenas/transcriptomes/GBXE01.1.fsa_nt
+# BUSCO was run in mode: transcriptome
+
+	C:95.7%[S:57.0%,D:38.7%],F:3.6%,M:0.7%,n:978
+
+	935	Complete BUSCOs (C)
+	557	Complete and single-copy BUSCOs (S)
+	378	Complete and duplicated BUSCOs (D)
+	35	Fragmented BUSCOs (F)
+	8	Missing BUSCOs (M)
+	978	Total BUSCO groups searched
+```
+
+##### _L.vannamei_
+
+- [20201110_crustacean-transcriptomes_busco/run_Trinity_Trimmed_Whiteleg_Shrimp_Transcrimptome_Assmbled_Supplemental_Data_1.fasta/short_summary_Trinity_Trimmed_Whiteleg_Shrimp_Transcrimptome_Assmbled_Supplemental_Data_1.fasta.txt](https://gannet.fish.washington.edu/Atumefaciens/20201110_crustacean-transcriptomes_busco/run_Trinity_Trimmed_Whiteleg_Shrimp_Transcrimptome_Assmbled_Supplemental_Data_1.fasta/short_summary_Trinity_Trimmed_Whiteleg_Shrimp_Transcrimptome_Assmbled_Supplemental_Data_1.fasta.txt)
+
+```
+# BUSCO version is: 3.0.2
+# The lineage dataset is: metazoa_odb9 (Creation date: 2016-02-13, number of species: 65, number of BUSCOs: 978)
+# To reproduce this run: python /gscratch/srlab/programs/busco-v3/scripts/run_BUSCO.py -i /gscratch/srlab/sam/data/L_vannamei/transcriptomes/Trinity_Trimmed_Whiteleg_Shrimp_Transcrimptome_Assmbled_Supplemental_Data_1.fasta -o Trinity_Trimmed_Whiteleg_Shrimp_Transcrimptome_Assmbled_Supplemental_Data_1.fasta -l /gscratch/srlab/sam/data/databases/BUSCO/metazoa_odb9/ -m transcriptome -c 28 --long -z
+#
+# Summarized benchmarking in BUSCO notation for file /gscratch/srlab/sam/data/L_vannamei/transcriptomes/Trinity_Trimmed_Whiteleg_Shrimp_Transcrimptome_Assmbled_Supplemental_Data_1.fasta
+# BUSCO was run in mode: transcriptome
+
+	C:98.1%[S:72.7%,D:25.4%],F:0.9%,M:1.0%,n:978
+
+	959	Complete BUSCOs (C)
+	711	Complete and single-copy BUSCOs (S)
+	248	Complete and duplicated BUSCOs (D)
+	9	Fragmented BUSCOs (F)
+	10	Missing BUSCOs (M)
+	978	Total BUSCO groups searched
+```
