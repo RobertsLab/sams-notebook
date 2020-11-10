@@ -9,6 +9,19 @@ tags:
 categories:
   - Miscellaneous
 ---
+Grace was recently working on writing up a manuscript which did a basic comparison of our _C.bairdi_ transcriptome (`cbai_transcriptome_v3.1`) (see the [Genomic Resources wiki](https://github.com/RobertsLab/resources/wiki/Genomic-Resources) for more deets) to two other species' transcriptome assemblies. We wanted BUSCO evaluations as part of this comparison, but the two other species did not have BUSCO scores in their respective publications. As such, I decided to generate them myself, as BUSCO runs very quickly. The job was run on Mox.
+
+Info on the other two species' transcriptomes:
+
+- _Carcinus maenas_ (green crab) transcriptome: [NCBI TSA](https://www.ncbi.nlm.nih.gov/nuccore/GBXE01000000)
+
+  - Publication: [Verbruggen, Bas, Lisa K. Bickley, Eduarda M. Santos, Charles R. Tyler, Grant D. Stentiford, Kelly S. Bateman, and Ronny van Aerle. 2015. “De Novo Assembly of the Carcinus Maenas Transcriptome and Characterization of Innate Immune System Pathways.” BMC Genomics 16 (June): 458.](https://www.ncbi.nlm.nih.gov/pmc/articles/PMC4469326/)
+
+- _Litopenaeus vannamei_ (whiteleg shrimp) transcriptome: [OAKTrust](https://oaktrust.library.tamu.edu/handle/1969.1/152151)
+
+  - Publication: [Novel transcriptome assembly and improved annotation of the whiteleg shrimp (Litopenaeus vannamei), a dominant crustacean in global seafood mariculture](https://www.ncbi.nlm.nih.gov/pmc/articles/PMC4243063/)
+
+
 
 SBATCH script (GitHub):
 
