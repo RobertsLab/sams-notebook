@@ -25,3 +25,17 @@ Next up:
 - Run FatQC
 
 - Submit to NCBI sequence read archive (SRA).
+
+
+| SeqID     | Library_Name | Tissue   | Ploidy   | Dessication | Heat_Stress |
+|-----------|--------------|----------|----------|-------------|-------------|
+| zr3534_1  | D11-C        | ctenidia | diploid  | yes         | no          |
+| zr3534_2  | D12-C        | ctenidia | diploid  | yes         | no          |
+| zr3534_3  | D13-C        | ctenidia | diploid  | yes         | no          |
+| zr3534_4  | D19-C        | ctenidia | diploid  | yes         | yes         |
+| zr3534_5  | D20-C        | ctenidia | diploid  | yes         | yes         |
+| zr3534_6  | T11-C        | ctenidia | triploid | yes         | no          |
+| zr3534_7  | T12-C        | ctenidia | triploid | yes         | no          |
+| zr3534_8  | T13-C        | ctenidia | triploid | yes         | no          |
+| zr3534_9  | T19-C        | ctenidia | triploid | yes         | yes         |
+| zr3534_10 | T20-C        | ctenidia | triploid | yes         | yes         |
