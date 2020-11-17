@@ -152,21 +152,21 @@ Output folder and files:
 
 - [20201014_cbai_minimap_nanopore-megan6-taxa-reads/](https://gannet.fish.washington.edu/Atumefaciens/20201014_cbai_minimap_nanopore-megan6-taxa-reads/)
 
-  - [20201014_201002558-2729-Q7_Aquifex.sorted.sam](20201014_201002558-2729-Q7_Aquifex.sorted.sam) (1.5M)
+  - [20201014_201002558-2729-Q7_Aquifex.sorted.sam](https://gannet.fish.washington.edu/Atumefaciens/20201014_cbai_minimap_nanopore-megan6-taxa-reads/20201014_201002558-2729-Q7_Aquifex.sorted.sam) (1.5M)
 
-  - [20201014_201002558-2729-Q7_Arthropoda.sorted.sam](20201014_201002558-2729-Q7_Arthropoda.sorted.sam) (11M)
+  - [20201014_201002558-2729-Q7_Arthropoda.sorted.sam](https://gannet.fish.washington.edu/Atumefaciens/20201014_cbai_minimap_nanopore-megan6-taxa-reads/20201014_201002558-2729-Q7_Arthropoda.sorted.sam) (11M)
 
-  - [20201014_201002558-2729-Q7_Enterospora.sorted.sam](20201014_201002558-2729-Q7_Enterospora.sorted.sam) (8.3M)
+  - [20201014_201002558-2729-Q7_Enterospora.sorted.sam](https://gannet.fish.washington.edu/Atumefaciens/20201014_cbai_minimap_nanopore-megan6-taxa-reads/20201014_201002558-2729-Q7_Enterospora.sorted.sam) (8.3M)
 
-  - [20201014_201002558-2729-Q7_Sar.sorted.sam](20201014_201002558-2729-Q7_Sar.sorted.sam) (104K)
+  - [20201014_201002558-2729-Q7_Sar.sorted.sam](https://gannet.fish.washington.edu/Atumefaciens/20201014_cbai_minimap_nanopore-megan6-taxa-reads/20201014_201002558-2729-Q7_Sar.sorted.sam) (104K)
 
-  - [20201014_6129-403-26-Q7_Alveolata.sorted.sam](20201014_6129-403-26-Q7_Alveolata.sorted.sam) (5.6M)
+  - [20201014_6129-403-26-Q7_Alveolata.sorted.sam](https://gannet.fish.washington.edu/Atumefaciens/20201014_cbai_minimap_nanopore-megan6-taxa-reads/20201014_6129-403-26-Q7_Alveolata.sorted.sam) (5.6M)
 
-  - [20201014_6129-403-26-Q7_Aquifex.sorted.sam](20201014_6129-403-26-Q7_Aquifex.sorted.sam) (68M)
+  - [20201014_6129-403-26-Q7_Aquifex.sorted.sam](https://gannet.fish.washington.edu/Atumefaciens/20201014_cbai_minimap_nanopore-megan6-taxa-reads/20201014_6129-403-26-Q7_Aquifex.sorted.sam) (68M)
 
-  - [20201014_6129-403-26-Q7_Arthropoda.sorted.sam](20201014_6129-403-26-Q7_Arthropoda.sorted.sam) (491M)
+  - [20201014_6129-403-26-Q7_Arthropoda.sorted.sam](https://gannet.fish.washington.edu/Atumefaciens/20201014_cbai_minimap_nanopore-megan6-taxa-reads/20201014_6129-403-26-Q7_Arthropoda.sorted.sam) (491M)
 
-  - [20201014_6129-403-26-Q7_Enterospora.sorted.sam](20201014_6129-403-26-Q7_Enterospora.sorted.sam) (261M)
+  - [20201014_6129-403-26-Q7_Enterospora.sorted.sam](https://gannet.fish.washington.edu/Atumefaciens/20201014_cbai_minimap_nanopore-megan6-taxa-reads/20201014_6129-403-26-Q7_Enterospora.sorted.sam) (261M)
 
 I left the output files as SAM files (instead of compressing them to the standard BAM format) so that they would be human readable. I haven't actually explored SAM/BAM manipulation too much in the past and felt that this was a good excuse and being able to view the SAM files without the need to use `samtools` seemed easier. Also, I knew these would be relatively small files, so compressing them wasn't a huge priority.
 
