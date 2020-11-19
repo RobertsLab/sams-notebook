@@ -35,3 +35,13 @@ All samples were stored in the [-80<sup>o</sup>C](https://docs.google.com/spread
 Qubit results:
 
 - [20201119_qubit_pgen_hemo_RNA](https://docs.google.com/spreadsheets/d/1HFwpvskPTo8oliZJmz5ImBzOAIYuvh4OMLYpUM1sqfI/edit?usp=sharing) (Google Sheet)
+
+
+| Sample | Concentration(ng/uL) | Elution_vol(uL) | Yield(ng) |
+|--------|----------------------|-----------------|-----------|
+| 021 H  | 176                  | 15              | 2640      |
+| 022 H  | 382                  | 15              | 5730      |
+| 041 H  | 102                  | 15              | 1530      |
+| 044 H  | 580                  | 15              | 8700      |
+| 14 H   | 194                  | 15              | 2910      |
+| 15 H   | 124                  | 15              | 1860      |
