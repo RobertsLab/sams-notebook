@@ -15,6 +15,8 @@ categories:
 
 ##### GENERAL
 
+- Protocol was followed for using input DNA range 1ng - 50ng.
+
 - All thermalcycling was performed on the Roberts Lab PTC-200 (MJ Research).
 
 - All thermalcycling used a heated lid temp of 104<sup>o</sup>C, unless a different temp was specified in the protocol.
@@ -23,9 +25,23 @@ categories:
 
 ##### SECTION 2
 
+- Used 0.5mL PCR tubes, since 0.2uL tubes were note specified and the 0.5mL tubes are easier to handle/work with.
+
 - PrepAmp Mix was prepared as a master mix and then distributed to samples as required
 
+| PrepAmp_component   | single_rxn_vol(uL) | num_rxns | total_vol(uL) |
+|---------------------|--------------------|----------|---------------|
+| PrepAmp Buffer (5x) | 1                  | 26       | 26            |
+| PrepAmp Pre-mix     | 3.75               | 26       | 97.5          |
+| PrepAmp Polymerase  | 0.3                | 26       | 7.8           |
 
+##### SECTION 3
+
+- Elutions consistently returned 1.5uL _less_ volume than input (e.g 12uL input returned 10.5uL).
+
+  - This was also noted [by Shelly when she utilized this kit previously](https://shellytrigg.github.io/122th-post/).
+
+##### SECTION 4
 
 
 ---
