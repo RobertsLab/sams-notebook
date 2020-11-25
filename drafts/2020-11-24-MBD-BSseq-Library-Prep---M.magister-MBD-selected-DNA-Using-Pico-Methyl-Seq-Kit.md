@@ -53,10 +53,31 @@ categories:
 
 
 
----
+##### Sample - Sequencing Primer Index Table
 
-#### RESULTS
-
-Output folder:
-
-- []()
+| Sample  | Illumina_TruSeq_index_num | Illumina_TruSeq_Index_seq | SRID/ZymoID |
+|---------|---------------------------|---------------------------|-------------|
+| CH01-06 | 1                         | CGATGT                    | 1732        |
+| CH01-14 | 2                         | TGACCA                    | A           |
+| CH01-22 | 3                         | ACAGTG                    | 1731        |
+| CH01-38 | 4                         | GCCAAT                    | B           |
+| CH03-04 | 5                         | CAGATC                    | C           |
+| CH03-15 | 6                         | CTTGTA                    | D           |
+| CH03-33 | 7                         | CGTGAT                    | E           |
+| CH05-01 | 8                         | GCCTAA                    | 1730        |
+| CH05-06 | 9                         | TCAAGT                    | 1729        |
+| CH05-21 | 10                        | CTGATC                    | 1728        |
+| CH05-24 | 11                        | AAGCTA                    | 1727        |
+| CH05-26 | 12                        | GTAGCC                    | F           |
+| CH07-06 | 13                        | TTGACT                    | 1726        |
+| CH07-11 | 14                        | GGAACT                    | 1725        |
+| CH07-24 | 15                        | TGACAT                    | 1724        |
+| CH09-02 | 16                        | GGACGG                    | 1723        |
+| CH09-11 | 17                        | CTCTAC                    | 1722        |
+| CH09-13 | 18                        | GCGGAC                    | 1721        |
+| CH09-28 | 19                        | TTTCAC                    | 1720        |
+| CH09-29 | 20                        | GGCCAC                    | 1719        |
+| CH10-01 | 21                        | CGAAAC                    | 1718        |
+| CH10-08 | 22                        | CGTACG                    | 1717        |
+| CH10-11 | 23                        | CCACTC                    | 1805        |
+| CH10-19 | 25                        | ATCAGT                    | 1804        |
