@@ -23,9 +23,11 @@ categories:
 
 - All elution steps were performed with heated elution buffer (55<sup>o</sup>C).
 
+- All index primers _not_ included with the kit were a mix of the Illumina TruSeq P5 primer (SRID: 1733) and an Illumina TruSeq P7 index primer (see table at bottom of page). The mix consisted of 10uM each of P5 and P7 primers. [See the Roberts Lab Primer Database](https://docs.google.com/spreadsheets/d/14m2kkFhxcoKWWIGoAD_7VOVsAg9wilME2UcSLqfnqLI/edit?usp=sharing) (Google Sheet) for info on the primers.
+
 ##### SECTION 2
 
-- Used 0.5mL PCR tubes, since 0.2uL tubes were note specified and the 0.5mL tubes are easier to handle/work with.
+- Used 0.5mL PCR tubes, since 0.2uL tubes were not specified and the 0.5mL tubes are easier to handle/work with.
 
 - PrepAmp Mix was prepared as a master mix and then distributed to samples as required
 
@@ -81,3 +83,11 @@ categories:
 | CH10-08 | 22                        | CGTACG                    | 1717        |
 | CH10-11 | 23                        | CCACTC                    | 1805        |
 | CH10-19 | 25                        | ATCAGT                    | 1804        |
+
+All sample processing info/history can currently be found here (Google Sheet):
+
+- [OA Crab Sample Collection 071119](https://docs.google.com/spreadsheets/d/1ym0XnYVts98tIUCn0kIaU6VuvqxzV7LoSx9RHwLdiIs/edit?usp=sharing)
+
+Any additional project info will end up in this GitHub repo:
+
+- [project-dungeness-crab](https://github.com/RobertsLab/project-dungeness-crab)
