@@ -43,6 +43,9 @@ categories:
 
 ##### SECTION 4
 
+- Recovery from SECTION 3 elution was only 10.5uL (expected 11.5uL based on protocol), so added 1.5uL H<sub>2</sub>O to each sample.
+
+- Based on input DNA range (1ng - 50ng), number of cycles was set to 8.
 
 ---
 
