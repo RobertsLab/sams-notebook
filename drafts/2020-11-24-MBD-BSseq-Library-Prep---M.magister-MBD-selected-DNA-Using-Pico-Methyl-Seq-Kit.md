@@ -47,6 +47,12 @@ categories:
 
 - Based on input DNA range (1ng - 50ng), number of cycles was set to 8.
 
+##### SECTION 5
+
+- Anticipating the loss in elution volume, samples were eluted with 13.5uL in the preceding cleanup step and yielded 12uL (the target input volume for this section).
+
+
+
 ---
 
 #### RESULTS
