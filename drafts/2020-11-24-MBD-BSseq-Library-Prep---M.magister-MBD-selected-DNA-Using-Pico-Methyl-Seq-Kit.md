@@ -53,6 +53,8 @@ categories:
 
 - Anticipating the loss in elution volume, samples were eluted with 13.5uL in the preceding cleanup step and yielded 12uL (the target input volume for this section).
 
+Next step, run the samples on the Bioanalyzer for QC to see how they look.
+
 
 
 ##### Sample - Sequencing Primer Index Table
