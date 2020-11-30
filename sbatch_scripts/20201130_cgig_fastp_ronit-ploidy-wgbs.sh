@@ -153,7 +153,7 @@ do
 
   # If MultiQC is in programs_array, copy the config file to this directory.
   if [[ "${program}" == "multiqc" ]]; then
-  	cp --preserve ~/.multiqc_config.yaml .
+  	cp --preserve ~/.multiqc_config.yaml multiqc_config.yaml
   fi
 done
 
