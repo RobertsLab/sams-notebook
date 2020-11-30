@@ -10,7 +10,9 @@ tags:
 categories:
   - Miscellaneous
 ---
+[MBD BSseq library construction was completed yesterday (20201124)](https://robertslab.github.io/sams-notebook/2020/11/24/MBD-BSseq-Library-Prep-M.magister-MBD-selected-DNA-Using-Pico-Methyl-Seq-Kit.html). Next, I needed to evaluate the libraries using the Roberts Lab Bioanalyzer 2100 (Agilent) to assess library sizes, yields, and qualities (i.e. primer dimers).
 
+ZymoResearch recommends using the TapeStation (Agilent), but if a lab doesn't have access to that, they indicated that either of the regular DNA assays will work (verbal communication). I ran the libraries on the High Sensitivity DNA Assay (Agilent), since that's what we had in the lab. It should work relatively OK.
 
 
 ---
