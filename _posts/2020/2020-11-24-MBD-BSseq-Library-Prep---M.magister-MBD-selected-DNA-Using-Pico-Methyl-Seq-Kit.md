@@ -53,6 +53,10 @@ categories:
 
 - Anticipating the loss in elution volume, samples were eluted with 13.5uL in the preceding cleanup step and yielded 12uL (the target input volume for this section).
 
+---
+
+NOTE: Sample `CH10-19` had a weird elution in SECTION 4 - only recovered 6.5uL. Brought volume up to 12uL with H<sub>2</sub>O for required input volume in SECTION 5.
+
 Next step, run the samples on the Bioanalyzer for QC to see how they look.
 
 
