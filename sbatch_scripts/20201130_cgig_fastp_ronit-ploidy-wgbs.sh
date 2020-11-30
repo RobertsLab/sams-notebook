@@ -90,6 +90,7 @@ done
 
 
 # Run fastp on files
+# Trim 10bp from 5' from each read
 # Adds JSON report output for downstream usage by MultiQC
 for index in "${!fastq_array_R1[@]}"
 do
@@ -99,6 +100,9 @@ do
 	--in1 ${fastq_array_R1[index]} \
 	--in2 ${fastq_array_R2[index]} \
 	--detect_adapter_for_pe \
+  --detect_adapter_for_pe \
+  --trim_front1 10 \
+  --trim_front2 10 \
 	--thread ${threads} \
 	--html "${R1_sample_name}".fastp-trim."${timestamp}".report.html \
 	--json "${R1_sample_name}".fastp-trim."${timestamp}".report.json \
