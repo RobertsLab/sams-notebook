@@ -14,10 +14,25 @@ categories:
 
 ZymoResearch recommends using the TapeStation (Agilent), but if a lab doesn't have access to that, they indicated that either of the regular DNA assays will work (verbal communication). I ran the libraries on the High Sensitivity DNA Assay (Agilent), since that's what we had in the lab. It should work relatively OK.
 
+All data (including Bioanalyzer electropherograms) will be added to the Google Sheet for this project:
+
+- [OA Crab Sample Collection 071119](https://docs.google.com/spreadsheets/d/1ym0XnYVts98tIUCn0kIaU6VuvqxzV7LoSx9RHwLdiIs/edit#gid=1430155532)
+
+Additional details are available in this GitHub repo:
+
+- [project-dungeness-crab](https://github.com/RobertsLab/project-dungeness-crab)
 
 ---
 
 #### RESULTS
+
+Most samples ([including `CH09-13` which had no detectable DNA via Qubit(https://robertslab.github.io/sams-notebook/2020/11/03/MBD-Selection-M.magister-Sheared-Gill-gDNA-16-of-24-Samples-Set-3-of-3.html)]) exhibited the expected profiles. Admittedly, a number of samples were probably slightly too concentrated for the High Sensitivity DNA Assay (Agilent), leading to skewed baselines. However, the software does a good job of detecting, and accounting for, this.
+
+One sample failed: `CH10-19`
+
+Although I did not expect it to fail, [this sample did have a wonky elution at the end of SECTION 4 of the library prep.](https://robertslab.github.io/sams-notebook/2020/11/24/MBD-BSseq-Library-Prep-M.magister-MBD-selected-DNA-Using-Pico-Methyl-Seq-Kit.html).
+
+Once a sequencing facility is decided upon, will make decisions about sample pooling and desired sequencing output.
 
 Output folder:
 
