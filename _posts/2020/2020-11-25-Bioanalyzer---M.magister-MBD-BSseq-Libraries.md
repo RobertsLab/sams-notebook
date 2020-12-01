@@ -32,6 +32,26 @@ One sample failed: `CH10-19`
 
 Although I did not expect it to fail, [this sample did have a wonky elution at the end of SECTION 4 of the library prep.](https://robertslab.github.io/sams-notebook/2020/11/24/MBD-BSseq-Library-Prep-M.magister-MBD-selected-DNA-Using-Pico-Methyl-Seq-Kit.html).
 
+For generating Bioanalyzer reports, a region was set for each sample from 44.52s to 109.57s (corresponding to 50bp and 8000bp, respecctively). A couple of samples had to be slightly adjusted due to the software having difficulty automatically identifying the lower marker. In the reports, each sample has a "Region Table" section and a corresponding "Region 1" which lists the following data (most are self-explanatory; the `Color` is simply the color selected to define "Region 1" on the electropherograms):
+
+- `From [s]`
+
+- `To [s]`
+
+- `Corr. Area`
+
+- `% of Total`
+
+- `Average Size [bp]`
+
+- `Size distribution in CV [%]`
+
+- `Conc. [pg/ul]`
+
+- `Molarity [pmol/l]`
+
+- `Color`
+
 Once a sequencing facility is decided upon, will make decisions about sample pooling and desired sequencing output.
 
 Output folder:
