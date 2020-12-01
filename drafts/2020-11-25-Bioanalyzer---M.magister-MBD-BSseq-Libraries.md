@@ -31,6 +31,14 @@ Output folder:
 
     - [2100-expert_High-Sensitivity-DNA-Assay_DE72902486_2020-11-25_07-00-25.xad](https://gannet.fish.washington.edu/Atumefaciens/20201125_mmag_bioanalyzer_mbd-bsseq-libraries/2100-expert_High-Sensitivity-DNA-Assay_DE72902486_2020-11-25_07-00-25.xad)
 
+  - Bioanalyzer report files (includes fragment lengths, concentration, and molarity; CSV):
+
+    - [2100-expert_High-Sensitivity-DNA-Assay_DE72902486_2020-11-25_05-16-07_Results.csv](2100-expert_High-Sensitivity-DNA-Assay_DE72902486_2020-11-25_05-16-07_Results.csv)
+
+    - [2100-expert_High-Sensitivity-DNA-Assay_DE72902486_2020-11-25_06-12-38_Results.csv](2100-expert_High-Sensitivity-DNA-Assay_DE72902486_2020-11-25_06-12-38_Results.csv)
+
+    - [2100-expert_High-Sensitivity-DNA-Assay_DE72902486_2020-11-25_07-00-25_Results.csv](2100-expert_High-Sensitivity-DNA-Assay_DE72902486_2020-11-25_07-00-25_Results.csv)
+
 
 #### Electropherograms and gels (full chips)
 
