@@ -8,7 +8,7 @@ tags:
 categories:
   - Samples Submitted
 ---
-[Per this GitHub Issue](), Steven asked that I submit a set of fixed cockle clam gonad tissues (currently stored in histology cassettes in 70% EtOH) for  Hematoxylin and eosin stain (H&E). I submitted the following samples to the [UW Pathology Research Services Laboratory (UW PRSL)](https://dlmp.uw.edu/research/pathology-research-services-lab):
+[Per this GitHub Issue](https://github.com/RobertsLab/resources/issues/938), Steven asked that I submit a set of fixed cockle clam gonad tissues (currently stored in histology cassettes in 70% EtOH) for  Hematoxylin and eosin stain (H&E). I submitted the following samples to the [UW Pathology Research Services Laboratory (UW PRSL)](https://dlmp.uw.edu/research/pathology-research-services-lab):
 
 - `cockle_gonad_6`
 
