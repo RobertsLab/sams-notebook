@@ -48,11 +48,11 @@ Output folder:
 
   - Bioanalyzer report files (includes fragment lengths, concentration, and molarity; CSV):
 
-    - [2100-expert_High-Sensitivity-DNA-Assay_DE72902486_2020-11-25_05-16-07_Results.csv](2100-expert_High-Sensitivity-DNA-Assay_DE72902486_2020-11-25_05-16-07_Results.csv)
+    - [2100-expert_High-Sensitivity-DNA-Assay_DE72902486_2020-11-25_05-16-07_Results.csv](https://gannet.fish.washington.edu/Atumefaciens/20201125_mmag_bioanalyzer_mbd-bsseq-libraries/2100-expert_High-Sensitivity-DNA-Assay_DE72902486_2020-11-25_05-16-07_Results.csv)
 
-    - [2100-expert_High-Sensitivity-DNA-Assay_DE72902486_2020-11-25_06-12-38_Results.csv](2100-expert_High-Sensitivity-DNA-Assay_DE72902486_2020-11-25_06-12-38_Results.csv)
+    - [2100-expert_High-Sensitivity-DNA-Assay_DE72902486_2020-11-25_06-12-38_Results.csv](https://gannet.fish.washington.edu/Atumefaciens/20201125_mmag_bioanalyzer_mbd-bsseq-libraries/2100-expert_High-Sensitivity-DNA-Assay_DE72902486_2020-11-25_06-12-38_Results.csv)
 
-    - [2100-expert_High-Sensitivity-DNA-Assay_DE72902486_2020-11-25_07-00-25_Results.csv](2100-expert_High-Sensitivity-DNA-Assay_DE72902486_2020-11-25_07-00-25_Results.csv)
+    - [2100-expert_High-Sensitivity-DNA-Assay_DE72902486_2020-11-25_07-00-25_Results.csv](https://gannet.fish.washington.edu/Atumefaciens/20201125_mmag_bioanalyzer_mbd-bsseq-libraries/2100-expert_High-Sensitivity-DNA-Assay_DE72902486_2020-11-25_07-00-25_Results.csv)
 
 
 #### Electropherograms and gels (full chips)
@@ -104,28 +104,28 @@ Output folder:
 
 ![Bioanalyzer 2100 electropherogram for MBD BSseq library CH05-24](https://gannet.fish.washington.edu/Atumefaciens/20201125_mmag_bioanalyzer_mbd-bsseq-libraries/2100-expert_High-Sensitivity-DNA-Assay_DE72902486_2020-11-25_05-16-07_EGRAM_Sample11.png)
 
-![Bioanalyzer 2100 electropherogram for MBD BSseq library CH05-26](2100-expert_High-Sensitivity-DNA-Assay_DE72902486_2020-11-25_06-12-38_EGRAM_Sample1.png)
+![Bioanalyzer 2100 electropherogram for MBD BSseq library CH05-26](https://gannet.fish.washington.edu/Atumefaciens/20201125_mmag_bioanalyzer_mbd-bsseq-libraries/2100-expert_High-Sensitivity-DNA-Assay_DE72902486_2020-11-25_06-12-38_EGRAM_Sample1.png)
 
-![Bioanalyzer 2100 electropherogram for MBD BSseq library CH07-06](2100-expert_High-Sensitivity-DNA-Assay_DE72902486_2020-11-25_06-12-38_EGRAM_Sample10.png)
+![Bioanalyzer 2100 electropherogram for MBD BSseq library CH07-06](https://gannet.fish.washington.edu/Atumefaciens/20201125_mmag_bioanalyzer_mbd-bsseq-libraries/2100-expert_High-Sensitivity-DNA-Assay_DE72902486_2020-11-25_06-12-38_EGRAM_Sample10.png)
 
-![Bioanalyzer 2100 electropherogram for MBD BSseq library CH07-11](2100-expert_High-Sensitivity-DNA-Assay_DE72902486_2020-11-25_06-12-38_EGRAM_Sample11.png)
+![Bioanalyzer 2100 electropherogram for MBD BSseq library CH07-11](https://gannet.fish.washington.edu/Atumefaciens/20201125_mmag_bioanalyzer_mbd-bsseq-libraries/2100-expert_High-Sensitivity-DNA-Assay_DE72902486_2020-11-25_06-12-38_EGRAM_Sample11.png)
 
-![Bioanalyzer 2100 electropherogram for MBD BSseq library CH07-24](2100-expert_High-Sensitivity-DNA-Assay_DE72902486_2020-11-25_06-12-38_EGRAM_Sample2.png)
+![Bioanalyzer 2100 electropherogram for MBD BSseq library CH07-24](https://gannet.fish.washington.edu/Atumefaciens/20201125_mmag_bioanalyzer_mbd-bsseq-libraries/2100-expert_High-Sensitivity-DNA-Assay_DE72902486_2020-11-25_06-12-38_EGRAM_Sample2.png)
 
-![Bioanalyzer 2100 electropherogram for MBD BSseq library CH09-02](2100-expert_High-Sensitivity-DNA-Assay_DE72902486_2020-11-25_06-12-38_EGRAM_Sample3.png)
+![Bioanalyzer 2100 electropherogram for MBD BSseq library CH09-02](https://gannet.fish.washington.edu/Atumefaciens/20201125_mmag_bioanalyzer_mbd-bsseq-libraries/2100-expert_High-Sensitivity-DNA-Assay_DE72902486_2020-11-25_06-12-38_EGRAM_Sample3.png)
 
-![Bioanalyzer 2100 electropherogram for MBD BSseq library CH09-11](2100-expert_High-Sensitivity-DNA-Assay_DE72902486_2020-11-25_06-12-38_EGRAM_Sample4.png)
+![Bioanalyzer 2100 electropherogram for MBD BSseq library CH09-11](https://gannet.fish.washington.edu/Atumefaciens/20201125_mmag_bioanalyzer_mbd-bsseq-libraries/2100-expert_High-Sensitivity-DNA-Assay_DE72902486_2020-11-25_06-12-38_EGRAM_Sample4.png)
 
-![Bioanalyzer 2100 electropherogram for MBD BSseq library CH09-13](2100-expert_High-Sensitivity-DNA-Assay_DE72902486_2020-11-25_06-12-38_EGRAM_Sample5.png)
+![Bioanalyzer 2100 electropherogram for MBD BSseq library CH09-13](https://gannet.fish.washington.edu/Atumefaciens/20201125_mmag_bioanalyzer_mbd-bsseq-libraries/2100-expert_High-Sensitivity-DNA-Assay_DE72902486_2020-11-25_06-12-38_EGRAM_Sample5.png)
 
-![Bioanalyzer 2100 electropherogram for MBD BSseq library CH09-28](2100-expert_High-Sensitivity-DNA-Assay_DE72902486_2020-11-25_06-12-38_EGRAM_Sample6.png)
+![Bioanalyzer 2100 electropherogram for MBD BSseq library CH09-28](https://gannet.fish.washington.edu/Atumefaciens/20201125_mmag_bioanalyzer_mbd-bsseq-libraries/2100-expert_High-Sensitivity-DNA-Assay_DE72902486_2020-11-25_06-12-38_EGRAM_Sample6.png)
 
-![Bioanalyzer 2100 electropherogram for MBD BSseq library CH09-29](2100-expert_High-Sensitivity-DNA-Assay_DE72902486_2020-11-25_06-12-38_EGRAM_Sample7.png)
+![Bioanalyzer 2100 electropherogram for MBD BSseq library CH09-29](https://gannet.fish.washington.edu/Atumefaciens/20201125_mmag_bioanalyzer_mbd-bsseq-libraries/2100-expert_High-Sensitivity-DNA-Assay_DE72902486_2020-11-25_06-12-38_EGRAM_Sample7.png)
 
-![Bioanalyzer 2100 electropherogram for MBD BSseq library CH10-01](2100-expert_High-Sensitivity-DNA-Assay_DE72902486_2020-11-25_06-12-38_EGRAM_Sample8.png)
+![Bioanalyzer 2100 electropherogram for MBD BSseq library CH10-01](https://gannet.fish.washington.edu/Atumefaciens/20201125_mmag_bioanalyzer_mbd-bsseq-libraries/2100-expert_High-Sensitivity-DNA-Assay_DE72902486_2020-11-25_06-12-38_EGRAM_Sample8.png)
 
-![Bioanalyzer 2100 electropherogram for MBD BSseq library CH10-08](2100-expert_High-Sensitivity-DNA-Assay_DE72902486_2020-11-25_06-12-38_EGRAM_Sample9.png)
+![Bioanalyzer 2100 electropherogram for MBD BSseq library CH10-08](https://gannet.fish.washington.edu/Atumefaciens/20201125_mmag_bioanalyzer_mbd-bsseq-libraries/2100-expert_High-Sensitivity-DNA-Assay_DE72902486_2020-11-25_06-12-38_EGRAM_Sample9.png)
 
-![Bioanalyzer 2100 electropherogram for MBD BSseq library CH10-11](2100-expert_High-Sensitivity-DNA-Assay_DE72902486_2020-11-25_07-00-25_EGRAM_Sample1.png)
+![Bioanalyzer 2100 electropherogram for MBD BSseq library CH10-11](https://gannet.fish.washington.edu/Atumefaciens/20201125_mmag_bioanalyzer_mbd-bsseq-libraries/2100-expert_High-Sensitivity-DNA-Assay_DE72902486_2020-11-25_07-00-25_EGRAM_Sample1.png)
 
-![Bioanalyzer 2100 electropherogram for MBD BSseq library CH10-19](2100-expert_High-Sensitivity-DNA-Assay_DE72902486_2020-11-25_07-00-25_EGRAM_Sample2.png)
+![Bioanalyzer 2100 electropherogram for MBD BSseq library CH10-19](https://gannet.fish.washington.edu/Atumefaciens/20201125_mmag_bioanalyzer_mbd-bsseq-libraries/2100-expert_High-Sensitivity-DNA-Assay_DE72902486_2020-11-25_07-00-25_EGRAM_Sample2.png)
