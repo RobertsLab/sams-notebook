@@ -13,7 +13,11 @@ tags:
 categories:
   - Miscellaneous
 ---
+[Steven asked me to trim](https://github.com/RobertsLab/resources/issues/1039) (GitHub Issue) Ronit's WGBS sequencing data we [received on 20201110](https://robertslab.github.io/sams-notebook/2020/11/10/Data-Received-C.gigas-Ploidy-WGBS-from-Ronits-Project-via-ZymoResearch.html), according to [`Bismark`](https://github.com/FelixKrueger/Bismark) guidelines for [libraries made with the ZymoResearch Pico MethylSeq Kit](https://github.com/FelixKrueger/Bismark/blob/master/Docs/README.md#ix-notes-about-different-library-types-and-commercial-kits).
 
+I trimmed the files using [`fastp`](https://github.com/OpenGene/fastp).
+
+Job was run on Mox.
 
 SBATCH script (GitHub):
 
