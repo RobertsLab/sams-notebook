@@ -65,18 +65,18 @@ Next step, run the samples on the Bioanalyzer for QC to see how they look.
 
 | Sample  | Illumina_TruSeq_index_num | Illumina_TruSeq_Index_seq | SRID/ZymoID |
 |---------|---------------------------|---------------------------|-------------|
-| CH01-06 | 1                         | CGATGT                    | 1732        |
-| CH01-14 | 2                         | TGACCA                    | A           |
-| CH01-22 | 3                         | ACAGTG                    | 1731        |
-| CH01-38 | 4                         | GCCAAT                    | B           |
-| CH03-04 | 5                         | CAGATC                    | C           |
-| CH03-15 | 6                         | CTTGTA                    | D           |
-| CH03-33 | 7                         | CGTGAT                    | E           |
-| CH05-01 | 8                         | GCCTAA                    | 1730        |
-| CH05-06 | 9                         | TCAAGT                    | 1729        |
-| CH05-21 | 10                        | CTGATC                    | 1728        |
-| CH05-24 | 11                        | AAGCTA                    | 1727        |
-| CH05-26 | 12                        | GTAGCC                    | F           |
+| CH01-06 | 1                         | CGTGAT                    | 1732        |
+| CH01-14 | 2                         | CGATGT                    | A           |
+| CH01-22 | 3                         | GCCTAA                    | 1731        |
+| CH01-38 | 4                         | TGACCA                    | B           |
+| CH03-04 | 5                         | ACAGTG                    | C           |
+| CH03-15 | 6                         | GCCAAT                    | D           |
+| CH03-33 | 7                         | CAGATC                    | E           |
+| CH05-01 | 8                         | TCAAGT                    | 1730        |
+| CH05-06 | 9                         | CTGATC                    | 1729        |
+| CH05-21 | 10                        | AAGCTA                    | 1728        |
+| CH05-24 | 11                        | GTAGCC                    | 1727        |
+| CH05-26 | 12                        | CTTGTA                    | F           |
 | CH07-06 | 13                        | TTGACT                    | 1726        |
 | CH07-11 | 14                        | GGAACT                    | 1725        |
 | CH07-24 | 15                        | TGACAT                    | 1724        |
