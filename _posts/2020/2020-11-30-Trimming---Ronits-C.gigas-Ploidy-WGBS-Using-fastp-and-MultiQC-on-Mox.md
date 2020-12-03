@@ -242,40 +242,80 @@ Output folder:
 
     - [zr3534_10_R1.fastp-trim.20201130.fq.gz](https://gannet.fish.washington.edu/Atumefaciens/20201130_cgig_fastp_ronit-ploidy-wgbs/zr3534_10_R1.fastp-trim.20201130.fq.gz) (4.2G)
 
+      - MD5: `7324282409549a013c4b7b2a5a6a14a6`
+
     - [zr3534_10_R2.fastp-trim.20201130.fq.gz](https://gannet.fish.washington.edu/Atumefaciens/20201130_cgig_fastp_ronit-ploidy-wgbs/zr3534_10_R2.fastp-trim.20201130.fq.gz) (4.3G)
+
+      - MD5: `9fb1357e0af5e071c0dfe545499cccb7`
 
     - [zr3534_1_R1.fastp-trim.20201130.fq.gz](https://gannet.fish.washington.edu/Atumefaciens/20201130_cgig_fastp_ronit-ploidy-wgbs/zr3534_1_R1.fastp-trim.20201130.fq.gz) (4.2G)
 
+      - MD5: `33a32d98e98189f4acf068c7a76b86e0`
+
     - [zr3534_1_R2.fastp-trim.20201130.fq.gz](https://gannet.fish.washington.edu/Atumefaciens/20201130_cgig_fastp_ronit-ploidy-wgbs/zr3534_1_R2.fastp-trim.20201130.fq.gz) (4.2G)
+
+      - MD5: `e979a919090cf463694ddbca7d016f5e`
 
     - [zr3534_2_R1.fastp-trim.20201130.fq.gz](https://gannet.fish.washington.edu/Atumefaciens/20201130_cgig_fastp_ronit-ploidy-wgbs/zr3534_2_R1.fastp-trim.20201130.fq.gz) (4.1G)
 
+      - MD5: `111d3d7c516c15a7d6915761bffd0260`
+
     - [zr3534_2_R2.fastp-trim.20201130.fq.gz](https://gannet.fish.washington.edu/Atumefaciens/20201130_cgig_fastp_ronit-ploidy-wgbs/zr3534_2_R2.fastp-trim.20201130.fq.gz) (4.2G)
+
+      - MD5: `a2de2f420e8d580dcd419386adc2fca9`
 
     - [zr3534_3_R1.fastp-trim.20201130.fq.gz](https://gannet.fish.washington.edu/Atumefaciens/20201130_cgig_fastp_ronit-ploidy-wgbs/zr3534_3_R1.fastp-trim.20201130.fq.gz) (4.3G)
 
+      - MD5: `99cbaa5703cb44e2fb71c0793482ca39`
+
     - [zr3534_3_R2.fastp-trim.20201130.fq.gz](https://gannet.fish.washington.edu/Atumefaciens/20201130_cgig_fastp_ronit-ploidy-wgbs/zr3534_3_R2.fastp-trim.20201130.fq.gz) (4.4G)
+
+      - MD5: `91070b1e5f083430a9101e4874b6f72b`
 
     - [zr3534_4_R1.fastp-trim.20201130.fq.gz](https://gannet.fish.washington.edu/Atumefaciens/20201130_cgig_fastp_ronit-ploidy-wgbs/zr3534_4_R1.fastp-trim.20201130.fq.gz) (4.2G)
 
+      - MD5: `c5ff85f06b374f8488f85af877e8ab33`
+
     - [zr3534_4_R2.fastp-trim.20201130.fq.gz](https://gannet.fish.washington.edu/Atumefaciens/20201130_cgig_fastp_ronit-ploidy-wgbs/zr3534_4_R2.fastp-trim.20201130.fq.gz) (4.1G)
+
+      - MD5: `1eb69d729f3511ab28a0bacc223623dd`
 
     - [zr3534_5_R1.fastp-trim.20201130.fq.gz](https://gannet.fish.washington.edu/Atumefaciens/20201130_cgig_fastp_ronit-ploidy-wgbs/zr3534_5_R1.fastp-trim.20201130.fq.gz) (4.5G)
 
+      - MD5: `abfa3ceeddab59d82c9ed5734a6e83a5`
+
     - [zr3534_5_R2.fastp-trim.20201130.fq.gz](https://gannet.fish.washington.edu/Atumefaciens/20201130_cgig_fastp_ronit-ploidy-wgbs/zr3534_5_R2.fastp-trim.20201130.fq.gz) (4.7G)
+
+      - MD5: `846a177f02f08713186537ebd8101126`
 
     - [zr3534_6_R1.fastp-trim.20201130.fq.gz](https://gannet.fish.washington.edu/Atumefaciens/20201130_cgig_fastp_ronit-ploidy-wgbs/zr3534_6_R1.fastp-trim.20201130.fq.gz) (4.1G)
 
+      - MD5: `1cc04bf49ac933c18936ebfa8b1e30d5`
+
     - [zr3534_6_R2.fastp-trim.20201130.fq.gz](https://gannet.fish.washington.edu/Atumefaciens/20201130_cgig_fastp_ronit-ploidy-wgbs/zr3534_6_R2.fastp-trim.20201130.fq.gz) (4.2G)
+
+      - MD5: `1d287dfcdf57d28db4b1307aded2b592`
 
     - [zr3534_7_R1.fastp-trim.20201130.fq.gz](https://gannet.fish.washington.edu/Atumefaciens/20201130_cgig_fastp_ronit-ploidy-wgbs/zr3534_7_R1.fastp-trim.20201130.fq.gz) (3.7G)
 
+      - MD5: `fd3ed000d01b71e3e85277f27e9a8df4`
+
     - [zr3534_7_R2.fastp-trim.20201130.fq.gz](https://gannet.fish.washington.edu/Atumefaciens/20201130_cgig_fastp_ronit-ploidy-wgbs/zr3534_7_R2.fastp-trim.20201130.fq.gz) (3.7G)
+
+      - MD5: `f9aa2a37729b00c3789e29a742030cdb`
 
     - [zr3534_8_R1.fastp-trim.20201130.fq.gz](https://gannet.fish.washington.edu/Atumefaciens/20201130_cgig_fastp_ronit-ploidy-wgbs/zr3534_8_R1.fastp-trim.20201130.fq.gz) (5.3G)
 
+      - MD5: `a75b297f5d0348c543e18e2b0e5bc460`
+
     - [zr3534_8_R2.fastp-trim.20201130.fq.gz](https://gannet.fish.washington.edu/Atumefaciens/20201130_cgig_fastp_ronit-ploidy-wgbs/zr3534_8_R2.fastp-trim.20201130.fq.gz) (4.9G)
+
+      - MD5: `b4f5ec54b07285f11a7010bd1ec1e5f1`
 
     - [zr3534_9_R1.fastp-trim.20201130.fq.gz](https://gannet.fish.washington.edu/Atumefaciens/20201130_cgig_fastp_ronit-ploidy-wgbs/zr3534_9_R1.fastp-trim.20201130.fq.gz) (4.0G)
 
+      - MD5: `2e05bbd9c4b2b1b5e4f6f07c8a210bd6`
+
     - [zr3534_9_R2.fastp-trim.20201130.fq.gz](https://gannet.fish.washington.edu/Atumefaciens/20201130_cgig_fastp_ronit-ploidy-wgbs/zr3534_9_R2.fastp-trim.20201130.fq.gz) (4.1G)
+
+      - MD5: `4a9a112c87f49f32ae1b8e10841e0a50`

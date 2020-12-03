@@ -212,6 +212,60 @@ Runtime was actually faster than just the 10bp 5' trimming from the other day; j
 
 ![fastp runtime](https://github.com/RobertsLab/sams-notebook/blob/master/images/screencaps/20201202_cgig_fastp-10bp-5-3-prime_ronit-ploidy-wgbs_runtime.png?raw=true)
 
+NOTE: The report files ([`MultiQC`](https://multiqc.info/) and [`fastp`](https://github.com/OpenGene/fastp)) all suffer from a naming error, but do contain data for both read 1 (R1) and read 2 (R2).
+
 Output folder:
 
-- []()
+- [20201202_cgig_fastp-10bp-5-3-prime_ronit-ploidy-wgbs/](https://gannet.fish.washington.edu/Atumefaciens/20201202_cgig_fastp-10bp-5-3-prime_ronit-ploidy-wgbs/)
+
+- [`MultiQC`](https://multiqc.info/) report (HTML; open with web browser):
+
+  - [20201202_cgig_fastp-10bp-5-3-prime_ronit-ploidy-wgbs/multiqc_report.html](https://gannet.fish.washington.edu/Atumefaciens/20201202_cgig_fastp-10bp-5-3-prime_ronit-ploidy-wgbs/multiqc_report.html)
+
+- [[`fastp`](https://github.com/OpenGene/fastp)] Reports (HTML; open in web browser):
+
+  - [zr3534_10_R1.fastp-trim.20201202.report.html](https://gannet.fish.washington.edu/Atumefaciens/20201130_cgig_fastp_ronit-ploidy-wgbs/zr3534_10_R1.fastp-trim.20201202.report.html)
+
+  - [zr3534_1_R1.fastp-trim.20201202.report.html](https://gannet.fish.washington.edu/Atumefaciens/20201130_cgig_fastp_ronit-ploidy-wgbs/zr3534_1_R1.fastp-trim.20201202.report.html)
+
+  - [zr3534_2_R1.fastp-trim.20201202.report.html](https://gannet.fish.washington.edu/Atumefaciens/20201130_cgig_fastp_ronit-ploidy-wgbs/zr3534_2_R1.fastp-trim.20201202.report.html)
+
+  - [zr3534_3_R1.fastp-trim.20201202.report.html](https://gannet.fish.washington.edu/Atumefaciens/20201130_cgig_fastp_ronit-ploidy-wgbs/zr3534_3_R1.fastp-trim.20201202.report.html)
+
+  - [zr3534_4_R1.fastp-trim.20201202.report.html](https://gannet.fish.washington.edu/Atumefaciens/20201130_cgig_fastp_ronit-ploidy-wgbs/zr3534_4_R1.fastp-trim.20201202.report.html)
+
+  - [zr3534_5_R1.fastp-trim.20201202.report.html](https://gannet.fish.washington.edu/Atumefaciens/20201130_cgig_fastp_ronit-ploidy-wgbs/zr3534_5_R1.fastp-trim.20201202.report.html)
+
+  - [zr3534_6_R1.fastp-trim.20201202.report.html](https://gannet.fish.washington.edu/Atumefaciens/20201130_cgig_fastp_ronit-ploidy-wgbs/zr3534_6_R1.fastp-trim.20201202.report.html)
+
+  - [zr3534_7_R1.fastp-trim.20201202.report.html](https://gannet.fish.washington.edu/Atumefaciens/20201130_cgig_fastp_ronit-ploidy-wgbs/zr3534_7_R1.fastp-trim.20201202.report.html)
+
+  - [zr3534_8_R1.fastp-trim.20201202.report.html](https://gannet.fish.washington.edu/Atumefaciens/20201130_cgig_fastp_ronit-ploidy-wgbs/zr3534_8_R1.fastp-trim.20201202.report.html)
+
+  - [zr3534_9_R1.fastp-trim.20201202.report.html](https://gannet.fish.washington.edu/Atumefaciens/20201130_cgig_fastp_ronit-ploidy-wgbs/zr3534_9_R1.fastp-trim.20201202.report.html)
+
+- Trimmed FastQ files (gzipped):
+
+  - [zr3534_10_R1.fastp-trim.20201202.fq.gz](https://gannet.fish.washington.edu/Atumefaciens/20201130_cgig_fastp_ronit-ploidy-wgbs/zr3534_10_R1.fastp-trim.20201202.fq.gz) (4.0G)
+
+    - MD5: `a16658d4c034361963a6def0ff266189`
+
+  - [zr3534_10_R2.fastp-trim.20201202.fq.gz](https://gannet.fish.washington.edu/Atumefaciens/20201130_cgig_fastp_ronit-ploidy-wgbs/zr3534_10_R2.fastp-trim.20201202.fq.gz) (4.0G)
+
+    - MD5: `8a994705dada067c8440aba9fe9d23f4`
+
+  - [zr3534_1_R1.fastp-trim.20201202.fq.gz](https://gannet.fish.washington.edu/Atumefaciens/20201130_cgig_fastp_ronit-ploidy-wgbs/zr3534_1_R1.fastp-trim.20201202.fq.gz) (3.9G)
+
+    - MD5: `9c0a247865d2c4f508f285c7835c09e4`
+
+  - [zr3534_1_R2.fastp-trim.20201202.fq.gz](https://gannet.fish.washington.edu/Atumefaciens/20201130_cgig_fastp_ronit-ploidy-wgbs/zr3534_1_R2.fastp-trim.20201202.fq.gz) (4.0G)
+
+    - MD5: `aa4b80519c65404867c91aa037bb7aa0`
+
+  - [zr3534_2_R1.fastp-trim.20201202.fq.gz](https://gannet.fish.washington.edu/Atumefaciens/20201130_cgig_fastp_ronit-ploidy-wgbs/zr3534_2_R1.fastp-trim.20201202.fq.gz) (3.9G)
+
+    - MD5: `c0bb9cf83cec7d2e52c1e43300da6d4e`
+
+  - [zr3534_2_R2.fastp-trim.20201202.fq.gz](https://gannet.fish.washington.edu/Atumefaciens/20201130_cgig_fastp_ronit-ploidy-wgbs/zr3534_2_R2.fastp-trim.20201202.fq.gz) (4.0G)
+
+    - MD5: `4208221b6ad68f1f75c031a4b376a68d`
