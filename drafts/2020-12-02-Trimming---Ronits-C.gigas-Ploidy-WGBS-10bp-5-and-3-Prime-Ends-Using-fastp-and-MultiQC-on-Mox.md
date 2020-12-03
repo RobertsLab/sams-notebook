@@ -25,10 +25,15 @@ Job was run on Mox.
 
 SBATCH script (GitHub):
 
+- []()
 
 ---
 
 #### RESULTS
+
+Runtime was actually faster than just the 10bp 5' trimming from the other day; just over 2hrs:
+
+![fastp runtime](https://github.com/RobertsLab/sams-notebook/blob/master/images/screencaps/20201202_cgig_fastp-10bp-5-3-prime_ronit-ploidy-wgbs_runtime.png?raw=true)
 
 Output folder:
 
