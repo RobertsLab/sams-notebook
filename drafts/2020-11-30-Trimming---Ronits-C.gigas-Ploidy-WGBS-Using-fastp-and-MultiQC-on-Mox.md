@@ -17,6 +17,8 @@ categories:
 
 I trimmed the files using [`fastp`](https://github.com/OpenGene/fastp).
 
+The trimming trims adapters and 10bp from the 5' ends of each read.
+
 Job was run on Mox.
 
 SBATCH script (GitHub):
@@ -200,6 +202,10 @@ echo "${PATH}" | tr : \\n
 
 #### RESULTS
 
+A little under 2.5hrs to run:
+
+![fastp runtime](https://github.com/RobertsLab/sams-notebook/blob/master/images/screencaps/20201130_cgig_fastp_ronit-ploidy-wgbs_runtime.png?raw=true)
+
 Output folder:
 
-- []()
+- [20201130_cgig_fastp_ronit-ploidy-wgbs/](https://gannet.fish.washington.edu/Atumefaciens/20201130_cgig_fastp_ronit-ploidy-wgbs/)
