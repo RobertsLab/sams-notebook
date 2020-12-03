@@ -1,6 +1,6 @@
 ---
 layout: post
-title: Sample Submission - M.magister MBD BSseq Libraries for MiSeq at NOAA NWFSC
+title: Sample Submission - M.magister MBD BSseq Libraries for MiSeq at NOAA
 date: '2020-12-02 09:13'
 tags:
   - Metacarcinus magister
@@ -12,7 +12,7 @@ tags:
 categories:
   - Samples Submitted
 ---
-[Earlier today I quantified the libraries with the Qubit](https://robertslab.github.io/sams-notebook/2020/12/02/Library-Quantification-M.magister-MBD-BSseq-Libraries-with-Qubit.html) in preparation for sample pooling and sequencing. Before performing a full sequencing run, Mac wanted to select a subset of the libraries based on the experimental treatments to have an equal representation of samples. She also wanted to do a quick run on the MiSeq at [NOAA Northewest Fisheries Science Center (NWFSC)](https://www.fisheries.noaa.gov/contact/northwest-fisheries-science-center) to evaluate how well libraries map and to make sure libraries appear to be sequencing at relatively equal levels.
+[Earlier today I quantified the libraries with the Qubit](https://robertslab.github.io/sams-notebook/2020/12/02/Library-Quantification-M.magister-MBD-BSseq-Libraries-with-Qubit.html) in preparation for sample pooling and sequencing. Before performing a full sequencing run, Mac wanted to select a subset of the libraries based on the experimental treatments to have an equal representation of samples. She also wanted to do a quick run on the MiSeq at NOAA to evaluate how well libraries map and to make sure libraries appear to be sequencing at relatively equal levels.
 
 I created 4nM aliquots of all samples, using the average fragment length calculated by the Bioanalyzer region setting I created. The formula for determining molarity from concentration is:
 
