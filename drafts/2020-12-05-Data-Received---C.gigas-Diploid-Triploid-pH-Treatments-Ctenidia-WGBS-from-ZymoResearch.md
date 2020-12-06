@@ -21,6 +21,10 @@ Sequencing consisted of WGBS 150bp paired end (PE) reads for each library. All f
 
 ![screencap of md5 checksum verification](https://github.com/RobertsLab/sams-notebook/blob/master/images/screencaps/20201205_cgig_md5-verification_zr3644-fastqs.png?raw=true)
 
+Principal spreadhsheet for this project was updated (Google Sheet):
+
+- [20200816_hawaii_ploidy_samples](https://drive.google.com/file/d/1wd0iHe78s_1u7NYa9HUlRIOX59QpAtXA/view?usp=sharing)
+
 Next up:
 
 - [`FastQC`](https://www.bioinformatics.babraham.ac.uk/projects/fastqc/)
