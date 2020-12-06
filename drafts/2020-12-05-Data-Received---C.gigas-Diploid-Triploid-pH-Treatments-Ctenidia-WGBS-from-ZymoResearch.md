@@ -24,3 +24,32 @@ Next up:
 - [`FastQC`](https://www.bioinformatics.babraham.ac.uk/projects/fastqc/)
 
 - Submit to NCBI sequence read archive (SRA).
+
+
+
+| Zymo_ID   | Sample_ID | Ploidy   | pH_treatment |
+|-----------|-----------|----------|--------------|
+| zr3644_1  | 2N_HI_5   | diploid  | high         |
+| zr3644_2  | 2N_HI_8   | diploid  | high         |
+| zr3644_3  | 2N_HI_9   | diploid  | high         |
+| zr3644_4  | 2N_HI_10  | diploid  | high         |
+| zr3644_5  | 2N_HI_11  | diploid  | high         |
+| zr3644_6  | 2N_HI_12  | diploid  | high         |
+| zr3644_7  | 2N_LOW_1  | diploid  | low          |
+| zr3644_8  | 2N_LOW_2  | diploid  | low          |
+| zr3644_9  | 2N_LOW_3  | diploid  | low          |
+| zr3644_10 | 2N_LOW_4  | diploid  | low          |
+| zr3644_11 | 2N_LOW_5  | diploid  | low          |
+| zr3644_12 | 2N_LOW_6  | diploid  | low          |
+| zr3644_13 | 3N_HI_2   | triploid | high         |
+| zr3644_14 | 3N_HI_3   | triploid | high         |
+| zr3644_15 | 3N_HI_5   | triploid | high         |
+| zr3644_16 | 3N_HI_8   | triploid | high         |
+| zr3644_17 | 3N_HI_10  | triploid | high         |
+| zr3644_18 | 3N_HI_11  | triploid | high         |
+| zr3644_19 | 3N_LOW_6  | triploid | low          |
+| zr3644_20 | 3N_LOW_7  | triploid | low          |
+| zr3644_21 | 3N_LOW_8  | triploid | low          |
+| zr3644_22 | 3N_LOW_10 | triploid | low          |
+| zr3644_23 | 3N_LOW_11 | triploid | low          |
+| zr3644_24 | 3N_LOW_12 | triploid | low          |
