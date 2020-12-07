@@ -173,6 +173,10 @@ Output folder:
 
 - [20201206_cgig_fastqc_multiqc_ploidy-pH-wgbs](https://gannet.fish.washington.edu/Atumefaciens/20201206_cgig_fastqc_multiqc_ploidy-pH-wgbs)
 
+  - FastQ MD5 checksums (TEXT):
+
+    - [fastq_checksums.md5](https://gannet.fish.washington.edu/Atumefaciens/20201206_cgig_fastqc_multiqc_ploidy-pH-wgbs/fastq_checksums.md5)
+
   - [`MultiQC`](https://multiqc.info/) Report (HTML; open in web browser):
 
     - [multiqc_report.html](https://gannet.fish.washington.edu/Atumefaciens/20201206_cgig_fastqc_multiqc_ploidy-pH-wgbs/multiqc_report.html)
