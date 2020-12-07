@@ -165,6 +165,10 @@ echo "${PATH}" | tr : \\n
 
 #### RESULTS
 
+Runtime was ~30mins:
+
+![FastQC and MultiQC cumulative runtime on Mox](https://github.com/RobertsLab/sams-notebook/blob/master/images/screencaps/20201206_cgig_fastqc_multiqc_ploidy-pH-wgbs_runtime.png?raw=true)
+
 Output folder:
 
 - []()
