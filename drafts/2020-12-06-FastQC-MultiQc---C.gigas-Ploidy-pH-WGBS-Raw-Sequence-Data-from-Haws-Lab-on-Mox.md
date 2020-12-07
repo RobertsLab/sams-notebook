@@ -171,4 +171,107 @@ Runtime was ~30mins:
 
 Output folder:
 
-- []()
+- [20201206_cgig_fastqc_multiqc_ploidy-pH-wgbs](https://gannet.fish.washington.edu/Atumefaciens/20201206_cgig_fastqc_multiqc_ploidy-pH-wgbs)
+
+  - [`MultiQC`](https://multiqc.info/) Report (HTML; open in web browser):
+
+    - [multiqc_report.html](https://gannet.fish.washington.edu/Atumefaciens/20201206_cgig_fastqc_multiqc_ploidy-pH-wgbs/multiqc_report.html)
+
+
+  - Individual [`FastQC`](https://www.bioinformatics.babraham.ac.uk/projects/fastqc/) Reports (HTML; open in web browser):
+
+    - [zr3644_10_R1_fastqc.html](https://gannet.fish.washington.edu/Atumefaciens/20201206_cgig_fastqc_multiqc_ploidy-pH-wgbs/zr3644_10_R1_fastqc.html)
+
+    - [zr3644_10_R2_fastqc.html](https://gannet.fish.washington.edu/Atumefaciens/20201206_cgig_fastqc_multiqc_ploidy-pH-wgbs/zr3644_10_R2_fastqc.html)
+
+    - [zr3644_11_R1_fastqc.html](https://gannet.fish.washington.edu/Atumefaciens/20201206_cgig_fastqc_multiqc_ploidy-pH-wgbs/zr3644_11_R1_fastqc.html)
+
+    - [zr3644_11_R2_fastqc.html](https://gannet.fish.washington.edu/Atumefaciens/20201206_cgig_fastqc_multiqc_ploidy-pH-wgbs/zr3644_11_R2_fastqc.html)
+
+    - [zr3644_12_R1_fastqc.html](https://gannet.fish.washington.edu/Atumefaciens/20201206_cgig_fastqc_multiqc_ploidy-pH-wgbs/zr3644_12_R1_fastqc.html)
+
+    - [zr3644_12_R2_fastqc.html](https://gannet.fish.washington.edu/Atumefaciens/20201206_cgig_fastqc_multiqc_ploidy-pH-wgbs/zr3644_12_R2_fastqc.html)
+
+    - [zr3644_13_R1_fastqc.html](https://gannet.fish.washington.edu/Atumefaciens/20201206_cgig_fastqc_multiqc_ploidy-pH-wgbs/zr3644_13_R1_fastqc.html)
+
+    - [zr3644_13_R2_fastqc.html](https://gannet.fish.washington.edu/Atumefaciens/20201206_cgig_fastqc_multiqc_ploidy-pH-wgbs/zr3644_13_R2_fastqc.html)
+
+    - [zr3644_14_R1_fastqc.html](https://gannet.fish.washington.edu/Atumefaciens/20201206_cgig_fastqc_multiqc_ploidy-pH-wgbs/zr3644_14_R1_fastqc.html)
+
+    - [zr3644_14_R2_fastqc.html](https://gannet.fish.washington.edu/Atumefaciens/20201206_cgig_fastqc_multiqc_ploidy-pH-wgbs/zr3644_14_R2_fastqc.html)
+
+    - [zr3644_15_R1_fastqc.html](https://gannet.fish.washington.edu/Atumefaciens/20201206_cgig_fastqc_multiqc_ploidy-pH-wgbs/zr3644_15_R1_fastqc.html)
+
+    - [zr3644_15_R2_fastqc.html](https://gannet.fish.washington.edu/Atumefaciens/20201206_cgig_fastqc_multiqc_ploidy-pH-wgbs/zr3644_15_R2_fastqc.html)
+
+    - [zr3644_16_R1_fastqc.html](https://gannet.fish.washington.edu/Atumefaciens/20201206_cgig_fastqc_multiqc_ploidy-pH-wgbs/zr3644_16_R1_fastqc.html)
+
+    - [zr3644_16_R2_fastqc.html](https://gannet.fish.washington.edu/Atumefaciens/20201206_cgig_fastqc_multiqc_ploidy-pH-wgbs/zr3644_16_R2_fastqc.html)
+
+    - [zr3644_17_R1_fastqc.html](https://gannet.fish.washington.edu/Atumefaciens/20201206_cgig_fastqc_multiqc_ploidy-pH-wgbs/zr3644_17_R1_fastqc.html)
+
+    - [zr3644_17_R2_fastqc.html](https://gannet.fish.washington.edu/Atumefaciens/20201206_cgig_fastqc_multiqc_ploidy-pH-wgbs/zr3644_17_R2_fastqc.html)
+
+    - [zr3644_18_R1_fastqc.html](https://gannet.fish.washington.edu/Atumefaciens/20201206_cgig_fastqc_multiqc_ploidy-pH-wgbs/zr3644_18_R1_fastqc.html)
+
+    - [zr3644_18_R2_fastqc.html](https://gannet.fish.washington.edu/Atumefaciens/20201206_cgig_fastqc_multiqc_ploidy-pH-wgbs/zr3644_18_R2_fastqc.html)
+
+    - [zr3644_19_R1_fastqc.html](https://gannet.fish.washington.edu/Atumefaciens/20201206_cgig_fastqc_multiqc_ploidy-pH-wgbs/zr3644_19_R1_fastqc.html)
+
+    - [zr3644_19_R2_fastqc.html](https://gannet.fish.washington.edu/Atumefaciens/20201206_cgig_fastqc_multiqc_ploidy-pH-wgbs/zr3644_19_R2_fastqc.html)
+
+    - [zr3644_1_R1_fastqc.html](https://gannet.fish.washington.edu/Atumefaciens/20201206_cgig_fastqc_multiqc_ploidy-pH-wgbs/zr3644_1_R1_fastqc.html)
+
+    - [zr3644_1_R2_fastqc.html](https://gannet.fish.washington.edu/Atumefaciens/20201206_cgig_fastqc_multiqc_ploidy-pH-wgbs/zr3644_1_R2_fastqc.html)
+
+    - [zr3644_20_R1_fastqc.html](https://gannet.fish.washington.edu/Atumefaciens/20201206_cgig_fastqc_multiqc_ploidy-pH-wgbs/zr3644_20_R1_fastqc.html)
+
+    - [zr3644_20_R2_fastqc.html](https://gannet.fish.washington.edu/Atumefaciens/20201206_cgig_fastqc_multiqc_ploidy-pH-wgbs/zr3644_20_R2_fastqc.html)
+
+    - [zr3644_21_R1_fastqc.html](https://gannet.fish.washington.edu/Atumefaciens/20201206_cgig_fastqc_multiqc_ploidy-pH-wgbs/zr3644_21_R1_fastqc.html)
+
+    - [zr3644_21_R2_fastqc.html](https://gannet.fish.washington.edu/Atumefaciens/20201206_cgig_fastqc_multiqc_ploidy-pH-wgbs/zr3644_21_R2_fastqc.html)
+
+    - [zr3644_22_R1_fastqc.html](https://gannet.fish.washington.edu/Atumefaciens/20201206_cgig_fastqc_multiqc_ploidy-pH-wgbs/zr3644_22_R1_fastqc.html)
+
+    - [zr3644_22_R2_fastqc.html](https://gannet.fish.washington.edu/Atumefaciens/20201206_cgig_fastqc_multiqc_ploidy-pH-wgbs/zr3644_22_R2_fastqc.html)
+
+    - [zr3644_23_R1_fastqc.html](https://gannet.fish.washington.edu/Atumefaciens/20201206_cgig_fastqc_multiqc_ploidy-pH-wgbs/zr3644_23_R1_fastqc.html)
+
+    - [zr3644_23_R2_fastqc.html](https://gannet.fish.washington.edu/Atumefaciens/20201206_cgig_fastqc_multiqc_ploidy-pH-wgbs/zr3644_23_R2_fastqc.html)
+
+    - [zr3644_24_R1_fastqc.html](https://gannet.fish.washington.edu/Atumefaciens/20201206_cgig_fastqc_multiqc_ploidy-pH-wgbs/zr3644_24_R1_fastqc.html)
+
+    - [zr3644_24_R2_fastqc.html](https://gannet.fish.washington.edu/Atumefaciens/20201206_cgig_fastqc_multiqc_ploidy-pH-wgbs/zr3644_24_R2_fastqc.html)
+
+    - [zr3644_2_R1_fastqc.html](https://gannet.fish.washington.edu/Atumefaciens/20201206_cgig_fastqc_multiqc_ploidy-pH-wgbs/zr3644_2_R1_fastqc.html)
+
+    - [zr3644_2_R2_fastqc.html](https://gannet.fish.washington.edu/Atumefaciens/20201206_cgig_fastqc_multiqc_ploidy-pH-wgbs/zr3644_2_R2_fastqc.html)
+
+    - [zr3644_3_R1_fastqc.html](https://gannet.fish.washington.edu/Atumefaciens/20201206_cgig_fastqc_multiqc_ploidy-pH-wgbs/zr3644_3_R1_fastqc.html)
+
+    - [zr3644_3_R2_fastqc.html](https://gannet.fish.washington.edu/Atumefaciens/20201206_cgig_fastqc_multiqc_ploidy-pH-wgbs/zr3644_3_R2_fastqc.html)
+
+    - [zr3644_4_R1_fastqc.html](https://gannet.fish.washington.edu/Atumefaciens/20201206_cgig_fastqc_multiqc_ploidy-pH-wgbs/zr3644_4_R1_fastqc.html)
+
+    - [zr3644_4_R2_fastqc.html](https://gannet.fish.washington.edu/Atumefaciens/20201206_cgig_fastqc_multiqc_ploidy-pH-wgbs/zr3644_4_R2_fastqc.html)
+
+    - [zr3644_5_R1_fastqc.html](https://gannet.fish.washington.edu/Atumefaciens/20201206_cgig_fastqc_multiqc_ploidy-pH-wgbs/zr3644_5_R1_fastqc.html)
+
+    - [zr3644_5_R2_fastqc.html](https://gannet.fish.washington.edu/Atumefaciens/20201206_cgig_fastqc_multiqc_ploidy-pH-wgbs/zr3644_5_R2_fastqc.html)
+
+    - [zr3644_6_R1_fastqc.html](https://gannet.fish.washington.edu/Atumefaciens/20201206_cgig_fastqc_multiqc_ploidy-pH-wgbs/zr3644_6_R1_fastqc.html)
+
+    - [zr3644_6_R2_fastqc.html](https://gannet.fish.washington.edu/Atumefaciens/20201206_cgig_fastqc_multiqc_ploidy-pH-wgbs/zr3644_6_R2_fastqc.html)
+
+    - [zr3644_7_R1_fastqc.html](https://gannet.fish.washington.edu/Atumefaciens/20201206_cgig_fastqc_multiqc_ploidy-pH-wgbs/zr3644_7_R1_fastqc.html)
+
+    - [zr3644_7_R2_fastqc.html](https://gannet.fish.washington.edu/Atumefaciens/20201206_cgig_fastqc_multiqc_ploidy-pH-wgbs/zr3644_7_R2_fastqc.html)
+
+    - [zr3644_8_R1_fastqc.html](https://gannet.fish.washington.edu/Atumefaciens/20201206_cgig_fastqc_multiqc_ploidy-pH-wgbs/zr3644_8_R1_fastqc.html)
+
+    - [zr3644_8_R2_fastqc.html](https://gannet.fish.washington.edu/Atumefaciens/20201206_cgig_fastqc_multiqc_ploidy-pH-wgbs/zr3644_8_R2_fastqc.html)
+
+    - [zr3644_9_R1_fastqc.html](https://gannet.fish.washington.edu/Atumefaciens/20201206_cgig_fastqc_multiqc_ploidy-pH-wgbs/zr3644_9_R1_fastqc.html)
+
+    - [zr3644_9_R2_fastqc.html](https://gannet.fish.washington.edu/Atumefaciens/20201206_cgig_fastqc_multiqc_ploidy-pH-wgbs/zr3644_9_R2_fastqc.html)
