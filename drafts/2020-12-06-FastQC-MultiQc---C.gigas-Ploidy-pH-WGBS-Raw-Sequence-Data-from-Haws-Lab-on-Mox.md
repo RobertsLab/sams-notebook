@@ -13,7 +13,152 @@ tags:
 categories:
   - Miscellaneous
 ---
+[Yesterday (20201205), we received the whole genome bisulfite sequencing (WGBS) data back from ZymoResearch](https://robertslab.github.io/sams-notebook/2020/12/05/Data-Received-C.gigas-Diploid-Triploid-pH-Treatments-Ctenidia-WGBS-from-ZymoResearch.html) from the 24 _C.gigas_ diploid/triploid subjected to two different pH treatments ([received from the Haws' Lab on 20200820](https://robertslab.github.io/sams-notebook/2020/08/20/Samples-Received-C.gigas-High-Low-pH-Triploid-Diploid-from-Maria-Haws-Lab.html) that we [submitted to ZymoResearch on 20200824](https://robertslab.github.io/sams-notebook/2020/08/24/Sample-Submitted-C.gigas-Diploid-Triploid-pH-Treatments-Ctenidia-to-ZymoResearch-for-WGBS.html). As part of our standard sequencing data receipt pipeline, I needed to generate [`FastQC`](https://www.bioinformatics.babraham.ac.uk/projects/fastqc/) files for each sample.
 
+[`FastQC`](https://www.bioinformatics.babraham.ac.uk/projects/fastqc/) was run on Mox.
+
+SBATCH script (GitHub):
+
+- [20201206_cgig_fastqc_multiqc_ploidy-pH-wgbs.sh](https://github.com/RobertsLab/sams-notebook/blob/master/sbatch_scripts/20201206_cgig_fastqc_multiqc_ploidy-pH-wgbs.sh)
+
+```shell
+#!/bin/bash
+## Job Name
+#SBATCH --job-name=20201206_cgig_fastqc_multiqc_ploidy-pH-wgbs
+## Allocation Definition
+#SBATCH --account=coenv
+#SBATCH --partition=coenv
+## Resources
+## Nodes
+#SBATCH --nodes=1
+## Walltime (days-hours:minutes:seconds format)
+#SBATCH --time=10-00:00:00
+## Memory per node
+#SBATCH --mem=120G
+##turn on e-mail notification
+#SBATCH --mail-type=ALL
+#SBATCH --mail-user=samwhite@uw.edu
+## Specify the working directory for this job
+#SBATCH --chdir=/gscratch/scrubbed/samwhite/outputs/20201206_cgig_fastqc_multiqc_ploidy-pH-wgbs
+
+
+### FastQC assessment of raw sequencing from Haw's Lab ploidy pH WGBS.
+
+
+###################################################################################
+# These variables need to be set by user
+
+# FastQC output directory
+output_dir=$(pwd)
+
+# Set number of CPUs to use
+threads=28
+
+# Input/output files
+checksums=fastq_checksums.md5
+fastq_list=fastq_list.txt
+raw_reads_dir=/gscratch/srlab/sam/data/C_gigas/wgbs/
+
+# Paths to programs
+fastqc=/gscratch/srlab/programs/fastqc_v0.11.9/fastqc
+multiqc=/gscratch/srlab/programs/anaconda3/bin/multiqc
+
+
+# Programs associative array
+declare -A programs_array
+programs_array=(
+[fastqc]="${fastqc}" \
+[multiqc]="${multiqc}"
+)
+
+###################################################################################
+
+# Exit script if any command fails
+set -e
+
+# Load Python Mox module for Python module availability
+module load intel-python3_2017
+
+# Sync raw FastQ files to working directory
+rsync --archive --verbose \
+"${raw_reads_dir}"zr3644*.fq.gz .
+
+# Populate array with FastQ files
+fastq_array=(*.fq.gz)
+
+# Pass array contents to new variable
+fastqc_list=$(echo "${fastq_array[*]}")
+
+# Run FastQC
+# NOTE: Do NOT quote ${fastqc_list}
+${programs_array[fastqc]} \
+--threads ${threads} \
+--outdir ${output_dir} \
+${fastqc_list}
+
+
+# Create list of fastq files used in analysis
+echo "${fastqc_list}" | tr " " "\n" >> ${fastq_list}
+
+# Generate checksums for reference
+while read -r line
+do
+
+	# Generate MD5 checksums for each input FastQ file
+	echo "Generating MD5 checksum for ${line}."
+	md5sum "${line}" >> "${checksums}"
+	echo "Completed: MD5 checksum for ${line}."
+	echo ""
+
+	# Remove fastq files from working directory
+	echo "Removing ${line} from directory"
+	rm "${line}"
+	echo "Removed ${line} from directory"
+	echo ""
+done < ${fastq_list}
+
+# Run MultiQC
+${programs_array[multiqc]} .
+
+
+# Capture program options
+for program in "${!programs_array[@]}"
+do
+	{
+  echo "Program options for ${program}: "
+	echo ""
+  # Handle samtools help menus
+  if [[ "${program}" == "samtools_index" ]] \
+  || [[ "${program}" == "samtools_sort" ]] \
+  || [[ "${program}" == "samtools_view" ]]
+  then
+    ${programs_array[$program]}
+  fi
+	${programs_array[$program]} -h
+	echo ""
+	echo ""
+	echo "----------------------------------------------"
+	echo ""
+	echo ""
+} &>> program_options.log || true
+
+  # If MultiQC is in programs_array, copy the config file to this directory.
+  if [[ "${program}" == "multiqc" ]]; then
+  	cp --preserve ~/.multiqc_config.yaml multiqc_config.yaml
+  fi
+done
+
+
+# Document programs in PATH (primarily for program version ID)
+{
+date
+echo ""
+echo "System PATH for $SLURM_JOB_ID"
+echo ""
+printf "%0.s-" {1..10}
+echo "${PATH}" | tr : \\n
+} >> system_path.log
+```
 
 
 ---
