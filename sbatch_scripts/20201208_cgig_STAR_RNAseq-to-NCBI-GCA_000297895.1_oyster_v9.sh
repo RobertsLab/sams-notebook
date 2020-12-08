@@ -18,7 +18,7 @@
 #SBATCH --chdir=/gscratch/scrubbed/samwhite/outputs/20201208_cgig_STAR_RNAseq-to-NCBI-GCA_000297895.1_oyster_v9
 
 
-### C.gigas RNAseq alignment to NCBI genome file GCA_000297895.1_oyster_v9.
+### C.gigas RNAseq alignment to NCBI genome FastA file GCA_000297895.1_oyster_v9.
 ### Mackenzie Gavery asked for help to evaluate RNAseq read mappings to mt genome.
 
 
@@ -31,13 +31,15 @@ wd=$(pwd)
 # Set number of CPUs to use
 threads=28
 
+# Initialize arrays
+fastq_array=()
+
 # Input/output files
 fastq_checksums=fastq_checksums.md5
-fastq_list=fastq_list.txt
 rnaseq_reads_dir=/gscratch/srlab/sam/data/C_gigas/RNAseq
 gtf=/gscratch/srlab/sam/data/C_gigas/transcriptomes/GCA_000297895.1_oyster_v9_genomic.gtf
 genome_dir=${wd}/genome_dir
-genome_fasta=GCA_000297895.1_oyster_v9_genomic.fna
+genome_fasta=/gscratch/srlab/sam/data/C_gigas/genomes/GCA_000297895.1_oyster_v9_genomic.fna
 
 # Paths to programs
 star=/gscratch/srlab/programs/STAR-2.7.6a/bin/Linux_x86_64_static/STAR
@@ -62,37 +64,54 @@ module load intel-python3_2017
 # Load GCC OMP compiler. Might/not be needed for STAR
 module load gcc_8.2.1-ompi_4.0.2
 
-# Sync raw FastQ files to working directory
-rsync --archive --verbose \
-"${raw_reads_dir}"zr3644*.fq.gz .
 
-# Populate array with FastQ files
-fastq_array=(*.fq.gz)
+# Make STAR genome directory
+mkdir --parents $"{genome_dir}"
 
-# Pass array contents to new variable
-fastqc_list=$(echo "${fastq_array[*]}")
+# Populate RNAseq array
+fastq_array=(${rnaseq_reads_dir}/*.fastq)
+
+# Comma separated list required for STAR mapping
+# Uses tr to change spaces between elements to commas
+fastq_list=$(tr ' ' ',' <<< "${fastq_array[@]}")
 
 
 
-# Create list of fastq files used in analysis
-echo "${fastqc_list}" | tr " " "\n" >> ${fastq_list}
+# Create STAR genome indexes
+${programs_array[$star]} \
+--runThreadN ${threads} \
+--runMode genomeGenerate
+--genomeDir ${genome_dir} \
+--genomeFastaFiles ${genome_fasta} \
+--sjdbGTFfile ${gtf} \
+--sjdbOverhang ReadLength-1
+
+# Run STAR mapping
+# Sets output to sorted BAM file
+${programs_array[$star]} \
+--runThreadN ${threads} \
+--genomeDir ${genome_dir} \
+--outSAMtype BAM SortedByCoordinate \
+--readFilesIn ${fastq_list}
 
 # Generate checksums for reference
-while read -r line
+# Uses bash string substitution to replace commas with spaces
+# NOTE: do NOT quote string substitution command
+for fastq in ${fastq_list//,/ }
 do
 
 	# Generate MD5 checksums for each input FastQ file
-	echo "Generating MD5 checksum for ${line}."
-	md5sum "${line}" >> "${checksums}"
-	echo "Completed: MD5 checksum for ${line}."
+	echo "Generating MD5 checksum for ${fastq}."
+	md5sum "${fastq}" >> "${checksums}"
+	echo "Completed: MD5 checksum for ${fastq}."
 	echo ""
 
 	# Remove fastq files from working directory
-	echo "Removing ${line} from directory"
-	rm "${line}"
-	echo "Removed ${line} from directory"
+	echo "Removing ${fastq} from directory"
+	rm "${fastq}"
+	echo "Removed ${fastq} from directory"
 	echo ""
-done < ${fastq_list}
+done
 
 # Run MultiQC
 ${programs_array[multiqc]} .
