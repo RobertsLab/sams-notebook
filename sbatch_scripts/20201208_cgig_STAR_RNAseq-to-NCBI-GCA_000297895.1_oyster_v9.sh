@@ -66,7 +66,7 @@ module load gcc_8.2.1-ompi_4.0.2
 
 
 # Make STAR genome directory
-mkdir --parents $"{genome_dir}"
+mkdir --parents ${genome_dir}
 
 # Populate RNAseq array
 fastq_array=(${rnaseq_reads_dir}/*.fastq)
@@ -78,17 +78,21 @@ fastq_list=$(tr ' ' ',' <<< "${fastq_array[@]}")
 
 
 # Create STAR genome indexes
-${programs_array[$star]} \
+# Overhang value is set to "generic" 100bp -
+# this value is unknown and is the suggested default in
+# STAR documentation.
+${programs_array[star]} \
 --runThreadN ${threads} \
---runMode genomeGenerate
+--runMode genomeGenerate \
 --genomeDir ${genome_dir} \
 --genomeFastaFiles ${genome_fasta} \
 --sjdbGTFfile ${gtf} \
---sjdbOverhang ReadLength-1
+--sjdbOverhang 100 \
+--genomeSAindexNbases 13
 
 # Run STAR mapping
 # Sets output to sorted BAM file
-${programs_array[$star]} \
+${programs_array[star]} \
 --runThreadN ${threads} \
 --genomeDir ${genome_dir} \
 --outSAMtype BAM SortedByCoordinate \
