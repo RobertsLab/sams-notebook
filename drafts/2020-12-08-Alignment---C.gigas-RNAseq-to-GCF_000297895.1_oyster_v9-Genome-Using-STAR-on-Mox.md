@@ -250,6 +250,12 @@ echo "Finished logging system PATH"
 
 #### RESULTS
 
+This was pretty quick, but wasn't really sure what to expect. Only 20mins:
+
+![STAR runtime on Mox](https://github.com/RobertsLab/sams-notebook/blob/master/images/screencaps/20201208_cgig_STAR_RNAseq-to-NCBI-GCF_000297895.1_oyster_v9_runtime.png?raw=true)
+
+
+
 Output folder:
 
 - []()
