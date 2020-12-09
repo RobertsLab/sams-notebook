@@ -42,15 +42,17 @@ genome_dir=${wd}/genome_dir
 genome_fasta=/gscratch/srlab/sam/data/C_gigas/genomes/GCA_000297895.1_oyster_v9_genomic.fna
 
 # Paths to programs
-star=/gscratch/srlab/programs/STAR-2.7.6a/bin/Linux_x86_64_static/STAR
 multiqc=/gscratch/srlab/programs/anaconda3/bin/multiqc
+samtools=
+star=/gscratch/srlab/programs/STAR-2.7.6a/bin/Linux_x86_64_static/STAR
 
 
 # Programs associative array
 declare -A programs_array
 programs_array=(
-[star]="${star}" \
-[multiqc]="${multiqc}"
+[multiqc]="${multiqc}" \
+[samtools_index]=
+[star]="${star}"
 )
 
 ###################################################################################
@@ -98,6 +100,10 @@ ${programs_array[star]} \
 --outSAMtype BAM SortedByCoordinate \
 --readFilesIn ${fastq_list}
 
+# Index BAM output file
+${programs_array[samtools_index]} \
+
+
 # Generate checksums for reference
 # Uses bash string substitution to replace commas with spaces
 # NOTE: do NOT quote string substitution command
@@ -106,7 +112,7 @@ do
 
 	# Generate MD5 checksums for each input FastQ file
 	echo "Generating MD5 checksum for ${fastq}."
-	md5sum "${fastq}" >> "${checksums}"
+	md5sum "${fastq}" >> "${fastq_checksums}"
 	echo "Completed: MD5 checksum for ${fastq}."
 	echo ""
 
