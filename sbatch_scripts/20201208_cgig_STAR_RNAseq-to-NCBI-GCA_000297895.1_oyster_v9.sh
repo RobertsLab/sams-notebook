@@ -37,9 +37,9 @@ fastq_array=()
 # Input/output files
 fastq_checksums=fastq_checksums.md5
 rnaseq_reads_dir=/gscratch/srlab/sam/data/C_gigas/RNAseq
-gtf=/gscratch/srlab/sam/data/C_gigas/transcriptomes/GCA_000297895.1_oyster_v9_genomic.gtf
+gtf=/gscratch/srlab/sam/data/C_gigas/transcriptomes/GCF_000297895.1_oyster_v9_genomic.gtf.wl_keep_mito_v7.sorted.gtf
 genome_dir=${wd}/genome_dir
-genome_fasta=/gscratch/srlab/sam/data/C_gigas/genomes/GCA_000297895.1_oyster_v9_genomic.fna
+genome_fasta=/gscratch/srlab/sam/data/C_gigas/genomes/GCF_000297895.1_oyster_v9_genomic.fasta
 
 # Paths to programs
 multiqc=/gscratch/srlab/programs/anaconda3/bin/multiqc
