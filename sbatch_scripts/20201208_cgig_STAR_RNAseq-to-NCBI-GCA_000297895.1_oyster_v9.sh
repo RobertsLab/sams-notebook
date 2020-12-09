@@ -1,6 +1,6 @@
 #!/bin/bash
 ## Job Name
-#SBATCH --job-name=20201208_cgig_STAR_RNAseq-to-NCBI-GCA_000297895.1_oyster_v9
+#SBATCH --job-name=20201208_cgig_STAR_RNAseq-to-NCBI-GCF_000297895.1_oyster_v9
 ## Allocation Definition
 #SBATCH --account=coenv
 #SBATCH --partition=coenv
@@ -15,10 +15,10 @@
 #SBATCH --mail-type=ALL
 #SBATCH --mail-user=samwhite@uw.edu
 ## Specify the working directory for this job
-#SBATCH --chdir=/gscratch/scrubbed/samwhite/outputs/20201208_cgig_STAR_RNAseq-to-NCBI-GCA_000297895.1_oyster_v9
+#SBATCH --chdir=/gscratch/scrubbed/samwhite/outputs/20201208_cgig_STAR_RNAseq-to-NCBI-GCF_000297895.1_oyster_v9
 
 
-### C.gigas RNAseq alignment to NCBI genome FastA file GCA_000297895.1_oyster_v9.
+### C.gigas RNAseq alignment to NCBI genome FastA file from Mac GCF_000297895.1_oyster_v9_genomic.fasta.
 ### Mackenzie Gavery asked for help to evaluate RNAseq read mappings to mt genome.
 
 
