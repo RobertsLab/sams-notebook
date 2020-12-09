@@ -36,6 +36,8 @@ fastq_array=()
 
 # Input/output files
 fastq_checksums=fastq_checksums.md5
+genome_fasta_checksum=genome_fasta_checksum.md5
+gtf_checksum=gtf_checksum.md5
 rnaseq_reads_dir=/gscratch/srlab/sam/data/C_gigas/RNAseq
 gtf=/gscratch/srlab/sam/data/C_gigas/transcriptomes/GCF_000297895.1_oyster_v9_genomic.gtf.wl_keep_mito_v7.sorted.gtf
 genome_dir=${wd}/genome_dir
@@ -131,8 +133,20 @@ done
 # Run MultiQC
 ${programs_array[multiqc]} .
 
+# Generate checksums for genome FastA and GTF
+echo "Generating MD5 checksum for ${genome_fasta}."
+md5sum "${genome_fasta}" > "${genome_fasta_checksum}"
+echo "Completed: MD5 checksum for ${genome_fasta}."
+echo ""
+
+echo "Generating MD5 hecksum for ${gtf}."
+md5sum "${gtf}" > "${gtf_checksum}"
+echo "Completed: MD5 checksum for ${gtf}."
+echo ""
+
 
 # Capture program options
+echo "Logging program options..."
 for program in "${!programs_array[@]}"
 do
 	{
@@ -159,7 +173,12 @@ do
   fi
 done
 
+echo ""
+echo "Finished logging program options."
+echo ""
 
+echo ""
+echo "Logging system PATH."
 # Document programs in PATH (primarily for program version ID)
 {
 date
@@ -169,3 +188,5 @@ echo ""
 printf "%0.s-" {1..10}
 echo "${PATH}" | tr : \\n
 } >> system_path.log
+
+echo "Finished logging system PATH"
