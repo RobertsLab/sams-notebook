@@ -258,4 +258,4 @@ This was pretty quick, but wasn't really sure what to expect. Only 20mins:
 
 Output folder:
 
-- []()
+- [20201208_cgig_STAR_RNAseq-to-NCBI-GCF_000297895.1_oyster_v9/](https://gannet.fish.washington.edu/Atumefaciens/20201208_cgig_STAR_RNAseq-to-NCBI-GCF_000297895.1_oyster_v9/)
