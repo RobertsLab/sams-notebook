@@ -267,11 +267,36 @@ MAC'S ALIGNMENT:
 
 [Her primary concern](https://github.com/RobertsLab/resources/issues/1045) is the fact that a majority of the reads appear to align to non-coding regions of the _C.gigas_ mt genome. My alignment shows the same. I suspect that is likely related to poor annotation of the _C.gigas_ mt genome/transcriptome. Also, I believe the mitochondrial translation codons differ from that of nuclear translation codons. On top of that, I think invertebrates might also have a slightly altered set of translation codons. Zooming in on the IGV alignment seems to show that the standard (mammalian) codons were used to identify coding regions.
 
-Notice that the stop codon from this alignment shown below uses TGA as termination. In invertebrate mt genomes, this codon actually encodes for tryptophan (Trp/W). This suggests that the GTF file was generated with a standard (i.e. vertebrate, non-mitochondrial) codon table, instead of a mt codon table (and almost certainly not an invertebrate mt codon table).
+Notice that the stop codon from this alignment shown below uses TGA as termination. [In invertebrate mt genomes, this codon actually encodes for tryptophan (Trp/W)](https://www.ncbi.nlm.nih.gov/Taxonomy/Utils/wprintgc.cgi#SG5). This suggests that the GTF file was generated with a standard (i.e. vertebrate, non-mitochondrial) codon table, instead of a mt codon table (and almost certainly not an invertebrate mt codon table).
 
 ![IGV screencap showing standard stop codon usage instead of invertebrate mt tryptophan codon](https://github.com/RobertsLab/sams-notebook/blob/master/images/screencaps/20201208_cgig_STAR_RNAseq-to-NCBI-GCF_000297895.1_oyster_v9_mt_IGV_stop-codon.png?raw=true)
+
+In any case, I've posted my thoughts/results [in that GitHub Issue](https://github.com/RobertsLab/resources/issues/1045). Links to files are below.
 
 
 Output folder:
 
 - [20201208_cgig_STAR_RNAseq-to-NCBI-GCF_000297895.1_oyster_v9/](https://gannet.fish.washington.edu/Atumefaciens/20201208_cgig_STAR_RNAseq-to-NCBI-GCF_000297895.1_oyster_v9/)
+
+  - BAM files:
+
+    - Mitochondrial BAM and index:
+
+      - [Aligned.sortedByCoord.out.NC_001276.1.bam](https://gannet.fish.washington.edu/Atumefaciens/20201208_cgig_STAR_RNAseq-to-NCBI-GCF_000297895.1_oyster_v9/Aligned.sortedByCoord.out.NC_001276.1.bam)
+
+      - [Aligned.sortedByCoord.out.NC_001276.1.bam.csi](https://gannet.fish.washington.edu/Atumefaciens/20201208_cgig_STAR_RNAseq-to-NCBI-GCF_000297895.1_oyster_v9/Aligned.sortedByCoord.out.NC_001276.1.bam.csi)
+
+    - Full BAM and index:
+
+      - [Aligned.sortedByCoord.out.bam](https://gannet.fish.washington.edu/Atumefaciens/20201208_cgig_STAR_RNAseq-to-NCBI-GCF_000297895.1_oyster_v9/Aligned.sortedByCoord.out.bam)
+
+      - [Aligned.sortedByCoord.out.bam.bai](https://gannet.fish.washington.edu/Atumefaciens/20201208_cgig_STAR_RNAseq-to-NCBI-GCF_000297895.1_oyster_v9/Aligned.sortedByCoord.out.bam.bai)
+
+
+  - MD5 checksums (TEXT):
+
+    - [fastq_checksums.md5](https://gannet.fish.washington.edu/Atumefaciens/20201208_cgig_STAR_RNAseq-to-NCBI-GCF_000297895.1_oyster_v9/fastq_checksums.md5)
+
+    - [genome_fasta_checksum.md5](https://gannet.fish.washington.edu/Atumefaciens/20201208_cgig_STAR_RNAseq-to-NCBI-GCF_000297895.1_oyster_v9/genome_fasta_checksum.md5)
+
+    - [gtf_checksum.md5](https://gannet.fish.washington.edu/Atumefaciens/20201208_cgig_STAR_RNAseq-to-NCBI-GCF_000297895.1_oyster_v9/gtf_checksum.md5)
