@@ -43,7 +43,7 @@ genome_fasta=/gscratch/srlab/sam/data/C_gigas/genomes/GCF_000297895.1_oyster_v9_
 
 # Paths to programs
 multiqc=/gscratch/srlab/programs/anaconda3/bin/multiqc
-samtools=
+samtools="/gscratch/srlab/programs/samtools-1.10/samtools"
 star=/gscratch/srlab/programs/STAR-2.7.6a/bin/Linux_x86_64_static/STAR
 
 
@@ -51,7 +51,9 @@ star=/gscratch/srlab/programs/STAR-2.7.6a/bin/Linux_x86_64_static/STAR
 declare -A programs_array
 programs_array=(
 [multiqc]="${multiqc}" \
-[samtools_index]=
+[samtools_index]="${samtools} index" \
+[samtools_sort]="${samtools} sort" \
+[samtools_view]="${samtools} view" \
 [star]="${star}"
 )
 
@@ -102,7 +104,16 @@ ${programs_array[star]} \
 
 # Index BAM output file
 ${programs_array[samtools_index]} \
+Aligned.sortedByCoord.out.bam
 
+# Extract mt alignments
+# -h: includes header
+${programs_array[samtools_view]} \
+--threads ${threads} \
+--write-index \
+-h \
+Aligned.sortedByCoord.out.bam NC_001276.1 \
+-o Aligned.sortedByCoord.out.NC_001276.1.bam
 
 # Generate checksums for reference
 # Uses bash string substitution to replace commas with spaces
