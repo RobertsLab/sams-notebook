@@ -126,12 +126,6 @@ do
 	md5sum "${fastq}" >> "${fastq_checksums}"
 	echo "Completed: MD5 checksum for ${fastq}."
 	echo ""
-
-	# Remove fastq files from working directory
-	echo "Removing ${fastq} from directory"
-	rm "${fastq}"
-	echo "Removed ${fastq} from directory"
-	echo ""
 done
 
 # Run MultiQC
