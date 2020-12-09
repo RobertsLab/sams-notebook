@@ -23,17 +23,17 @@ I used the following files for the alignment:
 
 RNAseq (FastQ):
 
-- [2M_AGTCAA_L001_R1_001.fastq.gz](http://owl.fish.washington.edu/nightingales/C_gigas/2M_AGTCAA_L001_R1_001.fastq.gz)
+- [2M_AGTCAA_L001_R1_001.fastq.gz](http://owl.fish.washington.edu/nightingales/C_gigas/2M_AGTCAA_L001_R1_001.fastq.gz) (2.4GB)
 
-- [2M-HS_CCGTCC_L001_R1_001.fastq.gz](http://owl.fish.washington.edu/nightingales/C_gigas/2M-HS_CCGTCC_L001_R1_001.fastq.gz)
+- [2M-HS_CCGTCC_L001_R1_001.fastq.gz](http://owl.fish.washington.edu/nightingales/C_gigas/2M-HS_CCGTCC_L001_R1_001.fastq.gz) (1.9GB)
 
-- [4M_AGTTCC_L001_R1_001.fastq.gz](http://owl.fish.washington.edu/nightingales/C_gigas/4M_AGTTCC_L001_R1_001.fastq.gz)
+- [4M_AGTTCC_L001_R1_001.fastq.gz](http://owl.fish.washington.edu/nightingales/C_gigas/4M_AGTTCC_L001_R1_001.fastq.gz) (2.0GB)
 
-- [http://owl.fish.washington.edu/nightingales/C_gigas/4M-HS_GTCCGC_L001_R1_001.fastq.gz](http://owl.fish.washington.edu/nightingales/C_gigas/4M-HS_GTCCGC_L001_R1_001.fastq.gz)
+- [http://owl.fish.washington.edu/nightingales/C_gigas/4M-HS_GTCCGC_L001_R1_001.fastq.gz](http://owl.fish.washington.edu/nightingales/C_gigas/4M-HS_GTCCGC_L001_R1_001.fastq.gz) (1.5GB)
 
-- [http://owl.fish.washington.edu/nightingales/C_gigas/6M_ATGTCA_L001_R1_001.fastq.gz](http://owl.fish.washington.edu/nightingales/C_gigas/6M_ATGTCA_L001_R1_001.fastq.gz)
+- [http://owl.fish.washington.edu/nightingales/C_gigas/6M_ATGTCA_L001_R1_001.fastq.gz](http://owl.fish.washington.edu/nightingales/C_gigas/6M_ATGTCA_L001_R1_001.fastq.gz) (2.0GB)
 
-- [http://owl.fish.washington.edu/nightingales/C_gigas/6M-HS_GTGAAA_L001_R1_001.fastq.gz](http://owl.fish.washington.edu/nightingales/C_gigas/6M-HS_GTGAAA_L001_R1_001.fastq.gz)
+- [http://owl.fish.washington.edu/nightingales/C_gigas/6M-HS_GTGAAA_L001_R1_001.fastq.gz](http://owl.fish.washington.edu/nightingales/C_gigas/6M-HS_GTGAAA_L001_R1_001.fastq.gz) (1.5GB)
 
 
 Genome FastA (540MB):
@@ -254,6 +254,22 @@ This was pretty quick, but wasn't really sure what to expect. Only 20mins:
 
 ![STAR runtime on Mox](https://github.com/RobertsLab/sams-notebook/blob/master/images/screencaps/20201208_cgig_STAR_RNAseq-to-NCBI-GCF_000297895.1_oyster_v9_runtime.png?raw=true)
 
+
+A quick comparison of my alignment with what Mac saw previously show very similar results:
+
+SAM'S ALIGNMENT:
+
+![Sam's C.gigas RNAseq STAR alignment to mt genome in IGV](https://github.com/RobertsLab/sams-notebook/blob/master/images/screencaps/20201208_cgig_STAR_RNAseq-to-NCBI-GCF_000297895.1_oyster_v9_mt_IGV.png?raw=true)
+
+MAC'S ALIGNMENT:
+
+![Mac's C.gigas single-cell RNAseq alignment to mt genome in IGV](https://user-images.githubusercontent.com/4512578/101513691-52c8bc80-3931-11eb-9f8e-2d5040234575.png)
+
+[Her primary concern](https://github.com/RobertsLab/resources/issues/1045) is the fact that a majority of the reads appear to align to non-coding regions of the _C.gigas_ mt genome. My alignment shows the same. I suspect that is likely related to poor annotation of the _C.gigas_ mt genome/transcriptome. Also, I believe the mitochondrial translation codons differ from that of nuclear translation codons. On top of that, I think invertebrates might also have a slightly altered set of translation codons. Zooming in on the IGV alignment seems to show that the standard (mammalian) codons were used to identify coding regions.
+
+Notice that the stop codon from this alignment shown below uses TGA as termination. In invertebrate mt genomes, this codon actually encodes for tryptophan (Trp/W). This suggests that the GTF file was generated with a standard (i.e. vertebrate, non-mitochondrial) codon table, instead of a mt codon table (and almost certainly not an invertebrate mt codon table).
+
+![IGV screencap showing standard stop codon usage instead of invertebrate mt tryptophan codon](https://github.com/RobertsLab/sams-notebook/blob/master/images/screencaps/20201208_cgig_STAR_RNAseq-to-NCBI-GCF_000297895.1_oyster_v9_mt_IGV_stop-codon.png?raw=true)
 
 
 Output folder:
