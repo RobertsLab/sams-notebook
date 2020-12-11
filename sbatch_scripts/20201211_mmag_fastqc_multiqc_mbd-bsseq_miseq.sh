@@ -34,7 +34,7 @@ threads=28
 # Input/output files
 checksums=fastq_checksums.md5
 fastq_list=fastq_list.txt
-raw_reads_dir=/gscratch/srlab/sam/data/C_magister/MBD-BSseq
+raw_reads_dir=/gscratch/srlab/sam/data/C_magister/MBD-BSseq/
 
 # Paths to programs
 fastqc=/gscratch/srlab/programs/fastqc_v0.11.9/fastqc
@@ -61,7 +61,7 @@ rsync --archive --verbose \
 "${raw_reads_dir}"CH*.fastq.gz .
 
 # Populate array with FastQ files
-fastq_array=(*.fq.gz)
+fastq_array=(CH*.fastq.gz)
 
 # Pass array contents to new variable
 fastqc_list=$(echo "${fastq_array[*]}")
