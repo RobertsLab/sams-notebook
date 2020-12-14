@@ -170,4 +170,12 @@ Runtime was fast, under 3mins:
 
 Output folder:
 
-- []()
+- [20201211_mmag_fastqc_multiqc_mbd-bsseq_miseq/](https://gannet.fish.washington.edu/Atumefaciens/20201211_mmag_fastqc_multiqc_mbd-bsseq_miseq/)
+
+[`MultiQC`](https://multiqc.info/) Report (HTML; open with web browser):
+
+- [20201211_mmag_fastqc_multiqc_mbd-bsseq_miseq/multiqc_report.html](https://gannet.fish.washington.edu/Atumefaciens/20201211_mmag_fastqc_multiqc_mbd-bsseq_miseq/multiqc_report.html)
+
+Individual [`FastQC`](https://www.bioinformatics.babraham.ac.uk/projects/fastqc/) reports can be found by browsing the output folder linked above and/or by clicking through the [`MultiQC`](https://multiqc.info/) report that's linked above.
+
+This test run was to help evaluate evenness of the sample pooling, as well as identify any other possible issues. Evenness appears OK (not great), but I'm not entirely sure how this would be addressed, as an aliquot of each library was created at a concentration of 4nM and then 1uL of each of these aliquots was combined. Is it safe to assume that any sequencing biases leading to preferential library sequencing is due to the individual libraries? And, that this can be adjusted for when making the final pooling that gets sent off for a full sequencing run? Also, I'm a bit surprised at the high levels of adapter content. I'm curious how these data will look after trimming. Anyway, at this point, I'll let Laura Spencer and Mac make decisions about going forward with a full sequencing run, as it's really their project anyway.
