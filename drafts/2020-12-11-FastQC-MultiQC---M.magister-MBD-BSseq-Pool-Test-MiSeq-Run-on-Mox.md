@@ -164,6 +164,10 @@ echo "${PATH}" | tr : \\n
 
 #### RESULTS
 
+Runtime was fast, under 3mins:
+
+![Cumulative runtime for FastQC and MultiQC on C.magister MiSeq data](https://github.com/RobertsLab/sams-notebook/blob/master/images/screencaps/20201211_mmag_fastqc_multiqc_mbd-bsseq_miseq_runtime.png?raw=true)
+
 Output folder:
 
 - []()
