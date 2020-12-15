@@ -14,7 +14,7 @@ tags:
 categories:
   - Miscellaneous
 ---
-We've produced a number of [_C.bairdi_ transcriptomes](https://github.com/RobertsLab/resources/wiki/Genomic-Resources#transcriptomes) and we're interested in doing some comparisons to try to determine which one might be "best". I previously [compared the BUSCO scores of each of these transcriptomes](https://robertslab.github.io/sams-notebook/2020/05/28/Transcriptome-Comparisons-C.bairdi-BUSCO-Scores.html) and now will be using the [DETONATE](http://deweylab.biostat.wisc.edu/detonate) software package to perform two different types of comparisons: compared to a reference ([REF-EVAL](http://deweylab.biostat.wisc.edu/detonate/ref-eval.html)) and determine an overall quality "score" ([RSEM-EVAL](http://deweylab.biostat.wisc.edu/detonate/rsem-eval.html)). I'll running [REF-EVAL](http://deweylab.biostat.wisc.edu/detonate/ref-eval.html) in this notebook.
+We've produced a number of [_C.bairdi_ transcriptomes](https://github.com/RobertsLab/resources/wiki/Genomic-Resources#transcriptomes) and we're interested in doing some comparisons to try to determine which one might be "best". I previously [compared the BUSCO scores of each of these transcriptomes](https://robertslab.github.io/sams-notebook/2020/05/28/Transcriptome-Comparisons-C.bairdi-BUSCO-Scores.html) and now will be using the [DETONATE](http://deweylab.biostat.wisc.edu/detonate) software package to perform two different types of comparisons: compared to a reference ([REF-EVAL](http://deweylab.biostat.wisc.edu/detonate/ref-eval.html)) and determine an overall quality "score" ([RSEM-EVAL](http://deweylab.biostat.wisc.edu/detonate/rsem-eval.html)). I'll be running [REF-EVAL](http://deweylab.biostat.wisc.edu/detonate/ref-eval.html) in this notebook.
 
 A link to the paper is here and explains both:
 
@@ -28,7 +28,7 @@ Since this is designed to compare a transcriptome assembly to a "reference" tran
 
 2. Downloaded green crab (_Carcinus maenas_) transcriptome from NCBI (accession: GBXE01.1).
 
-3. Downloaded and [assembled _Portunus trituberculatus_ NCBI SRA RNAseq data](https://robertslab.github.io/sams-notebook/2020/05/23/Transcriptome-Assembly-P.trituberculatus-(Japanese-blue-crab)-NCBI-SRA-BioProject-PRJNA597187-Data-with-Trinity-on-Mox.html).
+3. Downloaded and [assembled _Portunus trituberculatus_ NCBI SRA RNAseq data](https://robertslab.github.io/sams-notebook/2020/05/23/Transcriptome-Assembly-P.trituberculatus-(Japanese-blue-crab\)-NCBI-SRA-BioProject-PRJNA597187-Data-with-Trinity-on-Mox.html).
 
 I then compared all of our assemblies to each other, to the three "reference" sequences, and the three "reference" sequences to our _C.bairdi_ assemblies (i.e. using our assemblies as the "reference" in the comparison).
 
