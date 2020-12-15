@@ -8,7 +8,7 @@
 ## Nodes
 #SBATCH --nodes=1
 ## Walltime (days-hours:minutes:seconds format)
-#SBATCH --time=30-00:00:00
+#SBATCH --time=25-00:00:00
 ## Memory per node
 #SBATCH --mem=500G
 ##turn on e-mail notification
@@ -178,13 +178,13 @@ do
   ${programs_array[bowtie2]} \
   -x ${transcriptome_name} \
   -S ${transcriptome_name}.sam \
-  --num-threads ${threads} \
-  ${R1_list} \
-  ${R2_list} \
+  --threads ${threads} \
+  -1 ${R1_list} \
+  -2 ${R2_list} \
   --sensitive \
   --dpad 0 \
   --gbar 99999999 \
-  --mp 1 \
+  --mp 1,1 \
   --np 1 \
   --score-min L,0,-0.1 \
   --no-mixed \
@@ -196,8 +196,8 @@ do
   ${transcriptome_name}.sam \
   | ${programs_array[samtools_sort]} \
   --threads ${threads} \
-  - \
-  ${transcriptome_name}.sorted.bam
+  -o ${transcriptome_name}.sorted.bam \
+  -
 
   # Capture BAM checksums for verification
   echo "Generating checksum for ${transcriptome_name}.sorted.bam"
@@ -207,7 +207,8 @@ do
 
 done
 
-
+# Remove leftover SAM files
+rm *.sam
 
 # Capture program options
 echo "Logging program options..."
