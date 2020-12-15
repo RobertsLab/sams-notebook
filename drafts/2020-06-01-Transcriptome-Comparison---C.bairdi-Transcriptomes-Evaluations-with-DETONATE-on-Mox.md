@@ -242,6 +242,10 @@ done
 
 #### RESULTS
 
+This process was PAINFUL. Here's the "runtime" for the failed job (due to it timing out; after 65 DAYS!). Also, this was _just_ for the cbai_transcriptome_v2.0!!!
+
+![ref-eval runtime of 65 days](https://github.com/RobertsLab/sams-notebook/blob/master/images/screencaps/20200616_cbai_detonate_transcriptome_evaluations_runtime.png?raw=true)
+
 Output folder:
 
 - []()
