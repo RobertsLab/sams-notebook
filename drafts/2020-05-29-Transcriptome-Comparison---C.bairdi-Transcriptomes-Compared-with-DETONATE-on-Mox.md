@@ -173,6 +173,10 @@ Took a bit over 3 days to complete:
 
 NOTE: There are two jobs associated with this because I had to modify SBATCH script after initial run to account for missed reference comparisons.
 
+Well, I ran this and I am completely unsure what it all means. Hah! And, ugh! It was easy enough to setup and run, so it didn't require too much effort. However, even after reading [the paper](https://genomebiology.biomedcentral.com/articles/10.1186/s13059-014-0553-5), it's still not clear if this has any real value; particularly since the paper focuses on evaluating _de novo_ assemblies. The evaluation to a reference transcriptome seems like it's an aside. However, the two sets of software are packaged together as DETONATE, so I figured I'd run them both.
+
+All the files are linked below for anyone curious enough to spend time trying to figure out if these results mean anything...
+
 Output folder:
 
 - [20200529_cbai_detonate_transcriptome_comparisons/](https://gannet.fish.washington.edu/Atumefaciens/20200529_cbai_detonate_transcriptome_comparisons/)
