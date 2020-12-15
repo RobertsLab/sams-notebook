@@ -242,10 +242,18 @@ done
 
 #### RESULTS
 
-This process was PAINFUL. Here's the "runtime" for the failed job (due to it timing out; after 65 DAYS!). Also, this was _just_ for the cbai_transcriptome_v2.0!!!
+This process was PAINFUL. Here's the "runtime" for the failed job (due to it timing out; after 65 DAYS!). Also, this was _just_ for `cbai_transcriptome_v2.0`!!!
 
 ![ref-eval runtime of 65 days](https://github.com/RobertsLab/sams-notebook/blob/master/images/screencaps/20200616_cbai_detonate_transcriptome_evaluations_runtime.png?raw=true)
 
-Output folder:
+Overall, even though this required very little effort on my part, it was kind of a pain to manage. For some reason (I guess it's due to the number of sequences it has to align) `cbai_transcriptome_v2.0` alignments took too long (i.e. longer than the 30 days between Mox node maintenance). I restarted this job a couple of times and I finally lucked out for a bit when the October, November, and December 2020 Mox maintenance dates were canceled. Despite that, I neglected to extend the runtime further in December and the job timed out.
 
-- []()
+But, with that said, part of me thinks something weird was going on anyway. I mean, look at the size of the BAM file (remember, a BAM file is a _compressed_ version of a SAM file, and is usually close to _10x smaller_ than the originating SAM file!) that was still being made when the job died:
+
+![cbai_transcriptome_v2.0 BAM file size screencap](https://github.com/RobertsLab/sams-notebook/blob/master/images/screencaps/20200616_cbai_detonate_transcriptome_evaluations_file_size.png?raw=true)
+
+789GB!!!!
+
+That's absurd! Not to mention the fact that this was generated over the course of _two months_!
+
+I'm going to try one more thing to see if I can get `rsem-eval` to work. Again, it's low effort, so won't take too much of my time. I'm going to run [`bowtie2`](https://github.com/BenLangmead/bowtie2) independently of `rsem-eval` ([`bowtie2`](https://github.com/BenLangmead/bowtie2) alignment is built-in to that, if the user wants to use it) and see if that is somehow faster. If it is, then I can provide the resulting BAM files as input to `rsem-eval`.
