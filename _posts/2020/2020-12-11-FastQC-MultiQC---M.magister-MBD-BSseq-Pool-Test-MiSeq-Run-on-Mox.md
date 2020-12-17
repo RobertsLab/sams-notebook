@@ -164,39 +164,14 @@ echo "${PATH}" | tr : \\n
 
 #### RESULTS
 
-Runtime was fast, under 3mins:
+Runtime was fast, ~3.5mins:
 
 ![Cumulative runtime for FastQC and MultiQC on C.magister MiSeq data](https://github.com/RobertsLab/sams-notebook/blob/master/images/screencaps/20201211_mmag_fastqc_multiqc_mbd-bsseq_miseq_runtime.png?raw=true)
 
-This is weird. Noticed multiple errors when running [`FastQC`](https://www.bioinformatics.babraham.ac.uk/projects/fastqc/):
-
-```
-Failed to process file CH01-14_S2_L001_R2_001.fastq.gz
-uk.ac.babraham.FastQC.Sequence.SequenceFormatException: Midline 'CCCCCTTTT' didn't start with '+'
---
-Failed to process file CH01-38_S4_L001_R1_001.fastq.gz
-uk.ac.babraham.FastQC.Sequence.SequenceFormatException: ID line didn't start with '@'
---
-Failed to process file CH03-15_S6_L001_R1_001.fastq.gz
-uk.ac.babraham.FastQC.Sequence.SequenceFormatException: Midline 'TGTCGGAAGAGCAGGAAGATCGGAAGAGCACACGTCTGAACTCCAGTCACGCCAATATCTCGTATGCCGTCTT' didn't start with '+'
---
-Failed to process file CH03-04_S5_L001_R1_001.fastq.gz
-uk.ac.babraham.FastQC.Sequence.SequenceFormatException: Midline 'CCCCCGGGGGGGGGGGGGFGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGFGGFFGGGGGGGG' didn't start with '+'
---
-Failed to process file CH07-24_S14_L001_R1_001.fastq.gz
-uk.ac.babraham.FastQC.Sequence.SequenceFormatException: ID line didn't start with '@'
---
-Failed to process file CH10-11_S20_L001_R2_001.fastq.gz
-uk.ac.babraham.FastQC.Sequence.SequenceFormatException: Midline 'GGTGAGAGGTTATCGTG8E,CFF,,CFC8E,CFFGG00-J@@F,+C,-@,,;1:2B<<,,,86+CEATTGAC,C6C8E,CFFG2B<-J@@FF,6-@,0' didn't start with '+'
---
-Failed to process file CH10-11_S20_L001_R1_001.fastq.gz
-uk.ac.babraham.FastQC.Sequence.SequenceFormatException: Midline 'ACCTCCTATACGCCCACTFFG:000000000-J7M5M:1:2108:12450:2743 1:N:0:20' didn't start with '+'
-```
-
-I'll contact Mac and see if she has any idea about what might be happening here. I've never encountered errors when running [`FastQC`](https://www.bioinformatics.babraham.ac.uk/projects/fastqc/) before, so not sure what to do. It certainly seems odd that the FastQ files aren't formatted properly...
-
 
 Will add [`FastQC`](https://www.bioinformatics.babraham.ac.uk/projects/fastqc/) report links to [`Nightingales`](https://b.link/nightingales) spreadsheet (Google Sheet) for those that did _not_ fail.
+
+NOTE: This post was updated on 20201217 using a newly transferred set of FastQs that Mac set up. See [the previous commit of this post](https://github.com/RobertsLab/sams-notebook/blob/c11f5f8c6149376d5896c2f0acd104960512b972/_posts/2020/2020-12-11-FastQC-MultiQC---M.magister-MBD-BSseq-Pool-Test-MiSeq-Run-on-Mox.md) for more info.
 
 Output folder:
 
