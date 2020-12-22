@@ -65,7 +65,7 @@ do
     # Prints accession<tab>GOID1;GOID2;GOIDn
     # IFS prevents spaces from being added between GO IDs
     # sed removes ";" after final GO ID
-    (IFS=; printf "%s\t%s" "${accession}" "${go_ids_array[*]}" | sed 's/.$//')
+    (IFS=; printf "%s\t%s\n" "${accession}" "${go_ids_array[*]}" | sed 's/;$//')
 
   # Record accession numbers of those that failed to download.
   else
