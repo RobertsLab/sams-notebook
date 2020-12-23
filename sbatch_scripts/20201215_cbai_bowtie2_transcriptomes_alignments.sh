@@ -27,6 +27,7 @@
 reads_dir=/gscratch/srlab/sam/data/C_bairdi/RNAseq
 transcriptomes_dir=/gscratch/srlab/sam/data/C_bairdi/transcriptomes
 threads=28
+mem_per_thread=17G
 
 # Program paths
 bowtie2_dir="/gscratch/srlab/programs/bowtie2-2.4.2-linux-x86_64"
@@ -191,10 +192,12 @@ do
   --no-discordant
 
   # Convert SAM to sorted BAM
+  #
   ${programs_array[samtools_view]} \
   -b \
   ${transcriptome_name}.sam \
   | ${programs_array[samtools_sort]} \
+  -m ${mem_per_thread} \
   --threads ${threads} \
   -o ${transcriptome_name}.sorted.bam \
   -
