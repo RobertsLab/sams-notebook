@@ -1,6 +1,6 @@
 #!/bin/bash
 ## Job Name
-#SBATCH --job-name=20201223_cbai_bowtie2_transcriptomes_alignments
+#SBATCH --job-name=20201224_cbai_bowtie2_transcriptomes_alignments
 ## Allocation Definition
 #SBATCH --account=srlab
 #SBATCH --partition=srlab
@@ -15,8 +15,7 @@
 #SBATCH --mail-type=ALL
 #SBATCH --mail-user=samwhite@uw.edu
 ## Specify the working directory for this job
-#SBATCH --chdir=/gscratch/scrubbed/samwhite/outputs/20201223_cbai_bowtie2_transcriptomes_alignments
-
+#SBATCH --chdir=/gscratch/scrubbed/samwhite/outputs/20201224_cbai_bowtie2_transcriptomes_alignments
 # This is a script to generate BAM files for use in DETONATE's
 # rsem-eval program to compare C.bairdi transcriptome assembly "qualities".
 
@@ -27,7 +26,7 @@
 reads_dir=/gscratch/srlab/sam/data/C_bairdi/RNAseq
 transcriptomes_dir=/gscratch/srlab/sam/data/C_bairdi/transcriptomes
 threads=28
-mem_per_thread=17G
+mem_per_thread=10G
 
 # Program paths
 bowtie2_dir="/gscratch/srlab/programs/bowtie2-2.4.2-linux-x86_64"
