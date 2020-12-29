@@ -8,7 +8,7 @@
 ## Nodes
 #SBATCH --nodes=1
 ## Walltime (days-hours:minutes:seconds format)
-#SBATCH --time=15-00:00:00
+#SBATCH --time=10-00:00:00
 ## Memory per node
 #SBATCH --mem=500G
 ##turn on e-mail notification
@@ -62,8 +62,8 @@ module load intel-python3_2017
 
 declare -A programs_array
 programs_array=(
-[detonate_trans_length]="/gscratch/srlab/programs/detonate-1.11/rsem-eval/rsem-eval-estimate-transcript-length-distribution" \
-[detonate]="/gscratch/srlab/programs/detonate-1.11/rsem-eval/rsem-eval-calculate-score"
+[detonate_trans_length]="/gscratch/srlab/programs/detonate-1.11-precompiled/rsem-eval/rsem-eval-estimate-transcript-length-distribution" \
+[detonate]="/gscratch/srlab/programs/detonate-1.11-precompiled/rsem-eval/rsem-eval-calculate-score"
 )
 
 
@@ -74,7 +74,7 @@ for transcriptome in "${!transcriptomes_array[@]}"
 do
 
   # Remove path from transcriptome
-  transcriptome_name="${transcriptome]##*/}"
+  transcriptome_name="${transcriptome##*/}"
 
   # Set RSEM distance output filename
   rsem_eval_dist_mean_sd="${transcriptome_name}_true_length_dis_mean_sd.txt"
