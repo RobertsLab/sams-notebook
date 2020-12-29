@@ -61,4 +61,4 @@ Output folder:
 
 - [owl/nightingales/C_bairdi/](https://owl.fish.washington.edu/nightingales/C_bairdi)
 
-Will update the [nightingales Google Sheet](https://b.link/nightingales) with the appropriate info shortly.
+Will update the [nightingales Google Sheet](http://b.link/nightingales) with the appropriate info shortly.

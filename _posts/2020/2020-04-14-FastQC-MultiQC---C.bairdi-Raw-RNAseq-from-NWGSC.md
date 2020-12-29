@@ -26,4 +26,4 @@ MultiQC report (HTML):
 
 - [20200414_cbai_RNAseq_fastqc_multiqc/multiqc_report.html](https://gannet.fish.washington.edu/Atumefaciens/20200414_cbai_RNAseq_fastqc_multiqc/multiqc_report.html)
 
-Will get the FastQC results URLs put in the [nightingales Google Sheet](https://b.link/nightingales).
+Will get the FastQC results URLs put in the [nightingales Google Sheet](http://b.link/nightingales).

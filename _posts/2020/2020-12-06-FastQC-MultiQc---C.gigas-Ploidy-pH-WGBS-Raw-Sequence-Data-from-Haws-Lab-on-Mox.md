@@ -17,7 +17,7 @@ categories:
 
 [`FastQC`](https://www.bioinformatics.babraham.ac.uk/projects/fastqc/) was run on Mox.
 
-Links to [`FastQC`](https://www.bioinformatics.babraham.ac.uk/projects/fastqc/) reports will be added to our NGS database spreadsheet, [`Nightingales`](https://b.link/nightingales) (Google Sheet).
+Links to [`FastQC`](https://www.bioinformatics.babraham.ac.uk/projects/fastqc/) reports will be added to our NGS database spreadsheet, [`Nightingales`](http://b.link/nightingales) (Google Sheet).
 
 SBATCH script (GitHub):
 

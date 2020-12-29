@@ -21,7 +21,7 @@ All files were downloaded to the [`C_magister` folder on Owl](https://owl.fish.w
 
 Have added files to our high-throughput sequencing database (Google Sheet):
 
-- [nightingales](https://b.link/nightingales)
+- [nightingales](http://b.link/nightingales)
 
 Next up:
 

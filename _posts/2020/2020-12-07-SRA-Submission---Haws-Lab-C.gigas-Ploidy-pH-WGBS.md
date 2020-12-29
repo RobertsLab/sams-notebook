@@ -20,7 +20,7 @@ The samples were registered as part of the following BioProject:
 
 - [PRJNA682817](https://www.ncbi.nlm.nih.gov/bioproject/PRJNA682817)
 
-This accession number is what should be referenced for any publications with these samples. This has been added to [`Nightingales`](https://b.link/nightingales) (Google Sheet), the Roberts Lab NGS database.
+This accession number is what should be referenced for any publications with these samples. This has been added to [`Nightingales`](http://b.link/nightingales) (Google Sheet), the Roberts Lab NGS database.
 
 Here is a table which contains individual sample accession numbers, in case they're needed:
 

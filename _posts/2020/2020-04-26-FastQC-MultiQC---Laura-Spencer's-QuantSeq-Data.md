@@ -10,7 +10,7 @@ tags:
 categories:
   - Miscellaneous
 ---
-Laura Spencer received her [_O.lurida_ QuantSeq data](https://laurahspencer.github.io/LabNotebook/Oly-QuantSeq-sequencing/), so I put it through FastQC/MultiQC and put the pertinent info in the [nightingales Google Sheet](https://b.link/nightingales). I also moved the data to [`/owl/nightingales/O_lurida`](https://owl.fish.washington.edu/nightingales/O_lurida/), updated the readme file and checksums file. There were 148 individual samples, so I won't list them all here.
+Laura Spencer received her [_O.lurida_ QuantSeq data](https://laurahspencer.github.io/LabNotebook/Oly-QuantSeq-sequencing/), so I put it through FastQC/MultiQC and put the pertinent info in the [nightingales Google Sheet](http://b.link/nightingales). I also moved the data to [`/owl/nightingales/O_lurida`](https://owl.fish.washington.edu/nightingales/O_lurida/), updated the readme file and checksums file. There were 148 individual samples, so I won't list them all here.
 
 
 ---

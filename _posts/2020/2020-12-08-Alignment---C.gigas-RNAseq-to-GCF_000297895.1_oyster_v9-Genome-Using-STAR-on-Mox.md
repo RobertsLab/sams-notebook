@@ -17,7 +17,7 @@ Per Mac's suggestion, I used [`STAR`](https://github.com/alexdobin/STAR) to perf
 
 I used a genome FastA and transcriptome GTF file that she had previously provided in [this GitHub Issue](https://github.com/RobertsLab/resources/issues/1033), so I don't know much about their origination/history.
 
-For RNAseq data, I used the only Roberts Lab _C.gigas_ data I could find (see [`Nightingales`](https://b.link/nightingales) (Google Sheet) for more info), which was surprisingly limited. I didn't realize that we've performed so few RNAseq experiments with _C.gigas_.
+For RNAseq data, I used the only Roberts Lab _C.gigas_ data I could find (see [`Nightingales`](http://b.link/nightingales) (Google Sheet) for more info), which was surprisingly limited. I didn't realize that we've performed so few RNAseq experiments with _C.gigas_.
 
 I used the following files for the alignment:
 

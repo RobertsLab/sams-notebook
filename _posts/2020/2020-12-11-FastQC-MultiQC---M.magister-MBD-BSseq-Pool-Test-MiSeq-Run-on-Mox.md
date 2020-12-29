@@ -169,7 +169,7 @@ Runtime was fast, ~3.5mins:
 ![Cumulative runtime for FastQC and MultiQC on C.magister MiSeq data](https://github.com/RobertsLab/sams-notebook/blob/master/images/screencaps/20201211_mmag_fastqc_multiqc_mbd-bsseq_miseq_runtime.png?raw=true)
 
 
-Will add [`FastQC`](https://www.bioinformatics.babraham.ac.uk/projects/fastqc/) report links to [`Nightingales`](https://b.link/nightingales) spreadsheet (Google Sheet) for those that did _not_ fail.
+Will add [`FastQC`](https://www.bioinformatics.babraham.ac.uk/projects/fastqc/) report links to [`Nightingales`](http://b.link/nightingales) spreadsheet (Google Sheet) for those that did _not_ fail.
 
 NOTE: This post was updated on 20201217 using a newly transferred set of FastQs that Mac set up. See [the previous commit of this post](https://github.com/RobertsLab/sams-notebook/blob/c11f5f8c6149376d5896c2f0acd104960512b972/_posts/2020/2020-12-11-FastQC-MultiQC---M.magister-MBD-BSseq-Pool-Test-MiSeq-Run-on-Mox.md) for more info.
 

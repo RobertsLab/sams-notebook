@@ -26,4 +26,4 @@ Data has been uploaded to [Nightingales](https://owl.fish.washington.edu/nightin
 
 ![checksum verification screenshot](https://github.com/RobertsLab/sams-notebook/blob/master/images/screencaps/20200413_cbai_rnaseq_checksum_verification.png?raw=true)
 
-Will update [nightingales Google Sheet](https://b.link/nightingales) with info.
+Will update [nightingales Google Sheet](http://b.link/nightingales) with info.
