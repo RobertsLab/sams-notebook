@@ -79,22 +79,11 @@ do
   # Set RSEM distance output filename
   rsem_eval_dist_mean_sd="${transcriptome_name}_true_length_dis_mean_sd.txt"
 
-  # Capture FastA checksums for verification
-  echo "Generating checksum for ${transcriptome_name}"
-  md5sum "${transcriptome}" >> fasta.checksums.md5
-  echo "Finished generating checksum for ${transcriptome_name}"
-  echo ""
-
-  # Capture BAM checksums for verification
-  echo "Generating checksum for ${transcriptomes_array[$transcriptome]}"
-  md5sum "${transcriptomes_array[$transcriptome]}" >> bam.checksums.md5
-  echo "Finished generating checksum for ${transcriptomes_array[$transcriptome]}"
-  echo ""
 
   # Determine transcript length
   # Needed for subsequent rsem-eval command.
   ${programs_array[detonate_trans_length]} \
-  "${transcriptomes_array[$transcriptome]}" \
+  "${transcriptome}" \
   "${rsem_eval_dist_mean_sd}"
 
 
@@ -108,6 +97,18 @@ do
   "${transcriptome}" \
   "${transcriptome_name}" \
   ${frag_size}
+
+  # Capture FastA checksums for verification
+  echo "Generating checksum for ${transcriptome_name}"
+  md5sum "${transcriptome}" >> fasta.checksums.md5
+  echo "Finished generating checksum for ${transcriptome_name}"
+  echo ""
+
+  # Capture BAM checksums for verification
+  echo "Generating checksum for ${transcriptomes_array[$transcriptome]}"
+  md5sum "${transcriptomes_array[$transcriptome]}" >> bam.checksums.md5
+  echo "Finished generating checksum for ${transcriptomes_array[$transcriptome]}"
+  echo ""
 
 done
 
