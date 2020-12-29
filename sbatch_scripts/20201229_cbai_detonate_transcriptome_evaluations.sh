@@ -85,6 +85,12 @@ do
   echo "Finished generating checksum for ${transcriptome_name}"
   echo ""
 
+  # Capture BAM checksums for verification
+  echo "Generating checksum for ${transcriptomes_array[$transcriptome]}"
+  md5sum "${transcriptomes_array[$transcriptome]}" >> bam.checksums.md5
+  echo "Finished generating checksum for ${transcriptomes_array[$transcriptome]}"
+  echo ""
+
   # Determine transcript length
   # Needed for subsequent rsem-eval command.
   ${programs_array[detonate_trans_length]} \
