@@ -62,8 +62,8 @@ module load intel-python3_2017
 
 declare -A programs_array
 programs_array=(
-[detonate_trans_length]="/gscratch/srlab/programs/detonate-1.11-precompiled/rsem-eval/rsem-eval-estimate-transcript-length-distribution" \
-[detonate]="/gscratch/srlab/programs/detonate-1.11-precompiled/rsem-eval/rsem-eval-calculate-score"
+[detonate_trans_length]="/gscratch/srlab/programs/detonate-1.11/rsem-eval/rsem-eval-estimate-transcript-length-distribution" \
+[detonate]="/gscratch/srlab/programs/detonate-1.11/rsem-eval/rsem-eval-calculate-score"
 )
 
 
