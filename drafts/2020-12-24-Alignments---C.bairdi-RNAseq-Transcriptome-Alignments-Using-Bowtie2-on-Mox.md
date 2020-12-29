@@ -289,6 +289,99 @@ Run time was ~2.5 days (not counting some weird issues with Mox):
 
 ~[Runtime for bowtie2 alignments on Mox](https://github.com/RobertsLab/sams-notebook/blob/master/images/screencaps/20201224_cbai_bowtie2_transcriptomes_alignments_runtime.png?raw=true)
 
+These will be used in a subsequent analysis using [DETONATE (rsem-eval)](http://deweylab.biostat.wisc.edu/detonate/) to generate a score for each transcriptome. This score can be utilized to help compare the transcriptomes to identify which is the best assembly.
+
+Important output files are linked below (BAMs, checksums, list of FastQs for each alignment).
+
 Output folder:
 
 - [20201224_cbai_bowtie2_transcriptomes_alignments/](https://gannet.fish.washington.edu/Atumefaciens/20201224_cbai_bowtie2_transcriptomes_alignments/)
+
+  - MD5 checksum files (text) for input FastAs and resulting BAMs:
+
+    - [bam.checksums.md5](https://gannet.fish.washington.edu/Atumefaciens/20201224_cbai_bowtie2_transcriptomes_alignments/bam.checksums.md5)
+
+    - [fasta.checksums.md5](https://gannet.fish.washington.edu/Atumefaciens/20201224_cbai_bowtie2_transcriptomes_alignments/fasta.checksums.md5)
+
+
+  - cbai_transcriptome_v1.0 files:
+
+    - [`bowtie2`](https://github.com/BenLangmead/bowtie2) BAM file:
+
+      - [cbai_transcriptome_v1.0.fasta.sorted.bam](https://gannet.fish.washington.edu/Atumefaciens/20201224_cbai_bowtie2_transcriptomes_alignments/cbai_transcriptome_v1.0.fasta.sorted.bam)
+
+    - List of FastQs used for alignment (text):
+
+      - [cbai_transcriptome_v1.0.fasta.fastq.list.txt](https://gannet.fish.washington.edu/Atumefaciens/20201224_cbai_bowtie2_transcriptomes_alignments/cbai_transcriptome_v1.0.fasta.fastq.list.txt)
+
+  - cbai_transcriptome_v1.5 files:
+
+    - [`bowtie2`](https://gith      - List of FastQs used for alignment (text):
+
+        - [cbai_transcriptome_v1.7.fasta.fastq.list.txt](https://gannet.fish.washington.edu/Atumefaciens/20201224_cbai_bowtie2_transcriptomes_alignments/cbai_transcriptome_v1.7.fasta.fastq.list.txt)ub.com/BenLangmead/bowtie2) BAM file:
+
+      - [cbai_transcriptome_v1.5.fasta.sorted.bam](https://gannet.fish.washington.edu/Atumefaciens/20201224_cbai_bowtie2_transcriptomes_alignments/cbai_transcriptome_v1.5.fasta.sorted.bam)
+
+    - List of FastQs used for alignment (text):
+
+      - [cbai_transcriptome_v1.5.fasta.fastq.list.txt](https://gannet.fish.washington.edu/Atumefaciens/20201224_cbai_bowtie2_transcriptomes_alignments/cbai_transcriptome_v1.5.fasta.fastq.list.txt)
+
+  - cbai_transcriptome_v1.6 files:
+
+    - [`bowtie2`](https://github.com/BenLangmead/bowtie2) BAM file:
+
+      - [cbai_transcriptome_v1.6.fasta.sorted.bam](https://gannet.fish.washington.edu/Atumefaciens/20201224_cbai_bowtie2_transcriptomes_alignments/cbai_transcriptome_v1.6.fasta.sorted.bam)
+
+    - List of FastQs used for alignment (text):
+
+      - [cbai_transcriptome_v1.6.fasta.fastq.list.txt](https://gannet.fish.washington.edu/Atumefaciens/20201224_cbai_bowtie2_transcriptomes_alignments/cbai_transcriptome_v1.6.fasta.fastq.list.txt)
+
+  - cbai_transcriptome_v1.7 files:
+
+    - [`bowtie2`](https://github.com/BenLangmead/bowtie2) BAM file:
+
+      - [cbai_transcriptome_v1.7.fasta.sorted.bam](https://gannet.fish.washington.edu/Atumefaciens/20201224_cbai_bowtie2_transcriptomes_alignments/cbai_transcriptome_v1.7.fasta.sorted.bam)
+
+    - List of FastQs used for alignment (text):
+
+      - [cbai_transcriptome_v1.7.fasta.fastq.list.txt](https://gannet.fish.washington.edu/Atumefaciens/20201224_cbai_bowtie2_transcriptomes_alignments/cbai_transcriptome_v1.7.fasta.fastq.list.txt)
+
+  - cbai_transcriptome_v2.0 files:
+
+    - [`bowtie2`](https://github.com/BenLangmead/bowtie2) BAM file:
+
+      - [cbai_transcriptome_v2.0.fasta.sorted.bam](https://gannet.fish.washington.edu/Atumefaciens/20201224_cbai_bowtie2_transcriptomes_alignments/cbai_transcriptome_v2.0.fasta.sorted.bam)
+
+    - List of FastQs used for alignment (text):
+
+      - [cbai_transcriptome_v1.7.fasta.fastq.list.txt](https://gannet.fish.washington.edu/Atumefaciens/20201224_cbai_bowtie2_transcriptomes_alignments/cbai_transcriptome_v1.7.fasta.fastq.list.txt)
+
+  - cbai_transcriptome_v2.1 files:
+
+    - [`bowtie2`](https://github.com/BenLangmead/bowtie2) BAM file:
+
+      - [cbai_transcriptome_v2.1.fasta.sorted.bam](https://gannet.fish.washington.edu/Atumefaciens/20201224_cbai_bowtie2_transcriptomes_alignments/cbai_transcriptome_v2.1.fasta.sorted.bam)
+
+    - List of FastQs used for alignment (text):
+
+      - [cbai_transcriptome_v2.1.fasta.fastq.list.txt](https://gannet.fish.washington.edu/Atumefaciens/20201224_cbai_bowtie2_transcriptomes_alignments/cbai_transcriptome_v2.1.fasta.fastq.list.txt)
+
+  - cbai_transcriptome_v3.0 files:
+
+    - [`bowtie2`](https://github.com/BenLangmead/bowtie2) BAM file:
+
+      - [cbai_transcriptome_v3.0.fasta.sorted.bam](https://gannet.fish.washington.edu/Atumefaciens/20201224_cbai_bowtie2_transcriptomes_alignments/cbai_transcriptome_v3.0.fasta.sorted.bam)
+
+    - List of FastQs used for alignment (text):
+
+      - [cbai_transcriptome_v3.0.fasta.fastq.list.txt](https://gannet.fish.washington.edu/Atumefaciens/20201224_cbai_bowtie2_transcriptomes_alignments/cbai_transcriptome_v3.0.fasta.fastq.list.txt)
+
+  - cbai_transcriptome_v3.1 files:
+
+    - [`bowtie2`](https://github.com/BenLangmead/bowtie2) BAM file:
+
+      - [cbai_transcriptome_v3.1.fasta.sorted.bam](https://gannet.fish.washington.edu/Atumefaciens/20201224_cbai_bowtie2_transcriptomes_alignments/cbai_transcriptome_v3.1.fasta.sorted.bam)
+
+    - List of FastQs used for alignment (text):
+
+      - [cbai_transcriptome_v3.1.fasta.fastq.list.txt](https://gannet.fish.washington.edu/Atumefaciens/20201224_cbai_bowtie2_transcriptomes_alignments/cbai_transcriptome_v3.1.fasta.fastq.list.txt)
