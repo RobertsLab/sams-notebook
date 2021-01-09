@@ -30,3 +30,6 @@ unset IFS
 
 # Update list and remove tmp_file
 rsync --remove-source-files "${tmp_file}" "${out_file}"
+
+# Change permissions on file
+chmod 774 "${out_file}"
