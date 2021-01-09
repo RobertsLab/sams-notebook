@@ -7,7 +7,7 @@
 # Set variables
 out_file=owl_files_gt_100MB.txt
 tmp_file="$(mktemp)"
-web_dir=/volume1/web/
+web_dir=/volume1/web/testing
 
 # Change to web directory
 cd "${web_dir}"
@@ -29,4 +29,4 @@ done \
 unset IFS
 
 # Update list and remove tmp_file
-rsync --remove-source-files "${tmp_file}" ./"${out_file}"
+rsync --remove-source-files "${tmp_file}" "${out_file}"
