@@ -5,9 +5,11 @@
 # of unique filenames of sizes >100MB
 
 # Set variables
-out_file=owl_files_gt_100MB.txt
+
 tmp_file="$(mktemp)"
-web_dir=/volume1/web/testing
+web_dir=/volume1/web/
+out_dir="${web_dir}testing"
+out_file="${out_dir}/owl_files_gt_100MB.txt"
 
 # Change to web directory
 cd "${web_dir}"
