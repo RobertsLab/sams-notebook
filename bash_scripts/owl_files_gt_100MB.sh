@@ -5,11 +5,14 @@
 # of unique filenames of sizes >100MB
 
 # Set variables
-
-tmp_file="$(mktemp)"
 web_dir=/volume1/web/
 out_dir="${web_dir}testing"
 out_file="${out_dir}/owl_files_gt_100MB.txt"
+
+# Create temporary file
+# mktemp requires a filename with at least two consecutive 'XX's if specifying
+# a directory and filename
+tmp_file=$(mktemp -p ${out_dir} tmp.100MB.list.XXXXXX)
 
 # Change to web directory
 cd "${web_dir}"
