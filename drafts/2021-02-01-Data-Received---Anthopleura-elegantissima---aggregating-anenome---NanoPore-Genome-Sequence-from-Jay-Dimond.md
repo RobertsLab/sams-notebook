@@ -75,7 +75,7 @@ do
         echo "Finished syncing ${dir}."
         echo ""
 
-        
+
     elif [ "${dir}" = "bar03" ]; then
 
         # Print dividing line
@@ -176,3 +176,7 @@ real	885m51.779s
 user	24m10.217s
 sys	78m51.111s
 ```
+
+Files were compressed into gzipped tarballs, MD5 checksums generated, rsync'd to Owl, and checksums verified:
+
+![Screencap of checksum verification after rsync to Owl](https://raw.githubusercontent.com/RobertsLab/sams-notebook/master/images/screencaps/20210201_aele_data-received_checksum-verification.png)
