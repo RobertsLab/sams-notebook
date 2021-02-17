@@ -22,9 +22,9 @@ The above BioProject accession is what NCBI recommends for citation. However, he
 
 | SeqID           | Library_Name | SRA                                                                  | BioProject                                                  |
 |-----------------|--------------|----------------------------------------------------------------------|-------------------------------------------------------------|
-| aele_A1_aposymb | bar05        | [SRR13685276](https://dataview.ncbi.nlm.nih.gov/object/SRR136852716) | [PRJNA700526](https://www.ncbi.nlm.nih.gov/sra/PRJNA700526) |
-| aele_A3_aposymb | bar03        | [SRR13685275](https://dataview.ncbi.nlm.nih.gov/object/SRR136852715) | [PRJNA700526](https://www.ncbi.nlm.nih.gov/sra/PRJNA700526) |
-| aele_A4_aposymb | bar01        | [SRR13685274](https://dataview.ncbi.nlm.nih.gov/object/SRR136852714) | [PRJNA700526](https://www.ncbi.nlm.nih.gov/sra/PRJNA700526) |
-| aele_G2_symb    | bar02        | [SRR13685273](https://dataview.ncbi.nlm.nih.gov/object/SRR136852713) | [PRJNA700526](https://www.ncbi.nlm.nih.gov/sra/PRJNA700526) |
-| aele_G3_symb    | bar06        | [SRR13685272](https://dataview.ncbi.nlm.nih.gov/object/SRR136852712) | [PRJNA700526](https://www.ncbi.nlm.nih.gov/sra/PRJNA700526) |
-| aele_G4_symb    | bar04        | [SRR13685271](https://dataview.ncbi.nlm.nih.gov/object/SRR136852711) | [PRJNA700526](https://www.ncbi.nlm.nih.gov/sra/PRJNA700526) |
+| aele_A1_aposymb | bar05        | [SRR13685276](https://dataview.ncbi.nlm.nih.gov/object/SRR13685276) | [PRJNA700526](https://www.ncbi.nlm.nih.gov/sra/PRJNA700526) |
+| aele_A3_aposymb | bar03        | [SRR13685275](https://dataview.ncbi.nlm.nih.gov/object/SRR13685275) | [PRJNA700526](https://www.ncbi.nlm.nih.gov/sra/PRJNA700526) |
+| aele_A4_aposymb | bar01        | [SRR13685274](https://dataview.ncbi.nlm.nih.gov/object/SRR13685274) | [PRJNA700526](https://www.ncbi.nlm.nih.gov/sra/PRJNA700526) |
+| aele_G2_symb    | bar02        | [SRR13685273](https://dataview.ncbi.nlm.nih.gov/object/SRR13685273) | [PRJNA700526](https://www.ncbi.nlm.nih.gov/sra/PRJNA700526) |
+| aele_G3_symb    | bar06        | [SRR13685272](https://dataview.ncbi.nlm.nih.gov/object/SRR13685272) | [PRJNA700526](https://www.ncbi.nlm.nih.gov/sra/PRJNA700526) |
+| aele_G4_symb    | bar04        | [SRR13685271](https://dataview.ncbi.nlm.nih.gov/object/SRR13685271) | [PRJNA700526](https://www.ncbi.nlm.nih.gov/sra/PRJNA700526) |
