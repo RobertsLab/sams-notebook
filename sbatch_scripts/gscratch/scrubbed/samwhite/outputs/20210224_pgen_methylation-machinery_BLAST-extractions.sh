@@ -71,22 +71,23 @@ done < 20210219_methylation_list.txt | sort -u >> ${unique_pgen_match_IDs}
 # Use matched pgen IDs to extract FastAs and run BLASTx
 while IFS="\t" read -r pgen_ID meth_machinery
 do
-  query=$(${programs_array[seqkit]} faidx "${genes_fasta}" "${pgen_ID}"))
+  query=$(${programs_array[seqkit]} faidx "${genes_fasta}" "${pgen_ID}")
 
   # Run NCBI BLASTx to generate single match for each query
-  ${programs_array[blastx]} \
+  ncbi_eval=$(${programs_array[blastx]} \
   -query "${query}" \
   -db ${ncbi_blast_db} \
   -outfmt 6 \
   -threads "${threads}" \
   -max_hsps 1 \
   -max_target_seqs 1 \
-  >> ${ncbi_blastx_out}
+  | tee --append ${ncbi_blastx_out} \
+  | cut -f11)
 
 
   # Run DIAMOND with blastx
   # Output format 6 produces a standard BLAST tab-delimited file
-  ${programs_array[diamond] blastx} \
+  diamond_eval=$(${programs_array[diamond] blastx} \
   --db ${diamond_blast_db} \
   --query "${query}" \
   --outfmt 6 \
@@ -94,7 +95,8 @@ do
   --max-hsps 1 \
   --block-size 15.0 \
   --index-chunks 4 \
-  >> ${diamond_blastx_out}
+  | tee --append ${diamond_blastx_out} \
+  | cut -f11)
 
 done < ${unique_pgen_match_IDs}
 
