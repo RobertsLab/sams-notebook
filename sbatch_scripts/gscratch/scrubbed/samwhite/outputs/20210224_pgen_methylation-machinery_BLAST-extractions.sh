@@ -34,14 +34,19 @@ declare -A programs_array
 programs_array=(
 [blastx]="/gscratch/srlab/programs/ncbi-blast-2.10.1+/bin/blastx" \
 [diamond_blastx]="/gscratch/srlab/programs/diamond-2.0.4/diamond" \
-[seqtk]="/gscratch/srlab/programs/seqkit-0.15.0"
+[seqkit]="/gscratch/srlab/programs/seqkit-0.15.0"
 )
 
 
 # Input/output files
+diamond_blast_db="/gscratch/srlab/blastdbs/uniprot_sprot_20200123/uniprot_sprot.dmnd"
+ncbi_blast_db="/gscratch/srlab/blastdbs/ncbi-sp-v5_20210224/swissprot"
 genes_fasta="${data_dir}/Panopea-generosa-vv0.74.a4.5d9637f372b5d-publish.genes.fna"
 genes_gff="${data_dir}/Panopea-generosa-vv0.74.a4.gene.gff3"
 meth_machinery_list="20210219_methylation_list.txt"
+unique_pgen_match_IDs="unique_pgen_match_IDs.tab"
+ncbi_blastx_out="ncbi_blastx.outfmt6"
+diamond_blastx_out="diamond_blastx.outfmt6"
 
 
 ###################################################################################
@@ -51,6 +56,38 @@ set -e
 
 # Load Python Mox module for Python module availability
 module load intel-python3_2017
+
+# Create FastA Index
+${programs_array[$seqkit]} faidx "${genes_fasta}"
+
+# Pull out unique list of pgen IDs matching methylation machinery list
+while read -r line
+do
+  # Search GFF for methylation gene name
+  pgen_match_IDs=$(grep --ignore-case "|${line}" "${genes_gff}" | awk -F'[=;]' '{print $2}')
+  printf "%s\t%s\n" "${pgen_match_IDs}" "${line}"
+done < 20210219_methylation_list.txt | sort -u >> ${unique_pgen_match_IDs}
+
+# Use matched pgen IDs to extract FastAs and run BLASTx
+while IFS="\t" read -r pgen_ID meth_machinery
+do
+  query=$(${programs_array[seqkit]} faidx "${genes_fasta}" "${pgen_ID}"))
+
+  # Run NCBI BLASTx to generate single match for each query
+  ${programs_array[blastx]} \
+  -query "${query}" \
+  -db ${ncbi_blast_db} \
+  -outfmt 6 \
+  -threads "${threads}" \
+  -max_hsps 1 \
+  -max_target_seqs 1 \
+  >> ${ncbi_blastx_out}
+
+  # Run DIAMOND BLASTx to generate singel match for each query
+  
+
+done < ${unique_pgen_match_IDs}
+
 
 
 
