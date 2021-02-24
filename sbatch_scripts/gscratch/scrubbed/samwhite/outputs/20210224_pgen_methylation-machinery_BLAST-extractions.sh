@@ -47,6 +47,7 @@ meth_machinery_list="20210219_methylation_list.txt"
 unique_pgen_match_IDs="unique_pgen_match_IDs.tab"
 ncbi_blastx_out="ncbi_blastx.outfmt6"
 diamond_blastx_out="diamond_blastx.outfmt6"
+results="results_table.tab"
 
 
 ###################################################################################
@@ -97,6 +98,10 @@ do
   --index-chunks 4 \
   | tee --append ${diamond_blastx_out} \
   | cut -f11)
+
+  # Print to results table file
+  printf "%s\t%s\t%s\t%s\n" "${pgen_ID}" "${meth_machinery}" "${ncbi_eval}" "${diamond_eval}" \
+  >> ${results}
 
 done < ${unique_pgen_match_IDs}
 
