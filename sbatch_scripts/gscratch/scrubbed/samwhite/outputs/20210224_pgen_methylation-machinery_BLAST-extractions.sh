@@ -33,7 +33,7 @@ threads=40
 declare -A programs_array
 programs_array=(
 [blastx]="/gscratch/srlab/programs/ncbi-blast-2.10.1+/bin/blastx" \
-[diamond_blastx]="/gscratch/srlab/programs/diamond-2.0.4/diamond" \
+[diamond]="/gscratch/srlab/programs/diamond-2.0.4/diamond" \
 [seqkit]="/gscratch/srlab/programs/seqkit-0.15.0"
 )
 
@@ -83,8 +83,18 @@ do
   -max_target_seqs 1 \
   >> ${ncbi_blastx_out}
 
-  # Run DIAMOND BLASTx to generate singel match for each query
-  
+
+  # Run DIAMOND with blastx
+  # Output format 6 produces a standard BLAST tab-delimited file
+  ${programs_array[diamond] blastx} \
+  --db ${diamond_blast_db} \
+  --query "${query}" \
+  --outfmt 6 \
+  --max-target-seqs 1 \
+  --max-hsps 1 \
+  --block-size 15.0 \
+  --index-chunks 4 \
+  >> ${diamond_blastx_out}
 
 done < ${unique_pgen_match_IDs}
 
@@ -107,6 +117,14 @@ do
   || [[ "${program}" == "samtools_view" ]]
   then
     ${programs_array[$program]}
+
+  # Handle DIAMOND BLAST menu
+  elif [[ "${program}" == "diamond" ]]; then
+    ${programs_array[$program]} help
+
+  # Handle NCBI BLASTx menu
+  elif [[ "${program}" == "blastx" ]]; then
+    ${programs_array[$program]} -help
   fi
 	${programs_array[$program]} -h
 	echo ""
