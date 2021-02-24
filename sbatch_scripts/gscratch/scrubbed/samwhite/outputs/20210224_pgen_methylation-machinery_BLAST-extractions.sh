@@ -61,6 +61,10 @@ module load intel-python3_2017
 # Create FastA Index
 ${programs_array[$seqkit]} faidx "${genes_fasta}"
 
+# Create results file and header
+printf "%s\t%s\t%s\t%s\n" "gene_name""gene_ID" "NCBI_evalue" "DIAMOND_evalue" \
+> ${results_table}
+
 # Pull out unique list of pgen IDs matching methylation machinery list
 while read -r line
 do
@@ -88,6 +92,7 @@ do
 
   # Run DIAMOND with blastx
   # Output format 6 produces a standard BLAST tab-delimited file
+  # Block size and index chunks improve speed of DIAMOND BLAST
   diamond_eval=$(${programs_array[diamond] blastx} \
   --db ${diamond_blast_db} \
   --query "${query}" \
