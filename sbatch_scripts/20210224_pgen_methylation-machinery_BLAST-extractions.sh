@@ -82,9 +82,15 @@ printf "%s\t%s\t%s\t%s\n" "gene_name" "gene_ID" "NCBI_evalue" "DIAMOND_evalue" \
 # Pull out unique list of pgen IDs matching methylation machinery list
 while read -r line
 do
+  # Test for empty line
+  [ -z ${line} ] || exit 1 && echo "Empty line found in ${meth_machinery_list}."
+  
   # Search GFF for methylation gene name
-  pgen_match_IDs=$(grep --ignore-case "|${line}" "${genes_gff}" | awk -F'[=;]' '{print $2}')
-  printf "%s\t%s\n" "${pgen_match_IDs}" "${line}"
+  if grep --quiet --ignore-case "|${line}" "${genes_gff}"; then
+    pgen_match_IDs=$(grep --ignore-case "|${line}" "${genes_gff}" | awk -F'[=;]' '{print $2}')
+    printf "%s\t%s\n" "${pgen_match_IDs}" "${line}"
+  fi
+
 done < ${meth_machinery_list} | sort -u >> ${unique_pgen_match_IDs}
 
 # Use matched pgen IDs to extract FastAs and run BLASTx
@@ -102,7 +108,7 @@ do
   -query ${query} \
   -db ${ncbi_blast_db} \
   -outfmt 6 \
-  -threads "${threads}" \
+  -num_threads ${threads} \
   -max_hsps 1 \
   -max_target_seqs 1 \
   | tee --append ${ncbi_blastx_out} \
@@ -112,7 +118,7 @@ do
   # Run DIAMOND with blastx
   # Output format 6 produces a standard BLAST tab-delimited file
   # Block size and index chunks improve speed of DIAMOND BLAST
-  diamond_eval=$(${programs_array[diamond] blastx} \
+  diamond_eval=$(${programs_array[diamond]} blastx \
   --db ${diamond_blast_db} \
   --query ${query} \
   --outfmt 6 \
