@@ -75,23 +75,30 @@ module load intel-python3_2017
 # Create FastA Index
 ${programs_array[seqkit]} faidx "${genes_fasta}"
 
-# Create results file and header
-printf "%s\t%s\t%s\t%s\n" "gene_name" "gene_ID" "NCBI_evalue" "DIAMOND_evalue" \
-> ${results_table}
-
 # Pull out unique list of pgen IDs matching methylation machinery list
 while read -r line
 do
+
   # Test for empty line
-  [ -z ${line} ] || exit 1 && echo "Empty line found in ${meth_machinery_list}."
-  
+  [ -z ${line} ] && { echo "Empty line found in ${meth_machinery_list}."; exit 1; }
+
   # Search GFF for methylation gene name
   if grep --quiet --ignore-case "|${line}" "${genes_gff}"; then
-    pgen_match_IDs=$(grep --ignore-case "|${line}" "${genes_gff}" | awk -F'[=;]' '{print $2}')
-    printf "%s\t%s\n" "${pgen_match_IDs}" "${line}"
+
+    # Loop through matches, in case of multiple matches
+    for match in $(grep --ignore-case "|${line}" "${genes_gff}" | awk -F'[=;]' '{print $2}')
+    do
+      # Print tab-delimited results
+      printf "%s\t%s\n" "${match}" "${line}"
+    done
   fi
 
 done < ${meth_machinery_list} | sort -u >> ${unique_pgen_match_IDs}
+
+
+# Create results file and header
+printf "%s\t%s\t%s\t%s\n" "gene_name" "gene_ID" "NCBI_evalue" "DIAMOND_evalue" \
+> ${results_table}
 
 # Use matched pgen IDs to extract FastAs and run BLASTx
 while IFS=$'\t' read -r pgen_ID meth_machinery
@@ -134,11 +141,6 @@ do
   >> ${results_table}
 
 done < ${unique_pgen_match_IDs}
-
-
-
-
-
 
 
 # Capture program options
