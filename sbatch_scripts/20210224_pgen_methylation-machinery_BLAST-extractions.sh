@@ -23,7 +23,10 @@
 # List of methylation machinery gene IDs were provided in this GitHub issue:
 # https://github.com/RobertsLab/resources/issues/1116
 #
-# P.generosa annotated GFF and FastA from 20190928 GenSAS v074-a4 genome annotation:
+# P.generosa gene GFF from GenSAS v074-a4 annotation with renamed scaffolds from:
+# https://gannet.fish.washington.edu/Atumefaciens/20191203_pgen_v074.a4_genome_feature_counts/
+#
+# P.generosa annotated FastA from 20190928 GenSAS v074-a4 genome annotation:
 # https://robertslab.github.io/sams-notebook/2019/09/28/Genome-Annotation-Pgenerosa_v074-a4-Using-GenSAS.html
 #
 # Requires Bash >=4.0, as script uses associative arrays.
@@ -55,7 +58,7 @@ ncbi_blast_db="/gscratch/srlab/blastdbs/ncbi-sp-v5_20210224/swissprot"
 
 ## Genome files
 genes_fasta="${data_dir}/Panopea-generosa-vv0.74.a4.5d9637f372b5d-publish.genes.fna"
-genes_gff="${data_dir}/Panopea-generosa-vv0.74.a4.gene.gff3"
+genes_gff="${data_dir}/Panopea-generosa-v1.0.a4.gene.gff3"
 
 ## Output files
 diamond_blastx_out="diamond_blastx.outfmt6"
@@ -101,13 +104,17 @@ printf "%s\t%s\t%s\t%s\n" "gene_name" "gene_ID" "NCBI_evalue" "DIAMOND_evalue" \
 > ${results_table}
 
 # Use matched pgen IDs to extract FastAs and run BLASTx
-while IFS=$'\t' read -r pgen_ID meth_machinery
+while read -r pgen_ID meth_machinery
 do
   # Create a temporary file to store seqkit outpout
   query="$(mktemp)"
 
+  # Pull out pgen gene IDs from FastA headers
+  # Checks first field for any type of match and then prints the first field
+  pgen_ID_full=$(awk -v id="${pgen_ID}" '$1~id {print $1}' "${genes_fasta}.fai")
+
   # Run seqkit using pgen_ID to extract corresponding FastA sequnce
-  ${programs_array[seqkit]} faidx "${genes_fasta}" "${pgen_ID}" \
+  ${programs_array[seqkit]} faidx "${genes_fasta}" "${pgen_ID_full}" \
   > "${query}"
 
   # Run NCBI BLASTx to generate single match for each query
