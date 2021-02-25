@@ -91,7 +91,7 @@ done < ${meth_machinery_list} | sort -u >> ${unique_pgen_match_IDs}
 while IFS=$'\t' read -r pgen_ID meth_machinery
 do
   # Create a temporary file to store seqkit outpout
-  query="${mktemp}"
+  query="$(mktemp)"
 
   # Run seqkit using pgen_ID to extract corresponding FastA sequnce
   ${programs_array[seqkit]} faidx "${genes_fasta}" "${pgen_ID}" \
