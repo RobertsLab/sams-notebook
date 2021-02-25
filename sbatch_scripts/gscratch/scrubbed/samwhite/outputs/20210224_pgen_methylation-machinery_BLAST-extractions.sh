@@ -17,7 +17,15 @@
 ## Specify the working directory for this job
 #SBATCH --chdir=/gscratch/scrubbed/samwhite/outputs/20210224_pgen_methylation-machinery_BLAST-extractions
 
-
+# Script to extract P.generosa gene IDs based on matches to
+# list of methylation machinery gene IDs.
+#
+# List of methylation machinery gene IDs were provided in this GitHub issue:
+# https://github.com/RobertsLab/resources/issues/1116
+#
+# P.generosa annotated GFF and FastA from 20190928 GenSAS v074-a4 genome annotation:
+# https://robertslab.github.io/sams-notebook/2019/09/28/Genome-Annotation-Pgenerosa_v074-a4-Using-GenSAS.html
+#
 # Requires Bash >=4.0, as script uses associative arrays.
 
 
@@ -25,7 +33,6 @@
 # These variables need to be set by user
 
 # Assign Variables
-wd=$(pwd)
 data_dir=/gscratch/srlab/sam/data/P_generosa/genomes
 threads=40
 
@@ -39,15 +46,22 @@ programs_array=(
 
 
 # Input/output files
+## Input file
+meth_machinery_list="20210219_methylation_list.txt"
+
+## BLAST databases
 diamond_blast_db="/gscratch/srlab/blastdbs/uniprot_sprot_20200123/uniprot_sprot.dmnd"
 ncbi_blast_db="/gscratch/srlab/blastdbs/ncbi-sp-v5_20210224/swissprot"
+
+## Genome files
 genes_fasta="${data_dir}/Panopea-generosa-vv0.74.a4.5d9637f372b5d-publish.genes.fna"
 genes_gff="${data_dir}/Panopea-generosa-vv0.74.a4.gene.gff3"
-meth_machinery_list="20210219_methylation_list.txt"
-unique_pgen_match_IDs="unique_pgen_match_IDs.tab"
-ncbi_blastx_out="ncbi_blastx.outfmt6"
+
+## Output files
 diamond_blastx_out="diamond_blastx.outfmt6"
-results="results_table.tab"
+ncbi_blastx_out="ncbi_blastx.outfmt6"
+results_table="results_table.tab"
+unique_pgen_match_IDs="unique_pgen_match_IDs.tab"
 
 
 ###################################################################################
@@ -62,7 +76,7 @@ module load intel-python3_2017
 ${programs_array[$seqkit]} faidx "${genes_fasta}"
 
 # Create results file and header
-printf "%s\t%s\t%s\t%s\n" "gene_name""gene_ID" "NCBI_evalue" "DIAMOND_evalue" \
+printf "%s\t%s\t%s\t%s\n" "gene_name" "gene_ID" "NCBI_evalue" "DIAMOND_evalue" \
 > ${results_table}
 
 # Pull out unique list of pgen IDs matching methylation machinery list
@@ -71,10 +85,10 @@ do
   # Search GFF for methylation gene name
   pgen_match_IDs=$(grep --ignore-case "|${line}" "${genes_gff}" | awk -F'[=;]' '{print $2}')
   printf "%s\t%s\n" "${pgen_match_IDs}" "${line}"
-done < 20210219_methylation_list.txt | sort -u >> ${unique_pgen_match_IDs}
+done < ${meth_machinery_list} | sort -u >> ${unique_pgen_match_IDs}
 
 # Use matched pgen IDs to extract FastAs and run BLASTx
-while IFS="\t" read -r pgen_ID meth_machinery
+while IFS=$'\t' read -r pgen_ID meth_machinery
 do
   # Create a temporary file to store seqkit outpout
   query="${mktemp}"
@@ -111,7 +125,7 @@ do
 
   # Print to results table file
   printf "%s\t%s\t%s\t%s\n" "${pgen_ID}" "${meth_machinery}" "${ncbi_eval}" "${diamond_eval}" \
-  >> ${results}
+  >> ${results_table}
 
 done < ${unique_pgen_match_IDs}
 
