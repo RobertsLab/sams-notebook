@@ -73,7 +73,7 @@ set -e
 module load intel-python3_2017
 
 # Create FastA Index
-${programs_array[$seqkit]} faidx "${genes_fasta}"
+${programs_array[seqkit]} faidx "${genes_fasta}"
 
 # Create results file and header
 printf "%s\t%s\t%s\t%s\n" "gene_name" "gene_ID" "NCBI_evalue" "DIAMOND_evalue" \
