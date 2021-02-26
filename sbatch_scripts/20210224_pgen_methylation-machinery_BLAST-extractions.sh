@@ -1,6 +1,6 @@
 #!/bin/bash
 ## Job Name
-#SBATCH --job-name=20210224_pgen_methylation-machinery_BLAST-extractions
+#SBATCH --job-name=20210226_pgen_methylation-machinery_BLAST-extractions
 ## Allocation Definition
 #SBATCH --account=srlab
 #SBATCH --partition=srlab
@@ -15,7 +15,7 @@
 #SBATCH --mail-type=ALL
 #SBATCH --mail-user=samwhite@uw.edu
 ## Specify the working directory for this job
-#SBATCH --chdir=/gscratch/scrubbed/samwhite/outputs/20210224_pgen_methylation-machinery_BLAST-extractions
+#SBATCH --chdir=/gscratch/scrubbed/samwhite/outputs/20210226_pgen_methylation-machinery_BLAST-extractions
 
 # Script to extract P.generosa gene IDs based on matches to
 # list of methylation machinery gene IDs.
