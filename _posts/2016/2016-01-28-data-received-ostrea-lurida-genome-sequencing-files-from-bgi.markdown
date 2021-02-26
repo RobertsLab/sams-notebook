@@ -1,5 +1,4 @@
 ---
-author: kubu4
 comments: true
 date: 2016-01-28 00:30:56+00:00
 layout: post
@@ -38,4 +37,4 @@ Jupyter Notebook file: [20160126_Olurida_BGI_data_handling.ipynb](https://eagle.
 
 Notebook Viewer: [20160126_Olurida_BGI_data_handling.ipynb](https://nbviewer.jupyter.org/url/eagle.fish.washington.edu/Arabidopsis/iPythonNotebooks/20160126_Olurida_BGI_data_handling.ipynb)
 
-<iframe src="https://nbviewer.jupyter.org/url/eagle.fish.washington.edu/Arabidopsis/iPythonNotebooks/20160126_Olurida_BGI_data_handling.ipynb" width="100%" height="500" scrolling="yes"></iframe>
+<iframe src="https://nbviewer.jupyter.org/url/eagle.fish.washington.edu/Arabidopsis/iPythonNotebooks/20160126_Olurida_BGI_data_handling.ipynb" width="100%" height="1000" scrolling="yes"></iframe>
