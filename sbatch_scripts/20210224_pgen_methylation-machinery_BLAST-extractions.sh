@@ -96,7 +96,7 @@ do
     done
   fi
 
-done < ${meth_machinery_list} | sort -u >> ${unique_pgen_match_IDs}
+done < ${meth_machinery_list} | sort -k1,1 -u >> ${unique_pgen_match_IDs}
 
 
 # Create results file and header
