@@ -100,7 +100,7 @@ done < ${meth_machinery_list} | sort -k1,1 -u >> ${unique_pgen_match_IDs}
 
 
 # Create results file and header
-printf "%s\t%s\t%s\t%s\n" "gene_name" "gene_ID" "NCBI_evalue" "DIAMOND_evalue" \
+printf "%s\t%s\t%s\t%s\n" "gene_ID" "gene_name" "NCBI_evalue" "DIAMOND_evalue" \
 > ${results_table}
 
 # Use matched pgen IDs to extract FastAs and run BLASTx
