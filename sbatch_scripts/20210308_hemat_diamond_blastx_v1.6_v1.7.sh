@@ -1,9 +1,9 @@
 #!/bin/bash
 ## Job Name
-#SBATCH --job-name=hemat_diamond_blastx_v1.6_v1.7_v2.1_v3.1
+#SBATCH --job-name=20210308_hemat_diamond_blastx_v1.6_v1.7
 ## Allocation Definition
-#SBATCH --account=coenv
-#SBATCH --partition=coenv
+#SBATCH --account=srlab
+#SBATCH --partition=srlab
 ## Resources
 ## Nodes
 #SBATCH --nodes=1

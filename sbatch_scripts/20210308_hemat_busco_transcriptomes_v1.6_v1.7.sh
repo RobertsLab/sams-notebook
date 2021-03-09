@@ -2,8 +2,8 @@
 ## Job Name
 #SBATCH --job-name=20210308_hemat_busco_transcriptomes_v1.6_v1.7
 ## Allocation Definition
-#SBATCH --account=coenv
-#SBATCH --partition=coenv
+#SBATCH --account=srlab
+#SBATCH --partition=srlab
 ## Resources
 ## Nodes
 #SBATCH --nodes=1
