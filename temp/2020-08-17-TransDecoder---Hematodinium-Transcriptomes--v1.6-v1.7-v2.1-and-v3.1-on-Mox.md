@@ -185,6 +185,7 @@ do
 done
 ```
 
+Due to a colossal error in the original v1.6 and v1.7 assemblies (used the wrong FastQ files!), [I re-ran this analysis just on the v1.6 and v1.7](https://github.com/RobertsLab/sams-notebook/blob/master/sbatch_scripts/20210309_hemat_transdecoder_transcriptomes_v1.6_v1.7.sh) and integrated the results in this post/output directory. I have not created a separate notebook entry for this re-analysis to minimize confusion.
 
 ---
 
