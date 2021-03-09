@@ -119,7 +119,7 @@ do
 
   # Create checksum list of fastq files used in analysis
   ## Uses parameter substitution to strip leading path from filename
-  md5sum "${reads_array[@]##*/}" >> "${transcriptome_name}".fastq-checksums.md5
+  md5sum "${reads_array[@]}" >> "${transcriptome_name}".fastq-checksums.md5
 
   # Create comma-separated lists of FastQ reads
   R1_list=$(echo "${R1_array[@]}" | tr " " ",")
