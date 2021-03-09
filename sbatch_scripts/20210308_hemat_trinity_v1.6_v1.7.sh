@@ -2,8 +2,8 @@
 ## Job Name
 #SBATCH --job-name=hemat_trinity_v1.6_v1.7
 ## Allocation Definition
-#SBATCH --account=coenv
-#SBATCH --partition=coenv
+#SBATCH --account=srlab
+#SBATCH --partition=srlab
 ## Resources
 ## Nodes
 #SBATCH --nodes=1
@@ -189,6 +189,48 @@ do
 
 done
 
+# Capture program options
+echo "Logging program options..."
+for program in "${!programs_array[@]}"
+do
+	{
+  echo "Program options for ${program}: "
+	echo ""
+  # Handle samtools help menus
+  if [[ "${program}" == "samtools_index" ]] \
+  || [[ "${program}" == "samtools_sort" ]] \
+  || [[ "${program}" == "samtools_view" ]]
+  then
+    ${programs_array[$program]}
+
+  # Handle DIAMOND BLAST menu
+  elif [[ "${program}" == "diamond" ]]; then
+    ${programs_array[$program]} help
+
+  # Handle NCBI BLASTx menu
+  elif [[ "${program}" == "blastx" ]]; then
+    ${programs_array[$program]} -help
+  fi
+	${programs_array[$program]} -h
+	echo ""
+	echo ""
+	echo "----------------------------------------------"
+	echo ""
+	echo ""
+} &>> program_options.log || true
+
+  # If MultiQC is in programs_array, copy the config file to this directory.
+  if [[ "${program}" == "multiqc" ]]; then
+  	cp --preserve ~/.multiqc_config.yaml multiqc_config.yaml
+  fi
+done
+
+echo ""
+echo "Finished logging program options."
+echo ""
+
+echo ""
+echo "Logging system PATH."
 # Document programs in PATH (primarily for program version ID)
 {
 date
@@ -199,18 +241,4 @@ printf "%0.s-" {1..10}
 echo "${PATH}" | tr : \\n
 } >> system_path.log
 
-# Capture program options
-## Note: Trinity util/support scripts don't have options/help menus
-for program in "${!programs_array[@]}"
-do
-	{
-  echo "Program options for ${program}: "
-	echo ""
-	${programs_array[$program]} --help
-	echo ""
-	echo ""
-	echo "----------------------------------------------"
-	echo ""
-	echo ""
-} &>> program_options.log || true
-done
+echo "Finished logging system PATH"
