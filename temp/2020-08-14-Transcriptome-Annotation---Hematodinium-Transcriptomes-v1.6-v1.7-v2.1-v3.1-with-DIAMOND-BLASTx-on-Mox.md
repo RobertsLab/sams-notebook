@@ -1,7 +1,7 @@
 ---
 layout: post
 title: Transcriptome Annotation - Hematodinium Transcriptomes v1.6 v1.7 v2.1 v3.1 with DIAMOND BLASTx on Mox
-date: '2020-08-14 22:30'
+date: '2021-03-08 21:50'
 tags:
   - BLASTx
   - mox
@@ -13,9 +13,9 @@ categories:
 ---
 Needed to annotate the _Hematodinium sp._ transcriptomes that I've assembled using DIAMOND BLASTx. This will also be used for additional downstream annotation (TransDecoder, Trinotate):
 
-- [hemat_transcriptome_v1.6.fasta](https://gannet.fish.washington.edu/Atumefaciens/20200814_hemat_trinity_v1.6_v1.7/hemat_transcriptome_v1.6.fasta_trinity_out_dir/hemat_transcriptome_v1.6.fasta) (38MB; from [20200814](https://robertslab.github.io/sams-notebook/2020/08/14/Transcriptome-Assembly-Hematodinium-Transcriptomes-v1.6-and-v1.7-with-Trinity-on-Mox.html))
+- [hemat_transcriptome_v1.6.fasta](https://gannet.fish.washington.edu/Atumefaciens/20210308_hemat_trinity_v1.6_v1.7/hemat_transcriptome_v1.6.fasta_trinity_out_dir/hemat_transcriptome_v1.6.fasta) (4.5MB; from [20210308](https://robertslab.github.io/sams-notebook/2021/03/08/Transcriptome-Assembly-Hematodinium-Transcriptomes-v1.6-and-v1.7-with-Trinity-on-Mox.html))
 
-- [hemat_transcriptome_v1.7.fasta](https://gannet.fish.washington.edu/Atumefaciens/20200814_hemat_trinity_v1.6_v1.7/hemat_transcriptome_v1.7.fasta_trinity_out_dir/hemat_transcriptome_v1.7.fasta) (22MB; from [20200814](https://robertslab.github.io/sams-notebook/2020/08/14/Transcriptome-Assembly-Hematodinium-Transcriptomes-v1.6-and-v1.7-with-Trinity-on-Mox.html))
+- [hemat_transcriptome_v1.7.fasta](https://gannet.fish.washington.edu/Atumefaciens/20210308_hemat_trinity_v1.6_v1.7/hemat_transcriptome_v1.7.fasta_trinity_out_dir/hemat_transcriptome_v1.7.fasta) (1.9MB; from [20210308](https://robertslab.github.io/sams-notebook/2021/03/08/Transcriptome-Assembly-Hematodinium-Transcriptomes-v1.6-and-v1.7-with-Trinity-on-Mox.html))
 
 - [hemat_transcriptome_v2.1.fasta](https://gannet.fish.washington.edu/Atumefaciens/20200605_cbai_v2.0_v3.0_megan_seq_extractions/hemat_transcriptome_v2.1.fasta) (65MB; from [20200605](https://robertslab.github.io/sams-notebook/2020/06/05/Sequence-Extractions-C.bairdi-Transcriptomes-v2.0-and-v3.0-Excluding-Alveolata-with-MEGAN6-on-Swoose.html))
 
