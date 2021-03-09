@@ -1,6 +1,6 @@
 #!/bin/bash
 ## Job Name
-#SBATCH --job-name=20200308_hemat_busco_transcriptomes_v1.6_v1.7
+#SBATCH --job-name=20210308_hemat_busco_transcriptomes_v1.6_v1.7
 ## Allocation Definition
 #SBATCH --account=coenv
 #SBATCH --partition=coenv
@@ -15,7 +15,7 @@
 #SBATCH --mail-type=ALL
 #SBATCH --mail-user=samwhite@uw.edu
 ## Specify the working directory for this job
-#SBATCH --chdir=/gscratch/scrubbed/samwhite/outputs/20200308_hemat_busco_transcriptomes_v1.6_v1.7
+#SBATCH --chdir=/gscratch/scrubbed/samwhite/outputs/20210308_hemat_busco_transcriptomes_v1.6_v1.7
 
 ###################################################################################
 # These variables need to be set by user
