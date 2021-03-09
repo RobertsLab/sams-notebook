@@ -13,9 +13,9 @@ categories:
 ---
 Needed to assess the _Hematodinium sp._ transcriptomes that I've assembled to determine their "completeness" using [BUSCO](https://busco.ezlab.org/).
 
-- [hemat_transcriptome_v1.6.fasta](https://gannet.fish.washington.edu/Atumefaciens/20200814_hemat_trinity_v1.6_v1.7/hemat_transcriptome_v1.6.fasta_trinity_out_dir/hemat_transcriptome_v1.6.fasta) (38MB; from [20200814](https://robertslab.github.io/sams-notebook/2020/08/14/Transcriptome-Assembly-Hematodinium-Transcriptomes-v1.6-and-v1.7-with-Trinity-on-Mox.html))
+- [hemat_transcriptome_v1.6.fasta](https://gannet.fish.washington.edu/Atumefaciens/20210308_hemat_trinity_v1.6_v1.7/hemat_transcriptome_v1.6.fasta_trinity_out_dir/hemat_transcriptome_v1.6.fasta) (4.5MB; from [20210308](https://robertslab.github.io/sams-notebook/2021/03/08/Transcriptome-Assembly-Hematodinium-Transcriptomes-v1.6-and-v1.7-with-Trinity-on-Mox.html))
 
-- [hemat_transcriptome_v1.7.fasta](https://gannet.fish.washington.edu/Atumefaciens/20200814_hemat_trinity_v1.6_v1.7/hemat_transcriptome_v1.7.fasta_trinity_out_dir/hemat_transcriptome_v1.7.fasta) (22MB; from [20200814](https://robertslab.github.io/sams-notebook/2020/08/14/Transcriptome-Assembly-Hematodinium-Transcriptomes-v1.6-and-v1.7-with-Trinity-on-Mox.html))
+- [hemat_transcriptome_v1.7.fasta](https://gannet.fish.washington.edu/Atumefaciens/20210308_hemat_trinity_v1.6_v1.7/hemat_transcriptome_v1.7.fasta_trinity_out_dir/hemat_transcriptome_v1.7.fasta) (1.9MB; from [20210308](https://robertslab.github.io/sams-notebook/2021/03/08/Transcriptome-Assembly-Hematodinium-Transcriptomes-v1.6-and-v1.7-with-Trinity-on-Mox.html))
 
 - [hemat_transcriptome_v2.1.fasta](https://gannet.fish.washington.edu/Atumefaciens/20200605_cbai_v2.0_v3.0_megan_seq_extractions/hemat_transcriptome_v2.1.fasta) (65MB; from [20200605](https://robertslab.github.io/sams-notebook/2020/06/05/Sequence-Extractions-C.bairdi-Transcriptomes-v2.0-and-v3.0-Excluding-Alveolata-with-MEGAN6-on-Swoose.html))
 
@@ -229,13 +229,13 @@ All data below has been added to a transcriptome comparison spreadsheet:
 # Summarized benchmarking in BUSCO notation for file /gscratch/srlab/sam/data/Hematodinium/transcriptomes/hemat_transcriptome_v1.6.fasta
 # BUSCO was run in mode: transcriptome
 
-	C:91.8%[S:64.9%,D:26.9%],F:6.0%,M:2.2%,n:978
+	C:26.5%[S:20.7%,D:5.8%],F:11.2%,M:62.3%,n:978
 
-	898	Complete BUSCOs (C)
-	635	Complete and single-copy BUSCOs (S)
-	263	Complete and duplicated BUSCOs (D)
-	59	Fragmented BUSCOs (F)
-	21	Missing BUSCOs (M)
+	259	Complete BUSCOs (C)
+	202	Complete and single-copy BUSCOs (S)
+	57	Complete and duplicated BUSCOs (D)
+	110	Fragmented BUSCOs (F)
+	609	Missing BUSCOs (M)
 	978	Total BUSCO groups searched
 ```
 
@@ -252,13 +252,13 @@ All data below has been added to a transcriptome comparison spreadsheet:
 # Summarized benchmarking in BUSCO notation for file /gscratch/srlab/sam/data/Hematodinium/transcriptomes/hemat_transcriptome_v1.7.fasta
 # BUSCO was run in mode: transcriptome
 
-	C:86.5%[S:65.5%,D:21.0%],F:8.3%,M:5.2%,n:978
+	C:15.0%[S:12.2%,D:2.8%],F:12.3%,M:72.7%,n:978
 
-	846	Complete BUSCOs (C)
-	641	Complete and single-copy BUSCOs (S)
-	205	Complete and duplicated BUSCOs (D)
-	81	Fragmented BUSCOs (F)
-	51	Missing BUSCOs (M)
+	146	Complete BUSCOs (C)
+	119	Complete and single-copy BUSCOs (S)
+	27	Complete and duplicated BUSCOs (D)
+	120	Fragmented BUSCOs (F)
+	712	Missing BUSCOs (M)
 	978	Total BUSCO groups searched
 ```
 
