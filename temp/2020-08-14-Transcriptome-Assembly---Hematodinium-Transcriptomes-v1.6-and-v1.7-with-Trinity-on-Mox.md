@@ -1,7 +1,7 @@
 ---
 layout: post
 title: Transcriptome Assembly - Hematodinium Transcriptomes v1.6 and v1.7 with Trinity on Mox
-date: '2020-08-14 12:44'
+date: '2021-03-08 20:44'
 tags:
   - Tanner crab
   - hematodinium
@@ -20,7 +20,7 @@ All of the above transcriptomes were assembled with different combinations of th
 
 SBATCH script (GitHub):
 
-- [20200814_hemat_trinity_v1.6_v1.7.sh](https://github.com/RobertsLab/sams-notebook/blob/master/sbatch_scripts/20200814_hemat_trinity_v1.6_v1.7.sh)
+- [20210308_hemat_trinity_v1.6_v1.7.sh](https://github.com/RobertsLab/sams-notebook/blob/master/sbatch_scripts/20210308_hemat_trinity_v1.6_v1.7.sh)
 
 
 ```shell
@@ -28,8 +28,8 @@ SBATCH script (GitHub):
 ## Job Name
 #SBATCH --job-name=hemat_trinity_v1.6_v1.7
 ## Allocation Definition
-#SBATCH --account=coenv
-#SBATCH --partition=coenv
+#SBATCH --account=srlab
+#SBATCH --partition=srlab
 ## Resources
 ## Nodes
 #SBATCH --nodes=1
@@ -41,7 +41,7 @@ SBATCH script (GitHub):
 #SBATCH --mail-type=ALL
 #SBATCH --mail-user=samwhite@uw.edu
 ## Specify the working directory for this job
-#SBATCH --chdir=/gscratch/scrubbed/samwhite/outputs/20200814_hemat_trinity_v1.6_v1.7
+#SBATCH --chdir=/gscratch/scrubbed/samwhite/outputs/20210308_hemat_trinity_v1.6_v1.7
 
 
 # Script to generate Hematodinium Trinity transcriptome assemblies:
@@ -53,8 +53,8 @@ SBATCH script (GitHub):
 # These variables need to be set by user
 
 # Assign Variables
-script_path=/gscratch/scrubbed/samwhite/outputs/20200814_hemat_trinity_v1.6_v1.7/20200814_hemat_trinity_v1.6_v1.7.sh
-reads_dir=/gscratch/srlab/sam/data/C_bairdi/RNAseq
+script_path=/gscratch/scrubbed/samwhite/outputs/20210308_hemat_trinity_v1.6_v1.7/20210308_hemat_trinity_v1.6_v1.7.sh
+reads_dir=/gscratch/srlab/sam/data/Hematodinium/RNAseq
 transcriptomes_dir=/gscratch/srlab/sam/data/Hematodinium/transcriptomes
 threads=28
 # Carrot needed to limit grep to line starting with #SBATCH
@@ -98,7 +98,7 @@ set -e
 module load intel-python3_2017
 
 # Set working directory
-wd="/gscratch/scrubbed/samwhite/outputs/20200814_hemat_trinity_v1.6_v1.7"
+wd=$(pwd)
 
 # Loop through each transcriptome
 for transcriptome in "${!transcriptomes_array[@]}"
@@ -143,9 +143,9 @@ do
 
   fi
 
-  # Create list of fastq files used in analysis
+  # Create checksum list of fastq files used in analysis
   ## Uses parameter substitution to strip leading path from filename
-  printf "%s\n" "${reads_array[@]##*/}" >> "${transcriptome_name}".fastq.list.txt
+  md5sum "${reads_array[@]}" >> "${transcriptome_name}".fastq-checksums.md5
 
   # Create comma-separated lists of FastQ reads
   R1_list=$(echo "${R1_array[@]}" | tr " " ",")
@@ -215,6 +215,48 @@ do
 
 done
 
+# Capture program options
+echo "Logging program options..."
+for program in "${!programs_array[@]}"
+do
+	{
+  echo "Program options for ${program}: "
+	echo ""
+  # Handle samtools help menus
+  if [[ "${program}" == "samtools_index" ]] \
+  || [[ "${program}" == "samtools_sort" ]] \
+  || [[ "${program}" == "samtools_view" ]]
+  then
+    ${programs_array[$program]}
+
+  # Handle DIAMOND BLAST menu
+  elif [[ "${program}" == "diamond" ]]; then
+    ${programs_array[$program]} help
+
+  # Handle NCBI BLASTx menu
+  elif [[ "${program}" == "blastx" ]]; then
+    ${programs_array[$program]} -help
+  fi
+	${programs_array[$program]} -h
+	echo ""
+	echo ""
+	echo "----------------------------------------------"
+	echo ""
+	echo ""
+} &>> program_options.log || true
+
+  # If MultiQC is in programs_array, copy the config file to this directory.
+  if [[ "${program}" == "multiqc" ]]; then
+  	cp --preserve ~/.multiqc_config.yaml multiqc_config.yaml
+  fi
+done
+
+echo ""
+echo "Finished logging program options."
+echo ""
+
+echo ""
+echo "Logging system PATH."
 # Document programs in PATH (primarily for program version ID)
 {
 date
@@ -225,21 +267,7 @@ printf "%0.s-" {1..10}
 echo "${PATH}" | tr : \\n
 } >> system_path.log
 
-# Capture program options
-## Note: Trinity util/support scripts don't have options/help menus
-for program in "${!programs_array[@]}"
-do
-	{
-  echo "Program options for ${program}: "
-	echo ""
-	${programs_array[$program]} --help
-	echo ""
-	echo ""
-	echo "----------------------------------------------"
-	echo ""
-	echo ""
-} &>> program_options.log || true
-done
+echo "Finished logging system PATH"
 
 ```
 
@@ -249,40 +277,40 @@ done
 
 Just under 5hrs to run both assemblies:
 
-![Hemat Trinity assemblies v1.6 and v1.7 combined runtime](https://github.com/RobertsLab/sams-notebook/blob/master/images/screencaps/20200814_hemat_trinity_v1.6_v1.7_runtime.png?raw=true)
+![Hemat Trinity assemblies v1.6 and v1.7 combined runtime](https://github.com/RobertsLab/sams-notebook/blob/master/images/screencaps/20210308_hemat_trinity_v1.6_v1.7_runtime.png?raw=true)
 
 Output folder:
 
-- [20200814_hemat_trinity_v1.6_v1.7/](https://gannet.fish.washington.edu/Atumefaciens/20200814_hemat_trinity_v1.6_v1.7/)
+- [20210308_hemat_trinity_v1.6_v1.7/](https://gannet.fish.washington.edu/Atumefaciens/20210308_hemat_trinity_v1.6_v1.7/)
 
 
 #### hemat_transcriptome_v1.6
 
 Input FastQ list (text):
 
-- [20200814_hemat_trinity_v1.6_v1.7/hemat_transcriptome_v1.6.fasta.fastq.list.txt](https://gannet.fish.washington.edu/Atumefaciens/20200814_hemat_trinity_v1.6_v1.7/hemat_transcriptome_v1.6.fasta.fastq.list.txt)
+- [20210308_hemat_trinity_v1.6_v1.7/hemat_transcriptome_v1.6.fasta.fastq.list.txt](https://gannet.fish.washington.edu/Atumefaciens/20210308_hemat_trinity_v1.6_v1.7/hemat_transcriptome_v1.6.fasta.fastq.list.txt)
 
 FastA (38MB):
 
-- [20200814_hemat_trinity_v1.6_v1.7/hemat_transcriptome_v1.6.fasta_trinity_out_dir/hemat_transcriptome_v1.6.fasta](https://gannet.fish.washington.edu/Atumefaciens/20200814_hemat_trinity_v1.6_v1.7/hemat_transcriptome_v1.6.fasta_trinity_out_dir/hemat_transcriptome_v1.6.fasta)
+- [20210308_hemat_trinity_v1.6_v1.7/hemat_transcriptome_v1.6.fasta_trinity_out_dir/hemat_transcriptome_v1.6.fasta](https://gannet.fish.washington.edu/Atumefaciens/20210308_hemat_trinity_v1.6_v1.7/hemat_transcriptome_v1.6.fasta_trinity_out_dir/hemat_transcriptome_v1.6.fasta)
 
 FastA Index (text):
 
-- [20200814_hemat_trinity_v1.6_v1.7/hemat_transcriptome_v1.6.fasta_trinity_out_dir/hemat_transcriptome_v1.6.fasta.fai](https://gannet.fish.washington.edu/Atumefaciens/20200814_hemat_trinity_v1.6_v1.7/hemat_transcriptome_v1.6.fasta_trinity_out_dir/hemat_transcriptome_v1.6.fasta.fai)
+- [20210308_hemat_trinity_v1.6_v1.7/hemat_transcriptome_v1.6.fasta_trinity_out_dir/hemat_transcriptome_v1.6.fasta.fai](https://gannet.fish.washington.edu/Atumefaciens/20210308_hemat_trinity_v1.6_v1.7/hemat_transcriptome_v1.6.fasta_trinity_out_dir/hemat_transcriptome_v1.6.fasta.fai)
 
 The following sets of files are useful for downstream gene expression and annotation using Trinity.
 
 Trinity FastA Gene Trans Map (text):
 
-- [20200814_hemat_trinity_v1.6_v1.7/hemat_transcriptome_v1.6.fasta_trinity_out_dir/hemat_transcriptome_v1.6.fasta.gene_trans_map](https://gannet.fish.washington.edu/Atumefaciens/20200814_hemat_trinity_v1.6_v1.7/hemat_transcriptome_v1.6.fasta_trinity_out_dir/hemat_transcriptome_v1.6.fasta.gene_trans_map)
+- [20210308_hemat_trinity_v1.6_v1.7/hemat_transcriptome_v1.6.fasta_trinity_out_dir/hemat_transcriptome_v1.6.fasta.gene_trans_map](https://gannet.fish.washington.edu/Atumefaciens/20210308_hemat_trinity_v1.6_v1.7/hemat_transcriptome_v1.6.fasta_trinity_out_dir/hemat_transcriptome_v1.6.fasta.gene_trans_map)
 
 Trinity FastA Sequence Lengths (text):
 
--  [20200814_hemat_trinity_v1.6_v1.7/hemat_transcriptome_v1.6.fasta_trinity_out_dir/hemat_transcriptome_v1.6.fasta.seq_lens](https://gannet.fish.washington.edu/Atumefaciens/20200814_hemat_trinity_v1.6_v1.7/hemat_transcriptome_v1.6.fasta_trinity_out_dir/hemat_transcriptome_v1.6.fasta.seq_lens)
+-  [20210308_hemat_trinity_v1.6_v1.7/hemat_transcriptome_v1.6.fasta_trinity_out_dir/hemat_transcriptome_v1.6.fasta.seq_lens](https://gannet.fish.washington.edu/Atumefaciens/20210308_hemat_trinity_v1.6_v1.7/hemat_transcriptome_v1.6.fasta_trinity_out_dir/hemat_transcriptome_v1.6.fasta.seq_lens)
 
 Assembly stats:
 
-- [hemat_transcriptome_v1.6.fasta_assembly_stats.txt](https://gannet.fish.washington.edu/Atumefaciens/20200814_hemat_trinity_v1.6_v1.7/hemat_transcriptome_v1.6.fasta_assembly_stats.txt)
+- [hemat_transcriptome_v1.6.fasta_assembly_stats.txt](https://gannet.fish.washington.edu/Atumefaciens/20210308_hemat_trinity_v1.6_v1.7/hemat_transcriptome_v1.6.fasta_assembly_stats.txt)
 
 ```
 ################################
@@ -326,33 +354,33 @@ Stats based on ALL transcript contigs:
 
 Input FastQ list (text):
 
-- [20200814_hemat_trinity_v1.6_v1.7/hemat_transcriptome_v1.7.fasta.fastq.list.txt](https://gannet.fish.washington.edu/Atumefaciens/20200814_hemat_trinity_v1.6_v1.7/hemat_transcriptome_v1.7.fasta.fastq.list.txt)
+- [20210308_hemat_trinity_v1.6_v1.7/hemat_transcriptome_v1.7.fasta.fastq.list.txt](https://gannet.fish.washington.edu/Atumefaciens/20210308_hemat_trinity_v1.6_v1.7/hemat_transcriptome_v1.7.fasta.fastq.list.txt)
 
 FastA (22MB):
 
-- [20200814_hemat_trinity_v1.6_v1.7/hemat_transcriptome_v1.7.fasta_trinity_out_dir/hemat_transcriptome_v1.7.fasta](https://gannet.fish.washington.edu/Atumefaciens/20200814_hemat_trinity_v1.6_v1.7/hemat_transcriptome_v1.7.fasta_trinity_out_dir/hemat_transcriptome_v1.7.fasta)
+- [20210308_hemat_trinity_v1.6_v1.7/hemat_transcriptome_v1.7.fasta_trinity_out_dir/hemat_transcriptome_v1.7.fasta](https://gannet.fish.washington.edu/Atumefaciens/20210308_hemat_trinity_v1.6_v1.7/hemat_transcriptome_v1.7.fasta_trinity_out_dir/hemat_transcriptome_v1.7.fasta)
 
 
 
 FastA Index (text):
 
-- [20200814_hemat_trinity_v1.6_v1.7/hemat_transcriptome_v1.7.fasta_trinity_out_dir/hemat_transcriptome_v1.7.fasta.fai](https://gannet.fish.washington.edu/Atumefaciens/20200814_hemat_trinity_v1.6_v1.7/hemat_transcriptome_v1.7.fasta_trinity_out_dir/hemat_transcriptome_v1.7.fasta.fai)
+- [20210308_hemat_trinity_v1.6_v1.7/hemat_transcriptome_v1.7.fasta_trinity_out_dir/hemat_transcriptome_v1.7.fasta.fai](https://gannet.fish.washington.edu/Atumefaciens/20210308_hemat_trinity_v1.6_v1.7/hemat_transcriptome_v1.7.fasta_trinity_out_dir/hemat_transcriptome_v1.7.fasta.fai)
 
 
 The following sets of files are useful for downstream gene expression and annotation using Trinity.
 
 Trinity FastA Gene Trans Map (text):
 
-- [20200814_hemat_trinity_v1.6_v1.7/hemat_transcriptome_v1.7.fasta_trinity_out_dir/hemat_transcriptome_v1.7.fasta.gene_trans_map](https://gannet.fish.washington.edu/Atumefaciens/20200814_hemat_trinity_v1.6_v1.7/hemat_transcriptome_v1.7.fasta_trinity_out_dir/hemat_transcriptome_v1.7.fasta.gene_trans_map)
+- [20210308_hemat_trinity_v1.6_v1.7/hemat_transcriptome_v1.7.fasta_trinity_out_dir/hemat_transcriptome_v1.7.fasta.gene_trans_map](https://gannet.fish.washington.edu/Atumefaciens/20210308_hemat_trinity_v1.6_v1.7/hemat_transcriptome_v1.7.fasta_trinity_out_dir/hemat_transcriptome_v1.7.fasta.gene_trans_map)
 
 Trinity FastA Sequence Lengths (text):
 
-- [20200814_hemat_trinity_v1.6_v1.7/hemat_transcriptome_v1.7.fasta_trinity_out_dir/hemat_transcriptome_v1.7.fasta.seq_lens](https://gannet.fish.washington.edu/Atumefaciens/20200814_hemat_trinity_v1.6_v1.7/hemat_transcriptome_v1.7.fasta_trinity_out_dir/hemat_transcriptome_v1.7.fasta.seq_lens)
+- [20210308_hemat_trinity_v1.6_v1.7/hemat_transcriptome_v1.7.fasta_trinity_out_dir/hemat_transcriptome_v1.7.fasta.seq_lens](https://gannet.fish.washington.edu/Atumefaciens/20210308_hemat_trinity_v1.6_v1.7/hemat_transcriptome_v1.7.fasta_trinity_out_dir/hemat_transcriptome_v1.7.fasta.seq_lens)
 
 
 Assembly stats:
 
- - [20200814_hemat_trinity_v1.6_v1.7/hemat_transcriptome_v1.7.fasta_assembly_stats.txt](https://gannet.fish.washington.edu/Atumefaciens/20200814_hemat_trinity_v1.6_v1.7/hemat_transcriptome_v1.7.fasta_assembly_stats.txt)
+ - [20210308_hemat_trinity_v1.6_v1.7/hemat_transcriptome_v1.7.fasta_assembly_stats.txt](https://gannet.fish.washington.edu/Atumefaciens/20210308_hemat_trinity_v1.6_v1.7/hemat_transcriptome_v1.7.fasta_assembly_stats.txt)
 
  ```
  ################################
