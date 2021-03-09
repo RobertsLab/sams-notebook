@@ -1,7 +1,7 @@
 ---
 layout: post
 title: Transcriptome Annotation - Trinotate Hematodinium v1.6 on Mox
-date: '2020-08-26 09:42'
+date: '2021-03-09 08:42'
 tags:
   - trinotate
   - Hematodinium
@@ -22,12 +22,12 @@ This was run on Mox.
 
 SBATCH script (GitHub):
 
-- [20200826_hemat_trinotate_transcriptome-v1.6.sh](https://github.com/RobertsLab/sams-notebook/blob/master/sbatch_scripts/20200826_hemat_trinotate_transcriptome-v1.6.sh)
+- [20210309_hemat_trinotate_transcriptome-v1.6.sh](https://github.com/RobertsLab/sams-notebook/blob/master/sbatch_scripts/20210309_hemat_trinotate_transcriptome-v1.6.sh)
 
 ```shell
 #!/bin/bash
 ## Job Name
-#SBATCH --job-name=hemat_trinotate_transcriptome-v1.6
+#SBATCH --job-name=20210309_hemat_trinotate_transcriptome-v1.6
 ## Allocation Definition
 #SBATCH --account=srlab
 #SBATCH --partition=srlab
@@ -42,7 +42,7 @@ SBATCH script (GitHub):
 #SBATCH --mail-type=ALL
 #SBATCH --mail-user=samwhite@uw.edu
 ## Specify the working directory for this job
-#SBATCH --chdir=/gscratch/scrubbed/samwhite/outputs/20200826_hemat_trinotate_transcriptome-v1.6
+#SBATCH --chdir=/gscratch/scrubbed/samwhite/outputs/20210309_hemat_trinotate_transcriptome-v1.6
 
 
 # Script to run Trinotate on Hematodinium transcriptome:
@@ -53,12 +53,12 @@ SBATCH script (GitHub):
 
 # Input files
 ## BLASTx
-blastx_out="/gscratch/scrubbed/samwhite/outputs/20200814_hemat_diamond_blastx_v1.6_v1.7_v2.1_v3.1/hemat_transcriptome_v1.6.fasta.blastx.outfmt6"
+blastx_out="/gscratch/scrubbed/samwhite/outputs/20210308_hemat_diamond_blastx_v1.6_v1.7/hemat_transcriptome_v1.6.fasta.blastx.outfmt6"
 
 ## TransDecoder
-transdecoder_dir="/gscratch/scrubbed/samwhite/outputs/20200817_hemat_transdecoder_transcriptomes_v1.6_v1.7_v2.1_v.3.1/20200817_hemat_transcriptome_v1.6.fasta.transdecoder"
-blastp_out="${transdecoder_dir}/20200817_hemat_transcriptome_v1.6.fasta.blastp_out/20200817_hemat_transcriptome_v1.6.fasta.blastp.outfmt6"
-pfam_out="${transdecoder_dir}/20200817_hemat_transcriptome_v1.6.fasta.pfam_out/20200817_hemat_transcriptome_v1.6.fasta.pfam.domtblout"
+transdecoder_dir="/gscratch/scrubbed/samwhite/outputs/20210309_hemat_transdecoder_transcriptomes_v1.6_v1.7/20210309_hemat_transcriptome_v1.6.fasta.transdecoder"
+blastp_out="${transdecoder_dir}/20210309_hemat_transcriptome_v1.6.fasta.blastp_out/20210309_hemat_transcriptome_v1.6.fasta.blastp.outfmt6"
+pfam_out="${transdecoder_dir}/20210309_hemat_transcriptome_v1.6.fasta.pfam_out/20210309_hemat_transcriptome_v1.6.fasta.pfam.domtblout"
 lORFs_pep="${transdecoder_dir}/hemat_transcriptome_v1.6.fasta.transdecoder_dir/longest_orfs.pep"
 
 ## Transcriptomics
@@ -211,28 +211,28 @@ echo "${PATH}" | tr : \\n
 
 Took just under 1hr:
 
-![Runtime for Hemat v1.6 Trinotate job](https://github.com/RobertsLab/sams-notebook/blob/master/images/screencaps/20200826_hemat_trinotate_transcriptome-v1.6_runtime.png?raw=true)
+![Runtime for Hemat v1.6 Trinotate job](https://github.com/RobertsLab/sams-notebook/blob/master/images/screencaps/20210309_hemat_trinotate_transcriptome-v1.6_runtime.png?raw=true)
 
 Output folder:
 
-- [20200826_hemat_trinotate_transcriptome-v1.6/](https://gannet.fish.washington.edu/Atumefaciens/20200826_hemat_trinotate_transcriptome-v1.6/)
+- [20210309_hemat_trinotate_transcriptome-v1.6/](https://gannet.fish.washington.edu/Atumefaciens/20210309_hemat_trinotate_transcriptome-v1.6/)
 
-Annotation feature map (3.5MB; TXT):
+Annotation feature map (727KB; TXT):
 
-- [20200826.hemat_transcriptome_v1.6.fasta.trinotate.annotation_feature_map.txt](https://gannet.fish.washington.edu/Atumefaciens/20200826_hemat_trinotate_transcriptome-v1.6/20200826.hemat_transcriptome_v1.6.fasta.trinotate.annotation_feature_map.txt)
+- [20210309.hemat_transcriptome_v1.6.fasta.trinotate.annotation_feature_map.txt](https://gannet.fish.washington.edu/Atumefaciens/20210309_hemat_trinotate_transcriptome-v1.6/20210309.hemat_transcriptome_v1.6.fasta.trinotate.annotation_feature_map.txt)
 
   - [This can be used to update Trinity-based gene expression matrices like so](https://github.com/trinityrnaseq/trinityrnaseq/wiki/Functional-Annotation-of-Transcripts):
 
     - ```${TRINITY_HOME}/Analysis/DifferentialExpression/rename_matrix_feature_identifiers.pl Trinity_trans.counts.matrix annot_feature_map.txt > Trinity_trans.counts.wAnnot.matrix```
 
-Gene ontology (GO) annotations (9.4MB; TXT):
+Gene ontology (GO) annotations (2.4MB; TXT):
 
-- [20200826.hemat_transcriptome_v1.6.fasta.trinotate.go_annotations.txt](https://gannet.fish.washington.edu/Atumefaciens/20200826_hemat_trinotate_transcriptome-v1.6/20200826.hemat_transcriptome_v1.6.fasta.trinotate.go_annotations.txt)
+- [20210309.hemat_transcriptome_v1.6.fasta.trinotate.go_annotations.txt](https://gannet.fish.washington.edu/Atumefaciens/20210309_hemat_trinotate_transcriptome-v1.6/20210309.hemat_transcriptome_v1.6.fasta.trinotate.go_annotations.txt)
 
-Annotation report (37MB; CSV):
+Annotation report (12MB; CSV):
 
-- [20200826.hemat_transcriptome_v1.6.fasta.trinotate_annotation_report.txt](https://gannet.fish.washington.edu/Atumefaciens/20200826_hemat_trinotate_transcriptome-v1.6/20200826.hemat_transcriptome_v1.6.fasta.trinotate_annotation_report.txt)
+- [20210309.hemat_transcriptome_v1.6.fasta.trinotate_annotation_report.txt](https://gannet.fish.washington.edu/Atumefaciens/20210309_hemat_trinotate_transcriptome-v1.6/20210309.hemat_transcriptome_v1.6.fasta.trinotate_annotation_report.txt)
 
-SQlite database (489MB; SQLITE):
+SQlite database (391MB; SQLITE):
 
-- [Trinotate.sqlite](https://gannet.fish.washington.edu/Atumefaciens/20200826_hemat_trinotate_transcriptome-v1.6/Trinotate.sqlite)
+- [Trinotate.sqlite](https://gannet.fish.washington.edu/Atumefaciens/20210309_hemat_trinotate_transcriptome-v1.6/Trinotate.sqlite)
