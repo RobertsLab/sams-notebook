@@ -1,7 +1,7 @@
 ---
 layout: post
 title: Transcriptome Annotation - Hematodinium Transcriptomes v1.6 v1.7 v2.1 v3.1 with DIAMOND BLASTx on Mox
-date: '2021-03-08 21:50'
+date: '2020-08-14 20:04'
 tags:
   - BLASTx
   - mox
