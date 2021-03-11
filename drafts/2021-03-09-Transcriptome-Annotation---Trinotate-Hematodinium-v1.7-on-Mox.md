@@ -217,22 +217,22 @@ Output folder:
 
 - [20210309_hemat_trinotate_transcriptome-v1.7/](https://gannet.fish.washington.edu/Atumefaciens/20210309_hemat_trinotate_transcriptome-v1.7/)
 
-Annotation feature map (2.3MB; TXT):
+Annotation feature map (388KB; TXT):
 
-- [20210309.hemat_transcriptome_v1.7.fasta.trinotate.annotation_feature_map.txt](https://gannet.fish.washington.edu/Atumefaciens/20210309_hemat_trinotate_transcriptome-v1.7/20210309.hemat_transcriptome_v1.7.fasta.trinotate.annotation_feature_map.txt)
+- [20210310.hemat_transcriptome_v1.7.fasta.trinotate.annotation_feature_map.txt](https://gannet.fish.washington.edu/Atumefaciens/20210309_hemat_trinotate_transcriptome-v1.7/20210310.hemat_transcriptome_v1.7.fasta.trinotate.annotation_feature_map.txt)
 
   - [This can be used to update Trinity-based gene expression matrices like so](https://github.com/trinityrnaseq/trinityrnaseq/wiki/Functional-Annotation-of-Transcripts):
 
     - ```${TRINITY_HOME}/Analysis/DifferentialExpression/rename_matrix_feature_identifiers.pl Trinity_trans.counts.matrix annot_feature_map.txt > Trinity_trans.counts.wAnnot.matrix```
 
-Gene ontology (GO) annotations (7.9MB; TXT):
+Gene ontology (GO) annotations (284KB; TXT):
 
-- [20210309.hemat_transcriptome_v1.7.fasta.trinotate.go_annotations.txt](https://gannet.fish.washington.edu/Atumefaciens/20210309_hemat_trinotate_transcriptome-v1.7/20210309.hemat_transcriptome_v1.7.fasta.trinotate.go_annotations.txt)
+- [20210310.hemat_transcriptome_v1.7.fasta.trinotate.go_annotations.txt](https://gannet.fish.washington.edu/Atumefaciens/20210309_hemat_trinotate_transcriptome-v1.7/20210310.hemat_transcriptome_v1.7.fasta.trinotate.go_annotations.txt)
 
-Annotation report (25MB; CSV):
+Annotation report (5.0MB; CSV):
 
-- [20210309.hemat_transcriptome_v1.7.fasta.trinotate_annotation_report.txt](https://gannet.fish.washington.edu/Atumefaciens/20210309_hemat_trinotate_transcriptome-v1.7/20210309.hemat_transcriptome_v1.7.fasta.trinotate_annotation_report.txt)
+- [20210310.hemat_transcriptome_v1.7.fasta.trinotate_annotation_report.txt](https://gannet.fish.washington.edu/Atumefaciens/20210309_hemat_trinotate_transcriptome-v1.7/20210310.hemat_transcriptome_v1.7.fasta.trinotate_annotation_report.txt)
 
-SQlite database (442MB; SQLITE):
+SQlite database (376MB; SQLITE):
 
 - [Trinotate.sqlite](https://gannet.fish.washington.edu/Atumefaciens/20210309_hemat_trinotate_transcriptome-v1.7/Trinotate.sqlite)
