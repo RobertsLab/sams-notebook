@@ -31,7 +31,7 @@ blastx_out="/gscratch/scrubbed/samwhite/outputs/20210308_hemat_diamond_blastx_v1
 ## TransDecoder
 transdecoder_dir="/gscratch/scrubbed/samwhite/outputs/20210309_hemat_transdecoder_transcriptomes_v1.6_v1.7/20210309_hemat_transcriptome_v1.7.fasta.transdecoder"
 blastp_out="${transdecoder_dir}/20210309_hemat_transcriptome_v1.6.fasta.blastp_out/20210309_hemat_transcriptome_v1.7.fasta.blastp.outfmt6"
-pfam_out="${transdecoder_dir}/20210309_hemat_transcriptome_v1.6.fasta.pfam_out/20210309_hemat_transcriptome_v1.7.fasta.pfam.domtblout"
+pfam_out="${transdecoder_dir}/20210309_hemat_transcriptome_v1.7.fasta.pfam_out/20210309_hemat_transcriptome_v1.7.fasta.pfam.domtblout"
 lORFs_pep="${transdecoder_dir}/hemat_transcriptome_v1.7.fasta.transdecoder_dir/longest_orfs.pep"
 
 ## Transcriptomics
