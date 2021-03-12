@@ -72,8 +72,7 @@ do
   --db ${dmnd} \
   --query "${fastq_array[$fastq]}" \
   --out "${fastq_name}".blastx.outfmt6-query \
-  --long-reads \
-  --outfmt "6 query" \
+  --outfmt 6 query \
   --evalue 1e-4 \
   --max-target-seqs 1 \
   --max-hsps 1 \
