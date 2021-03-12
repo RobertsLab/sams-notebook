@@ -59,7 +59,11 @@ do
   fastq_name="${fastq_array[$fastq]##*/}"
 
   # Generate checksums for reference
+  echo ""
+  echo "Generating checksum for ${fastq_array[$fastq]}."
   md5sum "${fastq_array[$fastq]}">> fastq.checksums.md5
+  echo "Completed checksum for ${fastq_array[$fastq]}."
+  echo ""
 
   # Run DIAMOND with blastx
   # Output format 6 query only returns a single query ID per match
