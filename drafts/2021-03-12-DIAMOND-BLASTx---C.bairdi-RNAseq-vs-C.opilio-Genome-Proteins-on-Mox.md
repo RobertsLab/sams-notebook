@@ -168,3 +168,9 @@ Runtime was surprisingly long, considering how fast [`DIAMOND`](https://github.c
 Output folder:
 
 - [20210312_cbai-vs-copi_diamond_blastx/](https://gannet.fish.washington.edu/Atumefaciens/20210312_cbai-vs-copi_diamond_blastx/)
+
+  - Input FastQ list/MD5 checksums:
+
+    - [fastq.checksums.md5](https://gannet.fish.washington.edu/Atumefaciens/20210312_cbai-vs-copi_diamond_blastx/fastq.checksums.md5)
+
+  Due to the large number of output files, I will not link to each of them here. Please browse the output folder linked above.
