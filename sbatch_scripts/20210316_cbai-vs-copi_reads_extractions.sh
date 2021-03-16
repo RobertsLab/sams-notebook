@@ -30,10 +30,8 @@ threads=40
 
 # FastQ directory
 reads_dir=/gscratch/srlab/sam/data/C_bairdi/RNAseq
-blast_dir=/gscratch/scrubbed/samwhite/outputs/20210312_cbai-vs-copi_diamond_blastx
+blastx_dir=/gscratch/scrubbed/samwhite/outputs/20210312_cbai-vs-copi_diamond_blastx
 
-# DIAMOND database
-dmnd=/gscratch/srlab/sam/data/C_opilio/blastdbs/GCA_016584305.1_ASM1658430v1_protein.dmnd
 
 # Programs array
 declare -A programs_array
@@ -43,8 +41,8 @@ programs_array=(
 )
 
 # FastQ array
-fastq_array=(${reads_dir}/*fastp-trim*.fq.gz)
-blastx_array=(${blastx_dir}/*.blastx.outfmt6-query)
+fastq_array=("${reads_dir}/*fastp-trim*.fq.gz")
+blastx_array=("${blastx_dir}/*.blastx.outfmt6-query")
 
 
 ###################################################################################
