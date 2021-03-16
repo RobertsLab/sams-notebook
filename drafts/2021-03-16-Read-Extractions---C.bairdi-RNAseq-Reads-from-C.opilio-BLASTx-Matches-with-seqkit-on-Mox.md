@@ -174,4 +174,4 @@ echo "Finished logging system PATH"
 
 Output folder:
 
-- []()
+- [20210316_cbai-vs-copi_reads_extractions/](https://gannet.fish.washington.edu/Atumefaciens/20210316_cbai-vs-copi_reads_extractions/)
