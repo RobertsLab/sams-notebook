@@ -2,13 +2,13 @@
 ## Job Name
 #SBATCH --job-name=20210316_cbai-vs-copi_reads_extractions
 ## Allocation Definition
-#SBATCH --account=srlab
-#SBATCH --partition=srlab
+#SBATCH --account=coenv
+#SBATCH --partition=coenv
 ## Resources
 ## Nodes
 #SBATCH --nodes=1
 ## Walltime (days-hours:minutes:seconds format)
-#SBATCH --time=20-00:00:00
+#SBATCH --time=10-00:00:00
 ## Memory per node
 #SBATCH --mem=120G
 ##turn on e-mail notification
@@ -81,7 +81,7 @@ do
 	${fastq_array[$file]} \
 	--out-file ${out_file} \
 	--threads ${threads}
-	
+
 	# Generate checksums of extracted reads reference
   echo ""
   echo "Generating checksum for ${out_file}."
