@@ -12,7 +12,7 @@ tags:
 categories:
   - Miscellaneous
 ---
-As part of addressing [this GitHub issue, to generate an additional _C.bairdi_ transcriptome](https://github.com/RobertsLab/resources/issues/1135), I needed to extract the [reads ID'ed via BLASTX against the _C.opilio_ genome on 20210312](). Read extractions were performed using [seqkit](https://bioinf.shenwei.me/seqkit/) on Mox.
+As part of addressing [this GitHub issue, to generate an additional _C.bairdi_ transcriptome](https://github.com/RobertsLab/resources/issues/1135), I needed to extract the [reads ID'ed via BLASTX against the _C.opilio_ genome on 20210312](https://robertslab.github.io/sams-notebook/2021/03/12/DIAMOND-BLASTx-C.bairdi-RNAseq-vs-C.opilio-Genome-Proteins-on-Mox.html). Read extractions were performed using [`SeqKit`](https://bioinf.shenwei.me/seqkit/) on Mox.
 
 SBATCH script (GitHub):
 
@@ -179,3 +179,12 @@ Run time was actually pretty quick, <1hr:
 Output folder:
 
 - [20210316_cbai-vs-copi_reads_extractions/](https://gannet.fish.washington.edu/Atumefaciens/20210316_cbai-vs-copi_reads_extractions/)
+
+  - Input/output FastQ files/MD5 checksums (TXT):
+
+    - [20210316_cbai-vs-copi_reads_extractions/fastq.checksums.md5](https://gannet.fish.washington.edu/Atumefaciens/20210316_cbai-vs-copi_reads_extractions/fastq.checksums.md5)
+
+
+Due to the large number of output files, I will not link to each of them here. Please browse the output folder linked above.
+
+Next up, transcriptome assembly.
