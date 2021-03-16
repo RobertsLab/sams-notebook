@@ -172,6 +172,10 @@ echo "Finished logging system PATH"
 
 #### RESULTS
 
+Run time was actually pretty quick, <1hr:
+
+![seqkit read extraction runtime](https://github.com/RobertsLab/sams-notebook/blob/master/images/screencaps/20210316_cbai-vs-copi_reads_extractions_runtime.png?raw=true)
+
 Output folder:
 
 - [20210316_cbai-vs-copi_reads_extractions/](https://gannet.fish.washington.edu/Atumefaciens/20210316_cbai-vs-copi_reads_extractions/)
