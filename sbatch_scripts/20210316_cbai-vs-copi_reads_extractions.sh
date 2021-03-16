@@ -41,8 +41,8 @@ programs_array=(
 )
 
 # FastQ array
-fastq_array=("${reads_dir}/*fastp-trim*.fq.gz")
-blastx_array=("${blastx_dir}/*.blastx.outfmt6-query")
+fastq_array=(${reads_dir}/*fastp-trim*.fq.gz)
+blastx_array=(${blastx_dir}/*.blastx.outfmt6-query)
 
 
 ###################################################################################
@@ -69,7 +69,7 @@ do
   # Generate checksums for reference
   echo ""
   echo "Generating checksum for ${fastq_array[$file]}."
-  md5sum "${fastq_array[$file]}">> fastq.checksums.md5
+  md5sum "${fastq_array[$file]}" >> fastq.checksums.md5
   echo "Completed checksum for ${fastq_array[$file]}."
   echo ""
 
