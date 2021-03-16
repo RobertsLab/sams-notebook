@@ -16,6 +16,8 @@ We want to generate an additional [Tanner crab (_Chionoecetes bairdi_)](http://e
 
 I used [`DIAMOND`](https://github.com/bbuchfink/diamond) BLASTx along with the [Snow crab genome protein FastA](https://ftp.ncbi.nlm.nih.gov/genomes/genbank/invertebrate/Chionoecetes_opilio/all_assembly_versions/GCA_016584305.1_ASM1658430v1/GCA_016584305.1_ASM1658430v1_protein.faa.gz) (8.7MB) from NCBI (Acc: [GCA_016584305.1](https://www.ncbi.nlm.nih.gov/assembly/GCA_016584305.1/)).
 
+NOTE: Since this is geared toward just identifying matching reads, the BLASTx output format will _only contain the query ID_. There will be one BLASTx output file for each corresponding input FastQ file.
+
 SBATCH script (GitHub):
 
 - [20210312_cbai-vs-copi_diamond_blastx.sh](https://github.com/RobertsLab/sams-notebook/blob/master/sbatch_scripts/20210312_cbai-vs-copi_diamond_blastx.sh)
@@ -159,6 +161,10 @@ echo "Finished logging system PATH"
 
 #### RESULTS
 
+Runtime was surprisingly long, considering how fast [`DIAMOND`](https://github.com/bbuchfink/diamond) BLASTx has run on other samples. It took nearly 7hrs to complete:
+
+![DIAMOND BLASTx runtime for 92 C.bairdi RNAseq FastQs vs C.opilio protein FastA](https://github.com/RobertsLab/sams-notebook/blob/master/images/screencaps/20210312_cbai-vs-copi_diamond_blastx_runtime.png?raw=true)
+
 Output folder:
 
-- []()
+- [20210312_cbai-vs-copi_diamond_blastx/](https://gannet.fish.washington.edu/Atumefaciens/20210312_cbai-vs-copi_diamond_blastx/)
