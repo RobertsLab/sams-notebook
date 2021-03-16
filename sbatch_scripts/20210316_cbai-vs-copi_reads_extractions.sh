@@ -99,10 +99,11 @@ do
 	{
   echo "Program options for ${program}: "
 	echo ""
-  # Handle samtools help menus
+  # Handle blank argument for help menus
   if [[ "${program}" == "samtools_index" ]] \
   || [[ "${program}" == "samtools_sort" ]] \
-  || [[ "${program}" == "samtools_view" ]]
+  || [[ "${program}" == "samtools_view" ]] \
+	|| [[ "${program}" == "seqkit" ]]
   then
     ${programs_array[$program]}
 
@@ -114,6 +115,7 @@ do
   elif [[ "${program}" == "blastx" ]]; then
     ${programs_array[$program]} -help
   fi
+
 	${programs_array[$program]} -h
 	echo ""
 	echo ""
