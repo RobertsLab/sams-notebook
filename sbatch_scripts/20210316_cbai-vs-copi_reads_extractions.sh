@@ -61,7 +61,7 @@ do
   # Remove path from transcriptome using parameter substitution
   no_path="${fastq_array[$file]##*/}"
 	# Remove extensions from filename
-	no_ext="${no_path}%.fq.gz"
+	no_ext=${no_path%.fq.gz}
 
 	# Set output filename
 	out_file="${no_ext}_copi-BLASTx-match.fq.gz"
