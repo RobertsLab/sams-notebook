@@ -17,11 +17,10 @@
 ## Specify the working directory for this job
 #SBATCH --chdir=/gscratch/scrubbed/samwhite/outputs/20210316_cbai-vs-copi_reads_extractions
 
-## Script for running BLASTx (using DIAMOND) with all of our C.bairdi RNAseq data to-date.
-## BLASTx against C.opilio _(snow crab) NCBI protein FastA
-## Output will be in standard BLAST output format 6, but only query ID.
-## Output will be used to extract just reads with matches to to C.opilio genome,
-## for downstream transcriptome assembly
+## Script for extracting C.bairdi RNAseq reads that matched to C.opilio
+## genome via BLASTx on 20210312.
+## Inputs are lists of RNAseq IDs
+## Outputs are gzipped FastQ files of extracted reads
 
 ###################################################################################
 # These variables need to be set by user
@@ -30,6 +29,8 @@ threads=40
 
 # FastQ directory
 reads_dir=/gscratch/srlab/sam/data/C_bairdi/RNAseq
+
+# BLASTx results directory
 blastx_dir=/gscratch/scrubbed/samwhite/outputs/20210312_cbai-vs-copi_diamond_blastx
 
 
@@ -42,6 +43,8 @@ programs_array=(
 
 # FastQ array
 fastq_array=(${reads_dir}/*fastp-trim*.fq.gz)
+
+# BLASTx results files with query (FastQ read ID) only
 blastx_array=(${blastx_dir}/*.blastx.outfmt6-query)
 
 
