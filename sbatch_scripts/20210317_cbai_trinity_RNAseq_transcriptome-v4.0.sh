@@ -88,14 +88,17 @@ echo ""
 for (( i=0; i<${#fastq_array[@]} ; i+=2 ))
   do
     # Handle "fence post" problem
-    # Prints first element in array followed by comma
-    # Then moves on to rest of array processing
+    # associated with comma placement
     if [[ ${i} -eq 0 ]]; then
       R1_list="${fastq_array[${i}]},"
       R2_list="${fastq_array[${i}+1]},"
+    elif [[ ${i} -eq $(( ${#fastq_array[@]} - 1 )) ]]; then
+      R1_list="${R1_list}${fastq_array[${i}]}"
+      R2_list="${R2_list}${fastq_array[${i}+1]}"
+    else
+      R1_list="${R1_list}${fastq_array[${i}]},"
+      R2_list="${R2_list}${fastq_array[${i}+1]},"
     fi
-  R1_list="${R1_list},${fastq_array[${i}]}"
-  R2_list="${R2_list},${fastq_array[${i}+1]}"
 done
 
 # Run Trinity without stranded RNAseq option
