@@ -61,6 +61,10 @@ programs_array=(
 # FastQ array
 fastq_array=(${reads_dir}/*copi-BLASTx-match.fq.gz)
 
+# Variables
+R1_list=""
+R2_list=""
+
 
 ###################################################################################
 
@@ -76,7 +80,7 @@ assembly_stats="${transcriptome_name}_assembly_stats.txt"
 trinity_out_dir="${transcriptome_name}_trinity_out_dir"
 
 # Generate input FastQ checksums
-for fastq in ${!fastq_array[@]}
+for fastq in "${!fastq_array[@]}"
 do
   echo ""
   echo "Generating checksum for ${fastq_array[$fastq]}"
@@ -88,15 +92,29 @@ done
 echo ""
 
 # Create comma-separated lists of FastQ reads
-fastq_list=$(echo "${fastq_array[@]}" | tr " " ",")
+# Loop through read pairs
+# Increment by 2 to process next pair of FastQ files
+for (( i=0; i<${#fastq_array[@]} ; i+=2 ))
+  do
+    # Handle "fence post" problem
+    # Prints first element in array followed by comma
+    # Then moves on to rest of array processing
+    if [[ ${i} -eq 0 ]]; then
+      R1_list="${fastq_array[${i}]},"
+      R2_list="${fastq_array[${i}+1]},"
+    fi
+  R1_list="${R1_list},${fastq_array[${i}]}"
+  R2_list="${R2_list},${fastq_array[${i}+1]}"
+done
 
 # Run Trinity without stranded RNAseq option
 ${programs_array[trinity]} \
 --seqType fq \
---single ${fastq_list} \
 --max_memory ${max_mem} \
 --CPU ${threads} \
---output ${trinity_out_dir}
+--output ${trinity_out_dir} \
+--left "${R1_list}" \
+--right "${R2_list}"
 
 # Rename generic assembly FastA
 mv "${trinity_out_dir}"/Trinity.fasta "${trinity_out_dir}"/"${transcriptome_name}"
