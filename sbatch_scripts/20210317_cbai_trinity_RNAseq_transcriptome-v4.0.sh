@@ -17,11 +17,9 @@
 ## Specify the working directory for this job
 #SBATCH --chdir=/gscratch/scrubbed/samwhite/outputs/20210317_cbai_trinity_RNAseq_transcriptome-v4.0
 
-## Script for running BLASTx (using DIAMOND) with all of our C.bairdi RNAseq data to-date.
-## BLASTx against C.opilio _(snow crab) NCBI protein FastA
-## Output will be in standard BLAST output format 6, but only query ID.
-## Output will be used to extract just reads with matches to to C.opilio genome,
-## for downstream transcriptome assembly
+## Trinity assembly of C.bairdi RNAseq reads
+## with BLASTx matches to NCBI C.opilio genome proteins (GCA_016584305.1)
+## Assembly will be referred to as cbai_transcriptome_v4.0
 
 ###################################################################################
 # These variables need to be set by user
