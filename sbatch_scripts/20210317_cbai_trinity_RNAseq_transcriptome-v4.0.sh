@@ -77,9 +77,17 @@ trinity_out_dir=""
 assembly_stats="${transcriptome_name}_assembly_stats.txt"
 trinity_out_dir="${transcriptome_name}_trinity_out_dir"
 
-# Create list of fastq files used in analysis
-## Uses parameter substitution to strip leading path from filename
-printf "%s\n" "${fastq_array[@]##*/}" >> "${transcriptome_name}".fastq.list.txt
+# Generate input FastQ checksums
+for fastq in ${!fastq_array[@]}
+do
+  echo ""
+  echo "Generating checksum for ${fastq_array[$fastq]}"
+  md5sum "${fastq_array[$fastq]}" >> fastq_checksums.md5
+  echo "Checksum for ${fastq_array[$fastq]} complete."
+done
+
+# Adds empty line between checksums and next info logged to SLURM output.
+echo ""
 
 # Create comma-separated lists of FastQ reads
 fastq_list=$(echo "${fastq_array[@]}" | tr " " ",")
