@@ -79,15 +79,6 @@ trinity_out_dir=""
 assembly_stats="${transcriptome_name}_assembly_stats.txt"
 trinity_out_dir="${transcriptome_name}_trinity_out_dir"
 
-# Generate input FastQ checksums
-for fastq in "${!fastq_array[@]}"
-do
-  echo ""
-  echo "Generating checksum for ${fastq_array[$fastq]}"
-  md5sum "${fastq_array[$fastq]}" >> fastq_checksums.md5
-  echo "Checksum for ${fastq_array[$fastq]} complete."
-done
-
 # Adds empty line between checksums and next info logged to SLURM output.
 echo ""
 
@@ -150,6 +141,14 @@ md5sum "${transcriptome_name}" > "${transcriptome_name}".checksum.md5
 echo "Finished generating checksum for ${transcriptome_name}"
 echo ""
 
+# Generate input FastQ checksums
+for fastq in "${!fastq_array[@]}"
+do
+  echo ""
+  echo "Generating checksum for ${fastq_array[$fastq]}"
+  md5sum "${fastq_array[$fastq]}" >> fastq_checksums.md5
+  echo "Checksum for ${fastq_array[$fastq]} complete."
+done
 
 ###################################################################################
 
