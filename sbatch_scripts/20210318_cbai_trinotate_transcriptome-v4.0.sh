@@ -28,10 +28,10 @@
 blastx_out="/gscratch/scrubbed/samwhite/outputs/20210318_cbai_diamond_blastx_transcriptome-v4.0/cbai_transcriptome_v4.0.fasta.blastx.outfmt6"
 
 ## TransDecoder
-transdecoder_dir="20210317_cbai_transdecoder_transcriptome_v4.0"
+transdecoder_dir="/gscratch/scrubbed/samwhite/outputs/20210317_cbai_transdecoder_transcriptome_v4.0"
 blastp_out="${transdecoder_dir}/blastp_out/cbai_transcriptome_v4.0.fasta.blastp.outfmt6"
 pfam_out="${transdecoder_dir}/pfam_out/cbai_transcriptome_v4.0.fasta.pfam.domtblout"
-lORFs_pep="${transdecoder_dir}/transdecoder_dir/longest_orfs.pep"
+lORFs_pep="${transdecoder_dir}/cbai_transcriptome_v4.0.fasta.transdecoder_dir/longest_orfs.pep"
 
 ## Transcriptomics
 transcriptomes_dir="/gscratch/srlab/sam/data/C_bairdi/transcriptomes"
@@ -39,6 +39,17 @@ trinity_fasta="${transcriptomes_dir}/cbai_transcriptome_v4.0.fasta"
 trinity_gene_map="${transcriptomes_dir}/cbai_transcriptome_v4.0.fasta.gene_trans_map"
 
 ###################################################################################
+
+# Exit script if any command fails
+set -e
+
+# Load Python Mox module for Python module availability
+
+module load intel-python3_2017
+
+# SegFault fix?
+export THREADS_DAEMON_MODEL=1
+
 
 wd="$(pwd)"
 timestamp=$(date +%Y%m%d)
