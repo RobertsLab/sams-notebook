@@ -155,6 +155,16 @@ Runtime was the usual [`DIAMOND`](https://github.com/bbuchfink/diamond) BLASTx q
 
 ![DIAMOND BLASTx of C.bairdi transcriptome v4.0 vs. SwissProt database](https://github.com/RobertsLab/sams-notebook/blob/master/images/screencaps/20210318_cbai_diamond_blastx_transcriptome-v4.0_runtime.png?raw=true)
 
+Next up, run everything through Trinotate.
+
 Output folder:
 
-- []()
+- [20210318_cbai_diamond_blastx_transcriptome-v4.0/](https://gannet.fish.washington.edu/Atumefaciens/20210318_cbai_diamond_blastx_transcriptome-v4.0/)
+
+  - FastA MD5 checksum (TXT):
+
+    - [20210318_cbai_diamond_blastx_transcriptome-v4.0/fastq.checksums.md5](https://gannet.fish.washington.edu/Atumefaciens/20210318_cbai_diamond_blastx_transcriptome-v4.0/fastq.checksums.md5) (NOTE: filename typo in code)
+
+  - BLASTX output format 6 (TXT):
+
+    - [cbai_transcriptome_v4.0.blastx.outfmt6](https://gannet.fish.washington.edu/Atumefaciens/20210318_cbai_diamond_blastx_transcriptome-v4.0/cbai_transcriptome_v4.0.blastx.outfmt6)
