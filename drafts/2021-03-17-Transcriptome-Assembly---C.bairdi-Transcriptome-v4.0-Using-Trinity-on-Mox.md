@@ -235,3 +235,71 @@ Runtime was just less than 6.5hrs:
 Output folder:
 
 - [20210317_cbai_trinity_RNAseq_transcriptome-v4.0/](https://gannet.fish.washington.edu/Atumefaciens/20210317_cbai_trinity_RNAseq_transcriptome-v4.0/)
+
+
+- Input FastQ list (text):
+
+  - [fastq_checksums.md5](https://gannet.fish.washington.edu/Atumefaciens/20210317_cbai_trinity_RNAseq_transcriptome-v4.0/cbai_transcriptome_v4.0.fasta_trinity_out_dir/fastq_checksums.md5)
+
+- FastA (50MB):
+
+  - [cbai_transcriptome_v4.0.fasta](https://gannet.fish.washington.edu/Atumefaciens/20210317_cbai_trinity_RNAseq_transcriptome-v4.0/cbai_transcriptome_v4.0.fasta_trinity_out_dir/cbai_transcriptome_v4.0.fasta)
+
+  - MD5 = `6450d6f5650bfb5f910a5f42eef94913`
+
+- FastA Index (text):
+
+  - [cbai_transcriptome_v4.0.fasta.fai](https://gannet.fish.washington.edu/Atumefaciens/20210317_cbai_trinity_RNAseq_transcriptome-v4.0/cbai_transcriptome_v4.0.fasta_trinity_out_dir/cbai_transcriptome_v4.0.fasta.fai)
+
+The following sets of files are useful for downstream gene expression and annotation using Trinity.
+
+Trinity FastA Gene Trans Map (text):
+
+- [cbai_transcriptome_v4.0.fasta.gene_trans_map](https://gannet.fish.washington.edu/Atumefaciens/20210317_cbai_trinity_RNAseq_transcriptome-v4.0/cbai_transcriptome_v4.0.fasta_trinity_out_dir/cbai_transcriptome_v4.0.fasta.gene_trans_map)
+
+Trinity FastA Sequence Lengths (text):
+
+- [cbai_transcriptome_v4.0.fasta.seq_lens](https://gannet.fish.washington.edu/Atumefaciens/20210317_cbai_trinity_RNAseq_transcriptome-v4.0/cbai_transcriptome_v4.0.fasta_trinity_out_dir/cbai_transcriptome_v4.0.fasta.seq_lens)
+
+
+Assembly stats (text):
+
+- [assembly_stats.txt](https://gannet.fish.washington.edu/Atumefaciens/20210317_cbai_trinity_RNAseq_transcriptome-v4.0/cbai_transcriptome_v4.0.fasta_assembly_stats.txt)
+
+```
+################################
+## Counts of transcripts, etc.
+################################
+Total trinity 'genes':	47097
+Total trinity transcripts:	88302
+Percent GC: 52.86
+
+########################################
+Stats based on ALL transcript contigs:
+########################################
+
+	Contig N10: 2340
+	Contig N20: 1588
+	Contig N30: 1180
+	Contig N40: 880
+	Contig N50: 635
+
+	Median contig length: 317
+	Average contig: 507.68
+	Total assembled bases: 44829042
+
+
+#####################################################
+## Stats based on ONLY LONGEST ISOFORM per 'GENE':
+#####################################################
+
+	Contig N10: 2334
+	Contig N20: 1601
+	Contig N30: 1185
+	Contig N40: 862
+	Contig N50: 605
+
+	Median contig length: 294
+	Average contig: 484.58
+	Total assembled bases: 22822315
+```
