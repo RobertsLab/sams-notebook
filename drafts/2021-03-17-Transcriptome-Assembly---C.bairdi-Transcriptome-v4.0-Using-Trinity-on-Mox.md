@@ -229,6 +229,9 @@ echo "Finished logging system PATH"
 
 #### RESULTS
 
+Runtime was just less than 6.5hrs:
+
+![trinity assembly of C.bairdi v4.0 transcriptome runtime](https://github.com/RobertsLab/sams-notebook/blob/master/images/screencaps/20210317_cbai_trinity_RNAseq_transcriptome-v4.0_runtime.png?raw=true)
 Output folder:
 
-- []()
+- [20210317_cbai_trinity_RNAseq_transcriptome-v4.0/](https://gannet.fish.washington.edu/Atumefaciens/20210317_cbai_trinity_RNAseq_transcriptome-v4.0/)
