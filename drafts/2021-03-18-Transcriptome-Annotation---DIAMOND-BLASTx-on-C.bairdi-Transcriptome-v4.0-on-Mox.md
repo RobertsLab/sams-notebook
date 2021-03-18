@@ -151,6 +151,10 @@ echo "Finished logging system PATH"
 
 #### RESULTS
 
+Runtime was the usual [`DIAMOND`](https://github.com/bbuchfink/diamond) BLASTx quickness; 11 seconds!
+
+![DIAMOND BLASTx of C.bairdi transcriptome v4.0 vs. SwissProt database](https://github.com/RobertsLab/sams-notebook/blob/master/images/screencaps/20210318_cbai_diamond_blastx_transcriptome-v4.0_runtime.png?raw=true)
+
 Output folder:
 
 - []()
