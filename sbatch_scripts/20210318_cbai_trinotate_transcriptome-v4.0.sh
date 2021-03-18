@@ -20,6 +20,9 @@
 
 # Script to run Trinotate on C.bairdi transcriptome v4.0
 
+# NOTE: RNAMMER appears to not find any matches, so have added "||" at end of RNAMMER
+# command to allow annotation to proceed.
+
 ###################################################################################
 # These variables need to be set by user
 
@@ -109,11 +112,13 @@ ${tmhmm} \
 > "${tmhmm_out}"
 
 # Run RNAmmer
+# Has "||" operator due to previous lack of matches
+# Need "||" to continue with annotation.
 cd "${rnammer_out_dir}" || exit
 ${trinotate_rnammer} \
 --transcriptome ${trinity_fasta} \
---path_to_rnammer ${rnammer}
-cd "${wd}" || exit
+--path_to_rnammer ${rnammer} \
+|| cd "${wd}" || exit
 
 # Run Trinotate
 ## Load transcripts and coding regions into database
