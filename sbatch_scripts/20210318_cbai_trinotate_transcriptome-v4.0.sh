@@ -28,7 +28,7 @@
 
 # Input files
 ## BLASTx
-blastx_out="/gscratch/scrubbed/samwhite/outputs/20210318_cbai_diamond_blastx_transcriptome-v4.0/cbai_transcriptome_v4.0.fasta.blastx.outfmt6"
+blastx_out="/gscratch/scrubbed/samwhite/outputs/20210318_cbai_diamond_blastx_transcriptome-v4.0/cbai_transcriptome_v4.0.blastx.outfmt6"
 
 ## TransDecoder
 transdecoder_dir="/gscratch/scrubbed/samwhite/outputs/20210317_cbai_transdecoder_transcriptome_v4.0"
