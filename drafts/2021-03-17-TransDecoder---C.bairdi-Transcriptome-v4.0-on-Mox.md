@@ -129,6 +129,10 @@ echo "${PATH}" | tr : \\n
 
 #### RESULTS
 
+Runtime was just under 8hrs:
+
+![TransDecoder runtime for cbai_transcriptome_v4.0 on Mox](https://github.com/RobertsLab/sams-notebook/blob/master/images/screencaps/20210317_cbai_transdecoder_transcriptome_v4.0_runtime.png?raw=true)
+
 Output folder:
 
 - []()
