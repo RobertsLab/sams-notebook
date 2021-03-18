@@ -135,4 +135,20 @@ Runtime was just under 8hrs:
 
 Output folder:
 
-- []()
+- [20210317_cbai_transdecoder_transcriptome_v4.0/](https://gannet.fish.washington.edu/Atumefaciens/20210317_cbai_transdecoder_transcriptome_v4.0/)
+
+  - FastA checksum (TXT):
+
+    - [cbai_transcriptome_v4.0.fasta.checksum.md5](https://gannet.fish.washington.edu/Atumefaciens/20210317_cbai_transdecoder_transcriptome_v4.0/cbai_transcriptome_v4.0.fasta.checksum.md5)
+
+  - BLASTp output format 6 (TXT):
+
+    - [20210317_cbai_transdecoder_transcriptome_v4.0/blastp_out/cbai_transcriptome_v4.0.fasta.blastp.outfmt6](https://gannet.fish.washington.edu/Atumefaciens/20210317_cbai_transdecoder_transcriptome_v4.0/blastp_out/cbai_transcriptome_v4.0.fasta.blastp.outfmt6)
+
+  - Longest peptide ORFs (FastA):
+
+    - [20210317_cbai_transdecoder_transcriptome_v4.0/cbai_transcriptome_v4.0.fasta.transdecoder_dir/longest_orfs.pep](https://gannet.fish.washington.edu/Atumefaciens/20210317_cbai_transdecoder_transcriptome_v4.0/cbai_transcriptome_v4.0.fasta.transdecoder_dir/longest_orfs.pep)
+
+  - Pfam output (TXT):
+
+    - [20210317_cbai_transdecoder_transcriptome_v4.0/pfam_out/cbai_transcriptome_v4.0.fasta.pfam.domtblout](https://gannet.fish.washington.edu/Atumefaciens/20210317_cbai_transdecoder_transcriptome_v4.0/pfam_out/cbai_transcriptome_v4.0.fasta.pfam.domtblout)
