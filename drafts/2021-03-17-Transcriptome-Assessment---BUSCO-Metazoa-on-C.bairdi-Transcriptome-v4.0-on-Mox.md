@@ -143,4 +143,31 @@ As usual, runtime was very short, <2mins:
 
 Output folder:
 
-- []()
+- [20210317_cbai_busco_transcriptome_v4.0/](https://gannet.fish.washington.edu/Atumefaciens/20210317_cbai_busco_transcriptome_v4.0/)
+
+  - FastA MD5 checksum (TXT):
+
+    - [cbai_transcriptome_v4.0.fasta.checksum.md5](https://gannet.fish.washington.edu/Atumefaciens/20210317_cbai_busco_transcriptome_v4.0/cbai_transcriptome_v4.0.fasta.checksum.md5)
+
+  - Short summary (text):
+
+    - [20210317_cbai_busco_transcriptome_v4.0/run_cbai_transcriptome_v4.0.fasta/short_summary_cbai_transcriptome_v4.0.fasta.txt](https://gannet.fish.washington.edu/Atumefaciens/20210317_cbai_busco_transcriptome_v4.0/run_cbai_transcriptome_v4.0.fasta/short_summary_cbai_transcriptome_v4.0.fasta.txt)
+
+
+    ```
+    # BUSCO version is: 3.0.2
+    # The lineage dataset is: metazoa_odb9 (Creation date: 2016-02-13, number of species: 65, number of BUSCOs: 978)
+    # To reproduce this run: python /gscratch/srlab/programs/busco-v3/scripts/run_BUSCO.py -i /gscratch/srlab/sam/data/C_bairdi/transcriptomes/cbai_transcriptome_v4.0.fasta -o cbai_transcriptome_v4.0.fasta -l /gscratch/srlab/sam/data/databases/BUSCO/metazoa_odb9/ -m transcriptome -c 40 --long -z
+    #
+    # Summarized benchmarking in BUSCO notation for file /gscratch/srlab/sam/data/C_bairdi/transcriptomes/cbai_transcriptome_v4.0.fasta
+    # BUSCO was run in mode: transcriptome
+
+    	C:73.8%[S:45.8%,D:28.0%],F:7.9%,M:18.3%,n:978
+
+    	722	Complete BUSCOs (C)
+    	448	Complete and single-copy BUSCOs (S)
+    	274	Complete and duplicated BUSCOs (D)
+    	77	Fragmented BUSCOs (F)
+    	179	Missing BUSCOs (M)
+    	978	Total BUSCO groups searched
+      ```
