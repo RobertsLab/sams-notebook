@@ -137,6 +137,10 @@ md5sum "${transcriptome_fasta}" >> "${fasta_name}".checksum.md5
 
 #### RESULTS
 
+As usual, runtime was very short, <2mins:
+
+![BUSCO runtime on C.bairdi transcriptome v4.0 on Mox](https://github.com/RobertsLab/sams-notebook/blob/master/images/screencaps/20210317_cbai_busco_transcriptome_v4.0_runtime.png?raw=true)
+
 Output folder:
 
 - []()
