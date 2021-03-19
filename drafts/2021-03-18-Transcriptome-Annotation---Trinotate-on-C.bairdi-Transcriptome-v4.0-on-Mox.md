@@ -14,6 +14,8 @@ categories:
 ---
 Continued annotation of `cbai_transcriptome_v4.0.fasta` [Trinity _de novo_ assembly from 20210317(https://robertslab.github.io/sams-notebook/2021/03/17/Transcriptome-Assembly-C.bairdi-Transcriptome-v4.0-Using-Trinity-on-Mox.html)] using [`Trinotate`](https://github.com/Trinotate/Trinotate.github.io/wiki) on Mox. This will provide a thorough annotation, including genoe ontology (GO) term assignments to each contig.
 
+One thing to note is that upon initial run, RNAmmer caused the script to exit with an error due to not having produced any results. The developer responded to the [GitHub issue I posted](https://github.com/Trinotate/Trinotate/issues/71) and indicated the lack of results was a bit unexpected, but suggested I add the "or" bash notation (`||`) to the end of the RNammer command to allow the Trinotate pipeline to proceed without any RNAmmer info. It's still surprising that there weren't _any_ matches...
+
 SBATCH script (GitHub):
 
 - [20210318_cbai_trinotate_transcriptome-v4.0.sh](https://github.com/RobertsLab/sams-notebook/blob/master/sbatch_scripts/20210318_cbai_trinotate_transcriptome-v4.0.sh)
@@ -223,4 +225,24 @@ Runtime was pretty quick; just less than an hour:
 
 Output folder:
 
-- []()
+- [20210318_cbai_trinotate_transcriptome-v4.0](https://gannet.fish.washington.edu/Atumefaciens/20210318_cbai_trinotate_transcriptome-v4.0)
+
+  - Annotation feature map (5MB; text):
+
+      - [20210318.cbai_transcriptome_v4.0.fasta.trinotate.annotation_feature_map.txt](https://gannet.fish.washington.edu/Atumefaciens/20210318_cbai_trinotate_transcriptome-v4.0/20210318.cbai_transcriptome_v4.0.fasta.trinotate.annotation_feature_map.txt)
+
+      - [This can be used to update Trinity-based gene expression matrices like so](https://github.com/trinityrnaseq/trinityrnaseq/wiki/Functional-Annotation-of-Transcripts):
+
+        - ```${TRINITY_HOME}/Analysis/DifferentialExpression/rename_matrix_feature_identifiers.pl Trinity_trans.counts.matrix annot_feature_map.txt > Trinity_trans.counts.wAnnot.matrix```
+
+  - Annotation report (45MB; CSV)
+
+    - [20210318.cbai_transcriptome_v4.0.fasta.trinotate_annotation_report.txt](https://gannet.fish.washington.edu/Atumefaciens/20210318_cbai_trinotate_transcriptome-v4.0/20210318.cbai_transcriptome_v4.0.fasta.trinotate_annotation_report.txt)
+
+  - Gene ontology (GO) annotations (12MB; text)
+
+    - [20210318.cbai_transcriptome_v4.0.fasta.trinotate.go_annotations.txt](https://gannet.fish.washington.edu/Atumefaciens/20210318_cbai_trinotate_transcriptome-v4.0/20210318.cbai_transcriptome_v4.0.fasta.trinotate.go_annotations.txt)
+
+  - SQlite database (542MB; SQLITE):
+
+    - [Trinotate.sqlite](https://gannet.fish.washington.edu/Atumefaciens/20210318_cbai_trinotate_transcriptome-v4.0/Trinotate.sqlite)
