@@ -1,7 +1,7 @@
 ---
 layout: post
 title: Data Wrangling - Gene ID Extraction from P.generosa Genome GFF Using Methylation Machinery Gene IDs
-date: '2021-02-19 21:37'
+date: '2021-02-26 21:37'
 tags:
   - jupyter notebook
   - methylation
