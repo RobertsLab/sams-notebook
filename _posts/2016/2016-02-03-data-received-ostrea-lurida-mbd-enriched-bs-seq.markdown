@@ -123,4 +123,4 @@ Jupyter Notebook file: [20160203_Olurida_Zymo_Data_Handling.ipynb](https://eagle
 
 Notebook Viewer: [20160203_Olurida_Zymo_Data_Handling.ipynb](https://nbviewer.jupyter.org/url/eagle.fish.washington.edu/Arabidopsis/iPythonNotebooks/20160203_Olurida_Zymo_Data_Handling.ipynb)
 
-<iframe src="https://nbviewer.jupyter.org/url/eagle.fish.washington.edu/Arabidopsis/iPythonNotebooks/20160203_Olurida_Zymo_Data_Handling.ipynb" width="100%" same_height_as="window" scrolling="yes"></iframe>
+<iframe src="https://nbviewer.jupyter.org/url/eagle.fish.washington.edu/Arabidopsis/iPythonNotebooks/20160203_Olurida_Zymo_Data_Handling.ipynb" width="100%" height="2000" scrolling="yes"></iframe>

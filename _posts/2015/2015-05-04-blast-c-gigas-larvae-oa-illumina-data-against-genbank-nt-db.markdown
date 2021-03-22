@@ -29,7 +29,7 @@ Jupyter (IPython) Notebook : [20150501_Cgigas_larvae_OA_BLASTn_nt.ipynb](https:/
 
 Notebook Viewer : [20150501_Cgigas_larvae_OA_BLASTn_nt](https://nbviewer.ipython.org/url/eagle.fish.washington.edu/Arabidopsis/iPythonNotebooks/20150501_Cgigas_larvae_OA_BLASTn_nt.ipynb)
 
-<iframe src="https://nbviewer.ipython.org/url/eagle.fish.washington.edu/Arabidopsis/iPythonNotebooks/20150501_Cgigas_larvae_OA_BLASTn_nt.ipynb" width="100%" same_height_as="window" scrolling="yes"></iframe>
+<iframe src="https://nbviewer.ipython.org/url/eagle.fish.washington.edu/Arabidopsis/iPythonNotebooks/20150501_Cgigas_larvae_OA_BLASTn_nt.ipynb" width="100%" height="2000" scrolling="yes"></iframe>
 
 Results:
 

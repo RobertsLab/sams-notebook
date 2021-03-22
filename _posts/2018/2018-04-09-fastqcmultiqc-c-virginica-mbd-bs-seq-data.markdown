@@ -77,4 +77,4 @@ Steven's interested in seeing what the trimmed output would look like (and, how 
 
 See the GitHub issue linked above for the full discussion.
 
-<iframe src="https://owl.fish.washington.edu/Athaliana/20180409_fastqc_Cvirginica_MBD/multiqc_data/multiqc_report.html" width="100%" same_height_as="window" scrolling="yes"></iframe>
+<iframe src="https://owl.fish.washington.edu/Athaliana/20180409_fastqc_Cvirginica_MBD/multiqc_data/multiqc_report.html" width="100%" height="2000" scrolling="yes"></iframe>

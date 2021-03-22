@@ -45,4 +45,4 @@ MultiQC HTML report: [20180328_bgi_multiqc/multiqc_report.html](https://owl.fish
 
 Everything looks nice and clean! Waiting on transfer and FASTQC of Illumina NMP data before proceeding to next assembly attempt.
 
-<iframe src="https://owl.fish.washington.edu/Athaliana/20180327_bgi_fastqc/20180328_bgi_multiqc/multiqc_report.html" width="100%" same_height_as="window" scrolling="yes"></iframe>
+<iframe src="https://owl.fish.washington.edu/Athaliana/20180327_bgi_fastqc/20180328_bgi_multiqc/multiqc_report.html" width="100%" height="2000" scrolling="yes"></iframe>

@@ -52,4 +52,4 @@ Jupyter notebook file: [20160314_Olurida_GBS_data_management.ipynb](https://eagl
 
 Notebook Viewer: [20160314_Olurida_GBS_data_management.ipynb](https://nbviewer.jupyter.org/url/eagle.fish.washington.edu/Arabidopsis/iPythonNotebooks/20160314_Olurida_GBS_data_management.ipynb)
 
-<iframe src="https://nbviewer.jupyter.org/url/eagle.fish.washington.edu/Arabidopsis/iPythonNotebooks/20160314_Olurida_GBS_data_management.ipynb" width="100%" same_height_as="window" scrolling="yes"></iframe>
+<iframe src="https://nbviewer.jupyter.org/url/eagle.fish.washington.edu/Arabidopsis/iPythonNotebooks/20160314_Olurida_GBS_data_management.ipynb" width="100%" height="2000" scrolling="yes"></iframe>

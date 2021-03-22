@@ -95,4 +95,4 @@ MultiQC HTML report:
 
 Hey! Look at that! Everything is much better! Thanks for the excellent documentation and suggestions, Bismarck!
 
-<iframe src="https://owl.fish.washington.edu/Athaliana/20180411_trimgalore_10bp_Cvirginica_MBD/20180411_fastqc_trim_10bp_Cvirginica_MBD/multiqc_data/multiqc_report.html" width="100%" same_height_as="window" scrolling="yes"></iframe>
+<iframe src="https://owl.fish.washington.edu/Athaliana/20180411_trimgalore_10bp_Cvirginica_MBD/20180411_fastqc_trim_10bp_Cvirginica_MBD/multiqc_data/multiqc_report.html" width="100%" height="2000" scrolling="yes"></iframe>

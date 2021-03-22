@@ -40,4 +40,4 @@ Quast report (HTML): [results_2018_04_15_13_45_03/report.html](https://owl.fish.
 
 I've embedded the Quast HTML report below, but it may be easier to view by using the link above.
 
-<iframe src="https://owl.fish.washington.edu/Athaliana/quast_results/results_2018_04_15_13_45_03/report.html" width="100%" same_height_as="window" scrolling="yes"></iframe>
+<iframe src="https://owl.fish.washington.edu/Athaliana/quast_results/results_2018_04_15_13_45_03/report.html" width="100%" height="2000" scrolling="yes"></iframe>

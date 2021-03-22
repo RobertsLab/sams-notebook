@@ -94,4 +94,4 @@ The fact that there is such a large discrepancy in the total number of bps betwe
 
 Here's an embedded version of my Jupyter notebook:
 
-<iframe src="https://nbviewer.jupyter.org/github/sr320/LabDocs/blob/master/jupyter_nbs/sam/20171003_docker_oly_assembly_comparisons.ipynb" width="100%" same_height_as="window" scrolling="yes"></iframe>
+<iframe src="https://nbviewer.jupyter.org/github/sr320/LabDocs/blob/master/jupyter_nbs/sam/20171003_docker_oly_assembly_comparisons.ipynb" width="100%" height="2000" scrolling="yes"></iframe>

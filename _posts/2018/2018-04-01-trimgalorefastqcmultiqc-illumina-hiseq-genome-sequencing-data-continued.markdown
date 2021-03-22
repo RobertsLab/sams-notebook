@@ -59,7 +59,7 @@ MultiQC output: [20180328_trim_galore_illumina_hiseq_geoduck/20180328_fastqc_tri
 
 MultiQC HTML report: [20180328_trim_galore_illumina_hiseq_geoduck/20180328_fastqc_trimmed_hiseq_geoduck/multiqc_data/multiqc_report.html](https://owl.fish.washington.edu/Athaliana/20180328_trim_galore_illumina_hiseq_geoduck/20180328_fastqc_trimmed_hiseq_geoduck/multiqc_data/multiqc_report.html)
 
-<iframe src="https://owl.fish.washington.edu/Athaliana/20180328_trim_galore_illumina_hiseq_geoduck/20180328_fastqc_trimmed_hiseq_geoduck/multiqc_data/multiqc_report.html" width="100%" same_height_as="window" scrolling="yes"></iframe>
+<iframe src="https://owl.fish.washington.edu/Athaliana/20180328_trim_galore_illumina_hiseq_geoduck/20180328_fastqc_trimmed_hiseq_geoduck/multiqc_data/multiqc_report.html" width="100%" height="2000" scrolling="yes"></iframe>
 
 Trimming completed and the FastQC results look much better than before.
 

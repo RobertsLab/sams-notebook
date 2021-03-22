@@ -54,7 +54,7 @@ Round 1 Trim Galore reports: [20180125_trim_galore_reports/](https://owl.fish.wa
 Round 1 FASTQC: [20180129_trimmed_multiqc_fastqc_01](https://owl.fish.washington.edu/Athaliana/20180125_geoduck_novaseq/20180129_trimmed_multiqc_fastqc_01/)
 Round 1 FASTQC MultiQC overview: [20180129_trimmed_multiqc_fastqc_01/multiqc_report.html](https://owl.fish.washington.edu/Athaliana/20180125_geoduck_novaseq/20180129_trimmed_multiqc_fastqc_01/multiqc_report.html)
 
-<iframe src="https://owl.fish.washington.edu/Athaliana/20180125_geoduck_novaseq/20180129_trimmed_multiqc_fastqc_01/multiqc_report.html" width="100%" same_height_as="window" scrolling="yes"></iframe>
+<iframe src="https://owl.fish.washington.edu/Athaliana/20180125_geoduck_novaseq/20180129_trimmed_multiqc_fastqc_01/multiqc_report.html" width="100%" height="2000" scrolling="yes"></iframe>
 
 
 
@@ -76,7 +76,7 @@ Round 2 Trim Galore reports: [20180125_geoduck_novaseq/20180205_trim_galore_repo
 Round 2 FASTQC: [20180205_trimmed_fastqc_02/](https://owl.fish.washington.edu/Athaliana/20180125_geoduck_novaseq/20180205_trimmed_fastqc_02/)
 Round 2 FASTQC MultiQC overview: [20180205_trimmed_multiqc_fastqc_02/multiqc_report.html](https://owl.fish.washington.edu/Athaliana/20180125_geoduck_novaseq/20180205_trimmed_multiqc_fastqc_02/multiqc_report.html)
 
-<iframe src="https://owl.fish.washington.edu/Athaliana/20180125_geoduck_novaseq/20180205_trimmed_multiqc_fastqc_02/multiqc_report.html" width="100%" same_height_as="window" scrolling="yes"></iframe>
+<iframe src="https://owl.fish.washington.edu/Athaliana/20180125_geoduck_novaseq/20180205_trimmed_multiqc_fastqc_02/multiqc_report.html" width="100%" height="2000" scrolling="yes"></iframe>
 
   
 
@@ -102,4 +102,4 @@ For the astute observer, you might notice the "Per Base Sequence Content" genera
 
 Jupyter Notebook (GitHub): [20180125_roadrunner_trimming_geoduck_novaseq.ipynb](https://github.com/sr320/LabDocs/blob/master/jupyter_nbs/sam/20180125_roadrunner_trimming_geoduck_novaseq.ipynb)
 
-<iframe src="https://render.githubusercontent.com/view/ipynb?commit=4776dd87980bb1e99159dff31429a5a9deac9f48&enc;_url=68747470733a2f2f7261772e67697468756275736572636f6e74656e742e636f6d2f73723332302f4c6162446f63732f343737366464383739383062623165393931353964666633313432396135613964656163396634382f6a7570797465725f6e62732f73616d2f32303138303132355f726f616472756e6e65725f7472696d6d696e675f67656f6475636b5f6e6f76617365712e6970796e62&nwo;=sr320%2FLabDocs&path;=jupyter_nbs%2Fsam%2F20180125_roadrunner_trimming_geoduck_novaseq.ipynb&repository;_id=13746500&repository;_type=Repository#13978f4e-90d1-41ac-9320-cddebbb90252" width="100%" same_height_as="window" scrolling="yes"></iframe>
+<iframe src="https://render.githubusercontent.com/view/ipynb?commit=4776dd87980bb1e99159dff31429a5a9deac9f48&enc;_url=68747470733a2f2f7261772e67697468756275736572636f6e74656e742e636f6d2f73723332302f4c6162446f63732f343737366464383739383062623165393931353964666633313432396135613964656163396634382f6a7570797465725f6e62732f73616d2f32303138303132355f726f616472756e6e65725f7472696d6d696e675f67656f6475636b5f6e6f76617365712e6970796e62&nwo;=sr320%2FLabDocs&path;=jupyter_nbs%2Fsam%2F20180125_roadrunner_trimming_geoduck_novaseq.ipynb&repository;_id=13746500&repository;_type=Repository#13978f4e-90d1-41ac-9320-cddebbb90252" width="100%" height="2000" scrolling="yes"></iframe>

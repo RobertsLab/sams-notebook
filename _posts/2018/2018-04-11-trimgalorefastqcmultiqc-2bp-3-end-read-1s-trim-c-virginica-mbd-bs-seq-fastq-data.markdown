@@ -99,4 +99,4 @@ Well, this is a bit strange, but the 2bp trimming on the read 1s looks fine, but
 
 Regardless, while this was running, Steven found out that the [Bismarck documentation (Bismarck is the bisulfite aligner we use in our BS-seq pipeline) suggests trimming 10bp from both the 5' and 3' ends.](https://github.com/FelixKrueger/Bismark/tree/master/Docs#viii-notes-about-different-library-types-and-commercial-kits) So, maybe this was all moot. I'll go ahead and re-run this following the Bismark recommendations.
 
-<iframe src="https://owl.fish.washington.edu/Athaliana/20180410_trimgalore_trim14bp5prim_2bp3prime_Cvirginica_MBD/20180410_fastqc_trimgalore_14bp5prime_2bp3prime_Cvirginica_MBD/multiqc_data/multiqc_report.html" width="100%" same_height_as="window" scrolling="yes"></iframe>
+<iframe src="https://owl.fish.washington.edu/Athaliana/20180410_trimgalore_trim14bp5prim_2bp3prime_Cvirginica_MBD/20180410_fastqc_trimgalore_14bp5prime_2bp3prime_Cvirginica_MBD/multiqc_data/multiqc_report.html" width="100%" height="2000" scrolling="yes"></iframe>

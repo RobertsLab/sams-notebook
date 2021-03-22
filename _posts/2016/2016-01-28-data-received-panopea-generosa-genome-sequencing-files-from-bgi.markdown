@@ -38,4 +38,4 @@ Jupyter Notebook file: [20160126_Olurida_BGI_data_handling.ipynb](https://eagle.
 
 Notebook Viewer: [20160126_Olurida_BGI_data_handling.ipynb](https://nbviewer.jupyter.org/url/eagle.fish.washington.edu/Arabidopsis/iPythonNotebooks/20160126_Pgenerosa_BGI_data_handling.ipynb)
 
-<iframe src="https://nbviewer.jupyter.org/url/eagle.fish.washington.edu/Arabidopsis/iPythonNotebooks/20160126_Pgenerosa_BGI_data_handling.ipynb" width="100%" same_height_as="window" scrolling="yes"></iframe>
+<iframe src="https://nbviewer.jupyter.org/url/eagle.fish.washington.edu/Arabidopsis/iPythonNotebooks/20160126_Pgenerosa_BGI_data_handling.ipynb" width="100%" height="2000" scrolling="yes"></iframe>

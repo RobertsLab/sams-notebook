@@ -120,4 +120,4 @@ Interactive link: [https://owl.fish.washington.edu/Athaliana/quast_results/resul
 
 The scaffolds with the "Ns" removed from them are appended with "_broken" - meaning the scaffolds were broken apart into contigs. Things are certainly cleaner when using the `--scaffolds` option, however, as far as I can tell, QUAST doesn't actually generate a FASTA file with the "_broken" scaffolds!
 
-<iframe src="https://nbviewer.jupyter.org/github/sr320/LabDocs/blob/master/jupyter_nbs/sam/20171004_docker_oly_redundans.ipynb" width="100%" same_height_as="window" scrolling="yes"></iframe>
+<iframe src="https://nbviewer.jupyter.org/github/sr320/LabDocs/blob/master/jupyter_nbs/sam/20171004_docker_oly_redundans.ipynb" width="100%" height="2000" scrolling="yes"></iframe>

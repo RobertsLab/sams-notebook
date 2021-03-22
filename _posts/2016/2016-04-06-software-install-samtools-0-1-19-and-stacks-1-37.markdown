@@ -31,4 +31,4 @@ Due to permissions issues during installation, I frequently had to leave the Jup
 Jupyter notebook: [20160406_STACKS_install.ipynb](https://eagle.fish.washington.edu/Arabidopsis/iPythonNotebooks/20160406_STACKS_install.ipynb)
 
 NBviewer: [20160406_STACKS_install.ipynb](https://nbviewer.jupyter.org/url/eagle.fish.washington.edu/Arabidopsis/iPythonNotebooks/20160406_STACKS_install.ipynb)
-<iframe src="https://nbviewer.jupyter.org/url/eagle.fish.washington.edu/Arabidopsis/iPythonNotebooks/20160406_STACKS_install.ipynb" width="100%" same_height_as="window" scrolling="yes"></iframe>
+<iframe src="https://nbviewer.jupyter.org/url/eagle.fish.washington.edu/Arabidopsis/iPythonNotebooks/20160406_STACKS_install.ipynb" width="100%" height="2000" scrolling="yes"></iframe>

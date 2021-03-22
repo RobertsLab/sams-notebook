@@ -35,7 +35,7 @@ Notebook Viewer: [20150506_Cgigas_larvae_OA_trimmomatic_FASTQC](https://nbviewer
 
 Jupyter (IPython) notebook: [20150506_Cgigas_larvae_OA_trimmomatic_FASTQC.ipynb](https://eagle.fish.washington.edu/Arabidopsis/iPythonNotebooks/20150506_Cgigas_larvae_OA_trimmomatic_FASTQC.ipynb)
 
-<iframe src="https://nbviewer.ipython.org/url/eagle.fish.washington.edu/Arabidopsis/iPythonNotebooks/20150506_Cgigas_larvae_OA_trimmomatic_FASTQC.ipynb" width="100%" same_height_as="window" scrolling="yes"></iframe>
+<iframe src="https://nbviewer.ipython.org/url/eagle.fish.washington.edu/Arabidopsis/iPythonNotebooks/20150506_Cgigas_larvae_OA_trimmomatic_FASTQC.ipynb" width="100%" height="2000" scrolling="yes"></iframe>
 
 Results:
 

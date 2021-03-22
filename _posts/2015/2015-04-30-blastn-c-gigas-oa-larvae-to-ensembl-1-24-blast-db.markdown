@@ -26,7 +26,7 @@ Jupyter (IPython) Notebook: [20150429_Gigas_larvae_OA_BLASTn.ipynb](https://eagl
 
 Notebook Viewer: [20150429_Gigas_larvae_OA_BLASTn](https://nbviewer.ipython.org/url/eagle.fish.washington.edu/Arabidopsis/iPythonNotebooks/20150429_Gigas_larvae_OA_BLASTn.ipynb)
 
-<iframe src="https://nbviewer.ipython.org/url/eagle.fish.washington.edu/Arabidopsis/iPythonNotebooks/20150429_Gigas_larvae_OA_BLASTn.ipynb" width="100%" same_height_as="window" scrolling="yes"></iframe>
+<iframe src="https://nbviewer.ipython.org/url/eagle.fish.washington.edu/Arabidopsis/iPythonNotebooks/20150429_Gigas_larvae_OA_BLASTn.ipynb" width="100%" height="2000" scrolling="yes"></iframe>
 
 
 

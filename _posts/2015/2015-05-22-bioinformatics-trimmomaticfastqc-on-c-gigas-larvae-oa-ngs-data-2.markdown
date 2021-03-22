@@ -86,7 +86,7 @@ Jupyter (IPython) notebook: [20150521_Cgigas_larvae_OA_Trimmomatic_FASTQC.ipynb]
 
 
 
-<iframe src="https://nbviewer.ipython.org/url/eagle.fish.washington.edu/Arabidopsis/iPythonNotebooks/20150521_Cgigas_larvae_OA_Trimmomatic_FASTQC.ipynb" width="100%" same_height_as="window" scrolling="yes"></iframe>
+<iframe src="https://nbviewer.ipython.org/url/eagle.fish.washington.edu/Arabidopsis/iPythonNotebooks/20150521_Cgigas_larvae_OA_Trimmomatic_FASTQC.ipynb" width="100%" height="2000" scrolling="yes"></iframe>
 
 
 

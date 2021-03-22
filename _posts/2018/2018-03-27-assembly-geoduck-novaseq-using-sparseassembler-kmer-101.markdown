@@ -130,7 +130,7 @@ Quast output (text): [results_2018_03_27_08_25_52/report.txt](https://owl.fish.w
 
 Quast output (HTML):[results_2018_03_27_08_25_52/report.html](https://owl.fish.washington.edu/Athaliana/quast_results/results_2018_03_27_08_25_52/report.html)
 
-<iframe src="https://owl.fish.washington.edu/Athaliana/quast_results/results_2018_03_27_08_25_52/report.html" width="100%" same_height_as="window" scrolling="yes"></iframe>
+<iframe src="https://owl.fish.washington.edu/Athaliana/quast_results/results_2018_03_27_08_25_52/report.html" width="100%" height="2000" scrolling="yes"></iframe>
 
 This is definitely a better assembly than [the kmer = 61 assembly](https://robertslab.github.io/sams-notebook/2018/03/22/assembly-geoduck-novaseq-using-sparseassembler-tldr-it-worked.html).
 

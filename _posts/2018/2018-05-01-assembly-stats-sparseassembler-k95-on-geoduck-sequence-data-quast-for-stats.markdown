@@ -87,4 +87,4 @@ This assembly doesn't have a single contig >50,000bp, while the previous one has
 
 Definitely shows what a large impact the kmer setting in assembly software can have on the final assembly!
 
-<iframe src="https://owl.fish.washington.edu/Athaliana/quast_results/results_2018_05_10_15_04_07/report.html" width="100%" same_height_as="window" scrolling="yes"></iframe>
+<iframe src="https://owl.fish.washington.edu/Athaliana/quast_results/results_2018_05_10_15_04_07/report.html" width="100%" height="2000" scrolling="yes"></iframe>

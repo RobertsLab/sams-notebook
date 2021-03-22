@@ -47,4 +47,4 @@ Well, lots of fails. I high level of "Per Base N Content" (these are only warnin
 
 I'll run these through [TrimGalore!](https://www.bioinformatics.babraham.ac.uk/projects/trim_galore/) (probably twice), and see how things change.
 
-<iframe src="https://owl.fish.washington.edu/Athaliana/20180328_illumina_hiseq_geoduck_fastqc/multiqc_data/multiqc_report.html" width="100%" same_height_as="window" scrolling="yes"></iframe>
+<iframe src="https://owl.fish.washington.edu/Athaliana/20180328_illumina_hiseq_geoduck_fastqc/multiqc_data/multiqc_report.html" width="100%" height="2000" scrolling="yes"></iframe>

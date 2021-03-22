@@ -42,4 +42,4 @@ Jupyter Notebook: [20160411_Concatenate_Oly_MBDseq.ipynb](https://eagle.fish.was
 
 NBviewer: [20160411_Concatenate_Oly_MBDseq](https://nbviewer.jupyter.org/url/eagle.fish.washington.edu/Arabidopsis/iPythonNotebooks/20160411_Concatenate_Oly_MBDseq.ipynb)
 
-<iframe src="https://nbviewer.jupyter.org/url/eagle.fish.washington.edu/Arabidopsis/iPythonNotebooks/20160411_Concatenate_Oly_MBDseq.ipynb" width="100%" same_height_as="window" scrolling="yes"></iframe>
+<iframe src="https://nbviewer.jupyter.org/url/eagle.fish.washington.edu/Arabidopsis/iPythonNotebooks/20160411_Concatenate_Oly_MBDseq.ipynb" width="100%" height="2000" scrolling="yes"></iframe>

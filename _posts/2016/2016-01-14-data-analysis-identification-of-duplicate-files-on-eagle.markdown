@@ -51,7 +51,7 @@ Here are the two output files from the fslint analysis:
 To get a summary of the fslint output, I tallied the total amount of duplicates files that were >100MB in size. This was performed in a Jupyter notebook (see below):
 Notebook Viewer: [20160114_wasted_space_synologies.ipynb](https://nbviewer.ipython.org/url/eagle.fish.washington.edu/Arabidopsis/iPythonNotebooks/20160114_wasted_space_synologies.ipynb)
 Jupyter (IPython) Notebook File: [20160114_wasted_space_synologies.ipynb](https://eagle.fish.washington.edu/Arabidopsis/iPythonNotebooks/20160114_wasted_space_synologies.ipynb)
-<iframe src="https://nbviewer.ipython.org/url/eagle.fish.washington.edu/Arabidopsis/iPythonNotebooks/20160114_wasted_space_synologies.ipynb" width="100%" same_height_as="window" scrolling="yes"></iframe>
+<iframe src="https://nbviewer.ipython.org/url/eagle.fish.washington.edu/Arabidopsis/iPythonNotebooks/20160114_wasted_space_synologies.ipynb" width="100%" height="2000" scrolling="yes"></iframe>
 
 
 Here are the cleaned output files from the fslint analysis:

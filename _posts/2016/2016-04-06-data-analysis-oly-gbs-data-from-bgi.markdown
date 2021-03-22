@@ -34,4 +34,4 @@ Below is the Jupyter (iPython) notebook I ran to perform this analysis.
 Jupyter (iPython) Notebook: [20160406_Oly_GBS_STACKS.ipynb](https://eagle.fish.washington.edu/Arabidopsis/iPythonNotebooks/20160406_Oly_GBS_STACKS.ipynb)
 
 Jupyter Notebook Viewer: [20160406_Oly_GBS_STACKS](https://nbviewer.jupyter.org/url/eagle.fish.washington.edu/Arabidopsis/iPythonNotebooks/20160406_Oly_GBS_STACKS.ipynb)
-<iframe src="https://nbviewer.jupyter.org/url/eagle.fish.washington.edu/Arabidopsis/iPythonNotebooks/20160406_Oly_GBS_STACKS.ipynb" width="100%" same_height_as="window" scrolling="yes"></iframe>
+<iframe src="https://nbviewer.jupyter.org/url/eagle.fish.washington.edu/Arabidopsis/iPythonNotebooks/20160406_Oly_GBS_STACKS.ipynb" width="100%" height="2000" scrolling="yes"></iframe>

@@ -98,4 +98,4 @@ OK, this trimming definitely took care of the variability seen in the first ~15b
 
 However, I noticed that the last 2bp of each of the Read 1 seqs all have some wonky stuff going on. I'm guessing I should probably trim that stuff off, too...
 
-<iframe src="https://owl.fish.washington.edu/Athaliana/20180410_trimgalore_trim14bp_Cvirginica_MBD/20180410_fastqc_trimgalore_trim14bp_Cvirginica_MBD/multiqc_data/multiqc_report.html" width="100%" same_height_as="window" scrolling="yes"></iframe>
+<iframe src="https://owl.fish.washington.edu/Athaliana/20180410_trimgalore_trim14bp_Cvirginica_MBD/20180410_fastqc_trimgalore_trim14bp_Cvirginica_MBD/multiqc_data/multiqc_report.html" width="100%" height="2000" scrolling="yes"></iframe>

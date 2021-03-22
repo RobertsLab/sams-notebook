@@ -106,4 +106,4 @@ Interactive link: [https://owl.fish.washington.edu/Athaliana/quast_results/resul
 
 ![](https://owl.fish.washington.edu/Athaliana/20171005_%20quast_redundans_02.png)(http://owl.fish.washington.edu/Athaliana/20171005_%20quast_redundans_02.png)
 
-<iframe src="https://nbviewer.jupyter.org/github/sr320/LabDocs/blob/master/jupyter_nbs/sam/20171005_docker_oly_redundans.ipynb" width="100%" same_height_as="window" scrolling="yes"></iframe>
+<iframe src="https://nbviewer.jupyter.org/github/sr320/LabDocs/blob/master/jupyter_nbs/sam/20171005_docker_oly_redundans.ipynb" width="100%" height="2000" scrolling="yes"></iframe>

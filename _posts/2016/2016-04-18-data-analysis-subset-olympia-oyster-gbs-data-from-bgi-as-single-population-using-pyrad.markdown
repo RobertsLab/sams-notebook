@@ -45,4 +45,4 @@ One last thing. This might be obvious to most, but I discovered that trying to d
 Jupyter Notebook: [20160418_pyrad_oly_PE-GBS.ipynb](https://eagle.fish.washington.edu/Arabidopsis/iPythonNotebooks/20160418_pyrad_oly_PE-GBS.ipynb)
 
 NBviewer: [20160418_pyrad_oly_PE-GBS](https://nbviewer.jupyter.org/url/eagle.fish.washington.edu/Arabidopsis/iPythonNotebooks/20160418_pyrad_oly_PE-GBS.ipynb)
-<iframe src="https://nbviewer.jupyter.org/url/eagle.fish.washington.edu/Arabidopsis/iPythonNotebooks/20160418_pyrad_oly_PE-GBS.ipynb" width="100%" same_height_as="window" scrolling="yes"></iframe>
+<iframe src="https://nbviewer.jupyter.org/url/eagle.fish.washington.edu/Arabidopsis/iPythonNotebooks/20160418_pyrad_oly_PE-GBS.ipynb" width="100%" height="2000" scrolling="yes"></iframe>
