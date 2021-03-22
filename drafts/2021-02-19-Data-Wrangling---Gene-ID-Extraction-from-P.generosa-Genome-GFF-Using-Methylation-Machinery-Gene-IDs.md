@@ -67,3 +67,20 @@ Jupyter Notebook:
 ---
 
 #### RESULTS
+
+Here's the final table:
+
+| Gene_ID         | gene_name | BLASTp_evalue | DIAMOND_evalue |
+|-----------------|-----------|---------------|----------------|
+| PGEN_.00g104080 | Baz2b     | 1.05E-98      | 5.40E-102      |
+| PGEN_.00g104170 | Baz2b     | 3.09E-96      | 1.20E-109      |
+| PGEN_.00g116950 | mbd5      | 6.40E-21      | 2.80E-20       |
+| PGEN_.00g186870 | ctcf      | 1.25E-116     |                |
+| PGEN_.00g192900 | UHRF1     | 2.32E-19      |                |
+| PGEN_.00g202750 | mbd2      | 9.46E-82      | 2.60E-63       |
+| PGEN_.00g209890 | mbd2      | 4.37E-19      | 9.20E-09       |
+| PGEN_.00g209900 | mbd4      | 3.14E-32      | 8.00E-29       |
+| PGEN_.00g243700 | egr1      | 6.24E-58      | 2.20E-23       |
+| PGEN_.00g249090 | egr1      | 4.19E-18      | 2.60E-06       |
+| PGEN_.00g283000 | dnmt1     | 5.03E-10      | 8.20E-28       |
+| PGEN_.00g283010 | dnmt1     | 0             | 7.30E-224      |
