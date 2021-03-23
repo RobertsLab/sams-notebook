@@ -74,5 +74,5 @@ printf "%s\n\n" "Output folder:" >> "${new_md_file}"
 printf "%s\n\n" "- []()" >> "${new_md_file}"
 
 
-# Open file with Atom text editor.
-atom "${new_md_file}"
+# Open file with VS Code text editor.
+code "${new_md_file}"
