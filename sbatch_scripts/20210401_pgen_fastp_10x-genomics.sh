@@ -44,8 +44,6 @@ multiqc=/gscratch/srlab/programs/anaconda3/bin/multiqc
 ## Inititalize arrays
 fastq_array_R1=()
 fastq_array_R2=()
-R1_names_array=()
-R2_names_array=()
 
 
 # Programs associative array
@@ -93,6 +91,12 @@ do
   R1_sample_name=$(echo "${fastq_array_R1[index]}" | sed 's/.fastq.gz//')
   R2_sample_name=$(echo "${fastq_array_R2[index]}" | sed 's/.fastq.gz//')
 
+  # Get sample name without R1/R2 labels
+  sample_name=$(echo "${fastq_array_R1[index]}" | sed 's/_R[12].*//')
+
+  echo ""
+  echo "fastp started on ${sample_name} FastQs."
+
   # Run fastp
   # Specifies reports in HTML and JSON formats
   ${fastp} \
@@ -100,10 +104,13 @@ do
   --in2 ${fastq_array_R2[index]} \
   --detect_adapter_for_pe \
   --thread ${threads} \
-  --html "${R1_sample_name}".fastp-trim."${timestamp}".report.html \
-  --json "${R1_sample_name}".fastp-trim."${timestamp}".report.json \
+  --html "$sample_name}".fastp-trim."${timestamp}".report.html \
+  --json "${sample_name}".fastp-trim."${timestamp}".report.json \
   --out1 "${R1_sample_name}".fastp-trim."${timestamp}".fq.gz \
   --out2 "${R2_sample_name}".fastp-trim."${timestamp}".fq.gz
+
+  echo "fastp completed on ${sample_name} FastQs"
+  echo ""
 
   # Generate md5 checksums for newly trimmed files
   {
@@ -118,13 +125,12 @@ do
     md5sum "${fastq_array_R2[index]}"
   }  >> ${fastq_checksums}
 
-# Remove original FastQ files
-rm "${fastq_array_R1[index]}" "${fastq_array_R2[index]}"
-
+  # Remove original FastQ files
+  rm "${fastq_array_R1[index]}" "${fastq_array_R2[index]}"
 done
 
 # Run MultiQC
-${multiqc} .
+${programs_array[multiqc]} .
 
 ###################################################################################
 
