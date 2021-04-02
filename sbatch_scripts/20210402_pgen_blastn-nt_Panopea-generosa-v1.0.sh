@@ -2,8 +2,8 @@
 ## Job Name
 #SBATCH --job-name=20210402_pgen_blastn-nt_Panopea-generosa-v1.0
 ## Allocation Definition
-#SBATCH --account=coenv
-#SBATCH --partition=coenv
+#SBATCH --account=srlab
+#SBATCH --partition=srlab
 ## Resources
 ## Nodes
 #SBATCH --nodes=1
@@ -34,7 +34,7 @@ fasta="/gscratch/srlab/sam/data/P_generosa/genomes/Panopea-generosa-v1.0.fa"
 blast_db="/gscratch/srlab/blastdbs/20210401_ncbi_nt/nt"
 
 # Programs
-blastn="/gscratch/srlab/programs/ncbi-blast-2.10.1+/bin"
+blastn="/gscratch/srlab/programs/ncbi-blast-2.10.1+/bin/blastn"
 
 
 # Programs associative array
@@ -58,7 +58,7 @@ ${programs_array[blastn]} \
 -max_target_seqs 10 \
 -max_hsps 1 \
 -evalue 1e-25 \
--num_threads 16 \
+-num_threads ${threads} \
 -out Panopea-generosa-v1.0_blobtools2_blast.out
 
 
