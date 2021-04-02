@@ -104,7 +104,7 @@ do
   --in2 ${fastq_array_R2[index]} \
   --detect_adapter_for_pe \
   --thread ${threads} \
-  --html "$sample_name}".fastp-trim."${timestamp}".report.html \
+  --html "${sample_name}".fastp-trim."${timestamp}".report.html \
   --json "${sample_name}".fastp-trim."${timestamp}".report.json \
   --out1 "${R1_sample_name}".fastp-trim."${timestamp}".fq.gz \
   --out2 "${R2_sample_name}".fastp-trim."${timestamp}".fq.gz
