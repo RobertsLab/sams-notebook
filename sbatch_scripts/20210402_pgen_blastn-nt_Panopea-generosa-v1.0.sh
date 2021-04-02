@@ -50,6 +50,16 @@ programs_array=(
 set -e
 
 
+# Run BLASTn with custom format/settings for use in blobtools2
+${programs_array[blastn]} \
+-db ${blast_db} \
+-query ${fasta} \
+-outfmt "6 qseqid staxids bitscore std" \
+-max_target_seqs 10 \
+-max_hsps 1 \
+-evalue 1e-25 \
+-num_threads 16 \
+-out Panopea-generosa-v1.0_blobtools2_blast.out
 
 
 ###################################################################################
