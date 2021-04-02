@@ -20,7 +20,7 @@
 
 ### BLASTn of P.generosa genome assembly Panopea-generosa-v1.0.fa
 ### against NCBI nt database.
-### In preparation for use in BlobToolKit
+### In preparation for use in BlobTools2
 
 
 ###################################################################################
@@ -73,7 +73,8 @@ do
     ${programs_array[$program]} help
 
   # Handle NCBI BLASTx menu
-  elif [[ "${program}" == "blastx" ]]; then
+  elif [[ "${program}" == "blastx" ]] \
+  || [[ "${program}" == "blastn" ]]; then
     ${programs_array[$program]} -help
   fi
 	${programs_array[$program]} -h
