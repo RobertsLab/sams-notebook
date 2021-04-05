@@ -50,8 +50,33 @@ programs_array=(
 # Exit script if any command fails
 set -e
 
+# Concatenate all R1 reads
+for fastq in ${trimmed_reads_dir}*R1*.fq.gz
+do
+  echo ""
+  echo "Generating checksum for ${fastq}"
+  md5sum ${fastq} >> ${fastq_checksums}
+  echo "Checksum generated for ${fastq}."
 
+  echo ""
+  echo "Concatenating $[fastq} to reads_R1.fq.gz"
+  cat ${fastq} >> reads_R1.fq.gz
+  echo "Finished concatenating ${fastq} to reads_R1.fq.gz"
+done
 
+# Concatenate all R2 reads
+for fastq in ${trimmed_reads_dir}*R2*.fq.gz
+do
+  echo ""
+  echo "Generating checksum for ${fastq}"
+  md5sum ${fastq} >> ${fastq_checksums}
+  echo "Checksum generated for ${fastq}."
+
+  echo ""
+  echo "Concatenating $[fastq} to reads_R2.fq.gz"
+  cat ${fastq} >> reads_R2.fq.gz
+  echo "Finished concatenating ${fastq} to reads_R2.fq.gz"
+done
 
 ###################################################################################
 
