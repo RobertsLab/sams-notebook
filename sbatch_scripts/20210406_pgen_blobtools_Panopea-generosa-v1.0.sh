@@ -30,8 +30,6 @@
 ###################################################################################
 # These variables need to be set by user
 
-## Assign Variables
-
 # Pipeline options
 ## BLASTn evalue
 evalue="1e-25"
@@ -44,16 +42,30 @@ species="Panopea generosa"
 root=1
 
 # Set number of CPUs to use
-threads=40
+threads=28
 
 # Input/output files
+assembly_name=Panopea-generosa-v1.0
 genome_fasta=/gscratch/srlab/sam/data/P_generosa/genomes/Panopea-generosa-v1.0.fa
 fastq_checksums=fastq_checksums.md5
 trimmed_reads_dir=/gscratch/scrubbed/samwhite/outputs/20210401_pgen_fastp_10x-genomics/
 config="${genome_fasta##*/}_btk.yaml"
 
 # Programs
+## Blobtools2 directory
 blobtools2=/gscratch/srlab/programs/blobtoolkit/blobtools2
+
+## BTK pipeline directory
+btk_pipeline=/gscratch/srlab/programs/blobtoolkit/insdc-pipeline
+
+## Name of conda snakemake environment
+snakemake_env_name=snakemake_env
+
+## Conda environment directory
+cond_dir=/gscratch/srlab/programs/anaconda3/envs/snakemake_env
+
+
+## Anaconda program
 conda=/gscratch/srlab/programs/anaconda3/condabin/conda
 
 # Databases
@@ -81,6 +93,9 @@ programs_array=()
 # Exit script if any command fails
 set -e
 
+# Set working directory
+wd=$(pwd)
+
 # Concatenate all R1 reads
 for fastq in ${trimmed_reads_dir}*R1*.fq.gz
 do
@@ -90,7 +105,7 @@ do
   echo "Checksum generated for ${fastq}."
 
   echo ""
-  echo "Concatenating $[fastq} to reads_R1.fq.gz"
+  echo "Concatenating ${fastq} to reads_R1.fq.gz"
   cat ${fastq} >> reads_R1.fq.gz
   echo "Finished concatenating ${fastq} to reads_R1.fq.gz"
 done
@@ -104,7 +119,7 @@ do
   echo "Checksum generated for ${fastq}."
 
   echo ""
-  echo "Concatenating $[fastq} to reads_R2.fq.gz"
+  echo "Concatenating ${fastq} to reads_R2.fq.gz"
   cat ${fastq} >> reads_R2.fq.gz
   echo "Finished concatenating ${fastq} to reads_R2.fq.gz"
 done
@@ -115,7 +130,7 @@ done
   printf "%s\n" "assembly:"
   printf "%2s%s\n" "" "accession: draft"
   printf "%2s%s\n" "" "level: scaffold"
-  printf "%2s%s\n" "" "prefix: Panopea-generosa-v1.0"
+  printf "%2s%s\n" "" "prefix: ${assembly_name}"
   printf "%s\n" "busco:"
   printf "%2s%s\n" "" "lineages:"
   printf "%4s%s\n" "" "- eukaryota_odb9" "" "- metazoa_odb9"
@@ -146,6 +161,19 @@ done
   printf "%s\n" "keep_intermediates: true"
 } >> ${config}
 
+
+# Run snakemake, btk pipeline
+cd ${btk_pipeline}
+${conda} activate ${snakemake_env_name}
+
+snakemake -p \
+--use-conda \
+--conda-prefix ${conda_dir} \
+--directory ${wd}/ \
+--configfile ${wd}/${config} \
+--stats ${assembly_name}.snakemake.stats \
+-j ${threads} \
+--resources btk=1
 
 ###################################################################################
 
