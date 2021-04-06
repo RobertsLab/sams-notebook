@@ -46,7 +46,7 @@ root=1
 threads=28
 
 # Input/output files
-assembly_name=Panopea-generosa-v1.0
+assembly_name=Panopea_generosa_v1
 genome_fasta=/gscratch/srlab/sam/data/P_generosa/genomes/Panopea-generosa-v1.0.fa
 fastq_checksums=fastq_checksums.md5
 trimmed_reads_dir=/gscratch/scrubbed/samwhite/outputs/20210401_pgen_fastp_10x-genomics
