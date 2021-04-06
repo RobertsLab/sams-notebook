@@ -126,12 +126,16 @@ do
   echo "Finished concatenating ${fastq} to reads_R2.fq.gz"
 done
 
+# Count scaffolds in assembly
+scaffold_count=$(grep -c ">" ${genome_fasta})
+
+# Count nucleotides in assembly
+genome_nucleotides_count=$(grep -v ">" ${genome_fasta} | wc | awk '{print $3-$1}')
 
 # Create BTK config YAML
 {
   printf "%s\n" "assembly:"
-  printf "%2s%s\n" "" "accession: draft"
-  printf "%2s%s\n" "" "level: scaffold"
+  printf "%2s%s\n" "" "accession: draft" "" "level: scaffold" "" "scaffold-count: ${genome_fasta}" "" "span: ${genome_nucleotides_count}"
   printf "%2s%s\n" "" "prefix: ${assembly_name}"
   printf "%s\n" "busco:"
   printf "%2s%s\n" "" "lineages:"
