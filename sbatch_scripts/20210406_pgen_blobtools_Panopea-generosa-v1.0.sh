@@ -30,10 +30,14 @@
 ## Assign Variables
 
 # Pipeline options
-
+## BLASTn evalue
 evalue="1e-25"
+
+## NCBI Tax ID and genus/species
 ncbi_tax_id=1049056
 species="Panopea generosa"
+
+## NCBI Taxonomy Root ID to begin from
 root=1
 
 # Set number of CPUs to use
@@ -49,7 +53,6 @@ config="${genome_fasta##*/}_btk.yaml"
 blobtools2=/gscratch/srlab/programs/blobtoolkit/blobtools2
 
 # Databases
-
 ## BUSCO lineage database directory
 busco_dbs=/gscratch/srlab/sam/data/databases/BUSCO
 
@@ -66,10 +69,7 @@ uniprot_db_name=reference_proteomes
 
 # Programs associative array
 declare -A programs_array
-programs_array=(
-[blobltools2]="${blobtools2}" \
-[multiqc]="${multiqc}"
-)
+programs_array=()
 
 
 ###################################################################################
@@ -107,7 +107,6 @@ done
 
 
 # Create BTK config YAML
-
 {
   printf "%s\n" "assembly:"
   printf "%2s%s\n" "" "accession: draft"
@@ -147,40 +146,42 @@ done
 ###################################################################################
 
 # Capture program options
-echo "Logging program options..."
-for program in "${!programs_array[@]}"
-do
-	{
-  echo "Program options for ${program}: "
-	echo ""
-  # Handle samtools help menus
-  if [[ "${program}" == "samtools_index" ]] \
-  || [[ "${program}" == "samtools_sort" ]] \
-  || [[ "${program}" == "samtools_view" ]]
-  then
-    ${programs_array[$program]}
+if [[ "${#programs_array[@]}" -gt 0 ]]; then
+  echo "Logging program options..."
+  for program in "${!programs_array[@]}"
+  do
+    {
+    echo "Program options for ${program}: "
+    echo ""
+    # Handle samtools help menus
+    if [[ "${program}" == "samtools_index" ]] \
+    || [[ "${program}" == "samtools_sort" ]] \
+    || [[ "${program}" == "samtools_view" ]]
+    then
+      ${programs_array[$program]}
 
-  # Handle DIAMOND BLAST menu
-  elif [[ "${program}" == "diamond" ]]; then
-    ${programs_array[$program]} help
+    # Handle DIAMOND BLAST menu
+    elif [[ "${program}" == "diamond" ]]; then
+      ${programs_array[$program]} help
 
-  # Handle NCBI BLASTx menu
-  elif [[ "${program}" == "blastx" ]]; then
-    ${programs_array[$program]} -help
-  fi
-	${programs_array[$program]} -h
-	echo ""
-	echo ""
-	echo "----------------------------------------------"
-	echo ""
-	echo ""
-} &>> program_options.log || true
+    # Handle NCBI BLASTx menu
+    elif [[ "${program}" == "blastx" ]]; then
+      ${programs_array[$program]} -help
+    fi
+    ${programs_array[$program]} -h
+    echo ""
+    echo ""
+    echo "----------------------------------------------"
+    echo ""
+    echo ""
+  } &>> program_options.log || true
 
-  # If MultiQC is in programs_array, copy the config file to this directory.
-  if [[ "${program}" == "multiqc" ]]; then
-  	cp --preserve ~/.multiqc_config.yaml multiqc_config.yaml
-  fi
-done
+    # If MultiQC is in programs_array, copy the config file to this directory.
+    if [[ "${program}" == "multiqc" ]]; then
+      cp --preserve ~/.multiqc_config.yaml multiqc_config.yaml
+    fi
+  done
+fi
 
 # Document programs in PATH (primarily for program version ID)
 {
