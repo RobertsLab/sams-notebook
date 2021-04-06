@@ -144,7 +144,7 @@ done
   printf "%s\n" "settings:"
   printf "%2s%s\n" "" "blobtools2_path: ${blobtools2}"
   printf "%2s%s\n" "" "taxonomy: ${btk_ncbi_tax_dir}"
-  printf "%2s%s\n" "" "/tmp"
+  printf "%2s%s\n" "" "tmp: /tmp"
   printf "%2s%s\n" "" "blast_chunk: 100000"
   printf "%2s%s\n" "" "blast_max_chunks: 10"
   printf "%2s%s\n" "" "blast_overlap: 500"
