@@ -18,10 +18,13 @@
 #SBATCH --chdir=/gscratch/scrubbed/samwhite/outputs/20210406_pgen_blobtools_Panopea-generosa-v1.0
 
 
-### Fastp 10x Genomics data used for P.generosa genome assembly by Phase Genomics.
-### In preparation for use in BlobToolKit
+### Script to run the Blobtools2 Pipeline
+### on trimmed 10x Genomics/HiC FastQs from 20210401.
+### Using to identify sequencing contaminants in Panopea-generosa-v1.0 genome assembly
+### Generates a Snakemake config file
+### Outputs Blobtools2 JSON files for use in the Blobtools2 viewer
 
-### Expects input filenames to be in format: *.fastq.gz
+### Utilizes NCBI taxonomy dump and customized UniProt database for DIAMOND BLASTx
 
 
 ###################################################################################
@@ -51,6 +54,7 @@ config="${genome_fasta##*/}_btk.yaml"
 
 # Programs
 blobtools2=/gscratch/srlab/programs/blobtoolkit/blobtools2
+conda=/gscratch/srlab/programs/anaconda3/condabin/conda
 
 # Databases
 ## BUSCO lineage database directory
