@@ -62,7 +62,7 @@ btk_pipeline=/gscratch/srlab/programs/blobtoolkit/insdc-pipeline
 snakemake_env_name=snakemake_env
 
 ## Conda environment directory
-cond_dir=/gscratch/srlab/programs/anaconda3/envs/snakemake_env
+conda_dir=/gscratch/srlab/programs/anaconda3/envs/snakemake_env
 
 
 ## Anaconda program
@@ -97,30 +97,30 @@ set -e
 wd=$(pwd)
 
 # Concatenate all R1 reads
-for fastq in ${trimmed_reads_dir}*R1*.fq.gz
+for fastq in "${trimmed_reads_dir}"*R1*.fq.gz
 do
   echo ""
   echo "Generating checksum for ${fastq}"
-  md5sum ${fastq} >> ${fastq_checksums}
+  md5sum "${fastq}" >> ${fastq_checksums}
   echo "Checksum generated for ${fastq}."
 
   echo ""
   echo "Concatenating ${fastq} to reads_R1.fq.gz"
-  cat ${fastq} >> reads_R1.fq.gz
+  cat "${fastq}" >> reads_R1.fq.gz
   echo "Finished concatenating ${fastq} to reads_R1.fq.gz"
 done
 
 # Concatenate all R2 reads
-for fastq in ${trimmed_reads_dir}*R2*.fq.gz
+for fastq in "${trimmed_reads_dir}"*R2*.fq.gz
 do
   echo ""
   echo "Generating checksum for ${fastq}"
-  md5sum ${fastq} >> ${fastq_checksums}
+  md5sum "${fastq}" >> ${fastq_checksums}
   echo "Checksum generated for ${fastq}."
 
   echo ""
   echo "Concatenating ${fastq} to reads_R2.fq.gz"
-  cat ${fastq} >> reads_R2.fq.gz
+  cat "${fastq}" >> reads_R2.fq.gz
   echo "Finished concatenating ${fastq} to reads_R2.fq.gz"
 done
 
@@ -136,7 +136,7 @@ done
   printf "%4s%s\n" "" "- eukaryota_odb9" "" "- metazoa_odb9"
   printf "%2s%s\n" "" "lineage_dir: ${busco_dbs}"
   printf "%s\n" "reads:"
-  printf "%2s%s\n" "paired:"
+  printf "%2s%s\n" "" "paired:"
   printf "%4s%s\n" "" "-"
   printf "%6s%s\n" "" "- reads" "" "- ILLUMINA"
   printf "%s\n" "settings:"
