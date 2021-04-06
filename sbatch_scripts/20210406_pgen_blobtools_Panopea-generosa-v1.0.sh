@@ -26,6 +26,7 @@
 
 ### Utilizes NCBI taxonomy dump and customized UniProt database for DIAMOND BLASTx
 
+### Requires Anaconda to be in system $PATH!
 
 ###################################################################################
 # These variables need to be set by user
@@ -65,9 +66,6 @@ snakemake_env_name=snakemake_env
 conda_dir=/gscratch/srlab/programs/anaconda3/envs/snakemake_env
 
 
-## Anaconda program
-conda=/gscratch/srlab/programs/anaconda3/condabin/conda
-
 # Databases
 ## BUSCO lineage database directory
 busco_dbs=/gscratch/srlab/sam/data/databases/BUSCO
@@ -95,6 +93,10 @@ set -e
 
 # Set working directory
 wd=$(pwd)
+
+# Load Anaconda
+# Uknown why this is needed, but Anaconda will not run if this line is not included.
+. "/gscratch/srlab/programs/anaconda3/etc/profile.d/conda.sh"
 
 # Concatenate all R1 reads
 for fastq in "${trimmed_reads_dir}"/*R1*.fq.gz
@@ -164,7 +166,7 @@ done
 
 # Run snakemake, btk pipeline
 cd ${btk_pipeline}
-${conda} activate ${snakemake_env_name}
+conda activate ${snakemake_env_name}
 
 snakemake -p \
 --use-conda \
