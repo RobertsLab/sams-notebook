@@ -48,7 +48,7 @@ threads=28
 assembly_name=Panopea-generosa-v1.0
 genome_fasta=/gscratch/srlab/sam/data/P_generosa/genomes/Panopea-generosa-v1.0.fa
 fastq_checksums=fastq_checksums.md5
-trimmed_reads_dir=/gscratch/scrubbed/samwhite/outputs/20210401_pgen_fastp_10x-genomics/
+trimmed_reads_dir=/gscratch/scrubbed/samwhite/outputs/20210401_pgen_fastp_10x-genomics
 config="${genome_fasta##*/}_btk.yaml"
 
 # Programs
@@ -97,7 +97,7 @@ set -e
 wd=$(pwd)
 
 # Concatenate all R1 reads
-for fastq in "${trimmed_reads_dir}"*R1*.fq.gz
+for fastq in "${trimmed_reads_dir}"/*R1*.fq.gz
 do
   echo ""
   echo "Generating checksum for ${fastq}"
@@ -111,7 +111,7 @@ do
 done
 
 # Concatenate all R2 reads
-for fastq in "${trimmed_reads_dir}"*R2*.fq.gz
+for fastq in "${trimmed_reads_dir}"/*R2*.fq.gz
 do
   echo ""
   echo "Generating checksum for ${fastq}"
