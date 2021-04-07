@@ -47,7 +47,8 @@ threads=28
 
 # Input/output files
 assembly_name=Panopea_generosa_v1
-genome_fasta=/gscratch/srlab/sam/data/P_generosa/genomes/Panopea-generosa-v1.0.fa
+orig_fasta=/gscratch/srlab/sam/data/P_generosa/genomes/Panopea-generosa-v1.0.fa
+genome_fasta=/gscratch/srlab/sam/data/P_generosa/genomes/Panopea-generosa-v1.0.fasta
 fastq_checksums=fastq_checksums.md5
 trimmed_reads_dir=/gscratch/scrubbed/samwhite/outputs/20210401_pgen_fastp_10x-genomics
 config="${genome_fasta##*/}_btk.yaml"
@@ -97,6 +98,12 @@ wd=$(pwd)
 # Load Anaconda
 # Uknown why this is needed, but Anaconda will not run if this line is not included.
 . "/gscratch/srlab/programs/anaconda3/etc/profile.d/conda.sh"
+
+# Rename orginal FastA to comply with BTK naming requirements
+rsync -av ${orig_fasta} ${genome_fasta}
+
+# Generate checksum for "new" FastA
+md5sum ${genome_fasta} > genome_fasta.md5
 
 # Concatenate all R1 reads
 for fastq in "${trimmed_reads_dir}"/*R1*.fq.gz
