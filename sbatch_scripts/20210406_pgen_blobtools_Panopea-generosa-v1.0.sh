@@ -107,9 +107,9 @@ do
   echo "Checksum generated for ${fastq}."
 
   echo ""
-  echo "Concatenating ${fastq} to reads_R1.fq.gz"
-  cat "${fastq}" >> reads_R1.fq.gz
-  echo "Finished concatenating ${fastq} to reads_R1.fq.gz"
+  echo "Concatenating ${fastq} to reads_1.fastq.gz"
+  cat "${fastq}" >> reads_1.fastq.gz
+  echo "Finished concatenating ${fastq} to reads_1.fastq.gz"
 done
 
 # Concatenate all R2 reads
@@ -121,9 +121,9 @@ do
   echo "Checksum generated for ${fastq}."
 
   echo ""
-  echo "Concatenating ${fastq} to reads_R2.fq.gz"
-  cat "${fastq}" >> reads_R2.fq.gz
-  echo "Finished concatenating ${fastq} to reads_R2.fq.gz"
+  echo "Concatenating ${fastq} to reads_2.fastq.gz"
+  cat "${fastq}" >> reads_2.fastq.gz
+  echo "Finished concatenating ${fastq} to reads_2.fastq.gz"
 done
 
 # Count scaffolds in assembly
@@ -180,6 +180,9 @@ snakemake -p \
 --stats ${assembly_name}.snakemake.stats \
 -j ${threads} \
 --resources btk=1
+
+# Change back to working directory
+cd ${wd}
 
 ###################################################################################
 
