@@ -168,7 +168,7 @@ genome_nucleotides_count=$(grep -v ">" ${genome_fasta} | wc | awk '{print $3-$1}
   printf "%6s%s\n" "" "local: ${ncbi_db}" "" "name: ${ncbi_db_name}" "" "source: ncbi" "" "tools: blast" "" "type: nucl"
   printf "%4s%s\n" "" "-"
   printf "%6s%s\n" "" "local: ${uniprot_db}" "" "max_target_seqs: 1" "" "name: ${uniprot_db_name}" "" "source: uniprot" "" "tools: diamond" "" "type: prot"
-  printf "%2s%s\n" "" "taxrule: bestsumorder"
+  printf "%2s%s\n" "" "taxrule: eachdistorder"
   printf "%s\n" "taxon:"
   printf "%2s%s\n" "" "taxid: ${ncbi_tax_id}" "" "name: ${species}"
   printf "%s\n" "keep_intermediates: true"
