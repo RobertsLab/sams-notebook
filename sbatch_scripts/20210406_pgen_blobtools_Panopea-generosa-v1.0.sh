@@ -142,7 +142,7 @@ genome_nucleotides_count=$(grep -v ">" ${genome_fasta} | wc | awk '{print $3-$1}
 # Create BTK config YAML
 {
   printf "%s\n" "assembly:"
-  printf "%2s%s\n" "" "accession: draft" "" "level: scaffold" "" "scaffold-count: ${genome_fasta}" "" "span: ${genome_nucleotides_count}"
+  printf "%2s%s\n" "" "accession: draft" "" "level: scaffold" "" "scaffold-count: ${scaffold_count}" "" "span: ${genome_nucleotides_count}"
   printf "%2s%s\n" "" "prefix: ${assembly_name}"
   printf "%s\n" "busco:"
   printf "%2s%s\n" "" "lineages:"
