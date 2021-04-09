@@ -31,6 +31,9 @@
 ###################################################################################
 # These variables need to be set by user
 
+# Set working directory
+wd=$(pwd)
+
 # Pipeline options
 ## BLASTn evalue
 evalue="1e-25"
@@ -48,7 +51,7 @@ threads=28
 # Input/output files
 assembly_name=Panopea_generosa_v1
 orig_fasta=/gscratch/srlab/sam/data/P_generosa/genomes/Panopea-generosa-v1.0.fa
-genome_fasta=/gscratch/srlab/sam/data/P_generosa/genomes/Panopea-generosa-v1.0.fasta
+genome_fasta=${wd}/Panopea_generosa_v1.fasta
 fastq_checksums=fastq_checksums.md5
 trimmed_reads_dir=/gscratch/scrubbed/samwhite/outputs/20210401_pgen_fastp_10x-genomics
 config="${genome_fasta##*/}_btk.yaml"
@@ -91,9 +94,6 @@ programs_array=()
 
 # Exit script if any command fails
 set -e
-
-# Set working directory
-wd=$(pwd)
 
 # Load Anaconda
 # Uknown why this is needed, but Anaconda will not run if this line is not included.
