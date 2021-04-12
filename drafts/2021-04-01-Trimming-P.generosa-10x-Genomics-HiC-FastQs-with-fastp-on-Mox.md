@@ -216,6 +216,18 @@ There's a lot of data, so this took a pretty long time. Just under 7hrs!
 
 Output folder:
 
-
 - [20210401_pgen_fastp_10x-genomics/](https://gannet.fish.washington.edu/Atumefaciens/20210401_pgen_fastp_10x-genomics/)
 
+  - List of input FastQ files (text):
+
+    - [raw_fastq_checksums.md5](https://gannet.fish.washington.edu/Atumefaciens/20210401_pgen_fastp_10x-genomics/raw_fastq_checksums.md5)
+
+  - [`MultiQC`](https://multiqc.info/) Report (HTML; open in browser):
+
+    - [multiqc_report.html](https://gannet.fish.washington.edu/Atumefaciens/20210401_pgen_fastp_10x-genomics/multiqc_report.html)
+
+  - Trimmed FastQ list/checksums (text):
+
+    - [trimmed_fastq_checksums.md5](https://gannet.fish.washington.edu/Atumefaciens/20210401_pgen_fastp_10x-genomics/trimmed_fastq_checksums.md5)
+
+Alrighty, I will use these trimmed FastQ files in a subsequent run of [Blob Tool Kit](https://blobtoolkit.genomehubs.org/) with out [_Panopea generosa_ (Pacific geoduck)](http://en.wikipedia.org/wiki/Geoduck) v1.0 genome assembly and see what we find!
