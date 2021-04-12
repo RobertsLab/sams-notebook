@@ -210,7 +210,12 @@ echo "Finished logging system PATH"
 
 #### RESULTS
 
+There's a lot of data, so this took a pretty long time. Just under 7hrs!
+
+![Fastp runtime screencap](https://github.com/RobertsLab/sams-notebook/blob/master/images/screencaps/20210401_pgen_fastp_10x-genomics_runtime.png?raw=true)
+
 Output folder:
 
-- []()
+
+- [20210401_pgen_fastp_10x-genomics/](https://gannet.fish.washington.edu/Atumefaciens/20210401_pgen_fastp_10x-genomics/)
 
