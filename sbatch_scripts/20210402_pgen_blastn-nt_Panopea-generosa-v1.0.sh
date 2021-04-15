@@ -1,6 +1,6 @@
 #!/bin/bash
 ## Job Name
-#SBATCH --job-name=20210402_pgen_blastn-nt_Panopea-generosa-v1.0
+#SBATCH --job-name=20210415_pgen_blastn-nt_Panopea-generosa-v1.0
 ## Allocation Definition
 #SBATCH --account=srlab
 #SBATCH --partition=srlab
@@ -15,7 +15,7 @@
 #SBATCH --mail-type=ALL
 #SBATCH --mail-user=samwhite@uw.edu
 ## Specify the working directory for this job
-#SBATCH --chdir=/gscratch/scrubbed/samwhite/outputs/20210402_pgen_blastn-nt_Panopea-generosa-v1.0
+#SBATCH --chdir=/gscratch/scrubbed/samwhite/outputs/20210415_pgen_blastn-nt_Panopea-generosa-v1.0
 
 
 ### BLASTn of P.generosa genome assembly Panopea-generosa-v1.0.fa
