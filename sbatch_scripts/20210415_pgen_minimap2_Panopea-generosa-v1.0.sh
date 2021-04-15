@@ -17,7 +17,9 @@
 ## Specify the working directory for this job
 #SBATCH --chdir=/gscratch/scrubbed/samwhite/outputs/20210415_pgen_minimap2_Panopea-generosa-v1.0
 
-
+### Map trimmed 10x Genomics reads to Panopea-generosa_v1.0 assembly
+### for use with BlobToolKit
+### Output is BAM file
 
 
 ###################################################################################
