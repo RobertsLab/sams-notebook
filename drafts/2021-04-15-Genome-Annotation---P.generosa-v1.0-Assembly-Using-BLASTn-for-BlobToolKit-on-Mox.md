@@ -138,7 +138,16 @@ echo "Finished logging system PATH"
 
 #### RESULTS
 
+Runtime wasn't too bad; just a bit over 6hrs:
+
+![BLASTn runtime](https://github.com/RobertsLab/sams-notebook/blob/master/images/screencaps/20210415_pgen_blastn-nt_Panopea-generosa-v1.0_runtime.png?raw=true)
+
 Output folder:
 
-- []()
+- [20210415_pgen_blastn-nt_Panopea-generosa-v1.0/](https://gannet.fish.washington.edu/Atumefaciens/20210415_pgen_blastn-nt_Panopea-generosa-v1.0/)
 
+  - BLAST output file (see SBATCH script for custom formatting) for improt to BlobToolKit:
+
+    - [20210415_pgen_blastn-nt_Panopea-generosa-v1.0/Panopea-generosa-v1.0_blobtools2_blast.out](https://gannet.fish.washington.edu/Atumefaciens/20210415_pgen_blastn-nt_Panopea-generosa-v1.0/Panopea-generosa-v1.0_blobtools2_blast.out)
+
+After [`DIAMOND`](https://github.com/bbuchfink/diamond) BLASTx and minimap2 alignments are complete, I'll get this info imported into the [BlobToolKit](https://blobtoolkit.genomehubs.org/) viewer.
