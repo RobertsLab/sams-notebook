@@ -171,7 +171,20 @@ echo "Finished logging system PATH"
 
 #### RESULTS
 
+Runtime was close to 5.5hrs:
+
+![DIAMOND BLASTx runtime](https://github.com/RobertsLab/sams-notebook/blob/master/images/screencaps/20210415_pgen_diamond_blastx_Panopea-generosa-v1.0_runtime.png?raw=true)
+
 Output folder:
 
-- []()
+- [20210415_pgen_diamond_blastx_Panopea-generosa-v1.0](https://gannet.fish.washington.edu/Atumefaciens/20210415_pgen_diamond_blastx_Panopea-generosa-v1.0/)
 
+  - Custom BLASTx output format (see SBATCH script for output formatting) for import to BlobToolKit (text):
+
+    - [20210415_pgen_diamond_blastx_Panopea-generosa-v1.0/Panopea-generosa-v1.0.blastx.btk.outfmt6](https://gannet.fish.washington.edu/Atumefaciens/20210415_pgen_diamond_blastx_Panopea-generosa-v1.0/Panopea-generosa-v1.0.blastx.btk.outfmt6)
+
+  - Genome FastA checksum (text):
+
+    - [20210415_pgen_diamond_blastx_Panopea-generosa-v1.0/fastq.checksums.md5](https://gannet.fish.washington.edu/Atumefaciens/20210415_pgen_diamond_blastx_Panopea-generosa-v1.0/fastq.checksums.md5)
+
+Once minimap2 alignments are complete, will get this imported into [BlobToolKit](https://blobtoolkit.genomehubs.org/) viewer.
