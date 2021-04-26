@@ -182,7 +182,21 @@ echo "Finished logging system PATH"
 
 #### RESULTS
 
+Runtime was pretty long, ~9 days:
+
+![minimap2 runtime on Mox](https://github.com/RobertsLab/sams-notebook/blob/master/images/screencaps/20210415_pgen_minimap2_Panopea-generosa-v1.0_runtime.png?raw=true)
+
 Output folder:
 
-- []()
+- [20210415_pgen_minimap2_Panopea-generosa-v1.0/](https://gannet.fish.washington.edu/Atumefaciens/20210415_pgen_minimap2_Panopea-generosa-v1.0/)
 
+  - List of input files/checksums (text):
+
+    - [20210415_pgen_minimap2_Panopea-generosa-v1.0/fastq_checksums.md5](https://gannet.fish.washington.edu/Atumefaciens/20210415_pgen_minimap2_Panopea-generosa-v1.0/fastq_checksums.md5)
+
+  - BAM file (348GB!!!):
+
+    - [20210415_pgen_minimap2_Panopea-generosa-v1.0/20210415_pgen_10x-genomics_Pgen-v1.0-assembly.reads.sorted.bam](https://gannet.fish.washington.edu/Atumefaciens/20210415_pgen_minimap2_Panopea-generosa-v1.0/20210415_pgen_10x-genomics_Pgen-v1.0-assembly.reads.sorted.bam)
+
+
+Next up, add the BAM file and the BLAST results to BlobToolKit.
