@@ -55,7 +55,7 @@ threads=40
 genome_fasta=/gscratch/srlab/sam/data/P_generosa/genomes/Panopea-generosa-v1.0.fa
 fastq_checksums=fastq_checksums.md5
 trimmed_reads_dir=/gscratch/scrubbed/samwhite/outputs/20210401_pgen_fastp_10x-genomics
-bam_out=20210415_pgen_10x-genomics_Pgen-v1.0-assembly.reads
+bam_out=20210415_pgen_10x-genomics_Pgen-v1.0-assembly.reads.sorted.bam
 
 # Programs
 ## Minimap2
