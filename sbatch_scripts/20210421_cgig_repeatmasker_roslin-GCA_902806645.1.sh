@@ -1,6 +1,6 @@
 #!/bin/bash
 ## Job Name
-#SBATCH --job-name=20210421_cgig_repeatmasker_roslin-GCA_902806645.1
+#SBATCH --job-name=20210504_cgig_repeatmasker_roslin-GCA_902806645.1
 ## Allocation Definition
 #SBATCH --account=coenv
 #SBATCH --partition=coenv
@@ -15,7 +15,7 @@
 #SBATCH --mail-type=ALL
 #SBATCH --mail-user=samwhite@uw.edu
 ## Specify the working directory for this job
-#SBATCH --chdir=/gscratch/scrubbed/samwhite/outputs/20210421_cgig_repeatmasker_roslin-GCA_902806645.1
+#SBATCH --chdir=/gscratch/scrubbed/samwhite/outputs/20210504_cgig_repeatmasker_roslin-GCA_902806645.1
 
 # Script to run RepeatMasker 4.1.0 on "Roslin" C.gigas NCBI genome assembly GCA_902806645.1
 
