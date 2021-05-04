@@ -63,7 +63,7 @@ md5sum ${genome_fasta} > genome_fasta.md5
 ${programs_array[repeat_masker]} \
 ${genome_fasta} \
 -species "all" \
--pa ${threads} \
+-parallel ${threads} \
 -gff \
 -excln
 
