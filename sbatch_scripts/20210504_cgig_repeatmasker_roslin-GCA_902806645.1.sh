@@ -30,20 +30,22 @@ wd=$(pwd)
 threads=40
 
 # Input/output files
-genome_fasta=/gscratch/srlab/sam/data/C_gigas/genomes/GCA_902806645.1_cgigas_uk_roslin_v1_genomic.fna
+source_genome_fasta=/gscratch/srlab/sam/data/C_gigas/genomes/GCA_902806645.1_cgigas_uk_roslin_v1_genomic.fna
+genome_fasta=GCA_902806645.1_cgigas_uk_roslin_v1_genomic.fna
 
 # Programs
 ## Minimap2
 repeat_masker=/gscratch/srlab/programs/RepeatMasker-4.1.0/RepeatMasker
 
-
-
+# Species array (used for RepeatMasker species setting)
+species=("all" "crassostrea gigas")
 
 # Programs associative array
 declare -A programs_array
 programs_array=(
 [repeat_masker]=${repeat_masker} \
 )
+
 
 
 ###################################################################################
@@ -53,19 +55,40 @@ set -e
 
 
 # Generate checksum for "new" FastA
-md5sum ${genome_fasta} > genome_fasta.md5
+md5sum ${source_genome_fasta} > genome_fasta.md5
 
+for species in "${species[@]}"
+do
 
-# Run RepeatMasker
-# Uses all species
-# Generates GFF output
-# 'excln' calculates repeat densities
-${programs_array[repeat_masker]} \
-${genome_fasta} \
--species "all" \
--parallel ${threads} \
--gff \
--excln
+  # Check species name and create appropriate directory naem
+  if [ "${species}" = "crassostrea gigas" ]; then
+
+    mkdir "repeatmasker-species_C.gigas_roslin-GCA_902806645.1" && cd $_
+    rsync -av ${source_genome_fasta} .
+
+    else
+    mkdir "repeatmasker-species_all_roslin-GCA_902806645.1" && cd $_
+    rsync -av ${source_genome_fasta} .
+
+  fi
+
+  # Run RepeatMasker
+  # Uses all species
+  # Generates GFF output
+  # 'excln' calculates repeat densities excluding runs of X/N >20bp
+  ${programs_array[repeat_masker]} \
+  ${genome_fasta} \
+  -species "${species}" \
+  -parallel ${threads} \
+  -gff \
+  -excln
+  
+  # Remove the genome FastA file
+  rm ${genome_fasta}
+
+  cd ${wd}
+
+done
 
 ###################################################################################
 
