@@ -179,7 +179,156 @@ echo "Finished logging system PATH"
 
 #### RESULTS
 
+Was much faster than I expected, as previous runs on Emu/Roadrunner have taken _days_. This was just 1.5hrs:
+
+![RepeatMasker runtime for GCA_902806645.1 on Mox](https://github.com/RobertsLab/sams-notebook/blob/master/images/screencaps/20210504_cgig_repeatmasker_roslin-GCA_902806645.1_runtime.png?raw=true)
+
+Important to note is the stark differences between results with the species set to "all" vs. "[_Crassostrea gigas_ (Pacific oyster)](http://en.wikipedia.org/wiki/Pacific_oyster)". For example, the number of "Retroelements" identified with the "all" setting was 14,694 vs 23 with the "[_Crassostrea gigas_ (Pacific oyster)](http://en.wikipedia.org/wiki/Pacific_oyster)" setting!
+
 Output folder:
 
-- []()
+- [20210504_cgig_repeatmasker_roslin-GCA_902806645.1/](https://gannet.fish.washington.edu/Atumefaciens/20210504_cgig_repeatmasker_roslin-GCA_902806645.1/)
 
+##### Species Setting: [_Crassostrea gigas_ (Pacific oyster)](http://en.wikipedia.org/wiki/Pacific_oyster)
+
+  - RepeatMasker GFF:
+
+    - [20210504_cgig_repeatmasker_roslin-GCA_902806645.1/repeatmasker-species_C.gigas_roslin-GCA_902806645.1/GCA_902806645.1_cgigas_uk_roslin_v1_genomic.fna.out.gff](https://gannet.fish.washington.edu/Atumefaciens/20210504_cgig_repeatmasker_roslin-GCA_902806645.1/repeatmasker-species_C.gigas_roslin-GCA_902806645.1/GCA_902806645.1_cgigas_uk_roslin_v1_genomic.fna.out.gff)
+
+  - Summary Table (text):
+
+    - [20210504_cgig_repeatmasker_roslin-GCA_902806645.1/repeatmasker-species_C.gigas_roslin-GCA_902806645.1/GCA_902806645.1_cgigas_uk_roslin_v1_genomic.fna.tbl](https://gannet.fish.washington.edu/Atumefaciens/20210504_cgig_repeatmasker_roslin-GCA_902806645.1/repeatmasker-species_C.gigas_roslin-GCA_902806645.1/GCA_902806645.1_cgigas_uk_roslin_v1_genomic.fna.tbl)
+
+    ```
+    ==================================================
+    file name: GCA_902806645.1_cgigas_uk_roslin_v1_genomic.fna
+    sequences:           236
+    total length:  647887097 bp  (647868030 bp excl N/X-runs)
+    GC level:         33.50 %
+    bases masked:   12745378 bp ( 1.97 %)
+    ==================================================
+                  number of      length   percentage
+                  elements*    occupied  of sequence
+    --------------------------------------------------
+    Retroelements           23         1649 bp    0.00 %
+      SINEs:               23         1649 bp    0.00 %
+      Penelope              0            0 bp    0.00 %
+      LINEs:                0            0 bp    0.00 %
+        CRE/SLACS            0            0 bp    0.00 %
+        L2/CR1/Rex          0            0 bp    0.00 %
+        R1/LOA/Jockey       0            0 bp    0.00 %
+        R2/R4/NeSL          0            0 bp    0.00 %
+        RTE/Bov-B           0            0 bp    0.00 %
+        L1/CIN4             0            0 bp    0.00 %
+      LTR elements:         0            0 bp    0.00 %
+        BEL/Pao             0            0 bp    0.00 %
+        Ty1/Copia           0            0 bp    0.00 %
+        Gypsy/DIRS1         0            0 bp    0.00 %
+          Retroviral        0            0 bp    0.00 %
+
+    DNA transposons          0            0 bp    0.00 %
+      hobo-Activator        0            0 bp    0.00 %
+      Tc1-IS630-Pogo        0            0 bp    0.00 %
+      En-Spm                0            0 bp    0.00 %
+      MuDR-IS905            0            0 bp    0.00 %
+      PiggyBac              0            0 bp    0.00 %
+      Tourist/Harbinger     0            0 bp    0.00 %
+      Other (Mirage,        0            0 bp    0.00 %
+        P-element, Transib)
+
+    Rolling-circles          0            0 bp    0.00 %
+
+    Unclassified:            2           84 bp    0.00 %
+
+    Total interspersed repeats:        1733 bp    0.00 %
+
+
+    Small RNA:              68        12259 bp    0.00 %
+
+    Satellites:              0            0 bp    0.00 %
+    Simple repeats:     231620     11214786 bp    1.73 %
+    Low complexity:      32034      1516600 bp    0.23 %
+    ==================================================
+
+    * most repeats fragmented by insertions or deletions
+      have been counted as one element
+      Runs of >=20 X/Ns in query were excluded in % calcs
+
+
+    The query species was assumed to be crassostrea gigas
+    RepeatMasker Combined Database: Dfam_3.1
+                                            
+    run with rmblastn version 2.10.0+
+    ```
+    
+##### Species Setting: All
+
+- RepeatMasker GFF:
+
+  - [20210504_cgig_repeatmasker_roslin-GCA_902806645.1/repeatmasker-species_all_roslin-GCA_902806645.1/GCA_902806645.1_cgigas_uk_roslin_v1_genomic.fna.out.gff](https://gannet.fish.washington.edu/Atumefaciens/20210504_cgig_repeatmasker_roslin-GCA_902806645.1/repeatmasker-species_all_roslin-GCA_902806645.1/GCA_902806645.1_cgigas_uk_roslin_v1_genomic.fna.out.gff)
+
+- Summary Table (text):
+
+  - [20210504_cgig_repeatmasker_roslin-GCA_902806645.1/repeatmasker-species_all_roslin-GCA_902806645.1/GCA_902806645.1_cgigas_uk_roslin_v1_genomic.fna.tbl](https://gannet.fish.washington.edu/Atumefaciens/20210504_cgig_repeatmasker_roslin-GCA_902806645.1/repeatmasker-species_all_roslin-GCA_902806645.1/GCA_902806645.1_cgigas_uk_roslin_v1_genomic.fna.tbl)
+
+```
+==================================================
+file name: GCA_902806645.1_cgigas_uk_roslin_v1_genomic.fna
+sequences:           236
+total length:  647887097 bp  (647868030 bp excl N/X-runs)
+GC level:         33.50 %
+bases masked:   19522553 bp ( 3.01 %)
+==================================================
+               number of      length   percentage
+               elements*    occupied  of sequence
+--------------------------------------------------
+Retroelements        14694      4937654 bp    0.76 %
+   SINEs:              585        34638 bp    0.01 %
+   Penelope            262        28681 bp    0.00 %
+   LINEs:             7164      1209298 bp    0.19 %
+    CRE/SLACS            0            0 bp    0.00 %
+     L2/CR1/Rex       1266       159741 bp    0.02 %
+     R1/LOA/Jockey     157        13339 bp    0.00 %
+     R2/R4/NeSL        129        65251 bp    0.01 %
+     RTE/Bov-B         980       263384 bp    0.04 %
+     L1/CIN4          1582       175410 bp    0.03 %
+   LTR elements:      6945      3693718 bp    0.57 %
+     BEL/Pao           863      1015388 bp    0.16 %
+     Ty1/Copia          38        10630 bp    0.00 %
+     Gypsy/DIRS1      3578      2423374 bp    0.37 %
+       Retroviral     1416        90219 bp    0.01 %
+
+DNA transposons      13542      2099703 bp    0.32 %
+   hobo-Activator     3213       229649 bp    0.04 %
+   Tc1-IS630-Pogo      560        47379 bp    0.01 %
+   En-Spm                0            0 bp    0.00 %
+   MuDR-IS905            0            0 bp    0.00 %
+   PiggyBac             30         2479 bp    0.00 %
+   Tourist/Harbinger   711       100695 bp    0.02 %
+   Other (Mirage,       37         1842 bp    0.00 %
+    P-element, Transib)
+
+Rolling-circles       2594       517630 bp    0.08 %
+
+Unclassified:          508        42673 bp    0.01 %
+
+Total interspersed repeats:     7080030 bp    1.09 %
+
+
+Small RNA:            2485       177888 bp    0.03 %
+
+Satellites:           1212       172569 bp    0.03 %
+Simple repeats:     223699     10101220 bp    1.56 %
+Low complexity:      31668      1475381 bp    0.23 %
+==================================================
+
+* most repeats fragmented by insertions or deletions
+  have been counted as one element
+  Runs of >=20 X/Ns in query were excluded in % calcs
+
+
+The query species was assumed to be root          
+RepeatMasker Combined Database: Dfam_3.1
+                                         
+run with rmblastn version 2.10.0+
+```
