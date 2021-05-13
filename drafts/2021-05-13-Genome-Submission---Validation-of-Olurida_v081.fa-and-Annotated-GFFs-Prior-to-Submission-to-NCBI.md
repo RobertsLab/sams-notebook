@@ -13,6 +13,18 @@ categories:
 
 
 
+Jupyter Notebook (GitHub):
+
+- [20210513_olur_NCBI_genome-submission-prep.ipynb](https://github.com/RobertsLab/code/blob/master/notebooks/sam/20210513_olur_NCBI_genome-submission-prep.ipynb)
+
+Jupyter Notebook (NBviewer):
+
+- [20210513_olur_NCBI_genome-submission-prep.ipynb](https://nbviewer.jupyter.org/github/RobertsLab/code/blob/master/notebooks/sam/20210513_olur_NCBI_genome-submission-prep.ipynb)
+
+
+<iframe src="https://nbviewer.jupyter.org/github/RobertsLab/code/blob/master/notebooks/sam/20210513_olur_NCBI_genome-submission-prep.ipynb" width="100%" height="2000" scrolling="yes"></iframe>
+
+
 ---
 
 #### RESULTS
