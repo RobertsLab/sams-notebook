@@ -10,7 +10,9 @@ tags:
 categories: 
   - Olympia Oyster Genome Assembly
 ---
+[Per this GitHub Issue](https://github.com/RobertsLab/resources/issues/1159), Steven has asked to get our [_Ostrea lurida_ (Olympia oyster)](http://en.wikipedia.org/wiki/Pacific_oyster) genome assembly (`Olurida_v081.fa`) submitted to NCBI with annotations. The first step in the submission process is to use the NCBI `table2asn_GFF` software to validate the FastA assembly, as well as the GFF annotations file. Once the software has been run, it will point out any errors which need to be corrected prior to submission.
 
+The validation was run on my local computer in the following Jupyter Notebook:
 
 
 Jupyter Notebook (GitHub):
