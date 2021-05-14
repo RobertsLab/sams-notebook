@@ -33,5 +33,99 @@ Jupyter Notebook (NBviewer):
 
 Output folder:
 
-- []()
+- [20210513_olur_NCBI_genome-submission-prep/](https://gannet.fish.washington.edu/Atumefaciens/20210513_olur_NCBI_genome-submission-prep/)
+
+  - Discrepancy Report (text; 46MB)
+
+    - [20210513_olur_NCBI_genome-submission-prep/20210513_Olurida-v081.dr](https://gannet.fish.washington.edu/Atumefaciens/20210513_olur_NCBI_genome-submission-prep/20210513_Olurida-v081.dr)
+
+ 
+
+  - Validation Report (text; 867B)
+
+    - [20210513_olur_NCBI_genome-submission-prep/20210513_Olurida-v081.stats](https://gannet.fish.washington.edu/Atumefaciens/20210513_olur_NCBI_genome-submission-prep/20210513_Olurida-v081.stats)
+
+
+
+Alrighty, let's take a look at the results.
+
+---
+
+### Discrepancy report:
+
+```
+Discrepancy Report Results
+
+Summary
+COUNT_NUCLEOTIDES: 159429 nucleotide Bioseqs are present
+LONG_NO_ANNOTATION: 46845 bioseqs are longer than 5000nt and have no features
+NO_ANNOTATION: 133211 bioseqs have no features
+GAPS: 114914 sequences contain gaps
+LOW_QUALITY_REGION: 809 sequences contain low quality region
+FEATURE_COUNT: CDS: 32210 present
+FEATURE_COUNT: gene: 32210 present
+FEATURE_COUNT: mRNA: 32210 present
+PROTEIN_NAMES: All proteins have same name "hypothetical protein"
+BAD_GENE_STRAND: 3 feature locations conflict with gene location strands
+FATAL: CONTAINED_CDS: 10 coding regions are completely contained in another coding region, but on the opposite strand.
+FEATURE_LOCATION_CONFLICT: 16978 features have inconsistent gene locations.
+FATAL: BACTERIAL_JOINED_FEATURES_NO_EXCEPTION: 29207 coding regions with joined locations have no exceptions
+SHORT_INTRON: 726 introns are shorter than 10 nt
+FEATURE_LIST: Feature List
+
+Detailed Report
+```
+
+[Here's the NCBI resource guide to the understanding the Discrepancy Report.](https://www.ncbi.nlm.nih.gov/genbank/asndisc/#evaluating_the_output) as well as a [guide to common errors](https://www.ncbi.nlm.nih.gov/genbank/new_asndisc_examples/).
+
+We see that there are two lines beginning with `FATAL`, but they're actually not a big deal:
+
+- `FATAL: BACTERIAL_JOINED_FEATURES_NO_EXCEPTION`: This can be ignored, as it only applies to prokaryotes.
+
+- `FATAL: CONTAINED_CDS`: These will require inspection and confirmation that the annotations are indeed correct and/or fixed.
+
+Here are other problems which will need to be addressed:
+
+- `LOW_QUALITY_REGION`: Indicates stretches of N's. Will need to remove N's and replace with gap "feature".
+
+- `BAD_GENE_STRAND`: Not sure whether or not this is critical, as it's not documented in either of those links above. I'll have to contact NCBI regarding this.
+
+- `FEATURE_LOCATION_CONFLICT`: Not sure whether or not this is critical, as it's not documented in either of those links above. I'll have to contact NCBI regarding this.
+
+- `SHORT_INTRON`: Not sure whether or not this is critical, as it's not documented in either of those links above. I'll have to contact NCBI regarding this.
+
+---
+
+### Validation report
+
+```
+Total messages:		293302
+
+=================================================================
+35926 WARNING-level messages exist
+
+SEQ_INST.TerminalGap:	2
+SEQ_INST.LeadingX:	1
+SEQ_FEAT.NotSpliceConsensusDonor:	12488
+SEQ_FEAT.NotSpliceConsensusAcceptor:	10811
+SEQ_FEAT.IntervalBeginsOrEndsInGap:	72
+SEQ_FEAT.ShortExon:	1182
+SEQ_FEAT.PartialProblemNotSpliceConsensus3Prime:	6154
+SEQ_FEAT.PartialProblemNotSpliceConsensus5Prime:	5214
+SEQ_FEAT.PartialProblem5Prime:	2
+
+=================================================================
+257376 ERROR-level messages exist
+
+SEQ_INST.ShortSeq:	2
+SEQ_DESCR.BioSourceMissing:	26218
+SEQ_DESCR.NoPubFound:	1
+SEQ_DESCR.NoSourceDescriptor:	1
+GENERIC.MissingPubRequirement:	1
+SEQ_FEAT.IllegalDbXref:	230426
+SEQ_FEAT.FeatureBeginsOrEndsInGap:	1
+SEQ_FEAT.ShortIntron:	726
+
+=================================================================
+```
 
