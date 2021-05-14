@@ -129,3 +129,20 @@ SEQ_FEAT.ShortIntron:	726
 =================================================================
 ```
 
+[Here's the NCBI guide to validation errors](https://www.ncbi.nlm.nih.gov/genbank/genome_validation/). All errors will need to be resolved prior to submission.
+
+- `SEQ_INST.ShortSeq`: This is not documented in the link above. I'll have to contact NCBI regarding this.
+
+- `SEQ_DESCR.BioSourceMissing`: "Suggestion: Provide an organism name for each sequence in your submission." Not sure if this needs to be done in the FastA, GFF, or both. Or, maybe it needs to be supllied when running the `table2asn_GFF` command, using the `-j` option? Will investigate both files and see which sequences this crops up on, as well as a modified run of the `table2asn_GFF`.
+
+- `SEQ_DESCR.NoPubFound`: "Suggestion: Include the template when you create the .sqn submission file. You can create a template here: https://submit.ncbi.nlm.nih.gov/genbank/template/submission/ ." I'll create a template file.
+
+- `SEQ_DESCR.NoSourceDescriptor`: This is not documented in the link above. I'll have to contact NCBI regarding this. However, I have a sneaking suspicion that this is related to the need for a template file.
+
+- `GENERIC.MissingPubRequirement`: This is not documented in the link above. I'll have to contact NCBI regarding this. However, I have a sneaking suspicion that this is related to the need for a template file.
+
+- `SEQ_FEAT.IllegalDbXref`: This is not documented in the link above. I'll have to contact NCBI regarding this. However, it's likely due to incorrect formatting or invalid database cross reference, according to [this NCBI DbXref guide](https://www.ncbi.nlm.nih.gov/genbank/collab/db_xref/%20).
+
+- `SEQ_FEAT.FeatureBeginsOrEndsInGap`: This is not documented in the link above. I'll have to contact NCBI regarding this. However, it seems obvious that the problem is that a feature is beginning/ending in a stretch of N's. Will look at GFF to see what's happening.
+
+- `SEQ_FEAT.ShortIntron`: This is not documented in the link above. I'll have to contact NCBI regarding this. However, it's clear that some introns are considered too short. This was identified in the Discrepancy Report above, but the documentation for that suggests that this might not need to be corrected. But, documentation indicates that all errors in the validation need to be eliminated...
