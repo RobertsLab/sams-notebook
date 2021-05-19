@@ -1,6 +1,6 @@
 #!/bin/bash
 ## Job Name
-#SBATCH --job-name=20210406_pgen_blobtools_Panopea-generosa-v1.0
+#SBATCH --job-name=20210518_pgen_blobtools_Panopea-generosa-v1.0
 ## Allocation Definition
 #SBATCH --account=srlab
 #SBATCH --partition=srlab
@@ -15,7 +15,7 @@
 #SBATCH --mail-type=ALL
 #SBATCH --mail-user=samwhite@uw.edu
 ## Specify the working directory for this job
-#SBATCH --chdir=/gscratch/scrubbed/samwhite/outputs/20210406_pgen_blobtools_Panopea-generosa-v1.0
+#SBATCH --chdir=/gscratch/scrubbed/samwhite/outputs/20210518_pgen_blobtools_Panopea-generosa-v1.0
 
 
 ### Script to run the Blobtools2 Pipeline
@@ -27,6 +27,8 @@
 ### Utilizes NCBI taxonomy dump and customized UniProt database for DIAMOND BLASTx
 
 ### Requires Anaconda to be in system $PATH!
+
+### Follows instructions for release v2.5 (https://github.com/blobtoolkit/pipeline/tree/release/v2.5.0)
 
 ###################################################################################
 # These variables need to be set by user
@@ -58,10 +60,10 @@ config="${genome_fasta##*/}_btk.yaml"
 
 # Programs
 ## Blobtools2 directory
-blobtools2=/gscratch/srlab/programs/blobtoolkit/blobtools2
+blobtools2=/gscratch/srlab/programs/blobtoolkit-v2.5/blobtools2
 
 ## BTK pipeline directory
-btk_pipeline=/gscratch/srlab/programs/blobtoolkit/insdc-pipeline
+btk_pipeline=/gscratch/srlab/programs/blobtoolkit-v2.5/insdc-pipeline
 
 ## Name of conda snakemake environment
 snakemake_env_name=snakemake_env
@@ -145,32 +147,34 @@ genome_nucleotides_count=$(grep -v ">" ${genome_fasta} | wc | awk '{print $3-$1}
   printf "%2s%s\n" "" "accession: draft" "" "level: scaffold" "" "scaffold-count: ${scaffold_count}" "" "span: ${genome_nucleotides_count}"
   printf "%2s%s\n" "" "prefix: ${assembly_name}"
   printf "%s\n" "busco:"
-  printf "%2s%s\n" "" "lineages:"
-  printf "%4s%s\n" "" "- eukaryota_odb9" "" "- metazoa_odb9"
   printf "%2s%s\n" "" "lineage_dir: ${busco_dbs}"
+  printf "%2s%s\n" "" "lineages:"
+  printf "%4s%s\n" "" "- archaea_odb10" "" "- arthropoda_odb10" "" "- bacteria_odb10" "" "- eukaryota_odb10" "" "- metazoa_odb10"
+  printf "%2s%s\n" "" "basal_lineages:"
+  printf "%4s%s\n" "" "- archaea_odb10" "" "- bacteria_odb10" "" "- eukaryota_odb10"
   printf "%s\n" "reads:"
   printf "%2s%s\n" "" "paired:"
   printf "%4s%s\n" "" "-"
   printf "%6s%s\n" "" "- reads" "" "- ILLUMINA"
   printf "%s\n" "settings:"
   printf "%2s%s\n" "" "blobtools2_path: ${blobtools2}"
-  printf "%2s%s\n" "" "taxonomy: ${btk_ncbi_tax_dir}"
+  printf "%2s%s\n" "" "taxdump: ${btk_ncbi_tax_dir}"
   printf "%2s%s\n" "" "tmp: /tmp"
   printf "%2s%s\n" "" "blast_chunk: 100000"
   printf "%2s%s\n" "" "blast_max_chunks: 10"
-  printf "%2s%s\n" "" "blast_overlap: 500"
-  printf "%2s%s\n" "" "chunk: 1000000"
+  printf "%2s%s\n" "" "blast_overlap: 0"
+  printf "%2s%s\n" "" "blast_min_length: 1000"
   printf "%s\n" "similarity:"
   printf "%2s%s\n" "" "defaults:"
-  printf "%4s%s\n" "" "evalue: ${evalue}" "" "max_target_seqs: 10" "" "root: ${root}" "" "mask_ids: []"
-  printf "%2s%s\n" "" "databases:"
-  printf "%4s%s\n" "" "-"
-  printf "%6s%s\n" "" "local: ${ncbi_db}" "" "name: ${ncbi_db_name}" "" "source: ncbi" "" "tools: blast" "" "type: nucl"
-  printf "%4s%s\n" "" "-"
-  printf "%6s%s\n" "" "local: ${uniprot_db}" "" "max_target_seqs: 1" "" "name: ${uniprot_db_name}" "" "source: uniprot" "" "tools: diamond" "" "type: prot"
-  printf "%2s%s\n" "" "taxrule: eachdistorder"
+  printf "%4s%s\n" "" "evalue: ${evalue}" "" "max_target_seqs: 10" "" "import_evalue: 1.0e-25" "" "taxrule: bestdistorder"
+  printf "%2s%s\n" "" "diamond_blastx:"
+  printf "%4s%s\n" "" "name: ${uniprot_db_name}" "" "path: ${uniprot_db}"
+  printf "%2s%s\n" "" "diamond_blastp:"
+  printf "%4s%s\n" "" "name: ${uniprot_db_name}" "" "path: ${uniprot_db}" "" "import_max_target_seqs: 100000"
+  printf "%2s%s\n" "" "blastn:"
+  printf "%4s%s\n" "" "name: ${ncbi_db_name}" "" "path: ${ncbi_db}"
   printf "%s\n" "taxon:"
-  printf "%2s%s\n" "" "taxid: ${ncbi_tax_id}" "" "name: ${species}"
+  printf "%2s%s\n" "" "name: ${species}" "" "taxid: ${ncbi_tax_id}"
   printf "%s\n" "keep_intermediates: true"
 } >> ${config}
 
