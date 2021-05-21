@@ -14,7 +14,14 @@ categories:
 ---
 
 
-
+```shell
+python \
+/home/sam/programs/quast-5.0.2/quast.py \
+--threads=20 \
+--min-contig=100 \
+--labels Olurida_v090 \
+/home/sam/data/O_lurida/genomes/Olur_v090.SPolished.asm.wengan.fasta
+```
 ---
 
 #### RESULTS
