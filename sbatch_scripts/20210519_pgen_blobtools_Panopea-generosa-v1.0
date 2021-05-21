@@ -8,7 +8,7 @@
 ## Nodes
 #SBATCH --nodes=1
 ## Walltime (days-hours:minutes:seconds format)
-#SBATCH --time=30-00:00:00
+#SBATCH --time=10-00:00:00
 ## Memory per node
 #SBATCH --mem=500G
 ##turn on e-mail notification
@@ -35,6 +35,8 @@
 
 # Set working directory
 wd=$(pwd)
+echo "Working directory is ${wd}."
+echo ""
 
 # Pipeline options
 ## BLASTn evalue
@@ -63,7 +65,7 @@ config="${genome_fasta##*/}_btk.yaml"
 blobtools2=/gscratch/srlab/programs/blobtoolkit-v2.5/blobtools2
 
 ## BTK pipeline directory
-btk_pipeline=/gscratch/srlab/programs/blobtoolkit-v2.5/insdc-pipeline
+btk_pipeline=/gscratch/srlab/programs/blobtoolkit-v2.5/pipeline
 
 ## Name of conda snakemake environment
 snakemake_env_name=snakemake_env
@@ -180,7 +182,6 @@ genome_nucleotides_count=$(grep -v ">" ${genome_fasta} | wc | awk '{print $3-$1}
 
 
 # Run snakemake, btk pipeline
-cd ${btk_pipeline}
 conda activate ${snakemake_env_name}
 
 snakemake -p \
@@ -190,10 +191,10 @@ snakemake -p \
 --configfile ${wd}/${config} \
 --stats ${assembly_name}.snakemake.stats \
 -j ${threads} \
+--rerun-incomplete \
+-s ${btk_pipeline}/blobtoolkit.smk \
 --resources btk=1
 
-# Change back to working directory
-cd ${wd}
 
 ###################################################################################
 
