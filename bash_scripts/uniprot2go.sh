@@ -31,6 +31,8 @@ do
   go_ids_array=()
   uniprot_file="${accession}.txt"
 
+  # Add random sleep command to reduce load on UniProt servers
+  sleep $[ ( $RANDOM % 10 )  + 1 ]s
 
   # Record HTTP GET response code and download target file.
   # --ciphers argument seems to be needed when using Ubuntu 20.04.
