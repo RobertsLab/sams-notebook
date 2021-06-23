@@ -64,9 +64,6 @@ trimmed_reads_dir=/gscratch/scrubbed/samwhite/outputs/20210401_pgen_fastp_10x-ge
 ## New genome name for BTK filename requirements (no periods)
 genome_fasta=${wd}/Panopea_generosa_v1.fasta
 
-## Set BTK config filename
-config="${genome_fasta##*/}_btk.yaml"
-
 # Programs
 ## Blobtools2 directory
 blobtools2=/gscratch/srlab/programs/blobtoolkit-v2.6.0/blobtools2
@@ -185,7 +182,7 @@ genome_nucleotides_count=$(grep -v ">" ${genome_fasta} | wc | awk '{print $3-$1}
   printf "%s\n" "taxon:"
   printf "%2s%s\n" "" "name: ${species}" "" "taxid: '${ncbi_tax_id}'"
   printf "%s\n" "keep_intermediates: true"
-} >> ${config}
+} >> config.yaml
 
 
 # Run snakemake, btk pipeline
@@ -195,7 +192,7 @@ snakemake -p \
 --use-conda \
 --conda-prefix ${conda_dir} \
 --directory ${base_dir} \
---configfile ${wd}/${config} \
+--configfile ${wd}/config.yaml \
 --stats ${assembly_name}.blobtoolkit.stats \
 -j ${threads} \
 --rerun-incomplete \
