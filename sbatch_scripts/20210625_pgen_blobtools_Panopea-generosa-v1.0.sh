@@ -111,6 +111,7 @@ set -e
 # Uknown why this is needed, but Anaconda will not run if this line is not included.
 . "/gscratch/srlab/programs/anaconda3/etc/profile.d/conda.sh"
 
+
 # Rename orginal FastA to comply with BTK naming requirements
 rsync -av ${orig_fasta} ${genome_fasta}
 
@@ -185,10 +186,13 @@ genome_nucleotides_count=$(grep -v ">" ${genome_fasta} | wc | awk '{print $3-$1}
   printf "%2s%s\n" "" "name: ${species}" "" "taxid: '${ncbi_tax_id}'"
 } >> config.yaml
 
+# Activate blobtoolkit conda environment
+conda activate btk_env
 
-# Run snakemake, btk pipeline
+# Activate snakemake environment
 conda activate ${snakemake_env_name}
 
+# Run snakemake, btk pipeline
 snakemake -p \
 --use-conda \
 --conda-prefix ${conda_dir} \
