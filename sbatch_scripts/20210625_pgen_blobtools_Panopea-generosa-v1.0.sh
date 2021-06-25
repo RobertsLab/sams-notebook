@@ -189,9 +189,6 @@ genome_nucleotides_count=$(grep -v ">" ${genome_fasta} | wc | awk '{print $3-$1}
 # Activate blobtoolkit conda environment
 conda activate btk_env
 
-# Activate snakemake environment
-conda activate ${snakemake_env_name}
-
 # Run snakemake, btk pipeline
 snakemake -p \
 --use-conda \
