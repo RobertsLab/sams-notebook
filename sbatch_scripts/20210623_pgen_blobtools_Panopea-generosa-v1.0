@@ -29,9 +29,13 @@
 ### Requires Anaconda to be in system $PATH!
 
 ### Follows instructions for release v2.6.0 (https://github.com/blobtoolkit/pipeline/tree/release/v2.6.0)
+### And changes noted in this GitHub Issue: https://github.com/blobtoolkit/pipeline/issues/13#issuecomment-868510883
 
 ###################################################################################
 # These variables need to be set by user
+
+# Load blobtoolkit module to add btk to PATH
+module load blobtoolkit-v2.6.1.module
 
 # Set working directory
 wd=$(pwd)
@@ -150,7 +154,7 @@ genome_nucleotides_count=$(grep -v ">" ${genome_fasta} | wc | awk '{print $3-$1}
 # Create BTK config YAML
 {
   printf "%s\n" "assembly:"
-  printf "%2s%s\n" "" "accession: draft" "" "level: scaffold" "" "scaffold-count: ${scaffold_count}" "" "span: ${genome_nucleotides_count}"
+  printf "%2s%s\n" "" "accession: draft" "" "file: ${wd}/${genome_fasta}" "" "level: scaffold" "" "scaffold-count: ${scaffold_count}" "" "span: ${genome_nucleotides_count}"
   printf "%2s%s\n" "" "prefix: ${assembly_name}"
   printf "%s\n" "busco:"
   printf "%2s%s\n" "" "lineage_dir: ${busco_dbs}"
@@ -161,11 +165,9 @@ genome_nucleotides_count=$(grep -v ">" ${genome_fasta} | wc | awk '{print $3-$1}
   printf "%s\n" "reads:"
   printf "%2s%s\n" "" "paired:"
   printf "%4s%s\n" "" "-"
-  printf "%6s%s\n" "" "- reads" "" "- ILLUMINA"
+  printf "%6s%s\n" "" "- reads" "" "- ILLUMINA" "" "file: ${wd}/reads_1.fastq.gz;${wd}/reads_2.fastq.gz"
   printf "%s\n" "settings:"
-  printf "%2s%s\n" "" "blobtools2_path: ${blobtools2}"
   printf "%2s%s\n" "" "taxdump: ${btk_ncbi_tax_dir}"
-  printf "%2s%s\n" "" "tmp: /tmp"
   printf "%2s%s\n" "" "blast_chunk: 100000"
   printf "%2s%s\n" "" "blast_max_chunks: 10"
   printf "%2s%s\n" "" "blast_overlap: 0"
@@ -181,7 +183,6 @@ genome_nucleotides_count=$(grep -v ">" ${genome_fasta} | wc | awk '{print $3-$1}
   printf "%4s%s\n" "" "name: ${ncbi_db_name}" "" "path: ${ncbi_db}"
   printf "%s\n" "taxon:"
   printf "%2s%s\n" "" "name: ${species}" "" "taxid: '${ncbi_tax_id}'"
-  printf "%s\n" "keep_intermediates: true"
 } >> config.yaml
 
 
