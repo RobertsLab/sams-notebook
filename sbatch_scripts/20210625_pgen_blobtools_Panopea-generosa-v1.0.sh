@@ -154,7 +154,7 @@ genome_nucleotides_count=$(grep -v ">" ${genome_fasta} | wc | awk '{print $3-$1}
 # Create BTK config YAML
 {
   printf "%s\n" "assembly:"
-  printf "%2s%s\n" "" "accession: draft" "" "file: ${wd}/${genome_fasta}" "" "level: scaffold" "" "scaffold-count: ${scaffold_count}" "" "span: ${genome_nucleotides_count}"
+  printf "%2s%s\n" "" "accession: draft" "" "file: ${genome_fasta}" "" "level: scaffold" "" "scaffold-count: ${scaffold_count}" "" "span: ${genome_nucleotides_count}"
   printf "%2s%s\n" "" "prefix: ${assembly_name}"
   printf "%s\n" "busco:"
   printf "%2s%s\n" "" "lineage_dir: ${busco_dbs}"
@@ -164,8 +164,8 @@ genome_nucleotides_count=$(grep -v ">" ${genome_fasta} | wc | awk '{print $3-$1}
   printf "%4s%s\n" "" "- archaea_odb10" "" "- bacteria_odb10" "" "- eukaryota_odb10"
   printf "%s\n" "reads:"
   printf "%2s%s\n" "" "paired:"
-  printf "%4s%s\n" "" "-"
-  printf "%6s%s\n" "" "- reads" "" "- ILLUMINA" "" "file: ${wd}/reads_1.fastq.gz;${wd}/reads_2.fastq.gz"
+  printf "%4s%s\n" "" "- prefix: reads"
+  printf "%6s%s\n" "" "platform: ILLUMINA" "" "file: ${wd}/reads_1.fastq.gz;${wd}/reads_2.fastq.gz"
   printf "%s\n" "settings:"
   printf "%2s%s\n" "" "taxdump: ${btk_ncbi_tax_dir}"
   printf "%2s%s\n" "" "blast_chunk: 100000"
