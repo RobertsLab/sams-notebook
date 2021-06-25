@@ -70,10 +70,10 @@ genome_fasta=${wd}/Panopea_generosa_v1.fasta
 
 # Programs
 ## Blobtools2 directory
-blobtools2=/gscratch/srlab/programs/blobtoolkit-v2.6.0/blobtools2
+blobtools2=/gscratch/srlab/programs/blobtoolkit-v2.6.1/blobtools2
 
 ## BTK pipeline directory
-btk_pipeline=/gscratch/srlab/programs/blobtoolkit-v2.6.0/pipeline
+btk_pipeline=/gscratch/srlab/programs/blobtoolkit-v2.6.1/pipeline
 
 ## Name of conda snakemake environment
 snakemake_env_name=snakemake_env
