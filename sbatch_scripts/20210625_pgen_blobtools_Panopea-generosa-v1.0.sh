@@ -173,6 +173,8 @@ genome_nucleotides_count=$(grep -v ">" ${genome_fasta} | wc | awk '{print $3-$1}
   printf "%2s%s\n" "" "blast_max_chunks: 10"
   printf "%2s%s\n" "" "blast_overlap: 0"
   printf "%2s%s\n" "" "blast_min_length: 1000"
+  printf "%2s%s\n" "" "threads:"
+  printf "%4s%s\n" "" "blastn: ${threads}," "" "blobtools: ${threads}," "" "busco: ${threads}," "" "diamond: ${threads}," "" "diamond_blastp: ${threads}," "" "minimap: ${threads}," "" "windowmasker: ${threads}"
   printf "%s\n" "similarity:"
   printf "%2s%s\n" "" "defaults:"
   printf "%4s%s\n" "" "evalue: ${evalue}" "" "max_target_seqs: 10" "" "import_evalue: 1.0e-25" "" "taxrule: buscogenes"
