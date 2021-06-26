@@ -75,11 +75,8 @@ blobtools2=/gscratch/srlab/programs/blobtoolkit-v2.6.1/blobtools2
 ## BTK pipeline directory
 btk_pipeline=/gscratch/srlab/programs/blobtoolkit-v2.6.1/pipeline
 
-## Name of conda snakemake environment
-snakemake_env_name=snakemake_env
-
 ## Conda environment directory
-conda_dir=/gscratch/srlab/programs/anaconda3/envs/snakemake_env
+conda_dir=/gscratch/srlab/programs/anaconda3/envs/btk_env
 
 
 # Databases
