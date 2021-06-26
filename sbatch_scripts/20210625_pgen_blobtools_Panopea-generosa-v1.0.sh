@@ -66,7 +66,7 @@ fastq_checksums=fastq_checksums.md5
 trimmed_reads_dir=/gscratch/scrubbed/samwhite/outputs/20210401_pgen_fastp_10x-genomics
 
 ## New genome name for BTK filename requirements (no periods)
-genome_fasta=${wd}/Panopea_generosa_v1.fasta
+genome_fasta=${wd}/Panopea_generosa_v1.fasta.gz
 
 # Programs
 ## Blobtools2 directory
@@ -111,9 +111,8 @@ set -e
 # Uknown why this is needed, but Anaconda will not run if this line is not included.
 . "/gscratch/srlab/programs/anaconda3/etc/profile.d/conda.sh"
 
-
-# Rename orginal FastA to comply with BTK naming requirements
-rsync -av ${orig_fasta} ${genome_fasta}
+# Gzip FastA - needed for blobltoolkit to run properly
+gzip -c ${orig_fasta} > ${genome_fasta}
 
 # Generate checksum for "new" FastA
 md5sum ${genome_fasta} > genome_fasta.md5
