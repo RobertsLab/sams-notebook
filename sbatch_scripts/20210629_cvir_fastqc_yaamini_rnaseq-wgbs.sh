@@ -63,7 +63,7 @@ rsync --archive --verbose \
 /gscratch/scrubbed/samwhite/data/C_virginica/DNAseq/*.fq.gz .
 
 # Populate array with FastQ files
-fastq_array=(*.fq.gz)
+fastq_array=(*.f*q.gz)
 
 # Pass array contents to new variable
 fastqc_list=$(echo "${fastq_array[*]}")
