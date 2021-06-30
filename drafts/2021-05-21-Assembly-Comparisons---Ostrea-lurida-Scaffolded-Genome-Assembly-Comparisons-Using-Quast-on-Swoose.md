@@ -11,7 +11,13 @@ tags:
 categories: 
   - Olympia Oyster Genome Assemlby
 ---
+After [generating a new _Ostrea lurida_ genome assembly (v090) on 20210520](https://robertslab.github.io/sams-notebook/2021/05/20/Genome-Assembly-Olurida_v090-with-BGI-Illumina-and-PacBio-Hybrid-Using-Wengan-on-Mox.html), I decided to compare with our previous genome assemblies. Here, I compared v090 with all of our previous scaffolded assemblies using [Quast](http://quast.sourceforge.net/quast). Here is a table (GitHub) which describes all of our existing assemblies (i.e. assembly name, assembly process, etc):
 
+- [https://github.com/RobertsLab/project-olympia.oyster-genomic/wiki/Genome-Assemblies](https://github.com/RobertsLab/project-olympia.oyster-genomic/wiki/Genome-Assemblies)
+
+NOTE: Assembly `pbjelly_sjw_01` is the source of our current "canonical" assembly: `Olurida_v081.fa`
+
+This was run locally on my computer with the following command:
 
 ```shell
 python \
