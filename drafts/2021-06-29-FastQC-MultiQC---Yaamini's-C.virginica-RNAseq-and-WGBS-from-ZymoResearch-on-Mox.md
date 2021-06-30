@@ -164,7 +164,18 @@ echo "${PATH}" | tr : \\n
 
 #### RESULTS
 
+Runtime was ~3.75hrs:
+
+![FastQC runtime on Mox](https://github.com/RobertsLab/sams-notebook/blob/master/images/screencaps/20210629_cvir_fastqc_yaamini_rnaseq-wgbs_runtime.png?raw=true)
+
 Output folder:
 
-- []()
+- [20210629_cvir_fastqc_yaamini_rnaseq-wgbs/](https://gannet.fish.washington.edu/Atumefaciens/20210629_cvir_fastqc_yaamini_rnaseq-wgbs/)
 
+  - #### MultiQC Report (HTML; open in browser)
+
+    - [20210629_cvir_fastqc_yaamini_rnaseq-wgbs/multiqc_report.html](https://gannet.fish.washington.edu/Atumefaciens/20210629_cvir_fastqc_yaamini_rnaseq-wgbs/multiqc_report.html)
+
+When viewing the [`MultiQC`](https://multiqc.info/) report, remember that there are two different sequencing projects here: RNAseq and WGBS. This explains why there appear to be such drastic differences between two "groups" of files in the report; because there are!
+
+Will get this info added to [`Nightingales`](https://b.link/nightingales) (Google Sheet).
