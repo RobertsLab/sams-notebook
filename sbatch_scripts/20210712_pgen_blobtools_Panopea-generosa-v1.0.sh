@@ -31,6 +31,8 @@
 ### Follows instructions for release v2.6.0 (https://github.com/blobtoolkit/pipeline/tree/release/v2.6.0)
 ### And changes noted in this GitHub Issue: https://github.com/blobtoolkit/pipeline/issues/13#issuecomment-868510883
 
+### MODIFED HARD-CODED THREAD COUNTS IN rules/run_minimap2_index.smk and rules/run_minimap2_align.smk
+
 ###################################################################################
 # These variables need to be set by user
 
