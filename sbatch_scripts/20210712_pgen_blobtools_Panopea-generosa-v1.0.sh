@@ -1,6 +1,6 @@
 #!/bin/bash
 ## Job Name
-#SBATCH --job-name=20210625_pgen_blobtools_Panopea-generosa-v1.0
+#SBATCH --job-name=20210712_pgen_blobtools_Panopea-generosa-v1.0
 ## Allocation Definition
 #SBATCH --account=coenv
 #SBATCH --partition=coenv
@@ -8,14 +8,14 @@
 ## Nodes
 #SBATCH --nodes=1
 ## Walltime (days-hours:minutes:seconds format)
-#SBATCH --time=10-00:00:00
+#SBATCH --time=30-00:00:00
 ## Memory per node
 #SBATCH --mem=200G
 ##turn on e-mail notification
 #SBATCH --mail-type=ALL
 #SBATCH --mail-user=samwhite@uw.edu
 ## Specify the working directory for this job
-#SBATCH --chdir=/gscratch/scrubbed/samwhite/outputs/20210625_pgen_blobtools_Panopea-generosa-v1.0
+#SBATCH --chdir=/gscratch/scrubbed/samwhite/outputs/20210712_pgen_blobtools_Panopea-generosa-v1.0
 
 
 ### Script to run the Blobtools2 Pipeline
