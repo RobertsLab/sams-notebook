@@ -14,7 +14,7 @@ Needed to trim the [_Crassostrea virginica_ (Eastern oyster)](https://en.wikiped
 
 SBATCH script (GitHub):
 
-- []()
+- [20210714_cvir_gonad_RNAseq_fastp_trimming.sh](https://github.com/RobertsLab/sams-notebook/blob/master/sbatch_scripts/20210714_cvir_gonad_RNAseq_fastp_trimming.sh)
 
 ```shell
 #!/bin/bash
