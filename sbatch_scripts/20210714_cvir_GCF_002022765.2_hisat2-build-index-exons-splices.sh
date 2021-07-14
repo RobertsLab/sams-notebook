@@ -15,7 +15,7 @@
 #SBATCH --mail-type=ALL
 #SBATCH --mail-user=samwhite@uw.edu
 ## Specify the working directory for this job
-#SBATCH --workdir=/gscratch/scrubbed/samwhite/outputs/20210714_cvir_GCF_002022765.2_hisat2-build-index-exons-splices
+#SBATCH --chdir=/gscratch/scrubbed/samwhite/outputs/20210714_cvir_GCF_002022765.2_hisat2-build-index-exons-splices
 
 ## Script using HiSat2 to build a genome index, identify exons, and splice sites in NCBI C.virginica genome assemlby using Hisat2.
 
