@@ -90,7 +90,7 @@ done
 for fastq in *.gz
 do
   echo "${fastq}" >> input.fastq.list.txt
-  md5sum >> ${fastq_checksums}
+  md5sum ${fastq} >> ${fastq_checksums}
 done
 
 # Run fastp on files
@@ -115,6 +115,8 @@ do
       md5sum "${R2_sample_name}".fastp-trim."${timestamp}".fq.gz
   } >> "${trimmed_checksums}"
   # Remove original FastQ files
+  echo ""
+  echo " Removing ${fastq_array_R1[index]} and ${fastq_array_R2[index]}."
   rm "${fastq_array_R1[index]}" "${fastq_array_R2[index]}"
 done
 
@@ -171,11 +173,3 @@ echo ""
 printf "%0.s-" {1..10}
 echo "${PATH}" | tr : \\n
 } >> system_path.log
-
-# Remove raw FastQ file
-while read -r line
-do
-	echo ""
-	echo "Removing ${line}"
-	rm "${line}"
-done < input.fastq.list.txt
