@@ -73,7 +73,7 @@ fastq_array_R2=()
 names_array=()
 
 # Copy Hisat2 genome index files
-rsync -av "${genome_index_dir}/${genome_index_name}*.ht2" .
+rsync -av "${genome_index_dir}"/${genome_index_name}*.ht2 .
 
 # Create array of fastq R1 files
 # and generated MD5 checksums file.
@@ -107,7 +107,7 @@ done
 # Hisat2 alignments
 for index in "${!fastq_array_R1[@]}"
 do
-  sample_name=$("${names_array[index]}")
+  sample_name="${names_array[index]}"
   "${programs_array[hisat2]}" \
   -x "${genome_index_name}" \
   -1 "${fastq_array_R1[index]}" \
