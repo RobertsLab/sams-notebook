@@ -8,7 +8,7 @@
 ## Nodes
 #SBATCH --nodes=1
 ## Walltime (days-hours:minutes:seconds format)
-#SBATCH --time=20-00:00:00
+#SBATCH --time=10-00:00:00
 ## Memory per node
 #SBATCH --mem=500G
 ##turn on e-mail notification
@@ -40,9 +40,10 @@ hisat2_splice_sites="${hisat2_dir}/hisat2_extract_splice_sites.py"
 # Input/output files
 exons="cvir_GCF_002022765.2_hisat2_exons.tab"
 genome_dir="/gscratch/srlab/sam/data/C_virginica/genomes"
-genome_gff="${genome_dir}/GCF_002022765.2_C_virginica-3.0_genomic.gtf.gz"
+genome_gff="${genome_dir}/GCF_002022765.2_C_virginica-3.0_genomic.gtf"
+genome_fasta="${genome_dir}/GCF_002022765.2_C_virginica-3.0_genomic.fna"
 splice_sites="cvir_GCF_002022765.2_hisat2_splice_sites.tab"
-transcripts_gtf="${genome_dir}/GCF_002022765.2_C_virginica-3.0_genomic.fna.gz"
+transcripts_gtf="${genome_dir}/GCF_002022765.2_C_virginica-3.0_genomic.fna"
 
 # Programs associative array
 declare -A programs_array
