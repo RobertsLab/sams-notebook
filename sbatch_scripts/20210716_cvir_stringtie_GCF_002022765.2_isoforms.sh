@@ -38,7 +38,7 @@ genome_index_name="cvir_GCF_002022765.2"
 # Paths to programs
 hisat2_dir="/gscratch/srlab/programs/hisat2-2.1.0"
 hisat2="${hisat2_dir}/hisat2"
-samtools="/gscratch/srlab/programs/samtools-1.9/samtools"
+samtools="/gscratch/srlab/programs/samtools-1.10/samtools"
 stringtie="/gscratch/srlab/programs/stringtie-1.3.6.Linux_x86_64/stringtie"
 
 # Input/output files
