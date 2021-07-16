@@ -73,7 +73,7 @@ fastq_array_R2=()
 names_array=()
 
 # Copy Hisat2 genome index files
-rsync -av "${genome_index_dir}"/"${genome_index_name}*.ht2" .
+rsync -av "${genome_index_dir}/${genome_index_name}*.ht2" .
 
 # Create array of fastq R1 files
 # and generated MD5 checksums file.
@@ -101,14 +101,14 @@ done
 ## Uses awk to parse out sample name from filename
 for R1_fastq in "${fastq_dir}"*R1*.gz
 do
-  names_array+=($(echo "${R1_fastq#${fastq_dir}}" | awk -F"_" '{print $1}'))
+  names_array+=("$(echo "${R1_fastq#${fastq_dir}}" | awk -F"_" '{print $1}')")
 done
 
 # Hisat2 alignments
 for index in "${!fastq_array_R1[@]}"
 do
-  sample_name=$(echo "${names_array[index]}")
-  "${hisat2}" \
+  sample_name=$("${names_array[index]}")
+  "${programs_array[hisat2]}" \
   -x "${genome_index_name}" \
   -1 "${fastq_array_R1[index]}" \
   -2 "${fastq_array_R2[index]}" \
@@ -116,16 +116,16 @@ do
   2> "${sample_name}"_hisat2.err
 
 # Sort SAM files, convert to BAM, and index
-  "${samtools}" view \
+  "${programs_array[samtools_view]}" \
   -@ "${threads}" \
   -Su "${sample_name}".sam \
-  | "${samtools}" sort - \
+  | "${programs_array[samtools_sort]}" - \
   -@ "${threads}" \
   -o "${sample_name}".sorted.bam
-  "${samtools}" index "${sample_name}".sorted.bam
+  "${programs_array[samtools_index]}" "${sample_name}".sorted.bam
 
 # Run stringtie on alignments
-  "${stringtie}" "${sample_name}".sorted.bam \
+  "${programs_array[stringtie]}" "${sample_name}".sorted.bam \
   -p "${threads}" \
   -o "${sample_name}".gtf \
   -G "${genome_gff}" \
@@ -133,14 +133,14 @@ do
 
 # Add GTFs to list file, only if non-empty
 # Identifies GTF files that only have header
-  gtf_lines=$(wc -l < ${sample_name}.gtf )
+  gtf_lines=$(wc -l < "${sample_name}".gtf )
   if [ "${gtf_lines}" -gt 2 ]; then
     echo "${sample_name}.gtf" >> "${gtf_list}"
   fi
 done
 
 # Create singular transcript file, using GTF list file
-"${stringtie}" --merge \
+"${programs_array[stringtie]}" --merge \
 "${gtf_list}" \
 -p "${threads}" \
 -G "${genome_gff}" \
