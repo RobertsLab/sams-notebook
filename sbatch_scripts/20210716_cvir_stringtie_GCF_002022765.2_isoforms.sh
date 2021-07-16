@@ -15,7 +15,7 @@
 #SBATCH --mail-type=ALL
 #SBATCH --mail-user=samwhite@uw.edu
 ## Specify the working directory for this job
-#SBATCH --workdir=/gscratch/scrubbed/samwhite/outputs/20210716_cvir_stringtie_GCF_002022765.2_isoforms
+#SBATCH --chdir=/gscratch/scrubbed/samwhite/outputs/20210716_cvir_stringtie_GCF_002022765.2_isoforms
 
 ## Script using Stringtie with NCBI C.virginica genome assembly
 ## and HiSat2 index generated on 20210714.
