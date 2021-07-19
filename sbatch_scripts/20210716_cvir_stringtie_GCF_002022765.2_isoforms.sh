@@ -8,7 +8,7 @@
 ## Nodes
 #SBATCH --nodes=1
 ## Walltime (days-hours:minutes:seconds format)
-#SBATCH --time=11-00:00:00
+#SBATCH --time=10-00:00:00
 ## Memory per node
 #SBATCH --mem=500G
 ##turn on e-mail notification
@@ -43,7 +43,7 @@ stringtie="/gscratch/srlab/programs/stringtie-1.3.6.Linux_x86_64/stringtie"
 
 # Input/output files
 genome_index_dir="/gscratch/srlab/sam/data/C_virginica/genomes"
-genome_gff="${genome_index_dir}/GCF_002022765.2_C_virginica-3.0_genomic.fna"
+genome_gff="${genome_index_dir}/GCF_002022765.2_C_virginica-3.0_genomic.gff"
 fastq_dir="/gscratch/scrubbed/samwhite/data/C_virginica/RNAseq/"
 gtf_list="gtf_list.txt"
 
@@ -116,13 +116,13 @@ do
   2> "${sample_name}"_hisat2.err
 
 # Sort SAM files, convert to BAM, and index
-  "${programs_array[samtools_view]}" \
+  ${programs_array[samtools_view]} \
   -@ "${threads}" \
   -Su "${sample_name}".sam \
-  | "${programs_array[samtools_sort]}" - \
+  | ${programs_array[samtools_sort]} - \
   -@ "${threads}" \
   -o "${sample_name}".sorted.bam
-  "${programs_array[samtools_index]}" "${sample_name}".sorted.bam
+  ${programs_array[samtools_index]} "${sample_name}".sorted.bam
 
 # Run stringtie on alignments
   "${programs_array[stringtie]}" "${sample_name}".sorted.bam \
