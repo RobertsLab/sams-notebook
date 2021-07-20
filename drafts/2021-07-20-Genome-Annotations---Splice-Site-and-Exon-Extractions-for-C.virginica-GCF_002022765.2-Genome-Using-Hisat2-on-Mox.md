@@ -183,5 +183,14 @@ Runtime was fast, only 12mins:
 
 Output folder:
 
-- []()
+- [20210720_cvir_GCF_002022765.2_hisat2-build-index-exons-splices/](https://gannet.fish.washington.edu/Atumefaciens/20210720_cvir_GCF_002022765.2_hisat2-build-index-exons-splices/)
 
+This generates a set of 8 [`HISAT2`](https://daehwankimlab.github.io/hisat2/) genome index files (`*.ht2`), as well as an exon and a splice sites file:
+
+- [20210720_cvir_GCF_002022765.2_hisat2-build-index-exons-splices/cvir_GCF_002022765.2_hisat2_exons.tab(https://gannet.fish.washington.edu/Atumefaciens/20210720_cvir_GCF_002022765.2_hisat2-build-index-exons-splices/cvir_GCF_002022765.2_hisat2_exons.tab)
+
+- [0210720_cvir_GCF_002022765.2_hisat2-build-index-exons-splices/cvir_GCF_002022765.2_hisat2_splice_sites.tab](https://gannet.fish.washington.edu/Atumefaciens/20210720_cvir_GCF_002022765.2_hisat2-build-index-exons-splices/cvir_GCF_002022765.2_hisat2_splice_sites.tab)
+
+Those two files are incorporated into the 8 index files and are not used later on.
+
+Next up, run [`StringTie`](https://ccb.jhu.edu/software/stringtie/) to identify all potential isoforms in this RNAseq data.
