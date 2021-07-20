@@ -17,6 +17,10 @@ categories:
 
 #### RESULTS
 
+Runtime was fast, only 12mins:
+
+![Runtime for Hisat2 indexing for C.virginica GCF_002022765.2 on Mox](https://github.com/RobertsLab/sams-notebook/blob/master/images/screencaps/20210720_cvir_GCF_002022765.2_hisat2-build-index-exons-splices_runtime.png?raw=true)
+
 Output folder:
 
 - []()
