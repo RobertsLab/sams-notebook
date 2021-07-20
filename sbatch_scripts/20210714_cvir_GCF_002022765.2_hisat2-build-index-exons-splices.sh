@@ -1,21 +1,21 @@
 #!/bin/bash
 ## Job Name
-#SBATCH --job-name=20210714_cvir_GCF_002022765.2_hisat2-build-index-exons-splices
+#SBATCH --job-name=20210720_cvir_GCF_002022765.2_hisat2-build-index-exons-splices
 ## Allocation Definition
-#SBATCH --account=srlab
-#SBATCH --partition=srlab
+#SBATCH --account=coenv
+#SBATCH --partition=coenv
 ## Resources
 ## Nodes
 #SBATCH --nodes=1
 ## Walltime (days-hours:minutes:seconds format)
-#SBATCH --time=10-00:00:00
+#SBATCH --time=5-00:00:00
 ## Memory per node
-#SBATCH --mem=500G
+#SBATCH --mem=200G
 ##turn on e-mail notification
 #SBATCH --mail-type=ALL
 #SBATCH --mail-user=samwhite@uw.edu
 ## Specify the working directory for this job
-#SBATCH --chdir=/gscratch/scrubbed/samwhite/outputs/20210714_cvir_GCF_002022765.2_hisat2-build-index-exons-splices
+#SBATCH --chdir=/gscratch/scrubbed/samwhite/outputs/20210720_cvir_GCF_002022765.2_hisat2-build-index-exons-splices
 
 ## Script using HiSat2 to build a genome index, identify exons, and splice sites in NCBI C.virginica genome assemlby using Hisat2.
 
@@ -28,7 +28,7 @@
 # Set number of CPUs to use
 
 
-threads=28
+threads=40
 genome_index_name="cvir_GCF_002022765.2"
 
 # Paths to programs
@@ -40,10 +40,10 @@ hisat2_splice_sites="${hisat2_dir}/hisat2_extract_splice_sites.py"
 # Input/output files
 exons="cvir_GCF_002022765.2_hisat2_exons.tab"
 genome_dir="/gscratch/srlab/sam/data/C_virginica/genomes"
-genome_gff="${genome_dir}/GCF_002022765.2_C_virginica-3.0_genomic.gtf"
+genome_gff="${genomef_dir}/GCF_002022765.2_C_virginica-3.0_genomic.gff"
 genome_fasta="${genome_dir}/GCF_002022765.2_C_virginica-3.0_genomic.fna"
 splice_sites="cvir_GCF_002022765.2_hisat2_splice_sites.tab"
-transcripts_gtf="${genome_dir}/GCF_002022765.2_C_virginica-3.0_genomic.fna"
+transcripts_gtf="${genomef_dir}/GCF_002022765.2_C_virginica-3.0_genomic.gtf"
 
 # Programs associative array
 declare -A programs_array
