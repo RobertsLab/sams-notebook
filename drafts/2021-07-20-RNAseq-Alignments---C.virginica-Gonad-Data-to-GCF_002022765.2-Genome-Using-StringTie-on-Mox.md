@@ -11,7 +11,7 @@ tags:
 categories: 
   - Miscellaneous
 ---
-
+As part of identifying alternative transcripts in the [_Crassostrea virginica_ (Eastern oyster)](https://en.wikipedia.org/wiki/Eastern_oyster) gonad RNAseq data we have, I previously used [`HISAT2`](https://daehwankimlab.github.io/hisat2/) to index the NCBI [_Crassostrea virginica_ (Eastern oyster)](https://en.wikipedia.org/wiki/Eastern_oyster) genome and identify exon/splice sites [on 20210720](https://robertslab.github.io/sams-notebook/2021/07/20/Genome-Annotations-Splice-Site-and-Exon-Extractions-for-C.virginica-GCF_002022765.2-Genome-Using-Hisat2-on-Mox.html). Then, I used this genome index to run [`StringTie`](https://ccb.jhu.edu/software/stringtie/) on Mox in order to map sequencing reads to the genome/alternative isoforms.
 
 SBATCH Script (GitHub):
 
