@@ -242,6 +242,15 @@ Output folder:
 
 - [20210720_cvir_stringtie_GCF_002022765.2_isoforms/](https://gannet.fish.washington.edu/Atumefaciens/20210720_cvir_stringtie_GCF_002022765.2_isoforms/)
 
+The output files consist of the following:
+
+- `cov_refs.gtf`: GTF of fully covered transcripts which match the _C.virginica_ reference genome.
+- `.gtf`: GTF of all transcripts/isoforms identified by StringTie in _C.virginica_ reference genome.
+- `.sorted.bam`: Sorted BAM file of alignments.
+- `.sored.bam.bai`: Corresponding BAM index file.
+
+Links to all files will be at the end of this post. 
+
 
 | Sample | Overall Alignment Rate |
 |--------|------------------------|
