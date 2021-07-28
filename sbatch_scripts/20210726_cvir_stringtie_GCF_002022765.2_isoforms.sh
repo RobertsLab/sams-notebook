@@ -38,6 +38,7 @@ genome_index_name="cvir_GCF_002022765.2"
 # Location of Hisat2 index files
 # Must keep variable name formatting, as it's used by HiSat2
 HISAT2_INDEXES=$(pwd)
+export HISAT2_INDEXES
 
 # Paths to programs
 hisat2_dir="/gscratch/srlab/programs/hisat2-2.1.0"
