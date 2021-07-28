@@ -35,6 +35,10 @@ threads=28
 # Needs to match index naem used in previous Hisat2 indexing step
 genome_index_name="cvir_GCF_002022765.2"
 
+# Location of Hisat2 index files
+# Must keep variable name formatting, as it's used by HiSat2
+HISAT2_INDEXES=$(pwd)
+
 # Paths to programs
 hisat2_dir="/gscratch/srlab/programs/hisat2-2.1.0"
 hisat2="${hisat2_dir}/hisat2"
@@ -64,7 +68,6 @@ programs_array=(
 set -e
 
 # Load Python Mox module for Python module availability
-
 module load intel-python3_2017
 
 ## Inititalize arrays
@@ -108,6 +111,11 @@ done
 for index in "${!fastq_array_R1[@]}"
 do
   sample_name="${names_array[index]}"
+
+  # Create and switch to dedicated sample directory
+  mkdir "${sample_name}" && cd "$_"
+
+  # Generate HiSat2 alignments
   "${programs_array[hisat2]}" \
   -x "${genome_index_name}" \
   -1 "${fastq_array_R1[index]}" \
@@ -115,7 +123,7 @@ do
   -S "${sample_name}".sam \
   2> "${sample_name}"_hisat2.err
 
-# Sort SAM files, convert to BAM, and index
+  # Sort SAM files, convert to BAM, and index
   ${programs_array[samtools_view]} \
   -@ "${threads}" \
   -Su "${sample_name}".sam \
@@ -124,10 +132,10 @@ do
   -o "${sample_name}".sorted.bam
   ${programs_array[samtools_index]} "${sample_name}".sorted.bam
 
-# Run stringtie on alignments
-# Uses "-B" option to output tables intended for use in Ballgown
-# Uses "-e" option; recommended when using "-B" option.
-# Limits analysis to only reads alignments matching reference.
+  # Run stringtie on alignments
+  # Uses "-B" option to output tables intended for use in Ballgown
+  # Uses "-e" option; recommended when using "-B" option.
+  # Limits analysis to only reads alignments matching reference.
   "${programs_array[stringtie]}" "${sample_name}".sorted.bam \
   -p "${threads}" \
   -o "${sample_name}".gtf \
@@ -136,32 +144,38 @@ do
   -B \
   -e
 
-# Add GTFs to list file, only if non-empty
-# Identifies GTF files that only have header
+  # Add GTFs to list file, only if non-empty
+  # Identifies GTF files that only have header
   gtf_lines=$(wc -l < "${sample_name}".gtf )
   if [ "${gtf_lines}" -gt 2 ]; then
-    echo "${sample_name}.gtf" >> "${gtf_list}"
+    echo "$(pwd)/${sample_name}.gtf" >> ../"${gtf_list}"
   fi
+
+  # Delete unneded SAM files
+  rm ./*.sam
+
+
+  # Generate checksums
+  for file in *
+  do
+    md5sum "${file}" >> ${sample_name}_checksums.md5
+  done
+
+  cd ../
+
+  # Create singular transcript file, using GTF list file
+  "${programs_array[stringtie]}" --merge \
+  "${gtf_list}" \
+  -p "${threads}" \
+  -G "${genome_gff}" \
+  -o "${genome_index_name}".stringtie.gtf
+
 done
 
-# Create singular transcript file, using GTF list file
-"${programs_array[stringtie]}" --merge \
-"${gtf_list}" \
--p "${threads}" \
--G "${genome_gff}" \
--o "${genome_index_name}".stringtie.gtf
 
 # Delete unneccessary index files
 rm "${genome_index_name}"*.ht2
 
-# Delete unneded SAM files
-rm ./*.sam
-
-# Generate checksums
-for file in *
-do
-  md5sum "${file}" >> checksums.md5
-done
 
 #######################################################################################################
 
