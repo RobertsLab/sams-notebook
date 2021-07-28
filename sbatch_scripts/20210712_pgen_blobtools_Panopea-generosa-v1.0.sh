@@ -111,38 +111,46 @@ set -e
 . "/gscratch/srlab/programs/anaconda3/etc/profile.d/conda.sh"
 
 # Gzip FastA - needed for blobltoolkit to run properly
-gzip -c ${orig_fasta} > ${genome_fasta}
+if [ ! -f "${genome_fasta}" ]; then
+  gzip -c ${orig_fasta} > ${genome_fasta}
+fi
 
 # Generate checksum for "new" FastA
-md5sum ${genome_fasta} > genome_fasta.md5
+if [ ! -f "${genome_fasta}" ]; then
+  md5sum ${genome_fasta} > genome_fasta.md5
+fi
 
 # Concatenate all R1 reads
-for fastq in "${trimmed_reads_dir}"/*R1*.fq.gz
-do
-  echo ""
-  echo "Generating checksum for ${fastq}"
-  md5sum "${fastq}" >> ${fastq_checksums}
-  echo "Checksum generated for ${fastq}."
+if [ ! -f "reads_1.fastq.gz" ]; then
+  for fastq in "${trimmed_reads_dir}"/*R1*.fq.gz
+  do
+    echo ""
+    echo "Generating checksum for ${fastq}"
+    md5sum "${fastq}" >> ${fastq_checksums}
+    echo "Checksum generated for ${fastq}."
 
-  echo ""
-  echo "Concatenating ${fastq} to reads_1.fastq.gz"
-  cat "${fastq}" >> reads_1.fastq.gz
-  echo "Finished concatenating ${fastq} to reads_1.fastq.gz"
-done
+    echo ""
+    echo "Concatenating ${fastq} to reads_1.fastq.gz"
+    cat "${fastq}" >> reads_1.fastq.gz
+    echo "Finished concatenating ${fastq} to reads_1.fastq.gz"
+  done
+fi
 
 # Concatenate all R2 reads
-for fastq in "${trimmed_reads_dir}"/*R2*.fq.gz
-do
-  echo ""
-  echo "Generating checksum for ${fastq}"
-  md5sum "${fastq}" >> ${fastq_checksums}
-  echo "Checksum generated for ${fastq}."
+if [ ! -f "reads_2.fastq.gz" ]; then
+  for fastq in "${trimmed_reads_dir}"/*R2*.fq.gz
+  do
+    echo ""
+    echo "Generating checksum for ${fastq}"
+    md5sum "${fastq}" >> ${fastq_checksums}
+    echo "Checksum generated for ${fastq}."
 
-  echo ""
-  echo "Concatenating ${fastq} to reads_2.fastq.gz"
-  cat "${fastq}" >> reads_2.fastq.gz
-  echo "Finished concatenating ${fastq} to reads_2.fastq.gz"
-done
+    echo ""
+    echo "Concatenating ${fastq} to reads_2.fastq.gz"
+    cat "${fastq}" >> reads_2.fastq.gz
+    echo "Finished concatenating ${fastq} to reads_2.fastq.gz"
+  done
+fi
 
 # Count scaffolds in assembly
 scaffold_count=$(grep -c ">" ${genome_fasta})
@@ -151,6 +159,9 @@ scaffold_count=$(grep -c ">" ${genome_fasta})
 genome_nucleotides_count=$(grep -v ">" ${genome_fasta} | wc | awk '{print $3-$1}')
 
 # Create BTK config YAML
+if [ -f "config.yaml" ]; then
+  rm "config.yaml"
+fi
 {
   printf "%s\n" "assembly:"
   printf "%2s%s\n" "" "accession: draft" "" "file: ${genome_fasta}" "" "level: scaffold" "" "scaffold-count: ${scaffold_count}" "" "span: ${genome_nucleotides_count}"
