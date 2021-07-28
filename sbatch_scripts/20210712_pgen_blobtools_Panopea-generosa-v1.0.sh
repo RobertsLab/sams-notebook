@@ -8,7 +8,7 @@
 ## Nodes
 #SBATCH --nodes=1
 ## Walltime (days-hours:minutes:seconds format)
-#SBATCH --time=30-00:00:00
+#SBATCH --time=13-00:00:00
 ## Memory per node
 #SBATCH --mem=200G
 ##turn on e-mail notification
@@ -112,12 +112,12 @@ set -e
 
 # Gzip FastA - needed for blobltoolkit to run properly
 if [ ! -f "${genome_fasta}" ]; then
-  gzip -c ${orig_fasta} > ${genome_fasta}
+  gzip -c ${orig_fasta} > "${genome_fasta}"
 fi
 
 # Generate checksum for "new" FastA
 if [ ! -f "${genome_fasta}" ]; then
-  md5sum ${genome_fasta} > genome_fasta.md5
+  md5sum "${genome_fasta}" > genome_fasta.md5
 fi
 
 # Concatenate all R1 reads
@@ -153,10 +153,10 @@ if [ ! -f "reads_2.fastq.gz" ]; then
 fi
 
 # Count scaffolds in assembly
-scaffold_count=$(grep -c ">" ${genome_fasta})
+scaffold_count=$(grep -c ">" "${genome_fasta}")
 
 # Count nucleotides in assembly
-genome_nucleotides_count=$(grep -v ">" ${genome_fasta} | wc | awk '{print $3-$1}')
+genome_nucleotides_count=$(grep -v ">" "${genome_fasta}" | wc | awk '{print $3-$1}')
 
 # Create BTK config YAML
 if [ -f "config.yaml" ]; then
@@ -202,8 +202,8 @@ conda activate btk_env
 snakemake -p \
 --use-conda \
 --conda-prefix ${conda_dir} \
---directory ${base_dir} \
---configfile ${wd}/config.yaml \
+--directory "${base_dir}" \
+--configfile "${wd}"/config.yaml \
 --stats ${assembly_name}.blobtoolkit.stats \
 -j ${threads} \
 --rerun-incomplete \
