@@ -156,7 +156,7 @@ genome_nucleotides_count=$(grep -v ">" ${genome_fasta} | wc | awk '{print $3-$1}
   printf "%2s%s\n" "" "accession: draft" "" "file: ${genome_fasta}" "" "level: scaffold" "" "scaffold-count: ${scaffold_count}" "" "span: ${genome_nucleotides_count}"
   printf "%2s%s\n" "" "prefix: ${assembly_name}"
   printf "%s\n" "busco:"
-  printf "%2s%s\n" "" "lineage_dir: ${busco_dbs}"
+  printf "%2s%s\n" "" "download_dir: ${busco_dbs}"
   printf "%2s%s\n" "" "lineages:"
   printf "%4s%s\n" "" "- archaea_odb10" "" "- arthropoda_odb10" "" "- bacteria_odb10" "" "- eukaryota_odb10" "" "- metazoa_odb10"
   printf "%2s%s\n" "" "basal_lineages:"
