@@ -159,6 +159,7 @@ scaffold_count=$(grep -c ">" "${genome_fasta}")
 genome_nucleotides_count=$(grep -v ">" "${genome_fasta}" | wc | awk '{print $3-$1}')
 
 # Create BTK config YAML
+# BUSCO lineage order is important! List in order of most taxonomic specific to most general.
 if [ -f "config.yaml" ]; then
   rm "config.yaml"
 fi
@@ -169,7 +170,7 @@ fi
   printf "%s\n" "busco:"
   printf "%2s%s\n" "" "download_dir: ${busco_dbs}"
   printf "%2s%s\n" "" "lineages:"
-  printf "%4s%s\n" "" "- archaea_odb10" "" "- arthropoda_odb10" "" "- bacteria_odb10" "" "- eukaryota_odb10" "" "- metazoa_odb10"
+  printf "%4s%s\n" "" "- arthropoda_odb10" "" "- eukaryota_odb10" "" "- metazoa_odb10" "" "- bacteria_odb10" "" "- archaea_odb10"
   printf "%2s%s\n" "" "basal_lineages:"
   printf "%4s%s\n" "" "- archaea_odb10" "" "- bacteria_odb10" "" "- eukaryota_odb10"
   printf "%s\n" "reads:"
