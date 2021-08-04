@@ -49,7 +49,7 @@ stringtie="/gscratch/srlab/programs/stringtie-1.3.6.Linux_x86_64/stringtie"
 # Input/output files
 genome_index_dir="/gscratch/srlab/sam/data/C_virginica/genomes"
 genome_gff="${genome_index_dir}/GCF_002022765.2_C_virginica-3.0_genomic.gff"
-fastq_dir="/gscratch/scrubbed/samwhite/data/C_virginica/RNAseq/"
+fastq_dir="/gscratch/srlab/sam/data/C_virginica/RNAseq/"
 gtf_list="gtf_list.txt"
 
 # Programs associative array
