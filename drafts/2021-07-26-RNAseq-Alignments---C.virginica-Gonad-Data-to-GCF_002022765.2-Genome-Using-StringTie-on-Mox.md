@@ -18,11 +18,9 @@ SBATCH Script (GitHub):
 - [20210720_cvir_stringtie_GCF_002022765.2_isoforms.sh](https://github.com/RobertsLab/sams-notebook/blob/master/sbatch_scripts/20210720_cvir_stringtie_GCF_002022765.2_isoforms.sh)
 
 ```shell
-
-```
 #!/bin/bash
 ## Job Name
-#SBATCH --job-name=20210720_cvir_stringtie_GCF_002022765.2_isoforms
+#SBATCH --job-name=20210726_cvir_stringtie_GCF_002022765.2_isoforms
 ## Allocation Definition
 #SBATCH --account=srlab
 #SBATCH --partition=srlab
@@ -37,7 +35,7 @@ SBATCH Script (GitHub):
 #SBATCH --mail-type=ALL
 #SBATCH --mail-user=samwhite@uw.edu
 ## Specify the working directory for this job
-#SBATCH --chdir=/gscratch/scrubbed/samwhite/outputs/20210720_cvir_stringtie_GCF_002022765.2_isoforms
+#SBATCH --chdir=/gscratch/scrubbed/samwhite/outputs/20210726_cvir_stringtie_GCF_002022765.2_isoforms
 
 ## Script using Stringtie with NCBI C.virginica genome assembly
 ## and HiSat2 index generated on 20210714.
@@ -57,6 +55,11 @@ threads=28
 # Needs to match index naem used in previous Hisat2 indexing step
 genome_index_name="cvir_GCF_002022765.2"
 
+# Location of Hisat2 index files
+# Must keep variable name formatting, as it's used by HiSat2
+HISAT2_INDEXES=$(pwd)
+export HISAT2_INDEXES
+
 # Paths to programs
 hisat2_dir="/gscratch/srlab/programs/hisat2-2.1.0"
 hisat2="${hisat2_dir}/hisat2"
@@ -66,7 +69,7 @@ stringtie="/gscratch/srlab/programs/stringtie-1.3.6.Linux_x86_64/stringtie"
 # Input/output files
 genome_index_dir="/gscratch/srlab/sam/data/C_virginica/genomes"
 genome_gff="${genome_index_dir}/GCF_002022765.2_C_virginica-3.0_genomic.gff"
-fastq_dir="/gscratch/scrubbed/samwhite/data/C_virginica/RNAseq/"
+fastq_dir="/gscratch/srlab/sam/data/C_virginica/RNAseq/"
 gtf_list="gtf_list.txt"
 
 # Programs associative array
@@ -86,7 +89,6 @@ programs_array=(
 set -e
 
 # Load Python Mox module for Python module availability
-
 module load intel-python3_2017
 
 ## Inititalize arrays
@@ -130,6 +132,11 @@ done
 for index in "${!fastq_array_R1[@]}"
 do
   sample_name="${names_array[index]}"
+
+  # Create and switch to dedicated sample directory
+  mkdir "${sample_name}" && cd "$_"
+
+  # Generate HiSat2 alignments
   "${programs_array[hisat2]}" \
   -x "${genome_index_name}" \
   -1 "${fastq_array_R1[index]}" \
@@ -137,7 +144,7 @@ do
   -S "${sample_name}".sam \
   2> "${sample_name}"_hisat2.err
 
-# Sort SAM files, convert to BAM, and index
+  # Sort SAM files, convert to BAM, and index
   ${programs_array[samtools_view]} \
   -@ "${threads}" \
   -Su "${sample_name}".sam \
@@ -146,39 +153,50 @@ do
   -o "${sample_name}".sorted.bam
   ${programs_array[samtools_index]} "${sample_name}".sorted.bam
 
-# Run stringtie on alignments
+  # Run stringtie on alignments
+  # Uses "-B" option to output tables intended for use in Ballgown
+  # Uses "-e" option; recommended when using "-B" option.
+  # Limits analysis to only reads alignments matching reference.
   "${programs_array[stringtie]}" "${sample_name}".sorted.bam \
   -p "${threads}" \
   -o "${sample_name}".gtf \
   -G "${genome_gff}" \
-  -C "${sample_name}.cov_refs.gtf"
+  -C "${sample_name}.cov_refs.gtf" \
+  -B \
+  -e
 
-# Add GTFs to list file, only if non-empty
-# Identifies GTF files that only have header
+  # Add GTFs to list file, only if non-empty
+  # Identifies GTF files that only have header
   gtf_lines=$(wc -l < "${sample_name}".gtf )
   if [ "${gtf_lines}" -gt 2 ]; then
-    echo "${sample_name}.gtf" >> "${gtf_list}"
+    echo "$(pwd)/${sample_name}.gtf" >> ../"${gtf_list}"
   fi
+
+  # Delete unneded SAM files
+  rm ./*.sam
+
+
+  # Generate checksums
+  for file in *
+  do
+    md5sum "${file}" >> ${sample_name}_checksums.md5
+  done
+
+  cd ../
+
+  # Create singular transcript file, using GTF list file
+  "${programs_array[stringtie]}" --merge \
+  "${gtf_list}" \
+  -p "${threads}" \
+  -G "${genome_gff}" \
+  -o "${genome_index_name}".stringtie.gtf
+
 done
 
-# Create singular transcript file, using GTF list file
-"${programs_array[stringtie]}" --merge \
-"${gtf_list}" \
--p "${threads}" \
--G "${genome_gff}" \
--o "${genome_index_name}".stringtie.gtf
 
 # Delete unneccessary index files
 rm "${genome_index_name}"*.ht2
 
-# Delete unneded SAM files
-rm ./*.sam
-
-# Generate checksums
-for file in *
-do
-  md5sum "${file}" >> checksums.md5
-done
 
 #######################################################################################################
 
@@ -230,6 +248,8 @@ echo ""
 printf "%0.s-" {1..10}
 echo "${PATH}" | tr : \\n
 } >> system_path.log
+```
+
 ---
 
 #### RESULTS
