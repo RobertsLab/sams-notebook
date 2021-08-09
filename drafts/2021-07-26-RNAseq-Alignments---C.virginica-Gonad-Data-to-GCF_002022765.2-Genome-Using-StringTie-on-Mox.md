@@ -256,7 +256,7 @@ echo "${PATH}" | tr : \\n
 
 Run time was a bit more than 2.5 days:
 
-![StringTie runtime screencap on Mox](https://github.com/RobertsLab/sams-notebook/blob/master/images/screencaps/20210720_cvir_stringtie_GCF_002022765.2_isoforms_runtime.png?raw=true)
+![StringTie runtime screencap on Mox](https://github.com/RobertsLab/sams-notebook/blob/master/images/screencaps/20210726_cvir_stringtie_GCF_002022765.2_isoforms_runtime.png?raw=true)
 
 Output folder:
 
@@ -265,12 +265,17 @@ Output folder:
 The output files consist of the following:
 
 - `cov_refs.gtf`: GTF of fully covered transcripts which match the _C.virginica_ reference genome.
+- `*.ctab`: Ballgown input files. [Described on Ballgown GitHub page.](https://github.com/alyssafrazee/ballgown#ballgown-readable-expression-output)
+- `.err`: Standard error output.
 - `.gtf`: GTF of all transcripts/isoforms identified by StringTie in _C.virginica_ reference genome.
 - `.sorted.bam`: Sorted BAM file of alignments.
 - `.sored.bam.bai`: Corresponding BAM index file.
 
-Links to all files will be at the end of this post. 
+List of all files will be at the end of this post. 
 
+I noticed something when glancing at the data. Alignment rates are consistently low/lower in males, compared to the females. Not sure of what this means, but figured I'd share it.
+
+Here's a table. The letter `M` or `F` in the sample name column indicates sex.
 
 | Sample | Overall Alignment Rate |
 |--------|------------------------|
@@ -300,3 +305,330 @@ Links to all files will be at the end of this post.
 | S3F    | 48.89%                 |
 | S16F   | 50.29%                 |
 | S77F   | 50.31%                 |
+
+
+---
+
+Output directory contents:
+
+```
+├── [6.1K]  20210726_cvir_stringtie_GCF_002022765.2_isoforms.sh
+├── [143M]  cvir_GCF_002022765.2.stringtie.gtf
+├── [2.5K]  gtf_list.txt
+├── [4.8K]  input_fastqs_checksums.md5
+├── [ 12K]  program_options.log
+├── [4.7G]  S12M
+│   ├── [8.7M]  e2t.ctab
+│   ├── [ 26M]  e_data.ctab
+│   ├── [7.8M]  i2t.ctab
+│   ├── [ 14M]  i_data.ctab
+│   ├── [ 473]  S12M_checksums.md5
+│   ├── [1.3M]  S12M.cov_refs.gtf
+│   ├── [136M]  S12M.gtf
+│   ├── [ 638]  S12M_hisat2.err
+│   ├── [4.5G]  S12M.sorted.bam
+│   ├── [1.3M]  S12M.sorted.bam.bai
+│   └── [7.3M]  t_data.ctab
+├── [3.8G]  S13M
+│   ├── [8.7M]  e2t.ctab
+│   ├── [ 26M]  e_data.ctab
+│   ├── [7.8M]  i2t.ctab
+│   ├── [ 14M]  i_data.ctab
+│   ├── [ 473]  S13M_checksums.md5
+│   ├── [637K]  S13M.cov_refs.gtf
+│   ├── [136M]  S13M.gtf
+│   ├── [ 637]  S13M_hisat2.err
+│   ├── [3.6G]  S13M.sorted.bam
+│   ├── [861K]  S13M.sorted.bam.bai
+│   └── [7.3M]  t_data.ctab
+├── [3.2G]  S16F
+│   ├── [8.7M]  e2t.ctab
+│   ├── [ 26M]  e_data.ctab
+│   ├── [7.8M]  i2t.ctab
+│   ├── [ 14M]  i_data.ctab
+│   ├── [ 473]  S16F_checksums.md5
+│   ├── [ 15M]  S16F.cov_refs.gtf
+│   ├── [136M]  S16F.gtf
+│   ├── [ 638]  S16F_hisat2.err
+│   ├── [3.0G]  S16F.sorted.bam
+│   ├── [1.1M]  S16F.sorted.bam.bai
+│   └── [7.3M]  t_data.ctab
+├── [3.2G]  S19F
+│   ├── [8.7M]  e2t.ctab
+│   ├── [ 26M]  e_data.ctab
+│   ├── [7.8M]  i2t.ctab
+│   ├── [ 14M]  i_data.ctab
+│   ├── [ 473]  S19F_checksums.md5
+│   ├── [ 12M]  S19F.cov_refs.gtf
+│   ├── [136M]  S19F.gtf
+│   ├── [ 638]  S19F_hisat2.err
+│   ├── [3.0G]  S19F.sorted.bam
+│   ├── [1.1M]  S19F.sorted.bam.bai
+│   └── [7.3M]  t_data.ctab
+├── [3.7G]  S22F
+│   ├── [8.7M]  e2t.ctab
+│   ├── [ 26M]  e_data.ctab
+│   ├── [7.8M]  i2t.ctab
+│   ├── [ 14M]  i_data.ctab
+│   ├── [ 473]  S22F_checksums.md5
+│   ├── [ 13M]  S22F.cov_refs.gtf
+│   ├── [136M]  S22F.gtf
+│   ├── [ 638]  S22F_hisat2.err
+│   ├── [3.5G]  S22F.sorted.bam
+│   ├── [1.2M]  S22F.sorted.bam.bai
+│   └── [7.3M]  t_data.ctab
+├── [5.3G]  S23M
+│   ├── [8.7M]  e2t.ctab
+│   ├── [ 26M]  e_data.ctab
+│   ├── [7.8M]  i2t.ctab
+│   ├── [ 14M]  i_data.ctab
+│   ├── [ 473]  S23M_checksums.md5
+│   ├── [1.1M]  S23M.cov_refs.gtf
+│   ├── [136M]  S23M.gtf
+│   ├── [ 637]  S23M_hisat2.err
+│   ├── [5.1G]  S23M.sorted.bam
+│   ├── [1004K]  S23M.sorted.bam.bai
+│   └── [7.3M]  t_data.ctab
+├── [3.2G]  S29F
+│   ├── [8.7M]  e2t.ctab
+│   ├── [ 26M]  e_data.ctab
+│   ├── [7.8M]  i2t.ctab
+│   ├── [ 14M]  i_data.ctab
+│   ├── [ 473]  S29F_checksums.md5
+│   ├── [ 12M]  S29F.cov_refs.gtf
+│   ├── [137M]  S29F.gtf
+│   ├── [ 637]  S29F_hisat2.err
+│   ├── [3.0G]  S29F.sorted.bam
+│   ├── [1.0M]  S29F.sorted.bam.bai
+│   └── [7.3M]  t_data.ctab
+├── [3.2G]  S31M
+│   ├── [8.7M]  e2t.ctab
+│   ├── [ 26M]  e_data.ctab
+│   ├── [7.8M]  i2t.ctab
+│   ├── [ 14M]  i_data.ctab
+│   ├── [ 473]  S31M_checksums.md5
+│   ├── [571K]  S31M.cov_refs.gtf
+│   ├── [136M]  S31M.gtf
+│   ├── [ 638]  S31M_hisat2.err
+│   ├── [3.0G]  S31M.sorted.bam
+│   ├── [1.1M]  S31M.sorted.bam.bai
+│   └── [7.3M]  t_data.ctab
+├── [2.7G]  S35F
+│   ├── [8.7M]  e2t.ctab
+│   ├── [ 26M]  e_data.ctab
+│   ├── [7.8M]  i2t.ctab
+│   ├── [ 14M]  i_data.ctab
+│   ├── [ 473]  S35F_checksums.md5
+│   ├── [ 11M]  S35F.cov_refs.gtf
+│   ├── [136M]  S35F.gtf
+│   ├── [ 637]  S35F_hisat2.err
+│   ├── [2.5G]  S35F.sorted.bam
+│   ├── [952K]  S35F.sorted.bam.bai
+│   └── [7.3M]  t_data.ctab
+├── [2.9G]  S36F
+│   ├── [8.7M]  e2t.ctab
+│   ├── [ 26M]  e_data.ctab
+│   ├── [7.8M]  i2t.ctab
+│   ├── [ 14M]  i_data.ctab
+│   ├── [ 473]  S36F_checksums.md5
+│   ├── [ 11M]  S36F.cov_refs.gtf
+│   ├── [136M]  S36F.gtf
+│   ├── [ 638]  S36F_hisat2.err
+│   ├── [2.7G]  S36F.sorted.bam
+│   ├── [1.0M]  S36F.sorted.bam.bai
+│   └── [7.3M]  t_data.ctab
+├── [3.3G]  S39F
+│   ├── [8.7M]  e2t.ctab
+│   ├── [ 26M]  e_data.ctab
+│   ├── [7.8M]  i2t.ctab
+│   ├── [ 14M]  i_data.ctab
+│   ├── [ 473]  S39F_checksums.md5
+│   ├── [ 12M]  S39F.cov_refs.gtf
+│   ├── [136M]  S39F.gtf
+│   ├── [ 638]  S39F_hisat2.err
+│   ├── [3.0G]  S39F.sorted.bam
+│   ├── [1.1M]  S39F.sorted.bam.bai
+│   └── [7.3M]  t_data.ctab
+├── [2.9G]  S3F
+│   ├── [8.7M]  e2t.ctab
+│   ├── [ 26M]  e_data.ctab
+│   ├── [7.8M]  i2t.ctab
+│   ├── [ 14M]  i_data.ctab
+│   ├── [ 468]  S3F_checksums.md5
+│   ├── [ 13M]  S3F.cov_refs.gtf
+│   ├── [136M]  S3F.gtf
+│   ├── [ 637]  S3F_hisat2.err
+│   ├── [2.7G]  S3F.sorted.bam
+│   ├── [1022K]  S3F.sorted.bam.bai
+│   └── [7.3M]  t_data.ctab
+├── [3.1G]  S41F
+│   ├── [8.7M]  e2t.ctab
+│   ├── [ 26M]  e_data.ctab
+│   ├── [7.8M]  i2t.ctab
+│   ├── [ 14M]  i_data.ctab
+│   ├── [ 473]  S41F_checksums.md5
+│   ├── [ 13M]  S41F.cov_refs.gtf
+│   ├── [137M]  S41F.gtf
+│   ├── [ 638]  S41F_hisat2.err
+│   ├── [2.9G]  S41F.sorted.bam
+│   ├── [1.0M]  S41F.sorted.bam.bai
+│   └── [7.3M]  t_data.ctab
+├── [3.4G]  S44F
+│   ├── [8.7M]  e2t.ctab
+│   ├── [ 26M]  e_data.ctab
+│   ├── [7.8M]  i2t.ctab
+│   ├── [ 14M]  i_data.ctab
+│   ├── [ 473]  S44F_checksums.md5
+│   ├── [ 14M]  S44F.cov_refs.gtf
+│   ├── [137M]  S44F.gtf
+│   ├── [ 638]  S44F_hisat2.err
+│   ├── [3.2G]  S44F.sorted.bam
+│   ├── [1.1M]  S44F.sorted.bam.bai
+│   └── [7.3M]  t_data.ctab
+├── [8.3G]  S48M
+│   ├── [8.7M]  e2t.ctab
+│   ├── [ 26M]  e_data.ctab
+│   ├── [7.8M]  i2t.ctab
+│   ├── [ 14M]  i_data.ctab
+│   ├── [ 473]  S48M_checksums.md5
+│   ├── [1.1M]  S48M.cov_refs.gtf
+│   ├── [136M]  S48M.gtf
+│   ├── [ 640]  S48M_hisat2.err
+│   ├── [8.1G]  S48M.sorted.bam
+│   ├── [1.9M]  S48M.sorted.bam.bai
+│   └── [7.3M]  t_data.ctab
+├── [2.7G]  S50F
+│   ├── [8.7M]  e2t.ctab
+│   ├── [ 26M]  e_data.ctab
+│   ├── [7.8M]  i2t.ctab
+│   ├── [ 14M]  i_data.ctab
+│   ├── [ 473]  S50F_checksums.md5
+│   ├── [ 13M]  S50F.cov_refs.gtf
+│   ├── [136M]  S50F.gtf
+│   ├── [ 637]  S50F_hisat2.err
+│   ├── [2.5G]  S50F.sorted.bam
+│   ├── [980K]  S50F.sorted.bam.bai
+│   └── [7.3M]  t_data.ctab
+├── [3.3G]  S52F
+│   ├── [8.7M]  e2t.ctab
+│   ├── [ 26M]  e_data.ctab
+│   ├── [7.8M]  i2t.ctab
+│   ├── [ 14M]  i_data.ctab
+│   ├── [ 473]  S52F_checksums.md5
+│   ├── [ 16M]  S52F.cov_refs.gtf
+│   ├── [137M]  S52F.gtf
+│   ├── [ 638]  S52F_hisat2.err
+│   ├── [3.1G]  S52F.sorted.bam
+│   ├── [1.1M]  S52F.sorted.bam.bai
+│   └── [7.3M]  t_data.ctab
+├── [3.1G]  S53F
+│   ├── [8.7M]  e2t.ctab
+│   ├── [ 26M]  e_data.ctab
+│   ├── [7.8M]  i2t.ctab
+│   ├── [ 14M]  i_data.ctab
+│   ├── [ 473]  S53F_checksums.md5
+│   ├── [ 12M]  S53F.cov_refs.gtf
+│   ├── [136M]  S53F.gtf
+│   ├── [ 637]  S53F_hisat2.err
+│   ├── [2.9G]  S53F.sorted.bam
+│   ├── [996K]  S53F.sorted.bam.bai
+│   └── [7.3M]  t_data.ctab
+├── [3.2G]  S54F
+│   ├── [8.7M]  e2t.ctab
+│   ├── [ 26M]  e_data.ctab
+│   ├── [7.8M]  i2t.ctab
+│   ├── [ 14M]  i_data.ctab
+│   ├── [ 473]  S54F_checksums.md5
+│   ├── [ 12M]  S54F.cov_refs.gtf
+│   ├── [136M]  S54F.gtf
+│   ├── [ 637]  S54F_hisat2.err
+│   ├── [3.0G]  S54F.sorted.bam
+│   ├── [1023K]  S54F.sorted.bam.bai
+│   └── [7.3M]  t_data.ctab
+├── [3.1G]  S59M
+│   ├── [8.7M]  e2t.ctab
+│   ├── [ 26M]  e_data.ctab
+│   ├── [7.8M]  i2t.ctab
+│   ├── [ 14M]  i_data.ctab
+│   ├── [ 473]  S59M_checksums.md5
+│   ├── [8.8M]  S59M.cov_refs.gtf
+│   ├── [136M]  S59M.gtf
+│   ├── [ 637]  S59M_hisat2.err
+│   ├── [2.9G]  S59M.sorted.bam
+│   ├── [934K]  S59M.sorted.bam.bai
+│   └── [7.3M]  t_data.ctab
+├── [3.6G]  S64M
+│   ├── [8.7M]  e2t.ctab
+│   ├── [ 26M]  e_data.ctab
+│   ├── [7.8M]  i2t.ctab
+│   ├── [ 14M]  i_data.ctab
+│   ├── [ 473]  S64M_checksums.md5
+│   ├── [7.2M]  S64M.cov_refs.gtf
+│   ├── [136M]  S64M.gtf
+│   ├── [ 638]  S64M_hisat2.err
+│   ├── [3.4G]  S64M.sorted.bam
+│   ├── [1.4M]  S64M.sorted.bam.bai
+│   └── [7.3M]  t_data.ctab
+├── [5.5G]  S6M
+│   ├── [8.7M]  e2t.ctab
+│   ├── [ 26M]  e_data.ctab
+│   ├── [7.8M]  i2t.ctab
+│   ├── [ 14M]  i_data.ctab
+│   ├── [ 468]  S6M_checksums.md5
+│   ├── [1.0M]  S6M.cov_refs.gtf
+│   ├── [136M]  S6M.gtf
+│   ├── [ 638]  S6M_hisat2.err
+│   ├── [5.3G]  S6M.sorted.bam
+│   ├── [1.3M]  S6M.sorted.bam.bai
+│   └── [7.3M]  t_data.ctab
+├── [3.4G]  S76F
+│   ├── [8.7M]  e2t.ctab
+│   ├── [ 26M]  e_data.ctab
+│   ├── [7.8M]  i2t.ctab
+│   ├── [ 14M]  i_data.ctab
+│   ├── [ 473]  S76F_checksums.md5
+│   ├── [ 12M]  S76F.cov_refs.gtf
+│   ├── [136M]  S76F.gtf
+│   ├── [ 638]  S76F_hisat2.err
+│   ├── [3.2G]  S76F.sorted.bam
+│   ├── [1.1M]  S76F.sorted.bam.bai
+│   └── [7.3M]  t_data.ctab
+├── [3.6G]  S77F
+│   ├── [8.7M]  e2t.ctab
+│   ├── [ 26M]  e_data.ctab
+│   ├── [7.8M]  i2t.ctab
+│   ├── [ 14M]  i_data.ctab
+│   ├── [ 473]  S77F_checksums.md5
+│   ├── [ 14M]  S77F.cov_refs.gtf
+│   ├── [136M]  S77F.gtf
+│   ├── [ 639]  S77F_hisat2.err
+│   ├── [3.4G]  S77F.sorted.bam
+│   ├── [1.2M]  S77F.sorted.bam.bai
+│   └── [7.3M]  t_data.ctab
+├── [4.1G]  S7M
+│   ├── [8.7M]  e2t.ctab
+│   ├── [ 26M]  e_data.ctab
+│   ├── [7.8M]  i2t.ctab
+│   ├── [ 14M]  i_data.ctab
+│   ├── [ 468]  S7M_checksums.md5
+│   ├── [1.4M]  S7M.cov_refs.gtf
+│   ├── [136M]  S7M.gtf
+│   ├── [ 638]  S7M_hisat2.err
+│   ├── [3.9G]  S7M.sorted.bam
+│   ├── [1.2M]  S7M.sorted.bam.bai
+│   └── [7.3M]  t_data.ctab
+├── [5.1G]  S9M
+│   ├── [8.7M]  e2t.ctab
+│   ├── [ 26M]  e_data.ctab
+│   ├── [7.8M]  i2t.ctab
+│   ├── [ 14M]  i_data.ctab
+│   ├── [ 468]  S9M_checksums.md5
+│   ├── [992K]  S9M.cov_refs.gtf
+│   ├── [136M]  S9M.gtf
+│   ├── [ 638]  S9M_hisat2.err
+│   ├── [4.9G]  S9M.sorted.bam
+│   ├── [1.3M]  S9M.sorted.bam.bai
+│   └── [7.3M]  t_data.ctab
+├── [ 11K]  slurm-2112475.out
+└── [ 996]  system_path.log
+```
