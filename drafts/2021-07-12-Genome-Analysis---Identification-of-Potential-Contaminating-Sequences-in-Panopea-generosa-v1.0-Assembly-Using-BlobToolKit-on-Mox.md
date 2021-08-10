@@ -295,7 +295,16 @@ echo "Finished logging system PATH"
 
 #### RESULTS
 
+Usually, I post the run time for my Mox jobs here. However, this was stopped/started numerous times, making it difficult to actually determine the cumulative runtime.
+
 Output folder:
 
-- []()
+- [20210712_pgen_blobtools_Panopea-generosa-v1.0/](https://gannet.fish.washington.edu/Atumefaciens/20210712_pgen_blobtools_Panopea-generosa-v1.0/)
 
+   - #### JSON output directory
+
+       - [20210712_pgen_blobtools_Panopea-generosa-v1.0/blobtools/Panopea_generosa_v1/](https://gannet.fish.washington.edu/Atumefaciens/20210712_pgen_blobtools_Panopea-generosa-v1.0/blobtools/Panopea_generosa_v1/)
+
+        - _These files are needed to use with the Blobtools viewer software._
+
+Next up will be loading the JSON output files into the Blobtools viewer and analysing taxonomic assignments of reads/regions throughout our genome assembly.
