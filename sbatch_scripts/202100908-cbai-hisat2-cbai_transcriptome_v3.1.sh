@@ -20,7 +20,7 @@
 ## Hisat2 alignment of C.bairdi RNAseq to cbai_transcriptome_v3.1 transcriptome assembly
 ## using HiSat2 index generated on 20210908.
 
-## Expects FastQ input filenames to match *READ[12.]*.fq.gz
+## Expects FastQ input filenames to match *R[12]*.fq.gz.
 
 
 ###################################################################################
