@@ -1,6 +1,6 @@
 #!/bin/bash
 ## Job Name
-#SBATCH --job-name=202100908-cbai-hisat2-cbai_transcriptome_v3.1
+#SBATCH --job-name=20210908-cbai-hisat2-cbai_transcriptome_v3.1
 ## Allocation Definition
 #SBATCH --account=srlab
 #SBATCH --partition=srlab
@@ -15,7 +15,7 @@
 #SBATCH --mail-type=ALL
 #SBATCH --mail-user=samwhite@uw.edu
 ## Specify the working directory for this job
-#SBATCH --chdir=/gscratch/scrubbed/samwhite/outputs/202100908-cbai-hisat2-cbai_transcriptome_v3.1
+#SBATCH --chdir=/gscratch/scrubbed/samwhite/outputs/20210908-cbai-hisat2-cbai_transcriptome_v3.1
 
 ## Hisat2 alignment of C.bairdi RNAseq to cbai_transcriptome_v3.1 transcriptome assembly
 ## using HiSat2 index generated on 20210908.
@@ -120,7 +120,7 @@ do
   -2 "${fastq_list_R2}" \
   -S "${sample}".sam \
   --rg-id "${sample}" \
-  --rg "${samples_associative_array[$sample]}" \
+  --rg "SM:""${samples_associative_array[$sample]}" \
   2> "${sample}"_hisat2.err
 
   # Sort SAM files, convert to BAM, and index
