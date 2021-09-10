@@ -8,7 +8,7 @@
 ## Nodes
 #SBATCH --nodes=1
 ## Walltime (days-hours:minutes:seconds format)
-#SBATCH --time=5-00:00:00
+#SBATCH --time=3-00:00:00
 ## Memory per node
 #SBATCH --mem=200G
 ##turn on e-mail notification
@@ -50,8 +50,9 @@ bam_array=()
 declare -A programs_array
 programs_array=(
 [bcftools]="${bcftools}" \
+[bcftools_call]="${bcftools} call" \
+[bcftools_index]="${bcftools} index" \
 [bcftools_mpileup]="${bcftools} mpileup" \
-[bcftools_view]="${bcftools} view"
 [samtools_index]="${samtools} index" \
 [samtools_sort]="${samtools} sort" \
 [samtools_view]="${samtools} view"
@@ -86,17 +87,30 @@ bam_list=$(echo "${bam_array[*]}")
 ## mpileup and call SNPs
 echo ""
 echo "Beginning SNP calls."
+
 ${programs_array[bcftools_mpileup]} \
--g \
 --fasta-ref ${transcriptome_fasta} \
 ${bam_list} \
 --threads ${threads} \
-| ${programs_array[bcftools_view]} \
--bvcg \
+--output-type u \
+| ${programs_array[bcftools_call]} \
+--output-type b \
+--consensus-caller \
+--variants-only \
+--threads ${threads} \
 > ${bcf_out}
 
 
 echo "SNP calls complete."
+echo ""
+
+# Index BCF file
+echo "Indexing ${bcf_out}."
+${programs_array[bcftools_index]} \
+--threads ${threads} \
+${bcf_out}
+
+echo "Indexing finished."
 echo ""
 
 # Generate checksums
@@ -115,10 +129,13 @@ if [[ "${#programs_array[@]}" -gt 0 ]]; then
     {
     echo "Program options for ${program}: "
     echo ""
-    # Handle samtools help menus
+    # Handle samtools/bcftools help menus
     if [[ "${program}" == "samtools_index" ]] \
     || [[ "${program}" == "samtools_sort" ]] \
-    || [[ "${program}" == "samtools_view" ]]
+    || [[ "${program}" == "samtools_view" ]] \
+    || [[ "${program}" == "bcftools_call" ]] \
+    || [[ "${program}" == "bcftools_index" ]] \
+    || [[ "${program}" == "bcftools_mpileup" ]]
     then
       ${programs_array[$program]}
 
