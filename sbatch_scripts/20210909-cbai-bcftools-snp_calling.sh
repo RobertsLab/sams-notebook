@@ -105,14 +105,6 @@ ${bam_list} \
 echo "SNP calls complete."
 echo ""
 
-# Index VCF file
-echo "Indexing ${bcf_out}."
-${programs_array[bcftools_index]} \
---threads ${threads} \
-${bcf_out}
-
-echo "Indexing finished."
-echo ""
 
 # Generate checksums
 for file in *
