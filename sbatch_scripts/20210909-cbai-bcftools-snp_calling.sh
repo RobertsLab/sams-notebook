@@ -41,7 +41,7 @@ samtools="/gscratch/srlab/programs/samtools-1.10/samtools"
 bam_dir="/gscratch/scrubbed/samwhite/outputs/20210908-cbai-hisat2-cbai_transcriptome_v3.1"
 transcriptome_dir="/gscratch/srlab/sam/data/C_bairdi/transcriptomes"
 transcriptome_fasta="${transcriptome_dir}"/cbai_transcriptome_v3.1.fasta
-bcf_out=cbai_v3.1-SNPS.bcf
+bcf_out=cbai_v3.1-SNPS.vcf
 
 # Initialize array for BAM files
 bam_array=()
@@ -84,7 +84,8 @@ done
 bam_list=$(echo "${bam_array[*]}")
 
 
-## mpileup and call SNPs
+## mpileup and call SNPs.
+## Generates uncompressed VCF file.
 echo ""
 echo "Beginning SNP calls."
 
@@ -94,8 +95,8 @@ ${bam_list} \
 --threads ${threads} \
 --output-type u \
 | ${programs_array[bcftools_call]} \
---output-type b \
---consensus-caller \
+--output-type u \
+--multiallelic-caller \
 --variants-only \
 --threads ${threads} \
 > ${bcf_out}
@@ -104,7 +105,7 @@ ${bam_list} \
 echo "SNP calls complete."
 echo ""
 
-# Index BCF file
+# Index VCF file
 echo "Indexing ${bcf_out}."
 ${programs_array[bcftools_index]} \
 --threads ${threads} \
