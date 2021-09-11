@@ -53,6 +53,7 @@ programs_array=(
 [bcftools_call]="${bcftools} call" \
 [bcftools_index]="${bcftools} index" \
 [bcftools_mpileup]="${bcftools} mpileup" \
+[bcftools_view]="${bcftools} view" \
 [samtools_index]="${samtools} index" \
 [samtools_sort]="${samtools} sort" \
 [samtools_view]="${samtools} view"
@@ -95,7 +96,7 @@ ${bam_list} \
 --threads ${threads} \
 --output-type u \
 | ${programs_array[bcftools_call]} \
---output-type u \
+--output-type v \
 --multiallelic-caller \
 --variants-only \
 --threads ${threads} \
@@ -128,7 +129,8 @@ if [[ "${#programs_array[@]}" -gt 0 ]]; then
     || [[ "${program}" == "samtools_view" ]] \
     || [[ "${program}" == "bcftools_call" ]] \
     || [[ "${program}" == "bcftools_index" ]] \
-    || [[ "${program}" == "bcftools_mpileup" ]]
+    || [[ "${program}" == "bcftools_mpileup" ]] \
+    || [[ "${program}" == "bcftools_view" ]]
     then
       ${programs_array[$program]}
 
