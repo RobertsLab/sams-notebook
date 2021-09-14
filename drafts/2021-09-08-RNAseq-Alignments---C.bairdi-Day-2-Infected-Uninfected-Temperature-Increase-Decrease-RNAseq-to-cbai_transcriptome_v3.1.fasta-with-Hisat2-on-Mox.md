@@ -12,7 +12,7 @@ tags:
 categories: 
   - Tanner Crab RNAseq
 ---
-Ealier today, [I created the necessary Hisat2 index files](https://robertslab.github.io/sams-notebook/2021/09/08/Assembly-Indexing-C.bairdi-Transcriptome-cbai_transcriptome_v3.1.fasta-with-Hisat2-on-Mox.html) for `cbai_transcriptome_v3.1`. Next, I needed to actually get the alignments run. The alignments were performed using [`HISAT2`](https://daehwankimlab.github.io/hisat2/) on Mox using the following set of FastQ files:
+Ealier today, [I created the necessary Hisat2 index files](https://robertslab.github.io/sams-notebook/2021/09/08/Assembly-Indexing-C.bairdi-Transcriptome-cbai_transcriptome_v3.1.fasta-with-Hisat2-on-Mox.html) for `cbai_transcriptome_v3.1`. Next, I needed to actually get the alignments run. The alignments were performed using [`HISAT2`](https://daehwankimlab.github.io/hisat2/) on Mox using the following set of [trimmed FastQ files from 2020414](https://robertslab.github.io/sams-notebook/2020/04/14/TrimmingFastQCMultiQC-C.bairdi-RNAseq-FastQ-with-fastp-on-Mox.html):
 
 - 380822
 - 380823
@@ -234,7 +234,34 @@ echo "Finished logging system $PATH."
 
 #### RESULTS
 
+Runtime was ~2.5hrs:
+
+![Runtime for Hisat2 alignment of RNAseq data to cbai_transcriptome_v3.1](https://github.com/RobertsLab/sams-notebook/blob/master/images/screencaps/20210908-cbai-hisat2-cbai_transcriptome_v3.1_runtime.png?raw=true)
+
 Output folder:
 
-- []()
+- [20210908-cbai-hisat2-cbai_transcriptome_v3.1/](https://gannet.fish.washington.edu/Atumefaciens/20210908-cbai-hisat2-cbai_transcriptome_v3.1/)
 
+  - #### BAM files:
+
+    - [380822.sorted.bam](https://gannet.fish.washington.edu/Atumefaciens/20210908-cbai-hisat2-cbai_transcriptome_v3.1/380822.sorted.bam) (2.3G)
+
+      - MD5: `a4c0e147877327def00eda11be86deb9`
+
+    - [380823.sorted.bam](https://gannet.fish.washington.edu/Atumefaciens/20210908-cbai-hisat2-cbai_transcriptome_v3.1/380823.sorted.bam) (2.2G)
+
+      - MD5: `a23cf8a0d60a847678ad3edcbef686fd`
+
+    - [380824.sorted.bam](https://gannet.fish.washington.edu/Atumefaciens/20210908-cbai-hisat2-cbai_transcriptome_v3.1/380824.sorted.bam) (2.5G)
+
+      - MD5: `1f8c30a8ecf079d9d13ebab306f9506a`
+
+    - [380825.sorted.bam](https://gannet.fish.washington.edu/Atumefaciens/20210908-cbai-hisat2-cbai_transcriptome_v3.1/380825.sorted.bam) (2.6G)
+
+      - MD5: `d0331a572821e4f16757acbfb6c410b4`
+
+  - #### Input FastQ list/checksums (text):
+
+    - [20210908-cbai-hisat2-cbai_transcriptome_v3.1/input_fastqs_checksums.md5](https://gannet.fish.washington.edu/Atumefaciens/20210908-cbai-hisat2-cbai_transcriptome_v3.1/input_fastqs_checksums.md5)
+
+And, now that the alignments are completed, next up will be making variant calls using bcftools.
