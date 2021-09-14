@@ -147,7 +147,30 @@ echo "${PATH}" | tr : \\n
 
 #### RESULTS
 
+Very quick, just under 4mins:
+
+![Mox runtime for Hisat2 index building of cbai-transcriptome_v3.1](https://github.com/RobertsLab/sams-notebook/blob/master/images/screencaps/20210908-cbai-transcriptome_v3.1-hisat2-build-index_runtime.png?raw=true)
+
 Output folder:
 
 - [20210908-cbai-transcriptome_v3.1-hisat2-build-index/](https://gannet.fish.washington.edu/Atumefaciens/20210908-cbai-transcriptome_v3.1-hisat2-build-index/)
 
+  - #### Index files:
+
+    - [cbai-transcriptome_v3.1.1.ht2](https://gannet.fish.washington.edu/Atumefaciens/20210908-cbai-transcriptome_v3.1-hisat2-build-index/cbai-transcriptome_v3.1.1.ht2)
+
+    - [cbai-transcriptome_v3.1.2.ht2](https://gannet.fish.washington.edu/Atumefaciens/20210908-cbai-transcriptome_v3.1-hisat2-build-index/cbai-transcriptome_v3.1.2.ht2)
+
+    - [cbai-transcriptome_v3.1.3.ht2](https://gannet.fish.washington.edu/Atumefaciens/20210908-cbai-transcriptome_v3.1-hisat2-build-index/cbai-transcriptome_v3.1.3.ht2)
+
+    - [cbai-transcriptome_v3.1.4.ht2](https://gannet.fish.washington.edu/Atumefaciens/20210908-cbai-transcriptome_v3.1-hisat2-build-index/cbai-transcriptome_v3.1.4.ht2)
+
+    - [cbai-transcriptome_v3.1.5.ht2](https://gannet.fish.washington.edu/Atumefaciens/20210908-cbai-transcriptome_v3.1-hisat2-build-index/cbai-transcriptome_v3.1.5.ht2)
+
+    - [cbai-transcriptome_v3.1.6.ht2](https://gannet.fish.washington.edu/Atumefaciens/20210908-cbai-transcriptome_v3.1-hisat2-build-index/cbai-transcriptome_v3.1.6.ht2)
+
+    - [cbai-transcriptome_v3.1.7.ht2](https://gannet.fish.washington.edu/Atumefaciens/20210908-cbai-transcriptome_v3.1-hisat2-build-index/cbai-transcriptome_v3.1.7.ht2)
+
+    - [cbai-transcriptome_v3.1.8.ht2](https://gannet.fish.washington.edu/Atumefaciens/20210908-cbai-transcriptome_v3.1-hisat2-build-index/cbai-transcriptome_v3.1.8.ht2)
+
+Next up, perform the perform the alignments using [`HISAT2`](https://daehwankimlab.github.io/hisat2/).
