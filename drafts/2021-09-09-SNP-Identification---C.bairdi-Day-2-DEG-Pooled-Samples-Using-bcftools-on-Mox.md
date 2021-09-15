@@ -13,6 +13,14 @@ categories:
 ---
 After getting our the RNAseq data aligned with [`HISAT2`](https://daehwankimlab.github.io/hisat2/) on [20210908](https://robertslab.github.io/sams-notebook/2021/09/08/RNAseq-Alignments-C.bairdi-Day-2-Infected-Uninfected-Temperature-Increase-Decrease-RNAseq-to-cbai_transcriptome_v3.1.fasta-with-Hisat2-on-Mox.html), the next step was to make variant calls. I opted to do so using [`bcftools`](https://samtools.github.io/bcftools/bcftools.html#common_options) `mpileup`. Previously, this was usually done with samtools, but using [`bcftools`](https://samtools.github.io/bcftools/bcftools.html#common_options) is preferred for better downstream compatibility with other [`bcftools`](https://samtools.github.io/bcftools/bcftools.html#common_options).
 
+Input BAM files being used:
+
+- `380822.sorted.bam`
+- `380823.sorted.bam`
+- `380824.sorted.bam`
+- `380825.sorted.bam`
+
+
 The job was run on Mox and generated a [VCF file](https://samtools.github.io/hts-specs/VCFv4.2.pdf).
 
 SBATCH script (GitHub):
@@ -199,7 +207,21 @@ echo "Finished logging system $PATH."
 
 #### RESULTS
 
+Done pretty quickly in ~26mins:
+
+![Runtime for bcftools variant calling on Mox.](https://github.com/RobertsLab/sams-notebook/blob/master/images/screencaps/20210909-cbai-bcftools-snp_calling_runtime.png?raw=true)
+
 Output folder:
 
-- []()
+- [0210909-cbai-bcftools-snp_calling/](https://gannet.fish.washington.edu/Atumefaciens/20210909-cbai-bcftools-snp_calling/)
 
+
+  - #### VCF file:
+
+    - [20210909-cbai-bcftools-snp_calling/cbai_v3.1-SNPS.vcf](https://gannet.fish.washington.edu/Atumefaciens/20210909-cbai-bcftools-snp_calling/cbai_v3.1-SNPS.vcf)
+
+  - #### Input BAM files (text)
+
+    - [20210909-cbai-bcftools-snp_calling/input_bam_checksums.md5](https://gannet.fish.washington.edu/Atumefaciens/20210909-cbai-bcftools-snp_calling/input_bam_checksums.md5)
+
+Now, the next steps are to filter the variants based on alignment depth (Steven has indicated a minimum of 10x would be appropraite), as well as some other as-of-yet-determined factors. Once filtered, we'll identify which genes in the transcriptome (and their corresponding annotations) have SNPs and in which groups to identify the impacts, if any, on the transcritpomic responses to Hematodinium infection and/or temperature changes.
