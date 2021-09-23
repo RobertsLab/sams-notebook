@@ -7,7 +7,8 @@ tags:
   - RNAseq
   - Chionoecetes bairdi
 categories:
-  - Miscellaneous
+  - Tanner Crab RNAseq
+  - Data Received
 ---
 Previously, we "received" this data, but it turns out it was incomplete ([see 20191003](https://robertslab.github.io/sams-notebook/2019/10/03/Data-Received-C.bairdi-RNAseq-Day9-12-26-Infected-Uninfected.html)).
 

@@ -13,7 +13,7 @@ tags:
   - GO
   - enrichment
 categories:
-  - Miscellaneous
+  - Tanner Crab RNAseq
 ---
 After completing [annotation of the _C.bairdi_ MEGAN6 taxonomic-specific Trinity assembly using Trinotate on 20200126](https://robertslab.github.io/sams-notebook/2020/01/26/Transcriptome-Annotation-Trinotate-C.bairdi-MEGAN6-Taxonomic-specific-Trinity-Assembly-on-Mox.html), I performed differential gene expression analysis and gene ontology (GO) term enrichment analysis using Trinity's scripts to run EdgeR and GOseq, respectively, across all of the various treatment comparisons. The comparison are listed below and link to each individual SBATCH script (GitHub) used to run these on Mox.
 

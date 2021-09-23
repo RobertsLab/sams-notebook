@@ -9,7 +9,7 @@ tags:
   - dsDNA HS assay
   - Tanner crab
 categories:
-  - Miscellaneous
+  - Tanner Crab RNAseq
 ---
 Isolated DNA from three samples (see Qubit spreadsheet in "Results" below for sample IDs) using the [Quick DNA/RNA Microprep Kit](https://github.com/RobertsLab/resources/blob/master/protocols/Commercial_Protocols/ZymoResearch_quick-dna-rna_microprep_plus_kit_20190411.pdf) (ZymoResearch; PDF) according to the manufacturer's protocol for liquids/cells in RNAlater.
 

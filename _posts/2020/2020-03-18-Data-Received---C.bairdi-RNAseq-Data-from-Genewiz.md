@@ -9,6 +9,7 @@ tags:
   - Chionoecetes bairdi
 categories:
   - Data Received
+  - Tanner Crab RNAseq
 ---
 We received the RNAseq data from the [RNA that was sent out by Grace on 20200212](https://grace-ac.github.io/sent-crab-rna-genewiz/).
 

@@ -10,7 +10,7 @@ tags:
   - Tanner crab
   - snow crab
 categories:
-  - Miscellaneous
+  - Tanner Crab RNAseq
 ---
 As part of addressing [this GitHub issue, to generate an additional _C.bairdi_ transcriptome](https://github.com/RobertsLab/resources/issues/1135), I needed to extract the [reads ID'ed via BLASTX against the _C.opilio_ genome on 20210312](https://robertslab.github.io/sams-notebook/2021/03/12/DIAMOND-BLASTx-C.bairdi-RNAseq-vs-C.opilio-Genome-Proteins-on-Mox.html). Read extractions were performed using [`SeqKit`](https://bioinf.shenwei.me/seqkit/) on Mox.
 

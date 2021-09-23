@@ -9,7 +9,7 @@ tags:
   - Qubit
   - RNA HS Assay
 categories:
-  - Miscellaneous
+  - Tanner Crab RNAseq
 ---
 
 In the continuing struggle to isolate RNA from the _Chionoecetes bairdi_ hemolymph preserved in RNAlater, Pam managed to find the Quick-DNA-RNA Microprep Plus Kit (ZymoResearch) as a potential option. We received a free sample of the kit and so I gave it a shot. Grace pulled 10 samples she'd previously used to isolate RNA (and was unable to get anything out of virtually all of them using the RNeasy Plus Micro Kit (Qiagen)) for me to try out this new kit:

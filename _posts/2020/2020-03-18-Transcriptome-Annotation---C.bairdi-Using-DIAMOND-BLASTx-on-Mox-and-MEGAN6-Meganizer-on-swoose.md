@@ -12,7 +12,7 @@ tags:
   - meganizer
   - Chionoecetes bairdi
 categories:
-  - Miscellaneous
+  - Tanner Crab RNAseq
 ---
 [After receiving/trimming the latest round of _C.bairdi_ RNAseq data on 20200318](https://robertslab.github.io/sams-notebook/2020/03/18/TrimmingQCMultiQC-C.bairdi-RNAseq-FastQ-with-fastp-on-Mox.html), need to get the data ready to perform taxonomic selection of sequencing reads. To do this, I first need to run [DIAMOND BLASTx](https://github.com/bbuchfink/diamond), then "meganize" the output files in preparation for loading into [MEGAN6](https://uni-tuebingen.de/fakultaeten/mathematisch-naturwissenschaftliche-fakultaet/fachbereiche/informatik/lehrstuehle/algorithms-in-bioinformatics/software/megan6/), which will allow for taxonomic-specific read separation.
 

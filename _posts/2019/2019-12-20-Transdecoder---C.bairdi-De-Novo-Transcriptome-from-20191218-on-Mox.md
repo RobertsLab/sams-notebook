@@ -8,7 +8,7 @@ tags:
   - Chionoecetes bairdi
   - mox
 categories:
-  - Miscellaneous
+  - Tanner Crab RNAseq
 ---
 
 [Ran Trinity to _de novo_ assemble the _C.bairdi_ RNAseq data we had on 20191218](https://robertslab.github.io/sams-notebook/2019/12/18/Transcriptome-Assembly-C.bairdi-Trimmed-RNAseq-Using-Trinity-on-Mox.html) and now will begin annotating the transcriptome using TransDecoder on Mox.

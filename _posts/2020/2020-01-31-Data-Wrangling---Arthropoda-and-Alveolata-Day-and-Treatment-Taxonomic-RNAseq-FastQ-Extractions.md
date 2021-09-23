@@ -8,7 +8,7 @@ tags:
   - Chionoecetes bairdi
   - MEGAN6
 categories:
-  - Miscellaneous
+  - MiscellTanner Crab RNAseqaneous
 ---
 After using MEGAN6 to [extract _Arthropoda_ and _Alveolata_ reads from our RNAseq data on 20200114](https://robertslab.github.io/sams-notebook/2020/01/14/RNAseq-Reads-Extractions-C.bairdi-Taxonomic-Reads-Extractions-with-MEGAN6-on-swoose.html), I had then extracted taxonomic-specific reads and aggregated each into basic Read 1 and Read 2 FastQs to simplify [transcriptome assembly for _C.bairdi_](https://robertslab.github.io/sams-notebook/2020/01/22/Transcriptome-Assembly-C.bairdi-with-MEGAN6-Taxonomy-specific-Reads-with-Trinity-on-Mox.html) and [for _Hematodinium_](https://robertslab.github.io/sams-notebook/2020/01/22/Transcriptome-Assembly-Hematodinium-with-MEGAN6-Taxonomy-specific-Reads-with-Trinity-on-Mox.html). That was fine and all, but wasn't fully thought through.
 

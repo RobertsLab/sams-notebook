@@ -11,7 +11,7 @@ tags:
   - Qubit3.0
   - Qubit hsRNA assay
 categories:
-  - Miscellaneous
+  - Tanner Crab RNAseq
 ---
 [After the failure to obtain RNA from _any_ _C.bairdi_ hemocytes pellets (out of 24 samples processed) on 20200117](https://robertslab.github.io/sams-notebook/2020/01/17/RNA-Isolation-and-Quantification-C.bairdi-Hemolymph-Pellets-in-RNAlater.html), I decided to isolate RNA from just a subset of that group to determine if I screwed something up last time or something. Also, I am testing two different preparations of the kit-supplied DNase I: one Kaitlyn prepped and a fresh preparation that I made. Admittedly, I'm not doing the "proper" testing by trying the different DNase preps on the same exact sample, but it'll do. I just want to see if I get some RNA from these samples this time...
 

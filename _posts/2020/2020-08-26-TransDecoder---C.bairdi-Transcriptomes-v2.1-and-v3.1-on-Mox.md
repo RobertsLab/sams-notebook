@@ -9,7 +9,7 @@ tags:
   - transdecoder
   - mox
 categories:
-  - Miscellaneous
+  - Tanner Crab RNAseq
 ---
 To continue annotation of our _C.bairdi_ v2.1 & v3.1 transcriptome assemblies, I needed to run [TransDecoder](https://github.com/TransDecoder/TransDecoder/wiki) before performing the more thorough annotation with [Trinotate](https://github.com/Trinotate/Trinotate.github.io/wiki).
 

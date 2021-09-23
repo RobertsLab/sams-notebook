@@ -9,7 +9,7 @@ tags:
   - annotate
   - mox
 categories:
-  - Miscellaneous
+  - Tanner Crab RNAseq
 ---
 After performing [_de novo_ assembly on our _Hematodinium_ MEGAN6 taxonomic-specific RNAseq data on 20200122](https://robertslab.github.io/sams-notebook/2020/01/22/Transcriptome-Assembly-Hematodinium-with-MEGAN6-Taxonomy-specific-Reads-with-Trinity-on-Mox.html) and performing [BLASTx annotation on 20200123](https://robertslab.github.io/sams-notebook/2020/01/23/Transcriptome-Annotation-Hematodinium-MEGAN-Trinity-Assembly-Using-DIAMOND-BLASTx-on-Mox.html), I continued the annotation process by running [Trinotate](https://github.com/Trinotate/Trinotate.github.io/wiki).
 

@@ -9,7 +9,7 @@ tags:
   - Tanner crab
   - MEGAN6
 categories:
-  - Miscellaneous
+  - Tanner Crab RNAseq
 ---
 [I previously created a _C.bairdi_ _de novo_ transcriptome assembly with Trinity from the MEGAN6 taxonomic-specific reads for _Arthropoda_ on 20200122](https://robertslab.github.io/sams-notebook/2020/01/22/Transcriptome-Assembly-C.bairdi-with-MEGAN6-Taxonomy-specific-Reads-with-Trinity-on-Mox.html) and decided to assess its "completeness" using BUSCO and the `metazoa_odb9` database.
 

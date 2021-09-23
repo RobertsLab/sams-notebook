@@ -10,7 +10,7 @@ tags:
   - mox
   - Chionoecetes bairdi
 categories:
-  - Miscellaneous
+  - Tanner Crab RNAseq
 ---
 In preparation for complete transcriptome annotation of the [_C.bairdi_ _de novo_ assembly fro 20191218](https://robertslab.github.io/sams-notebook/2019/12/18/Transcriptome-Assembly-C.bairdi-Trimmed-RNAseq-Using-Trinity-on-Mox.html), I needed to run BLASTx. The assembly was BLASTed against the SwissProt database that comes with [Trinotate](https://github.com/Trinotate/Trinotate.github.io/wiki). Initial BLAST output format selected was format 11 (i.e. ASN format), as this allows for simple conversion between different formats later on, if desired.
 

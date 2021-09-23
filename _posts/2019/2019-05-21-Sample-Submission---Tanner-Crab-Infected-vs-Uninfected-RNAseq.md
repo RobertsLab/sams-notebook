@@ -8,7 +8,8 @@ tags:
   - RNA
   - Chionoecetes bairdi
 categories:
-  - Miscellaneous
+  - Tanner Crab RNAseq
+  - Samples Submitted
 ---
 After [reviewing our options for sample pooling](https://robertslab.github.io/sams-notebook/2019/05/14/Library-Decisions-C.bairdi-RNAs-for-Library-Pools.html), we decided to do a comparison of Infected vs. Uninfected crabs.
 

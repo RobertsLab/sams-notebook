@@ -11,7 +11,7 @@ tags:
   - meganizer
   - Chionoecetes bairdi
 categories:
-  - Miscellaneous
+  - Tanner Crab RNAseq
 ---
 Although I previously [annotated](https://robertslab.github.io/sams-notebook/2019/12/25/Transcriptome-Annotation-C.bairdi-Trinity-Assembly-Trinotate-on-Mox.html) our [_C.bairdi_ transcriptome from 20191218](https://robertslab.github.io/sams-notebook/2019/12/18/Transcriptome-Assembly-C.bairdi-Trimmed-RNAseq-Using-Trinity-on-Mox.html), I realized that the assembly and annotations were combine infected/uninfected samples, possibly making separating crab/_Hematodinium_ sequences a bit more difficult.
 

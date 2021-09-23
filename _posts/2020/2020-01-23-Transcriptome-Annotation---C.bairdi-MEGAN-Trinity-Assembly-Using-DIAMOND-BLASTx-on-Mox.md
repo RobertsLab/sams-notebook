@@ -9,7 +9,7 @@ tags:
   - mox
   - Chionoecetes bairdi
 categories:
-  - Miscellaneous
+  - Tanner Crab RNAseq
 ---
 As part of annotating the [transcriptome assembly from the MEGAN6 _C.bairdi_ taxonomic-specific reads](https://robertslab.github.io/sams-notebook/2020/01/22/Transcriptome-Assembly-C.bairdi-with-MEGAN6-Taxonomy-specific-Reads-with-Trinity-on-Mox.html), I need to run DIAMOND BLASTx to use with Trinotate.
 

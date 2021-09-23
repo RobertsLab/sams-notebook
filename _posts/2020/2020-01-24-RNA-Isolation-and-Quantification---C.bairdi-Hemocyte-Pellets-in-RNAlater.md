@@ -11,7 +11,7 @@ tags:
   - Chionoecetes bairdi
   - Quick DNA-RNA Microprep Plus
 categories:
-  - Miscellaneous
+  - Tanner Crab RNAseq
 ---
 Isolated RNA from the following  hemolymph pellet samples:
 

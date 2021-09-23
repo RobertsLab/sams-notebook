@@ -10,7 +10,7 @@ tags:
   - Chionoecetes bairdi
   - mox
 categories:
-  - Miscellaneous
+  - Tanner Crab RNAseq
 ---
 To continue annotation of our [_C.bairdi_ v2.1 transcriptome assembly](https://robertslab.github.io/sams-notebook/2020/06/05/Sequence-Extractions-C.bairdi-Transcriptomes-v2.0-and-v3.0-Excluding-Alveolata-with-MEGAN6-on-Swoose.html)], I wanted to run [Trinotate](https://github.com/Trinotate/Trinotate.github.io/wiki).
 

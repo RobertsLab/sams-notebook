@@ -9,7 +9,7 @@ tags:
   - transcriptome
   - mox
 categories:
-  - Miscellaneous
+  - Tanner Crab RNAseq
 ---
 [I previously created a _C.bairdi_ _de novo_ transcriptome assembly v4.0 with Trinity from all our _C.bairdi_ RNAseq reads which had BLASTx matches to the _C.opilio_ genome](https://robertslab.github.io/sams-notebook/2021/03/17/Transcriptome-Assembly-C.bairdi-Transcriptome-v4.0-Using-Trinity-on-Mox.html) and decided to assess its "completeness" using BUSCO and the `metazoa_odb9` database.
 

@@ -12,7 +12,7 @@ tags:
   - assembly
   - Chionoecetes bairdi
 categories:
-  - Miscellaneous
+  - Tanner Crab RNAseq
 ---
 Ran a _de novo_ assembly using [the extracted reads classified under _Arthropoda_ from 20200122](https://robertslab.github.io/sams-notebook/2020/01/22/Data-Wrangling-Arthropoda-and-Alveolata-Taxonomic-RNAseq-FastQ-Extractions.html) (for reference, these include RNAseq data using a newly established "shorthand": 2018, 2019). The assembly was performed with Trinity on Mox.
 

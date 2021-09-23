@@ -9,7 +9,7 @@ tags:
   - multiqc
   - Chionoecetes bairdi
 categories:
-  - Miscellaneous
+  - Tanner Crab RNAseq
 ---
 After [receiving the rest of the crab data and concatenating it all together](https://robertslab.github.io/sams-notebook/2019/10/24/Data-Received-C.bairdi-RNAseq-Day9-12-26-Infected-Uninfected.html), I ran FastQC and MultiQC on the FastQ files.
 

@@ -11,7 +11,7 @@ tags:
   - Trinity
   - Trinotate
 categories:
-  - Miscellaneous
+  - Tanner Crab RNAseq
 ---
 Getting ready to run some qPCRs and first we need to confirm that our RNA is actually DNA-free. Before we can do that, we need some primers to use, so I decided to semi-arbitrarily select three different gene targets from our [MEGAN6 taxonomic-specific Trinity assembly from 20200122](https://robertslab.github.io/sams-notebook/2020/01/22/Transcriptome-Assembly-C.bairdi-with-MEGAN6-Taxonomy-specific-Reads-with-Trinity-on-Mox.html).
 

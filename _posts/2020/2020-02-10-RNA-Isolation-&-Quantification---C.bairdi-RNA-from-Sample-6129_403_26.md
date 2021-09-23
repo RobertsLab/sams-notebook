@@ -10,7 +10,7 @@ tags:
   - tanner crab
   - Chionoecetes bairdi
 categories:
-  - Miscellaneous
+  - Tanner Crab RNAseq
 ---
 Since I was [isolating gDNA from _C.bairdi_ 6129_403_26 hemolymph](https://robertslab.github.io/sams-notebook/2020/02/10/DNA-Isolation-&-Quantification-Additional-C.bairdi-gDNA-from-Sample-6129_403_26.html), I figured I might as well co-isolate RNA since I was using the Quick DNA/RNA Microprep Plus Kit (ZymoResearch).
 

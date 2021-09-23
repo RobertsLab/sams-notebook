@@ -9,7 +9,7 @@ tags:
   - mox
   - transcriptome
 categories:
-  - Miscellaneous
+  - Tanner Crab RNAseq
 ---
 UPDATE: I'll lead in with the fact that this failed with an error message that I can't figure out. This will save the reader some time. I've posted the problem as [an Issue on the DETONATE GitHub repo](https://github.com/deweylab/detonate/issues/1), however it's clear that this software is no longer maintained, as the repo hasn't been updated in >3yrs; even lacking responses to Issues that are that old.
 

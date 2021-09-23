@@ -8,7 +8,7 @@ tags:
   - trinotate
   - Chionoecetes bairdi
 categories:
-  - Miscellaneous
+  - Tanner Crab RNAseq
 ---
 After performing [_de novo_ assembly on our Tanner crab RNAseq data on 20191218](https://robertslab.github.io/sams-notebook/2019/12/18/Transcriptome-Assembly-C.bairdi-Trimmed-RNAseq-Using-Trinity-on-Mox.html) and performing [BLASTx annotation on 20191224](https://robertslab.github.io/sams-notebook/2019/12/24/Transcriptome-Annotation-C.bairdi-Trinity-Assembly-BLASTx-on-Mox.html), I continued the annotation process by running [Trinotate](https://github.com/Trinotate/Trinotate.github.io/wiki).
 

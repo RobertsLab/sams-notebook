@@ -9,7 +9,7 @@ tags:
   - Qubit
   - Chionoecetes bairdi
 categories:
-  - Miscellaneous
+  - Tanner Crab RNAseq
 ---
 TL;DR - Recovered absolutely no RNA from any sample! However, [I did recover DNA from each sample](https://robertslab.github.io/sams-notebook/2020/01/17/DNA-Isolation-and-Quantification-C.bairdi-Hemolymph-Pellets-in-RNAlater.html).
 

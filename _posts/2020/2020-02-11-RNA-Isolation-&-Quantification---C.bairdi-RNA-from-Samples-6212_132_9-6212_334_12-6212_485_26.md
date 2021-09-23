@@ -9,7 +9,7 @@ tags:
   - Qubit3.0
   - Qubit hsRNA assay
 categories:
-  - Miscellaneous
+  - Tanner Crab RNAseq
 ---
 We are supposed to get RNA sent out for sequencing today, but it turns out that a few of the designated samples have insufficient RNA in them. So, I'm going to attempt to isolate enough RNA from the following samples in order to have enough RNA to send to Genewiz today:
 

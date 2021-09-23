@@ -11,7 +11,7 @@ tags:
   - assembly
   - RNAseq
 categories:
-  - Miscellaneous
+  - Tanner Crab RNAseq
 ---
 Continuing to addressing [this GitHub issue, to generate an additional _C.bairdi_ transcriptome](https://github.com/RobertsLab/resources/issues/1135), I finally got to the point of actually running the assembly using Trinity using [the extracted reads from 20210316](https://robertslab.github.io/sams-notebook/2021/03/16/Read-Extractions-C.bairdi-RNAseq-Reads-from-C.opilio-BLASTx-Matches-with-seqkit-on-Mox.html). Those reads were [identified via BLASTx agianst the _C.opilio_ genome proteins on 20210312](https://robertslab.github.io/sams-notebook/2021/03/12/DIAMOND-BLASTx-C.bairdi-RNAseq-vs-C.opilio-Genome-Proteins-on-Mox.html). Trinty was run on Mox.
 

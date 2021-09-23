@@ -11,7 +11,7 @@ tags:
   - fastp
   - multiqc
 categories:
-  - Miscellaneous
+  - Tanner Crab RNAseq
 ---
 After [receiving our RNAseq data from Genewiz earlier today](https://robertslab.github.io/sams-notebook/2020/03/18/Data-Received-C.bairdi-RNAseq-Data-from-Genewiz.html), needed to run FastQC, trim, check trimmed reads with FastQC.
 

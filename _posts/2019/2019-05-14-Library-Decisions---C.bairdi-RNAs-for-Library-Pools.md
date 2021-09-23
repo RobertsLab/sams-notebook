@@ -7,7 +7,7 @@ tags:
   - RNA
   - Chionoecetes bairdi
 categories:
-  - Miscellaneous
+  - Tanner Crab RNAseq
 ---
 I isolated a bunch of tanner crab RNA on [20190430](https://robertslab.github.io/sams-notebook/2019/04/30/RNA-Isolation-and-Quantification-C.bairdi-Hemolymph-Pellet-in-RNAlater.html) and Steven asked me to try to figure out some options for RNAseq libray pools.
 

@@ -10,7 +10,7 @@ tags:
   - Chionoecetes opilio
   - RNAseq
 categories:
-  - Miscellaneous
+  - Tanner Crab RNAseq
 ---
 We want to generate an additional [Tanner crab (_Chionoecetes bairdi_)](http://en.wikipedia.org/wiki/Chionoecetes_bairdi) transcriptome, per [this GitHub issue, to generate an additional _C.bairdi_ transcriptome](https://github.com/RobertsLab/resources/issues/1135). This has come about due to the release of the genome of a very closely related crab species, [_Chionoecetes opilio_ (Snow crab)](https://en.wikipedia.org/wiki/Chionoecetes_opilio).
 

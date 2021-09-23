@@ -14,7 +14,7 @@ tags:
   - MEGAN6
   - taxonomy
 categories:
-  - Miscellaneous
+  - Tanner Crab RNAseq
 ---
 After using MEGAN6 to [extract _Arthropoda_ and _Alveolata_ reads from our RNAseq data on 20200114](https://robertslab.github.io/sams-notebook/2020/01/14/RNAseq-Reads-Extractions-C.bairdi-Taxonomic-Reads-Extractions-with-MEGAN6-on-swoose.html) (for reference, these include RNAseq data using a newly established "shorthand": 2018, 2019), I realized that the FastA headers were incomplete and did not distinguish between paired reads. Here's an example:
 

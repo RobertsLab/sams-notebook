@@ -10,7 +10,7 @@ tags:
   - Tanner crab
   - Chionoecetes bairdi
 categories:
-  - Miscellaneous
+  - Tanner Crab RNAseq
 ---
 Based on [qPCR results testing for residual gDNA from 20200225](https://robertslab.github.io/sams-notebook/2020/02/25/qPCR-C.bairdi-Primer-Tests-on-gDNA.html), a set of 24 samples were identified that required DNase treatment and/or additional RNA. I opted to just isolate more RNA from all samples, since the kit includes a DNase step and avoids diluting the existing RNA using the Turbo DNA-free Kit that we usully use. Isolated RNA using the [Quick DNA/RNA Microprep Kit](https://github.com/RobertsLab/resources/blob/master/protocols/Commercial_Protocols/ZymoResearch_quick-dna-rna_microprep_plus_kit_20190411.pdf) (ZymoResearch; PDF) according to the manufacturer's protocol for liquids/cells in RNAlater.
 

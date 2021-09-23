@@ -9,7 +9,7 @@ tags:
   - Qubit3.0
   - hsRNA assay
 categories:
-  - Miscellaneous
+  - Tanner Crab RNAseq
 ---
 Isolated RNA from the following  hemolymph pellet samples:
 

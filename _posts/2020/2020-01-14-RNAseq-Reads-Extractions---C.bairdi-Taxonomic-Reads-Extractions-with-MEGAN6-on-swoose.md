@@ -9,7 +9,7 @@ tags:
   - Chionoecetes bairdi
   - swoose
 categories:
-  - Miscellaneous
+  - Tanner Crab RNAseq
 ---
 [I previously ran BLASTx and "meganized" the output DAA files on 20200103](https://robertslab.github.io/sams-notebook/2020/01/03/Transcriptome-Annotation-C.bairdi-Using-DIAMOND-BLASTx-on-Mox-and-MEGAN6-Meganizer.html) (for reference, these include RNAseq data using a newly established "shorthand": 2018, 2019) and now need to use MEGAN6 to bin the results into the proper taxonomies. This is accomplished using the MEGAN6 graphical user interface (GUI). This is how the process goes:
 

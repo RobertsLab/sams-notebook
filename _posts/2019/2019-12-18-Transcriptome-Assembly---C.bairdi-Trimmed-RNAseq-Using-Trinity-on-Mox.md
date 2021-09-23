@@ -11,7 +11,7 @@ tags:
   - mox
   - 20191218_cbai_trinity_RNAse
 categories:
-  - Miscellaneous
+  - Tanner Crab RNAseq
 ---
 Earlier today, [I trimmed our existing _C.bairdi_ RNAseq data](https://robertslab.github.io/sams-notebook/2019/12/18/TrimmingFastQCMultiQC-C.bairdi-RNAseq-FastQ-with-fastp-on-Mox.html), as part of producing generating a transcriptome ([per this GitHub issue](https://github.com/RobertsLab/resources/issues/808)). After trimming, I performed a _de novo_ assembly using [Trinity (v2.9.0)](https://github.com/trinityrnaseq/trinityrnaseq) with the stranded library option (`--SS_lib_type RF`) on Mox.
 

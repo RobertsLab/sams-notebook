@@ -11,7 +11,7 @@ tags:
   - RNAseq
   - Chionoecetes bairdi
 categories:
-  - Miscellaneous
+  - Tanner Crab RNAseq
 ---
 I had previously attempted to [compare all of our _C.bairdi_ transcriptome assemblies using DETONATE on 20200601](https://robertslab.github.io/sams-notebook/2020/06/01/Transcriptome-Comparison-C.bairdi-Transcriptomes-Evaluations-with-DETONATE-on-Mox.html), but, due to hitting time limits on Mox, failed to successfully get the analysis to complete. I realized that the limiting factor was performing FastQ alignments, so I decided to run this step independently to see if I could at least get that step resolved.  [DETONATE (rsem-eval)](http://deweylab.biostat.wisc.edu/detonate/) will accept BAM files as input, so I'm hoping I can power through this alignment step and then provided  [DETONATE (rsem-eval)](http://deweylab.biostat.wisc.edu/detonate/) with the BAM files.
 

@@ -10,7 +10,7 @@ tags:
   - tanner crab
   - mox
 categories:
-  - Miscellaneous
+  - Tanner Crab RNAseq
 ---
 Grace/Steven asked me to generate a _de novo_ transcriptome assembly of our current _C.bairdi_ RNAseq data in [this GitHub issue](https://github.com/RobertsLab/resources/issues/808). As part of that, I needed to quality trim the data first. Although I could automate this as part of the transcriptome assembly (Trinity has Trimmomatic built-in), I would be unable to view the post-trimming results until after the assembly was completed. So, I opted to do the trimming step separately, to evaluate the data prior to assembly.
 
