@@ -20,7 +20,7 @@ Previously performed quality trimming on the [_Crassostrea virginica_ (Eastern o
 
 Metadata for this project is here:
 
-https://github.com/RobertsLab/project-oyster-comparative-omics/blob/master/metadata/Virginica-Final-DNA-RNA-Yield.csv
+[https://github.com/RobertsLab/project-oyster-comparative-omics/blob/master/metadata/Virginica-Final-DNA-RNA-Yield.csv](https://github.com/RobertsLab/project-oyster-comparative-omics/blob/master/metadata/Virginica-Final-DNA-RNA-Yield.csv)
 
 This was run on Mox.
 
@@ -187,7 +187,7 @@ Output folder:
 
 This generates a set of 8 [`HISAT2`](https://daehwankimlab.github.io/hisat2/) genome index files (`*.ht2`), as well as an exon and a splice sites file:
 
-- [20210720_cvir_GCF_002022765.2_hisat2-build-index-exons-splices/cvir_GCF_002022765.2_hisat2_exons.tab(https://gannet.fish.washington.edu/Atumefaciens/20210720_cvir_GCF_002022765.2_hisat2-build-index-exons-splices/cvir_GCF_002022765.2_hisat2_exons.tab)
+- [20210720_cvir_GCF_002022765.2_hisat2-build-index-exons-splices/cvir_GCF_002022765.2_hisat2_exons.tab](https://gannet.fish.washington.edu/Atumefaciens/20210720_cvir_GCF_002022765.2_hisat2-build-index-exons-splices/cvir_GCF_002022765.2_hisat2_exons.tab)
 
 - [0210720_cvir_GCF_002022765.2_hisat2-build-index-exons-splices/cvir_GCF_002022765.2_hisat2_splice_sites.tab](https://gannet.fish.washington.edu/Atumefaciens/20210720_cvir_GCF_002022765.2_hisat2-build-index-exons-splices/cvir_GCF_002022765.2_hisat2_splice_sites.tab)
 
