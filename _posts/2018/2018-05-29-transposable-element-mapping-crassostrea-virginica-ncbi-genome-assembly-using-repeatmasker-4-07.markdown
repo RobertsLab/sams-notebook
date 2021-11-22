@@ -27,38 +27,20 @@ I ran RepeatMasker (v4.07) with RepBase-20170127 and RMBlast 2.6.0 with species 
 All commands were documented in a Jupyter Notebook (GitHub):
 
 
-
-
-
   * [20180529_roadrunner_virginica_TEs_repeatmasker.ipynb](https://github.com/sr320/LabDocs/blob/master/jupyter_nbs/sam/20180529_roadrunner_virginica_TEs_repeatmasker.ipynb)
 
+---
 
-
-
-
-* * *
-
-
-
-
-
-##### RESULTS:
+### RESULTS:
 
 
 
 Output folder:
 
-
-
-
-
   * [20180529_virginica_repeatmasker](https://owl.fish.washington.edu/Athaliana/20180529_virginica_repeatmasker/)
 
 
-
 Output table (GFF):
-
-
 
   * [GCF_002022765.2_C_virginica-3.0_genomic.fasta.out.gff](https://owl.fish.washington.edu/Athaliana/20180529_virginica_repeatmasker/GCF_002022765.2_C_virginica-3.0_genomic.fasta.out.gff)
 
@@ -66,15 +48,10 @@ Output table (GFF):
 
 Summary table (text):
 
-
-
   * [GCF_002022765.2_C_virginica-3.0_genomic.fasta.tbl](https://owl.fish.washington.edu/Athaliana/20180529_virginica_repeatmasker/GCF_002022765.2_C_virginica-3.0_genomic.fasta.tbl)
 
-
-
-
-    
-    <code>==================================================
+    ```
+    ==================================================
     file name: GCF_002022765.2_C_virginica-3.0_genomic.fasta
     sequences:            11
     total length:  684741128 bp  (684675328 bp excl N/X-runs)
@@ -134,4 +111,4 @@ Summary table (text):
             
     run with rmblastn version 2.6.0+
     
-    </code>
+    ```
