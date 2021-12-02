@@ -13,7 +13,7 @@ categories:
 ---
 UPDATE: I'll lead in with the fact that this failed with an error message that I can't figure out. This will save the reader some time. I've posted the problem as [an Issue on the DETONATE GitHub repo](https://github.com/deweylab/detonate/issues/1), however it's clear that this software is no longer maintained, as the repo hasn't been updated in >3yrs; even lacking responses to Issues that are that old.
 
-Here's the error message and some other details that could be useful for troubleshooting (which are beyond my knowledge - although I suspect that the `XM` tag is the culprit and the first entry in the BAM file has `XM:i:2` and the error message might suggest that `2` is not an acceptable value e.g. `Assertion `val == 0 || val == 1 || val == 5' failed.`):
+Here's the error message and some other details that could be useful for troubleshooting (which are beyond my knowledge - although I suspect that the `XM` tag is the culprit and the first entry in the BAM file has `XM:i:2` and the error message might suggest that `2` is not an acceptable value e.g. `Assertion val == 0 || val == 1 || val == 5' failed.`):
 
 
 ```
