@@ -10,7 +10,7 @@ tags:
 categories:
   - Tanner Crab RNAseq
 ---
-Began annotation of `cbai_transcriptome_v4.0.fasta` [Trinity _de novo_ assembly from 20210317(https://robertslab.github.io/sams-notebook/2021/03/17/Transcriptome-Assembly-C.bairdi-Transcriptome-v4.0-Using-Trinity-on-Mox.html)] using TransDecoder on Mox. This will be used as a component of Trinotate annotation downstream.
+Began annotation of `cbai_transcriptome_v4.0.fasta` [Trinity _de novo_ assembly from 20210317](https://robertslab.github.io/sams-notebook/2021/03/17/Transcriptome-Assembly-C.bairdi-Transcriptome-v4.0-Using-Trinity-on-Mox.html)] using TransDecoder on Mox. This will be used as a component of Trinotate annotation downstream.
 
 SBATCH script (GitHub):
 
