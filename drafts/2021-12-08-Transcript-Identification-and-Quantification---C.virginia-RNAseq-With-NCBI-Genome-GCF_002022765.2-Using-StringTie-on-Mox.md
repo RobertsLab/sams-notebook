@@ -284,8 +284,11 @@ echo "${PATH}" | tr : \\n
 ---
 
 #### RESULTS
+Runtime was a little over 2.5 days:
+
+![StringTie runtime on Mox](https://github.com/RobertsLab/sams-notebook/blob/master/images/screencaps/20210726_cvir_stringtie_GCF_002022765.2_isoforms_runtime.png?raw=true)
 
 Output folder:
 
-- []()
+- [20210726_cvir_stringtie_GCF_002022765.2_isoforms/](https://gannet.fish.washington.edu/Atumefaciens/20210726_cvir_stringtie_GCF_002022765.2_isoforms/)
 
