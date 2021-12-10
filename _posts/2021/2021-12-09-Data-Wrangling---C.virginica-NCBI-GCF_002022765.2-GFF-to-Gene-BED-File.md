@@ -39,7 +39,7 @@ Output folder:
 
       - MD5 checksum:
 
-        - `c61136062edfa2eac851baf3285e3646`
+        - `c8f203de591c0608b96f4299c0f847dc`
 
 
 The resulting BED file was renamed to `C_virginica-3.0_Gnomon_genes.bed` for consistency, added to the common storage location for _C.virginica_ genome tracks ([http://eagle.fish.washington.edu/Cvirg_tracks/https://eagle.fish.washington.edu/Cvirg_tracks/C_virginica-3.0_Gnomon_genes.bed](http://eagle.fish.washington.edu/Cvirg_tracks/https://eagle.fish.washington.edu/Cvirg_tracks/C_virginica-3.0_Gnomon_genes.bed)), and added to the [Roberts Lab Handbook - Genomic Resources page](https://robertslab.github.io/resources/Genomic-Resources/#crassostrea-virginica).
