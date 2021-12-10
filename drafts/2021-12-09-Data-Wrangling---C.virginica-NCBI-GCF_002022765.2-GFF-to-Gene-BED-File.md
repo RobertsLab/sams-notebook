@@ -31,5 +31,15 @@ Jupyter Notebook (GitHub):
 
 Output folder:
 
-- []()
+- [20211209_cvir_gff-to-bed/](https://gannet.fish.washington.edu/Atumefaciens/20211209_cvir_gff-to-bed/)
 
+  - BED file (1.7MB)
+
+    - [20211209_cvir_gff-to-bed/20211209_cvir_GCF_002022765.2_genes.bed](https://gannet.fish.washington.edu/Atumefaciens/20211209_cvir_gff-to-bed/20211209_cvir_GCF_002022765.2_genes.bed)
+
+      - MD5 checksum:
+
+        - `c61136062edfa2eac851baf3285e3646`
+
+
+The resulting BED file was renamed to `C_virginica-3.0_Gnomon_genes.bed` for consistency, added to the common storage location for _C.virginica_ genome tracks ([http://eagle.fish.washington.edu/Cvirg_tracks/https://eagle.fish.washington.edu/Cvirg_tracks/C_virginica-3.0_Gnomon_genes.bed](http://eagle.fish.washington.edu/Cvirg_tracks/https://eagle.fish.washington.edu/Cvirg_tracks/C_virginica-3.0_Gnomon_genes.bed)), and added to the [Roberts Lab Handbook - Genomic Resources page](https://robertslab.github.io/resources/Genomic-Resources/#crassostrea-virginica).
