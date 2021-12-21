@@ -55,7 +55,28 @@ All RNA was stored @ -80<sup>o</sup>C in [Sam's RNA Box #2](https://docs.google.
 
 #### RESULTS
 
-Output folder:
+Raw Qubit data (Google Sheet):
 
-- []()
+- [20211220_qubit_rna_salmon](https://docs.google.com/spreadsheets/d/1NtuztNyNWf32ggePzefrvC0TNMT2QL9FQd8EClEZiEc/edit?usp=sharing)
 
+Summary table:
+
+| Sample | Tissue | Concentration (ng/uL) | Yield (ng) |
+|--------|--------|-----------------------|------------|
+| 2A     | brain  | 0                     | 0          |
+| 2B     | liver  | 190                   | 9500       |
+| 2C     | gonad  | 196                   | 9800       |
+| 3A     | brain  | 0.602                 | 30.1       |
+| 3B     | liver  | 186                   | 9300       |
+| 3C     | gonad  | 51.8                  | 2590       |
+| 23A    | brain  | 0                     | 0          |
+| 23B    | liver  | 200                   | 10000      |
+| 23C    | gonad  | 200                   | 20000      |
+| 25A    | brain  | 20.8                  | 1040       |
+| 25B    | liver  | 200                   | 20000      |
+| 25C    | gonad  | 114                   | 22800      |
+
+
+Well, it's clear that the brain isolations did not go well. Ugh. I might consider isolating some additional individuals in order to have a full suite of RNA from an individual's set of tissues. For the brain tissue, I'd adjust things by increasing the final volume of TriReagent to accommodate the amount of insoluble fat. I'd also perform multiple rounds of "pelleting" the sample post-homogenization in order to minimize any fat carryover to the Direct-zol columns. An additional approach to the brain tissue would be to pulverize them under liquid nitrogen. This is always the best approach, but is often not the most practical.
+
+The remainder of the tissue samples had satisfactory yields (although, 3C is lower than expected). Will discuss results with Steven and decided how to proceed.
