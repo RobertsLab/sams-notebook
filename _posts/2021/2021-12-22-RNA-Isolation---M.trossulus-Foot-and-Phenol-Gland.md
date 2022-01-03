@@ -86,10 +86,10 @@ Summary table:
 | M.trossulus T10-F    | foot         | 188                  | 50         | 9400      |
 | M.trossulus T11-F    | foot         | 116                  | 200        | 23200     |
 | M.trossulus T12-F    | foot         | 132                  | 200        | 26400     |
-| M.trossulus T01-F PG | phenol gland | 158                  | 100        | 15800     |
-| M.trossulus T02-F PG | phenol gland | 92                   | 100        | 9200      |
-| M.trossulus T03-F PG | phenol gland | 70.4                 | 100        | 7040      |
-| M.trossulus T04-F PG | phenol gland | 44.4                 | 100        | 4440      |
-| M.trossulus T05-F PG | phenol gland | 65.8                 | 100        | 6580      |
-| M.trossulus T06-F PG | phenol gland | 95.2                 | 100        | 9520      |
+| M.trossulus T01-F PG | phenol gland | 158                  | 50         | 7900      |
+| M.trossulus T02-F PG | phenol gland | 92                   | 50         | 4600      |
+| M.trossulus T03-F PG | phenol gland | 70.4                 | 50         | 3520      |
+| M.trossulus T04-F PG | phenol gland | 44.4                 | 50         | 2220      |
+| M.trossulus T05-F PG | phenol gland | 65.8                 | 50         | 3290      |
+| M.trossulus T06-F PG | phenol gland | 95.2                 | 50         | 4760      |
 
