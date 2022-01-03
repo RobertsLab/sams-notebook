@@ -68,7 +68,7 @@ Raw Qubit data (Google Sheet):
 - [qubit_20211222_rna_mtro](https://docs.google.com/spreadsheets/d/1ge_0JnRNbKiFFEy-LIVvpjSzDS8wsE_ctyHV-3vmVFw/edit?usp=sharing)
 
 
-Secondly, yields from the foot tissues were extremely high and required multiple rounds of dilutions in order to get the concentrations within the linear range of the Qubit High Sensitivity assay. This led to a somewhat confusing set of raw qubit data (linked above), so I've put together a summary table to make things easier to follow:
+Yields from the foot tissues were extremely high and required multiple rounds of dilutions in order to get the concentrations within the linear range of the Qubit High Sensitivity assay. This led to a somewhat confusing set of raw qubit data (linked above), so I've put together a summary table to make things easier to follow:
 
 Summary table:
 
