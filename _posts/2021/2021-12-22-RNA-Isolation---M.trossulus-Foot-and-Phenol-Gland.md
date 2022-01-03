@@ -51,7 +51,7 @@ As part of a mussel project that Matt George has with the [Pacific States Marine
 
 Before I get into how RNA was isolated, I need to mention that I actually screwed up on the foot samples! I totally forgot that [I was only supposed to isolate RNA from the _phenol gland_!](https://github.com/RobertsLab/resources/issues/1352). Ugh. Can't believe this. This means I had to go back to each of the foot samples and isolate RNA from the remaining half of the phenol gland. Yeesh.
 
-RNA was isolated using TriReagent and the Direct-zol RNA Microprep Kit (ZymoResearch), with the DNase I on-column treatment step. Foot tissues were allowd to partially thaw to allow me to unfold/unbend the foot and then divided in half lengthwise (along the pedal groove) with a new razor blade. After realizing my screw up (mentioned above), I went back and dissected the phenol gland (essentially the most distal end of the foot). Forceps were rinsed in distilled H<sub>2</sub>O, soaked in 10% bleach solution for 10mins, and then rinsed in distilled H<sub>2</sub>O before re-use. All centrifugation steps were performed at 16,000g for 1.5mins. Here's a brief overview of the process.
+RNA was isolated using TriReagent and the Direct-zol RNA Microprep Kit (ZymoResearch), with the DNase I on-column treatment step. Foot tissues were allowed to partially thaw to allow me to unfold/unbend the foot and then divided in half lengthwise (along the pedal groove) with a new razor blade. After realizing my screw up (mentioned above), I went back and dissected the phenol gland (essentially the most distal end of the foot). Forceps were rinsed in distilled H<sub>2</sub>O, soaked in 10% bleach solution for 10mins, and then rinsed in distilled H<sub>2</sub>O before re-use. All centrifugation steps were performed at 16,000g for 1.5mins. Here's a brief overview of the process.
 
 Tissues were homogenized in 500uL of TriReagent with "disposable" platic mortar/pestle tubes (1.5mL). After homogenization, an additional 500uL of TriReagent was added to the tube, vortexed and incubated at RT for 10mins. Insoluble debris was pelleted and supernatant was transferred to a 2.0mL tube. An equal volume (1mL) of 100% ethanol was added to this supernatant and mixed thoroughly by pipetting. Direct-zol Microprep Kit protocol was followed from here on, including on-column DNase I treatment. Foot samples were eluted with 50uL of H<sub>2</sub>O, while phenol gland tissues were eluted with 100uL.
 
@@ -65,7 +65,7 @@ All RNA was stored @ -80<sup>o</sup>C in [Sam's RNA Box #2](https://docs.google.
 
 Raw Qubit data (Google Sheet):
 
-- [qubit_20211222_rna_oner](https://docs.google.com/spreadsheets/d/1ge_0JnRNbKiFFEy-LIVvpjSzDS8wsE_ctyHV-3vmVFw/edit?usp=sharing)
+- [qubit_20211222_rna_mtro](https://docs.google.com/spreadsheets/d/1ge_0JnRNbKiFFEy-LIVvpjSzDS8wsE_ctyHV-3vmVFw/edit?usp=sharing)
 
 
 Secondly, yields from the foot tissues were extremely high and required multiple rounds of dilutions in order to get the concentrations within the linear range of the Qubit High Sensitivity assay. This led to a somewhat confusing set of raw qubit data (linked above), so I've put together a summary table to make things easier to follow:
