@@ -21,7 +21,9 @@ Sample labelling was as follows:
 Numbers refer to individuals:
 
 1-15 are territorial individuals
+
 16-30 are social individuals
+
 Letters refer to tissues:
 
 (A) brain
@@ -57,3 +59,4 @@ SUMMARY TABLE:
 | 5A     | 1.23                 | 50         | 61.5      | brain  |
 | 20A    | 30.6                 | 50         | 1530      | brain  |
 
+The yield from 20A is good and should satisfy the goal of having RNA from two individuals within the "social" group. The yield from 5A is still low, but is potentially usable for RNAseq. I probably need to run an additional set of extractions from two more "territorial" brains in order to increase our flexibility in selecting individuals for sequencing, as well as have a better chance of having leftover RNA for other uses.
