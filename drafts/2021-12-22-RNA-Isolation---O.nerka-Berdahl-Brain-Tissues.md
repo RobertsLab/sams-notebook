@@ -45,3 +45,15 @@ All RNA was stored @ -80oC in Sam’s RNA Box #2, slots A1 - B3
 ---
 
 #### RESULTS
+
+Raw Qubit data (Google Sheet):
+
+- [20211222_qubit_oner](https://docs.google.com/spreadsheets/d/13Ki-2C7An2tI2bbQbOZsBWvijQhjNzJwoqk769HF8Fk/edit?usp=sharing)
+
+SUMMARY TABLE:
+
+| Sample | Concentration(ng/uL) | Volume(uL) | Yield(ng) | Tissue |
+|--------|----------------------|------------|-----------|--------|
+| 5A     | 1.23                 | 50         | 61.5      | brain  |
+| 20A    | 30.6                 | 50         | 1530      | brain  |
+
