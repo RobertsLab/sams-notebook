@@ -12,7 +12,43 @@ tags:
 categories: 
   - Miscellaneous
 ---
+As part of a mussel project that Matt George has with the [Pacific States Marine Fisheries Commission (PSMFC)](https://www.psmfc.org/), I'm helping by continuing isolating RNA from a relatively large number of samples. The samples are listed/described in [this GitHub Issue](https://github.com/RobertsLab/resources/issues/1352). Today, I isolated RNA from the following samples (the "F" indicates "foot", "PG" indicates "phenol gland", and "G" indicates "gill" tissues):
 
+- T118-F_PG
+
+- T119-F_PG
+
+- T14-F_PG
+
+- T15-F_PG
+
+- T16-F_PG
+
+- T17-F_PG
+
+- T19-F_PG
+
+- T21-F_PG
+
+- T23-F_PG
+
+- T25-F_PG
+
+- T26-F_PG
+
+- T27-F_PG
+
+- T118-G
+
+- T119-G
+
+- T14-G
+
+- T15-G
+
+- T16-G
+
+- T17-G
 
 
 ---
