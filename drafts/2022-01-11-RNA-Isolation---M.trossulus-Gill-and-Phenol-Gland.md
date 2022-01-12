@@ -75,4 +75,36 @@ All RNA was stored @ -80<sup>o</sup>C in [Sam's RNA Box #3](https://docs.google.
 
 #### RESULTS
 
+Raw Qubit data (Google Sheet):
 
+- [20220111_qubit_rna_mtro](https://docs.google.com/spreadsheets/d/1EnDi3RTvEhz8Z_cKLcBeA9H1mVbmib58VSH3ZSlb8gg/edit?usp=sharing)
+
+
+SUMMARY TABLE:
+
+| sample   | concentration(ng/uL) | volume(uL) | yield(ng) |
+|----------|----------------------|------------|-----------|
+| T19-G    | 79.6                 | 100        | 7960      |
+| T21-G    | 69.4                 | 100        | 6940      |
+| T23-G    | 108                  | 100        | 10800     |
+| T25-G    | 46                   | 100        | 4600      |
+| T26-G    | 168                  | 100        | 16800     |
+| T27-G    | 130                  | 100        | 13000     |
+| T29-F_PG | 89                   | 100        | 8900      |
+| T30-F_PG | 46.2                 | 100        | 4620      |
+| T31-F_PG | 74.2                 | 100        | 7420      |
+| T33-F_PG | 63.2                 | 100        | 6320      |
+| T34-F_PG | 97                   | 100        | 9700      |
+| T35-F_PG | 30.4                 | 100        | 3040      |
+| T36-F_PG | 37                   | 100        | 3700      |
+| T37-F_PG | 62.6                 | 100        | 6260      |
+| T38-F_PG | 84.2                 | 100        | 8420      |
+| T39-F_PG | 68.4                 | 100        | 6840      |
+| T40-F_PG | 35                   | 100        | 3500      |
+| T41-F_PG | 47.4                 | 100        | 4740      |
+| T29-G    | 86                   | 100        | 8600      |
+| T30-G    | 83                   | 200        | 16600     |
+| T31-G    | 99                   | 200        | 19800     |
+| T33-G    | 87.8                 | 100        | 8780      |
+| T34-G    | 104                  | 100        | 10400     |
+| T35-G    | 130                  | 100        | 13000     |
