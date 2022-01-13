@@ -10,11 +10,16 @@ tags:
 categories: 
   - Project Summary
 ---
+This will be a “dynamic” notebook entry, whereby I will update this post continually as I process new samples, analyze new data, etc for this project. The hope is to make it easier to find all the work I've done for this without having to search my notebook to find individual notebook entries.
+
+#### Project GitHub Repo
+
+- [PSMFC-mytilus-byssus-pilot](https://github.com/mattgeorgephd/PSMFC-mytilus-byssus-pilot)
+
+
 #### RNA Isolation Summary
 
-Google Sheet:
-
-- [psmfc_mussel_rna_summary](https://docs.google.com/spreadsheets/d/1HizNOIfhSjppHDQrWLGiJhuDZKO8c-qm9JAz0Z5QIIQ/edit?usp=sharing)
+- [psmfc_mussel_rna_summary](https://docs.google.com/spreadsheets/d/1HizNOIfhSjppHDQrWLGiJhuDZKO8c-qm9JAz0Z5QIIQ/edit?usp=sharing) (Google Sheet)
 
 
 #### RNA Isolation Notebook Entries
