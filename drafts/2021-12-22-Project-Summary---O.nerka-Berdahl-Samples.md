@@ -12,8 +12,9 @@ categories:
 ---
 This will be a “dynamic” notebook entry, whereby I will update this post continually as I process new samples, analyze new data, etc for this project. The hope is to make it easier to find all the work I've done for this without having to search my notebook to find individual notebook entries.
 
-#### RNA Isolation Summary
+#### RNA Isolation Log
 
+- [berndahl_oner_rna_summary](https://docs.google.com/spreadsheets/d/1MnwZe-4HenHbY8g8G7Ut2kq6saMStkaJE4ufZqox_Hs/edit?usp=sharing) (Google Sheet)
 
 
 #### RNA Isolation Notebook Entries
