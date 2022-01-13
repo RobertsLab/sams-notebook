@@ -17,7 +17,7 @@ This will be a “dynamic” notebook entry, whereby I will update this post con
 - [PSMFC-mytilus-byssus-pilot](https://github.com/mattgeorgephd/PSMFC-mytilus-byssus-pilot)
 
 
-#### RNA Isolation Summary
+#### RNA Isolation Log
 
 - [psmfc_mussel_rna_summary](https://docs.google.com/spreadsheets/d/1HizNOIfhSjppHDQrWLGiJhuDZKO8c-qm9JAz0Z5QIIQ/edit?usp=sharing) (Google Sheet)
 
