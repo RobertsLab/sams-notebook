@@ -12,7 +12,7 @@ tags:
 categories: 
   - Miscellaneous
 ---
-The previous round of RNA isolation (on (20211220)[https://robertslab.github.io/sams-notebook/2021/12/20/RNA-Isolation-O.nerka-Berdahl-Tissues.html]) had poor yields for the brain tissue. As such, I needed to attempt to obtain RNA from some additional brain tissues.
+The previous round of RNA isolation (on [20211220](https://robertslab.github.io/sams-notebook/2021/12/20/RNA-Isolation-O.nerka-Berdahl-Tissues.html)) had poor yields for the brain tissue. As such, I needed to attempt to obtain RNA from some additional brain tissues.
 
 For reference:
 
