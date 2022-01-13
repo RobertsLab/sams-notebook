@@ -10,5 +10,16 @@ tags:
 categories: 
   - Project Summary
 ---
+This will be a “dynamic” notebook entry, whereby I will update this post continually as I process new samples, analyze new data, etc for this project. The hope is to make it easier to find all the work I've done for this without having to search my notebook to find individual notebook entries.
+
+#### RNA Isolation Summary
 
 
+
+#### RNA Isolation Notebook Entries
+
+- [20211220](https://robertslab.github.io/sams-notebook/2021/12/20/RNA-Isolation-O.nerka-Berdahl-Tissues.html)
+
+- [20211222](https://robertslab.github.io/sams-notebook/2021/12/22/RNA-Isolation-O.nerka-Berdahl-Brain-Tissues.html)
+
+- [20220112](https://robertslab.github.io/sams-notebook/2022/01/12/RNA-Isolation-O.nerka-Berdahl-Brain-Tissues.html)
