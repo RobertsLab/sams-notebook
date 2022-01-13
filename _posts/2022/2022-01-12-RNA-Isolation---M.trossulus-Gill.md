@@ -39,3 +39,16 @@ All RNA was stored @ -80<sup>o</sup>C in [Sam's RNA Box #3](https://docs.google.
 #### RESULTS
 
 
+Raw Qubit data (Google Sheet):
+
+- [20220112_qubit_rna_mtro](https://docs.google.com/spreadsheets/d/1AdV5vT1CVX5C9X7Vbx3ytQmC8S-y5FF6Gl9IJk0oCCY/edit?usp=sharing)
+
+SUMMARY TABLE:
+
+| sample | concentration(ng/uL) | volume(uL) | yield(ng) |
+|--------|----------------------|------------|-----------|
+| T37-G  | 86                   | 140        | 12040     |
+| T38-G  | 56.8                 | 100        | 5680      |
+| T39-G  | 52.6                 | 100        | 5260      |
+| T40-G  | 118                  | 100        | 11800     |
+| T41-G  | 45                   | 100        | 4500      |
