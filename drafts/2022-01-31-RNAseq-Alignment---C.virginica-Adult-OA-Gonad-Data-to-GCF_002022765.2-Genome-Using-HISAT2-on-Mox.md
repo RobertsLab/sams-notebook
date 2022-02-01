@@ -13,6 +13,8 @@ categories:
 ---
 As part of [this project](https://github.com/epigeneticstoocean/2018_L18-adult-methylation), Steven's asked that [I identify long, non-coding RNAs (lncRNAs)](https://github.com/RobertsLab/resources/issues/1375) (GitHub Issue) in the [_Crassostrea gigas_ (Pacific oyster)](http://en.wikipedia.org/wiki/Pacific_oyster) adult OA gonad RNAseq data we have. The initial step for this is to assemble transcriptome. Since there is a [published genome (NCBI RefSeq GCF_002022765.2_C_virginica-3.0)](https://ftp.ncbi.nlm.nih.gov/genomes/all/GCF/002/022/765/GCF_002022765.2_C_virginica-3.0/) for [_Crassostrea gigas_ (Pacific oyster)](http://en.wikipedia.org/wiki/Pacific_oyster), I will perform a genome-guided assembly using [`Trinity`](https://github.com/trinityrnaseq/trinityrnaseq/wiki). That process requires a sorted BAM file as input. In order to generate that file, I used [`HISAT2`](https://daehwankimlab.github.io/hisat2/). I've already generated the necessary [`HISAT2`](https://daehwankimlab.github.io/hisat2/) genome index files ([as of 20210720](https://robertslab.github.io/sams-notebook/2021/07/20/Genome-Annotations-Splice-Site-and-Exon-Extractions-for-C.virginica-GCF_002022765.2-Genome-Using-Hisat2-on-Mox.html)), which also identified/incorporated splice sites and exons, which the [`HISAT2`](https://daehwankimlab.github.io/hisat2/) alignment process requires to run.
 
+[`fastp`](https://github.com/OpenGene/fastp)-trimmed RNAseq data from [20210714](https://robertslab.github.io/sams-notebook/2021/07/14/Trimming-C.virginica-Gonad-RNAseq-with-FastP-on-Mox.html) was used.
+
 The [`HISAT2`](https://daehwankimlab.github.io/hisat2/) alignment job was run on Mox.
 
 
