@@ -216,6 +216,10 @@ echo "${PATH}" | tr : \\n
 
 #### RESULTS
 
+Runtime was ~6 days, 7hrs:
+
+![HISAT2 runtime for C.virginica adult gonad OA exposed RNAseq on Mox](https://github.com/RobertsLab/sams-notebook/blob/master/images/screencaps/20220131_cvir_hisat2-GCF_002022765.2_adult-oa-gonad_runtime.png?raw=true)
+
 Output folder:
 
 - []()
