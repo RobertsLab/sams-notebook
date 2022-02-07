@@ -239,7 +239,9 @@ Output folder:
     - [input_fastqs_checksums.md5](https://gannet.fish.washington.edu/Atumefaciens/20220131_cvir_hisat2-GCF_002022765.2_adult-oa-gonad/input_fastqs_checksums.md5) (128K)
 
 
-  - Standard error output (alignment stats):
+  - Standard error output (text; alignment stats):
+
+    - [20220131_cvir_hisat2-GCF_002022765.2_adult-oa-gonad/20210131-cvir-hisat2_hisat2.err](https://gannet.fish.washington.edu/Atumefaciens/20220131_cvir_hisat2-GCF_002022765.2_adult-oa-gonad/20210131-cvir-hisat2_hisat2.err)
 
     ```
     1355938330 reads; of these:
