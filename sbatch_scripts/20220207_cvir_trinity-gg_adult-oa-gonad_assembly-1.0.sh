@@ -8,7 +8,7 @@
 ## Nodes
 #SBATCH --nodes=1
 ## Walltime (days-hours:minutes:seconds format)
-#SBATCH --time=30-00:00:00
+#SBATCH --time=25-00:00:00
 ## Memory per node
 #SBATCH --mem=500G
 ##turn on e-mail notification
@@ -29,7 +29,7 @@
 # These variables need to be set by user
 
 # Path to this script
-script_path=/gscratch/scrubbed/samwhite/outputs/20220207_cvir_trinity-gg_adult-oa-gonad_assembly-1.0/20220201_cvir_trinity-gg_adult-oa-gonad_assembly-1.0.sh
+script_path=/gscratch/scrubbed/samwhite/outputs/20220207_cvir_trinity-gg_adult-oa-gonad_assembly-1.0/20220207_cvir_trinity-gg_adult-oa-gonad_assembly-1.0.sh
 
 # RNAseq FastQs directory
 reads_dir=/gscratch/srlab/sam/data/C_virginica/RNAseq
