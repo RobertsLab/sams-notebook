@@ -29,10 +29,10 @@
 # These variables need to be set by user
 
 # Path to this script
-script_path=/gscratch/scrubbed/samwhite/outputs/20220201_cvir_trinity-gg_adult-oa-gonad_assembly-1.0.sh
+script_path=/gscratch/scrubbed/samwhite/outputs/20220207_cvir_trinity-gg_adult-oa-gonad_assembly-1.0/20220201_cvir_trinity-gg_adult-oa-gonad_assembly-1.0.sh
 
 # RNAseq FastQs directory
-reads_dir=/gscratch/srlab/sam/data/C_virginica/RNAseq/
+reads_dir=/gscratch/srlab/sam/data/C_virginica/RNAseq
 
 # Transcriptomes directory
 transcriptomes_dir=/gscratch/srlab/sam/data/C_virginica/transcriptomes
@@ -87,10 +87,10 @@ R1_list=""
 R2_list=""
 
 # Create array of fastq R1 files
-R1_array=("${reads_dir}"/*READ1*.fq.gz)
+R1_array=("${reads_dir}"/*R1.fastp-trim*.fq.gz)
 
 # Create array of fastq R2 files
-R2_array=("${reads_dir}"/*READ2*.fq.gz)
+R2_array=("${reads_dir}"/*R2.fastp-trim*.fq.gz)
 
 # Create list of fastq files used in analysis
 ## Uses parameter substitution to strip leading path from filename
