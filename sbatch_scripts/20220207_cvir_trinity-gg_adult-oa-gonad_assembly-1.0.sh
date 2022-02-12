@@ -1,21 +1,21 @@
 #!/bin/bash
 ## Job Name
-#SBATCH --job-name=20220207_cvir_trinity-gg_adult-oa-gonad_assembly-1.0
+#SBATCH --job-name=20220212_cvir_trinity-gg_adult-oa-gonad_assembly-1.0
 ## Allocation Definition
-#SBATCH --account=srlab
-#SBATCH --partition=srlab
+#SBATCH --account=coenv
+#SBATCH --partition=coenv
 ## Resources
 ## Nodes
 #SBATCH --nodes=1
 ## Walltime (days-hours:minutes:seconds format)
-#SBATCH --time=25-00:00:00
+#SBATCH --time=21-00:00:00
 ## Memory per node
-#SBATCH --mem=500G
+#SBATCH --mem=100G
 ##turn on e-mail notification
 #SBATCH --mail-type=ALL
 #SBATCH --mail-user=samwhite@uw.edu
 ## Specify the working directory for this job
-#SBATCH --chdir=/gscratch/scrubbed/samwhite/outputs/20220207_cvir_trinity-gg_adult-oa-gonad_assembly-1.0
+#SBATCH --chdir=/gscratch/scrubbed/samwhite/outputs/20220212_cvir_trinity-gg_adult-oa-gonad_assembly-1.0
 
 ### Genome-guided (NCBI RefSeq GCF_002022765.2) de novo transcriptome assembly of C.virginica adult OA gonda RNAseq.
 ### See input_fastqs.md5 file for list of input files used for assembly.
