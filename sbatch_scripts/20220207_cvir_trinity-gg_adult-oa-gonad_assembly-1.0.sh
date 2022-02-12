@@ -2,15 +2,15 @@
 ## Job Name
 #SBATCH --job-name=20220212_cvir_trinity-gg_adult-oa-gonad_assembly-1.0
 ## Allocation Definition
-#SBATCH --account=coenv
-#SBATCH --partition=coenv
+#SBATCH --account=srlab
+#SBATCH --partition=srlab
 ## Resources
 ## Nodes
 #SBATCH --nodes=1
 ## Walltime (days-hours:minutes:seconds format)
 #SBATCH --time=21-00:00:00
 ## Memory per node
-#SBATCH --mem=100G
+#SBATCH --mem=500G
 ##turn on e-mail notification
 #SBATCH --mail-type=ALL
 #SBATCH --mail-user=samwhite@uw.edu
@@ -43,8 +43,7 @@ threads=40
 # Capture specified RAM from this script
 # Carrot needed to limit grep to line starting with #SBATCH
 # Avoids grep-ing the command below.
-max_mem=$(grep "^#SBATCH --mem=" ${script_path} | awk -F [=] '{print $2}')
-
+max_mem=100G
 # BAM file for genome guided assembly
 sorted_bam=/gscratch/scrubbed/samwhite/outputs/20220131_cvir_hisat2-GCF_002022765.2_adult-oa-gonad/20210131-cvir-hisat2.sorted.bam
 
