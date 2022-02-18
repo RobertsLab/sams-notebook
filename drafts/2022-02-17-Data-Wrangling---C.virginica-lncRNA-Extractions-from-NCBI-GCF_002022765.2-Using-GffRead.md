@@ -11,8 +11,15 @@ tags:
 categories: 
   - Miscellaneous
 ---
+Continuing to work on our [_Crassostrea virginica_ (Eastern oyster)](https://en.wikipedia.org/wiki/Eastern_oyster) project examining the [effects of OA on female and male gonads]() (GitHub repo), Steven tasked me with [parsing out long, non-coding RNAs](https://github.com/RobertsLab/resources/issues/1375) (GitHub Issue). To do so, I relied on [the NCBI genome and associated files/annotations](https://ftp.ncbi.nlm.nih.gov/genomes/all/GCF/002/022/765/GCF_002022765.2_C_virginica-3.0/). I used [GffRead](https://github.com/gpertea/gffread), [GFFutils](https://gffutils.readthedocs.io/en/v0.12.0/index.html), and [samtools](http://www.htslib.org/). The process was documented in the followng Jupyter Notebook:
+
+- [20220217-cvir-lncRNA_subsetting.ipynb](https://github.com/RobertsLab/code/blob/master/notebooks/sam/20220217-cvir-lncRNA_subsetting.ipynb) (GitHub)
+
+- [20220217-cvir-lncRNA_subsetting.ipynb](https://nbviewer.ipython.org/github/RobertsLab/code/blob/master/notebooks/sam/20220217-cvir-lncRNA_subsetting.ipynb) (NBviewer)
 
 
+
+<iframe src="https://nbviewer.ipython.org/github/RobertsLab/code/blob/master/notebooks/sam/20220217-cvir-lncRNA_subsetting.ipynb" width="100%" height="1000" scrolling="yes"></iframe>
 
 ---
 
