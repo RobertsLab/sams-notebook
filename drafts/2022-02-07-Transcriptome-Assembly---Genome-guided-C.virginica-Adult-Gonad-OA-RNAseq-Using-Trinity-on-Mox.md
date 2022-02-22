@@ -15,6 +15,8 @@ categories:
 ---
 As part of [this project](https://github.com/epigeneticstoocean/2018_L18-adult-methylation), Steven's asked that [I identify long, non-coding RNAs (lncRNAs)](https://github.com/RobertsLab/resources/issues/1375) (GitHub Issue) in the [_Crassostrea gigas_ (Pacific oyster)](http://en.wikipedia.org/wiki/Pacific_oyster) adult OA gonad RNAseq data we have. The initial step for this is to assemble transcriptome. I generated the necessary BAM alignment on [20220131](https://robertslab.github.io/sams-notebook/2022/01/31/RNAseq-Alignment-C.virginica-Adult-OA-Gonad-Data-to-GCF_002022765.2-Genome-Using-HISAT2-on-Mox.html). Next was to actually get the transcriptome assembled. I followed the [`Trinity`](https://github.com/trinityrnaseq/trinityrnaseq/wiki) genome-guided procedure.
 
+The initial run of this got interrupted by [a corrupted SAM file](https://github.com/trinityrnaseq/trinityrnaseq/issues/1121) (GitHub Issue). It's unclear what caused this, but during the job, the Mox `/gscratch/scrubbed/` directory went over the storage quota... The solution was to attempt a re-run, which ran without issue. Although, I did implement a change suggested in that issue which was to set the `--max_memory` to 100G. I had previously been using 500G, but the developer explained this was excessive and not necessary.
+
 SBATCH script (GitHub):
 
 - [20220207_cvir_trinity-gg_adult-oa-gonad_assembly-1.0.sh](https://github.com/RobertsLab/sams-notebook/blob/master/sbatch_scripts/20220207_cvir_trinity-gg_adult-oa-gonad_assembly-1.0.sh)
