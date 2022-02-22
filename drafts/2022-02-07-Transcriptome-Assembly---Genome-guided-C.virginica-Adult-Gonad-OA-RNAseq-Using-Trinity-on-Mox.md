@@ -22,7 +22,7 @@ SBATCH script (GitHub):
 ```shell
 #!/bin/bash
 ## Job Name
-#SBATCH --job-name=20220207_cvir_trinity-gg_adult-oa-gonad_assembly-1.0
+#SBATCH --job-name=20220212_cvir_trinity-gg_adult-oa-gonad_assembly-1.0
 ## Allocation Definition
 #SBATCH --account=srlab
 #SBATCH --partition=srlab
@@ -30,14 +30,14 @@ SBATCH script (GitHub):
 ## Nodes
 #SBATCH --nodes=1
 ## Walltime (days-hours:minutes:seconds format)
-#SBATCH --time=30-00:00:00
+#SBATCH --time=21-00:00:00
 ## Memory per node
 #SBATCH --mem=500G
 ##turn on e-mail notification
 #SBATCH --mail-type=ALL
 #SBATCH --mail-user=samwhite@uw.edu
 ## Specify the working directory for this job
-#SBATCH --chdir=/gscratch/scrubbed/samwhite/outputs/20220207_cvir_trinity-gg_adult-oa-gonad_assembly-1.0
+#SBATCH --chdir=/gscratch/scrubbed/samwhite/outputs/20220212_cvir_trinity-gg_adult-oa-gonad_assembly-1.0
 
 ### Genome-guided (NCBI RefSeq GCF_002022765.2) de novo transcriptome assembly of C.virginica adult OA gonda RNAseq.
 ### See input_fastqs.md5 file for list of input files used for assembly.
@@ -51,10 +51,10 @@ SBATCH script (GitHub):
 # These variables need to be set by user
 
 # Path to this script
-script_path=/gscratch/scrubbed/samwhite/outputs/20220201_cvir_trinity-gg_adult-oa-gonad_assembly-1.0.sh
+script_path=/gscratch/scrubbed/samwhite/outputs/20220207_cvir_trinity-gg_adult-oa-gonad_assembly-1.0/20220207_cvir_trinity-gg_adult-oa-gonad_assembly-1.0.sh
 
 # RNAseq FastQs directory
-reads_dir=/gscratch/srlab/sam/data/C_virginica/RNAseq/
+reads_dir=/gscratch/srlab/sam/data/C_virginica/RNAseq
 
 # Transcriptomes directory
 transcriptomes_dir=/gscratch/srlab/sam/data/C_virginica/transcriptomes
@@ -65,8 +65,7 @@ threads=40
 # Capture specified RAM from this script
 # Carrot needed to limit grep to line starting with #SBATCH
 # Avoids grep-ing the command below.
-max_mem=$(grep "^#SBATCH --mem=" ${script_path} | awk -F [=] '{print $2}')
-
+max_mem=100G
 # BAM file for genome guided assembly
 sorted_bam=/gscratch/scrubbed/samwhite/outputs/20220131_cvir_hisat2-GCF_002022765.2_adult-oa-gonad/20210131-cvir-hisat2.sorted.bam
 
@@ -109,10 +108,10 @@ R1_list=""
 R2_list=""
 
 # Create array of fastq R1 files
-R1_array=("${reads_dir}"/*READ1*.fq.gz)
+R1_array=("${reads_dir}"/*R1.fastp-trim*.fq.gz)
 
 # Create array of fastq R2 files
-R2_array=("${reads_dir}"/*READ2*.fq.gz)
+R2_array=("${reads_dir}"/*R2.fastp-trim*.fq.gz)
 
 # Create list of fastq files used in analysis
 ## Uses parameter substitution to strip leading path from filename
@@ -220,6 +219,7 @@ echo ""
 printf "%0.s-" {1..10}
 echo "${PATH}" | tr : \\n
 } >> system_path.log
+
 ```
 
 
@@ -231,3 +231,41 @@ Output folder:
 
 - []()
 
+
+```
+################################
+## Counts of transcripts, etc.
+################################
+Total trinity 'genes':	887315
+Total trinity transcripts:	1849486
+Percent GC: 36.26
+
+########################################
+Stats based on ALL transcript contigs:
+########################################
+
+	Contig N10: 7967
+	Contig N20: 5284
+	Contig N30: 3814
+	Contig N40: 2801
+	Contig N50: 2062
+
+	Median contig length: 562
+	Average contig: 1117.46
+	Total assembled bases: 2066718534
+
+
+#####################################################
+## Stats based on ONLY LONGEST ISOFORM per 'GENE':
+#####################################################
+
+	Contig N10: 6904
+	Contig N20: 4398
+	Contig N30: 3003
+	Contig N40: 2120
+	Contig N50: 1501
+
+	Median contig length: 434
+	Average contig: 860.79
+	Total assembled bases: 763788564
+  ```
