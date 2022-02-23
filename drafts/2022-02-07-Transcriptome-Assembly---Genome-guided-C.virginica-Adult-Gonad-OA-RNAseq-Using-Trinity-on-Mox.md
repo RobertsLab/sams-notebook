@@ -229,6 +229,10 @@ echo "${PATH}" | tr : \\n
 
 #### RESULTS
 
+Runtime was lengthy at almost 10 days:
+
+![screencap of C.virginica gonad transcriptome assembly runtime on Mox](https://github.com/RobertsLab/sams-notebook/blob/master/images/screencaps/20220212_cvir_trinity-gg_adult-oa-gonad_assembly-1.0_runtime.png?raw=true)
+
 Output folder:
 
 - []()
