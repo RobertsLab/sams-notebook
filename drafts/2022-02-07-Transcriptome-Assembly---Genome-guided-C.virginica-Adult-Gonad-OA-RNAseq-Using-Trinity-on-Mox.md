@@ -15,6 +15,8 @@ categories:
 ---
 As part of [this project](https://github.com/epigeneticstoocean/2018_L18-adult-methylation), Steven's asked that [I identify long, non-coding RNAs (lncRNAs)](https://github.com/RobertsLab/resources/issues/1375) (GitHub Issue) in the [_Crassostrea gigas_ (Pacific oyster)](http://en.wikipedia.org/wiki/Pacific_oyster) adult OA gonad RNAseq data we have. The initial step for this is to assemble transcriptome. I generated the necessary BAM alignment on [20220131](https://robertslab.github.io/sams-notebook/2022/01/31/RNAseq-Alignment-C.virginica-Adult-OA-Gonad-Data-to-GCF_002022765.2-Genome-Using-HISAT2-on-Mox.html). Next was to actually get the transcriptome assembled. I followed the [`Trinity`](https://github.com/trinityrnaseq/trinityrnaseq/wiki) genome-guided procedure.
 
+I should add here that while this job was running, I figured out that the lncRNAs had already been annotated in the [_Crassostrea virginica_ (Eastern oyster)](https://en.wikipedia.org/wiki/Eastern_oyster) genome (NCBI GCF_002022765.2), so [I had already tackled the lncRNA asepct of things on 20220217](https://robertslab.github.io/sams-notebook/2022/02/17/Data-Wrangling-C.virginica-lncRNA-Extractions-from-NCBI-GCF_002022765.2-Using-GffRead.html). However, having a gonad transcriptome assembly won't hurt anything, so decided to let this continue running.
+
 The initial run of this got interrupted by [a corrupted SAM file](https://github.com/trinityrnaseq/trinityrnaseq/issues/1121) (GitHub Issue). It's unclear what caused this, but during the job, the Mox `/gscratch/scrubbed/` directory went over the storage quota... The solution was to attempt a re-run, which ran without issue. Although, I did implement a change suggested in that issue which was to set the `--max_memory` to 100G. I had previously been using 500G, but the developer explained this was excessive and not necessary.
 
 SBATCH script (GitHub):
@@ -229,49 +231,75 @@ echo "${PATH}" | tr : \\n
 
 #### RESULTS
 
-Runtime was lengthy at almost 10 days:
+Runtime was lengthy at almost 10 days. NOTE: The runtime screencap indicates the job _failed_. Although technically true, the job failed after the Trinity assembly was completed during a command to `rsync` the finished files to anotehr directory on Mox. So, it's all good!
 
 ![screencap of C.virginica gonad transcriptome assembly runtime on Mox](https://github.com/RobertsLab/sams-notebook/blob/master/images/screencaps/20220212_cvir_trinity-gg_adult-oa-gonad_assembly-1.0_runtime.png?raw=true)
 
 Output folder:
 
-- []()
+- [20220212_cvir_trinity-gg_adult-oa-gonad_assembly-1.0/](https://gannet.fish.washington.edu/Atumefaciens/20220212_cvir_trinity-gg_adult-oa-gonad_assembly-1.0/)
+
+  - **MD5 checksums of FastQs used for assembly - also functions as list of FastQs (text)**:
+
+    - [input_fastqs.md5](input_fastqs.md5) (8.0K)
+
+  - **Transcriptome assembly (FastA)**:
+
+    - [cvir-GG-GCF-002022765.2-adult_gonad-transcriptome-v1.0.fasta](20220212_cvir_trinity-gg_adult-oa-gonad_assembly-1.0/trinity_out_dir/cvir-GG-GCF-002022765.2-adult_gonad-transcriptome-v1.0.fasta) (2.1G)
+
+      - MD5: `88e6e3b1702e81e3034b8383f3c3efa0`
+
+  - **Transcriptome FastA index (text)**:
+
+    - [cvir-GG-GCF-002022765.2-adult_gonad-transcriptome-v1.0.fasta.fai](20220212_cvir_trinity-gg_adult-oa-gonad_assembly-1.0/trinity_out_dir/cvir-GG-GCF-002022765.2-adult_gonad-transcriptome-v1.0.fasta.fai) (88M)
+
+  - **Trinity gene/transcript mapping file (text)**:
+
+    - [cvir-GG-GCF-002022765.2-adult_gonad-transcriptome-v1.0.fasta.gene_trans_map](20220212_cvir_trinity-gg_adult-oa-gonad_assembly-1.0/trinity_out_dir/cvir-GG-GCF-002022765.2-adult_gonad-transcriptome-v1.0.fasta.gene_trans_map) (87M)
+
+  - **Trinity transcript sequence lengths (text)**:
+
+    - [cvir-GG-GCF-002022765.2-adult_gonad-transcriptome-v1.0.fasta.seq_lens](20220212_cvir_trinity-gg_adult-oa-gonad_assembly-1.0/trinity_out_dir/cvir-GG-GCF-002022765.2-adult_gonad-transcriptome-v1.0.fasta.seq_lens) (54M)
 
 
-```
-################################
-## Counts of transcripts, etc.
-################################
-Total trinity 'genes':	887315
-Total trinity transcripts:	1849486
-Percent GC: 36.26
+  - **Trinity assembly stats (text)**:
 
-########################################
-Stats based on ALL transcript contigs:
-########################################
+    - [cvir-GG-GCF-002022765.2-adult_gonad-transcriptome-v1.0.fasta_assembly_stats.txt](cvir-GG-GCF-002022765.2-adult_gonad-transcriptome-v1.0.fasta_assembly_stats.txt) (4.0K)
 
-	Contig N10: 7967
-	Contig N20: 5284
-	Contig N30: 3814
-	Contig N40: 2801
-	Contig N50: 2062
+    ```
+    ################################
+    ## Counts of transcripts, etc.
+    ################################
+    Total trinity 'genes':	887315
+    Total trinity transcripts:	1849486
+    Percent GC: 36.26
 
-	Median contig length: 562
-	Average contig: 1117.46
-	Total assembled bases: 2066718534
+    ########################################
+    Stats based on ALL transcript contigs:
+    ########################################
+
+      Contig N10: 7967
+      Contig N20: 5284
+      Contig N30: 3814
+      Contig N40: 2801
+      Contig N50: 2062
+
+      Median contig length: 562
+      Average contig: 1117.46
+      Total assembled bases: 2066718534
 
 
-#####################################################
-## Stats based on ONLY LONGEST ISOFORM per 'GENE':
-#####################################################
+    #####################################################
+    ## Stats based on ONLY LONGEST ISOFORM per 'GENE':
+    #####################################################
 
-	Contig N10: 6904
-	Contig N20: 4398
-	Contig N30: 3003
-	Contig N40: 2120
-	Contig N50: 1501
+      Contig N10: 6904
+      Contig N20: 4398
+      Contig N30: 3003
+      Contig N40: 2120
+      Contig N50: 1501
 
-	Median contig length: 434
-	Average contig: 860.79
-	Total assembled bases: 763788564
-  ```
+      Median contig length: 434
+      Average contig: 860.79
+      Total assembled bases: 763788564
+      ```
