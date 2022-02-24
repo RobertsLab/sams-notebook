@@ -111,6 +111,8 @@ do
   --in1 ${fastq_array_R1[index]} \
   --in2 ${fastq_array_R2[index]} \
   --disable_adapter_trimming \
+  --trim_front1 20 \
+  --trim_front2 20 \
   --thread ${threads} \
   --html "${R1_sample_name}".fastp-trim.20bp-5prime."${timestamp}".report.html \
   --json "${R1_sample_name}".fastp-trim.20bp-5prime."${timestamp}".report.json \
