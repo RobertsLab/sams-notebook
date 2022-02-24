@@ -44,7 +44,9 @@ sample.R2.fastq.gz
 
 Considering that we wanted to use these for a transcriptome assembly (which I already performed on [20220207](https://robertslab.github.io/sams-notebook/2022/02/07/Transcriptome-Assembly-Genome-guided-C.virginica-Adult-Gonad-OA-RNAseq-Using-Trinity-on-Mox.html)), this residual "low complexity bridge" could lead to some spurious results.
 
-3. Looking at some of the samples from the initial trimming suggested that additional trimming would improve things a bit. Here's an example from the initial `fastp` trimming. View the sections with "After filtering: read1: base contents" and "After filtering: read2: base contents" to see that the first ~20bp ratios are a bit rough:
+3. Looking at some of the samples from the initial trimming suggested that additional trimming would improve things a bit. Here's an example from the initial `fastp` trimming. View the sections with "After filtering: read1: base contents" and "After filtering: read2: base contents" to see that the first ~20bp ratios are a bit rough.
+
+NOTE: Words are tough to read on dark background - sorry! Also, you can click on _any_ section heading to collapse it - This reduces the need to scroll so much!
 
 <iframe src="https://gannet.fish.washington.edu/Atumefaciens/20210714_cvir_gonad_RNAseq_fastp_trimming/S3F_R1.fastp-trim.20210714.report.html" width="100%" height="1000" scrolling="yes"></iframe>
 
@@ -249,7 +251,11 @@ echo "${PATH}" | tr : \\n
 
 #### RESULTS
 
+Unsurprisingly, this was pretty fast since no adapter trimming was needed, at just under 2hrs:
+
+![fastp trimming runtime screencap on Mox](https://github.com/RobertsLab/sams-notebook/blob/master/images/screencaps/20220224_cvir_gonad_RNAseq_fastp_trimming_runtime.png?raw=true)
+
 Output folder:
 
-- []()
+- [20220224_cvir_gonad_RNAseq_fastp_trimming/](https://gannet.fish.washington.edu/Atumefaciens/20220224_cvir_gonad_RNAseq_fastp_trimming/)
 
