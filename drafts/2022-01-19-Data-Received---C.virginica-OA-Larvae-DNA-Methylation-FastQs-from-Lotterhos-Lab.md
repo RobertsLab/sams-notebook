@@ -44,3 +44,137 @@ Data was transferred from `2018OALarvae_DNAm_discovery/RAW/` via Globus to Mox `
 
 I then `rsync`'d the data to [`Owl/nightingales/C_virginica2018OALarvae_DNAm_discovery/`](https://owl.fish.washington.edu/nightingales/C_virginica/2018OALarvae_DNAm_discovery/).
 
+Contents:
+
+```
+├── CF01-CM01-Zygote_R1_001.fastq.gz
+├── CF01-CM01-Zygote_R2_001.fastq.gz
+├── CF01-CM02-Larvae_R1_001.fastq.gz
+├── CF01-CM02-Larvae_R2_001.fastq.gz
+├── CF02-CM02-Zygote_R1_001.fastq.gz
+├── CF02-CM02-Zygote_R2_001.fastq.gz
+├── CF03-CM03-Zygote_R1_001.fastq.gz
+├── CF03-CM03-Zygote_R2_001.fastq.gz
+├── CF03-CM04-Larvae_R1_001.fastq.gz
+├── CF03-CM04-Larvae_R2_001.fastq.gz
+├── CF03-CM05-Larvae_R1_001.fastq.gz
+├── CF03-CM05-Larvae_R2_001.fastq.gz
+├── CF04-CM04-Zygote_R1_001.fastq.gz
+├── CF04-CM04-Zygote_R2_001.fastq.gz
+├── CF05-CM02-Larvae_R1_001.fastq.gz
+├── CF05-CM02-Larvae_R2_001.fastq.gz
+├── CF05-CM05-Zygote_R1_001.fastq.gz
+├── CF05-CM05-Zygote_R2_001.fastq.gz
+├── CF06-CM01-Zygote_R1_001.fastq.gz
+├── CF06-CM01-Zygote_R2_001.fastq.gz
+├── CF06-CM02-Larvae_R1_001.fastq.gz
+├── CF06-CM02-Larvae_R2_001.fastq.gz
+├── CF07-CM02-Zygote_R1_001.fastq.gz
+├── CF07-CM02-Zygote_R2_001.fastq.gz
+├── CF08-CM03-Zygote_R1_001.fastq.gz
+├── CF08-CM03-Zygote_R2_001.fastq.gz
+├── CF08-CM04-Larvae_R1_001.fastq.gz
+├── CF08-CM04-Larvae_R2_001.fastq.gz
+├── CF08-CM05-Larvae_R1_001.fastq.gz
+├── CF08-CM05-Larvae_R2_001.fastq.gz
+├── EF01-EM01-Zygote_R1_001.fastq.gz
+├── EF01-EM01-Zygote_R2_001.fastq.gz
+├── EF02-EM02-Zygote_R1_001.fastq.gz
+├── EF02-EM02-Zygote_R2_001.fastq.gz
+├── EF03-EM03-Zygote_R1_001.fastq.gz
+├── EF03-EM03-Zygote_R2_001.fastq.gz
+├── EF03-EM04-Larvae_R1_001.fastq.gz
+├── EF03-EM04-Larvae_R2_001.fastq.gz
+├── EF03-EM05-Larvae_R1_001.fastq.gz
+├── EF03-EM05-Larvae_R2_001.fastq.gz
+├── EF04-EM04-Zygote_R1_001.fastq.gz
+├── EF04-EM04-Zygote_R2_001.fastq.gz
+├── EF04-EM05-Larvae_R1_001.fastq.gz
+├── EF04-EM05-Larvae_R2_001.fastq.gz
+├── EF05-EM01-Larvae_R1_001.fastq.gz
+├── EF05-EM01-Larvae_R2_001.fastq.gz
+├── EF05-EM05-Zygote_R1_001.fastq.gz
+├── EF05-EM05-Zygote_R2_001.fastq.gz
+├── EF05-EM06-Larvae_R1_001.fastq.gz
+├── EF05-EM06-Larvae_R2_001.fastq.gz
+├── EF06-EM01-Larvae_R1_001.fastq.gz
+├── EF06-EM01-Larvae_R2_001.fastq.gz
+├── EF06-EM02-Larvae_R1_001.fastq.gz
+├── EF06-EM02-Larvae_R2_001.fastq.gz
+├── EF06-EM06-Larvae_R1_001.fastq.gz
+├── EF06-EM06-Larvae_R2_001.fastq.gz
+├── EF07-EM01-Zygote_R1_001.fastq.gz
+├── EF07-EM01-Zygote_R2_001.fastq.gz
+├── EF07-EM03-Larvae_R1_001.fastq.gz
+├── EF07-EM03-Larvae_R2_001.fastq.gz
+├── EF08-EM03-Larvae_R1_001.fastq.gz
+├── EF08-EM03-Larvae_R2_001.fastq.gz
+├── EF08-EM04-Larvae_R1_001.fastq.gz
+├── EF08-EM04-Larvae_R2_001.fastq.gz
+├── md5sum_list.txt
+├── sample_files.txt
+└── second_lane
+    ├── CF01-CM01-Zygote_R2_001.fastq.gz
+    ├── CF01-CM02-Larvae_R1_001.fastq.gz
+    ├── CF01-CM02-Larvae_R2_001.fastq.gz
+    ├── CF02-CM02-Zygote_R1_001.fastq.gz
+    ├── CF02-CM02-Zygote_R2_001.fastq.gz
+    ├── CF03-CM03-Zygote_R1_001.fastq.gz
+    ├── CF03-CM03-Zygote_R2_001.fastq.gz
+    ├── CF03-CM04-Larvae_R1_001.fastq.gz
+    ├── CF03-CM04-Larvae_R2_001.fastq.gz
+    ├── CF03-CM05-Larvae_R1_001.fastq.gz
+    ├── CF03-CM05-Larvae_R2_001.fastq.gz
+    ├── CF04-CM04-Zygote_R1_001.fastq.gz
+    ├── CF04-CM04-Zygote_R2_001.fastq.gz
+    ├── CF05-CM02-Larvae_R1_001.fastq.gz
+    ├── CF05-CM02-Larvae_R2_001.fastq.gz
+    ├── CF05-CM05-Zygote_R1_001.fastq.gz
+    ├── CF05-CM05-Zygote_R2_001.fastq.gz
+    ├── CF06-CM01-Zygote_R1_001.fastq.gz
+    ├── CF06-CM01-Zygote_R2_001.fastq.gz
+    ├── CF06-CM02-Larvae_R1_001.fastq.gz
+    ├── CF06-CM02-Larvae_R2_001.fastq.gz
+    ├── CF07-CM02-Zygote_R1_001.fastq.gz
+    ├── CF07-CM02-Zygote_R2_001.fastq.gz
+    ├── CF08-CM03-Zygote_R1_001.fastq.gz
+    ├── CF08-CM03-Zygote_R2_001.fastq.gz
+    ├── CF08-CM04-Larvae_R1_001.fastq.gz
+    ├── CF08-CM05-Larvae_R1_001.fastq.gz
+    ├── CF08-CM05-Larvae_R2_001.fastq.gz
+    ├── EF01-EM01-Zygote_R1_001.fastq.gz
+    ├── EF01-EM01-Zygote_R2_001.fastq.gz
+    ├── EF02-EM02-Zygote_R1_001.fastq.gz
+    ├── EF02-EM02-Zygote_R2_001.fastq.gz
+    ├── EF03-EM03-Zygote_R1_001.fastq.gz
+    ├── EF03-EM04-Larvae_R1_001.fastq.gz
+    ├── EF03-EM04-Larvae_R2_001.fastq.gz
+    ├── EF03-EM05-Larvae_R1_001.fastq.gz
+    ├── EF03-EM05-Larvae_R2_001.fastq.gz
+    ├── EF04-EM04-Zygote_R1_001.fastq.gz
+    ├── EF04-EM04-Zygote_R2_001.fastq.gz
+    ├── EF04-EM05-Larvae_R1_001.fastq.gz
+    ├── EF04-EM05-Larvae_R2_001.fastq.gz
+    ├── EF05-EM01-Larvae_R1_001.fastq.gz
+    ├── EF05-EM01-Larvae_R2_001.fastq.gz
+    ├── EF05-EM05-Zygote_R1_001.fastq.gz
+    ├── EF05-EM05-Zygote_R2_001.fastq.gz
+    ├── EF05-EM06-Larvae_R1_001.fastq.gz
+    ├── EF05-EM06-Larvae_R2_001.fastq.gz
+    ├── EF06-EM01-Larvae_R1_001.fastq.gz
+    ├── EF06-EM01-Larvae_R2_001.fastq.gz
+    ├── EF06-EM02-Larvae_R1_001.fastq.gz
+    ├── EF06-EM02-Larvae_R2_001.fastq.gz
+    ├── EF06-EM06-Larvae_R1_001.fastq.gz
+    ├── EF06-EM06-Larvae_R2_001.fastq.gz
+    ├── EF07-EM01-Zygote_R1_001.fastq.gz
+    ├── EF07-EM01-Zygote_R2_001.fastq.gz
+    ├── EF07-EM03-Larvae_R1_001.fastq.gz
+    ├── EF07-EM03-Larvae_R2_001.fastq.gz
+    ├── EF08-EM03-Larvae_R1_001.fastq.gz
+    ├── EF08-EM03-Larvae_R2_001.fastq.gz
+    ├── EF08-EM04-Larvae_R1_001.fastq.gz
+    ├── EF08-EM04-Larvae_R2_001.fastq.gz
+    ├── file_labels.txt
+    └── md5sum_list.txt
+```
