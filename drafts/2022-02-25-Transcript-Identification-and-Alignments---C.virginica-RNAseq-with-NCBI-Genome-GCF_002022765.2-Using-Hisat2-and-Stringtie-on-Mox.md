@@ -215,21 +215,22 @@ do
   | ${programs_array[samtools_sort]} - \
   -@ "${threads}" \
   -o "${sample}".sorted.bam
+  # Index BAM
   ${programs_array[samtools_index]} "${sample}".sorted.bam
 
 
 # Run stringtie on alignments
-  "${programs_array[stringtie]}" "${sample_name}".sorted.bam \
+  "${programs_array[stringtie]}" "${sample}".sorted.bam \
   -p "${threads}" \
-  -o "${sample_name}".gtf \
+  -o "${sample}".gtf \
   -G "${genome_gff}" \
-  -C "${sample_name}.cov_refs.gtf"
+  -C "${sample}.cov_refs.gtf"
 
 # Add GTFs to list file, only if non-empty
 # Identifies GTF files that only have header
-  gtf_lines=$(wc -l < "${sample_name}".gtf )
+  gtf_lines=$(wc -l < "${sample}".gtf )
   if [ "${gtf_lines}" -gt 2 ]; then
-    echo "${sample_name}.gtf" >> "${gtf_list}"
+    echo "${sample}.gtf" >> "${gtf_list}"
   fi
 done
 
@@ -244,12 +245,6 @@ done
 rm "${genome_index_name}"*.ht2
 
 # Delete unneded SAM files
-rm ./*.sam
-
-# Delete unneccessary index files
-rm "${genome_index_name}"*.ht2
-
-# Delete unneeded SAM files
 rm ./*.sam
 
 # Generate checksums
