@@ -8,7 +8,7 @@
 ## Nodes
 #SBATCH --nodes=1
 ## Walltime (days-hours:minutes:seconds format)
-#SBATCH --time=5-00:00:00
+#SBATCH --time=10-00:00:00
 ## Memory per node
 #SBATCH --mem=500G
 ##turn on e-mail notification
@@ -200,11 +200,11 @@ do
   # Uses "-B" option to output tables intended for use in Ballgown
   # Uses "-e" option; recommended when using "-B" option.
   # Limits analysis to only reads alignments matching reference.
-  "${programs_array[stringtie]}" "${sample_name}".sorted.bam \
+  "${programs_array[stringtie]}" "${sample}".sorted.bam \
   -p "${threads}" \
-  -o "${sample_name}".gtf \
+  -o "${sample}".gtf \
   -G "${genome_gff}" \
-  -C "${sample_name}.cov_refs.gtf" \
+  -C "${sample}.cov_refs.gtf" \
   -B \
   -e
 
