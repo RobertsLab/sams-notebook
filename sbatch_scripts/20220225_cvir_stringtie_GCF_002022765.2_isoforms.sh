@@ -196,12 +196,17 @@ do
   ${programs_array[samtools_index]} "${sample}".sorted.bam
 
 
-# Run stringtie on alignments
-  "${programs_array[stringtie]}" "${sample}".sorted.bam \
+  # Run stringtie on alignments
+  # Uses "-B" option to output tables intended for use in Ballgown
+  # Uses "-e" option; recommended when using "-B" option.
+  # Limits analysis to only reads alignments matching reference.
+  "${programs_array[stringtie]}" "${sample_name}".sorted.bam \
   -p "${threads}" \
-  -o "${sample}".gtf \
+  -o "${sample_name}".gtf \
   -G "${genome_gff}" \
-  -C "${sample}.cov_refs.gtf"
+  -C "${sample_name}.cov_refs.gtf" \
+  -B \
+  -e
 
 # Add GTFs to list file, only if non-empty
 # Identifies GTF files that only have header
@@ -210,13 +215,6 @@ do
     echo "${sample}.gtf" >> "${gtf_list}"
   fi
 done
-
-# Create singular transcript file, using GTF list file
-"${programs_array[stringtie]}" --merge \
-"${gtf_list}" \
--p "${threads}" \
--G "${genome_gff}" \
--o "${genome_index_name}".stringtie.gtf
 
 # Delete unneccessary index files
 rm "${genome_index_name}"*.ht2
