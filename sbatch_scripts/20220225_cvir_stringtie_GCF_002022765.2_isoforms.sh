@@ -36,6 +36,11 @@ threads=28
 # Needs to match index naem used in previous Hisat2 indexing step
 genome_index_name="cvir_GCF_002022765.2"
 
+# Location of Hisat2 index files
+# Must keep variable name formatting, as it's used by HiSat2
+HISAT2_INDEXES=$(pwd)
+export HISAT2_INDEXES
+
 # Paths to programs
 hisat2_dir="/gscratch/srlab/programs/hisat2-2.1.0"
 hisat2="${hisat2_dir}/hisat2"
