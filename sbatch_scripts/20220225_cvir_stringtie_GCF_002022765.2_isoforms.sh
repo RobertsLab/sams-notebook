@@ -8,7 +8,7 @@
 ## Nodes
 #SBATCH --nodes=1
 ## Walltime (days-hours:minutes:seconds format)
-#SBATCH --time=9-12:00:00
+#SBATCH --time=9-00:00:00
 ## Memory per node
 #SBATCH --mem=500G
 ##turn on e-mail notification
@@ -173,6 +173,8 @@ do
   printf -v joined_R2 '%s,' "${fastq_array_R2[@]}"
   fastq_list_R2=$(echo "${joined_R2%,}")
 
+  # Create and switch to dedicated sample directory
+  mkdir "${sample_name}" && cd "$_"
 
   # Hisat2 alignments
   # Sets read group info (RG) using samples array
@@ -212,15 +214,33 @@ do
 # Identifies GTF files that only have header
   gtf_lines=$(wc -l < "${sample}".gtf )
   if [ "${gtf_lines}" -gt 2 ]; then
-    echo "${sample}.gtf" >> "${gtf_list}"
+    echo "${sample}.gtf" >> ../"${gtf_list}"
   fi
+
+  # Delete unneeded SAM files
+  rm ./*.sam
+
+  # Generate checksums
+  for file in *
+  do
+    md5sum "${file}" >> ${sample}_checksums.md5
+  done
+
+  # Move up to orig. working directory
+  cd ../
+
 done
+
+# Create singular transcript file, using GTF list file
+"${programs_array[stringtie]}" --merge \
+"${gtf_list}" \
+-p "${threads}" \
+-G "${genome_gff}" \
+-o "${genome_index_name}".stringtie.gtf
 
 # Delete unneccessary index files
 rm "${genome_index_name}"*.ht2
 
-# Delete unneded SAM files
-rm ./*.sam
 
 # Generate checksums
 for file in *
