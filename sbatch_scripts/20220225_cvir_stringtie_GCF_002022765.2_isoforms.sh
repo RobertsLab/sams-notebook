@@ -179,7 +179,7 @@ do
   fastq_list_R2=$(echo "${joined_R2%,}")
 
   # Create and switch to dedicated sample directory
-  mkdir "${sample_name}" && cd "$_"
+  mkdir "${sample}" && cd "$_"
 
   # Hisat2 alignments
   # Sets read group info (RG) using samples array
