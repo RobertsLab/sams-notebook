@@ -30,5 +30,12 @@ Jupyter Notebook:
 
 Output folder:
 
-- []()
+- [20220301-pgen-gff_to_gtf/](https://gannet.fish.washington.edu/Atumefaciens/20220301-pgen-gff_to_gtf/)
+
+  - GTF
+
+    - [Panopea-generosa-vv0.74.a4-merged-2019-10-07-4-46-46.gtf](https://gannet.fish.washington.edu/Atumefaciens/20220301-pgen-gff_to_gtf/Panopea-generosa-vv0.74.a4-merged-2019-10-07-4-46-46.gtf) (86M)
+
+      - MD5: `2926b2a9029eb98775b75883cbf199af`
+
 
