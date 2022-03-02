@@ -52,6 +52,7 @@ genome_index_dir="/gscratch/srlab/sam/data/C_virginica/genomes"
 genome_gff="${genome_index_dir}/GCF_002022765.2_C_virginica-3.0_genomic.gff"
 fastq_dir="/gscratch/srlab/sam/data/C_virginica/RNAseq/"
 gtf_list="gtf_list.txt"
+merged_bam="20220225_cvir_stringtie_GCF_002022765-sorted-bams-merged.bam"
 
 # Declare associative array of sample names and metadata
 declare -A samples_associative_array=()
@@ -64,6 +65,7 @@ declare -A programs_array
 programs_array=(
 [hisat2]="${hisat2}" \
 [samtools_index]="${samtools} index" \
+samtools_merge]="${samtools} merge" \
 [samtools_sort]="${samtools} sort" \
 [samtools_view]="${samtools} view" \
 [stringtie]="${stringtie}"
@@ -235,6 +237,21 @@ do
   cd ../
 
 done
+
+# Merge all BAMs to singular BAM for use in transcriptome assembly later
+## Create list of sorted BAMs for merging
+find . -name "*sorted.bam" > sorted_bams.list
+
+## Merge sorted BAMs
+"${programs_array[samtools_merge]}" \
+-b sorted_bams.list \
+-o ${merged_bam} \
+--threads ${threads}
+
+## Index merged BAM
+"${programs_array[samtools_index]}" ${merged_bam}
+
+
 
 # Create singular transcript file, using GTF list file
 "${programs_array[stringtie]}" --merge \
