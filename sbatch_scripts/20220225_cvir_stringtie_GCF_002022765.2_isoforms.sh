@@ -219,7 +219,7 @@ do
 # Identifies GTF files that only have header
   gtf_lines=$(wc -l < "${sample}".gtf )
   if [ "${gtf_lines}" -gt 2 ]; then
-    echo "${sample}.gtf" >> ../"${gtf_list}"
+    echo "$(pwd)/${sample}.gtf" >> ../"${gtf_list}"
   fi
 
   # Delete unneeded SAM files
