@@ -355,6 +355,12 @@ echo "Finished logging system $PATH."
 
 #### RESULTS
 
+Runtime was a bit over two days, as expected:
+
+![C.virginica StringTie runtime](https://github.com/RobertsLab/sams-notebook/blob/master/images/screencaps/20220225_cvir_stringtie_GCF_002022765.2_isoforms_runtime.png?raw=true)
+
+NOTE: The runtime screencap indicates the job failed. Although this is technically true, the actual [`StringTie`](https://ccb.jhu.edu/software/stringtie/) job ran to completion. The script exited due to error during MD5 checksum generation (it encountered a directory instead of a file) due to poor implementation by me.
+
 Output folder:
 
 - [20220225_cvir_stringtie_GCF_002022765.2_isoforms/](https://gannet.fish.washington.edu/Atumefaciens/20220225_cvir_stringtie_GCF_002022765.2_isoforms/)
