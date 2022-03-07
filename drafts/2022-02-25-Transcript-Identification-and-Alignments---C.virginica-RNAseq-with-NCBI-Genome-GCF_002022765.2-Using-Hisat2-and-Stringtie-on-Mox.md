@@ -31,7 +31,7 @@ SBATCH Script (GitHub):
 ## Nodes
 #SBATCH --nodes=1
 ## Walltime (days-hours:minutes:seconds format)
-#SBATCH --time=5-00:00:00
+#SBATCH --time=3-12:00:00
 ## Memory per node
 #SBATCH --mem=500G
 ##turn on e-mail notification
@@ -59,6 +59,11 @@ threads=28
 # Needs to match index naem used in previous Hisat2 indexing step
 genome_index_name="cvir_GCF_002022765.2"
 
+# Location of Hisat2 index files
+# Must keep variable name formatting, as it's used by HiSat2
+HISAT2_INDEXES=$(pwd)
+export HISAT2_INDEXES
+
 # Paths to programs
 hisat2_dir="/gscratch/srlab/programs/hisat2-2.1.0"
 hisat2="${hisat2_dir}/hisat2"
@@ -70,6 +75,7 @@ genome_index_dir="/gscratch/srlab/sam/data/C_virginica/genomes"
 genome_gff="${genome_index_dir}/GCF_002022765.2_C_virginica-3.0_genomic.gff"
 fastq_dir="/gscratch/srlab/sam/data/C_virginica/RNAseq/"
 gtf_list="gtf_list.txt"
+merged_bam="20220225_cvir_stringtie_GCF_002022765-sorted-bams-merged.bam"
 
 # Declare associative array of sample names and metadata
 declare -A samples_associative_array=()
@@ -82,6 +88,7 @@ declare -A programs_array
 programs_array=(
 [hisat2]="${hisat2}" \
 [samtools_index]="${samtools} index" \
+[samtools_merge]="${samtools} merge" \
 [samtools_sort]="${samtools} sort" \
 [samtools_view]="${samtools} view" \
 [stringtie]="${stringtie}"
@@ -116,20 +123,20 @@ do
   sample_name=$(echo "${sample_name}" | awk -F "_" '{print $1}')
   
   # Set treatment condition for each sample
-  if [[ "${sample_name}" == "12M" ]] \
-  || [[ "${sample_name}" == "22F" ]] \
-  || [[ "${sample_name}" == "23M" ]] \
-  || [[ "${sample_name}" == "29F" ]] \
-  || [[ "${sample_name}" == "31M" ]] \
-  || [[ "${sample_name}" == "35F" ]] \
-  || [[ "${sample_name}" == "36F" ]] \
-  || [[ "${sample_name}" == "3F" ]] \
-  || [[ "${sample_name}" == "41F" ]] \
-  || [[ "${sample_name}" == "48F" ]] \
-  || [[ "${sample_name}" == "50F" ]] \
-  || [[ "${sample_name}" == "59M" ]] \
-  || [[ "${sample_name}" == "77F" ]] \
-  || [[ "${sample_name}" == "9M" ]]
+  if [[ "${sample_name}" == "S12M" ]] \
+  || [[ "${sample_name}" == "S22F" ]] \
+  || [[ "${sample_name}" == "S23M" ]] \
+  || [[ "${sample_name}" == "S29F" ]] \
+  || [[ "${sample_name}" == "S31M" ]] \
+  || [[ "${sample_name}" == "S35F" ]] \
+  || [[ "${sample_name}" == "S36F" ]] \
+  || [[ "${sample_name}" == "S3F" ]] \
+  || [[ "${sample_name}" == "S41F" ]] \
+  || [[ "${sample_name}" == "S48F" ]] \
+  || [[ "${sample_name}" == "S50F" ]] \
+  || [[ "${sample_name}" == "S59M" ]] \
+  || [[ "${sample_name}" == "S77F" ]] \
+  || [[ "${sample_name}" == "S9M" ]]
   then
     treatment="exposed"
   else
@@ -196,6 +203,8 @@ do
   printf -v joined_R2 '%s,' "${fastq_array_R2[@]}"
   fastq_list_R2=$(echo "${joined_R2%,}")
 
+  # Create and switch to dedicated sample directory
+  mkdir "${sample}" && cd "$_"
 
   # Hisat2 alignments
   # Sets read group info (RG) using samples array
@@ -219,20 +228,53 @@ do
   ${programs_array[samtools_index]} "${sample}".sorted.bam
 
 
-# Run stringtie on alignments
+  # Run stringtie on alignments
+  # Uses "-B" option to output tables intended for use in Ballgown
+  # Uses "-e" option; recommended when using "-B" option.
+  # Limits analysis to only reads alignments matching reference.
   "${programs_array[stringtie]}" "${sample}".sorted.bam \
   -p "${threads}" \
   -o "${sample}".gtf \
   -G "${genome_gff}" \
-  -C "${sample}.cov_refs.gtf"
+  -C "${sample}.cov_refs.gtf" \
+  -B \
+  -e
 
 # Add GTFs to list file, only if non-empty
 # Identifies GTF files that only have header
   gtf_lines=$(wc -l < "${sample}".gtf )
   if [ "${gtf_lines}" -gt 2 ]; then
-    echo "${sample}.gtf" >> "${gtf_list}"
+    echo "$(pwd)/${sample}.gtf" >> ../"${gtf_list}"
   fi
+
+  # Delete unneeded SAM files
+  rm ./*.sam
+
+  # Generate checksums
+  for file in *
+  do
+    md5sum "${file}" >> ${sample}_checksums.md5
+  done
+
+  # Move up to orig. working directory
+  cd ../
+
 done
+
+# Merge all BAMs to singular BAM for use in transcriptome assembly later
+## Create list of sorted BAMs for merging
+find . -name "*sorted.bam" > sorted_bams.list
+
+## Merge sorted BAMs
+${programs_array[samtools_merge]} \
+-b sorted_bams.list \
+${merged_bam} \
+--threads ${threads}
+
+## Index merged BAM
+${programs_array[samtools_index]} ${merged_bam}
+
+
 
 # Create singular transcript file, using GTF list file
 "${programs_array[stringtie]}" --merge \
@@ -244,8 +286,6 @@ done
 # Delete unneccessary index files
 rm "${genome_index_name}"*.ht2
 
-# Delete unneded SAM files
-rm ./*.sam
 
 # Generate checksums
 for file in *
@@ -307,6 +347,7 @@ printf "%0.s-" {1..10}
 echo "${PATH}" | tr : \\n
 } >> system_path.log
 echo "Finished logging system $PATH."
+
 ```
 
 
@@ -316,5 +357,5 @@ echo "Finished logging system $PATH."
 
 Output folder:
 
-- []()
+- [20220225_cvir_stringtie_GCF_002022765.2_isoforms/](https://gannet.fish.washington.edu/Atumefaciens/20220225_cvir_stringtie_GCF_002022765.2_isoforms/)
 
