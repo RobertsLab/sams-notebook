@@ -8,7 +8,7 @@
 ## Nodes
 #SBATCH --nodes=1
 ## Walltime (days-hours:minutes:seconds format)
-#SBATCH --time=6-00:00:00
+#SBATCH --time=3-12:00:00
 ## Memory per node
 #SBATCH --mem=500G
 ##turn on e-mail notification
@@ -65,7 +65,7 @@ declare -A programs_array
 programs_array=(
 [hisat2]="${hisat2}" \
 [samtools_index]="${samtools} index" \
-samtools_merge]="${samtools} merge" \
+[samtools_merge]="${samtools} merge" \
 [samtools_sort]="${samtools} sort" \
 [samtools_view]="${samtools} view" \
 [stringtie]="${stringtie}"
@@ -100,20 +100,20 @@ do
   sample_name=$(echo "${sample_name}" | awk -F "_" '{print $1}')
   
   # Set treatment condition for each sample
-  if [[ "${sample_name}" == "12M" ]] \
-  || [[ "${sample_name}" == "22F" ]] \
-  || [[ "${sample_name}" == "23M" ]] \
-  || [[ "${sample_name}" == "29F" ]] \
-  || [[ "${sample_name}" == "31M" ]] \
-  || [[ "${sample_name}" == "35F" ]] \
-  || [[ "${sample_name}" == "36F" ]] \
-  || [[ "${sample_name}" == "3F" ]] \
-  || [[ "${sample_name}" == "41F" ]] \
-  || [[ "${sample_name}" == "48F" ]] \
-  || [[ "${sample_name}" == "50F" ]] \
-  || [[ "${sample_name}" == "59M" ]] \
-  || [[ "${sample_name}" == "77F" ]] \
-  || [[ "${sample_name}" == "9M" ]]
+  if [[ "${sample_name}" == "S12M" ]] \
+  || [[ "${sample_name}" == "S22F" ]] \
+  || [[ "${sample_name}" == "S23M" ]] \
+  || [[ "${sample_name}" == "S29F" ]] \
+  || [[ "${sample_name}" == "S31M" ]] \
+  || [[ "${sample_name}" == "S35F" ]] \
+  || [[ "${sample_name}" == "S36F" ]] \
+  || [[ "${sample_name}" == "S3F" ]] \
+  || [[ "${sample_name}" == "S41F" ]] \
+  || [[ "${sample_name}" == "S48F" ]] \
+  || [[ "${sample_name}" == "S50F" ]] \
+  || [[ "${sample_name}" == "S59M" ]] \
+  || [[ "${sample_name}" == "S77F" ]] \
+  || [[ "${sample_name}" == "S9M" ]]
   then
     treatment="exposed"
   else
@@ -243,13 +243,13 @@ done
 find . -name "*sorted.bam" > sorted_bams.list
 
 ## Merge sorted BAMs
-"${programs_array[samtools_merge]}" \
+${programs_array[samtools_merge]} \
 -b sorted_bams.list \
--o ${merged_bam} \
+${merged_bam} \
 --threads ${threads}
 
 ## Index merged BAM
-"${programs_array[samtools_index]}" ${merged_bam}
+${programs_array[samtools_index]} ${merged_bam}
 
 
 
