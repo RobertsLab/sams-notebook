@@ -15,6 +15,8 @@ After mapping bisulfite sequencing (BSseq) data to the [_Crassostrea virginica_ 
 
 To handle this issue, I used [`DIAMOND`](https://github.com/bbuchfink/diamond) BLASTx, followed by the MEGAN6 tool `daa-meganizer` to prepare the output files for import in MEGAN6 to view taxonomic assignments. See the SBATCH script and the RESULTS section below for info on BLAST database and input FastQ files used, respectively. FastQ files were provided by Steven, so I don't have any info on how they were generated; although, I'm assuming they came from [`Bismark`](https://github.com/FelixKrueger/Bismark).
 
+One side note on this process. In the past, I've opted to convert the output DAA files into RMA6 format instead of performing the "meganization" of the DAA files. The rationale for this was that when you import the DAA files into MEGAN6, they get converted to RMA6, so it seems reasonable to use a more powerful computer (e.g. Mox) to do this conversion. However, the developer indicates that this conversion via the `daa-rma` tool is slow and it is faster/more efficient to "meganize" the DAA files and import them into MEGAN6. So, that's why I've reverted back to just performing the "meganization" of the DAA files instead of converting directly to RMA6.
+
 SBATCH script (GitHub):
 
 - [20220302-cvir-diamond-meganizer-unmapped_bsseq.sh](https://github.com/RobertsLab/sams-notebook/blob/master/sbatch_scripts/20220302-cvir-diamond-meganizer-unmapped_bsseq.sh)
@@ -193,7 +195,23 @@ echo "Finished logging system $PATH."
 
 #### RESULTS
 
+Run time was was ~3.25 days:
+
+![Run time of DIAMOND BLASTx and MEGAN6 daa-meganizer on Mox](https://github.com/RobertsLab/sams-notebook/blob/master/images/screencaps/20220302-cvir-diamond-meganizer-unmapped_bsseq_runtime.png?raw=true)
+
 Output folder:
 
-- []()
+- [20220302-cvir-diamond-meganizer-unmapped_bsseq/](https://gannet.fish.washington.edu/Atumefaciens/20220302-cvir-diamond-meganizer-unmapped_bsseq/)
 
+  - #### Meganized DAA files:
+
+    - `*blastx.meganized.daa`
+
+    - These are all ~100MB.
+
+  - #### List of input FastQs and MD5 checksums (text)
+
+    - [20220302-cvir-diamond-meganizer-unmapped_bsseq/input_fastqs.md5](https://gannet.fish.washington.edu/Atumefaciens/20220302-cvir-diamond-meganizer-unmapped_bsseq/input_fastqs.md5)
+
+
+These are now ready for import into MEGAN6 to view taxonomic distribution of reads.
