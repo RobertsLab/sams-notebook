@@ -1,6 +1,6 @@
 ---
 layout: post
-title: Taxonomic Assignment - C.virginica BSseq Unmapped Reads Using MEGAN6 on Mox
+title: Taxonomic Assignment - C.virginica BSseq Unmapped Reads Using DIAMOND BLASTx and MEGAN6 on Mox
 date: '2022-03-02 11:50'
 tags: 
   - MEGAN6
