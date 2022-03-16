@@ -1,0 +1,163 @@
+#!/bin/bash
+## Job Name
+#SBATCH --job-name=
+## Allocation Definition
+#SBATCH --account=srlab
+#SBATCH --partition=srlab
+## Resources
+## Nodes
+#SBATCH --nodes=1
+## Walltime (days-hours:minutes:seconds format)
+#SBATCH --time=21-00:00:00
+## Memory per node
+#SBATCH --mem=500G
+##turn on e-mail notification
+#SBATCH --mail-type=ALL
+#SBATCH --mail-user=samwhite@uw.edu
+## Specify the working directory for this job
+#SBATCH --chdir=/gscratch/scrubbed/samwhite/outputs/
+
+
+###################################################################################
+
+# These variables need to be set by user
+
+## Assign Variables
+
+# These variables need to be set by user
+
+# RNAseq FastQs directory
+reads_dir=/gscratch/srlab/sam/data/P_generosa/RNAseq
+
+# Inititalize arrays
+# Leave empty!!
+R1_array=()
+R2_array=()
+R1_uncompressed_array=()
+R2_uncompressed_array=()
+
+###################################################################################
+
+# Exit script if a command fails
+set -e
+
+# Load Anaconda
+# Uknown why this is needed, but Anaconda will not run if this line is not included.
+. "/gscratch/srlab/programs/anaconda3/etc/profile.d/conda.sh"
+
+# Activate NF-core conda environment
+conda activate nf-core_env
+
+# Load Singularity Mox module for NF Core/Nextflow
+module load singularity
+
+# NF Core RNAseq sample sheet header
+sample_sheet_header="sample,fastq_1,fastq_2,strandedness"
+
+# Create array of original uncompressed fastq R1 files
+# Set filename pattern
+R1_uncompressed_array=("${reads_dir}"/*_1.fastq)
+
+# Create array of original uncompressed fastq R2 files
+# Set filename pattern
+R2_uncompressed_array=("${reads_dir}"/*_2.fastq)
+
+# Check array size to confirm it has all expected samples
+# Exit if mismatch
+if [[ "${#R1_uncompressed_array[@]}" != "${#R2_uncompressed_array[@]}" ]]
+  then
+    echo ""
+    echo "Uncompressed array sizes don't match."
+    echo "Confirm all expected FastQs are present in ${reads_dir}"
+    echo ""
+
+    exit
+fi
+
+# Create list of original uncompressed fastq files
+## Uses parameter substitution to strip leading path from filename
+for fastq in "${!R1_uncompressed_array[@]}"
+do
+  {
+    md5sum "${R1_uncompressed_array[${fastq}]}"
+    md5sum "${R2_uncompressed_array[${fastq}]}"
+  } >> "${SLURM_JOB_ID}"-uncompressed_fastqs.md5
+done
+
+
+# Compress FastQs
+## Required for Nextflow Core RNAseq pipeline
+for fastq in ${fastq_dir}/*.fastq
+do
+  gzip "${fastq}"
+done
+
+# Create array of fastq R1 files
+# Set filename pattern
+R1_array=("${reads_dir}"/*_1.fastq.gz)
+
+# Create array of fastq R2 files
+# Set filename pattern
+R2_array=("${reads_dir}"/*_2.fastq.gz)
+
+# Check array size to confirm it has all expected samples
+# Exit if mismatch
+if [[ "${#R1_array[@]}" != "${#R2_array[@]}" ]]
+  then
+    echo ""
+    echo "Read1 and Read2 compressed FastQ array sizes don't match."
+    echo "Confirm all expected compressed FastQs are present in ${reads_dir}"
+    echo ""
+
+    exit
+fi
+
+# Create list of fastq files used in analysis
+## Uses parameter substitution to strip leading path from filename
+for fastq in "${!R1_array[@]}"
+do
+  {
+    md5sum "${R1_array[${fastq}]}"
+    md5sum "${R2_array[${fastq}]}"
+  } >> "${SLURM_JOB_ID}"-input_fastqs.md5
+
+    # Grab SRA name
+  sra=$(awk -F "_" '{print $1}')
+
+  # Set tissue type
+  if [[ "${sra}" == "SRR12218868" ]]
+    then
+      tissue="heart"
+  elif [[ "${sra}" == "SRR12218869" ]] \
+  || [[ "${sra}" == "SRR12226692" ]]
+    then
+      tissue="gonad"
+  elif [[ "${sra}" == "SRR12218870" ]] \
+  || [[ "${sra}" == "SRR12226693" ]]
+    then
+      tissue="ctenidia"
+  elif [[ "${sra}" == "SRR12207404" ]] \
+  || [[ "${sra}" == "SRR12207405" ]] \
+  || [[ "${sra}" == "SRR12227930" ]]
+    then
+      tissue="juvenile_ambient"
+  elif [[ "${sra}" == "SRR12207406" ]] \
+  || [[ "${sra}" == "SRR12207407" ]] \
+  || [[ "${sra}" == "SRR12227931" ]]
+    then
+      tissue="juvenile_super-low"
+  elif [[ "${sra}" == "SRR12212519" ]] \
+  || [[ "${sra}" == "SRR12227929" ]] \
+  || [[ "${sra}" == "SRR8788211" ]]
+    then
+      tissue="larvae"
+  fi
+
+# Create NF Core RNAseq sample sheet
+{
+  printf "%s\n" "${sample_sheet_header}"
+  printf "%s,%s,%s,%s\n" "${tissue}" "${R1_array[${fastq}]}" "${R2_array[${fastq}]}" "reverse"
+} >> "${SLURM_JOB_ID}"-sample_sheet.csv
+done
+
+
