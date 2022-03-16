@@ -29,6 +29,12 @@
 # RNAseq FastQs directory
 reads_dir=/gscratch/srlab/sam/data/P_generosa/RNAseq
 
+# Genome FastA
+genome_fasta=/gscratch/srlab/sam/data/P_generosa/genomes/Panopea-generosa-v1.0.fa
+
+# Genome GFF3
+genome_gff=/gscratch/srlab/sam/data/P_generosa/genomes/Panopea-generosa-vv0.74.a4-merged-2019-10-07-4-46-46.gff3
+
 # Inititalize arrays
 # Leave empty!!
 R1_array=()
@@ -53,6 +59,7 @@ module load singularity
 
 # NF Core RNAseq sample sheet header
 sample_sheet_header="sample,fastq_1,fastq_2,strandedness"
+printf "%s\n" "sample_sheet_header" >> sample_sheet-"${SLURM_JOB_ID}".csv
 
 # Create array of original uncompressed fastq R1 files
 # Set filename pattern
@@ -81,7 +88,7 @@ do
   {
     md5sum "${R1_uncompressed_array[${fastq}]}"
     md5sum "${R2_uncompressed_array[${fastq}]}"
-  } >> "${SLURM_JOB_ID}"-uncompressed_fastqs.md5
+  } >> uncompressed_fastqs-"${SLURM_JOB_ID}".md5
 done
 
 
@@ -119,7 +126,7 @@ do
   {
     md5sum "${R1_array[${fastq}]}"
     md5sum "${R2_array[${fastq}]}"
-  } >> "${SLURM_JOB_ID}"-input_fastqs.md5
+  } >> input_fastqs-"${SLURM_JOB_ID}".md5
 
     # Grab SRA name
   sra=$(awk -F "_" '{print $1}')
@@ -128,36 +135,59 @@ do
   if [[ "${sra}" == "SRR12218868" ]]
     then
       tissue="heart"
+
+      # Add to NF Core RNAseq sample sheet
+      printf "%s,%s,%s,%s\n" "${tissue}" "${R1_array[${fastq}]}" "${R2_array[${fastq}]}" "reverse" \
+}     >> sample_sheet-"${SLURM_JOB_ID}".csv
+
   elif [[ "${sra}" == "SRR12218869" ]] \
   || [[ "${sra}" == "SRR12226692" ]]
+
     then
       tissue="gonad"
+
+      # Add to NF Core RNAseq sample sheet
+      printf "%s,%s,%s,%s\n" "${tissue}" "${R1_array[${fastq}]}" "${R2_array[${fastq}]}" "reverse" \
+      >> sample_sheet-"${SLURM_JOB_ID}".csv
+
   elif [[ "${sra}" == "SRR12218870" ]] \
   || [[ "${sra}" == "SRR12226693" ]]
     then
       tissue="ctenidia"
+
+      # Add to NF Core RNAseq sample sheet
+      printf "%s,%s,%s,%s\n" "${tissue}" "${R1_array[${fastq}]}" "${R2_array[${fastq}]}" "reverse" \
+      >> sample_sheet-"${SLURM_JOB_ID}".csv
+
   elif [[ "${sra}" == "SRR12207404" ]] \
   || [[ "${sra}" == "SRR12207405" ]] \
-  || [[ "${sra}" == "SRR12227930" ]]
-    then
-      tissue="juvenile_ambient"
-  elif [[ "${sra}" == "SRR12207406" ]] \
+  || [[ "${sra}" == "SRR12227930" ]] \
+  || [[ "${sra}" == "SRR12207406" ]] \
   || [[ "${sra}" == "SRR12207407" ]] \
   || [[ "${sra}" == "SRR12227931" ]]
     then
-      tissue="juvenile_super-low"
+      tissue="juvenile"
+
+      # Add to NF Core RNAseq sample sheet
+      printf "%s,%s,%s,%s\n" "${tissue}" "${R1_array[${fastq}]}" "${R2_array[${fastq}]}" "reverse" \
+      >> sample_sheet-"${SLURM_JOB_ID}".csv
+
   elif [[ "${sra}" == "SRR12212519" ]] \
   || [[ "${sra}" == "SRR12227929" ]] \
   || [[ "${sra}" == "SRR8788211" ]]
     then
       tissue="larvae"
+
+      # Add to NF Core RNAseq sample sheet
+      printf "%s,%s,%s,%s\n" "${tissue}" "${R1_array[${fastq}]}" "${R2_array[${fastq}]}" "reverse" \
+      >> sample_sheet-"${SLURM_JOB_ID}".csv
   fi
 
 # Create NF Core RNAseq sample sheet
 {
   printf "%s\n" "${sample_sheet_header}"
   printf "%s,%s,%s,%s\n" "${tissue}" "${R1_array[${fastq}]}" "${R2_array[${fastq}]}" "reverse"
-} >> "${SLURM_JOB_ID}"-sample_sheet.csv
+} >> sample_sheet-"${SLURM_JOB_ID}".csv
 done
 
 
