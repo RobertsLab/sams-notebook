@@ -222,7 +222,28 @@ done
 
 
 # Run NF Core RNAseq workflow
-nextflow run "${nf_core_rnaseq}" \
+nextflow run ${nf_core_rnaseq} \
 --input sample_sheet-"${SLURM_JOB_ID}".csv \
---outdir "${wd}" \
---multiqc_title ""
+--outdir ${wd} \
+--multiqc_title "20220317-pgen-nextflow_rnaseq-tissues-${SLURM_JOB_ID}" \
+--fasta ${genome_fasta} \
+--gff ${genome_gff} \
+--transcript_fasta ${transcriptome_fasta} \
+--save_reference \
+--gtf_extra_attributes gene_name \
+--gtf_group_features gene_id \
+--featurecounts_group_type gene_biotype \
+--featurecounts_feature_type exon \
+--trim_nextseq \
+--save_trimmed \
+--aligner star_salmon \
+--pseudo_aligner salmon \
+--min_mapped_reads 5 \
+--save_align_intermeds \
+--rseqc_modules bam_stat,\
+inner_distance,\
+infer_experiment,\
+junction_annotation,\
+junction_saturation,\
+read_distribution,\
+read_duplication
