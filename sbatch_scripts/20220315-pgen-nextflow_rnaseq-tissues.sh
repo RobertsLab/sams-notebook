@@ -28,6 +28,9 @@
 # NF Core RNAseq workflow directory
 nf_core_rnaseq="/gscratch/srlab/programs/nf-core-rnaseq-3.6/workflow/"
 
+# NF Core RNAseq custom config file
+nf_core_rnaseq_config=/gscratch/srlab/programs/nf-core-rnaseq-3.6/workflow/conf/base-srlab_500GB_node.config
+
 ## FILES AND DIRECTORIES ##
 # Wordking directory
 wd=$(pwd)
@@ -246,4 +249,6 @@ infer_experiment,\
 junction_annotation,\
 junction_saturation,\
 read_distribution,\
-read_duplication
+read_duplication \
+-profile singularity \
+-c ${nf_core_rnaseq_config}
