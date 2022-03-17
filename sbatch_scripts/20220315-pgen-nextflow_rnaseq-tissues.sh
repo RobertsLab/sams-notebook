@@ -35,6 +35,9 @@ genome_fasta=/gscratch/srlab/sam/data/P_generosa/genomes/Panopea-generosa-v1.0.f
 # Genome GFF3
 genome_gff=/gscratch/srlab/sam/data/P_generosa/genomes/Panopea-generosa-vv0.74.a4-merged-2019-10-07-4-46-46.gff3
 
+# Trascriptome FastA
+transcriptome_fasta=/gscratch/srlab/sam/data/P_generosa/transcriptomes/Pgenerosa_transcriptome_v5.fasta
+
 # Inititalize arrays
 # Leave empty!!
 R1_array=()
@@ -96,7 +99,27 @@ done
 ## Required for Nextflow Core RNAseq pipeline
 for fastq in ${fastq_dir}/*.fastq
 do
-  gzip "${fastq}"
+  # Grab SRA name
+  sra=$(awk -F "_" '{print $1}')
+
+  # Only gzip matching FastQs
+  if [[ "${sra}" == "SRR12218868" ]] \
+  || [[ "${sra}" == "SRR12218869" ]] \
+  || [[ "${sra}" == "SRR12226692" ]] \
+  || [[ "${sra}" == "SRR12218870" ]] \
+  || [[ "${sra}" == "SRR12226693" ]] \
+  || [[ "${sra}" == "SRR12207404" ]] \
+  || [[ "${sra}" == "SRR12207405" ]] \
+  || [[ "${sra}" == "SRR12227930" ]] \
+  || [[ "${sra}" == "SRR12207406" ]] \
+  || [[ "${sra}" == "SRR12207407" ]] \
+  || [[ "${sra}" == "SRR12227931" ]] \
+  || [[ "${sra}" == "SRR12212519" ]] \
+  || [[ "${sra}" == "SRR12227929" ]] \
+  || [[ "${sra}" == "SRR8788211" ]]
+  then
+    gzip "${fastq}"
+  fi
 done
 
 # Create array of fastq R1 files
@@ -128,7 +151,7 @@ do
     md5sum "${R2_array[${fastq}]}"
   } >> input_fastqs-"${SLURM_JOB_ID}".md5
 
-    # Grab SRA name
+  # Grab SRA name
   sra=$(awk -F "_" '{print $1}')
 
   # Set tissue type
