@@ -24,10 +24,13 @@
 
 ## Assign Variables
 
-# These variables need to be set by user
-
+## PROGRAMS ##
 # NF Core RNAseq workflow directory
-nf-core_rnaseq=""
+nf_core_rnaseq="/gscratch/srlab/programs/nf-core-rnaseq-3.6/workflow/"
+
+## FILES AND DIRECTORIES ##
+# Wordking directory
+wd=$(pwd)
 
 # RNAseq FastQs directory
 reads_dir=/gscratch/srlab/sam/data/P_generosa/RNAseq
@@ -41,7 +44,7 @@ genome_gff=/gscratch/srlab/sam/data/P_generosa/genomes/Panopea-generosa-vv0.74.a
 # Trascriptome FastA
 transcriptome_fasta=/gscratch/srlab/sam/data/P_generosa/transcriptomes/Pgenerosa_transcriptome_v5.fasta
 
-# Inititalize arrays
+## INITIALIZE ARRAYS ##
 # Leave empty!!
 R1_array=()
 R2_array=()
@@ -65,7 +68,7 @@ module load singularity
 
 # NF Core RNAseq sample sheet header
 sample_sheet_header="sample,fastq_1,fastq_2,strandedness"
-printf "%s\n" "sample_sheet_header" >> sample_sheet-"${SLURM_JOB_ID}".csv
+printf "%s\n" "${sample_sheet_header}" >> sample_sheet-"${SLURM_JOB_ID}".csv
 
 # Create array of original uncompressed fastq R1 files
 # Set filename pattern
@@ -219,3 +222,7 @@ done
 
 
 # Run NF Core RNAseq workflow
+nextflow run "${nf_core_rnaseq}" \
+--input sample_sheet-"${SLURM_JOB_ID}".csv \
+--outdir "${wd}" \
+--multiqc_title ""
