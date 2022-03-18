@@ -1,6 +1,6 @@
 #!/bin/bash
 ## Job Name
-#SBATCH --job-name=
+#SBATCH --job-name=20220318-pgen-nextflow_rnaseq-tissues
 ## Allocation Definition
 #SBATCH --account=srlab
 #SBATCH --partition=srlab
@@ -15,8 +15,17 @@
 #SBATCH --mail-type=ALL
 #SBATCH --mail-user=samwhite@uw.edu
 ## Specify the working directory for this job
-#SBATCH --chdir=/gscratch/scrubbed/samwhite/outputs/
+#SBATCH --chdir=/gscratch/scrubbed/samwhite/outputs/20220318-pgen-nextflow_rnaseq-tissues
 
+# Script to run Nextflow NF Core RNAseq pipeline for RNAseq analysis of P.generosa, per this GitHub Issue:
+# https://github.com/RobertsLab/resources/issues/1423
+
+# See variable assignments below for input files used: genome, GFF, transcriptome
+# List of input FastQs will be generated during run in: sample_sheet-"${SLURM_JOB_ID}".csv
+# Custom config file for maximum memory and CPU thread setttings
+
+# Outputs explanations are here: https://nf-co.re/rnaseq/3.6/output
+# Input paramaeter explanations are here: https://nf-co.re/rnaseq/3.6/parameters
 
 ###################################################################################
 
@@ -252,3 +261,7 @@ read_distribution,\
 read_duplication \
 -profile singularity \
 -c ${nf_core_rnaseq_config}
+
+# Copy config file for later reference, if needed
+cp "${nf_core_rnaseq_config}" .
+
