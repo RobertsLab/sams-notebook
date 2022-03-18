@@ -136,8 +136,13 @@ do
     } >> uncompressed_fastqs-"${SLURM_JOB_ID}".md5
 
     # Gzip FastQs; NF Core RNAseq requires gzipped FastQs as inputs
-    gzip --keep "${R1_uncompressed_array[${fastq}]}"
-    gzip --keep "${R2_uncompressed_array[${fastq}]}"
+    if [ ! -f "${fastq}.gz" ]; then 
+      gzip --keep "${R1_uncompressed_array[${fastq}]}"
+      gzip --keep "${R2_uncompressed_array[${fastq}]}"; 
+    else 
+      echo "${fastq}.gz already exists. Skipping."
+    fi
+
 
 
   fi
