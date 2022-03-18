@@ -129,15 +129,17 @@ do
     || [[ "${sra}" == "SRR12227929" ]] \
     || [[ "${sra}" == "SRR8788211" ]]
   then
-    # Gzip FastQs; NF Core RNAseq requires gzipped FastQs as inputs
-    gzip "${R1_uncompressed_array[${fastq}]}"
-    gzip "${R2_uncompressed_array[${fastq}]}"
-
     # Generate MD5 checksums of uncompressed FastQs
     {
       md5sum "${R1_uncompressed_array[${fastq}]}"
       md5sum "${R2_uncompressed_array[${fastq}]}"
     } >> uncompressed_fastqs-"${SLURM_JOB_ID}".md5
+
+    # Gzip FastQs; NF Core RNAseq requires gzipped FastQs as inputs
+    gzip --keep "${R1_uncompressed_array[${fastq}]}"
+    gzip --keep "${R2_uncompressed_array[${fastq}]}"
+
+
   fi
 done
 
