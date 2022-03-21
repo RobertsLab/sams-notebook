@@ -129,6 +129,9 @@ do
     || [[ "${sra}" == "SRR12227929" ]] \
     || [[ "${sra}" == "SRR8788211" ]]
   then
+    echo ""
+    echo "Generating MD5 checksums for ${R1_uncompressed_array[${fastq}]} and ${R2_uncompressed_array[${fastq}]}."
+    echo ""
     # Generate MD5 checksums of uncompressed FastQs
     {
       md5sum "${R1_uncompressed_array[${fastq}]}"
@@ -174,6 +177,9 @@ fi
 ## Uses parameter substitution to strip leading path from filename
 for fastq in "${!R1_array[@]}"
 do
+  echo ""
+  echo "Generating MD5 checksums for ${R1_array[${fastq}]} and ${R2_array[${fastq}]}."
+  echo ""
   # Generate MD5 checksums for compressed FastQs used in NF Core RNAseq analysis
   {
     md5sum "${R1_array[${fastq}]}"
@@ -240,7 +246,8 @@ do
 
 done
 
-
+echo "Beginning NF-Core RNAseq pipeline..."
+echo ""
 # Run NF Core RNAseq workflow
 nextflow run ${nf_core_rnaseq} \
 -profile singularity \
