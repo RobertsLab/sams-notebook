@@ -136,12 +136,12 @@ do
     } >> uncompressed_fastqs-"${SLURM_JOB_ID}".md5
 
     # Gzip FastQs; NF Core RNAseq requires gzipped FastQs as inputs
-    if [ ! -f "${fastq}.gz" ]
+    if [ ! -f "${R1_uncompressed_array[${fastq}]}.gz" ]
     then 
       gzip --keep "${R1_uncompressed_array[${fastq}]}"
       gzip --keep "${R2_uncompressed_array[${fastq}]}"
     else 
-      echo "${fastq}.gz already exists. Skipping."
+      echo "${R1_uncompressed_array[${fastq}]}.gz already exists. Skipping."
     fi
 
 
@@ -243,6 +243,8 @@ done
 
 # Run NF Core RNAseq workflow
 nextflow run ${nf_core_rnaseq} \
+-profile singularity \
+-c ${nf_core_rnaseq_config} \
 --input sample_sheet-"${SLURM_JOB_ID}".csv \
 --outdir ${wd} \
 --multiqc_title "20220317-pgen-nextflow_rnaseq-tissues-${SLURM_JOB_ID}" \
@@ -254,7 +256,7 @@ nextflow run ${nf_core_rnaseq} \
 --gtf_group_features gene_id \
 --featurecounts_group_type gene_biotype \
 --featurecounts_feature_type exon \
---trim_nextseq \
+--trim_nextseq 20 \
 --save_trimmed \
 --aligner star_salmon \
 --pseudo_aligner salmon \
@@ -266,9 +268,7 @@ infer_experiment,\
 junction_annotation,\
 junction_saturation,\
 read_distribution,\
-read_duplication \
--profile singularity \
--c ${nf_core_rnaseq_config}
+read_duplication
 
 ##############################################################
 # Copy config file for later reference, if needed
