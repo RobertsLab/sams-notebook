@@ -254,7 +254,7 @@ nextflow run ${nf_core_rnaseq} \
 -c ${nf_core_rnaseq_config} \
 --input sample_sheet-"${SLURM_JOB_ID}".csv \
 --outdir ${wd} \
---multiqc_title "20220317-pgen-nextflow_rnaseq-tissues-${SLURM_JOB_ID}" \
+--multiqc_title "20220321-pgen-nextflow_rnaseq-tissues-${SLURM_JOB_ID}" \
 --fasta ${genome_fasta} \
 --gff ${genome_gff} \
 --transcript_fasta ${transcriptome_fasta} \
