@@ -260,7 +260,6 @@ nextflow run ${nf_core_rnaseq} \
 --multiqc_title "20220321-pgen-nextflow_rnaseq-tissues-${SLURM_JOB_ID}" \
 --fasta ${genome_fasta} \
 --gff ${genome_gff} \
---transcript_fasta ${transcriptome_fasta} \
 --save_reference \
 --gtf_extra_attributes gene_name \
 --gtf_group_features gene_id \
