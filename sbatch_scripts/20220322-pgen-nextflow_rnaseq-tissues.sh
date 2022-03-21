@@ -52,7 +52,7 @@ genome_fasta=/gscratch/srlab/sam/data/P_generosa/genomes/Panopea-generosa-v1.0.f
 
 # Genome GFF3
 original_gff=/gscratch/srlab/sam/data/P_generosa/genomes/Panopea-generosa-v1.0.a4.gene.gff3
-genome_gff=S/gscratch/srlab/sam/data/P_generosa/genomes/Panopea-generosa-v1.0.a4.gene.gff
+genome_gff=/gscratch/srlab/sam/data/P_generosa/genomes/Panopea-generosa-v1.0.a4.gene.gff
 
 ## INITIALIZE ARRAYS ##
 # Leave empty!!
