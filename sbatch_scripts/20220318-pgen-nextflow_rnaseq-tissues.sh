@@ -1,6 +1,6 @@
 #!/bin/bash
 ## Job Name
-#SBATCH --job-name=20220318-pgen-nextflow_rnaseq-tissues
+#SBATCH --job-name=20220321-pgen-nextflow_rnaseq-tissues
 ## Allocation Definition
 #SBATCH --account=srlab
 #SBATCH --partition=srlab
@@ -15,7 +15,7 @@
 #SBATCH --mail-type=ALL
 #SBATCH --mail-user=samwhite@uw.edu
 ## Specify the working directory for this job
-#SBATCH --chdir=/gscratch/scrubbed/samwhite/outputs/20220318-pgen-nextflow_rnaseq-tissues
+#SBATCH --chdir=/gscratch/scrubbed/samwhite/outputs/20220321-pgen-nextflow_rnaseq-tissues
 
 # Script to run Nextflow NF Core RNAseq pipeline for RNAseq analysis of P.generosa, per this GitHub Issue:
 # https://github.com/RobertsLab/resources/issues/1423
@@ -35,10 +35,10 @@
 
 ## PROGRAMS ##
 # NF Core RNAseq workflow directory
-nf_core_rnaseq="/gscratch/srlab/programs/nf-core-rnaseq-3.6/workflow/"
+nf_core_rnaseq="/gscratch/srlab/programs/nf-core-rnaseq-3.6/workflow"
 
 # NF Core RNAseq custom config file
-nf_core_rnaseq_config=/gscratch/srlab/programs/nf-core-rnaseq-3.6/workflow/conf/base-srlab_500GB_node.config
+nf_core_rnaseq_config=/gscratch/srlab/programs/nf-core-rnaseq-3.6/configs/conf/base-srlab_500GB_node.config
 
 ## FILES AND DIRECTORIES ##
 # Wordking directory
@@ -136,9 +136,10 @@ do
     } >> uncompressed_fastqs-"${SLURM_JOB_ID}".md5
 
     # Gzip FastQs; NF Core RNAseq requires gzipped FastQs as inputs
-    if [ ! -f "${fastq}.gz" ]; then 
+    if [ ! -f "${fastq}.gz" ]
+    then 
       gzip --keep "${R1_uncompressed_array[${fastq}]}"
-      gzip --keep "${R2_uncompressed_array[${fastq}]}"; 
+      gzip --keep "${R2_uncompressed_array[${fastq}]}"
     else 
       echo "${fastq}.gz already exists. Skipping."
     fi
@@ -269,6 +270,18 @@ read_duplication \
 -profile singularity \
 -c ${nf_core_rnaseq_config}
 
+##############################################################
 # Copy config file for later reference, if needed
 cp "${nf_core_rnaseq_config}" .
 
+# Document programs in PATH (primarily for program version ID)
+{
+  date
+  echo ""
+  echo "System PATH for $SLURM_JOB_ID"
+  echo ""
+  printf "%0.s-" {1..10}
+  echo "${PATH}" | tr : \\n
+} >> system_path.log
+
+echo "Finished logging system PATH"
