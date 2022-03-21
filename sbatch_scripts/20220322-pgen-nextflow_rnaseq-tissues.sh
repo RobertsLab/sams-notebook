@@ -51,7 +51,8 @@ reads_dir=/gscratch/srlab/sam/data/P_generosa/RNAseq
 genome_fasta=/gscratch/srlab/sam/data/P_generosa/genomes/Panopea-generosa-v1.0.fa
 
 # Genome GFF3
-genome_gff=/gscratch/srlab/sam/data/P_generosa/genomes/Panopea-generosa-vv0.74.a4-merged-2019-10-07-4-46-46.gff3
+original_gff=/gscratch/srlab/sam/data/P_generosa/genomes/Panopea-generosa-vv0.74.a4-merged-2019-10-07-4-46-46.gff3
+genome_gff=/gscratch/srlab/sam/data/P_generosa/genomes/Panopea-generosa-vv0.74.a4-merged-2019-10-07-4-46-46.gff
 
 # Trascriptome FastA
 transcriptome_fasta=/gscratch/srlab/sam/data/P_generosa/transcriptomes/Pgenerosa_transcriptome_v5.fasta
@@ -77,6 +78,9 @@ conda activate nf-core_env
 
 # Load Singularity Mox module for NF Core/Nextflow
 module load singularity
+
+# Rename GFF for proper Nextflow parsing
+cp "${original_gff}" "${genome_gff}"
 
 # NF Core RNAseq sample sheet header
 sample_sheet_header="sample,fastq_1,fastq_2,strandedness"
@@ -139,6 +143,7 @@ do
     } >> uncompressed_fastqs-"${SLURM_JOB_ID}".md5
 
     # Gzip FastQs; NF Core RNAseq requires gzipped FastQs as inputs
+    echo "Compressing FastQ files."
     if [ ! -f "${R1_uncompressed_array[${fastq}]}.gz" ]
     then 
       gzip --keep "${R1_uncompressed_array[${fastq}]}"
@@ -146,6 +151,7 @@ do
     else 
       echo "${R1_uncompressed_array[${fastq}]}.gz already exists. Skipping."
     fi
+    echo ""
 
 
 
