@@ -51,8 +51,8 @@ reads_dir=/gscratch/srlab/sam/data/P_generosa/RNAseq
 genome_fasta=/gscratch/srlab/sam/data/P_generosa/genomes/Panopea-generosa-v1.0.fa
 
 # Genome GFF3
-original_gff=/gscratch/srlab/sam/data/P_generosa/genomes/Panopea-generosa-vv0.74.a4-merged-2019-10-07-4-46-46.gff3
-genome_gff=/gscratch/srlab/sam/data/P_generosa/genomes/Panopea-generosa-vv0.74.a4-merged-2019-10-07-4-46-46.gff
+original_gff=/gscratch/srlab/sam/data/P_generosa/genomes/Panopea-generosa-v1.0.a4.gene.gff3
+genome_gff=/gscratch/srlab/sam/data/P_generosa/genomes/Panopea-generosa-v1.0.a4.gene.gff
 
 # Trascriptome FastA
 transcriptome_fasta=/gscratch/srlab/sam/data/P_generosa/transcriptomes/Pgenerosa_transcriptome_v5.fasta
