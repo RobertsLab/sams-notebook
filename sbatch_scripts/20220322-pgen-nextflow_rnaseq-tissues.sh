@@ -51,8 +51,8 @@ reads_dir=/gscratch/srlab/sam/data/P_generosa/RNAseq
 genome_fasta=/gscratch/srlab/sam/data/P_generosa/genomes/Panopea-generosa-v1.0.fa
 
 # Genome GFF3
-original_gff=/gscratch/srlab/sam/data/P_generosa/genomes/Panopea-generosa-v1.0.a4.gene.gff3
-genome_gff=/gscratch/srlab/sam/data/P_generosa/genomes/Panopea-generosa-v1.0.a4.gene.gff
+original_gff=/gscratch/srlab/sam/data/P_generosa/genomes/Panopea-generosa-v1.0.gff3
+genome_gff=/gscratch/srlab/sam/data/P_generosa/genomes/Panopea-generosa-v1.0.gff
 
 ## INITIALIZE ARRAYS ##
 # Leave empty!!
