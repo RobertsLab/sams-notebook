@@ -1,6 +1,6 @@
 #!/bin/bash
 ## Job Name
-#SBATCH --job-name=20220321-pgen-nextflow_rnaseq-tissues
+#SBATCH --job-name=20220323-pgen-nextflow_rnaseq-tissues
 ## Allocation Definition
 #SBATCH --account=srlab
 #SBATCH --partition=srlab
@@ -15,7 +15,7 @@
 #SBATCH --mail-type=ALL
 #SBATCH --mail-user=samwhite@uw.edu
 ## Specify the working directory for this job
-#SBATCH --chdir=/gscratch/scrubbed/samwhite/outputs/20220321-pgen-nextflow_rnaseq-tissues
+#SBATCH --chdir=/gscratch/scrubbed/samwhite/outputs/20220323-pgen-nextflow_rnaseq-tissues
 
 # Script to run Nextflow NF Core RNAseq pipeline for RNAseq analysis of P.generosa, per this GitHub Issue:
 # https://github.com/RobertsLab/resources/issues/1423
