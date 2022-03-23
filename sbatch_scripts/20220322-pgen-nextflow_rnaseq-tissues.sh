@@ -53,7 +53,7 @@ genome_fasta=/gscratch/srlab/sam/data/P_generosa/genomes/Panopea-generosa-v1.0.f
 # Genome GFF3
 # This was manually modified by me to add gene_biotype to end of each entry.
 # Improves NF-Core RNAseq pipeline analysis/visualiztion to have this info present.
-genome_gff=/gscratch/srlab/sam/data/P_generosa/genomes/Panopea-generosa-v1.0_biotype.gff
+genome_gff=/gscratch/srlab/sam/data/P_generosa/genomes/Panopea-generosa-v1.0.a4_biotype-trna_strand_converted.gff
 
 ## INITIALIZE ARRAYS ##
 # Leave empty!!
