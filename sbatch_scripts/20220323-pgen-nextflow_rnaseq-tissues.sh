@@ -8,7 +8,7 @@
 ## Nodes
 #SBATCH --nodes=1
 ## Walltime (days-hours:minutes:seconds format)
-#SBATCH --time=21-00:00:00
+#SBATCH --time=19-00:00:00
 ## Memory per node
 #SBATCH --mem=500G
 ##turn on e-mail notification
@@ -77,8 +77,6 @@ conda activate nf-core_env
 # Load Singularity Mox module for NF Core/Nextflow
 module load singularity
 
-# Rename GFF for proper Nextflow parsing
-cp "${original_gff}" "${genome_gff}"
 
 # NF Core RNAseq sample sheet header
 sample_sheet_header="sample,fastq_1,fastq_2,strandedness"
