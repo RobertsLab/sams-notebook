@@ -8,7 +8,7 @@
 ## Nodes
 #SBATCH --nodes=1
 ## Walltime (days-hours:minutes:seconds format)
-#SBATCH --time=19-00:00:00
+#SBATCH --time=17-00:00:00
 ## Memory per node
 #SBATCH --mem=500G
 ##turn on e-mail notification
@@ -53,7 +53,7 @@ genome_fasta=/gscratch/srlab/sam/data/P_generosa/genomes/Panopea-generosa-v1.0.f
 # Genome GFF3
 # This was manually modified by me to add gene_biotype to end of each entry.
 # Improves NF-Core RNAseq pipeline analysis/visualiztion to have this info present.
-genome_gff=/gscratch/srlab/sam/data/P_generosa/genomes/Panopea-generosa-v1.0.a4_biotype-trna_strand_converted.gff
+genome_gff=/gscratch/srlab/sam/data/P_generosa/genomes/Panopea-generosa-v1.0.a4_biotype-trna_strand_converted-no_RNAmmer.gff
 
 ## INITIALIZE ARRAYS ##
 # Leave empty!!
