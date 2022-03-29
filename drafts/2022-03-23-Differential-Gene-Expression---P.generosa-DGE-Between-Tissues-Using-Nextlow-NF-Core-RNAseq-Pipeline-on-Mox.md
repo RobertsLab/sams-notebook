@@ -347,7 +347,135 @@ Runtime was surprisingly fast, at just a bit over 2.3 days...
 
 ![Screencap of NF-Core RNAseq runtime on Mox showing runtime of 2 days, 9hrs and some change](https://github.com/RobertsLab/sams-notebook/blob/master/images/screencaps/20220323-pgen-nextflow_rnaseq-tissues_runtime.png?raw=true)
 
+
+
+There is a ton of data here to unpack, so I'll just link to some of the most useful files.
+
+Refer to the NF-Core/RNAseq "Output docs" for all the things generated, as well as a thorough explanation of the MultiQC Report:
+
+- [https://nf-co.re/rnaseq/3.6/output](https://nf-co.re/rnaseq/3.6/output)
+
+Also, the NF-Core/RNAseq pipeline provides a nice progress report to show you which options are running/completed. This screenshot is from after the pipeline finished successfully:
+
+![Screencap of NF-Core/RNAseq pipeline upon completion. Shows percentages and checkboxes to indicate each process completion. Also provides a list of samples passing STAR mapping threshold and pipeline runtime.](https://github.com/RobertsLab/sams-notebook/blob/master/images/screencaps/20220323-pgen-nextflow_rnaseq-tissues_nf-core-rnaseq_progress.png?raw=true)
+
+
 Output folder:
 
-- []()
+- [20220323-pgen-nextflow_rnaseq-tissues/](https://gannet.fish.washington.edu/Atumefaciens/20220323-pgen-nextflow_rnaseq-tissues/)
 
+  - Pipeline MultiQC Report (HTML - opens interactive report in browser):
+
+    - [20220321-pgen-nextflow_rnaseq-tissues-2666621_multiqc_report.html](https://gannet.fish.washington.edu/Atumefaciens/20220323-pgen-nextflow_rnaseq-tissues/multiqc/star_salmon/20220321-pgen-nextflow_rnaseq-tissues-2666621_multiqc_report.html)
+
+    One interesting thing I noticed in this report is the disproportionate number of reads in gonad samples mapping to Scaffold_08 in the genome. This suggests that there is a cluster of genes invovled in reproduction on Scaffold_08.
+
+    ![Histogram showing normalized read counts of samples mapping to each of the 18 P.generosa genome scaffolds. A noticable spike in the black line (gonad) occurs in Scaffold 08.](https://github.com/RobertsLab/sams-notebook/blob/master/images/screencaps/20220323-pgen-nextflow_rnaseq-tissues_multiqc_mapped-reads-gonad.png?raw=true)
+
+    - List of compressed FastQ files and MD5 checksums used (text):
+
+      - [input_fastqs-2666621.md5](https://gannet.fish.washington.edu/Atumefaciens/20220323-pgen-nextflow_rnaseq-tissues/input_fastqs-2666621.md5)
+
+    - List of original, uncompressed FastQ files and MD5 checksums (text):
+
+      - [uncompressed_fastqs-2666621.md5](https://gannet.fish.washington.edu/Atumefaciens/20220323-pgen-nextflow_rnaseq-tissues/uncompressed_fastqs-2666621.md5)
+
+    - Sample sheet used as input to NF-Core RNAseq pipeline (CSV):
+
+      - [sample_sheet-2666621.csv](https://gannet.fish.washington.edu/Atumefaciens/20220323-pgen-nextflow_rnaseq-tissues/sample_sheet-2666621.csv)
+
+    - Config file used as input to NF-Core RNAseq pipeline (text). Mostly used to specify CPUs, RAM, and runtimes:
+
+      - [base-srlab_500GB_node.config](https://gannet.fish.washington.edu/Atumefaciens/20220323-pgen-nextflow_rnaseq-tissues/base-srlab_500GB_node.config)
+
+    - STAR alignments (BAM):
+
+      - [20220323-pgen-nextflow_rnaseq-tissues/star_salmon/ctenidia.markdup.sorted.bam](https://gannet.fish.washington.edu/Atumefaciens/20220323-pgen-nextflow_rnaseq-tissues/star_salmon/ctenidia.markdup.sorted.bam) (4.2G)
+
+        - MD5: `b5a8d02851184dbbf1155cfb2a7b4800`
+
+      - [20220323-pgen-nextflow_rnaseq-tissues/star_salmon/gonad.markdup.sorted.bam](https://gannet.fish.washington.edu/Atumefaciens/20220323-pgen-nextflow_rnaseq-tissues/star_salmon/gonad.markdup.sorted.bam) (3.8G)
+
+        - MD5: `fe2e49e4e81de935eb23c5f095e167f1`
+
+      - [20220323-pgen-nextflow_rnaseq-tissues/star_salmon/heart.markdup.sorted.bam](https://gannet.fish.washington.edu/Atumefaciens/20220323-pgen-nextflow_rnaseq-tissues/star_salmon/heart.markdup.sorted.bam) (7.9G)
+
+        - MD5: `3b621ed144399b27a5880416a9d9e98b`
+
+      - [20220323-pgen-nextflow_rnaseq-tissues/star_salmon/juvenile.markdup.sorted.bam](https://gannet.fish.washington.edu/Atumefaciens/20220323-pgen-nextflow_rnaseq-tissues/star_salmon/juvenile.markdup.sorted.bam) (26G)
+
+        - MD5: `f191d39dee3ea29964ee69861c48e01a`
+
+      - [20220323-pgen-nextflow_rnaseq-tissues/star_salmon/larvae.markdup.sorted.bam](https://gannet.fish.washington.edu/Atumefaciens/20220323-pgen-nextflow_rnaseq-tissues/star_salmon/larvae.markdup.sorted.bam) (5.0G)
+
+        - MD5: `15a215edcde2ae73c46940a4680e9bd4`
+
+
+    - Ballgown table folders:
+
+      - [20220323-pgen-nextflow_rnaseq-tissues/star_salmon/stringtie/ctenidia.ballgown/](https://gannet.fish.washington.edu/Atumefaciens/20220323-pgen-nextflow_rnaseq-tissues/star_salmon/stringtie/ctenidia.ballgown) (31M)
+
+      - [20220323-pgen-nextflow_rnaseq-tissues/star_salmon/stringtie/gonad.ballgown/](https://gannet.fish.washington.edu/Atumefaciens/20220323-pgen-nextflow_rnaseq-tissues/star_salmon/stringtie/gonad.ballgown) (31M)
+
+      - [20220323-pgen-nextflow_rnaseq-tissues/star_salmon/stringtie/heart.ballgown/](https://gannet.fish.washington.edu/Atumefaciens/20220323-pgen-nextflow_rnaseq-tissues/star_salmon/stringtie/heart.ballgown) (31M)
+
+      - [20220323-pgen-nextflow_rnaseq-tissues/star_salmon/stringtie/juvenile.ballgown/](https://gannet.fish.washington.edu/Atumefaciens/20220323-pgen-nextflow_rnaseq-tissues/star_salmon/stringtie/juvenile.ballgown) (32M)
+
+      - [20220323-pgen-nextflow_rnaseq-tissues/star_salmon/stringtie/larvae.ballgown/](https://gannet.fish.washington.edu/Atumefaciens/20220323-pgen-nextflow_rnaseq-tissues/star_salmon/stringtie/larvae.ballgown) (31M)
+
+
+    - STAR/Salmon TPM (text):
+
+      - [20220323-pgen-nextflow_rnaseq-tissues/star_salmon/star_salmon/salmon.merged.gene_tpm.tsv](https://gannet.fish.washington.edu/Atumefaciens/20220323-pgen-nextflow_rnaseq-tissues/star_salmon/salmon.merged.gene_tpm.tsv) (2.1M)
+
+      - [20220323-pgen-nextflow_rnaseq-tissues/star_salmon/star_salmon/salmon.merged.transcript_tpm.tsv](https://gannet.fish.washington.edu/Atumefaciens/20220323-pgen-nextflow_rnaseq-tissues/star_salmon/salmon.merged.transcript_tpm.tsv) (3.1M)
+
+    - Salmon _ONLY_ `quant.sf` files (text) can be found in tissue subdirectories:
+
+      - [20220323-pgen-nextflow_rnaseq-tissues/salmon](https://gannet.fish.washington.edu/Atumefaciens/20220323-pgen-nextflow_rnaseq-tissues/salmon/)
+
+    - STAR and Salmon genome index files in respective subdirectories:
+
+      - [20220323-pgen-nextflow_rnaseq-tissues/genome/index/](https://gannet.fish.washington.edu/Atumefaciens/20220323-pgen-nextflow_rnaseq-tissues/genome/index/)
+
+    - Trimmed FastQs:
+
+      - [20220323-pgen-nextflow_rnaseq-tissues/trimgalore/ctenidia_1_val_1.fq.gz](https://gannet.fish.washington.edu/Atumefaciens/20220323-pgen-nextflow_rnaseq-tissues/trimgalore/ctenidia_1_val_1.fq.gz) (4.3G)
+
+        - MD5: `fb5683c9734fd90e95f8b09292626f74`
+
+      - [20220323-pgen-nextflow_rnaseq-tissues/trimgalore/ctenidia_2_val_2.fq.gz](https://gannet.fish.washington.edu/Atumefaciens/20220323-pgen-nextflow_rnaseq-tissues/trimgalore/ctenidia_2_val_2.fq.gz) (4.4G)
+
+        - MD5: `a124c1ce517cd106979a32d0a9957742`
+
+      - [20220323-pgen-nextflow_rnaseq-tissues/trimgalore/gonad_1_val_1.fq.gz](https://gannet.fish.washington.edu/Atumefaciens/20220323-pgen-nextflow_rnaseq-tissues/trimgalore/gonad_1_val_1.fq.gz) (4.7G)
+
+        - MD5: `e999349a51d70f6f21384126b42bbe5e`
+
+      - [20220323-pgen-nextflow_rnaseq-tissues/trimgalore/gonad_2_val_2.fq.gz](https://gannet.fish.washington.edu/Atumefaciens/20220323-pgen-nextflow_rnaseq-tissues/trimgalore/gonad_2_val_2.fq.gz) (4.9G)
+
+        - MD5: `f70ac9c1170120f67e54cd523e8284eb`
+
+      - [20220323-pgen-nextflow_rnaseq-tissues/trimgalore/heart_1_val_1.fq.gz](https://gannet.fish.washington.edu/Atumefaciens/20220323-pgen-nextflow_rnaseq-tissues/trimgalore/heart_1_val_1.fq.gz) (8.0G)
+
+        - MD5: `d5d930b6f92005f3acdb8105736d2219`
+
+      - [20220323-pgen-nextflow_rnaseq-tissues/trimgalore/heart_2_val_2.fq.gz](https://gannet.fish.washington.edu/Atumefaciens/20220323-pgen-nextflow_rnaseq-tissues/trimgalore/heart_2_val_2.fq.gz) (7.8G)
+
+        - MD5: `0068df5bf32d18c9a940a4558645021e`
+
+      - [20220323-pgen-nextflow_rnaseq-tissues/trimgalore/juvenile_1_val_1.fq.gz](https://gannet.fish.washington.edu/Atumefaciens/20220323-pgen-nextflow_rnaseq-tissues/trimgalore/juvenile_1_val_1.fq.gz) (26G)
+
+        - MD5: `9f74db3f73fc140e009c470010c5b5b2`
+
+      - [20220323-pgen-nextflow_rnaseq-tissues/trimgalore/juvenile_2_val_2.fq.gz](https://gannet.fish.washington.edu/Atumefaciens/20220323-pgen-nextflow_rnaseq-tissues/trimgalore/juvenile_2_val_2.fq.gz) (26G)
+
+        - MD5: `453b846f816e227f386481b8613aee86`
+
+      - [20220323-pgen-nextflow_rnaseq-tissues/trimgalore/larvae_1_val_1.fq.gz](https://gannet.fish.washington.edu/Atumefaciens/20220323-pgen-nextflow_rnaseq-tissues/trimgalore/larvae_1_val_1.fq.gz) (5.3G)
+
+        - MD5: `70ff0f167449b7952362eba1c6b8ef18`
+
+      - [20220323-pgen-nextflow_rnaseq-tissues/trimgalore/larvae_2_val_2.fq.gz](https://gannet.fish.washington.edu/Atumefaciens/20220323-pgen-nextflow_rnaseq-tissues/trimgalore/larvae_2_val_2.fq.gz) (5.5G)
+
+        - MD5: `9f4b1080d956cfab03b94bba403ee81d`
