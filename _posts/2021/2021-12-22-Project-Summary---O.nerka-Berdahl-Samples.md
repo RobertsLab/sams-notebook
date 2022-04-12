@@ -24,3 +24,5 @@ This will be a “dynamic” notebook entry, whereby I will update this post con
 - [20211222](https://robertslab.github.io/sams-notebook/2021/12/22/RNA-Isolation-O.nerka-Berdahl-Brain-Tissues.html)
 
 - [20220112](https://robertslab.github.io/sams-notebook/2022/01/12/RNA-Isolation-O.nerka-Berdahl-Brain-Tissues.html)
+
+- [20220411](https://robertslab.github.io/sams-notebook/2022/04/11/RNA-Isolation-O.nerka-Berdahl-Brain-Tissues.html)
