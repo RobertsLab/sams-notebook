@@ -8,7 +8,7 @@ tags:
   - Panopea generosa
   - RNAseq
 categories: 
-  - Miscellaneous
+  - Project Summary
 ---
 [Per this GitHub Issue](https://github.com/RobertsLab/resources/issues/1247), I've compiled a summary table, with links, of all of our [_Panopea generosa_ (Pacific geoduck)](http://en.wikipedia.org/wiki/Geoduck) RNAseq data as it exists in NCBI. This will be a "dynamic" notebook entry, whereby I will update this post continually as we acquire new data and/or change the information we'd like to have here.
 
