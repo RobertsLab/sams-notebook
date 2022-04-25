@@ -9,7 +9,7 @@ tags:
   - Olympia oyster
   - trimming
 categories: 
-  - Oympia Oyster Genome Sequencing
+  - Olympia Oyster Genome Sequencing
 ---
 [After attempting to submit our _Ostrea lurida_ (Olympia oyster) genome assembly annotations (via GFF) to NCBI](https://robertslab.github.io/sams-notebook/2021/05/13/Genome-Submission-Validation-of-Olurida_v081.fa-and-Annotated-GFFs-Prior-to-Submission-to-NCBI.html), the submission process also highlighted some short comings of the `Olurida_v081` assembly. When getting ready to submit the genome annotations to NCBI, I was required to calculate the genome coverage we had. NCBI suggested to calculate this simply by counting the number of bases sequenced and divide it by the genome size. Doing this resulted in an estimated coverage of ~55X coverage, yet we have significant stretches of Ns throughout the assembly. I understand why this is still technically possible, but it's just sticking in my craw. So, I've decided to set up a quick assembly to see what I can come up with. Of note, the [canonical assembly we've been using relied on the scaffolded assembly provided by BGI](https://robertslab.github.io/sams-notebook/2017/11/30/genome-assembly-olympia-oyster-illumina-pacbio-using-pb-jelly-wbgi-scaffold-assembly-2.html); we never attempted our own assembly from the raw data.
 
