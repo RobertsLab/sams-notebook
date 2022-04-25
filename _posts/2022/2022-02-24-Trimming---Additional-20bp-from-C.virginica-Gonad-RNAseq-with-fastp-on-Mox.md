@@ -264,15 +264,18 @@ In my opinion, things look better. Here's the same sample shown above, now with 
 
 <iframe src="https://gannet.fish.washington.edu/Atumefaciens/20220224_cvir_gonad_RNAseq_fastp_trimming/S3F_R1.fastp-trim.20bp-5prime.20220224.report.html" width="100%" height="1000" scrolling="yes"></iframe>
 
+
+---
+
 Links to MultiQC report and trimmed FastQ files are below.
 
-  #### MultiQC Report (HTML):
+#### MultiQC Report (HTML):
 
-    - NOTE: Visit the output folder linked above to view each individual samples `fastp` HTML report; has additional info not shown in [`MultiQC`](https://multiqc.info/) summary report.
+  - NOTE: Visit the output folder linked above to view each individual samples `fastp` HTML report; has additional info not shown in [`MultiQC`](https://multiqc.info/) summary report.
 
     - [20220224_cvir_gonad_RNAseq_fastp_trimming/multiqc_report.html](https://gannet.fish.washington.edu/Atumefaciens/20220224_cvir_gonad_RNAseq_fastp_trimming/multiqc_report.html)
 
-  #### Trimmed FastQ files:
+#### Trimmed FastQ files:
 
   - [S12M_R1.fastp-trim.20bp-5prime.20220224.fq.gz](https://gannet.fish.washington.edu/Atumefaciens/20220224_cvir_gonad_RNAseq_fastp_trimming/S12M_R1.fastp-trim.20bp-5prime.20220224.fq.gz) (1.7G)
 
