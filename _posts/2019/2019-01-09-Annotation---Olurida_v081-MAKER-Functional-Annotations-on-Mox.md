@@ -10,7 +10,7 @@ tags:
   - Olurida_v081
   - annotation
 categories:
-  - Olypia Oyster Genome Sequencing
+  - Olympia Oyster Genome Sequencing
 ---
 Believe it or not, full, proper annotation of the Olympia oyster genome is nearly complete! Here's where it stands:
 
