@@ -13,7 +13,7 @@ categories:
 
 20220622
 
-Parsed and formatted data using `awk` to put into R vector. Will print comma-separated, quoted lists of the sample names I wanted:
+As part of [the CEABIGR project](https://github.com/sr320/ceabigr), I parsed and formatted data using `awk` to put into R vector. Will print comma-separated, quoted lists of the sample names I wanted (from [this file](https://github.com/epigeneticstoocean/2018_L18-adult-methylation/blob/main/data/adult-meta.csv)):
 
 ```shell
 # Get Exposed female ample names from second column
