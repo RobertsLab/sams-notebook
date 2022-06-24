@@ -8,6 +8,36 @@ categories:
   - Daily Bits
 ---
 
+---
+
+20220624
+
+- Gave some consideration/responses to [Anamica's GitHub issue regarding PacBio data for SNP analysis in bacterial cell lines](https://github.com/RobertsLab/resources/issues/1486#event-6859604758)
+
+- Added some useful code for writing multiple data frames to CSV in R to avoid having to have individual code for each one:
+
+```R
+
+# Add data frames to list
+# Wraps ls() with grep to allow for needed perl regex (the  "^(?!list).*" aspect) because
+# ls() doesn't support perl regex
+# Regex excludes any results beginning with the word "list"
+list_transcript_counts_dfs <- mget(grep("^(?!list).*", ls(pattern = "transcript_counts_per_gene_per_sample"), value = TRUE, perl = TRUE))
+
+# Write data frames to CSVs in ../analyses/dir
+# Uses names of data frames as names of output files.
+sapply(names(list_transcript_counts_dfs),
+       function(x) write.csv(list_transcript_counts_dfs[[x]],
+                             file = file.path("../analyses/", paste(x, "csv", sep=".")),
+                             quote = FALSE,
+                             row.names = FALSE)
+```
+
+---
+
+20220623
+
+DAY OFF
 
 ---
 
