@@ -9,10 +9,16 @@ categories:
   - Daily Bits
 ---
 
+20220706
+
+
+
+---
+
 20220705
 
 - CEABIGR meeting:
 
-  - need to add gene names to transcript counts files
-  - need to fix code to cover all desired iterations of output files (i.e. missing controls males files)
+  - added gene names to transcript counts files 
+  - added code to cover all desired iterations of output files (i.e. missing controls males files)
 
