@@ -11,7 +11,9 @@ categories:
 
 20220706
 
+- fixed [Nextflow epideiverse/snp problem](https://github.com/RobertsLab/resources/issues/1488) (GitHub Issue)
 
+- dealt with [lake trout BioProject PRJNA316738 data retrieval and QC](https://github.com/RobertsLab/resources/issues/1482) (GitHub Issue)
 
 ---
 
