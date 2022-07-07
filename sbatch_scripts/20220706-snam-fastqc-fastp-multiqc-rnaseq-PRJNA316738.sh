@@ -123,7 +123,7 @@ done
 ### NOTE: Do NOT quote ${trimmed_fastqc_list}
 
 # Create array of trimmed FastQs
-trimmed_fastq_array_R1=(*.fq.gz)
+trimmed_fastq_array=(*trimmed*.fq.gz)
 
 # Pass array contents to new variable as space-delimited list
 trimmed_fastqc_list=$(echo "${trimmed_fastq_array[*]}")
