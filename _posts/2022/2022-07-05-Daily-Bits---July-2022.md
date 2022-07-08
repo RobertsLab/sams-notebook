@@ -9,9 +9,17 @@ categories:
   - Daily Bits
 ---
 
+20220707
+
+- to start Nextflow epidiverse/snp, genome FastA file requires FastA index file; this is not documented, but pipeline throws an error when a FastA index is not found.
+
+- started Nextflow epidiverse/snp on raven
+
+---
+
 20220706
 
-- fixed [Nextflow epideiverse/snp problem](https://github.com/RobertsLab/resources/issues/1488) (GitHub Issue)
+- fixed [Nextflow epidiverse/snp problem](https://github.com/RobertsLab/resources/issues/1488) (GitHub Issue)
 
 - dealt with [lake trout BioProject PRJNA316738 data retrieval and QC](https://github.com/RobertsLab/resources/issues/1482) (GitHub Issue)
 
