@@ -9,6 +9,22 @@ categories:
   - Daily Bits
 ---
 
+20220709
+
+- Nextflow epidiverse/snp: Let it run overnight and woke up to the same timeout error message and kernel memory warnings, despite changes in config file.. Although, I had been running it with the `-resume` flag... I'll remove all previous `snps/` and `work/` dirs and run with the following command:
+
+  ```shell
+  NXF_VER=20.07.1 /home/shared/nextflow run epidiverse/snp \
+  -c nextflow-docker_permissions.config \
+  -profile docker \
+  --input /home/shared/8TB_HDD_01/sam/data/O_lurida/BSseq/ \
+  --reference /home/shared/8TB_HDD_01/sam/data/O_lurida/genomes/Olurida_v081.fa
+  ```
+
+  - Well that didn't work... I'm going to try again with a limited data set, as the `Olurida_v081.fa` has a TON of contigs, which has caused issues with other bisfulfite analysis software.
+
+---
+
 20220708
 
 - Spent time at Science Hour with Steven visualizing some of the [_Ostrea lurida_ (Olympia oyster)](http://en.wikipedia.org/wiki/Pacific_oyster) transcript counts stats in R - I mostly just watched and nodded. :)
