@@ -9,6 +9,161 @@ categories:
   - Daily Bits
 ---
 
+20220711
+
+- Lab meeting: Discussed Ch.6 of Fresh Banana Leaves
+
+- Oyster gene expression meeting: Steven did some plotting of [_Crassostrea virginica_ (Eastern oyster)](https://en.wikipedia.org/wiki/Eastern_oyster) transcript count data.
+
+- 
+
+
+---
+
+20220710
+
+- Created `erne-bs5` genome index to attempt full epidiverse pipeline, starting with `epidiverse/wgbs`:
+
+   ```shell
+/home/shared/erne-2.1.1-linux/bin/erne-create \
+--methyl-hash \
+--fasta Olurida_v081.fa \
+--output-prefix Olurida_v081
+   ```
+- Realized I had experienced previous issues (see this [GitHub Issue](https://github.com/EpiDiverse/wgbs/issues/5) and this [GitHub Issue](https://github.com/EpiDiverse/wgbs/issues/6)) previously, which is not encouraging.
+
+  Tried to run the test protocol for this pipeline "locally" (i.e. offline) using Mox sbatch script. To do so, I've downloaded all the of the input files listed in [`test.config`](https://github.com/EpiDiverse/wgbs/blob/master/config/test.config). I've also downloaded the Singularity image (`singularity pull docker://epidiverse/wgbs:1.0`) and changed the `nextflow.config` file to specify the Singularity image location, like so:
+
+```
+// -profile singularity
+	singularity {
+		includeConfig "${baseDir}/config/base.config"
+		singularity.enabled = true
+		process.container = '/gscratch/srlab/sam/analyses/20220710-olu-epidiverse_wgbs-test/work/singularity/wgbs_1.0.sif'
+	}
+```
+
+That seemed like that should be all that was needed, but when I execute the test command (`NXF_VER=20.07.1 /gscratch/srlab/programs/nextflow-21.10.6-all run /gscratch/srlab/sam/analyses/20220710-olu-epidiverse_wgbs-test/wgbs-1.0 -profile test,singularity`), it fails with this error:
+
+```
+executor >  local (10)
+[c4/79070c] process > INDEX:erne_bs5_indexing        [100%] 1 of 1 ✔
+[30/202688] process > INDEX:segemehl_indexing        [100%] 1 of 1 ✔
+[07/dc2230] process > WGBS:read_trimming (sampleB)   [100%] 8 of 8, failed: 8...
+[-        ] process > WGBS:read_merging              -
+[-        ] process > WGBS:fastqc                    -
+[-        ] process > WGBS:erne_bs5                  -
+[-        ] process > WGBS:segemehl                  -
+[-        ] process > WGBS:erne_bs5_processing       -
+[-        ] process > WGBS:segemehl_processing       -
+[-        ] process > WGBS:bam_merging               -
+[-        ] process > WGBS:bam_subsetting            -
+[-        ] process > WGBS:bam_filtering             -
+[-        ] process > WGBS:bam_statistics            -
+[-        ] process > CALL:bam_processing            -
+[-        ] process > CALL:Picard_MarkDuplicates     -
+[-        ] process > CALL:MethylDackel              -
+[-        ] process > CALL:conversion_rate_estima... -
+
+Pipeline execution summary
+---------------------------
+Name         : infallible_mccarthy
+Profile      : test,singularity
+Launch dir   : /gscratch/srlab/sam/analyses/20220710-olu-epidiverse_wgbs-test
+Work dir     : /gscratch/srlab/sam/analyses/20220710-olu-epidiverse_wgbs-test/work
+Status       : failed
+Error report : Error executing process > 'WGBS:read_trimming (sampleA)'
+
+Caused by:
+  Process `WGBS:read_trimming (sampleA)` terminated with an error exit status (1)
+
+Command executed:
+
+  mkdir fastq fastq/logs
+  cutadapt -j 2 -a AGATCGGAAGAGC -A AGATCGGAAGAGC \
+  -q 20 -m 36 -O 3 \
+  -o fastq/merge.null \
+  -p fastq/merge.g null g \
+  > fastq/logs/cutadapt.sampleA.merge.log 2>&1
+
+Command exit status:
+  1
+
+Command output:
+  (empty)
+
+Work dir:
+  /gscratch/srlab/sam/analyses/20220710-olu-epidiverse_wgbs-test/work/12/6ee9cc7a7372a97f34f21a4f79efb3
+
+Tip: view the complete command output by changing to the process work dir and entering the command `cat .command.out`
+
+Error executing process > 'WGBS:read_trimming (sampleA)'
+
+Caused by:
+  Process `WGBS:read_trimming (sampleA)` terminated with an error exit status (1)
+
+Command executed:
+
+  mkdir fastq fastq/logs
+  cutadapt -j 2 -a AGATCGGAAGAGC -A AGATCGGAAGAGC \
+  -q 20 -m 36 -O 3 \
+  -o fastq/merge.null \
+  -p fastq/merge.g null g \
+  > fastq/logs/cutadapt.sampleA.merge.log 2>&1
+
+Command exit status:
+  1
+
+Command output:
+  (empty)
+
+Work dir:
+  /gscratch/srlab/sam/analyses/20220710-olu-epidiverse_wgbs-test/work/12/6ee9cc7a7372a97f34f21a4f79efb3
+
+Tip: view the complete command output by changing to the process work dir and entering the command `cat .command.out`
+```
+
+When I look at the Cutadapt log file, this is what is shown:
+
+
+```
+cat cutadapt.sampleA.merge.log 
+This is cutadapt 2.10 with Python 3.6.7
+Command line parameters: -j 2 -a AGATCGGAAGAGC -A AGATCGGAAGAGC -q 20 -m 36 -O 3 -o fastq/merge.null -p fastq/merge.g null g
+Processing reads on 2 cores in paired-end mode ...
+ERROR: Traceback (most recent call last):
+  File "/opt/conda/envs/wgbs/lib/python3.6/site-packages/cutadapt/pipeline.py", line 477, in run
+    with xopen(self.file, 'rb') as f:
+  File "/opt/conda/envs/wgbs/lib/python3.6/site-packages/xopen/__init__.py", line 407, in xopen
+    return open(filename, mode)
+IsADirectoryError: [Errno 21] Is a directory: 'null'
+
+ERROR: Traceback (most recent call last):
+  File "/opt/conda/envs/wgbs/lib/python3.6/site-packages/cutadapt/pipeline.py", line 477, in run
+    with xopen(self.file, 'rb') as f:
+  File "/opt/conda/envs/wgbs/lib/python3.6/site-packages/xopen/__init__.py", line 407, in xopen
+    return open(filename, mode)
+IsADirectoryError: [Errno 21] Is a directory: 'null'
+
+ERROR: Traceback (most recent call last):
+  File "/opt/conda/envs/wgbs/lib/python3.6/site-packages/cutadapt/pipeline.py", line 540, in run
+    raise e
+IsADirectoryError: [Errno 21] Is a directory: 'null'
+
+Traceback (most recent call last):
+  File "/opt/conda/envs/wgbs/bin/cutadapt", line 10, in <module>
+    sys.exit(main())
+  File "/opt/conda/envs/wgbs/lib/python3.6/site-packages/cutadapt/__main__.py", line 855, in main
+    stats = r.run()
+  File "/opt/conda/envs/wgbs/lib/python3.6/site-packages/cutadapt/pipeline.py", line 770, in run
+    raise e
+IsADirectoryError: [Errno 21] Is a directory: 'null'
+```
+
+I [posted an Issue](https://github.com/EpiDiverse/wgbs/issues/8), but I'm not really expecting to get a response.
+
+---
+
 20220709
 
 - Nextflow epidiverse/snp: Let it run overnight and woke up to the same timeout error message and kernel memory warnings, despite changes in config file.. Although, I had been running it with the `-resume` flag... I'll remove all previous `snps/` and `work/` dirs and run with the following command:
