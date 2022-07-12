@@ -15,7 +15,92 @@ categories:
 
 - Oyster gene expression meeting: Steven did some plotting of [_Crassostrea virginica_ (Eastern oyster)](https://en.wikipedia.org/wiki/Eastern_oyster) transcript count data.
 
-- 
+- Nextflow `epidiverse/snp`: opted to try [a subsetted version of the Olurida_v081 genome and BSseq alignments](https://github.com/RobertsLab/resources/issues/1489#issuecomment-1179224402) (GitHub Issue):
+
+Looks like it's working (got past the previous hangups on 20220708)!
+
+```
+N E X T F L O W  ~  version 20.07.1
+Launching `epidiverse/snp` [sick_hoover] - revision: 9c814703c6 [master]
+
+================================================
+E P I D I V E R S E - S N P    P I P E L I N E
+================================================
+~ version 1.0
+
+input dir     : /home/shared/8TB_HDD_01/sam/data/O_lurida/BSseq/bams/070322-olymerge-snp/
+reference     : /home/shared/8TB_HDD_01/sam/data/O_lurida/genomes/Olurida_v081-mergecat98.fa
+output dir    : snps
+variant calls : enabled
+clustering    : enabled
+
+================================================
+RUN NAME: sick_hoover
+
+executor >  local (60)
+[2c/3853d0] process > SNPS:preprocessing (zr1394_9_s456_trimmed_bismark_bt2.deduplicated)        [100%] 10 of 10 ✔
+[90/dea51f] process > SNPS:masking (zr1394_9_s456_trimmed_bismark_bt2.deduplicated - clustering) [100%] 20 of 20 ✔
+[8a/ce2b44] process > SNPS:extracting (zr1394_9_s456_trimmed_bismark_bt2.deduplicated)           [100%] 10 of 10 ✔
+[01/ef9503] process > SNPS:khmer (zr1394_6_s456_trimmed_bismark_bt2.deduplicated)                [ 40%] 4 of 10
+[-        ] process > SNPS:kwip                                                                  -
+[-        ] process > SNPS:clustering                                                            -
+[83/238cfa] process > SNPS:sorting (zr1394_9_s456_trimmed_bismark_bt2.deduplicated)              [100%] 10 of 10 ✔
+[03/1b910d] process > SNPS:freebayes (zr1394_7_s456_trimmed_bismark_bt2.deduplicated)            [  0%] 0 of 10
+[-        ] process > SNPS:bcftools                                                              -
+[-        ] process > SNPS:plot_vcfstats 
+```
+
+Well, well, well! It worked!!
+
+```
+N E X T F L O W  ~  version 20.07.1
+Launching `epidiverse/snp` [sick_hoover] - revision: 9c814703c6 [master]
+
+================================================
+E P I D I V E R S E - S N P    P I P E L I N E
+================================================
+~ version 1.0
+
+input dir     : /home/shared/8TB_HDD_01/sam/data/O_lurida/BSseq/bams/070322-olymerge-snp/
+reference     : /home/shared/8TB_HDD_01/sam/data/O_lurida/genomes/Olurida_v081-mergecat98.fa
+output dir    : snps
+variant calls : enabled
+clustering    : enabled
+
+================================================
+RUN NAME: sick_hoover
+
+executor >  local (92)
+[2c/3853d0] process > SNPS:preprocessing (zr1394_9_s456_trimmed_bismark_bt2.deduplicated)        [100%] 10 of 10 ✔
+[90/dea51f] process > SNPS:masking (zr1394_9_s456_trimmed_bismark_bt2.deduplicated - clustering) [100%] 20 of 20 ✔
+[8a/ce2b44] process > SNPS:extracting (zr1394_9_s456_trimmed_bismark_bt2.deduplicated)           [100%] 10 of 10 ✔
+[a4/dc11ce] process > SNPS:khmer (zr1394_9_s456_trimmed_bismark_bt2.deduplicated)                [100%] 10 of 10 ✔
+[95/79be9f] process > SNPS:kwip                                                                  [100%] 1 of 1 ✔
+[c6/24b89b] process > SNPS:clustering                                                            [100%] 1 of 1 ✔
+[83/238cfa] process > SNPS:sorting (zr1394_9_s456_trimmed_bismark_bt2.deduplicated)              [100%] 10 of 10 ✔
+[63/2c5bc5] process > SNPS:freebayes (zr1394_9_s456_trimmed_bismark_bt2.deduplicated)            [100%] 10 of 10 ✔
+[00/f4af8b] process > SNPS:bcftools (zr1394_9_s456_trimmed_bismark_bt2.deduplicated)             [100%] 10 of 10 ✔
+[df/1e78de] process > SNPS:plot_vcfstats (zr1394_9_s456_trimmed_bismark_bt2.deduplicated)        [100%] 10 of 10 ✔
+
+Pipeline execution summary
+---------------------------
+Name         : sick_hoover
+Profile      : docker
+Launch dir   : /home/shared/8TB_HDD_01/sam/analyses/20220707-olur-epidiverse
+Work dir     : /home/shared/8TB_HDD_01/sam/analyses/20220707-olur-epidiverse/work (cleared)
+Status       : success
+Error report : -
+
+Completed at: 11-Jul-2022 18:47:04
+Duration    : 3h 17m 49s
+CPU hours   : 140.1
+Succeeded   : 92
+
+```
+
+I'll obviously share this with Steven, but will also see if I can get the original dataset to run on Mox, which has twice the memory available as Raven...
+
+Actually, I glanced at the data and it didn't really work. It only seems to have analyzed some of the BAMs in the directory! There are 18 BAMs, but it only processed 10 of them.. Odd (and annoying). I'll re-run to see if it does the same thing.
 
 
 ---
