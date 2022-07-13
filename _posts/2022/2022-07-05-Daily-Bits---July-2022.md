@@ -9,6 +9,12 @@ categories:
   - Daily Bits
 ---
 
+20220712
+
+- In lab: walked Dorothy through the basics of RNA isolation (RNAzol and Direct-zol Mini Kit) and quantification (Qubit RNA BR Assay). Processed two fresh mussel ctenidia samples.
+
+---
+
 20220711
 
 - Lab meeting: Discussed Ch.6 of Fresh Banana Leaves
