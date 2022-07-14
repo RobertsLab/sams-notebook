@@ -13,6 +13,8 @@ categories:
 
 - Installed Singularity on Raven (required Go, so installed that, too).
 
+- Tried to run `epidiverse/wgbs` test run on Raven, but it failed. See [the GitHub Issue I posted for deets.](https://github.com/EpiDiverse/wgbs/issues/9)
+
 ---
 
 20220713
