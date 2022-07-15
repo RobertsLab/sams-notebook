@@ -9,6 +9,12 @@ categories:
   - Daily Bits
 ---
 
+20220715
+
+- Managed to resolve the [`epdiverse/wgbs` test issue I encountered yesterday](https://github.com/EpiDiverse/wgbs/issues/9). See the link for details (involves binding local directory to Singularity container).
+
+---
+
 20220714
 
 - Installed Singularity on Raven (required Go, so installed that, too).
