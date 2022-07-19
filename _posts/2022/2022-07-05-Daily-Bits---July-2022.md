@@ -11,7 +11,11 @@ categories:
 
 20220715
 
-- Managed to resolve the [`epdiverse/wgbs` test issue I encountered yesterday](https://github.com/EpiDiverse/wgbs/issues/9). See the link for details (involves binding local directory to Singularity container).
+- Managed to resolve the [`epidiverse/wgbs` test issue I encountered yesterday](https://github.com/EpiDiverse/wgbs/issues/9). See the link for details (involves binding local directory to Singularity container).
+
+- Successfully ran the `epidiverse/wgbs` pipeline on a subset of the _Ostrea lurida_ BSseq data! Now to test this in the `epidiverse/snp` pipeline to see if output is same as when running Bismark BAMs through the `epidiverse/snp` pipeline...
+
+- Tested Bismark BAMs from different data set (_Panopea generosa_: https://gannet.fish.washington.edu/seashell/bu-mox/scrubbed/1231/) in `epidiverse/snp` pipeline to see how results compare to the _Ostrea lurida_ Bismark BAMs.
 
 ---
 
