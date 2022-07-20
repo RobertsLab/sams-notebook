@@ -9,6 +9,30 @@ categories:
   - Daily Bits
 ---
 
+20220719
+
+- Assisted Dorothy with prep for big RNA extraction from mussel gills. Homogenized 10 control and 10 heat treated gill samples in 1mL RNAzol RT and stored @ -80C. Extraction to happen next Tuesday.
+
+---
+
+20220718
+
+- Ran some more tests of the `epidiverse/wgbs` and `epidiverse/snp` pipelines to compare the Oly trimmed and untrimmed FastQs as inputs.
+
+---
+
+20220717
+
+- Ran some more tests of the `epidiverse/wgbs` and `epidiverse/snp` pipelines to compare the Oly trimmed and untrimmed FastQs as inputs.
+
+---
+
+20220716
+
+- Ran some more tests of the `epidiverse/wgbs` and `epidiverse/snp` pipelines to compare the Oly trimmed and untrimmed FastQs as inputs.
+
+---
+
 20220715
 
 - Managed to resolve the [`epidiverse/wgbs` test issue I encountered yesterday](https://github.com/EpiDiverse/wgbs/issues/9). See the link for details (involves binding local directory to Singularity container).
