@@ -9,6 +9,14 @@ categories:
   - Daily Bits
 ---
 
+20220721
+
+- More testing with `EpiDiverse/wgbs` and `EpiDiverse/snp` pipelines (conda environments). This time ran trimming with an additional 5' 10bp hard trim, per [`Bismark`](https://github.com/FelixKrueger/Bismark) recommendations (they actually recommend 8bp).
+
+- Did a _lot_ of reading about Nextflow and trying to get a grasp on how it all works so we might be able to develop our own pipelines and/or feel confident modifying existing pipelines (e.g. modify `EpiDiverse/snp` pipeline to analyze all BAMs in a directory without the need to explicitly declare how many at run time).
+
+---
+
 20220720
 
 - More testing with `EpiDiverse/wgbs` pipeline. Per [this GitHub Issue](https://github.com/EpiDiverse/wgbs/issues/11), I tried using the conda test profile and things ran smoothly without any errors in the `bam_statistics` part of the pipeline. Steps:
