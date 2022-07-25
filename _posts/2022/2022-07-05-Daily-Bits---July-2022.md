@@ -9,6 +9,14 @@ categories:
   - Daily Bits
 ---
 
+20220725
+
+- Read Ch. 7 of "Fresh Banana Leaves" for book club.
+
+- Lab meeting discussing Ch. 7 of "Fresh Banana Leaves."
+
+---
+
 20220721
 
 - More testing with `EpiDiverse/wgbs` and `EpiDiverse/snp` pipelines (conda environments). This time ran trimming with an additional 5' 10bp hard trim, per [`Bismark`](https://github.com/FelixKrueger/Bismark) recommendations (they actually recommend 8bp).
