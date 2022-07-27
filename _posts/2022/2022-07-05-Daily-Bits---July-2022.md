@@ -9,6 +9,13 @@ categories:
   - Daily Bits
 ---
 
+20220726
+
+- In lab to finish Dorothy's mussel RNA extraction and reverse transcription.
+
+
+---
+
 20220725
 
 - Read Ch. 7 of "Fresh Banana Leaves" for book club.
