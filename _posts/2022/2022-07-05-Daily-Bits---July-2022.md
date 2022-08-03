@@ -9,6 +9,12 @@ categories:
   - Daily Bits
 ---
 
+20220727
+
+- Ran qPCRs using 8 primer sets on Dorothy's cDNA from yesterday.
+
+---
+
 20220726
 
 - In lab to finish Dorothy's mussel RNA extraction and reverse transcription.
