@@ -9,7 +9,7 @@ tags:
 categories: 
   - Miscellaneous
 ---
-Ran qPCRs on Dorothy's mussel gill cDNA [from 20220726]() using the following primers:
+Ran qPCRs on Dorothy's mussel gill cDNA [from 20220726](https://robertslab.github.io/sams-notebook/2022/07/26/RNA-Isolation-and-Quantification-Dorothy-Mussel-Gill-Samples.html) using the following primers:
 
 | SRID | Primer name        |
 |------|--------------------|
