@@ -9,6 +9,18 @@ categories:
   - Daily Bits
 ---
 
+20220804
+
+- In lab today.
+
+- Re-ran ferritin qPCR with fresh primer stocks using Dorothy's mussel cDNA.
+
+- Annual UW lab safety inspection.
+
+- Introduced Dorothy to R and R Studio on Raven.
+
+---
+
 20220803
 
 - Created notebook post for [mussel RNA isolation and reverse transcription from 20220726]()
