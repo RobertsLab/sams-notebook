@@ -9,6 +9,16 @@ categories:
   - Daily Bits
 ---
 
+20220805
+
+- Messed around with Dorothy's data with Steven (he did most of the messing around) during Science Hour.
+
+- Chatted with Zack regarding aligning data for identification of lncRNAs. Showed him the basic HiSat2 indexing/aligning options.
+
+- Chatted with Zack regarding mussel primers from that FISH541 class. Told him to re-run class samples with primers - most failures during class likely due to inexperience with bench work.
+
+---
+
 20220804
 
 - In lab today.
