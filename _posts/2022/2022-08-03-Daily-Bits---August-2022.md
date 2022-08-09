@@ -9,6 +9,16 @@ categories:
   - Daily Bits
 ---
 
+20220808
+
+- Read Fresh Banana Leaves Ch. 8 for lab meeting.
+
+- Lab meeting.
+
+- Oyster gene expression meeting. Played with methylation percentages and grouping by data in R with Steven (he did most of the playing around in R).
+
+---
+
 20220805
 
 - Messed around with Dorothy's data with Steven (he did most of the messing around) during Science Hour.
