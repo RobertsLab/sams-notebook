@@ -48,16 +48,16 @@ samtools="/gscratch/srlab/programs/samtools-1.10/samtools"
 stringtie="/gscratch/srlab/programs/stringtie-1.3.6.Linux_x86_64/stringtie"
 
 # Input/output files
-exons="cvir_GCF_002022765.2_hisat2_exons.tab"
+exons="snam_snam-GCF_016432855.1_hisat2_exons.tab"
 fastq_dir="/gscratch/srlab/sam/data/S_namaycush/RNAseq/"
 genome_dir="/gscratch/srlab/sam/data/S_namaycush/genomes"
 genome_index_dir="/gscratch/srlab/sam/data/S_namaycush/genomes"
-genome_fasta="${genome_dir}/GCF_002022765.2_S_namaycush-3.0_genomic.fna"
-genome_gff="${genome_index_dir}/GCF_002022765.2_S_namaycush-3.0_genomic.gff"
+genome_fasta="${genome_dir}/snam-GCF_016432855.1_S_namaycush-3.0_genomic.fna"
+genome_gff="${genome_index_dir}/snam-GCF_016432855.1_S_namaycush-3.0_genomic.gff"
 gtf_list="gtf_list.txt"
 merged_bam="20220810-snam-stringtie-GCF_016432855.1-sorted_bams-merged.bam"
-splice_sites="cvir_GCF_002022765.2_hisat2_splice_sites.tab"
-transcripts_gtf="${genome_dir}/GCF_002022765.2_S_namaycush-3.0_genomic.gtf"
+splice_sites="snam_snam-GCF_016432855.1_hisat2_splice_sites.tab"
+transcripts_gtf="${genome_dir}/snam-GCF_016432855.1_S_namaycush-3.0_genomic.gtf"
 
 # Set FastQ naming pattern
 fastq_pattern="fastq.trimmed.20220707.fq.gz"
