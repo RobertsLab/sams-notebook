@@ -381,14 +381,16 @@ fi
 # Run Hisat2 on each FastQ file
 for sample in "${!samples_associative_array[@]}"
 do
-
-  fastq="${fastq_dir}/${sample}${fastq_pattern}"
+  # Identify corresponding FastQ file
+  # Pipe to sed removes leading "./" from find results
+  fastq=$(find . -name "${sample}*${fastq_pattern}" | sed 's/.\///')
 
   # Create and switch to dedicated sample directory
   mkdir "${sample}" && cd "$_"
 
   # Hisat2 alignments
   # Sets read group info (RG) using samples array
+  # Uses -U for single-end reads
   "${programs_array[hisat2]}" \
   -x "${genome_index_name}" \
   -U "${fastq}" \
@@ -464,9 +466,6 @@ ${programs_array[samtools_index]} ${merged_bam}
 -p "${threads}" \
 -G "${genome_gff}" \
 -o "${genome_index_name}".stringtie.gtf
-
-# Delete unneccessary index files
-rm "${genome_index_name}"*.ht2
 
 
 # Generate checksums
