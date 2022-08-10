@@ -92,6 +92,8 @@ set -e
 
 module load intel-python3_2017
 
+
+
 # Create Hisat2 exons tab file
 "${programs_array[hisat2_exons]}" \
 "${transcripts_gtf}" \
@@ -133,7 +135,157 @@ do
 
   # Get sample name from first "."-delimited field
   sample_name=$(echo "${sample_name}" | awk -F "." '{print $1}')
-  
+
+  # Concatenate reads from multiple runs
+  if
+    [[ "${sample_name}" == "SRR3321200" ]] \
+    || [[ "${sample_name}" == "SRR3321217" ]] \
+    || [[ "${sample_name}" == "SRR3321243" ]]
+  then
+    cat "${fastq}" >> ${fastq_dir}NPLL32.SRR3321200-SRR3321217-SRR3321243"${fastq_pattern}"
+  elif
+    [[ "${sample_name}" == "SRR3321201" ]] \
+    || [[ "${sample_name}" == "SRR3321218" ]] \
+    || [[ "${sample_name}" == "SRR3321244" ]]
+  then
+    cat "${fastq}" >> ${fastq_dir}NPLL34.SRR3321201-SRR3321218-SRR3321244"${fastq_pattern}"
+  elif
+    [[ "${sample_name}" == "SRR3321212" ]] \
+    || [[ "${sample_name}" == "SRR3321219" ]] \
+    || [[ "${sample_name}" == "SRR3321246" ]]
+  then
+    cat "${fastq}" >> ${fastq_dir}NPLL44.SRR3321212-SRR3321219-SRR3321246"${fastq_pattern}"
+  elif
+    [[ "${sample_name}" == "SRR3321223" ]] \
+    || [[ "${sample_name}" == "SRR3321220" ]] \
+    || [[ "${sample_name}" == "SRR3321247" ]]
+  then
+    cat "${fastq}" >> ${fastq_dir}NPLL46.SRR3321223-SRR3321220-SRR3321247"${fastq_pattern}"
+  elif
+    [[ "${sample_name}" == "SRR3321234" ]] \
+    || [[ "${sample_name}" == "SRR3321221" ]] \
+    || [[ "${sample_name}" == "SRR3321248" ]]
+  then
+    cat "${fastq}" >> ${fastq_dir}NPLL56.SRR3321234-SRR3321221-SRR3321248"${fastq_pattern}"
+  elif
+    [[ "${sample_name}" == "SRR3321245" ]] \
+    || [[ "${sample_name}" == "SRR3321222" ]] \
+    || [[ "${sample_name}" == "SRR3321249" ]]
+  then
+    cat "${fastq}" >> ${fastq_dir}NPLL61.SRR3321245-SRR3321222-SRR3321249"${fastq_pattern}"
+  elif
+    [[ "${sample_name}" == "SRR3321256" ]] \
+    || [[ "${sample_name}" == "SRR3321224" ]] \
+    || [[ "${sample_name}" == "SRR3321250" ]]
+  then
+    cat "${fastq}" >> ${fastq_dir}NPSL15.SRR3321256-SRR3321224-SRR3321250"${fastq_pattern}"
+  elif
+    [[ "${sample_name}" == "SRR3321267" ]] \
+    || [[ "${sample_name}" == "SRR3321225" ]] \
+    || [[ "${sample_name}" == "SRR3321251" ]]
+  then
+    cat "${fastq}" >> ${fastq_dir}NPSL24.SRR3321267-SRR3321225-SRR3321251"${fastq_pattern}"
+  elif
+    [[ "${sample_name}" == "SRR3321270" ]] \
+    || [[ "${sample_name}" == "SRR3321226" ]] \
+    || [[ "${sample_name}" == "SRR3321252" ]]
+  then
+    cat "${fastq}" >> ${fastq_dir}NPSL29.SRR3321270-SRR3321226-SRR3321252"${fastq_pattern}"
+  elif
+    [[ "${sample_name}" == "SRR3321271" ]] \
+    || [[ "${sample_name}" == "SRR3321227" ]] \
+    || [[ "${sample_name}" == "SRR3321253" ]]
+  then
+    cat "${fastq}" >> ${fastq_dir}NPSL36.SRR3321271-SRR3321227-SRR3321253"${fastq_pattern}"
+  elif
+    [[ "${sample_name}" == "SRR3321202" ]] \
+    || [[ "${sample_name}" == "SRR3321228" ]] \
+    || [[ "${sample_name}" == "SRR3321254" ]]
+  then
+    cat "${fastq}" >> ${fastq_dir}NPSL50.SRR3321202-SRR3321228-SRR3321254"${fastq_pattern}"
+  elif
+    [[ "${sample_name}" == "SRR3321203" ]] \
+    || [[ "${sample_name}" == "SRR3321229" ]] \
+    || [[ "${sample_name}" == "SRR3321255" ]]
+  then
+    cat "${fastq}" >> ${fastq_dir}NPSL58.SRR3321203-SRR3321229-SRR3321255"${fastq_pattern}"
+  elif
+    [[ "${sample_name}" == "SRR3321204" ]] \
+    || [[ "${sample_name}" == "SRR3321230" ]] \
+    || [[ "${sample_name}" == "SRR3321257" ]]
+  then
+    cat "${fastq}" >> ${fastq_dir}PLL20.SRR3321204-SRR3321230-SRR3321257"${fastq_pattern}"
+  elif
+    [[ "${sample_name}" == "SRR3321205" ]] \
+    || [[ "${sample_name}" == "SRR3321231" ]] \
+    || [[ "${sample_name}" == "SRR3321258" ]]
+  then
+    cat "${fastq}" >> ${fastq_dir}PLL31.SRR3321205-SRR3321231-SRR3321258"${fastq_pattern}"
+  elif
+    [[ "${sample_name}" == "SRR3321206" ]] \
+    || [[ "${sample_name}" == "SRR3321232" ]] \
+    || [[ "${sample_name}" == "SRR3321259" ]]
+  then
+    cat "${fastq}" >> ${fastq_dir}PLL43.SRR3321206-SRR3321232-SRR3321259"${fastq_pattern}"
+  elif
+    [[ "${sample_name}" == "SRR3321207" ]] \
+    || [[ "${sample_name}" == "SRR3321233" ]] \
+    || [[ "${sample_name}" == "SRR3321260" ]]
+  then
+    cat "${fastq}" >> ${fastq_dir}PLL55.SRR3321207-SRR3321233-SRR3321260"${fastq_pattern}"
+  elif
+    [[ "${sample_name}" == "SRR3321208" ]] \
+    || [[ "${sample_name}" == "SRR3321235" ]] \
+    || [[ "${sample_name}" == "SRR3321261" ]]
+  then
+    cat "${fastq}" >> ${fastq_dir}PLL59.SRR3321208-SRR3321235-SRR3321261"${fastq_pattern}"
+  elif
+    [[ "${sample_name}" == "SRR3321209" ]] \
+    || [[ "${sample_name}" == "SRR3321236" ]] \
+    || [[ "${sample_name}" == "SRR3321262" ]]
+  then
+    cat "${fastq}" >> ${fastq_dir}PLL62.SRR3321209-SRR3321236-SRR3321262"${fastq_pattern}"
+  elif
+    [[ "${sample_name}" == "SRR3321210" ]] \
+    || [[ "${sample_name}" == "SRR3321237" ]] \
+    || [[ "${sample_name}" == "SRR3321263" ]]
+  then
+    cat "${fastq}" >> ${fastq_dir}PSL13.SRR3321210-SRR3321237-SRR3321263"${fastq_pattern}"
+  elif
+    [[ "${sample_name}" == "SRR3321211" ]] \
+    || [[ "${sample_name}" == "SRR3321238" ]] \
+    || [[ "${sample_name}" == "SRR3321264" ]]
+  then
+    cat "${fastq}" >> ${fastq_dir}PSL16.SRR3321211-SRR3321238-SRR3321264"${fastq_pattern}"
+  elif
+    [[ "${sample_name}" == "SRR3321213" ]] \
+    || [[ "${sample_name}" == "SRR3321239" ]] \
+    || [[ "${sample_name}" == "SRR3321265" ]]
+  then
+    cat "${fastq}" >> ${fastq_dir}PSL35.SRR3321213-SRR3321239-SRR3321265"${fastq_pattern}"
+  elif
+    [[ "${sample_name}" == "SRR3321214" ]] \
+    || [[ "${sample_name}" == "SRR3321240" ]] \
+    || [[ "${sample_name}" == "SRR3321266" ]]
+  then
+    cat "${fastq}" >> ${fastq_dir}PSL49.SRR3321214-SRR3321240-SRR3321266"${fastq_pattern}"
+  elif
+    [[ "${sample_name}" == "SRR3321215" ]] \
+    || [[ "${sample_name}" == "SRR3321241" ]] \
+    || [[ "${sample_name}" == "SRR3321268" ]]
+  then
+    cat "${fastq}" >> ${fastq_dir}PSL53.SRR3321215-SRR3321241-SRR3321268"${fastq_pattern}"
+  elif
+    [[ "${sample_name}" == "SRR3321216" ]] \
+    || [[ "${sample_name}" == "SRR3321242" ]] \
+    || [[ "${sample_name}" == "SRR3321269" ]]
+  then
+    cat "${fastq}" >> ${fastq_dir}PSL63.SRR3321216-SRR3321242-SRR3321269"${fastq_pattern}"
+  fi
+
+
+
+
   # Set treatment condition for each sample
   # Primarily used for setting read group (RG) during BAM creation
   if [[ "${sample_name}" == "SRR3321200" ]] \
