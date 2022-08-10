@@ -9,6 +9,24 @@ categories:
   - Daily Bits
 ---
 
+20220809
+
+- In lab today to address lab inspection deficiencies:
+
+  - Waste collection request for most old chemicals (this was a _lot_ of chemicals).
+
+  - Printed new lab hazards sign and mounted outside of FTR 213.
+
+  - Labeled acids and bases cabinets in FTR 213.
+
+  - Ordered additional gas cylinder bracket for CO<sub>2</sub> cylinder in FTR 213.
+
+  - Took liquid nitrogen training (now required training).
+
+- Helped Dorothy get qPCR barplot exported from R to SVG to use in her poster.
+
+---
+
 20220808
 
 - Read Fresh Banana Leaves Ch. 8 for lab meeting.
