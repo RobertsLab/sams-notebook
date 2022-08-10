@@ -52,15 +52,15 @@ exons="snam-GCF_016432855.1_hisat2_exons.tab"
 fastq_dir="/gscratch/srlab/sam/data/S_namaycush/RNAseq/"
 genome_dir="/gscratch/srlab/sam/data/S_namaycush/genomes"
 genome_index_dir="/gscratch/srlab/sam/data/S_namaycush/genomes"
-genome_fasta="${genome_dir}/snam-GCF_016432855.1_S_namaycush-3.0_genomic.fna"
-genome_gff="${genome_index_dir}/snam-GCF_016432855.1_S_namaycush-3.0_genomic.gff"
+genome_fasta="${genome_dir}/GCF_016432855.1_SaNama_1.0_genomic.fna"
+genome_gff="${genome_index_dir}/GCF_016432855.1_SaNama_1.0_genomic.gff"
 gtf_list="gtf_list.txt"
 merged_bam="20220810-snam-stringtie-GCF_016432855.1-sorted_bams-merged.bam"
 splice_sites="snam-GCF_016432855.1_hisat2_splice_sites.tab"
-transcripts_gtf="${genome_dir}/snam-GCF_016432855.1_S_namaycush-3.0_genomic.gtf"
+transcripts_gtf="${genome_dir}/GCF_016432855.1_SaNama_1.0_genomic.gtf"
 
 # Set FastQ naming pattern
-fastq_pattern="fastq.trimmed.20220707.fq.gz"
+fastq_pattern=".fastq.trimmed.20220707.fq.gz"
 
 # Declare associative array of sample names and metadata
 declare -A samples_associative_array=()
@@ -112,7 +112,7 @@ module load intel-python3_2017
 2> hisat2_build.err
 
 # Generate checksums for all files
-md5sum * >> checksums.md5
+md5sum ./* >> checksums.md5
 
 # Copy Hisat2 index files to my data directory for later use with StringTie
 rsync -av "${genome_index_name}"*.ht2 "${genome_dir}"
@@ -227,7 +227,7 @@ fi
 for sample in "${!samples_associative_array[@]}"
 do
 
-  fastq=$("${fastq_dir}""${sample}"*"${fastq_pattern}")
+  fastq="${fastq_dir}/${sample}${fastq_pattern}"
 
   # Create and switch to dedicated sample directory
   mkdir "${sample}" && cd "$_"
@@ -280,7 +280,7 @@ do
   # Generate checksums
   for file in *
   do
-    md5sum "${file}" >> ${sample}_checksums.md5
+    md5sum "${file}" >> "${sample}"-checksums.md5
   done
 
   # Move up to orig. working directory
