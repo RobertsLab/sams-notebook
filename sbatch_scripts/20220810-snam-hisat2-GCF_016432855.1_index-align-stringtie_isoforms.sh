@@ -469,10 +469,8 @@ ${programs_array[samtools_index]} ${merged_bam}
 
 
 # Generate checksums
-for file in *
-do
-  md5sum "${file}" >> checksums.md5
-done
+find . -type f -maxdepth 1 -exec md5sum {} + >> checksums.md5
+
 
 #######################################################################################################
 
