@@ -290,18 +290,18 @@ do
     cat "${fastq}" >> PSL63.SRR3321216-SRR3321242-SRR3321269"${fastq_pattern}"
   fi
 
-  # Check array size to confirm it has all expected samples
-  # Exit if mismatch
-  if [[ "${fastq_counter}" != "${total_fastqs}" ]]
-  then
-    echo "Expected ${total_fastqs} FastQs, but only found ${fastq_counter}!"
-    echo ""
-    echo "Check original-fastq-checksums.md5 file for list of FastQs processed."
-    echo ""
-
-    exit
-  fi
 done
+
+# Check array size to confirm it has all expected samples
+# Exit if mismatch
+if [[ "${fastq_counter}" != "${total_fastqs}" ]]
+then
+  echo "Expected ${total_fastqs} FastQs, but only found ${fastq_counter}!"
+  echo ""
+  echo "Check original-fastq-checksums.md5 file for list of FastQs processed."
+  echo ""
+  exit
+fi
 
 ###### Load associative array ######
 
