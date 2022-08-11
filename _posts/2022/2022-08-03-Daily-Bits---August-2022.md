@@ -9,6 +9,28 @@ categories:
   - Daily Bits
 ---
 
+20220810
+
+- Completed [installation of `transrate` on Raven](https://github.com/RobertsLab/resources/issues/1503). Due to the fact that the hosting provider for [TransRate](http://hibberdlab.com/transrate/) binaries no longer exists, one cannot download the binaries needed to run it. So, instead, the process required the following:
+
+  - [Installation of RVM - a Ruby version manager](https://rvm.io/). I followed the [Ubuntu install instructions](https://github.com/rvm/ubuntu_rvm), which allows for a multi-user installation by default.
+
+  - Added users the `rvm` group: `sudo usermod -a -G rvm <username>`
+
+  - Activating a Ruby version: `rvm use ruby-3.0.0`
+
+  - Install TransRate: `gem install transrate`
+
+  - Install TransRate dependencies: `transrate --install-deps all`
+
+  - Remove problematic library preventing `salmon` from working (solution courtesy of [this GitHub repo Issue from unrelated software](https://github.com/nghiavtr/FuSeq/issues/8)): `rm /usr/share/rvm/gems/ruby-3.0.0/bin/librt.so.1`
+
+- Put script together for S.namaycush [`HISAT2`](https://daehwankimlab.github.io/hisat2/) alignments and splice site identification.
+
+- Internet died at 10:30... and came back ~13:30.
+
+---
+
 20220809
 
 - In lab today to address lab inspection deficiencies:
