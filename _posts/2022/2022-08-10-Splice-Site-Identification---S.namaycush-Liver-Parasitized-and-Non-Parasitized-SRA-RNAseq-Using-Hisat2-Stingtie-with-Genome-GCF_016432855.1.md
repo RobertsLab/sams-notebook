@@ -20,11 +20,11 @@ After previously [downloading/trimming/QCing _S.namaycush_ SRA liver RNAseq data
 
 To do so, I downloaded the following NCBI files to Mox:
 
-- FastA: https://ftp.ncbi.nlm.nih.gov/genomes/all/GCF/016/432/855/GCF_016432855.1_SaNama_1.0/GCF_016432855.1_SaNama_1.0_genomic.fna.gz
+- FastA: [https://ftp.ncbi.nlm.nih.gov/genomes/all/GCF/016/432/855/GCF_016432855.1_SaNama_1.0/GCF_016432855.1_SaNama_1.0_genomic.fna.gz](https://ftp.ncbi.nlm.nih.gov/genomes/all/GCF/016/432/855/GCF_016432855.1_SaNama_1.0/GCF_016432855.1_SaNama_1.0_genomic.fna.gz)
 
-- GFF: https://ftp.ncbi.nlm.nih.gov/genomes/all/GCF/016/432/855/GCF_016432855.1_SaNama_1.0/GCF_016432855.1_SaNama_1.0_genomic.gff.gz
+- GFF: [https://ftp.ncbi.nlm.nih.gov/genomes/all/GCF/016/432/855/GCF_016432855.1_SaNama_1.0/GCF_016432855.1_SaNama_1.0_genomic.gff.gz](https://ftp.ncbi.nlm.nih.gov/genomes/all/GCF/016/432/855/GCF_016432855.1_SaNama_1.0/GCF_016432855.1_SaNama_1.0_genomic.gff.gz)
 
-- GTF: https://ftp.ncbi.nlm.nih.gov/genomes/all/GCF/016/432/855/GCF_016432855.1_SaNama_1.0/GCF_016432855.1_SaNama_1.0_genomic.gtf.gz
+- GTF: [https://ftp.ncbi.nlm.nih.gov/genomes/all/GCF/016/432/855/GCF_016432855.1_SaNama_1.0/GCF_016432855.1_SaNama_1.0_genomic.gtf.gz]https://ftp.ncbi.nlm.nih.gov/genomes/all/GCF/016/432/855/GCF_016432855.1_SaNama_1.0/GCF_016432855.1_SaNama_1.0_genomic.gtf.gz
 
 I also reviewd the metadata for [BioProject PRJNA316738](https://www.ncbi.nlm.nih.gov/bioproject/PRJNA316738) and downloaded the metadata for the project:
 
