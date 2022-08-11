@@ -606,6 +606,10 @@ Output folder:
 
 - [20220810-snam-hisat2-GCF_016432855.1_index-align-stringtie_isoforms/](https://gannet.fish.washington.edu/Atumefaciens/20220810-snam-hisat2-GCF_016432855.1_index-align-stringtie_isoforms/)
 
+  #### MultiQC Report for Hisat2 alignments
+
+    - [20220810-snam-hisat2-GCF_016432855.1_index-align-stringtie_isoforms/multiqc_report.html](https://gannet.fish.washington.edu/Atumefaciens/20220810-snam-hisat2-GCF_016432855.1_index-align-stringtie_isoforms/multiqc_report.html) (HTML; opens in browser)
+
   #### Merged BAM file
 
     - [20220810-snam-stringtie-GCF_016432855.1-sorted_bams-merged.bam](https://gannet.fish.washington.edu/Atumefaciens/20220810-snam-hisat2-GCF_016432855.1_index-align-stringtie_isoforms/20220810-snam-stringtie-GCF_016432855.1-sorted_bams-merged.bam) (20G)
