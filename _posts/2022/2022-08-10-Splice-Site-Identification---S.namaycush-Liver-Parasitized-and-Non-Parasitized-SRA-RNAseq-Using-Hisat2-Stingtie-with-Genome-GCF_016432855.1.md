@@ -28,7 +28,7 @@ To do so, I downloaded the following NCBI files to Mox:
 
 I also reviewd the metadata for [BioProject PRJNA316738](https://www.ncbi.nlm.nih.gov/bioproject/PRJNA316738) and downloaded the metadata for the project:
 
-- Metadata website: https://www.ncbi.nlm.nih.gov/Traces/study/?acc=SRP072750&o=acc_s%3Aa
+- Metadata website: [https://www.ncbi.nlm.nih.gov/Traces/study/?acc=SRP072750&o=acc_s%3Aa](https://www.ncbi.nlm.nih.gov/Traces/study/?acc=SRP072750&o=acc_s%3Aa)
 
 - Metadata file (CSV): [SraRunTable.txt](https://gannet.fish.washington.edu/Atumefaciens/20220810-snam-hisat2-GCF_016432855.1_index-align-stringtie_isoforms/SraRunTable.txt)
 
