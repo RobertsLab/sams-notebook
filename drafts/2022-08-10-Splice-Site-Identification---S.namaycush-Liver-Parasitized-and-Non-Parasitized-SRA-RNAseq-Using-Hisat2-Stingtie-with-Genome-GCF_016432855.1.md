@@ -604,5 +604,367 @@ Runtime was almost exactly 7hrs:
 
 Output folder:
 
-- []()
+- [20220810-snam-hisat2-GCF_016432855.1_index-align-stringtie_isoforms/](https://gannet.fish.washington.edu/Atumefaciens/20220810-snam-hisat2-GCF_016432855.1_index-align-stringtie_isoforms/)
 
+  #### Merged BAM file
+
+    - [20220810-snam-stringtie-GCF_016432855.1-sorted_bams-merged.bam](https://gannet.fish.washington.edu/Atumefaciens/20220810-snam-hisat2-GCF_016432855.1_index-align-stringtie_isoforms/20220810-snam-stringtie-GCF_016432855.1-sorted_bams-merged.bam) (20G)
+
+      - MD5: `6911d3fc9f725a09a09a4c584b68ddfa`
+
+  #### Merged BAM index file (useful for IGV)
+
+    - [20220810-snam-stringtie-GCF_016432855.1-sorted_bams-merged.bam.bai](https://gannet.fish.washington.edu/Atumefaciens/20220810-snam-hisat2-GCF_016432855.1_index-align-stringtie_isoforms/20220810-snam-stringtie-GCF_016432855.1-sorted_bams-merged.bam.bai) (3.3M)
+
+      - MD5: `368e45c560e61f812522a00c71a89eee`
+
+  #### StringTie GTF
+
+    - [snam-GCF_016432855.1.stringtie.gtf](https://gannet.fish.washington.edu/Atumefaciens/20220810-snam-hisat2-GCF_016432855.1_index-align-stringtie_isoforms/snam-GCF_016432855.1.stringtie.gtf) (125M)
+
+      - MD5: `7396cc52190b6c6408c0f3bbc82e9ed6`
+
+Individual library alignments can be found in their respective subdirectories, along with their BAM, BAM index, GTF, and Ballgown tables (`*.ctab`). See the directory tree below for a better overview.
+
+---
+
+Directory tree:
+
+```shell
+├── 20220810-snam-hisat2-GCF_016432855.1_index-align-stringtie_isoforms.sh
+├── 20220810-snam-stringtie-GCF_016432855.1-sorted_bams-merged.bam
+├── 20220810-snam-stringtie-GCF_016432855.1-sorted_bams-merged.bam.bai
+├── checksums.md5
+├── concatenated-fastq-checksums.md5
+├── gtf_list.txt
+├── hisat2_build.err
+├── NPLL32
+│   ├── e2t.ctab
+│   ├── e_data.ctab
+│   ├── i2t.ctab
+│   ├── i_data.ctab
+│   ├── NPLL32-checksums.md5
+│   ├── NPLL32.cov_refs.gtf
+│   ├── NPLL32.gtf
+│   ├── NPLL32_hisat2.err
+│   ├── NPLL32.sorted.bam
+│   ├── NPLL32.sorted.bam.bai
+│   └── t_data.ctab
+├── NPLL32.SRR3321200-SRR3321217-SRR3321243.fastq.trimmed.20220707.fq.gz
+├── NPLL34
+│   ├── e2t.ctab
+│   ├── e_data.ctab
+│   ├── i2t.ctab
+│   ├── i_data.ctab
+│   ├── NPLL34-checksums.md5
+│   ├── NPLL34.cov_refs.gtf
+│   ├── NPLL34.gtf
+│   ├── NPLL34_hisat2.err
+│   ├── NPLL34.sorted.bam
+│   ├── NPLL34.sorted.bam.bai
+│   └── t_data.ctab
+├── NPLL34.SRR3321201-SRR3321218-SRR3321244.fastq.trimmed.20220707.fq.gz
+├── NPLL44
+│   ├── e2t.ctab
+│   ├── e_data.ctab
+│   ├── i2t.ctab
+│   ├── i_data.ctab
+│   ├── NPLL44-checksums.md5
+│   ├── NPLL44.cov_refs.gtf
+│   ├── NPLL44.gtf
+│   ├── NPLL44_hisat2.err
+│   ├── NPLL44.sorted.bam
+│   ├── NPLL44.sorted.bam.bai
+│   └── t_data.ctab
+├── NPLL44.SRR3321212-SRR3321219-SRR3321246.fastq.trimmed.20220707.fq.gz
+├── NPLL46
+│   ├── e2t.ctab
+│   ├── e_data.ctab
+│   ├── i2t.ctab
+│   ├── i_data.ctab
+│   ├── NPLL46-checksums.md5
+│   ├── NPLL46.cov_refs.gtf
+│   ├── NPLL46.gtf
+│   ├── NPLL46_hisat2.err
+│   ├── NPLL46.sorted.bam
+│   ├── NPLL46.sorted.bam.bai
+│   └── t_data.ctab
+├── NPLL46.SRR3321223-SRR3321220-SRR3321247.fastq.trimmed.20220707.fq.gz
+├── NPLL56
+│   ├── e2t.ctab
+│   ├── e_data.ctab
+│   ├── i2t.ctab
+│   ├── i_data.ctab
+│   ├── NPLL56-checksums.md5
+│   ├── NPLL56.cov_refs.gtf
+│   ├── NPLL56.gtf
+│   ├── NPLL56_hisat2.err
+│   ├── NPLL56.sorted.bam
+│   ├── NPLL56.sorted.bam.bai
+│   └── t_data.ctab
+├── NPLL56.SRR3321234-SRR3321221-SRR3321248.fastq.trimmed.20220707.fq.gz
+├── NPLL61
+│   ├── e2t.ctab
+│   ├── e_data.ctab
+│   ├── i2t.ctab
+│   ├── i_data.ctab
+│   ├── NPLL61-checksums.md5
+│   ├── NPLL61.cov_refs.gtf
+│   ├── NPLL61.gtf
+│   ├── NPLL61_hisat2.err
+│   ├── NPLL61.sorted.bam
+│   ├── NPLL61.sorted.bam.bai
+│   └── t_data.ctab
+├── NPLL61.SRR3321245-SRR3321222-SRR3321249.fastq.trimmed.20220707.fq.gz
+├── NPSL15
+│   ├── e2t.ctab
+│   ├── e_data.ctab
+│   ├── i2t.ctab
+│   ├── i_data.ctab
+│   ├── NPSL15-checksums.md5
+│   ├── NPSL15.cov_refs.gtf
+│   ├── NPSL15.gtf
+│   ├── NPSL15_hisat2.err
+│   ├── NPSL15.sorted.bam
+│   ├── NPSL15.sorted.bam.bai
+│   └── t_data.ctab
+├── NPSL15.SRR3321256-SRR3321224-SRR3321250.fastq.trimmed.20220707.fq.gz
+├── NPSL24
+│   ├── e2t.ctab
+│   ├── e_data.ctab
+│   ├── i2t.ctab
+│   ├── i_data.ctab
+│   ├── NPSL24-checksums.md5
+│   ├── NPSL24.cov_refs.gtf
+│   ├── NPSL24.gtf
+│   ├── NPSL24_hisat2.err
+│   ├── NPSL24.sorted.bam
+│   ├── NPSL24.sorted.bam.bai
+│   └── t_data.ctab
+├── NPSL24.SRR3321267-SRR3321225-SRR3321251.fastq.trimmed.20220707.fq.gz
+├── NPSL29
+│   ├── e2t.ctab
+│   ├── e_data.ctab
+│   ├── i2t.ctab
+│   ├── i_data.ctab
+│   ├── NPSL29-checksums.md5
+│   ├── NPSL29.cov_refs.gtf
+│   ├── NPSL29.gtf
+│   ├── NPSL29_hisat2.err
+│   ├── NPSL29.sorted.bam
+│   ├── NPSL29.sorted.bam.bai
+│   └── t_data.ctab
+├── NPSL29.SRR3321270-SRR3321226-SRR3321252.fastq.trimmed.20220707.fq.gz
+├── NPSL36
+│   ├── e2t.ctab
+│   ├── e_data.ctab
+│   ├── i2t.ctab
+│   ├── i_data.ctab
+│   ├── NPSL36-checksums.md5
+│   ├── NPSL36.cov_refs.gtf
+│   ├── NPSL36.gtf
+│   ├── NPSL36_hisat2.err
+│   ├── NPSL36.sorted.bam
+│   ├── NPSL36.sorted.bam.bai
+│   └── t_data.ctab
+├── NPSL36.SRR3321271-SRR3321227-SRR3321253.fastq.trimmed.20220707.fq.gz
+├── NPSL50
+│   ├── e2t.ctab
+│   ├── e_data.ctab
+│   ├── i2t.ctab
+│   ├── i_data.ctab
+│   ├── NPSL50-checksums.md5
+│   ├── NPSL50.cov_refs.gtf
+│   ├── NPSL50.gtf
+│   ├── NPSL50_hisat2.err
+│   ├── NPSL50.sorted.bam
+│   ├── NPSL50.sorted.bam.bai
+│   └── t_data.ctab
+├── NPSL50.SRR3321202-SRR3321228-SRR3321254.fastq.trimmed.20220707.fq.gz
+├── NPSL58
+│   ├── e2t.ctab
+│   ├── e_data.ctab
+│   ├── i2t.ctab
+│   ├── i_data.ctab
+│   ├── NPSL58-checksums.md5
+│   ├── NPSL58.cov_refs.gtf
+│   ├── NPSL58.gtf
+│   ├── NPSL58_hisat2.err
+│   ├── NPSL58.sorted.bam
+│   ├── NPSL58.sorted.bam.bai
+│   └── t_data.ctab
+├── NPSL58.SRR3321203-SRR3321229-SRR3321255.fastq.trimmed.20220707.fq.gz
+├── original-fastq-checksums.md5
+├── PLL20
+│   ├── e2t.ctab
+│   ├── e_data.ctab
+│   ├── i2t.ctab
+│   ├── i_data.ctab
+│   ├── PLL20-checksums.md5
+│   ├── PLL20.cov_refs.gtf
+│   ├── PLL20.gtf
+│   ├── PLL20_hisat2.err
+│   ├── PLL20.sorted.bam
+│   ├── PLL20.sorted.bam.bai
+│   └── t_data.ctab
+├── PLL20.SRR3321204-SRR3321230-SRR3321257.fastq.trimmed.20220707.fq.gz
+├── PLL31
+│   ├── e2t.ctab
+│   ├── e_data.ctab
+│   ├── i2t.ctab
+│   ├── i_data.ctab
+│   ├── PLL31-checksums.md5
+│   ├── PLL31.cov_refs.gtf
+│   ├── PLL31.gtf
+│   ├── PLL31_hisat2.err
+│   ├── PLL31.sorted.bam
+│   ├── PLL31.sorted.bam.bai
+│   └── t_data.ctab
+├── PLL31.SRR3321205-SRR3321231-SRR3321258.fastq.trimmed.20220707.fq.gz
+├── PLL43
+│   ├── e2t.ctab
+│   ├── e_data.ctab
+│   ├── i2t.ctab
+│   ├── i_data.ctab
+│   ├── PLL43-checksums.md5
+│   ├── PLL43.cov_refs.gtf
+│   ├── PLL43.gtf
+│   ├── PLL43_hisat2.err
+│   ├── PLL43.sorted.bam
+│   ├── PLL43.sorted.bam.bai
+│   └── t_data.ctab
+├── PLL43.SRR3321206-SRR3321232-SRR3321259.fastq.trimmed.20220707.fq.gz
+├── PLL55
+│   ├── e2t.ctab
+│   ├── e_data.ctab
+│   ├── i2t.ctab
+│   ├── i_data.ctab
+│   ├── PLL55-checksums.md5
+│   ├── PLL55.cov_refs.gtf
+│   ├── PLL55.gtf
+│   ├── PLL55_hisat2.err
+│   ├── PLL55.sorted.bam
+│   ├── PLL55.sorted.bam.bai
+│   └── t_data.ctab
+├── PLL55.SRR3321207-SRR3321233-SRR3321260.fastq.trimmed.20220707.fq.gz
+├── PLL59
+│   ├── e2t.ctab
+│   ├── e_data.ctab
+│   ├── i2t.ctab
+│   ├── i_data.ctab
+│   ├── PLL59-checksums.md5
+│   ├── PLL59.cov_refs.gtf
+│   ├── PLL59.gtf
+│   ├── PLL59_hisat2.err
+│   ├── PLL59.sorted.bam
+│   ├── PLL59.sorted.bam.bai
+│   └── t_data.ctab
+├── PLL59.SRR3321208-SRR3321235-SRR3321261.fastq.trimmed.20220707.fq.gz
+├── PLL62
+│   ├── e2t.ctab
+│   ├── e_data.ctab
+│   ├── i2t.ctab
+│   ├── i_data.ctab
+│   ├── PLL62-checksums.md5
+│   ├── PLL62.cov_refs.gtf
+│   ├── PLL62.gtf
+│   ├── PLL62_hisat2.err
+│   ├── PLL62.sorted.bam
+│   ├── PLL62.sorted.bam.bai
+│   └── t_data.ctab
+├── PLL62.SRR3321209-SRR3321236-SRR3321262.fastq.trimmed.20220707.fq.gz
+├── program_options.log
+├── PSL13
+│   ├── e2t.ctab
+│   ├── e_data.ctab
+│   ├── i2t.ctab
+│   ├── i_data.ctab
+│   ├── PSL13-checksums.md5
+│   ├── PSL13.cov_refs.gtf
+│   ├── PSL13.gtf
+│   ├── PSL13_hisat2.err
+│   ├── PSL13.sorted.bam
+│   ├── PSL13.sorted.bam.bai
+│   └── t_data.ctab
+├── PSL13.SRR3321210-SRR3321237-SRR3321263.fastq.trimmed.20220707.fq.gz
+├── PSL16
+│   ├── e2t.ctab
+│   ├── e_data.ctab
+│   ├── i2t.ctab
+│   ├── i_data.ctab
+│   ├── PSL16-checksums.md5
+│   ├── PSL16.cov_refs.gtf
+│   ├── PSL16.gtf
+│   ├── PSL16_hisat2.err
+│   ├── PSL16.sorted.bam
+│   ├── PSL16.sorted.bam.bai
+│   └── t_data.ctab
+├── PSL16.SRR3321211-SRR3321238-SRR3321264.fastq.trimmed.20220707.fq.gz
+├── PSL35
+│   ├── e2t.ctab
+│   ├── e_data.ctab
+│   ├── i2t.ctab
+│   ├── i_data.ctab
+│   ├── PSL35-checksums.md5
+│   ├── PSL35.cov_refs.gtf
+│   ├── PSL35.gtf
+│   ├── PSL35_hisat2.err
+│   ├── PSL35.sorted.bam
+│   ├── PSL35.sorted.bam.bai
+│   └── t_data.ctab
+├── PSL35.SRR3321213-SRR3321239-SRR3321265.fastq.trimmed.20220707.fq.gz
+├── PSL49
+│   ├── e2t.ctab
+│   ├── e_data.ctab
+│   ├── i2t.ctab
+│   ├── i_data.ctab
+│   ├── PSL49-checksums.md5
+│   ├── PSL49.cov_refs.gtf
+│   ├── PSL49.gtf
+│   ├── PSL49_hisat2.err
+│   ├── PSL49.sorted.bam
+│   ├── PSL49.sorted.bam.bai
+│   └── t_data.ctab
+├── PSL49.SRR3321214-SRR3321240-SRR3321266.fastq.trimmed.20220707.fq.gz
+├── PSL53
+│   ├── e2t.ctab
+│   ├── e_data.ctab
+│   ├── i2t.ctab
+│   ├── i_data.ctab
+│   ├── PSL53-checksums.md5
+│   ├── PSL53.cov_refs.gtf
+│   ├── PSL53.gtf
+│   ├── PSL53_hisat2.err
+│   ├── PSL53.sorted.bam
+│   ├── PSL53.sorted.bam.bai
+│   └── t_data.ctab
+├── PSL53.SRR3321215-SRR3321241-SRR3321268.fastq.trimmed.20220707.fq.gz
+├── PSL63
+│   ├── e2t.ctab
+│   ├── e_data.ctab
+│   ├── i2t.ctab
+│   ├── i_data.ctab
+│   ├── PSL63-checksums.md5
+│   ├── PSL63.cov_refs.gtf
+│   ├── PSL63.gtf
+│   ├── PSL63_hisat2.err
+│   ├── PSL63.sorted.bam
+│   ├── PSL63.sorted.bam.bai
+│   └── t_data.ctab
+├── PSL63.SRR3321216-SRR3321242-SRR3321269.fastq.trimmed.20220707.fq.gz
+├── slurm-3459606.out
+├── snam-GCF_016432855.1.1.ht2
+├── snam-GCF_016432855.1.2.ht2
+├── snam-GCF_016432855.1.3.ht2
+├── snam-GCF_016432855.1.4.ht2
+├── snam-GCF_016432855.1.5.ht2
+├── snam-GCF_016432855.1.6.ht2
+├── snam-GCF_016432855.1.7.ht2
+├── snam-GCF_016432855.1.8.ht2
+├── snam-GCF_016432855.1_hisat2_exons.tab
+├── snam-GCF_016432855.1_hisat2_splice_sites.tab
+├── snam-GCF_016432855.1.stringtie.gtf
+├── sorted_bams.list
+├── SraRunTable.txt
+└── system_path.log
+```
