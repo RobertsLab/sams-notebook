@@ -1,6 +1,6 @@
 #!/bin/bash
 ## Job Name
-#SBATCH --job-name=202200810-snam-hisat2-GCF_016432855.1_index-align-stringtie_isoforms
+#SBATCH --job-name=20220810-snam-hisat2-GCF_016432855.1_index-align-stringtie_isoforms
 ## Allocation Definition
 #SBATCH --account=srlab
 #SBATCH --partition=srlab
@@ -15,7 +15,7 @@
 #SBATCH --mail-type=ALL
 #SBATCH --mail-user=samwhite@uw.edu
 ## Specify the working directory for this job
-#SBATCH --chdir=/gscratch/scrubbed/samwhite/outputs/202200810-snam-hisat2-GCF_016432855.1_index-align-stringtie_isoforms
+#SBATCH --chdir=/gscratch/scrubbed/samwhite/outputs/20220810-snam-hisat2-GCF_016432855.1_index-align-stringtie_isoforms
 
 
 ## Script for HiSat2 indexing of NCBI S.namaycush genome assembly GCF_016432855.1
