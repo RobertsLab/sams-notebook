@@ -382,8 +382,8 @@ fi
 for sample in "${!samples_associative_array[@]}"
 do
   # Identify corresponding FastQ file
-  # Pipe to sed removes leading "./" from find results
-  fastq=$(find . -name "${sample}*${fastq_pattern}" | sed 's/.\///')
+  # Pipe to sed replace leading "./" with "../" to manage relative FastQ path
+  fastq=$(find . -name "${sample}*${fastq_pattern}" | sed 's/.\//..\//')
 
   # Create and switch to dedicated sample directory
   mkdir "${sample}" && cd "$_"
