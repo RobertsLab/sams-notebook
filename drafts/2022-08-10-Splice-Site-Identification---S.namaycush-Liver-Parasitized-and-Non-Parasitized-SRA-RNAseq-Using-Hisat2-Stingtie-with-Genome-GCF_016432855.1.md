@@ -16,7 +16,45 @@ tags:
 categories: 
   - Miscellaneous
 ---
-After previously [downloading/trimming/QCing _S.namaycush_ SRA data on 20220706](https://robertslab.github.io/sams-notebook/2022/07/06/SRA-Data-S.namaycush-SRA-BioProject-PRJNA674328-Download-and-QC.html), Steven asked that I [run through Hisat2 for splice site identification](https://github.com/RobertsLab/resources/issues/1505) (GitHub Issue).
+After previously [downloading/trimming/QCing _S.namaycush_ SRA liver RNAseq data on 20220706](https://robertslab.github.io/sams-notebook/2022/07/06/SRA-Data-S.namaycush-SRA-BioProject-PRJNA674328-Download-and-QC.html), Steven asked that I [run through Hisat2 for splice site identification](https://github.com/RobertsLab/resources/issues/1505) (GitHub Issue).
+
+To do so, I downloaded the following NCBI files to Mox:
+
+- FastA: https://ftp.ncbi.nlm.nih.gov/genomes/all/GCF/016/432/855/GCF_016432855.1_SaNama_1.0/GCF_016432855.1_SaNama_1.0_genomic.fna.gz
+
+- GFF: https://ftp.ncbi.nlm.nih.gov/genomes/all/GCF/016/432/855/GCF_016432855.1_SaNama_1.0/GCF_016432855.1_SaNama_1.0_genomic.gff.gz
+
+- GTF: https://ftp.ncbi.nlm.nih.gov/genomes/all/GCF/016/432/855/GCF_016432855.1_SaNama_1.0/GCF_016432855.1_SaNama_1.0_genomic.gtf.gz
+
+I also reviewd the metadata for [BioProject PRJNA316738](https://www.ncbi.nlm.nih.gov/bioproject/PRJNA316738) and downloaded the metadata for the project:
+
+- Metadata website: https://www.ncbi.nlm.nih.gov/Traces/study/?acc=SRP072750&o=acc_s%3Aa
+
+- Metadata file (CSV): [SraRunTable.txt](https://gannet.fish.washington.edu/Atumefaciens/20220810-snam-hisat2-GCF_016432855.1_index-align-stringtie_isoforms/SraRunTable.txt)
+
+Upon reviewing the metadata, it became clear that each SRA run was part of a set of three sequencing runs for each sample (see the "Library Name" column in the [SraRunTable.txt](https://gannet.fish.washington.edu/Atumefaciens/20220810-snam-hisat2-GCF_016432855.1_index-align-stringtie_isoforms/SraRunTable.txt)). I used this information to concatenate corresponding FastQs and for setting a read group (RG) in the resulting BAM files for the two subspecies (lean and siscowet), as well as indicate non-parasitized and parasitized. Although, each set of three library sets are part of one of four BioSamples:
+
+| BioSample    | Ecotype                |
+|--------------|------------------------|
+| SAMN04590682 | Lean parasitized       |
+| SAMN04590683 | Lean nonparasitized    |
+| SAMN04590684 | Siscowet parasitized   |
+| SAMN04590685 | Sicowet nonparasitized |
+
+It's possible I should've set up FastQ concatenation and the BAM RG fields using this information, but this can be dealt with downstream, if desired.
+
+Anyway, an overview of the proccess:
+
+1. Create [`HISAT2`](https://daehwankimlab.github.io/hisat2/) genome index.
+
+2. Identify genome exons and splice sites using [`HISAT2`](https://daehwankimlab.github.io/hisat2/).
+
+3. Align trimmed, concatenated RNAseq reads (single-end) to genome using [`HISAT2`](https://daehwankimlab.github.io/hisat2/).
+
+4. Use [`StringTie`](https://ccb.jhu.edu/software/stringtie/) to idenify alternative isoforms and create output files ready for import to [Ballgown](https://github.com/alyssafrazee/ballgown).
+
+
+Analysis was run on Mox.
 
 
 SBATCH script (GitHub):
