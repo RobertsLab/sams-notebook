@@ -9,6 +9,22 @@ categories:
   - Daily Bits
 ---
 
+20220811
+
+- Worked a bit on Linda Rhodes 16s stuff.
+
+- Did a _lot_ of troubleshooting for lab people. See the following GitHub Issues:
+
+  - [RNAseq workflow - issue by Grace](https://github.com/RobertsLab/resources/issues/1476)
+
+  - [Trinity error on Raven: no module name numpy - issue by Matt](https://github.com/RobertsLab/resources/issues/1506)
+
+  - [Stacks version - issue by Marta](https://github.com/RobertsLab/resources/issues/1507)
+
+  - [Install transrate on Raven - issue by Matt](https://github.com/RobertsLab/resources/issues/1503)
+
+---
+
 20220810
 
 - Completed [installation of `transrate` on Raven](https://github.com/RobertsLab/resources/issues/1503). Due to the fact that the hosting provider for [TransRate](http://hibberdlab.com/transrate/) binaries no longer exists, one cannot download the binaries needed to run it. So, instead, the process required the following:
