@@ -9,6 +9,23 @@ categories:
   - Daily Bits
 ---
 
+20220812
+
+- Intalled newest version of Stacks on Mox ([Stacks version - issue by Marta](https://github.com/RobertsLab/resources/issues/1507))
+
+  1. `wget https://catchenlab.life.illinois.edu/stacks/source/stacks-2.62.tar.gz`
+  2. `tar -xzvf stacks-2.62.tar.gz`
+  3. `cd stacks-2.62`
+  4. `module load gcc/10.1.0`: Had to load newer version of `gcc` because default version triggered an error when running `make`.
+  5. `make`
+
+- Science Hour:
+
+  - Helped Grace get Trinity running on Mox as part of this issue: [RNAseq workflow](https://github.com/RobertsLab/resources/issues/1476)
+
+- Helped Marta get Globus Connect Personal running for transferring data to/from Mox: [Globus Connect Personal](https://github.com/RobertsLab/resources/issues/1510)
+
+
 20220811
 
 - Worked a bit on Linda Rhodes 16s stuff.
