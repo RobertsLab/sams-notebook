@@ -9,6 +9,24 @@ categories:
   - Daily Bits
 ---
 
+20220815
+
+- Lab meeting:
+
+  - Decided on next book for book club: The Disordered Cosmos
+
+  - Discussed Pub-a-thon
+
+  - Had Dorothy show her mussel heat stress poster
+
+- Internet outage at ~ 11AM ... back on about 12PM
+
+- Internet outage again at 13:15...14:15 it's back on!
+
+- Worked on getting through Linda's Jupyter Notebooks 2 & 3.
+
+---
+
 20220812
 
 - Intalled newest version of Stacks on Mox ([Stacks version - issue by Marta](https://github.com/RobertsLab/resources/issues/1507))
