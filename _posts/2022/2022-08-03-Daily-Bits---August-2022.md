@@ -9,6 +9,19 @@ categories:
   - Daily Bits
 ---
 
+
+20220816
+
+- Renewed formaldehyde training
+
+- Renewed fire extinguisher training
+
+- Worked through Linda Rhodes Jupyter Notebooks 2,3, & 4. Hit roadblock in 4 - need external file.
+
+- Worked through Linda Rhodes Jupyter Notebook 8. End results of pipeline had no taxonomic assignments. Need to review process to determine what went wrong.
+
+---
+
 20220815
 
 - Lab meeting:
