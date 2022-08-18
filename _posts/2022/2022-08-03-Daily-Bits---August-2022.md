@@ -10,6 +10,14 @@ categories:
 ---
 
 
+20220817
+
+- Recreated SILVA database(s) using more specific workflow. Hope to solve issue of no taxonomic assignments experienced yesterday. https://forum.qiime2.org/t/processing-filtering-and-evaluating-the-silva-database-and-other-reference-sequence-data-with-rescript/15494
+
+- Established lake trout repo for Ballgown analysis: https://github.com/RobertsLab/project-lake-trout
+
+---
+
 20220816
 
 - Renewed formaldehyde training
