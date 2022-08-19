@@ -10,6 +10,17 @@ categories:
 ---
 
 
+20220818
+
+- Created _S.namaycush_ genes-only BED file for use in Ballgown analysis.
+
+- Started work on _S.namaycush_ Ballgown analysis.
+
+- Continued recreating SILVA databases (bayes classification step takes a LONG time - and there are two steps)
+
+
+---
+
 20220817
 
 - Recreated SILVA database(s) using more specific workflow. Hope to solve issue of no taxonomic assignments experienced yesterday. https://forum.qiime2.org/t/processing-filtering-and-evaluating-the-silva-database-and-other-reference-sequence-data-with-rescript/15494
