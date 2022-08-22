@@ -10,6 +10,16 @@ categories:
 ---
 
 
+
+
+---
+
+20220819
+
+- Took the day off.
+
+---
+
 20220818
 
 - Created _S.namaycush_ genes-only BED file for use in Ballgown analysis.
