@@ -10,7 +10,13 @@ categories:
 ---
 
 
+20220822
 
+- Worked heavily on Linda Rhodes QIIME2 stuff. Getting odd results of most data having unassigned taxonomies; the rest assigned to eukaryotes...
+
+- Located pre-formatted SILVA 138 files (finally!) ([here](https://docs.qiime2.org/2020.11/data-resources/) - need to click on the red box to actually get to the links!), but got same results with taxonomic assignments...
+
+- Lab meeting discussed Intro/Ch.1 of "The Disordered Cosmos"
 
 ---
 
