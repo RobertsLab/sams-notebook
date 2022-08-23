@@ -9,6 +9,13 @@ categories:
   - Daily Bits
 ---
 
+20220823
+
+- All day troubleshooting Linda Rhodes QIIME2 stuff. Discovered sequences are already trimmed(?), but would like to look at the `adapters.fa` file which is referenced in her notebooks (she didn't have this available at the beginning of this project, so I'm not sure what's in that file).
+
+- [Reviewed Marta's SBATCH file for Stacks...](https://github.com/RobertsLab/resources/issues/1516)
+
+---
 
 20220822
 
@@ -17,6 +24,8 @@ categories:
 - Located pre-formatted SILVA 138 files (finally!) ([here](https://docs.qiime2.org/2020.11/data-resources/) - need to click on the red box to actually get to the links!), but got same results with taxonomic assignments...
 
 - Lab meeting discussed Intro/Ch.1 of "The Disordered Cosmos"
+
+- [Reviewed Matt's SBATCH script for Trinity assembly...](https://github.com/RobertsLab/resources/issues/1508)
 
 ---
 
