@@ -9,6 +9,18 @@ categories:
   - Daily Bits
 ---
 
+20220824
+
+- Took the day off.
+
+- Updated all README files in [project-lake-trout Repo](https://github.com/RobertsLab/project-lake-trout)
+
+- Finished lean vs. siscowet Ballgown DEG/DET analysis in [project-lake-trout](https://github.com/RobertsLab/project-lake-trout) (GitHub Repo).
+
+- Continued to help with [Marta's job for Stacks on Mox.](https://github.com/RobertsLab/resources/issues/1516)
+
+---
+
 20220823
 
 - All day troubleshooting Linda Rhodes QIIME2 stuff. Discovered sequences are already trimmed(?), but would like to look at the `adapters.fa` file which is referenced in her notebooks (she didn't have this available at the beginning of this project, so I'm not sure what's in that file).
