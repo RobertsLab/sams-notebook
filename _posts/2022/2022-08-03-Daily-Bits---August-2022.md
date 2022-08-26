@@ -9,6 +9,18 @@ categories:
   - Daily Bits
 ---
 
+20220825
+
+- Continued to troubleshoot QIIME taxonomy assignments.
+
+- Met with Linda Rhodes to review discuss QIIME issues.
+
+- Pub-a-thon.
+
+- Helped with [Grace's Trinity RNAseq assembly issues](https://github.com/RobertsLab/resources/issues/1476#issuecomment-1227794374).
+
+---
+
 20220824
 
 - Took the day off.
@@ -93,6 +105,8 @@ categories:
 - Internet outage again at 13:15...14:15 it's back on!
 
 - Worked on getting through Linda's Jupyter Notebooks 2 & 3.
+
+- Helped with [Grace's Trinity RNAseq assembly issues](https://github.com/RobertsLab/resources/issues/1476#issuecomment-1227794374).
 
 ---
 
