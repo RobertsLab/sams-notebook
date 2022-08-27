@@ -9,6 +9,16 @@ categories:
   - Daily Bits
 ---
 
+20220826
+
+- Took the day off.
+
+- Worked on developing/running script [to QC/trim CEABIGR larvae/zygote samples](https://github.com/RobertsLab/resources/issues/1517).
+
+- Continued to help with [Marta's job for Stacks on Mox.](https://github.com/RobertsLab/resources/issues/1516)
+
+---
+
 20220825
 
 - Continued to troubleshoot QIIME taxonomy assignments.
