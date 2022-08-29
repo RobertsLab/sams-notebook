@@ -9,11 +9,21 @@ categories:
   - Daily Bits
 ---
 
+2022089
+
+- Took the day off.
+
+- Created notebook for [QC/trim CEABiGR larvae/zygote samples](https://robertslab.github.io/sams-notebook/2022/08/29/FastQ-Trimming-and-QC-C.virginica-Larval-BS-seq-Data-from-Lotterhos-Lab-and-Part-of-CEABIGR-Project-Using-fastp-on-Mox.html).
+
+- Updated [CEABiGR summary notebook with larval/zygote updates](https://robertslab.github.io/sams-notebook/2022/04/25/Project-Summary-C.virginica-CEABIGR-Female-vs.-Male-Gonad-Exposed-to-OA.html).
+
+---
+
 20220826
 
 - Took the day off.
 
-- Worked on developing/running script [to QC/trim CEABIGR larvae/zygote samples](https://github.com/RobertsLab/resources/issues/1517).
+- Worked on developing/running script [to QC/trim CEABiGR larvae/zygote samples](https://github.com/RobertsLab/resources/issues/1517).
 
 - Continued to help with [Marta's job for Stacks on Mox.](https://github.com/RobertsLab/resources/issues/1516)
 
