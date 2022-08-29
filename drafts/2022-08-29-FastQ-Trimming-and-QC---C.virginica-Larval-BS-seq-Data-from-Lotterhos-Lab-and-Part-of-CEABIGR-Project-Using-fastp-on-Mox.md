@@ -13,11 +13,31 @@ tags:
 categories: 
   - Miscellaneous
 ---
+We had some old [_Crassostrea virginica_ (Eastern oyster)](https://en.wikipedia.org/wiki/Eastern_oyster) larval/zygote BS-seq data from the Lotterhos Lab that's part of the [CEABiGR Workshop/Project](https://github.com/sr320/ceabigr) (GitHub Repo) and Steven asked that I QC/trim it in [this GitHub Issue](https://github.com/RobertsLab/resources/issues/1517).
 
+The original data/experiment is described in this repo (NOTE: this might be a private repo...):
 
-[this GitHub Issue](https://github.com/RobertsLab/resources/issues/1517).
+- [epigeneticstoocean/2018OAExp_larvae](https://github.com/epigeneticstoocean/2018OAExp_larvae)
 
+Metadat for the files processed in this notebook:
 
+- [2018_L18_OAExp_Cvirginica_DNAm/blob/main/data/L18_larvae_meta.csv](https://github.com/epigeneticstoocean/2018_L18_OAExp_Cvirginica_DNAm/blob/main/data/L18_larvae_meta.csv)
+
+Some notes:
+
+- Noted when initially transferred data from Lotterhos Lab (via Alan Downey-Wall) - missing some files:
+
+  - CF01-CM01-Zygote_R1_001.fastq.gz
+  - CF08-CM04-Larvae_R2_001.fastq.gz
+  - EF03-EM03-Zygote_R2_001.fastq.gz  
+
+- Note from Alan Downey-Wall regarding sample naming:
+
+  >  The Sample.ID​ contains the mothersID-fathersID-stage (zygote or 4 day larvae) for each offspring pool.
+
+I trimmed with [`fastp`](https://github.com/OpenGene/fastp) and performed trimming QC summary using [`MultiQC`](https://multiqc.info/). The job was run on Mox.
+
+See [RESULTS section for lists of files processed](#results)
 
 SBATCH script (GitHub):
 
