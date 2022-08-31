@@ -9,7 +9,13 @@ categories:
   - Daily Bits
 ---
 
-2022089
+20220830
+
+- Messed around with [Mixomics R package tutorials](https://mixomicsteam.github.io/Bookdown/pls.html) to see how we might use this for our CEABiGR analysis. Mostly just wanted to familiarize myself with how to format data to use in Mixomics package.
+
+---
+
+20220829
 
 - Took the day off.
 
