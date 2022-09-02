@@ -1,0 +1,155 @@
+---
+title: "mixomics_testing"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+
+```{r message=FALSE}
+library(mixOmics) # import the mixOmics library
+library(tidyverse)
+```
+
+```{r}
+gene.methylation <- read.csv("/home/sam/gitrepos/ceabigr/output/40-gene-methylaiton.csv")
+gene.fpkm <- read.csv("/home/sam/gitrepos/2018_L18-adult-methylation/analyses/gene_fpkm.csv")
+metadata <- read.csv("/home/sam/gitrepos/2018_L18-adult-methylation/data/adult-meta.csv")
+
+metadata <- metadata %>% remove_rownames %>% column_to_rownames(var="Sample.ID")
+
+rows <- metadata$Sample.ID
+row.names(gene.fpkm) <- rows
+gene.methylation.only <- gene.methylation %>% select(-(1:2))
+gene.methylation.no_NA_genes <- gene.methylation.only %>% 
+  select_if(~ !any(is.na(.)))
+gene.fpkm.only <- gene.fpkm %>% select(-(1:6))
+gene.methylation.rownames <- gene.methylation %>% remove_rownames %>% column_to_rownames(var="sample_id") %>% select(., -"X")
+```
+
+```{r}
+MyResult.pca <- pca(gene.methylation.no_NA_genes)   # 1 Run the method
+plotIndiv(MyResult.pca)    # 2 Plot the samples
+```
+
+```{r}
+plotVar(MyResult.pca, cutoff = 0.8)      # 3 Plot the variables
+```
+```{r}
+plotIndiv(MyResult.pca, group = metadata$Sex, 
+          legend = TRUE)
+```
+
+
+```{r}
+plotIndiv(MyResult.pca, ind.names = FALSE,
+          group = metadata$Sex,
+          pch = as.factor(metadata$Treatment),
+          legend = TRUE, title = 'Gene methylation: PCA comp 1 - 2',
+          legend.title = 'Sex', legend.title.pch = 'Exposure')
+```
+
+
+```{r}
+plot(MyResult.pca)
+```
+
+```{r}
+MyResult.pca
+```
+
+```{r message=FALSE}
+plotLoadings(MyResult.pca)
+```
+
+```{r echo=FALSE,results='hide',fig.keep='all', message=FALSE, warning=FALSE}
+# a customized example to only show the top 100 genes 
+# and their gene name
+invisible(
+  plotLoadings(
+    MyResult.pca, ndisplay = 100, 
+    name.var = dput(
+      colnames(gene.methylation.no_NA_genes)), # dput() gets column names as vector
+    size.name = rel(0.3)))
+
+```
+
+```{r}
+
+gene.methylation.no_NA_genes.non_distinct.only <- gene.methylation.no_NA_genes %>% select(where(~n_distinct(.) > 1 ))
+MyResult.spca <- spca(gene.methylation.no_NA_genes.non_distinct.only, ncomp = 3, keepX = c(21,21,21)) # Max is 21 for each component
+
+plotIndiv(MyResult.spca, group = metadata$Sex,   # 2 Plot the samples
+          pch = as.factor(metadata$Treatment),
+          legend = TRUE, title = 'Gene methylation, sPCA comp 1 - 2',
+          legend.title = 'Sex', legend.title.pch = 'Exposure')
+
+```
+
+```{r}
+plotVar(MyResult.spca, cex = 1)                                        # 3 Plot the variables
+```
+
+```{r}
+selectVar(MyResult.spca, comp = 1)$value
+```
+
+```{r}
+plotLoadings(MyResult.spca, comp=1)
+
+```
+
+
+```{r}
+plotLoadings(MyResult.spca, comp=2)
+
+```
+
+```{r begin-spls}
+MyResult.spls <- spls(gene.fpkm.only,gene.methylation.no_NA_genes, keepX = c(25, 25), keepY = c(25,25))
+plotIndiv(MyResult.spls)     ## sample plot
+```
+
+```{r}
+plotVar(MyResult.spls)       ## variable plot
+```
+
+```{r}
+plotIndiv(MyResult.spls, group = metadata$Treatment,
+          rep.space = "XY-variate", legend = TRUE,
+          legend.title = 'Treatment',
+          ind.names = metadata$OldSample.ID,
+          title = 'C.virginica gonad OA: sPLS')
+```
+
+```{r}
+plotIndiv(MyResult.spls, group = metadata$Sex,
+          rep.space = "XY-variate", legend = TRUE,
+          legend.title = 'Sex',
+          ind.names = metadata$OldSample.ID,
+          title = 'C.virginica gonad OA: sPLS')
+
+```
+
+```{r}
+plotIndiv(MyResult.spls, group=metadata$Treatment,
+          pch = metadata$Sex,
+          rep.space = "XY-variate",  legend = TRUE,
+          legend.title = 'Treatment', legend.title.pch = 'Sex',
+          ind.names = FALSE, 
+          title = 'C.virginica gonad OA: sPLS')
+```
+
+```{r}
+# png("~/Downloads/spls-heatmap-01.png", width=1900, height=1900)
+
+cim(MyResult.spls, comp = 1)
+
+```
+
+```{r}
+plotLoadings(MyResult.spls, comp = 1, size.name = rel(0.5))
+```
+
