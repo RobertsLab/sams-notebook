@@ -17,4 +17,4 @@ Put together a quick R Markdown doc to go through the tutorial using our gene FP
 
 [https://rpubs.com/kubu4/cvir-gonad-oa-mixomics_testing](https://rpubs.com/kubu4/cvir-gonad-oa-mixomics_testing)
 
-<iframe src="https://rpubs.com/kubu4/cvir-gonad-oa-mixomics_testing" width="100%" height="1000" scrolling="yes"></iframe>
+<iframe src="iframe.php?url=https://rpubs.com/kubu4/cvir-gonad-oa-mixomics_testing" width="100%" height="1000" scrolling="yes"></iframe>
