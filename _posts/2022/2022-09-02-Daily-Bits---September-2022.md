@@ -17,4 +17,14 @@ Put together a quick R Markdown doc to go through the tutorial using our gene FP
 
 [https://rpubs.com/kubu4/cvir-gonad-oa-mixomics_testing](https://rpubs.com/kubu4/cvir-gonad-oa-mixomics_testing)
 
-<iframe src="iframe.php?url=https://rpubs.com/kubu4/cvir-gonad-oa-mixomics_testing" width="100%" height="1000" scrolling="yes"></iframe>
+Some screenshots of plots generated:
+
+![PCA plot comparing impacts of average gene methylation, OA exposure, and sex. Orange shapes are males. Blue shapes are female. Circles are control water conditions. Triangles are exposed to OA water conditions. Oranges (males) are all grouped together on the left side of the PCA plot. Females are all grouped together on the right side of the PCA plot.](https://github.com/RobertsLab/sams-notebook/blob/master/images/screencaps/20220901-daily_bits-mixomics-gene_methylation-PCA.png?raw=true)
+
+![Sparse PCA plot (sPCA) comparing impacts of average gene methylation, OA exposure, and sex. Orange shapes are males. Blue shapes are female. Circles are control water conditions. Triangles are exposed to OA water conditions. Oranges (males) are all grouped together on the upper left side of the sPCA plot. Females are all grouped together on the upper right side of the sPCA plot. A single, blue triangle is on the bottom right side of the sPCA plot.](https://github.com/RobertsLab/sams-notebook/blob/master/images/screencaps/20220901-daily_bits-mixomics-gene_methylation-sPCA.png?raw=true)
+
+
+![Screenshot showing list of genes and the sPCA loading values contributing the most to the sPCA Comp 1 from above. List is followed by bar plot to visualize the loadings in the list above.](https://github.com/RobertsLab/sams-notebook/blob/master/images/screencaps/20220901-daily_bits-mixomics-gene_methylation-sPCA-loadings_comp1.png?raw=true)
+
+
+![A Sparse Projection to Latent Structure (sPLS) plot of C.virginica gonad gene expression (FPKM) values and gene average methylation values. Blue letters are control water conditions. Orange letters are exposed OA water conditions. The letter 'F' represents females. The letter 'M' represents males. All females are tightly clusterd in the lower left corner. All males are tightly clustered in the lower right corner.](https://github.com/RobertsLab/sams-notebook/blob/master/images/screencaps/20220901-daily_bits-mixomics-gene_methylation-sPLS.png?raw=true)
