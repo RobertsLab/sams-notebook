@@ -9,6 +9,20 @@ categories:
   - Daily Bits
 ---
 
+20220906
+
+- Computer maintenance: backed up my laptop virtual machine (took a very long time) to my home server.
+
+- Helped with [Zach's GitHub Issue regarding PCR caps vs. films](https://github.com/RobertsLab/resources/issues/1520).
+
+- Helped with [Marta's GitHub Issue with running a support script in `stacks`](https://github.com/RobertsLab/resources/issues/1516#issuecomment-1238614587).
+
+- ProCard reconciliation.
+
+- Technical issue with accessing the Lab Safety Report Dashboard. Resolved late this afternoon.
+
+---
+
 20220901
 
 - Continued to mess around with [Mixomics R package tutorials](https://mixomicsteam.github.io/Bookdown/pls.html). Here's R Markdown used, as well as some of the plots that were produced (PCA and sparse PCA). Overall, sex is driving factor of differences in gene expression (FPKM) and average gene methylation.
