@@ -9,6 +9,16 @@ categories:
   - Daily Bits
 ---
 
+20220907
+
+- Computer maintenance: upgraded my laptop Ubuntu virtual machine from 20.04LTS to 22.04LTS.
+
+- ProCard reconcilation.
+
+- transferred geoduck RNAseq files to Mox in preparation for long non-coding RNA identification.
+
+---
+
 20220906
 
 - Computer maintenance: backed up my laptop virtual machine (took a very long time) to my home server.
