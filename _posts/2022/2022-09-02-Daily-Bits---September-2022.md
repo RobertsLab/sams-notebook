@@ -9,6 +9,14 @@ categories:
   - Daily Bits
 ---
 
+20220908
+
+- lab meeting
+
+- transferred data to Mox, prepared SBATCH script and trimmed geoduck RNAseq data in preparation for [identifying long non-coding RNA](https://github.com/RobertsLab/resources/issues/1434)
+
+---
+
 20220907
 
 - Computer maintenance: upgraded my laptop Ubuntu virtual machine from 20.04LTS to 22.04LTS.
