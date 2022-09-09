@@ -291,6 +291,13 @@ echo "${PATH}" | tr : \\n
 
 #### RESULTS
 
+Runtime was a bit over 3hrs.
+
+NOTE: Job indicates it failed. Although technically true, the failure was specifically related to MultiQC trying to process a FastQC file that was run on an empty post-trimming FastQ file and accorred at the very end of the script. So, everything that "needed" to run actually did run; just don't have a MultiQC summary for the FastQC analyses.
+
+
+![Screencap of Mox job emails showing runtime of 3hrs 19mins and 5secs. Also shows job failed, but failure was simply due to an empty post-trimming FastQ file causing FastQC and, in turn MultiQC, to freak out.](https://github.com/RobertsLab/sams-notebook/blob/master/images/screencaps/20220909-pgen-fastqc-fastp-mutliqc-rnaseq-runtime.png?raw=true)
+
 Output folder:
 
 - []()
