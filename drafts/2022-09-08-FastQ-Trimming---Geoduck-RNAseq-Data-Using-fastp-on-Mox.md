@@ -12,8 +12,9 @@ tags:
 categories: 
   - Miscellaneous
 ---
+[Per this GitHub Issue, Steven asked me to identify long non-coding RNA (lncRNA) in geoduck](https://github.com/RobertsLab/resources/issues/1434). The first step is to aggregate all of our [_Panopea generosa_ (Pacific geoduck)](http://en.wikipedia.org/wiki/Geoduck) RNAseq data and get it all trimmed. After that, align it to the genome, followed by [Ballgown](https://github.com/alyssafrazee/ballgown) expression analysis, and then followed by a variety of selection criteria to parse out lncRNAs.
 
-
+Trimming was performed using [`fastp`](https://github.com/OpenGene/fastp) on Mox, along with [`FastQC`](https://www.bioinformatics.babraham.ac.uk/projects/fastqc/) and [`MultiQC`](https://multiqc.info/). A list of the input files used can be found in the [RESULTS](#results) section (see the linked MD5 files).
 
 SBATCH script:
 
