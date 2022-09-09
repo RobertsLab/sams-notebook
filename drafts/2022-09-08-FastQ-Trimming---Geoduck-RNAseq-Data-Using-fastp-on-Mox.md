@@ -295,10 +295,640 @@ Runtime was a bit over 3hrs.
 
 NOTE: Job indicates it failed. Although technically true, the failure was specifically related to MultiQC trying to process a FastQC file that was run on an empty post-trimming FastQ file and accorred at the very end of the script. So, everything that "needed" to run actually did run; just don't have a MultiQC summary for the FastQC analyses.
 
+There was a single set of paired FastQs which had no sequence data after trimming:
+
+`Trueseq-stranded-mRNA-libraries-GeoRNA8-H1-NR021_S5_L001_R[12]_001.fastp-trim.20220908.fq.gz`
+
 
 ![Screencap of Mox job emails showing runtime of 3hrs 19mins and 5secs. Also shows job failed, but failure was simply due to an empty post-trimming FastQ file causing FastQC and, in turn MultiQC, to freak out.](https://github.com/RobertsLab/sams-notebook/blob/master/images/screencaps/20220909-pgen-fastqc-fastp-mutliqc-rnaseq-runtime.png?raw=true)
 
 Output folder:
 
-- []()
+- [20220909-pgen-fastqc-fastp-mutliqc-rnaseq/](https://gannet.fish.washington.edu/Atumefaciens/20220909-pgen-fastqc-fastp-mutliqc-rnaseq/)
 
+All trimmed FastQs can be retrieved with this pattern:
+
+`*fastp-trim.20220908.fq.gz`
+
+
+  - [`MultiQC`](https://multiqc.info/) Report (HTML - opens interactive plots in browser):
+
+    - [20220909-pgen-fastqc-fastp-mutliqc-rnaseq/multiqc_report.html](https://gannet.fish.washington.edu/Atumefaciens/20220909-pgen-fastqc-fastp-mutliqc-rnaseq/multiqc_report.html)
+
+  - Input FastQ MD5 checksums (text):
+
+    - [20220909-pgen-fastqc-fastp-mutliqc-rnaseq/input_fastq_checksums.md5](https://gannet.fish.washington.edu/Atumefaciens/20220909-pgen-fastqc-fastp-mutliqc-rnaseq/input_fastq_checksums.md5)
+
+  - Trimmed FastQ MD5 checksums (text):
+
+    - [20220909-pgen-fastqc-fastp-mutliqc-rnaseq/trimmed_fastq_checksums.md5](https://gannet.fish.washington.edu/Atumefaciens/20220909-pgen-fastqc-fastp-mutliqc-rnaseq/trimmed_fastq_checksums.md5)
+
+  - FastQC Reports (HTML)
+
+    - [Geo_Pool_F_GGCTAC_L006_R1_001.fastp-trim.20220908_fastqc.html](https://gannet.fish.washington.edu/Atumefaciens/20220909-pgen-fastqc-fastp-mutliqc-rnaseq/Geo_Pool_F_GGCTAC_L006_R1_001.fastp-trim.20220908_fastqc.html)
+
+    - [Geo_Pool_F_GGCTAC_L006_R1_001_fastqc.html](https://gannet.fish.washington.edu/Atumefaciens/20220909-pgen-fastqc-fastp-mutliqc-rnaseq/Geo_Pool_F_GGCTAC_L006_R1_001_fastqc.html)
+
+    - [Geo_Pool_F_GGCTAC_L006_R2_001.fastp-trim.20220908_fastqc.html](https://gannet.fish.washington.edu/Atumefaciens/20220909-pgen-fastqc-fastp-mutliqc-rnaseq/Geo_Pool_F_GGCTAC_L006_R2_001.fastp-trim.20220908_fastqc.html)
+
+    - [Geo_Pool_F_GGCTAC_L006_R2_001_fastqc.html](https://gannet.fish.washington.edu/Atumefaciens/20220909-pgen-fastqc-fastp-mutliqc-rnaseq/Geo_Pool_F_GGCTAC_L006_R2_001_fastqc.html)
+
+    - [Geo_Pool_M_CTTGTA_L006_R1_001.fastp-trim.20220908_fastqc.html](https://gannet.fish.washington.edu/Atumefaciens/20220909-pgen-fastqc-fastp-mutliqc-rnaseq/Geo_Pool_M_CTTGTA_L006_R1_001.fastp-trim.20220908_fastqc.html)
+
+    - [Geo_Pool_M_CTTGTA_L006_R1_001_fastqc.html](https://gannet.fish.washington.edu/Atumefaciens/20220909-pgen-fastqc-fastp-mutliqc-rnaseq/Geo_Pool_M_CTTGTA_L006_R1_001_fastqc.html)
+
+    - [Geo_Pool_M_CTTGTA_L006_R2_001.fastp-trim.20220908_fastqc.html](https://gannet.fish.washington.edu/Atumefaciens/20220909-pgen-fastqc-fastp-mutliqc-rnaseq/Geo_Pool_M_CTTGTA_L006_R2_001.fastp-trim.20220908_fastqc.html)
+
+    - [Geo_Pool_M_CTTGTA_L006_R2_001_fastqc.html](https://gannet.fish.washington.edu/Atumefaciens/20220909-pgen-fastqc-fastp-mutliqc-rnaseq/Geo_Pool_M_CTTGTA_L006_R2_001_fastqc.html)
+
+    - [Geoduck-ctenidia-RNA-1_S3_L001_R1_001.fastp-trim.20220908_fastqc.html](https://gannet.fish.washington.edu/Atumefaciens/20220909-pgen-fastqc-fastp-mutliqc-rnaseq/Geoduck-ctenidia-RNA-1_S3_L001_R1_001.fastp-trim.20220908_fastqc.html)
+
+    - [Geoduck-ctenidia-RNA-1_S3_L001_R1_001_fastqc.html](https://gannet.fish.washington.edu/Atumefaciens/20220909-pgen-fastqc-fastp-mutliqc-rnaseq/Geoduck-ctenidia-RNA-1_S3_L001_R1_001_fastqc.html)
+
+    - [Geoduck-ctenidia-RNA-1_S3_L001_R2_001.fastp-trim.20220908_fastqc.html](https://gannet.fish.washington.edu/Atumefaciens/20220909-pgen-fastqc-fastp-mutliqc-rnaseq/Geoduck-ctenidia-RNA-1_S3_L001_R2_001.fastp-trim.20220908_fastqc.html)
+
+    - [Geoduck-ctenidia-RNA-1_S3_L001_R2_001_fastqc.html](https://gannet.fish.washington.edu/Atumefaciens/20220909-pgen-fastqc-fastp-mutliqc-rnaseq/Geoduck-ctenidia-RNA-1_S3_L001_R2_001_fastqc.html)
+
+    - [Geoduck-ctenidia-RNA-2_S11_L002_R1_001.fastp-trim.20220908_fastqc.html](https://gannet.fish.washington.edu/Atumefaciens/20220909-pgen-fastqc-fastp-mutliqc-rnaseq/Geoduck-ctenidia-RNA-2_S11_L002_R1_001.fastp-trim.20220908_fastqc.html)
+
+    - [Geoduck-ctenidia-RNA-2_S11_L002_R1_001_fastqc.html](https://gannet.fish.washington.edu/Atumefaciens/20220909-pgen-fastqc-fastp-mutliqc-rnaseq/Geoduck-ctenidia-RNA-2_S11_L002_R1_001_fastqc.html)
+
+    - [Geoduck-ctenidia-RNA-2_S11_L002_R2_001.fastp-trim.20220908_fastqc.html](https://gannet.fish.washington.edu/Atumefaciens/20220909-pgen-fastqc-fastp-mutliqc-rnaseq/Geoduck-ctenidia-RNA-2_S11_L002_R2_001.fastp-trim.20220908_fastqc.html)
+
+    - [Geoduck-ctenidia-RNA-2_S11_L002_R2_001_fastqc.html](https://gannet.fish.washington.edu/Atumefaciens/20220909-pgen-fastqc-fastp-mutliqc-rnaseq/Geoduck-ctenidia-RNA-2_S11_L002_R2_001_fastqc.html)
+
+    - [Geoduck-ctenidia-RNA-3_S19_L003_R1_001.fastp-trim.20220908_fastqc.html](https://gannet.fish.washington.edu/Atumefaciens/20220909-pgen-fastqc-fastp-mutliqc-rnaseq/Geoduck-ctenidia-RNA-3_S19_L003_R1_001.fastp-trim.20220908_fastqc.html)
+
+    - [Geoduck-ctenidia-RNA-3_S19_L003_R1_001_fastqc.html](https://gannet.fish.washington.edu/Atumefaciens/20220909-pgen-fastqc-fastp-mutliqc-rnaseq/Geoduck-ctenidia-RNA-3_S19_L003_R1_001_fastqc.html)
+
+    - [Geoduck-ctenidia-RNA-3_S19_L003_R2_001.fastp-trim.20220908_fastqc.html](https://gannet.fish.washington.edu/Atumefaciens/20220909-pgen-fastqc-fastp-mutliqc-rnaseq/Geoduck-ctenidia-RNA-3_S19_L003_R2_001.fastp-trim.20220908_fastqc.html)
+
+    - [Geoduck-ctenidia-RNA-3_S19_L003_R2_001_fastqc.html](https://gannet.fish.washington.edu/Atumefaciens/20220909-pgen-fastqc-fastp-mutliqc-rnaseq/Geoduck-ctenidia-RNA-3_S19_L003_R2_001_fastqc.html)
+
+    - [Geoduck-ctenidia-RNA-4_S27_L004_R1_001.fastp-trim.20220908_fastqc.html](https://gannet.fish.washington.edu/Atumefaciens/20220909-pgen-fastqc-fastp-mutliqc-rnaseq/Geoduck-ctenidia-RNA-4_S27_L004_R1_001.fastp-trim.20220908_fastqc.html)
+
+    - [Geoduck-ctenidia-RNA-4_S27_L004_R1_001_fastqc.html](https://gannet.fish.washington.edu/Atumefaciens/20220909-pgen-fastqc-fastp-mutliqc-rnaseq/Geoduck-ctenidia-RNA-4_S27_L004_R1_001_fastqc.html)
+
+    - [Geoduck-ctenidia-RNA-4_S27_L004_R2_001.fastp-trim.20220908_fastqc.html](https://gannet.fish.washington.edu/Atumefaciens/20220909-pgen-fastqc-fastp-mutliqc-rnaseq/Geoduck-ctenidia-RNA-4_S27_L004_R2_001.fastp-trim.20220908_fastqc.html)
+
+    - [Geoduck-ctenidia-RNA-4_S27_L004_R2_001_fastqc.html](https://gannet.fish.washington.edu/Atumefaciens/20220909-pgen-fastqc-fastp-mutliqc-rnaseq/Geoduck-ctenidia-RNA-4_S27_L004_R2_001_fastqc.html)
+
+    - [Geoduck-ctenidia-RNA-5_S35_L005_R1_001.fastp-trim.20220908_fastqc.html](https://gannet.fish.washington.edu/Atumefaciens/20220909-pgen-fastqc-fastp-mutliqc-rnaseq/Geoduck-ctenidia-RNA-5_S35_L005_R1_001.fastp-trim.20220908_fastqc.html)
+
+    - [Geoduck-ctenidia-RNA-5_S35_L005_R1_001_fastqc.html](https://gannet.fish.washington.edu/Atumefaciens/20220909-pgen-fastqc-fastp-mutliqc-rnaseq/Geoduck-ctenidia-RNA-5_S35_L005_R1_001_fastqc.html)
+
+    - [Geoduck-ctenidia-RNA-5_S35_L005_R2_001.fastp-trim.20220908_fastqc.html](https://gannet.fish.washington.edu/Atumefaciens/20220909-pgen-fastqc-fastp-mutliqc-rnaseq/Geoduck-ctenidia-RNA-5_S35_L005_R2_001.fastp-trim.20220908_fastqc.html)
+
+    - [Geoduck-ctenidia-RNA-5_S35_L005_R2_001_fastqc.html](https://gannet.fish.washington.edu/Atumefaciens/20220909-pgen-fastqc-fastp-mutliqc-rnaseq/Geoduck-ctenidia-RNA-5_S35_L005_R2_001_fastqc.html)
+
+    - [Geoduck-ctenidia-RNA-6_S43_L006_R1_001.fastp-trim.20220908_fastqc.html](https://gannet.fish.washington.edu/Atumefaciens/20220909-pgen-fastqc-fastp-mutliqc-rnaseq/Geoduck-ctenidia-RNA-6_S43_L006_R1_001.fastp-trim.20220908_fastqc.html)
+
+    - [Geoduck-ctenidia-RNA-6_S43_L006_R1_001_fastqc.html](https://gannet.fish.washington.edu/Atumefaciens/20220909-pgen-fastqc-fastp-mutliqc-rnaseq/Geoduck-ctenidia-RNA-6_S43_L006_R1_001_fastqc.html)
+
+    - [Geoduck-ctenidia-RNA-6_S43_L006_R2_001.fastp-trim.20220908_fastqc.html](https://gannet.fish.washington.edu/Atumefaciens/20220909-pgen-fastqc-fastp-mutliqc-rnaseq/Geoduck-ctenidia-RNA-6_S43_L006_R2_001.fastp-trim.20220908_fastqc.html)
+
+    - [Geoduck-ctenidia-RNA-6_S43_L006_R2_001_fastqc.html](https://gannet.fish.washington.edu/Atumefaciens/20220909-pgen-fastqc-fastp-mutliqc-rnaseq/Geoduck-ctenidia-RNA-6_S43_L006_R2_001_fastqc.html)
+
+    - [Geoduck-ctenidia-RNA-7_S51_L007_R1_001.fastp-trim.20220908_fastqc.html](https://gannet.fish.washington.edu/Atumefaciens/20220909-pgen-fastqc-fastp-mutliqc-rnaseq/Geoduck-ctenidia-RNA-7_S51_L007_R1_001.fastp-trim.20220908_fastqc.html)
+
+    - [Geoduck-ctenidia-RNA-7_S51_L007_R1_001_fastqc.html](https://gannet.fish.washington.edu/Atumefaciens/20220909-pgen-fastqc-fastp-mutliqc-rnaseq/Geoduck-ctenidia-RNA-7_S51_L007_R1_001_fastqc.html)
+
+    - [Geoduck-ctenidia-RNA-7_S51_L007_R2_001.fastp-trim.20220908_fastqc.html](https://gannet.fish.washington.edu/Atumefaciens/20220909-pgen-fastqc-fastp-mutliqc-rnaseq/Geoduck-ctenidia-RNA-7_S51_L007_R2_001.fastp-trim.20220908_fastqc.html)
+
+    - [Geoduck-ctenidia-RNA-7_S51_L007_R2_001_fastqc.html](https://gannet.fish.washington.edu/Atumefaciens/20220909-pgen-fastqc-fastp-mutliqc-rnaseq/Geoduck-ctenidia-RNA-7_S51_L007_R2_001_fastqc.html)
+
+    - [Geoduck-ctenidia-RNA-8_S59_L008_R1_001.fastp-trim.20220908_fastqc.html](https://gannet.fish.washington.edu/Atumefaciens/20220909-pgen-fastqc-fastp-mutliqc-rnaseq/Geoduck-ctenidia-RNA-8_S59_L008_R1_001.fastp-trim.20220908_fastqc.html)
+
+    - [Geoduck-ctenidia-RNA-8_S59_L008_R1_001_fastqc.html](https://gannet.fish.washington.edu/Atumefaciens/20220909-pgen-fastqc-fastp-mutliqc-rnaseq/Geoduck-ctenidia-RNA-8_S59_L008_R1_001_fastqc.html)
+
+    - [Geoduck-ctenidia-RNA-8_S59_L008_R2_001.fastp-trim.20220908_fastqc.html](https://gannet.fish.washington.edu/Atumefaciens/20220909-pgen-fastqc-fastp-mutliqc-rnaseq/Geoduck-ctenidia-RNA-8_S59_L008_R2_001.fastp-trim.20220908_fastqc.html)
+
+    - [Geoduck-ctenidia-RNA-8_S59_L008_R2_001_fastqc.html](https://gannet.fish.washington.edu/Atumefaciens/20220909-pgen-fastqc-fastp-mutliqc-rnaseq/Geoduck-ctenidia-RNA-8_S59_L008_R2_001_fastqc.html)
+
+    - [Geoduck-gonad-RNA-1_S1_L001_R1_001.fastp-trim.20220908_fastqc.html](https://gannet.fish.washington.edu/Atumefaciens/20220909-pgen-fastqc-fastp-mutliqc-rnaseq/Geoduck-gonad-RNA-1_S1_L001_R1_001.fastp-trim.20220908_fastqc.html)
+
+    - [Geoduck-gonad-RNA-1_S1_L001_R1_001_fastqc.html](https://gannet.fish.washington.edu/Atumefaciens/20220909-pgen-fastqc-fastp-mutliqc-rnaseq/Geoduck-gonad-RNA-1_S1_L001_R1_001_fastqc.html)
+
+    - [Geoduck-gonad-RNA-1_S1_L001_R2_001.fastp-trim.20220908_fastqc.html](https://gannet.fish.washington.edu/Atumefaciens/20220909-pgen-fastqc-fastp-mutliqc-rnaseq/Geoduck-gonad-RNA-1_S1_L001_R2_001.fastp-trim.20220908_fastqc.html)
+
+    - [Geoduck-gonad-RNA-1_S1_L001_R2_001_fastqc.html](https://gannet.fish.washington.edu/Atumefaciens/20220909-pgen-fastqc-fastp-mutliqc-rnaseq/Geoduck-gonad-RNA-1_S1_L001_R2_001_fastqc.html)
+
+    - [Geoduck-gonad-RNA-2_S9_L002_R1_001.fastp-trim.20220908_fastqc.html](https://gannet.fish.washington.edu/Atumefaciens/20220909-pgen-fastqc-fastp-mutliqc-rnaseq/Geoduck-gonad-RNA-2_S9_L002_R1_001.fastp-trim.20220908_fastqc.html)
+
+    - [Geoduck-gonad-RNA-2_S9_L002_R1_001_fastqc.html](https://gannet.fish.washington.edu/Atumefaciens/20220909-pgen-fastqc-fastp-mutliqc-rnaseq/Geoduck-gonad-RNA-2_S9_L002_R1_001_fastqc.html)
+
+    - [Geoduck-gonad-RNA-2_S9_L002_R2_001.fastp-trim.20220908_fastqc.html](https://gannet.fish.washington.edu/Atumefaciens/20220909-pgen-fastqc-fastp-mutliqc-rnaseq/Geoduck-gonad-RNA-2_S9_L002_R2_001.fastp-trim.20220908_fastqc.html)
+
+    - [Geoduck-gonad-RNA-2_S9_L002_R2_001_fastqc.html](https://gannet.fish.washington.edu/Atumefaciens/20220909-pgen-fastqc-fastp-mutliqc-rnaseq/Geoduck-gonad-RNA-2_S9_L002_R2_001_fastqc.html)
+
+    - [Geoduck-gonad-RNA-3_S17_L003_R1_001.fastp-trim.20220908_fastqc.html](https://gannet.fish.washington.edu/Atumefaciens/20220909-pgen-fastqc-fastp-mutliqc-rnaseq/Geoduck-gonad-RNA-3_S17_L003_R1_001.fastp-trim.20220908_fastqc.html)
+
+    - [Geoduck-gonad-RNA-3_S17_L003_R1_001_fastqc.html](https://gannet.fish.washington.edu/Atumefaciens/20220909-pgen-fastqc-fastp-mutliqc-rnaseq/Geoduck-gonad-RNA-3_S17_L003_R1_001_fastqc.html)
+
+    - [Geoduck-gonad-RNA-3_S17_L003_R2_001.fastp-trim.20220908_fastqc.html](https://gannet.fish.washington.edu/Atumefaciens/20220909-pgen-fastqc-fastp-mutliqc-rnaseq/Geoduck-gonad-RNA-3_S17_L003_R2_001.fastp-trim.20220908_fastqc.html)
+
+    - [Geoduck-gonad-RNA-3_S17_L003_R2_001_fastqc.html](https://gannet.fish.washington.edu/Atumefaciens/20220909-pgen-fastqc-fastp-mutliqc-rnaseq/Geoduck-gonad-RNA-3_S17_L003_R2_001_fastqc.html)
+
+    - [Geoduck-gonad-RNA-4_S25_L004_R1_001.fastp-trim.20220908_fastqc.html](https://gannet.fish.washington.edu/Atumefaciens/20220909-pgen-fastqc-fastp-mutliqc-rnaseq/Geoduck-gonad-RNA-4_S25_L004_R1_001.fastp-trim.20220908_fastqc.html)
+
+    - [Geoduck-gonad-RNA-4_S25_L004_R1_001_fastqc.html](https://gannet.fish.washington.edu/Atumefaciens/20220909-pgen-fastqc-fastp-mutliqc-rnaseq/Geoduck-gonad-RNA-4_S25_L004_R1_001_fastqc.html)
+
+    - [Geoduck-gonad-RNA-4_S25_L004_R2_001.fastp-trim.20220908_fastqc.html](https://gannet.fish.washington.edu/Atumefaciens/20220909-pgen-fastqc-fastp-mutliqc-rnaseq/Geoduck-gonad-RNA-4_S25_L004_R2_001.fastp-trim.20220908_fastqc.html)
+
+    - [Geoduck-gonad-RNA-4_S25_L004_R2_001_fastqc.html](https://gannet.fish.washington.edu/Atumefaciens/20220909-pgen-fastqc-fastp-mutliqc-rnaseq/Geoduck-gonad-RNA-4_S25_L004_R2_001_fastqc.html)
+
+    - [Geoduck-gonad-RNA-5_S33_L005_R1_001.fastp-trim.20220908_fastqc.html](https://gannet.fish.washington.edu/Atumefaciens/20220909-pgen-fastqc-fastp-mutliqc-rnaseq/Geoduck-gonad-RNA-5_S33_L005_R1_001.fastp-trim.20220908_fastqc.html)
+
+    - [Geoduck-gonad-RNA-5_S33_L005_R1_001_fastqc.html](https://gannet.fish.washington.edu/Atumefaciens/20220909-pgen-fastqc-fastp-mutliqc-rnaseq/Geoduck-gonad-RNA-5_S33_L005_R1_001_fastqc.html)
+
+    - [Geoduck-gonad-RNA-5_S33_L005_R2_001.fastp-trim.20220908_fastqc.html](https://gannet.fish.washington.edu/Atumefaciens/20220909-pgen-fastqc-fastp-mutliqc-rnaseq/Geoduck-gonad-RNA-5_S33_L005_R2_001.fastp-trim.20220908_fastqc.html)
+
+    - [Geoduck-gonad-RNA-5_S33_L005_R2_001_fastqc.html](https://gannet.fish.washington.edu/Atumefaciens/20220909-pgen-fastqc-fastp-mutliqc-rnaseq/Geoduck-gonad-RNA-5_S33_L005_R2_001_fastqc.html)
+
+    - [Geoduck-gonad-RNA-6_S41_L006_R1_001.fastp-trim.20220908_fastqc.html](https://gannet.fish.washington.edu/Atumefaciens/20220909-pgen-fastqc-fastp-mutliqc-rnaseq/Geoduck-gonad-RNA-6_S41_L006_R1_001.fastp-trim.20220908_fastqc.html)
+
+    - [Geoduck-gonad-RNA-6_S41_L006_R1_001_fastqc.html](https://gannet.fish.washington.edu/Atumefaciens/20220909-pgen-fastqc-fastp-mutliqc-rnaseq/Geoduck-gonad-RNA-6_S41_L006_R1_001_fastqc.html)
+
+    - [Geoduck-gonad-RNA-6_S41_L006_R2_001.fastp-trim.20220908_fastqc.html](https://gannet.fish.washington.edu/Atumefaciens/20220909-pgen-fastqc-fastp-mutliqc-rnaseq/Geoduck-gonad-RNA-6_S41_L006_R2_001.fastp-trim.20220908_fastqc.html)
+
+    - [Geoduck-gonad-RNA-6_S41_L006_R2_001_fastqc.html](https://gannet.fish.washington.edu/Atumefaciens/20220909-pgen-fastqc-fastp-mutliqc-rnaseq/Geoduck-gonad-RNA-6_S41_L006_R2_001_fastqc.html)
+
+    - [Geoduck-gonad-RNA-7_S49_L007_R1_001.fastp-trim.20220908_fastqc.html](https://gannet.fish.washington.edu/Atumefaciens/20220909-pgen-fastqc-fastp-mutliqc-rnaseq/Geoduck-gonad-RNA-7_S49_L007_R1_001.fastp-trim.20220908_fastqc.html)
+
+    - [Geoduck-gonad-RNA-7_S49_L007_R1_001_fastqc.html](https://gannet.fish.washington.edu/Atumefaciens/20220909-pgen-fastqc-fastp-mutliqc-rnaseq/Geoduck-gonad-RNA-7_S49_L007_R1_001_fastqc.html)
+
+    - [Geoduck-gonad-RNA-7_S49_L007_R2_001.fastp-trim.20220908_fastqc.html](https://gannet.fish.washington.edu/Atumefaciens/20220909-pgen-fastqc-fastp-mutliqc-rnaseq/Geoduck-gonad-RNA-7_S49_L007_R2_001.fastp-trim.20220908_fastqc.html)
+
+    - [Geoduck-gonad-RNA-7_S49_L007_R2_001_fastqc.html](https://gannet.fish.washington.edu/Atumefaciens/20220909-pgen-fastqc-fastp-mutliqc-rnaseq/Geoduck-gonad-RNA-7_S49_L007_R2_001_fastqc.html)
+
+    - [Geoduck-gonad-RNA-8_S57_L008_R1_001.fastp-trim.20220908_fastqc.html](https://gannet.fish.washington.edu/Atumefaciens/20220909-pgen-fastqc-fastp-mutliqc-rnaseq/Geoduck-gonad-RNA-8_S57_L008_R1_001.fastp-trim.20220908_fastqc.html)
+
+    - [Geoduck-gonad-RNA-8_S57_L008_R1_001_fastqc.html](https://gannet.fish.washington.edu/Atumefaciens/20220909-pgen-fastqc-fastp-mutliqc-rnaseq/Geoduck-gonad-RNA-8_S57_L008_R1_001_fastqc.html)
+
+    - [Geoduck-gonad-RNA-8_S57_L008_R2_001.fastp-trim.20220908_fastqc.html](https://gannet.fish.washington.edu/Atumefaciens/20220909-pgen-fastqc-fastp-mutliqc-rnaseq/Geoduck-gonad-RNA-8_S57_L008_R2_001.fastp-trim.20220908_fastqc.html)
+
+    - [Geoduck-gonad-RNA-8_S57_L008_R2_001_fastqc.html](https://gannet.fish.washington.edu/Atumefaciens/20220909-pgen-fastqc-fastp-mutliqc-rnaseq/Geoduck-gonad-RNA-8_S57_L008_R2_001_fastqc.html)
+
+    - [Geoduck-heart-RNA-1_S2_L001_R1_001.fastp-trim.20220908_fastqc.html](https://gannet.fish.washington.edu/Atumefaciens/20220909-pgen-fastqc-fastp-mutliqc-rnaseq/Geoduck-heart-RNA-1_S2_L001_R1_001.fastp-trim.20220908_fastqc.html)
+
+    - [Geoduck-heart-RNA-1_S2_L001_R1_001_fastqc.html](https://gannet.fish.washington.edu/Atumefaciens/20220909-pgen-fastqc-fastp-mutliqc-rnaseq/Geoduck-heart-RNA-1_S2_L001_R1_001_fastqc.html)
+
+    - [Geoduck-heart-RNA-1_S2_L001_R2_001.fastp-trim.20220908_fastqc.html](https://gannet.fish.washington.edu/Atumefaciens/20220909-pgen-fastqc-fastp-mutliqc-rnaseq/Geoduck-heart-RNA-1_S2_L001_R2_001.fastp-trim.20220908_fastqc.html)
+
+    - [Geoduck-heart-RNA-1_S2_L001_R2_001_fastqc.html](https://gannet.fish.washington.edu/Atumefaciens/20220909-pgen-fastqc-fastp-mutliqc-rnaseq/Geoduck-heart-RNA-1_S2_L001_R2_001_fastqc.html)
+
+    - [Geoduck-heart-RNA-2_S10_L002_R1_001.fastp-trim.20220908_fastqc.html](https://gannet.fish.washington.edu/Atumefaciens/20220909-pgen-fastqc-fastp-mutliqc-rnaseq/Geoduck-heart-RNA-2_S10_L002_R1_001.fastp-trim.20220908_fastqc.html)
+
+    - [Geoduck-heart-RNA-2_S10_L002_R1_001_fastqc.html](https://gannet.fish.washington.edu/Atumefaciens/20220909-pgen-fastqc-fastp-mutliqc-rnaseq/Geoduck-heart-RNA-2_S10_L002_R1_001_fastqc.html)
+
+    - [Geoduck-heart-RNA-2_S10_L002_R2_001.fastp-trim.20220908_fastqc.html](https://gannet.fish.washington.edu/Atumefaciens/20220909-pgen-fastqc-fastp-mutliqc-rnaseq/Geoduck-heart-RNA-2_S10_L002_R2_001.fastp-trim.20220908_fastqc.html)
+
+    - [Geoduck-heart-RNA-2_S10_L002_R2_001_fastqc.html](https://gannet.fish.washington.edu/Atumefaciens/20220909-pgen-fastqc-fastp-mutliqc-rnaseq/Geoduck-heart-RNA-2_S10_L002_R2_001_fastqc.html)
+
+    - [Geoduck-heart-RNA-3_S18_L003_R1_001.fastp-trim.20220908_fastqc.html](https://gannet.fish.washington.edu/Atumefaciens/20220909-pgen-fastqc-fastp-mutliqc-rnaseq/Geoduck-heart-RNA-3_S18_L003_R1_001.fastp-trim.20220908_fastqc.html)
+
+    - [Geoduck-heart-RNA-3_S18_L003_R1_001_fastqc.html](https://gannet.fish.washington.edu/Atumefaciens/20220909-pgen-fastqc-fastp-mutliqc-rnaseq/Geoduck-heart-RNA-3_S18_L003_R1_001_fastqc.html)
+
+    - [Geoduck-heart-RNA-3_S18_L003_R2_001.fastp-trim.20220908_fastqc.html](https://gannet.fish.washington.edu/Atumefaciens/20220909-pgen-fastqc-fastp-mutliqc-rnaseq/Geoduck-heart-RNA-3_S18_L003_R2_001.fastp-trim.20220908_fastqc.html)
+
+    - [Geoduck-heart-RNA-3_S18_L003_R2_001_fastqc.html](https://gannet.fish.washington.edu/Atumefaciens/20220909-pgen-fastqc-fastp-mutliqc-rnaseq/Geoduck-heart-RNA-3_S18_L003_R2_001_fastqc.html)
+
+    - [Geoduck-heart-RNA-4_S26_L004_R1_001.fastp-trim.20220908_fastqc.html](https://gannet.fish.washington.edu/Atumefaciens/20220909-pgen-fastqc-fastp-mutliqc-rnaseq/Geoduck-heart-RNA-4_S26_L004_R1_001.fastp-trim.20220908_fastqc.html)
+
+    - [Geoduck-heart-RNA-4_S26_L004_R1_001_fastqc.html](https://gannet.fish.washington.edu/Atumefaciens/20220909-pgen-fastqc-fastp-mutliqc-rnaseq/Geoduck-heart-RNA-4_S26_L004_R1_001_fastqc.html)
+
+    - [Geoduck-heart-RNA-4_S26_L004_R2_001.fastp-trim.20220908_fastqc.html](https://gannet.fish.washington.edu/Atumefaciens/20220909-pgen-fastqc-fastp-mutliqc-rnaseq/Geoduck-heart-RNA-4_S26_L004_R2_001.fastp-trim.20220908_fastqc.html)
+
+    - [Geoduck-heart-RNA-4_S26_L004_R2_001_fastqc.html](https://gannet.fish.washington.edu/Atumefaciens/20220909-pgen-fastqc-fastp-mutliqc-rnaseq/Geoduck-heart-RNA-4_S26_L004_R2_001_fastqc.html)
+
+    - [Geoduck-heart-RNA-5_S34_L005_R1_001.fastp-trim.20220908_fastqc.html](https://gannet.fish.washington.edu/Atumefaciens/20220909-pgen-fastqc-fastp-mutliqc-rnaseq/Geoduck-heart-RNA-5_S34_L005_R1_001.fastp-trim.20220908_fastqc.html)
+
+    - [Geoduck-heart-RNA-5_S34_L005_R1_001_fastqc.html](https://gannet.fish.washington.edu/Atumefaciens/20220909-pgen-fastqc-fastp-mutliqc-rnaseq/Geoduck-heart-RNA-5_S34_L005_R1_001_fastqc.html)
+
+    - [Geoduck-heart-RNA-5_S34_L005_R2_001.fastp-trim.20220908_fastqc.html](https://gannet.fish.washington.edu/Atumefaciens/20220909-pgen-fastqc-fastp-mutliqc-rnaseq/Geoduck-heart-RNA-5_S34_L005_R2_001.fastp-trim.20220908_fastqc.html)
+
+    - [Geoduck-heart-RNA-5_S34_L005_R2_001_fastqc.html](https://gannet.fish.washington.edu/Atumefaciens/20220909-pgen-fastqc-fastp-mutliqc-rnaseq/Geoduck-heart-RNA-5_S34_L005_R2_001_fastqc.html)
+
+    - [Geoduck-heart-RNA-6_S42_L006_R1_001.fastp-trim.20220908_fastqc.html](https://gannet.fish.washington.edu/Atumefaciens/20220909-pgen-fastqc-fastp-mutliqc-rnaseq/Geoduck-heart-RNA-6_S42_L006_R1_001.fastp-trim.20220908_fastqc.html)
+
+    - [Geoduck-heart-RNA-6_S42_L006_R1_001_fastqc.html](https://gannet.fish.washington.edu/Atumefaciens/20220909-pgen-fastqc-fastp-mutliqc-rnaseq/Geoduck-heart-RNA-6_S42_L006_R1_001_fastqc.html)
+
+    - [Geoduck-heart-RNA-6_S42_L006_R2_001.fastp-trim.20220908_fastqc.html](https://gannet.fish.washington.edu/Atumefaciens/20220909-pgen-fastqc-fastp-mutliqc-rnaseq/Geoduck-heart-RNA-6_S42_L006_R2_001.fastp-trim.20220908_fastqc.html)
+
+    - [Geoduck-heart-RNA-6_S42_L006_R2_001_fastqc.html](https://gannet.fish.washington.edu/Atumefaciens/20220909-pgen-fastqc-fastp-mutliqc-rnaseq/Geoduck-heart-RNA-6_S42_L006_R2_001_fastqc.html)
+
+    - [Geoduck-heart-RNA-7_S50_L007_R1_001.fastp-trim.20220908_fastqc.html](https://gannet.fish.washington.edu/Atumefaciens/20220909-pgen-fastqc-fastp-mutliqc-rnaseq/Geoduck-heart-RNA-7_S50_L007_R1_001.fastp-trim.20220908_fastqc.html)
+
+    - [Geoduck-heart-RNA-7_S50_L007_R1_001_fastqc.html](https://gannet.fish.washington.edu/Atumefaciens/20220909-pgen-fastqc-fastp-mutliqc-rnaseq/Geoduck-heart-RNA-7_S50_L007_R1_001_fastqc.html)
+
+    - [Geoduck-heart-RNA-7_S50_L007_R2_001.fastp-trim.20220908_fastqc.html](https://gannet.fish.washington.edu/Atumefaciens/20220909-pgen-fastqc-fastp-mutliqc-rnaseq/Geoduck-heart-RNA-7_S50_L007_R2_001.fastp-trim.20220908_fastqc.html)
+
+    - [Geoduck-heart-RNA-7_S50_L007_R2_001_fastqc.html](https://gannet.fish.washington.edu/Atumefaciens/20220909-pgen-fastqc-fastp-mutliqc-rnaseq/Geoduck-heart-RNA-7_S50_L007_R2_001_fastqc.html)
+
+    - [Geoduck-heart-RNA-8_S58_L008_R1_001.fastp-trim.20220908_fastqc.html](https://gannet.fish.washington.edu/Atumefaciens/20220909-pgen-fastqc-fastp-mutliqc-rnaseq/Geoduck-heart-RNA-8_S58_L008_R1_001.fastp-trim.20220908_fastqc.html)
+
+    - [Geoduck-heart-RNA-8_S58_L008_R1_001_fastqc.html](https://gannet.fish.washington.edu/Atumefaciens/20220909-pgen-fastqc-fastp-mutliqc-rnaseq/Geoduck-heart-RNA-8_S58_L008_R1_001_fastqc.html)
+
+    - [Geoduck-heart-RNA-8_S58_L008_R2_001.fastp-trim.20220908_fastqc.html](https://gannet.fish.washington.edu/Atumefaciens/20220909-pgen-fastqc-fastp-mutliqc-rnaseq/Geoduck-heart-RNA-8_S58_L008_R2_001.fastp-trim.20220908_fastqc.html)
+
+    - [Geoduck-heart-RNA-8_S58_L008_R2_001_fastqc.html](https://gannet.fish.washington.edu/Atumefaciens/20220909-pgen-fastqc-fastp-mutliqc-rnaseq/Geoduck-heart-RNA-8_S58_L008_R2_001_fastqc.html)
+
+    - [Geoduck-juvenile-OA-exposure-RNA-EPI-115-1_S4_L001_R1_001.fastp-trim.20220908_fastqc.html](https://gannet.fish.washington.edu/Atumefaciens/20220909-pgen-fastqc-fastp-mutliqc-rnaseq/Geoduck-juvenile-OA-exposure-RNA-EPI-115-1_S4_L001_R1_001.fastp-trim.20220908_fastqc.html)
+
+    - [Geoduck-juvenile-OA-exposure-RNA-EPI-115-1_S4_L001_R1_001_fastqc.html](https://gannet.fish.washington.edu/Atumefaciens/20220909-pgen-fastqc-fastp-mutliqc-rnaseq/Geoduck-juvenile-OA-exposure-RNA-EPI-115-1_S4_L001_R1_001_fastqc.html)
+
+    - [Geoduck-juvenile-OA-exposure-RNA-EPI-115-1_S4_L001_R2_001.fastp-trim.20220908_fastqc.html](https://gannet.fish.washington.edu/Atumefaciens/20220909-pgen-fastqc-fastp-mutliqc-rnaseq/Geoduck-juvenile-OA-exposure-RNA-EPI-115-1_S4_L001_R2_001.fastp-trim.20220908_fastqc.html)
+
+    - [Geoduck-juvenile-OA-exposure-RNA-EPI-115-1_S4_L001_R2_001_fastqc.html](https://gannet.fish.washington.edu/Atumefaciens/20220909-pgen-fastqc-fastp-mutliqc-rnaseq/Geoduck-juvenile-OA-exposure-RNA-EPI-115-1_S4_L001_R2_001_fastqc.html)
+
+    - [Geoduck-juvenile-OA-exposure-RNA-EPI-115-2_S12_L002_R1_001.fastp-trim.20220908_fastqc.html](https://gannet.fish.washington.edu/Atumefaciens/20220909-pgen-fastqc-fastp-mutliqc-rnaseq/Geoduck-juvenile-OA-exposure-RNA-EPI-115-2_S12_L002_R1_001.fastp-trim.20220908_fastqc.html)
+
+    - [Geoduck-juvenile-OA-exposure-RNA-EPI-115-2_S12_L002_R1_001_fastqc.html](https://gannet.fish.washington.edu/Atumefaciens/20220909-pgen-fastqc-fastp-mutliqc-rnaseq/Geoduck-juvenile-OA-exposure-RNA-EPI-115-2_S12_L002_R1_001_fastqc.html)
+
+    - [Geoduck-juvenile-OA-exposure-RNA-EPI-115-2_S12_L002_R2_001.fastp-trim.20220908_fastqc.html](https://gannet.fish.washington.edu/Atumefaciens/20220909-pgen-fastqc-fastp-mutliqc-rnaseq/Geoduck-juvenile-OA-exposure-RNA-EPI-115-2_S12_L002_R2_001.fastp-trim.20220908_fastqc.html)
+
+    - [Geoduck-juvenile-OA-exposure-RNA-EPI-115-2_S12_L002_R2_001_fastqc.html](https://gannet.fish.washington.edu/Atumefaciens/20220909-pgen-fastqc-fastp-mutliqc-rnaseq/Geoduck-juvenile-OA-exposure-RNA-EPI-115-2_S12_L002_R2_001_fastqc.html)
+
+    - [Geoduck-juvenile-OA-exposure-RNA-EPI-115-3_S20_L003_R1_001.fastp-trim.20220908_fastqc.html](https://gannet.fish.washington.edu/Atumefaciens/20220909-pgen-fastqc-fastp-mutliqc-rnaseq/Geoduck-juvenile-OA-exposure-RNA-EPI-115-3_S20_L003_R1_001.fastp-trim.20220908_fastqc.html)
+
+    - [Geoduck-juvenile-OA-exposure-RNA-EPI-115-3_S20_L003_R1_001_fastqc.html](https://gannet.fish.washington.edu/Atumefaciens/20220909-pgen-fastqc-fastp-mutliqc-rnaseq/Geoduck-juvenile-OA-exposure-RNA-EPI-115-3_S20_L003_R1_001_fastqc.html)
+
+    - [Geoduck-juvenile-OA-exposure-RNA-EPI-115-3_S20_L003_R2_001.fastp-trim.20220908_fastqc.html](https://gannet.fish.washington.edu/Atumefaciens/20220909-pgen-fastqc-fastp-mutliqc-rnaseq/Geoduck-juvenile-OA-exposure-RNA-EPI-115-3_S20_L003_R2_001.fastp-trim.20220908_fastqc.html)
+
+    - [Geoduck-juvenile-OA-exposure-RNA-EPI-115-3_S20_L003_R2_001_fastqc.html](https://gannet.fish.washington.edu/Atumefaciens/20220909-pgen-fastqc-fastp-mutliqc-rnaseq/Geoduck-juvenile-OA-exposure-RNA-EPI-115-3_S20_L003_R2_001_fastqc.html)
+
+    - [Geoduck-juvenile-OA-exposure-RNA-EPI-115-4_S28_L004_R1_001.fastp-trim.20220908_fastqc.html](https://gannet.fish.washington.edu/Atumefaciens/20220909-pgen-fastqc-fastp-mutliqc-rnaseq/Geoduck-juvenile-OA-exposure-RNA-EPI-115-4_S28_L004_R1_001.fastp-trim.20220908_fastqc.html)
+
+    - [Geoduck-juvenile-OA-exposure-RNA-EPI-115-4_S28_L004_R1_001_fastqc.html](https://gannet.fish.washington.edu/Atumefaciens/20220909-pgen-fastqc-fastp-mutliqc-rnaseq/Geoduck-juvenile-OA-exposure-RNA-EPI-115-4_S28_L004_R1_001_fastqc.html)
+
+    - [Geoduck-juvenile-OA-exposure-RNA-EPI-115-4_S28_L004_R2_001.fastp-trim.20220908_fastqc.html](https://gannet.fish.washington.edu/Atumefaciens/20220909-pgen-fastqc-fastp-mutliqc-rnaseq/Geoduck-juvenile-OA-exposure-RNA-EPI-115-4_S28_L004_R2_001.fastp-trim.20220908_fastqc.html)
+
+    - [Geoduck-juvenile-OA-exposure-RNA-EPI-115-4_S28_L004_R2_001_fastqc.html](https://gannet.fish.washington.edu/Atumefaciens/20220909-pgen-fastqc-fastp-mutliqc-rnaseq/Geoduck-juvenile-OA-exposure-RNA-EPI-115-4_S28_L004_R2_001_fastqc.html)
+
+    - [Geoduck-juvenile-OA-exposure-RNA-EPI-115-5_S36_L005_R1_001.fastp-trim.20220908_fastqc.html](https://gannet.fish.washington.edu/Atumefaciens/20220909-pgen-fastqc-fastp-mutliqc-rnaseq/Geoduck-juvenile-OA-exposure-RNA-EPI-115-5_S36_L005_R1_001.fastp-trim.20220908_fastqc.html)
+
+    - [Geoduck-juvenile-OA-exposure-RNA-EPI-115-5_S36_L005_R1_001_fastqc.html](https://gannet.fish.washington.edu/Atumefaciens/20220909-pgen-fastqc-fastp-mutliqc-rnaseq/Geoduck-juvenile-OA-exposure-RNA-EPI-115-5_S36_L005_R1_001_fastqc.html)
+
+    - [Geoduck-juvenile-OA-exposure-RNA-EPI-115-5_S36_L005_R2_001.fastp-trim.20220908_fastqc.html](https://gannet.fish.washington.edu/Atumefaciens/20220909-pgen-fastqc-fastp-mutliqc-rnaseq/Geoduck-juvenile-OA-exposure-RNA-EPI-115-5_S36_L005_R2_001.fastp-trim.20220908_fastqc.html)
+
+    - [Geoduck-juvenile-OA-exposure-RNA-EPI-115-5_S36_L005_R2_001_fastqc.html](https://gannet.fish.washington.edu/Atumefaciens/20220909-pgen-fastqc-fastp-mutliqc-rnaseq/Geoduck-juvenile-OA-exposure-RNA-EPI-115-5_S36_L005_R2_001_fastqc.html)
+
+    - [Geoduck-juvenile-OA-exposure-RNA-EPI-115-6_S44_L006_R1_001.fastp-trim.20220908_fastqc.html](https://gannet.fish.washington.edu/Atumefaciens/20220909-pgen-fastqc-fastp-mutliqc-rnaseq/Geoduck-juvenile-OA-exposure-RNA-EPI-115-6_S44_L006_R1_001.fastp-trim.20220908_fastqc.html)
+
+    - [Geoduck-juvenile-OA-exposure-RNA-EPI-115-6_S44_L006_R1_001_fastqc.html](https://gannet.fish.washington.edu/Atumefaciens/20220909-pgen-fastqc-fastp-mutliqc-rnaseq/Geoduck-juvenile-OA-exposure-RNA-EPI-115-6_S44_L006_R1_001_fastqc.html)
+
+    - [Geoduck-juvenile-OA-exposure-RNA-EPI-115-6_S44_L006_R2_001.fastp-trim.20220908_fastqc.html](https://gannet.fish.washington.edu/Atumefaciens/20220909-pgen-fastqc-fastp-mutliqc-rnaseq/Geoduck-juvenile-OA-exposure-RNA-EPI-115-6_S44_L006_R2_001.fastp-trim.20220908_fastqc.html)
+
+    - [Geoduck-juvenile-OA-exposure-RNA-EPI-115-6_S44_L006_R2_001_fastqc.html](https://gannet.fish.washington.edu/Atumefaciens/20220909-pgen-fastqc-fastp-mutliqc-rnaseq/Geoduck-juvenile-OA-exposure-RNA-EPI-115-6_S44_L006_R2_001_fastqc.html)
+
+    - [Geoduck-juvenile-OA-exposure-RNA-EPI-115-7_S52_L007_R1_001.fastp-trim.20220908_fastqc.html](https://gannet.fish.washington.edu/Atumefaciens/20220909-pgen-fastqc-fastp-mutliqc-rnaseq/Geoduck-juvenile-OA-exposure-RNA-EPI-115-7_S52_L007_R1_001.fastp-trim.20220908_fastqc.html)
+
+    - [Geoduck-juvenile-OA-exposure-RNA-EPI-115-7_S52_L007_R1_001_fastqc.html](https://gannet.fish.washington.edu/Atumefaciens/20220909-pgen-fastqc-fastp-mutliqc-rnaseq/Geoduck-juvenile-OA-exposure-RNA-EPI-115-7_S52_L007_R1_001_fastqc.html)
+
+    - [Geoduck-juvenile-OA-exposure-RNA-EPI-115-7_S52_L007_R2_001.fastp-trim.20220908_fastqc.html](https://gannet.fish.washington.edu/Atumefaciens/20220909-pgen-fastqc-fastp-mutliqc-rnaseq/Geoduck-juvenile-OA-exposure-RNA-EPI-115-7_S52_L007_R2_001.fastp-trim.20220908_fastqc.html)
+
+    - [Geoduck-juvenile-OA-exposure-RNA-EPI-115-7_S52_L007_R2_001_fastqc.html](https://gannet.fish.washington.edu/Atumefaciens/20220909-pgen-fastqc-fastp-mutliqc-rnaseq/Geoduck-juvenile-OA-exposure-RNA-EPI-115-7_S52_L007_R2_001_fastqc.html)
+
+    - [Geoduck-juvenile-OA-exposure-RNA-EPI-115-8_S60_L008_R1_001.fastp-trim.20220908_fastqc.html](https://gannet.fish.washington.edu/Atumefaciens/20220909-pgen-fastqc-fastp-mutliqc-rnaseq/Geoduck-juvenile-OA-exposure-RNA-EPI-115-8_S60_L008_R1_001.fastp-trim.20220908_fastqc.html)
+
+    - [Geoduck-juvenile-OA-exposure-RNA-EPI-115-8_S60_L008_R1_001_fastqc.html](https://gannet.fish.washington.edu/Atumefaciens/20220909-pgen-fastqc-fastp-mutliqc-rnaseq/Geoduck-juvenile-OA-exposure-RNA-EPI-115-8_S60_L008_R1_001_fastqc.html)
+
+    - [Geoduck-juvenile-OA-exposure-RNA-EPI-115-8_S60_L008_R2_001.fastp-trim.20220908_fastqc.html](https://gannet.fish.washington.edu/Atumefaciens/20220909-pgen-fastqc-fastp-mutliqc-rnaseq/Geoduck-juvenile-OA-exposure-RNA-EPI-115-8_S60_L008_R2_001.fastp-trim.20220908_fastqc.html)
+
+    - [Geoduck-juvenile-OA-exposure-RNA-EPI-115-8_S60_L008_R2_001_fastqc.html](https://gannet.fish.washington.edu/Atumefaciens/20220909-pgen-fastqc-fastp-mutliqc-rnaseq/Geoduck-juvenile-OA-exposure-RNA-EPI-115-8_S60_L008_R2_001_fastqc.html)
+
+    - [Geoduck-juvenile-OA-exposure-RNA-EPI-116-1_S5_L001_R1_001.fastp-trim.20220908_fastqc.html](https://gannet.fish.washington.edu/Atumefaciens/20220909-pgen-fastqc-fastp-mutliqc-rnaseq/Geoduck-juvenile-OA-exposure-RNA-EPI-116-1_S5_L001_R1_001.fastp-trim.20220908_fastqc.html)
+
+    - [Geoduck-juvenile-OA-exposure-RNA-EPI-116-1_S5_L001_R1_001_fastqc.html](https://gannet.fish.washington.edu/Atumefaciens/20220909-pgen-fastqc-fastp-mutliqc-rnaseq/Geoduck-juvenile-OA-exposure-RNA-EPI-116-1_S5_L001_R1_001_fastqc.html)
+
+    - [Geoduck-juvenile-OA-exposure-RNA-EPI-116-1_S5_L001_R2_001.fastp-trim.20220908_fastqc.html](https://gannet.fish.washington.edu/Atumefaciens/20220909-pgen-fastqc-fastp-mutliqc-rnaseq/Geoduck-juvenile-OA-exposure-RNA-EPI-116-1_S5_L001_R2_001.fastp-trim.20220908_fastqc.html)
+
+    - [Geoduck-juvenile-OA-exposure-RNA-EPI-116-1_S5_L001_R2_001_fastqc.html](https://gannet.fish.washington.edu/Atumefaciens/20220909-pgen-fastqc-fastp-mutliqc-rnaseq/Geoduck-juvenile-OA-exposure-RNA-EPI-116-1_S5_L001_R2_001_fastqc.html)
+
+    - [Geoduck-juvenile-OA-exposure-RNA-EPI-116-2_S13_L002_R1_001.fastp-trim.20220908_fastqc.html](https://gannet.fish.washington.edu/Atumefaciens/20220909-pgen-fastqc-fastp-mutliqc-rnaseq/Geoduck-juvenile-OA-exposure-RNA-EPI-116-2_S13_L002_R1_001.fastp-trim.20220908_fastqc.html)
+
+    - [Geoduck-juvenile-OA-exposure-RNA-EPI-116-2_S13_L002_R1_001_fastqc.html](https://gannet.fish.washington.edu/Atumefaciens/20220909-pgen-fastqc-fastp-mutliqc-rnaseq/Geoduck-juvenile-OA-exposure-RNA-EPI-116-2_S13_L002_R1_001_fastqc.html)
+
+    - [Geoduck-juvenile-OA-exposure-RNA-EPI-116-2_S13_L002_R2_001.fastp-trim.20220908_fastqc.html](https://gannet.fish.washington.edu/Atumefaciens/20220909-pgen-fastqc-fastp-mutliqc-rnaseq/Geoduck-juvenile-OA-exposure-RNA-EPI-116-2_S13_L002_R2_001.fastp-trim.20220908_fastqc.html)
+
+    - [Geoduck-juvenile-OA-exposure-RNA-EPI-116-2_S13_L002_R2_001_fastqc.html](https://gannet.fish.washington.edu/Atumefaciens/20220909-pgen-fastqc-fastp-mutliqc-rnaseq/Geoduck-juvenile-OA-exposure-RNA-EPI-116-2_S13_L002_R2_001_fastqc.html)
+
+    - [Geoduck-juvenile-OA-exposure-RNA-EPI-116-3_S21_L003_R1_001.fastp-trim.20220908_fastqc.html](https://gannet.fish.washington.edu/Atumefaciens/20220909-pgen-fastqc-fastp-mutliqc-rnaseq/Geoduck-juvenile-OA-exposure-RNA-EPI-116-3_S21_L003_R1_001.fastp-trim.20220908_fastqc.html)
+
+    - [Geoduck-juvenile-OA-exposure-RNA-EPI-116-3_S21_L003_R1_001_fastqc.html](https://gannet.fish.washington.edu/Atumefaciens/20220909-pgen-fastqc-fastp-mutliqc-rnaseq/Geoduck-juvenile-OA-exposure-RNA-EPI-116-3_S21_L003_R1_001_fastqc.html)
+
+    - [Geoduck-juvenile-OA-exposure-RNA-EPI-116-3_S21_L003_R2_001.fastp-trim.20220908_fastqc.html](https://gannet.fish.washington.edu/Atumefaciens/20220909-pgen-fastqc-fastp-mutliqc-rnaseq/Geoduck-juvenile-OA-exposure-RNA-EPI-116-3_S21_L003_R2_001.fastp-trim.20220908_fastqc.html)
+
+    - [Geoduck-juvenile-OA-exposure-RNA-EPI-116-3_S21_L003_R2_001_fastqc.html](https://gannet.fish.washington.edu/Atumefaciens/20220909-pgen-fastqc-fastp-mutliqc-rnaseq/Geoduck-juvenile-OA-exposure-RNA-EPI-116-3_S21_L003_R2_001_fastqc.html)
+
+    - [Geoduck-juvenile-OA-exposure-RNA-EPI-116-4_S29_L004_R1_001.fastp-trim.20220908_fastqc.html](https://gannet.fish.washington.edu/Atumefaciens/20220909-pgen-fastqc-fastp-mutliqc-rnaseq/Geoduck-juvenile-OA-exposure-RNA-EPI-116-4_S29_L004_R1_001.fastp-trim.20220908_fastqc.html)
+
+    - [Geoduck-juvenile-OA-exposure-RNA-EPI-116-4_S29_L004_R1_001_fastqc.html](https://gannet.fish.washington.edu/Atumefaciens/20220909-pgen-fastqc-fastp-mutliqc-rnaseq/Geoduck-juvenile-OA-exposure-RNA-EPI-116-4_S29_L004_R1_001_fastqc.html)
+
+    - [Geoduck-juvenile-OA-exposure-RNA-EPI-116-4_S29_L004_R2_001.fastp-trim.20220908_fastqc.html](https://gannet.fish.washington.edu/Atumefaciens/20220909-pgen-fastqc-fastp-mutliqc-rnaseq/Geoduck-juvenile-OA-exposure-RNA-EPI-116-4_S29_L004_R2_001.fastp-trim.20220908_fastqc.html)
+
+    - [Geoduck-juvenile-OA-exposure-RNA-EPI-116-4_S29_L004_R2_001_fastqc.html](https://gannet.fish.washington.edu/Atumefaciens/20220909-pgen-fastqc-fastp-mutliqc-rnaseq/Geoduck-juvenile-OA-exposure-RNA-EPI-116-4_S29_L004_R2_001_fastqc.html)
+
+    - [Geoduck-juvenile-OA-exposure-RNA-EPI-116-5_S37_L005_R1_001.fastp-trim.20220908_fastqc.html](https://gannet.fish.washington.edu/Atumefaciens/20220909-pgen-fastqc-fastp-mutliqc-rnaseq/Geoduck-juvenile-OA-exposure-RNA-EPI-116-5_S37_L005_R1_001.fastp-trim.20220908_fastqc.html)
+
+    - [Geoduck-juvenile-OA-exposure-RNA-EPI-116-5_S37_L005_R1_001_fastqc.html](https://gannet.fish.washington.edu/Atumefaciens/20220909-pgen-fastqc-fastp-mutliqc-rnaseq/Geoduck-juvenile-OA-exposure-RNA-EPI-116-5_S37_L005_R1_001_fastqc.html)
+
+    - [Geoduck-juvenile-OA-exposure-RNA-EPI-116-5_S37_L005_R2_001.fastp-trim.20220908_fastqc.html](https://gannet.fish.washington.edu/Atumefaciens/20220909-pgen-fastqc-fastp-mutliqc-rnaseq/Geoduck-juvenile-OA-exposure-RNA-EPI-116-5_S37_L005_R2_001.fastp-trim.20220908_fastqc.html)
+
+    - [Geoduck-juvenile-OA-exposure-RNA-EPI-116-5_S37_L005_R2_001_fastqc.html](https://gannet.fish.washington.edu/Atumefaciens/20220909-pgen-fastqc-fastp-mutliqc-rnaseq/Geoduck-juvenile-OA-exposure-RNA-EPI-116-5_S37_L005_R2_001_fastqc.html)
+
+    - [Geoduck-juvenile-OA-exposure-RNA-EPI-116-6_S45_L006_R1_001.fastp-trim.20220908_fastqc.html](https://gannet.fish.washington.edu/Atumefaciens/20220909-pgen-fastqc-fastp-mutliqc-rnaseq/Geoduck-juvenile-OA-exposure-RNA-EPI-116-6_S45_L006_R1_001.fastp-trim.20220908_fastqc.html)
+
+    - [Geoduck-juvenile-OA-exposure-RNA-EPI-116-6_S45_L006_R1_001_fastqc.html](https://gannet.fish.washington.edu/Atumefaciens/20220909-pgen-fastqc-fastp-mutliqc-rnaseq/Geoduck-juvenile-OA-exposure-RNA-EPI-116-6_S45_L006_R1_001_fastqc.html)
+
+    - [Geoduck-juvenile-OA-exposure-RNA-EPI-116-6_S45_L006_R2_001.fastp-trim.20220908_fastqc.html](https://gannet.fish.washington.edu/Atumefaciens/20220909-pgen-fastqc-fastp-mutliqc-rnaseq/Geoduck-juvenile-OA-exposure-RNA-EPI-116-6_S45_L006_R2_001.fastp-trim.20220908_fastqc.html)
+
+    - [Geoduck-juvenile-OA-exposure-RNA-EPI-116-6_S45_L006_R2_001_fastqc.html](https://gannet.fish.washington.edu/Atumefaciens/20220909-pgen-fastqc-fastp-mutliqc-rnaseq/Geoduck-juvenile-OA-exposure-RNA-EPI-116-6_S45_L006_R2_001_fastqc.html)
+
+    - [Geoduck-juvenile-OA-exposure-RNA-EPI-116-7_S53_L007_R1_001.fastp-trim.20220908_fastqc.html](https://gannet.fish.washington.edu/Atumefaciens/20220909-pgen-fastqc-fastp-mutliqc-rnaseq/Geoduck-juvenile-OA-exposure-RNA-EPI-116-7_S53_L007_R1_001.fastp-trim.20220908_fastqc.html)
+
+    - [Geoduck-juvenile-OA-exposure-RNA-EPI-116-7_S53_L007_R1_001_fastqc.html](https://gannet.fish.washington.edu/Atumefaciens/20220909-pgen-fastqc-fastp-mutliqc-rnaseq/Geoduck-juvenile-OA-exposure-RNA-EPI-116-7_S53_L007_R1_001_fastqc.html)
+
+    - [Geoduck-juvenile-OA-exposure-RNA-EPI-116-7_S53_L007_R2_001.fastp-trim.20220908_fastqc.html](https://gannet.fish.washington.edu/Atumefaciens/20220909-pgen-fastqc-fastp-mutliqc-rnaseq/Geoduck-juvenile-OA-exposure-RNA-EPI-116-7_S53_L007_R2_001.fastp-trim.20220908_fastqc.html)
+
+    - [Geoduck-juvenile-OA-exposure-RNA-EPI-116-7_S53_L007_R2_001_fastqc.html](https://gannet.fish.washington.edu/Atumefaciens/20220909-pgen-fastqc-fastp-mutliqc-rnaseq/Geoduck-juvenile-OA-exposure-RNA-EPI-116-7_S53_L007_R2_001_fastqc.html)
+
+    - [Geoduck-juvenile-OA-exposure-RNA-EPI-116-8_S61_L008_R1_001.fastp-trim.20220908_fastqc.html](https://gannet.fish.washington.edu/Atumefaciens/20220909-pgen-fastqc-fastp-mutliqc-rnaseq/Geoduck-juvenile-OA-exposure-RNA-EPI-116-8_S61_L008_R1_001.fastp-trim.20220908_fastqc.html)
+
+    - [Geoduck-juvenile-OA-exposure-RNA-EPI-116-8_S61_L008_R1_001_fastqc.html](https://gannet.fish.washington.edu/Atumefaciens/20220909-pgen-fastqc-fastp-mutliqc-rnaseq/Geoduck-juvenile-OA-exposure-RNA-EPI-116-8_S61_L008_R1_001_fastqc.html)
+
+    - [Geoduck-juvenile-OA-exposure-RNA-EPI-116-8_S61_L008_R2_001.fastp-trim.20220908_fastqc.html](https://gannet.fish.washington.edu/Atumefaciens/20220909-pgen-fastqc-fastp-mutliqc-rnaseq/Geoduck-juvenile-OA-exposure-RNA-EPI-116-8_S61_L008_R2_001.fastp-trim.20220908_fastqc.html)
+
+    - [Geoduck-juvenile-OA-exposure-RNA-EPI-116-8_S61_L008_R2_001_fastqc.html](https://gannet.fish.washington.edu/Atumefaciens/20220909-pgen-fastqc-fastp-mutliqc-rnaseq/Geoduck-juvenile-OA-exposure-RNA-EPI-116-8_S61_L008_R2_001_fastqc.html)
+
+    - [Geoduck-juvenile-ambient-exposure-RNA-EPI-123-1_S6_L001_R1_001.fastp-trim.20220908_fastqc.html](https://gannet.fish.washington.edu/Atumefaciens/20220909-pgen-fastqc-fastp-mutliqc-rnaseq/Geoduck-juvenile-ambient-exposure-RNA-EPI-123-1_S6_L001_R1_001.fastp-trim.20220908_fastqc.html)
+
+    - [Geoduck-juvenile-ambient-exposure-RNA-EPI-123-1_S6_L001_R1_001_fastqc.html](https://gannet.fish.washington.edu/Atumefaciens/20220909-pgen-fastqc-fastp-mutliqc-rnaseq/Geoduck-juvenile-ambient-exposure-RNA-EPI-123-1_S6_L001_R1_001_fastqc.html)
+
+    - [Geoduck-juvenile-ambient-exposure-RNA-EPI-123-1_S6_L001_R2_001.fastp-trim.20220908_fastqc.html](https://gannet.fish.washington.edu/Atumefaciens/20220909-pgen-fastqc-fastp-mutliqc-rnaseq/Geoduck-juvenile-ambient-exposure-RNA-EPI-123-1_S6_L001_R2_001.fastp-trim.20220908_fastqc.html)
+
+    - [Geoduck-juvenile-ambient-exposure-RNA-EPI-123-1_S6_L001_R2_001_fastqc.html](https://gannet.fish.washington.edu/Atumefaciens/20220909-pgen-fastqc-fastp-mutliqc-rnaseq/Geoduck-juvenile-ambient-exposure-RNA-EPI-123-1_S6_L001_R2_001_fastqc.html)
+
+    - [Geoduck-juvenile-ambient-exposure-RNA-EPI-123-2_S14_L002_R1_001.fastp-trim.20220908_fastqc.html](https://gannet.fish.washington.edu/Atumefaciens/20220909-pgen-fastqc-fastp-mutliqc-rnaseq/Geoduck-juvenile-ambient-exposure-RNA-EPI-123-2_S14_L002_R1_001.fastp-trim.20220908_fastqc.html)
+
+    - [Geoduck-juvenile-ambient-exposure-RNA-EPI-123-2_S14_L002_R1_001_fastqc.html](https://gannet.fish.washington.edu/Atumefaciens/20220909-pgen-fastqc-fastp-mutliqc-rnaseq/Geoduck-juvenile-ambient-exposure-RNA-EPI-123-2_S14_L002_R1_001_fastqc.html)
+
+    - [Geoduck-juvenile-ambient-exposure-RNA-EPI-123-2_S14_L002_R2_001.fastp-trim.20220908_fastqc.html](https://gannet.fish.washington.edu/Atumefaciens/20220909-pgen-fastqc-fastp-mutliqc-rnaseq/Geoduck-juvenile-ambient-exposure-RNA-EPI-123-2_S14_L002_R2_001.fastp-trim.20220908_fastqc.html)
+
+    - [Geoduck-juvenile-ambient-exposure-RNA-EPI-123-2_S14_L002_R2_001_fastqc.html](https://gannet.fish.washington.edu/Atumefaciens/20220909-pgen-fastqc-fastp-mutliqc-rnaseq/Geoduck-juvenile-ambient-exposure-RNA-EPI-123-2_S14_L002_R2_001_fastqc.html)
+
+    - [Geoduck-juvenile-ambient-exposure-RNA-EPI-123-3_S22_L003_R1_001.fastp-trim.20220908_fastqc.html](https://gannet.fish.washington.edu/Atumefaciens/20220909-pgen-fastqc-fastp-mutliqc-rnaseq/Geoduck-juvenile-ambient-exposure-RNA-EPI-123-3_S22_L003_R1_001.fastp-trim.20220908_fastqc.html)
+
+    - [Geoduck-juvenile-ambient-exposure-RNA-EPI-123-3_S22_L003_R1_001_fastqc.html](https://gannet.fish.washington.edu/Atumefaciens/20220909-pgen-fastqc-fastp-mutliqc-rnaseq/Geoduck-juvenile-ambient-exposure-RNA-EPI-123-3_S22_L003_R1_001_fastqc.html)
+
+    - [Geoduck-juvenile-ambient-exposure-RNA-EPI-123-3_S22_L003_R2_001.fastp-trim.20220908_fastqc.html](https://gannet.fish.washington.edu/Atumefaciens/20220909-pgen-fastqc-fastp-mutliqc-rnaseq/Geoduck-juvenile-ambient-exposure-RNA-EPI-123-3_S22_L003_R2_001.fastp-trim.20220908_fastqc.html)
+
+    - [Geoduck-juvenile-ambient-exposure-RNA-EPI-123-3_S22_L003_R2_001_fastqc.html](https://gannet.fish.washington.edu/Atumefaciens/20220909-pgen-fastqc-fastp-mutliqc-rnaseq/Geoduck-juvenile-ambient-exposure-RNA-EPI-123-3_S22_L003_R2_001_fastqc.html)
+
+    - [Geoduck-juvenile-ambient-exposure-RNA-EPI-123-4_S30_L004_R1_001.fastp-trim.20220908_fastqc.html](https://gannet.fish.washington.edu/Atumefaciens/20220909-pgen-fastqc-fastp-mutliqc-rnaseq/Geoduck-juvenile-ambient-exposure-RNA-EPI-123-4_S30_L004_R1_001.fastp-trim.20220908_fastqc.html)
+
+    - [Geoduck-juvenile-ambient-exposure-RNA-EPI-123-4_S30_L004_R1_001_fastqc.html](https://gannet.fish.washington.edu/Atumefaciens/20220909-pgen-fastqc-fastp-mutliqc-rnaseq/Geoduck-juvenile-ambient-exposure-RNA-EPI-123-4_S30_L004_R1_001_fastqc.html)
+
+    - [Geoduck-juvenile-ambient-exposure-RNA-EPI-123-4_S30_L004_R2_001.fastp-trim.20220908_fastqc.html](https://gannet.fish.washington.edu/Atumefaciens/20220909-pgen-fastqc-fastp-mutliqc-rnaseq/Geoduck-juvenile-ambient-exposure-RNA-EPI-123-4_S30_L004_R2_001.fastp-trim.20220908_fastqc.html)
+
+    - [Geoduck-juvenile-ambient-exposure-RNA-EPI-123-4_S30_L004_R2_001_fastqc.html](https://gannet.fish.washington.edu/Atumefaciens/20220909-pgen-fastqc-fastp-mutliqc-rnaseq/Geoduck-juvenile-ambient-exposure-RNA-EPI-123-4_S30_L004_R2_001_fastqc.html)
+
+    - [Geoduck-juvenile-ambient-exposure-RNA-EPI-123-5_S38_L005_R1_001.fastp-trim.20220908_fastqc.html](https://gannet.fish.washington.edu/Atumefaciens/20220909-pgen-fastqc-fastp-mutliqc-rnaseq/Geoduck-juvenile-ambient-exposure-RNA-EPI-123-5_S38_L005_R1_001.fastp-trim.20220908_fastqc.html)
+
+    - [Geoduck-juvenile-ambient-exposure-RNA-EPI-123-5_S38_L005_R1_001_fastqc.html](https://gannet.fish.washington.edu/Atumefaciens/20220909-pgen-fastqc-fastp-mutliqc-rnaseq/Geoduck-juvenile-ambient-exposure-RNA-EPI-123-5_S38_L005_R1_001_fastqc.html)
+
+    - [Geoduck-juvenile-ambient-exposure-RNA-EPI-123-5_S38_L005_R2_001.fastp-trim.20220908_fastqc.html](https://gannet.fish.washington.edu/Atumefaciens/20220909-pgen-fastqc-fastp-mutliqc-rnaseq/Geoduck-juvenile-ambient-exposure-RNA-EPI-123-5_S38_L005_R2_001.fastp-trim.20220908_fastqc.html)
+
+    - [Geoduck-juvenile-ambient-exposure-RNA-EPI-123-5_S38_L005_R2_001_fastqc.html](https://gannet.fish.washington.edu/Atumefaciens/20220909-pgen-fastqc-fastp-mutliqc-rnaseq/Geoduck-juvenile-ambient-exposure-RNA-EPI-123-5_S38_L005_R2_001_fastqc.html)
+
+    - [Geoduck-juvenile-ambient-exposure-RNA-EPI-123-6_S46_L006_R1_001.fastp-trim.20220908_fastqc.html](https://gannet.fish.washington.edu/Atumefaciens/20220909-pgen-fastqc-fastp-mutliqc-rnaseq/Geoduck-juvenile-ambient-exposure-RNA-EPI-123-6_S46_L006_R1_001.fastp-trim.20220908_fastqc.html)
+
+    - [Geoduck-juvenile-ambient-exposure-RNA-EPI-123-6_S46_L006_R1_001_fastqc.html](https://gannet.fish.washington.edu/Atumefaciens/20220909-pgen-fastqc-fastp-mutliqc-rnaseq/Geoduck-juvenile-ambient-exposure-RNA-EPI-123-6_S46_L006_R1_001_fastqc.html)
+
+    - [Geoduck-juvenile-ambient-exposure-RNA-EPI-123-6_S46_L006_R2_001.fastp-trim.20220908_fastqc.html](https://gannet.fish.washington.edu/Atumefaciens/20220909-pgen-fastqc-fastp-mutliqc-rnaseq/Geoduck-juvenile-ambient-exposure-RNA-EPI-123-6_S46_L006_R2_001.fastp-trim.20220908_fastqc.html)
+
+    - [Geoduck-juvenile-ambient-exposure-RNA-EPI-123-6_S46_L006_R2_001_fastqc.html](https://gannet.fish.washington.edu/Atumefaciens/20220909-pgen-fastqc-fastp-mutliqc-rnaseq/Geoduck-juvenile-ambient-exposure-RNA-EPI-123-6_S46_L006_R2_001_fastqc.html)
+
+    - [Geoduck-juvenile-ambient-exposure-RNA-EPI-123-7_S54_L007_R1_001.fastp-trim.20220908_fastqc.html](https://gannet.fish.washington.edu/Atumefaciens/20220909-pgen-fastqc-fastp-mutliqc-rnaseq/Geoduck-juvenile-ambient-exposure-RNA-EPI-123-7_S54_L007_R1_001.fastp-trim.20220908_fastqc.html)
+
+    - [Geoduck-juvenile-ambient-exposure-RNA-EPI-123-7_S54_L007_R1_001_fastqc.html](https://gannet.fish.washington.edu/Atumefaciens/20220909-pgen-fastqc-fastp-mutliqc-rnaseq/Geoduck-juvenile-ambient-exposure-RNA-EPI-123-7_S54_L007_R1_001_fastqc.html)
+
+    - [Geoduck-juvenile-ambient-exposure-RNA-EPI-123-7_S54_L007_R2_001.fastp-trim.20220908_fastqc.html](https://gannet.fish.washington.edu/Atumefaciens/20220909-pgen-fastqc-fastp-mutliqc-rnaseq/Geoduck-juvenile-ambient-exposure-RNA-EPI-123-7_S54_L007_R2_001.fastp-trim.20220908_fastqc.html)
+
+    - [Geoduck-juvenile-ambient-exposure-RNA-EPI-123-7_S54_L007_R2_001_fastqc.html](https://gannet.fish.washington.edu/Atumefaciens/20220909-pgen-fastqc-fastp-mutliqc-rnaseq/Geoduck-juvenile-ambient-exposure-RNA-EPI-123-7_S54_L007_R2_001_fastqc.html)
+
+    - [Geoduck-juvenile-ambient-exposure-RNA-EPI-123-8_S62_L008_R1_001.fastp-trim.20220908_fastqc.html](https://gannet.fish.washington.edu/Atumefaciens/20220909-pgen-fastqc-fastp-mutliqc-rnaseq/Geoduck-juvenile-ambient-exposure-RNA-EPI-123-8_S62_L008_R1_001.fastp-trim.20220908_fastqc.html)
+
+    - [Geoduck-juvenile-ambient-exposure-RNA-EPI-123-8_S62_L008_R1_001_fastqc.html](https://gannet.fish.washington.edu/Atumefaciens/20220909-pgen-fastqc-fastp-mutliqc-rnaseq/Geoduck-juvenile-ambient-exposure-RNA-EPI-123-8_S62_L008_R1_001_fastqc.html)
+
+    - [Geoduck-juvenile-ambient-exposure-RNA-EPI-123-8_S62_L008_R2_001.fastp-trim.20220908_fastqc.html](https://gannet.fish.washington.edu/Atumefaciens/20220909-pgen-fastqc-fastp-mutliqc-rnaseq/Geoduck-juvenile-ambient-exposure-RNA-EPI-123-8_S62_L008_R2_001.fastp-trim.20220908_fastqc.html)
+
+    - [Geoduck-juvenile-ambient-exposure-RNA-EPI-123-8_S62_L008_R2_001_fastqc.html](https://gannet.fish.washington.edu/Atumefaciens/20220909-pgen-fastqc-fastp-mutliqc-rnaseq/Geoduck-juvenile-ambient-exposure-RNA-EPI-123-8_S62_L008_R2_001_fastqc.html)
+
+    - [Geoduck-juvenile-ambient-exposure-RNA-EPI-124-1_S7_L001_R1_001.fastp-trim.20220908_fastqc.html](https://gannet.fish.washington.edu/Atumefaciens/20220909-pgen-fastqc-fastp-mutliqc-rnaseq/Geoduck-juvenile-ambient-exposure-RNA-EPI-124-1_S7_L001_R1_001.fastp-trim.20220908_fastqc.html)
+
+    - [Geoduck-juvenile-ambient-exposure-RNA-EPI-124-1_S7_L001_R1_001_fastqc.html](https://gannet.fish.washington.edu/Atumefaciens/20220909-pgen-fastqc-fastp-mutliqc-rnaseq/Geoduck-juvenile-ambient-exposure-RNA-EPI-124-1_S7_L001_R1_001_fastqc.html)
+
+    - [Geoduck-juvenile-ambient-exposure-RNA-EPI-124-1_S7_L001_R2_001.fastp-trim.20220908_fastqc.html](https://gannet.fish.washington.edu/Atumefaciens/20220909-pgen-fastqc-fastp-mutliqc-rnaseq/Geoduck-juvenile-ambient-exposure-RNA-EPI-124-1_S7_L001_R2_001.fastp-trim.20220908_fastqc.html)
+
+    - [Geoduck-juvenile-ambient-exposure-RNA-EPI-124-1_S7_L001_R2_001_fastqc.html](https://gannet.fish.washington.edu/Atumefaciens/20220909-pgen-fastqc-fastp-mutliqc-rnaseq/Geoduck-juvenile-ambient-exposure-RNA-EPI-124-1_S7_L001_R2_001_fastqc.html)
+
+    - [Geoduck-juvenile-ambient-exposure-RNA-EPI-124-2_S15_L002_R1_001.fastp-trim.20220908_fastqc.html](https://gannet.fish.washington.edu/Atumefaciens/20220909-pgen-fastqc-fastp-mutliqc-rnaseq/Geoduck-juvenile-ambient-exposure-RNA-EPI-124-2_S15_L002_R1_001.fastp-trim.20220908_fastqc.html)
+
+    - [Geoduck-juvenile-ambient-exposure-RNA-EPI-124-2_S15_L002_R1_001_fastqc.html](https://gannet.fish.washington.edu/Atumefaciens/20220909-pgen-fastqc-fastp-mutliqc-rnaseq/Geoduck-juvenile-ambient-exposure-RNA-EPI-124-2_S15_L002_R1_001_fastqc.html)
+
+    - [Geoduck-juvenile-ambient-exposure-RNA-EPI-124-2_S15_L002_R2_001.fastp-trim.20220908_fastqc.html](https://gannet.fish.washington.edu/Atumefaciens/20220909-pgen-fastqc-fastp-mutliqc-rnaseq/Geoduck-juvenile-ambient-exposure-RNA-EPI-124-2_S15_L002_R2_001.fastp-trim.20220908_fastqc.html)
+
+    - [Geoduck-juvenile-ambient-exposure-RNA-EPI-124-2_S15_L002_R2_001_fastqc.html](https://gannet.fish.washington.edu/Atumefaciens/20220909-pgen-fastqc-fastp-mutliqc-rnaseq/Geoduck-juvenile-ambient-exposure-RNA-EPI-124-2_S15_L002_R2_001_fastqc.html)
+
+    - [Geoduck-juvenile-ambient-exposure-RNA-EPI-124-3_S23_L003_R1_001.fastp-trim.20220908_fastqc.html](https://gannet.fish.washington.edu/Atumefaciens/20220909-pgen-fastqc-fastp-mutliqc-rnaseq/Geoduck-juvenile-ambient-exposure-RNA-EPI-124-3_S23_L003_R1_001.fastp-trim.20220908_fastqc.html)
+
+    - [Geoduck-juvenile-ambient-exposure-RNA-EPI-124-3_S23_L003_R1_001_fastqc.html](https://gannet.fish.washington.edu/Atumefaciens/20220909-pgen-fastqc-fastp-mutliqc-rnaseq/Geoduck-juvenile-ambient-exposure-RNA-EPI-124-3_S23_L003_R1_001_fastqc.html)
+
+    - [Geoduck-juvenile-ambient-exposure-RNA-EPI-124-3_S23_L003_R2_001.fastp-trim.20220908_fastqc.html](https://gannet.fish.washington.edu/Atumefaciens/20220909-pgen-fastqc-fastp-mutliqc-rnaseq/Geoduck-juvenile-ambient-exposure-RNA-EPI-124-3_S23_L003_R2_001.fastp-trim.20220908_fastqc.html)
+
+    - [Geoduck-juvenile-ambient-exposure-RNA-EPI-124-3_S23_L003_R2_001_fastqc.html](https://gannet.fish.washington.edu/Atumefaciens/20220909-pgen-fastqc-fastp-mutliqc-rnaseq/Geoduck-juvenile-ambient-exposure-RNA-EPI-124-3_S23_L003_R2_001_fastqc.html)
+
+    - [Geoduck-juvenile-ambient-exposure-RNA-EPI-124-4_S31_L004_R1_001.fastp-trim.20220908_fastqc.html](https://gannet.fish.washington.edu/Atumefaciens/20220909-pgen-fastqc-fastp-mutliqc-rnaseq/Geoduck-juvenile-ambient-exposure-RNA-EPI-124-4_S31_L004_R1_001.fastp-trim.20220908_fastqc.html)
+
+    - [Geoduck-juvenile-ambient-exposure-RNA-EPI-124-4_S31_L004_R1_001_fastqc.html](https://gannet.fish.washington.edu/Atumefaciens/20220909-pgen-fastqc-fastp-mutliqc-rnaseq/Geoduck-juvenile-ambient-exposure-RNA-EPI-124-4_S31_L004_R1_001_fastqc.html)
+
+    - [Geoduck-juvenile-ambient-exposure-RNA-EPI-124-4_S31_L004_R2_001.fastp-trim.20220908_fastqc.html](https://gannet.fish.washington.edu/Atumefaciens/20220909-pgen-fastqc-fastp-mutliqc-rnaseq/Geoduck-juvenile-ambient-exposure-RNA-EPI-124-4_S31_L004_R2_001.fastp-trim.20220908_fastqc.html)
+
+    - [Geoduck-juvenile-ambient-exposure-RNA-EPI-124-4_S31_L004_R2_001_fastqc.html](https://gannet.fish.washington.edu/Atumefaciens/20220909-pgen-fastqc-fastp-mutliqc-rnaseq/Geoduck-juvenile-ambient-exposure-RNA-EPI-124-4_S31_L004_R2_001_fastqc.html)
+
+    - [Geoduck-juvenile-ambient-exposure-RNA-EPI-124-5_S39_L005_R1_001.fastp-trim.20220908_fastqc.html](https://gannet.fish.washington.edu/Atumefaciens/20220909-pgen-fastqc-fastp-mutliqc-rnaseq/Geoduck-juvenile-ambient-exposure-RNA-EPI-124-5_S39_L005_R1_001.fastp-trim.20220908_fastqc.html)
+
+    - [Geoduck-juvenile-ambient-exposure-RNA-EPI-124-5_S39_L005_R1_001_fastqc.html](https://gannet.fish.washington.edu/Atumefaciens/20220909-pgen-fastqc-fastp-mutliqc-rnaseq/Geoduck-juvenile-ambient-exposure-RNA-EPI-124-5_S39_L005_R1_001_fastqc.html)
+
+    - [Geoduck-juvenile-ambient-exposure-RNA-EPI-124-5_S39_L005_R2_001.fastp-trim.20220908_fastqc.html](https://gannet.fish.washington.edu/Atumefaciens/20220909-pgen-fastqc-fastp-mutliqc-rnaseq/Geoduck-juvenile-ambient-exposure-RNA-EPI-124-5_S39_L005_R2_001.fastp-trim.20220908_fastqc.html)
+
+    - [Geoduck-juvenile-ambient-exposure-RNA-EPI-124-5_S39_L005_R2_001_fastqc.html](https://gannet.fish.washington.edu/Atumefaciens/20220909-pgen-fastqc-fastp-mutliqc-rnaseq/Geoduck-juvenile-ambient-exposure-RNA-EPI-124-5_S39_L005_R2_001_fastqc.html)
+
+    - [Geoduck-juvenile-ambient-exposure-RNA-EPI-124-6_S47_L006_R1_001.fastp-trim.20220908_fastqc.html](https://gannet.fish.washington.edu/Atumefaciens/20220909-pgen-fastqc-fastp-mutliqc-rnaseq/Geoduck-juvenile-ambient-exposure-RNA-EPI-124-6_S47_L006_R1_001.fastp-trim.20220908_fastqc.html)
+
+    - [Geoduck-juvenile-ambient-exposure-RNA-EPI-124-6_S47_L006_R1_001_fastqc.html](https://gannet.fish.washington.edu/Atumefaciens/20220909-pgen-fastqc-fastp-mutliqc-rnaseq/Geoduck-juvenile-ambient-exposure-RNA-EPI-124-6_S47_L006_R1_001_fastqc.html)
+
+    - [Geoduck-juvenile-ambient-exposure-RNA-EPI-124-6_S47_L006_R2_001.fastp-trim.20220908_fastqc.html](https://gannet.fish.washington.edu/Atumefaciens/20220909-pgen-fastqc-fastp-mutliqc-rnaseq/Geoduck-juvenile-ambient-exposure-RNA-EPI-124-6_S47_L006_R2_001.fastp-trim.20220908_fastqc.html)
+
+    - [Geoduck-juvenile-ambient-exposure-RNA-EPI-124-6_S47_L006_R2_001_fastqc.html](https://gannet.fish.washington.edu/Atumefaciens/20220909-pgen-fastqc-fastp-mutliqc-rnaseq/Geoduck-juvenile-ambient-exposure-RNA-EPI-124-6_S47_L006_R2_001_fastqc.html)
+
+    - [Geoduck-juvenile-ambient-exposure-RNA-EPI-124-7_S55_L007_R1_001.fastp-trim.20220908_fastqc.html](https://gannet.fish.washington.edu/Atumefaciens/20220909-pgen-fastqc-fastp-mutliqc-rnaseq/Geoduck-juvenile-ambient-exposure-RNA-EPI-124-7_S55_L007_R1_001.fastp-trim.20220908_fastqc.html)
+
+    - [Geoduck-juvenile-ambient-exposure-RNA-EPI-124-7_S55_L007_R1_001_fastqc.html](https://gannet.fish.washington.edu/Atumefaciens/20220909-pgen-fastqc-fastp-mutliqc-rnaseq/Geoduck-juvenile-ambient-exposure-RNA-EPI-124-7_S55_L007_R1_001_fastqc.html)
+
+    - [Geoduck-juvenile-ambient-exposure-RNA-EPI-124-7_S55_L007_R2_001.fastp-trim.20220908_fastqc.html](https://gannet.fish.washington.edu/Atumefaciens/20220909-pgen-fastqc-fastp-mutliqc-rnaseq/Geoduck-juvenile-ambient-exposure-RNA-EPI-124-7_S55_L007_R2_001.fastp-trim.20220908_fastqc.html)
+
+    - [Geoduck-juvenile-ambient-exposure-RNA-EPI-124-7_S55_L007_R2_001_fastqc.html](https://gannet.fish.washington.edu/Atumefaciens/20220909-pgen-fastqc-fastp-mutliqc-rnaseq/Geoduck-juvenile-ambient-exposure-RNA-EPI-124-7_S55_L007_R2_001_fastqc.html)
+
+    - [Geoduck-juvenile-ambient-exposure-RNA-EPI-124-8_S63_L008_R1_001.fastp-trim.20220908_fastqc.html](https://gannet.fish.washington.edu/Atumefaciens/20220909-pgen-fastqc-fastp-mutliqc-rnaseq/Geoduck-juvenile-ambient-exposure-RNA-EPI-124-8_S63_L008_R1_001.fastp-trim.20220908_fastqc.html)
+
+    - [Geoduck-juvenile-ambient-exposure-RNA-EPI-124-8_S63_L008_R1_001_fastqc.html](https://gannet.fish.washington.edu/Atumefaciens/20220909-pgen-fastqc-fastp-mutliqc-rnaseq/Geoduck-juvenile-ambient-exposure-RNA-EPI-124-8_S63_L008_R1_001_fastqc.html)
+
+    - [Geoduck-juvenile-ambient-exposure-RNA-EPI-124-8_S63_L008_R2_001.fastp-trim.20220908_fastqc.html](https://gannet.fish.washington.edu/Atumefaciens/20220909-pgen-fastqc-fastp-mutliqc-rnaseq/Geoduck-juvenile-ambient-exposure-RNA-EPI-124-8_S63_L008_R2_001.fastp-trim.20220908_fastqc.html)
+
+    - [Geoduck-juvenile-ambient-exposure-RNA-EPI-124-8_S63_L008_R2_001_fastqc.html](https://gannet.fish.washington.edu/Atumefaciens/20220909-pgen-fastqc-fastp-mutliqc-rnaseq/Geoduck-juvenile-ambient-exposure-RNA-EPI-124-8_S63_L008_R2_001_fastqc.html)
+
+    - [Geoduck-larvae-day5-RNA-EPI-99-1_S8_L001_R1_001.fastp-trim.20220908_fastqc.html](https://gannet.fish.washington.edu/Atumefaciens/20220909-pgen-fastqc-fastp-mutliqc-rnaseq/Geoduck-larvae-day5-RNA-EPI-99-1_S8_L001_R1_001.fastp-trim.20220908_fastqc.html)
+
+    - [Geoduck-larvae-day5-RNA-EPI-99-1_S8_L001_R1_001_fastqc.html](https://gannet.fish.washington.edu/Atumefaciens/20220909-pgen-fastqc-fastp-mutliqc-rnaseq/Geoduck-larvae-day5-RNA-EPI-99-1_S8_L001_R1_001_fastqc.html)
+
+    - [Geoduck-larvae-day5-RNA-EPI-99-1_S8_L001_R2_001.fastp-trim.20220908_fastqc.html](https://gannet.fish.washington.edu/Atumefaciens/20220909-pgen-fastqc-fastp-mutliqc-rnaseq/Geoduck-larvae-day5-RNA-EPI-99-1_S8_L001_R2_001.fastp-trim.20220908_fastqc.html)
+
+    - [Geoduck-larvae-day5-RNA-EPI-99-1_S8_L001_R2_001_fastqc.html](https://gannet.fish.washington.edu/Atumefaciens/20220909-pgen-fastqc-fastp-mutliqc-rnaseq/Geoduck-larvae-day5-RNA-EPI-99-1_S8_L001_R2_001_fastqc.html)
+
+    - [Geoduck-larvae-day5-RNA-EPI-99-2_S16_L002_R1_001.fastp-trim.20220908_fastqc.html](https://gannet.fish.washington.edu/Atumefaciens/20220909-pgen-fastqc-fastp-mutliqc-rnaseq/Geoduck-larvae-day5-RNA-EPI-99-2_S16_L002_R1_001.fastp-trim.20220908_fastqc.html)
+
+    - [Geoduck-larvae-day5-RNA-EPI-99-2_S16_L002_R1_001_fastqc.html](https://gannet.fish.washington.edu/Atumefaciens/20220909-pgen-fastqc-fastp-mutliqc-rnaseq/Geoduck-larvae-day5-RNA-EPI-99-2_S16_L002_R1_001_fastqc.html)
+
+    - [Geoduck-larvae-day5-RNA-EPI-99-2_S16_L002_R2_001.fastp-trim.20220908_fastqc.html](https://gannet.fish.washington.edu/Atumefaciens/20220909-pgen-fastqc-fastp-mutliqc-rnaseq/Geoduck-larvae-day5-RNA-EPI-99-2_S16_L002_R2_001.fastp-trim.20220908_fastqc.html)
+
+    - [Geoduck-larvae-day5-RNA-EPI-99-2_S16_L002_R2_001_fastqc.html](https://gannet.fish.washington.edu/Atumefaciens/20220909-pgen-fastqc-fastp-mutliqc-rnaseq/Geoduck-larvae-day5-RNA-EPI-99-2_S16_L002_R2_001_fastqc.html)
+
+    - [Geoduck-larvae-day5-RNA-EPI-99-3_S24_L003_R1_001.fastp-trim.20220908_fastqc.html](https://gannet.fish.washington.edu/Atumefaciens/20220909-pgen-fastqc-fastp-mutliqc-rnaseq/Geoduck-larvae-day5-RNA-EPI-99-3_S24_L003_R1_001.fastp-trim.20220908_fastqc.html)
+
+    - [Geoduck-larvae-day5-RNA-EPI-99-3_S24_L003_R1_001_fastqc.html](https://gannet.fish.washington.edu/Atumefaciens/20220909-pgen-fastqc-fastp-mutliqc-rnaseq/Geoduck-larvae-day5-RNA-EPI-99-3_S24_L003_R1_001_fastqc.html)
+
+    - [Geoduck-larvae-day5-RNA-EPI-99-3_S24_L003_R2_001.fastp-trim.20220908_fastqc.html](https://gannet.fish.washington.edu/Atumefaciens/20220909-pgen-fastqc-fastp-mutliqc-rnaseq/Geoduck-larvae-day5-RNA-EPI-99-3_S24_L003_R2_001.fastp-trim.20220908_fastqc.html)
+
+    - [Geoduck-larvae-day5-RNA-EPI-99-3_S24_L003_R2_001_fastqc.html](https://gannet.fish.washington.edu/Atumefaciens/20220909-pgen-fastqc-fastp-mutliqc-rnaseq/Geoduck-larvae-day5-RNA-EPI-99-3_S24_L003_R2_001_fastqc.html)
+
+    - [Geoduck-larvae-day5-RNA-EPI-99-4_S32_L004_R1_001.fastp-trim.20220908_fastqc.html](https://gannet.fish.washington.edu/Atumefaciens/20220909-pgen-fastqc-fastp-mutliqc-rnaseq/Geoduck-larvae-day5-RNA-EPI-99-4_S32_L004_R1_001.fastp-trim.20220908_fastqc.html)
+
+    - [Geoduck-larvae-day5-RNA-EPI-99-4_S32_L004_R1_001_fastqc.html](https://gannet.fish.washington.edu/Atumefaciens/20220909-pgen-fastqc-fastp-mutliqc-rnaseq/Geoduck-larvae-day5-RNA-EPI-99-4_S32_L004_R1_001_fastqc.html)
+
+    - [Geoduck-larvae-day5-RNA-EPI-99-4_S32_L004_R2_001.fastp-trim.20220908_fastqc.html](https://gannet.fish.washington.edu/Atumefaciens/20220909-pgen-fastqc-fastp-mutliqc-rnaseq/Geoduck-larvae-day5-RNA-EPI-99-4_S32_L004_R2_001.fastp-trim.20220908_fastqc.html)
+
+    - [Geoduck-larvae-day5-RNA-EPI-99-4_S32_L004_R2_001_fastqc.html](https://gannet.fish.washington.edu/Atumefaciens/20220909-pgen-fastqc-fastp-mutliqc-rnaseq/Geoduck-larvae-day5-RNA-EPI-99-4_S32_L004_R2_001_fastqc.html)
+
+    - [Geoduck-larvae-day5-RNA-EPI-99-5_S40_L005_R1_001.fastp-trim.20220908_fastqc.html](https://gannet.fish.washington.edu/Atumefaciens/20220909-pgen-fastqc-fastp-mutliqc-rnaseq/Geoduck-larvae-day5-RNA-EPI-99-5_S40_L005_R1_001.fastp-trim.20220908_fastqc.html)
+
+    - [Geoduck-larvae-day5-RNA-EPI-99-5_S40_L005_R1_001_fastqc.html](https://gannet.fish.washington.edu/Atumefaciens/20220909-pgen-fastqc-fastp-mutliqc-rnaseq/Geoduck-larvae-day5-RNA-EPI-99-5_S40_L005_R1_001_fastqc.html)
+
+    - [Geoduck-larvae-day5-RNA-EPI-99-5_S40_L005_R2_001.fastp-trim.20220908_fastqc.html](https://gannet.fish.washington.edu/Atumefaciens/20220909-pgen-fastqc-fastp-mutliqc-rnaseq/Geoduck-larvae-day5-RNA-EPI-99-5_S40_L005_R2_001.fastp-trim.20220908_fastqc.html)
+
+    - [Geoduck-larvae-day5-RNA-EPI-99-5_S40_L005_R2_001_fastqc.html](https://gannet.fish.washington.edu/Atumefaciens/20220909-pgen-fastqc-fastp-mutliqc-rnaseq/Geoduck-larvae-day5-RNA-EPI-99-5_S40_L005_R2_001_fastqc.html)
+
+    - [Geoduck-larvae-day5-RNA-EPI-99-6_S48_L006_R1_001.fastp-trim.20220908_fastqc.html](https://gannet.fish.washington.edu/Atumefaciens/20220909-pgen-fastqc-fastp-mutliqc-rnaseq/Geoduck-larvae-day5-RNA-EPI-99-6_S48_L006_R1_001.fastp-trim.20220908_fastqc.html)
+
+    - [Geoduck-larvae-day5-RNA-EPI-99-6_S48_L006_R1_001_fastqc.html](https://gannet.fish.washington.edu/Atumefaciens/20220909-pgen-fastqc-fastp-mutliqc-rnaseq/Geoduck-larvae-day5-RNA-EPI-99-6_S48_L006_R1_001_fastqc.html)
+
+    - [Geoduck-larvae-day5-RNA-EPI-99-6_S48_L006_R2_001.fastp-trim.20220908_fastqc.html](https://gannet.fish.washington.edu/Atumefaciens/20220909-pgen-fastqc-fastp-mutliqc-rnaseq/Geoduck-larvae-day5-RNA-EPI-99-6_S48_L006_R2_001.fastp-trim.20220908_fastqc.html)
+
+    - [Geoduck-larvae-day5-RNA-EPI-99-6_S48_L006_R2_001_fastqc.html](https://gannet.fish.washington.edu/Atumefaciens/20220909-pgen-fastqc-fastp-mutliqc-rnaseq/Geoduck-larvae-day5-RNA-EPI-99-6_S48_L006_R2_001_fastqc.html)
+
+    - [Geoduck-larvae-day5-RNA-EPI-99-7_S56_L007_R1_001.fastp-trim.20220908_fastqc.html](https://gannet.fish.washington.edu/Atumefaciens/20220909-pgen-fastqc-fastp-mutliqc-rnaseq/Geoduck-larvae-day5-RNA-EPI-99-7_S56_L007_R1_001.fastp-trim.20220908_fastqc.html)
+
+    - [Geoduck-larvae-day5-RNA-EPI-99-7_S56_L007_R1_001_fastqc.html](https://gannet.fish.washington.edu/Atumefaciens/20220909-pgen-fastqc-fastp-mutliqc-rnaseq/Geoduck-larvae-day5-RNA-EPI-99-7_S56_L007_R1_001_fastqc.html)
+
+    - [Geoduck-larvae-day5-RNA-EPI-99-7_S56_L007_R2_001.fastp-trim.20220908_fastqc.html](https://gannet.fish.washington.edu/Atumefaciens/20220909-pgen-fastqc-fastp-mutliqc-rnaseq/Geoduck-larvae-day5-RNA-EPI-99-7_S56_L007_R2_001.fastp-trim.20220908_fastqc.html)
+
+    - [Geoduck-larvae-day5-RNA-EPI-99-7_S56_L007_R2_001_fastqc.html](https://gannet.fish.washington.edu/Atumefaciens/20220909-pgen-fastqc-fastp-mutliqc-rnaseq/Geoduck-larvae-day5-RNA-EPI-99-7_S56_L007_R2_001_fastqc.html)
+
+    - [Geoduck-larvae-day5-RNA-EPI-99-8_S64_L008_R1_001.fastp-trim.20220908_fastqc.html](https://gannet.fish.washington.edu/Atumefaciens/20220909-pgen-fastqc-fastp-mutliqc-rnaseq/Geoduck-larvae-day5-RNA-EPI-99-8_S64_L008_R1_001.fastp-trim.20220908_fastqc.html)
+
+    - [Geoduck-larvae-day5-RNA-EPI-99-8_S64_L008_R1_001_fastqc.html](https://gannet.fish.washington.edu/Atumefaciens/20220909-pgen-fastqc-fastp-mutliqc-rnaseq/Geoduck-larvae-day5-RNA-EPI-99-8_S64_L008_R1_001_fastqc.html)
+
+    - [Geoduck-larvae-day5-RNA-EPI-99-8_S64_L008_R2_001.fastp-trim.20220908_fastqc.html](https://gannet.fish.washington.edu/Atumefaciens/20220909-pgen-fastqc-fastp-mutliqc-rnaseq/Geoduck-larvae-day5-RNA-EPI-99-8_S64_L008_R2_001.fastp-trim.20220908_fastqc.html)
+
+    - [Geoduck-larvae-day5-RNA-EPI-99-8_S64_L008_R2_001_fastqc.html](https://gannet.fish.washington.edu/Atumefaciens/20220909-pgen-fastqc-fastp-mutliqc-rnaseq/Geoduck-larvae-day5-RNA-EPI-99-8_S64_L008_R2_001_fastqc.html)
+
+    - [Trueseq-stranded-mRNA-libraries-GeoRNA1-A1-NR006_S1_L001_R1_001.fastp-trim.20220908_fastqc.html](https://gannet.fish.washington.edu/Atumefaciens/20220909-pgen-fastqc-fastp-mutliqc-rnaseq/Trueseq-stranded-mRNA-libraries-GeoRNA1-A1-NR006_S1_L001_R1_001.fastp-trim.20220908_fastqc.html)
+
+    - [Trueseq-stranded-mRNA-libraries-GeoRNA1-A1-NR006_S1_L001_R1_001_fastqc.html](https://gannet.fish.washington.edu/Atumefaciens/20220909-pgen-fastqc-fastp-mutliqc-rnaseq/Trueseq-stranded-mRNA-libraries-GeoRNA1-A1-NR006_S1_L001_R1_001_fastqc.html)
+
+    - [Trueseq-stranded-mRNA-libraries-GeoRNA1-A1-NR006_S1_L001_R2_001.fastp-trim.20220908_fastqc.html](https://gannet.fish.washington.edu/Atumefaciens/20220909-pgen-fastqc-fastp-mutliqc-rnaseq/Trueseq-stranded-mRNA-libraries-GeoRNA1-A1-NR006_S1_L001_R2_001.fastp-trim.20220908_fastqc.html)
+
+    - [Trueseq-stranded-mRNA-libraries-GeoRNA1-A1-NR006_S1_L001_R2_001_fastqc.html](https://gannet.fish.washington.edu/Atumefaciens/20220909-pgen-fastqc-fastp-mutliqc-rnaseq/Trueseq-stranded-mRNA-libraries-GeoRNA1-A1-NR006_S1_L001_R2_001_fastqc.html)
+
+    - [Trueseq-stranded-mRNA-libraries-GeoRNA1-A1-NR006_S1_L002_R1_001.fastp-trim.20220908_fastqc.html](https://gannet.fish.washington.edu/Atumefaciens/20220909-pgen-fastqc-fastp-mutliqc-rnaseq/Trueseq-stranded-mRNA-libraries-GeoRNA1-A1-NR006_S1_L002_R1_001.fastp-trim.20220908_fastqc.html)
+
+    - [Trueseq-stranded-mRNA-libraries-GeoRNA1-A1-NR006_S1_L002_R1_001_fastqc.html](https://gannet.fish.washington.edu/Atumefaciens/20220909-pgen-fastqc-fastp-mutliqc-rnaseq/Trueseq-stranded-mRNA-libraries-GeoRNA1-A1-NR006_S1_L002_R1_001_fastqc.html)
+
+    - [Trueseq-stranded-mRNA-libraries-GeoRNA1-A1-NR006_S1_L002_R2_001.fastp-trim.20220908_fastqc.html](https://gannet.fish.washington.edu/Atumefaciens/20220909-pgen-fastqc-fastp-mutliqc-rnaseq/Trueseq-stranded-mRNA-libraries-GeoRNA1-A1-NR006_S1_L002_R2_001.fastp-trim.20220908_fastqc.html)
+
+    - [Trueseq-stranded-mRNA-libraries-GeoRNA1-A1-NR006_S1_L002_R2_001_fastqc.html](https://gannet.fish.washington.edu/Atumefaciens/20220909-pgen-fastqc-fastp-mutliqc-rnaseq/Trueseq-stranded-mRNA-libraries-GeoRNA1-A1-NR006_S1_L002_R2_001_fastqc.html)
+
+    - [Trueseq-stranded-mRNA-libraries-GeoRNA3-C1-NR012_S2_L001_R1_001.fastp-trim.20220908_fastqc.html](https://gannet.fish.washington.edu/Atumefaciens/20220909-pgen-fastqc-fastp-mutliqc-rnaseq/Trueseq-stranded-mRNA-libraries-GeoRNA3-C1-NR012_S2_L001_R1_001.fastp-trim.20220908_fastqc.html)
+
+    - [Trueseq-stranded-mRNA-libraries-GeoRNA3-C1-NR012_S2_L001_R1_001_fastqc.html](https://gannet.fish.washington.edu/Atumefaciens/20220909-pgen-fastqc-fastp-mutliqc-rnaseq/Trueseq-stranded-mRNA-libraries-GeoRNA3-C1-NR012_S2_L001_R1_001_fastqc.html)
+
+    - [Trueseq-stranded-mRNA-libraries-GeoRNA3-C1-NR012_S2_L001_R2_001.fastp-trim.20220908_fastqc.html](https://gannet.fish.washington.edu/Atumefaciens/20220909-pgen-fastqc-fastp-mutliqc-rnaseq/Trueseq-stranded-mRNA-libraries-GeoRNA3-C1-NR012_S2_L001_R2_001.fastp-trim.20220908_fastqc.html)
+
+    - [Trueseq-stranded-mRNA-libraries-GeoRNA3-C1-NR012_S2_L001_R2_001_fastqc.html](https://gannet.fish.washington.edu/Atumefaciens/20220909-pgen-fastqc-fastp-mutliqc-rnaseq/Trueseq-stranded-mRNA-libraries-GeoRNA3-C1-NR012_S2_L001_R2_001_fastqc.html)
+
+    - [Trueseq-stranded-mRNA-libraries-GeoRNA3-C1-NR012_S2_L002_R1_001.fastp-trim.20220908_fastqc.html](https://gannet.fish.washington.edu/Atumefaciens/20220909-pgen-fastqc-fastp-mutliqc-rnaseq/Trueseq-stranded-mRNA-libraries-GeoRNA3-C1-NR012_S2_L002_R1_001.fastp-trim.20220908_fastqc.html)
+
+    - [Trueseq-stranded-mRNA-libraries-GeoRNA3-C1-NR012_S2_L002_R1_001_fastqc.html](https://gannet.fish.washington.edu/Atumefaciens/20220909-pgen-fastqc-fastp-mutliqc-rnaseq/Trueseq-stranded-mRNA-libraries-GeoRNA3-C1-NR012_S2_L002_R1_001_fastqc.html)
+
+    - [Trueseq-stranded-mRNA-libraries-GeoRNA3-C1-NR012_S2_L002_R2_001.fastp-trim.20220908_fastqc.html](https://gannet.fish.washington.edu/Atumefaciens/20220909-pgen-fastqc-fastp-mutliqc-rnaseq/Trueseq-stranded-mRNA-libraries-GeoRNA3-C1-NR012_S2_L002_R2_001.fastp-trim.20220908_fastqc.html)
+
+    - [Trueseq-stranded-mRNA-libraries-GeoRNA3-C1-NR012_S2_L002_R2_001_fastqc.html](https://gannet.fish.washington.edu/Atumefaciens/20220909-pgen-fastqc-fastp-mutliqc-rnaseq/Trueseq-stranded-mRNA-libraries-GeoRNA3-C1-NR012_S2_L002_R2_001_fastqc.html)
+
+    - [Trueseq-stranded-mRNA-libraries-GeoRNA5-E1-NR005_S3_L001_R1_001.fastp-trim.20220908_fastqc.html](https://gannet.fish.washington.edu/Atumefaciens/20220909-pgen-fastqc-fastp-mutliqc-rnaseq/Trueseq-stranded-mRNA-libraries-GeoRNA5-E1-NR005_S3_L001_R1_001.fastp-trim.20220908_fastqc.html)
+
+    - [Trueseq-stranded-mRNA-libraries-GeoRNA5-E1-NR005_S3_L001_R1_001_fastqc.html](https://gannet.fish.washington.edu/Atumefaciens/20220909-pgen-fastqc-fastp-mutliqc-rnaseq/Trueseq-stranded-mRNA-libraries-GeoRNA5-E1-NR005_S3_L001_R1_001_fastqc.html)
+
+    - [Trueseq-stranded-mRNA-libraries-GeoRNA5-E1-NR005_S3_L001_R2_001.fastp-trim.20220908_fastqc.html](https://gannet.fish.washington.edu/Atumefaciens/20220909-pgen-fastqc-fastp-mutliqc-rnaseq/Trueseq-stranded-mRNA-libraries-GeoRNA5-E1-NR005_S3_L001_R2_001.fastp-trim.20220908_fastqc.html)
+
+    - [Trueseq-stranded-mRNA-libraries-GeoRNA5-E1-NR005_S3_L001_R2_001_fastqc.html](https://gannet.fish.washington.edu/Atumefaciens/20220909-pgen-fastqc-fastp-mutliqc-rnaseq/Trueseq-stranded-mRNA-libraries-GeoRNA5-E1-NR005_S3_L001_R2_001_fastqc.html)
+
+    - [Trueseq-stranded-mRNA-libraries-GeoRNA5-E1-NR005_S3_L002_R1_001.fastp-trim.20220908_fastqc.html](https://gannet.fish.washington.edu/Atumefaciens/20220909-pgen-fastqc-fastp-mutliqc-rnaseq/Trueseq-stranded-mRNA-libraries-GeoRNA5-E1-NR005_S3_L002_R1_001.fastp-trim.20220908_fastqc.html)
+
+    - [Trueseq-stranded-mRNA-libraries-GeoRNA5-E1-NR005_S3_L002_R1_001_fastqc.html](https://gannet.fish.washington.edu/Atumefaciens/20220909-pgen-fastqc-fastp-mutliqc-rnaseq/Trueseq-stranded-mRNA-libraries-GeoRNA5-E1-NR005_S3_L002_R1_001_fastqc.html)
+
+    - [Trueseq-stranded-mRNA-libraries-GeoRNA5-E1-NR005_S3_L002_R2_001.fastp-trim.20220908_fastqc.html](https://gannet.fish.washington.edu/Atumefaciens/20220909-pgen-fastqc-fastp-mutliqc-rnaseq/Trueseq-stranded-mRNA-libraries-GeoRNA5-E1-NR005_S3_L002_R2_001.fastp-trim.20220908_fastqc.html)
+
+    - [Trueseq-stranded-mRNA-libraries-GeoRNA5-E1-NR005_S3_L002_R2_001_fastqc.html](https://gannet.fish.washington.edu/Atumefaciens/20220909-pgen-fastqc-fastp-mutliqc-rnaseq/Trueseq-stranded-mRNA-libraries-GeoRNA5-E1-NR005_S3_L002_R2_001_fastqc.html)
+
+    - [Trueseq-stranded-mRNA-libraries-GeoRNA7-G1-NR019_S4_L001_R1_001.fastp-trim.20220908_fastqc.html](https://gannet.fish.washington.edu/Atumefaciens/20220909-pgen-fastqc-fastp-mutliqc-rnaseq/Trueseq-stranded-mRNA-libraries-GeoRNA7-G1-NR019_S4_L001_R1_001.fastp-trim.20220908_fastqc.html)
+
+    - [Trueseq-stranded-mRNA-libraries-GeoRNA7-G1-NR019_S4_L001_R1_001_fastqc.html](https://gannet.fish.washington.edu/Atumefaciens/20220909-pgen-fastqc-fastp-mutliqc-rnaseq/Trueseq-stranded-mRNA-libraries-GeoRNA7-G1-NR019_S4_L001_R1_001_fastqc.html)
+
+    - [Trueseq-stranded-mRNA-libraries-GeoRNA7-G1-NR019_S4_L001_R2_001.fastp-trim.20220908_fastqc.html](https://gannet.fish.washington.edu/Atumefaciens/20220909-pgen-fastqc-fastp-mutliqc-rnaseq/Trueseq-stranded-mRNA-libraries-GeoRNA7-G1-NR019_S4_L001_R2_001.fastp-trim.20220908_fastqc.html)
+
+    - [Trueseq-stranded-mRNA-libraries-GeoRNA7-G1-NR019_S4_L001_R2_001_fastqc.html](https://gannet.fish.washington.edu/Atumefaciens/20220909-pgen-fastqc-fastp-mutliqc-rnaseq/Trueseq-stranded-mRNA-libraries-GeoRNA7-G1-NR019_S4_L001_R2_001_fastqc.html)
+
+    - [Trueseq-stranded-mRNA-libraries-GeoRNA7-G1-NR019_S4_L002_R1_001.fastp-trim.20220908_fastqc.html](https://gannet.fish.washington.edu/Atumefaciens/20220909-pgen-fastqc-fastp-mutliqc-rnaseq/Trueseq-stranded-mRNA-libraries-GeoRNA7-G1-NR019_S4_L002_R1_001.fastp-trim.20220908_fastqc.html)
+
+    - [Trueseq-stranded-mRNA-libraries-GeoRNA7-G1-NR019_S4_L002_R1_001_fastqc.html](https://gannet.fish.washington.edu/Atumefaciens/20220909-pgen-fastqc-fastp-mutliqc-rnaseq/Trueseq-stranded-mRNA-libraries-GeoRNA7-G1-NR019_S4_L002_R1_001_fastqc.html)
+
+    - [Trueseq-stranded-mRNA-libraries-GeoRNA7-G1-NR019_S4_L002_R2_001.fastp-trim.20220908_fastqc.html](https://gannet.fish.washington.edu/Atumefaciens/20220909-pgen-fastqc-fastp-mutliqc-rnaseq/Trueseq-stranded-mRNA-libraries-GeoRNA7-G1-NR019_S4_L002_R2_001.fastp-trim.20220908_fastqc.html)
+
+    - [Trueseq-stranded-mRNA-libraries-GeoRNA7-G1-NR019_S4_L002_R2_001_fastqc.html](https://gannet.fish.washington.edu/Atumefaciens/20220909-pgen-fastqc-fastp-mutliqc-rnaseq/Trueseq-stranded-mRNA-libraries-GeoRNA7-G1-NR019_S4_L002_R2_001_fastqc.html)
+
+    - [Trueseq-stranded-mRNA-libraries-GeoRNA8-H1-NR021_S5_L001_R1_001.fastp-trim.20220908_fastqc.html](https://gannet.fish.washington.edu/Atumefaciens/20220909-pgen-fastqc-fastp-mutliqc-rnaseq/Trueseq-stranded-mRNA-libraries-GeoRNA8-H1-NR021_S5_L001_R1_001.fastp-trim.20220908_fastqc.html)
+
+    - [Trueseq-stranded-mRNA-libraries-GeoRNA8-H1-NR021_S5_L001_R1_001_fastqc.html](https://gannet.fish.washington.edu/Atumefaciens/20220909-pgen-fastqc-fastp-mutliqc-rnaseq/Trueseq-stranded-mRNA-libraries-GeoRNA8-H1-NR021_S5_L001_R1_001_fastqc.html)
+
+    - [Trueseq-stranded-mRNA-libraries-GeoRNA8-H1-NR021_S5_L001_R2_001.fastp-trim.20220908_fastqc.html](https://gannet.fish.washington.edu/Atumefaciens/20220909-pgen-fastqc-fastp-mutliqc-rnaseq/Trueseq-stranded-mRNA-libraries-GeoRNA8-H1-NR021_S5_L001_R2_001.fastp-trim.20220908_fastqc.html)
+
+    - [Trueseq-stranded-mRNA-libraries-GeoRNA8-H1-NR021_S5_L001_R2_001_fastqc.html](https://gannet.fish.washington.edu/Atumefaciens/20220909-pgen-fastqc-fastp-mutliqc-rnaseq/Trueseq-stranded-mRNA-libraries-GeoRNA8-H1-NR021_S5_L001_R2_001_fastqc.html)
+
+    - [Trueseq-stranded-mRNA-libraries-GeoRNA8-H1-NR021_S5_L002_R1_001.fastp-trim.20220908_fastqc.html](https://gannet.fish.washington.edu/Atumefaciens/20220909-pgen-fastqc-fastp-mutliqc-rnaseq/Trueseq-stranded-mRNA-libraries-GeoRNA8-H1-NR021_S5_L002_R1_001.fastp-trim.20220908_fastqc.html)
+
+    - [Trueseq-stranded-mRNA-libraries-GeoRNA8-H1-NR021_S5_L002_R1_001_fastqc.html](https://gannet.fish.washington.edu/Atumefaciens/20220909-pgen-fastqc-fastp-mutliqc-rnaseq/Trueseq-stranded-mRNA-libraries-GeoRNA8-H1-NR021_S5_L002_R1_001_fastqc.html)
+
+    - [Trueseq-stranded-mRNA-libraries-GeoRNA8-H1-NR021_S5_L002_R2_001.fastp-trim.20220908_fastqc.html](https://gannet.fish.washington.edu/Atumefaciens/20220909-pgen-fastqc-fastp-mutliqc-rnaseq/Trueseq-stranded-mRNA-libraries-GeoRNA8-H1-NR021_S5_L002_R2_001.fastp-trim.20220908_fastqc.html)
+
+    - [Trueseq-stranded-mRNA-libraries-GeoRNA8-H1-NR021_S5_L002_R2_001_fastqc.html](https://gannet.fish.washington.edu/Atumefaciens/20220909-pgen-fastqc-fastp-mutliqc-rnaseq/Trueseq-stranded-mRNA-libraries-GeoRNA8-H1-NR021_S5_L002_R2_001_fastqc.html)
