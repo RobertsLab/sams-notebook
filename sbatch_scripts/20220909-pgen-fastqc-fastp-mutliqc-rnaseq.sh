@@ -206,7 +206,7 @@ echo ""
 ### RUN MULTIQC ###
 echo "Beginning MultiQC..."
 echo ""
-${programs_array[multiqc]} .
+${multiqc} .
 echo ""
 echo "MultiQC complete."
 echo ""
