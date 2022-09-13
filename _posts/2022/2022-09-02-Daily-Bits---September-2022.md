@@ -10,6 +10,14 @@ categories:
 ---
 
 
+20220913
+
+- ceabigr meeting
+
+- Finished (I hope!) [SBATCH script for geoduck RNAseq HiSat alignments](https://github.com/RobertsLab/sams-notebook/blob/master/sbatch_scripts/20220914-pgen-hisat2-Panopea-generosa-v1.0-index-align-stringtie_isoforms.sh) for [eventual lncRNA id](https://github.com/RobertsLab/resources/issues/1434). Lots of ins and outs and what-have-yous for this thing... Will execute tomorrow when Mox is back online (offline today for maintenance).
+
+---
+
 20220912
 
 - Lab meeting.
