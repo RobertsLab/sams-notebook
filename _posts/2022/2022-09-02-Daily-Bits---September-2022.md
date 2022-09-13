@@ -9,6 +9,19 @@ categories:
   - Daily Bits
 ---
 
+
+
+
+---
+
+20220909
+
+- Science Hour and Pub-a-thon
+
+- Started working on SBATCH script for geoduck RNAseq HiSat alignments for [eventual lncRNA id]((https://github.com/RobertsLab/resources/issues/1434)).
+
+---
+
 20220908
 
 - lab meeting
