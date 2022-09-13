@@ -10,7 +10,17 @@ categories:
 ---
 
 
+20220912
 
+- Lab meeting.
+
+- Oyster gene expression (ceabigr) meeting with Steven & Yaamini.
+
+  - Need to [make some CIRCOS plots](https://github.com/sr320/ceabigr/issues/70)
+
+  - Need to [revist Epi-Diverse stuff and add to wiki](https://github.com/sr320/ceabigr/issues/69)
+
+- Continued work on SBATCH script for geoduck RNAseq HiSat alignments for [eventual lncRNA id](https://github.com/RobertsLab/resources/issues/1434).
 
 ---
 
@@ -18,7 +28,7 @@ categories:
 
 - Science Hour and Pub-a-thon
 
-- Started working on SBATCH script for geoduck RNAseq HiSat alignments for [eventual lncRNA id]((https://github.com/RobertsLab/resources/issues/1434)).
+- Started working on SBATCH script for geoduck RNAseq HiSat alignments for [eventual lncRNA id](https://github.com/RobertsLab/resources/issues/1434).
 
 ---
 
