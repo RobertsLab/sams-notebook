@@ -242,8 +242,7 @@ do
     echo "Concatenated ${fastq} to concatenated-juvenile_ambient-${R1_fastq_naming_pattern}"
     echo ""
   elif
-    [[ "${tissue}" == "juvenile" ]] \
-    && [[ "${trueseq_tissue}" == "NR019" ]]
+    [[ "${trueseq_tissue}" == "NR019" ]]
   then
     cat "${fastq}" >> concatenated-juvenile_ambient-"${R1_fastq_naming_pattern}"
     echo "Concatenated ${fastq} to concatenated-juvenile_ambient-${R1_fastq_naming_pattern}"
@@ -256,8 +255,7 @@ do
     echo "Concatenated ${fastq} to concatenated-juvenile_OA-${R1_fastq_naming_pattern}"
     echo ""
   elif
-    [[ "${tissue}" == "juvenile" ]] \
-    && [[ "${trueseq_tissue}" == "NR005" ]]
+    [[ "${trueseq_tissue}" == "NR005" ]]
   then
     cat "${fastq}" >> concatenated-juvenile_OA-"${R1_fastq_naming_pattern}"
     echo "Concatenated ${fastq} to concatenated-juvenile_OA-${R1_fastq_naming_pattern}"
@@ -271,7 +269,11 @@ do
     echo ""
   # Handles Geo_Pool samples
   else
+    echo "Rsyincing ${fastq} to current directory"
+    echo "because it does not need concatenation."
+    echo ""
     rsync -av "${fastq}" .
+    echo ""
   fi
 
 done
