@@ -408,6 +408,10 @@ do
   md5sum "${fastq}" | tee --append concatenated-fastq-checksums.md5
   echo ""
 
+  echo ""
+  echo "Processing $fastq for associative array..."
+
+
   # Increment counter
   ((sample_counter+=1))
 
@@ -416,15 +420,17 @@ do
 
   # Get sample name from second "-"-delimited field
   sample_type=$(echo "${sample_name}" | awk -F "-" '{print $2}')
+  echo "Sample type before eval: ${sample_type}"
 
   # Get sample name from second "-"-delimited field
   # Redundant command, but used to delineate juvenile OA treatment conditions
   # in if statements below.
   juvenile_treatment="${sample_type}"
+  echo "Juvenile treatment before eval: ${juvenile_treatment}"
 
   # Get sample name from the deoduck pool samples
   gonad_pool=$(echo "${sample_name}" | awk 'BEGIN {OFS="_"; FS="_"} {print $1, $2, $3}')
-
+  echo "Gonad pool before eval: ${gonad_pool}."
 
 
   # Set treatment condition for each sample
@@ -434,46 +440,64 @@ do
     || [[ "${gonad_pool}" == "Geo_Pool_F" ]] \
     || [[ "${gonad_pool}" == "Geo_Pool_M" ]]
   then
+    echo "Sample type is: $sample_type"
     treatment="gonad"
+    echo "Treatment is: $treatment"
+    echo ""
+    if
+      [[ "${sample_type}" == "gonad" ]]
+    then
+        if [[ ! -n ${samples_associative_array[${sample_type}]} ]]
+        then
+            # Append to associative array
+            samples_associative_array+=(["${sample_type}"]="${treatment}")
+            echo "Checking array:"
+            echo ${samples_associative_array[@]}
+        fi
+    elif
+        [[ "${gonad_pool}" == "Geo_Pool_F" ]] \
+        || [[ "${gonad_pool}" == "Geo_Pool_M" ]]
+    then
+        if [[ ! -n ${samples_associative_array[${gonad_pool}]} ]]
+        then
+            # Append to associative array
+            samples_associative_array+=(["${gonad_pool}"]="${treatment}")
+            echo "Checking array:"
+            echo ${samples_associative_array[@]}
+        fi
+    fi
   elif
     [[ "${sample_type}" == "juvenile_ambient" ]] \
     || [[ "${sample_type}" == "juvenile_OA" ]]
   then
+    echo "Sample type is: $sample_type"
     treatment="juvenile"
-  else
-    treatment="${sample_type}"  
-  fi
-
-  # Append to associative array
-  samples_associative_array+=(["${sample_type}"]="${treatment}")
-
-  # Set geoduck male/female gonads
-  if
-    [[ "${gonad_pool}" == "Geo_Pool_F" ]]
-  then
-    treatment="gonad-female"
+    echo "Treatment is: $treatment"
+    echo ""
+        if [[ ! -n ${samples_associative_array[${sample_type}]} ]]
+        then
+            # Append to associative array
+            samples_associative_array+=(["${sample_type}"]="${treatment}")
+            echo "Checking array:"
+            echo ${samples_associative_array[@]}
+        fi
   elif
-    [[ "${gonad_pool}" == "Geo_Pool_M" ]]
+    [[ "${sample_type}" == "ctenidia" ]] \
+    || [[ "${sample_type}" == "heart" ]] \
+    || [[ "${sample_type}" == "larvae" ]]
   then
-    treatment="gonad-male"
+    echo "Sample type is: $sample_type"
+    treatment="${sample_type}"
+    echo "Treatment is: $treatment"
+    echo ""
+        if [[ ! -n ${samples_associative_array[${sample_type}]} ]]
+        then
+            # Append to associative array
+            samples_associative_array+=(["${sample_type}"]="${treatment}")
+            echo "Checking array:"
+            echo ${samples_associative_array[@]}
+        fi
   fi
-
-  # Append to associative array
-  samples_associative_array+=(["${gonad_pool}"]="${treatment}")
-  
-  # Set juvenile treatments
-  if
-    [[ "${juvenile_treatment}" == "juvenile_ambient" ]]
-  then
-    treatment="${juvenile_treatment}"
-  elif
-    [[ "${juvenile_treatment}" == "juvenile_OA" ]]
-  then
-    treatment="${juvenile_treatment}"
-  fi
-
-  # Append to associative array
-  samples_associative_array+=(["${juvenile_treatment}"]="${treatment}")
 done
 
 # Check array size to confirm it has all expected samples
