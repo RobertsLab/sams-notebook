@@ -264,7 +264,7 @@ do
     echo ""
   elif
     [[ "${tissue}" == "larvae" ]] \
-    || [[ "${trueseq_tissue}" == "NR021" ]] \
+    || [[ "${trueseq_tissue}" == "NR021" ]]
   then
     cat "${fastq}" >> concatenated-larvae-"${fastq_pattern}"
     echo "Concatenated ${fastq} to concatenated-larvae-${R1_fastq_naming_pattern}"
@@ -361,7 +361,7 @@ do
     echo ""
   elif
     [[ "${tissue}" == "larvae" ]] \
-    || [[ "${trueseq_tissue}" == "NR021" ]] \
+    || [[ "${trueseq_tissue}" == "NR021" ]]
   then
     cat "${fastq}" >> concatenated-larvae-"${fastq_pattern}"
     echo "Concatenated ${fastq} to concatenated-larvae-${R2_fastq_naming_pattern}"
