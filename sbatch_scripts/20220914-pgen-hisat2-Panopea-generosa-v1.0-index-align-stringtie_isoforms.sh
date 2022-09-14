@@ -377,7 +377,7 @@ done
 # Exit if mismatch
 
 echo "Confirming expeted number of FastQs processed..."
-sum_fastqs=$(("${R1_fastq_counter} + "${R2_fastq_counter}))
+sum_fastqs=$(("${R1_fastq_counter}" + "${R2_fastq_counter}"))
 if [[ "${sum_fastqs}" != "${total_fastqs}" ]]
 then
   echo "Expected ${total_fastqs} FastQs, but only found ${sum_fastqs}!"
