@@ -203,12 +203,12 @@ do
   sample_name="${fastq##*/}"
 
   # Get sample name from first "."-delimited field
-  sample_name=$(echo "${sample_name}" | awk -F "." '{print $1}')
+  sample_type=$(echo "${sample_name}" | awk -F "." '{print $1}')
 
   # Parse out tissue/sample types
-  juvenile_treatment=$(echo "${sample_name}" | awk -F [-_] '{print $3}')
-  tissue=$(echo "${sample_name}" | awk -F "-" '{print $2}')
-  trueseq_tissue=$(echo "${sample_name}" | awk -F [-_] '{print $7}')
+  juvenile_treatment=$(echo "${sample_type}" | awk -F [-_] '{print $3}')
+  tissue=$(echo "${sample_type}" | awk -F "-" '{print $2}')
+  trueseq_tissue=$(echo "${sample_type}" | awk -F [-_] '{print $7}')
 
 
   # Concatenate reads from multiple runs
@@ -302,12 +302,12 @@ do
   sample_name="${fastq##*/}"
 
   # Get sample name from first "."-delimited field
-  sample_name=$(echo "${sample_name}" | awk -F "." '{print $1}')
+  sample_type=$(echo "${sample_name}" | awk -F "." '{print $1}')
 
   # Parse out tissue/sample types
-  juvenile_treatment=$(echo "${sample_name}" | awk -F [-_] '{print $3}')
-  tissue=$(echo "${sample_name}" | awk -F "-" '{print $2}')
-  trueseq_tissue=$(echo "${sample_name}" | awk -F [-_] '{print $7}')
+  juvenile_treatment=$(echo "${sample_type}" | awk -F [-_] '{print $3}')
+  tissue=$(echo "${sample_type}" | awk -F "-" '{print $2}')
+  trueseq_tissue=$(echo "${sample_type}" | awk -F [-_] '{print $7}')
 
 
   # Concatenate reads from multiple runs
@@ -379,7 +379,7 @@ done
 # Exit if mismatch
 
 echo "Confirming expeted number of FastQs processed..."
-sum_fastqs=$(("${R1_fastq_counter}" + "${R2_fastq_counter}"))
+sum_fastqs=$((${R1_fastq_counter} + ${R2_fastq_counter}))
 if [[ "${sum_fastqs}" != "${total_fastqs}" ]]
 then
   echo "Expected ${total_fastqs} FastQs, but only found ${sum_fastqs}!"
@@ -415,12 +415,12 @@ do
   sample_name="${fastq##*/}"
 
   # Get sample name from second "-"-delimited field
-  sample_name=$(echo "${sample_name}" | awk -F "-" '{print $2}')
+  sample_type=$(echo "${sample_name}" | awk -F "-" '{print $2}')
 
   # Get sample name from second "-"-delimited field
   # Redundant command, but used to delineate juvenile OA treatment conditions
   # in if statements below.
-  juvenile_treatment="${sample_name}"
+  juvenile_treatment="${sample_type}"
 
   # Get sample name from the deoduck pool samples
   gonad_pool=$(echo "${sample_name}" | awk 'BEGIN {OFS="_"; FS="_"} {print $1, $2, $3}')
@@ -430,22 +430,22 @@ do
   # Set treatment condition for each sample
   # Primarily used for setting read group (RG) during BAM creation
   if
-    [[ "${sample_name}" == "gonad" ]] \
+    [[ "${sample_type}" == "gonad" ]] \
     || [[ "${gonad_pool}" == "Geo_Pool_F" ]] \
     || [[ "${gonad_pool}" == "Geo_Pool_M" ]]
   then
     treatment="gonad"
   elif
-    [[ "${sample_name}" == "juvenile_ambient" ]] \
-    || [[ "${sample_name}" == "juvenile_OA" ]]
+    [[ "${sample_type}" == "juvenile_ambient" ]] \
+    || [[ "${sample_type}" == "juvenile_OA" ]]
   then
     treatment="juvenile"
   else
-    treatment="${sample_name}"  
+    treatment="${sample_type}"  
   fi
 
   # Append to associative array
-  samples_associative_array+=(["${sample_name}"]="${treatment}")
+  samples_associative_array+=(["${sample_type}"]="${treatment}")
 
   # Set geoduck male/female gonads
   if
