@@ -341,8 +341,7 @@ do
     echo "Concatenated ${fastq} to concatenated-juvenile_ambient-${R2_fastq_naming_pattern}"
     echo ""
   elif
-    [[ "${tissue}" == "juvenile" ]] \
-    && [[ "${trueseq_tissue}" == "NR019" ]]
+    [[ "${trueseq_tissue}" == "NR019" ]]
   then
     cat "${fastq}" >> concatenated-juvenile_ambient-"${R2_fastq_naming_pattern}"
     echo "Concatenated ${fastq} to concatenated-juvenile_ambient-${R2_fastq_naming_pattern}"
@@ -355,8 +354,7 @@ do
     echo "Concatenated ${fastq} to concatenated-juvenile_OA-${R2_fastq_naming_pattern}"
     echo ""
   elif
-    [[ "${tissue}" == "juvenile" ]] \
-    && [[ "${trueseq_tissue}" == "NR005" ]]
+    [[ "${trueseq_tissue}" == "NR005" ]]
   then
     cat "${fastq}" >> concatenated-juvenile_OA-"${R2_fastq_naming_pattern}"
     echo "Concatenated ${fastq} to concatenated-juvenile_OA-${R2_fastq_naming_pattern}"
@@ -378,7 +376,7 @@ done
 # Check FastQ array sizes to confirm they have all expected samples
 # Exit if mismatch
 
-echo "Confirming expeted number of FastQs processed..."
+echo "Confirming expected number of FastQs processed..."
 sum_fastqs=$((${R1_fastq_counter} + ${R2_fastq_counter}))
 if [[ "${sum_fastqs}" != "${total_fastqs}" ]]
 then
@@ -386,7 +384,7 @@ then
   echo ""
   echo "Check original-fastq-checksums.md5 file for list of FastQs processed."
   echo ""
-  exit
+  exit 1
 else
   echo "Great!"
   printf "%-20s %s\n" "Expected:" "${total_fastqs}"
@@ -398,9 +396,6 @@ fi
 
 ###### Load associative array ######
 
-# Set sample counter for array verification
-sample_counter=0
-
 for fastq in *"${fastq_pattern}"
 do
   # Generate MD5 checksums for original set of FastQs
@@ -410,10 +405,6 @@ do
 
   echo ""
   echo "Processing $fastq for associative array..."
-
-
-  # Increment counter
-  ((sample_counter+=1))
 
   # Remove path
   sample_name="${fastq##*/}"
@@ -505,11 +496,10 @@ done
 echo ""
 echo "Checking samples_associative_array to confirm expected number of samples..."
 echo ""
-if [[ "${#samples_associative_array[@]}" != "${sample_counter}" ]] \
-|| [[ "${#samples_associative_array[@]}" != "${total_samples}" ]]
+if [[ "${#samples_associative_array[@]}" != "${total_samples}" ]]
   then
     echo "samples_associative_array doesn't have all ${total_samples} samples."
-    echo "Array only has ${total_samples}."
+    echo "Array has ${#samples_associative_array[@]} samples."
     echo "Please review array contents to begin troubleshooting."
     echo ""
     echo "samples_associative_array contents:"
@@ -520,7 +510,7 @@ if [[ "${#samples_associative_array[@]}" != "${sample_counter}" ]] \
     done
     echo ""
 
-    exit
+    exit 1
 fi
 
 
