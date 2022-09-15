@@ -9,6 +9,113 @@ categories:
   - Daily Bits
 ---
 
+20220914
+
+- Installed [Circos](http://circos.ca/support/getting_started/) on my computer (VM Ubuntu 22.04LTS):
+
+  - Couldn't install needed library:
+
+    ```shell
+    sudo apt-get -y install libgd2-xpm-dev
+    E: Unable to locate package libgd2-xpm-dev
+    ```
+
+    Possible fix is: `sudo apt-get -y install libgd-dev`
+
+  - Missing Perl modules:
+
+    ```shell
+    sam@computer:~/programs/circos-0.69-9/bin$ ./circos -modules
+    ok       1.52 Carp
+    ok       0.45 Clone
+    missing            Config::General
+    ok       3.80 Cwd
+    ok      2.179 Data::Dumper
+    ok       2.58 Digest::MD5
+    ok       2.85 File::Basename
+    ok       3.80 File::Spec::Functions
+    ok     0.2311 File::Temp
+    ok       1.52 FindBin
+    missing            Font::TTF::Font
+    missing            GD
+    missing            GD::Polyline
+    ok       2.52 Getopt::Long
+    ok       1.46 IO::File
+    missing            List::MoreUtils
+    ok       1.55 List::Util
+    missing            Math::Bezier
+    ok   1.999818 Math::BigFloat
+    missing            Math::Round
+    missing            Math::VecStat
+    ok    1.03_01 Memoize
+    ok       1.97 POSIX
+    missing            Params::Validate
+    ok       2.01 Pod::Usage
+    missing            Readonly
+    missing            Regexp::Common
+    missing            SVG
+    missing            Set::IntSpan
+    missing            Statistics::Basic
+    ok       3.23 Storable
+    ok       1.23 Sys::Hostname
+    ok       2.04 Text::Balanced
+    missing            Text::Format
+    ok     1.9767 Time::HiRes
+    ```
+    Needed to install `cpanm`:
+
+    `apt-get install cpanminus`
+
+    Then:
+
+    `sudo cpanm Clone Config::General Font::TTF::Font GD GD::Polyline List::MoreUtils Math::Bezier Math::Round Math::VecStat Params::Validate Readonly Regexp::Common SVG Set::IntSpan Statistics::Basic Text::Format`
+
+    Got me to this:
+
+    ```shell
+    sam@computer:~/programs/circos-0.69-9/bin$ ./circos -modules
+    ok       1.52 Carp
+    ok       0.45 Clone
+    ok       2.65 Config::General
+    ok       3.80 Cwd
+    ok      2.179 Data::Dumper
+    ok       2.58 Digest::MD5
+    ok       2.85 File::Basename
+    ok       3.80 File::Spec::Functions
+    ok     0.2311 File::Temp
+    ok       1.52 FindBin
+    ok       0.39 Font::TTF::Font
+    ok       2.76 GD
+    ok        0.2 GD::Polyline
+    ok       2.52 Getopt::Long
+    ok       1.46 IO::File
+    ok      0.430 List::MoreUtils
+    ok       1.55 List::Util
+    ok       0.01 Math::Bezier
+    ok   1.999818 Math::BigFloat
+    ok       0.07 Math::Round
+    ok       0.08 Math::VecStat
+    ok    1.03_01 Memoize
+    ok       1.97 POSIX
+    ok       1.30 Params::Validate
+    ok       2.01 Pod::Usage
+    ok       2.05 Readonly
+    ok 2017060201 Regexp::Common
+    ok       2.87 SVG
+    ok       1.19 Set::IntSpan
+    ok     1.6611 Statistics::Basic
+    ok       3.23 Storable
+    ok       1.23 Sys::Hostname
+    ok       2.04 Text::Balanced
+    ok       0.62 Text::Format
+    ok     1.9767 Time::HiRes
+    ```
+
+    Successfully generated test images!
+
+- Tidied up a bunch of things in the [SBATCH script for geoduck RNAseq HiSat alignments](https://github.com/RobertsLab/sams-notebook/blob/master/sbatch_scripts/20220914-pgen-hisat2-Panopea-generosa-v1.0-index-align-stringtie_isoforms.sh) in order to get it to run properly. Currently waiting in queue...
+
+- Updated (circos_pgen_karyotype.sh)[https://github.com/RobertsLab/sams-notebook/blob/master/bash_scripts/circos_pgen_karyotype.sh] bash script to allow passing arguments for species abbreviation and FastA index file.
 
 ---
 
