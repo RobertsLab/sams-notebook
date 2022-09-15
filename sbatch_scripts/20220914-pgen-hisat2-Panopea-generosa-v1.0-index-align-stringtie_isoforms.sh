@@ -74,7 +74,7 @@ declare -A samples_associative_array=()
 
 # Set total number of samples/treatments (NOT number of FastQ files)
 # Used for confirming proper array population of samples_associative_array
-total_samples=9
+total_samples=8
 
 # Set total of original FastQ files
 # Used for confirming all FastQs are processed.
@@ -502,10 +502,15 @@ done
 
 # Check array size to confirm it has all expected samples
 # Exit if mismatch
+echo ""
+echo "Checking samples_associative_array to confirm expected number of samples..."
+echo ""
 if [[ "${#samples_associative_array[@]}" != "${sample_counter}" ]] \
 || [[ "${#samples_associative_array[@]}" != "${total_samples}" ]]
   then
     echo "samples_associative_array doesn't have all ${total_samples} samples."
+    echo "Array only has ${total_samples}."
+    echo "Please review array contents to begin troubleshooting."
     echo ""
     echo "samples_associative_array contents:"
     echo ""
@@ -513,6 +518,7 @@ if [[ "${#samples_associative_array[@]}" != "${sample_counter}" ]] \
     do
       printf "%s\t%s\n" "${item}" "${samples_associative_array[${item}]}"
     done
+    echo ""
 
     exit
 fi
