@@ -9,6 +9,17 @@ categories:
   - Daily Bits
 ---
 
+
+20220915
+
+- Retrieved GOslims for single cell RNAseq (scRNAseq) project, per [this GitHub Issue](https://github.com/RobertsLab/resources/issues/1523).
+
+- Pub-a-thon
+
+- Permanantly fixed [SBATCH script for geoduck Hisat2 alignments](https://github.com/RobertsLab/sams-notebook/blob/master/sbatch_scripts/20220914-pgen-hisat2-Panopea-generosa-v1.0-index-align-stringtie_isoforms.sh) and succsufully ran, as part of the lncRNA identification.
+
+---
+
 20220914
 
 - Installed [Circos](http://circos.ca/support/getting_started/) on my computer (VM Ubuntu 22.04LTS):
