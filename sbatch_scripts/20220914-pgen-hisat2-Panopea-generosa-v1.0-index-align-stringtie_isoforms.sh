@@ -2,15 +2,15 @@
 ## Job Name
 #SBATCH --job-name=20220914-pgen-hisat2-Panopea-generosa-v1.0-index-align-stringtie_isoforms
 ## Allocation Definition
-#SBATCH --account=srlab
-#SBATCH --partition=srlab
+#SBATCH --account=coenv
+#SBATCH --partition=coenv
 ## Resources
 ## Nodes
 #SBATCH --nodes=1
 ## Walltime (days-hours:minutes:seconds format)
 #SBATCH --time=21-00:00:00
 ## Memory per node
-#SBATCH --mem=500G
+#SBATCH --mem=200G
 ##turn on e-mail notification
 #SBATCH --mail-type=ALL
 #SBATCH --mail-user=samwhite@uw.edu
@@ -29,7 +29,7 @@
 ## Assign Variables
 
 # Set number of CPUs to use
-threads=28
+threads=40
 
 # Index name for Hisat2 use
 # Needs to match index naem used in previous Hisat2 indexing step
@@ -264,7 +264,7 @@ do
     [[ "${tissue}" == "larvae" ]] \
     || [[ "${trueseq_tissue}" == "NR021" ]]
   then
-    cat "${fastq}" >> concatenated-larvae-"${fastq_pattern}"
+    cat "${fastq}" >> concatenated-larvae-"${R1_fastq_naming_pattern}"
     echo "Concatenated ${fastq} to concatenated-larvae-${R1_fastq_naming_pattern}"
     echo ""
   # Handles Geo_Pool samples
@@ -315,7 +315,7 @@ do
     [[ "${tissue}" == "ctenidia" ]] \
     || [[ "${trueseq_tissue}" == "NR012" ]]
   then
-    cat "${fastq}" >> concatenated-ctenidia-"${R1_fastq_naming_pattern}"
+    cat "${fastq}" >> concatenated-ctenidia-"${R2_fastq_naming_pattern}"
 
     echo "Concatenated ${fastq} to concatenated-ctenidia-${R2_fastq_naming_pattern}"
     echo ""
@@ -363,7 +363,7 @@ do
     [[ "${tissue}" == "larvae" ]] \
     || [[ "${trueseq_tissue}" == "NR021" ]]
   then
-    cat "${fastq}" >> concatenated-larvae-"${fastq_pattern}"
+    cat "${fastq}" >> concatenated-larvae-"${R2_fastq_naming_pattern}"
     echo "Concatenated ${fastq} to concatenated-larvae-${R2_fastq_naming_pattern}"
     echo ""
   # Handles Geo_Pool samples
@@ -511,6 +511,11 @@ if [[ "${#samples_associative_array[@]}" != "${total_samples}" ]]
     echo ""
 
     exit 1
+  else
+    echo ""
+    echo "Associative array has expected number of samples: ${#samples_associative_array[@]}/${total_samples}."
+    echo ""
+
 fi
 
 
@@ -528,27 +533,38 @@ do
   fastq_array_R1=()
   fastq_array_R2=()
 
+  # Create and switch to dedicated sample directory
+  echo "Creating and moving into ${sample} directory."
+  mkdir "${sample}" && cd "$_"
+  echo ""
+
   # Create array of fastq R1 files
   # and generate MD5 checksums file.
-  for fastq in "${sample}"*"${R1_fastq_naming_pattern}"
-  do
-    fastq_array_R1+=("${fastq}")
-    echo "Generating checksum for ${fastq}..."
-    md5sum "${fastq}" | tee --append input_fastqs_checksums.md5
-    echo "Checksum for ${fastq} completed."
-    echo ""
-  done
+
+  # Identify corresponding FastQ file
+  # Pipe to sed replace leading "./" with "../" to manage relative FastQ path
+  fastq=$(find .. -name "*${sample}*R1*.gz")
+
+  fastq_array_R1+=("${fastq}")
+  echo "Generating checksum for ${fastq}..."
+  md5sum "${fastq}" | tee --append input_fastqs_checksums.md5
+  echo "Checksum for ${fastq} completed."
+  echo ""
+
 
   # Create array of fastq R2 files
   # and generate MD5 checksums
-  for fastq in "${sample}"*"${R2_fastq_naming_pattern}"
-  do
-    fastq_array_R2+=("${fastq}")
-    echo "Generating checksum for ${fastq}..."
-    md5sum "${fastq}" | tee --append input_fastqs_checksums.md5
-    echo "Checksum for ${fastq} completed."
-    echo ""
-  done
+
+  # Identify corresponding FastQ file
+  # Pipe to sed replace leading "./" with "../" to manage relative FastQ path
+  fastq=$(find .. -name "*${sample}*R2*.gz")
+
+  fastq_array_R2+=("${fastq}")
+  echo "Generating checksum for ${fastq}..."
+  md5sum "${fastq}" | tee --append input_fastqs_checksums.md5
+  echo "Checksum for ${fastq} completed."
+  echo ""
+
 
   # Create comma-separated lists of FastQs for Hisat2
   printf -v joined_R1 '%s,' "${fastq_array_R1[@]}"
@@ -557,10 +573,6 @@ do
   printf -v joined_R2 '%s,' "${fastq_array_R2[@]}"
   fastq_list_R2=$(echo "${joined_R2%,}")
 
-  # Create and switch to dedicated sample directory
-  echo "Creating and moving into ${sample} directory."
-  mkdir "${sample}" && cd "$_"
-  echo ""
 
   # Hisat2 alignments
   # Sets read group info (RG) using samples array
