@@ -9,7 +9,17 @@ categories:
   - Daily Bits
 ---
 
+20220919
 
+- Did I finally fix the [SBATCH script for geoduck Hisat2 alignments](https://github.com/RobertsLab/sams-notebook/blob/master/sbatch_scripts/20220914-pgen-hisat2-Panopea-generosa-v1.0-index-align-stringtie_isoforms.sh)? It's looking that way...
+
+- CEABIGR Circos stuff
+
+  - `awk 'BEGIN {OFS="\t"} {print "cvir"$1, $2, $3}' C_virginica-3.0_Gnomon_genes.bed > C_virginica-3.0_Gnomon_genes.bed.circos`
+
+  - Continued reading documentation.
+
+- Got distracted exploring how to get a list of all existing GO IDs. The idea being to then map all GOslims to the GO IDs and create a "flat" file that can be used for joining. Mostly reading about using the `GO.db` library in R and how to extract information.
 
 ---
 
