@@ -776,7 +776,6 @@ printf "%0.s-" {1..10}
 echo "${PATH}" | tr : \\n
 } >> system_path.log
 echo "Finished logging system $PATH."
-
 ```
 
 
@@ -792,3 +791,154 @@ Output folder:
 
 - [20220914-pgen-hisat2-Panopea-generosa-v1.0-index-align-stringtie_isoforms/](https://gannet.fish.washington.edu/Atumefaciens/20220914-pgen-hisat2-Panopea-generosa-v1.0-index-align-stringtie_isoforms/)
 
+
+
+
+#### OUTPUT DIRECTORY TREE
+
+```shell
+
+├── 20220914-pgen-hisat2-Panopea-generosa-v1.0-index-align-stringtie_isoforms.sh
+├── 20220914-pgen-stringtie-Panopea-generosa-v1.0-sorted_bams-merged.bam
+├── 20220914-pgen-stringtie-Panopea-generosa-v1.0-sorted_bams-merged.bam.bai
+├── checksums.md5
+├── concatenated-ctenidia-R1.fastp-trim.20220908.fq.gz
+├── concatenated-ctenidia-R2.fastp-trim.20220908.fq.gz
+├── concatenated-fastq-checksums.md5
+├── concatenated-gonad-R1.fastp-trim.20220908.fq.gz
+├── concatenated-gonad-R2.fastp-trim.20220908.fq.gz
+├── concatenated-heart-R1.fastp-trim.20220908.fq.gz
+├── concatenated-heart-R2.fastp-trim.20220908.fq.gz
+├── concatenated-juvenile_ambient-R1.fastp-trim.20220908.fq.gz
+├── concatenated-juvenile_ambient-R2.fastp-trim.20220908.fq.gz
+├── concatenated-juvenile_OA-R1.fastp-trim.20220908.fq.gz
+├── concatenated-juvenile_OA-R2.fastp-trim.20220908.fq.gz
+├── concatenated-larvae-R1.fastp-trim.20220908.fq.gz
+├── concatenated-larvae-R2.fastp-trim.20220908.fq.gz
+├── ctenidia
+│   ├── ctenidia-checksums.md5
+│   ├── ctenidia.cov_refs.gtf
+│   ├── ctenidia.gtf
+│   ├── ctenidia_hisat2.err
+│   ├── ctenidia.sorted.bam
+│   ├── ctenidia.sorted.bam.bai
+│   ├── e2t.ctab
+│   ├── e_data.ctab
+│   ├── i2t.ctab
+│   ├── i_data.ctab
+│   ├── input_fastqs_checksums.md5
+│   └── t_data.ctab
+├── Geo_Pool_F
+│   ├── e2t.ctab
+│   ├── e_data.ctab
+│   ├── Geo_Pool_F-checksums.md5
+│   ├── Geo_Pool_F.cov_refs.gtf
+│   ├── Geo_Pool_F.gtf
+│   ├── Geo_Pool_F_hisat2.err
+│   ├── Geo_Pool_F.sorted.bam
+│   ├── Geo_Pool_F.sorted.bam.bai
+│   ├── i2t.ctab
+│   ├── i_data.ctab
+│   ├── input_fastqs_checksums.md5
+│   └── t_data.ctab
+├── Geo_Pool_F_GGCTAC_L006_R1_001.fastp-trim.20220908.fq.gz
+├── Geo_Pool_F_GGCTAC_L006_R2_001.fastp-trim.20220908.fq.gz
+├── Geo_Pool_M
+│   ├── e2t.ctab
+│   ├── e_data.ctab
+│   ├── Geo_Pool_M-checksums.md5
+│   ├── Geo_Pool_M.cov_refs.gtf
+│   ├── Geo_Pool_M.gtf
+│   ├── Geo_Pool_M_hisat2.err
+│   ├── Geo_Pool_M.sorted.bam
+│   ├── Geo_Pool_M.sorted.bam.bai
+│   ├── i2t.ctab
+│   ├── i_data.ctab
+│   ├── input_fastqs_checksums.md5
+│   └── t_data.ctab
+├── Geo_Pool_M_CTTGTA_L006_R1_001.fastp-trim.20220908.fq.gz
+├── Geo_Pool_M_CTTGTA_L006_R2_001.fastp-trim.20220908.fq.gz
+├── gonad
+│   ├── e2t.ctab
+│   ├── e_data.ctab
+│   ├── gonad-checksums.md5
+│   ├── gonad.cov_refs.gtf
+│   ├── gonad.gtf
+│   ├── gonad_hisat2.err
+│   ├── gonad.sorted.bam
+│   ├── gonad.sorted.bam.bai
+│   ├── i2t.ctab
+│   ├── i_data.ctab
+│   ├── input_fastqs_checksums.md5
+│   └── t_data.ctab
+├── gtf_list.txt
+├── heart
+│   ├── e2t.ctab
+│   ├── e_data.ctab
+│   ├── heart-checksums.md5
+│   ├── heart.cov_refs.gtf
+│   ├── heart.gtf
+│   ├── heart_hisat2.err
+│   ├── heart.sorted.bam
+│   ├── heart.sorted.bam.bai
+│   ├── i2t.ctab
+│   ├── i_data.ctab
+│   ├── input_fastqs_checksums.md5
+│   └── t_data.ctab
+├── hisat2_build.err
+├── juvenile_ambient
+│   ├── e2t.ctab
+│   ├── e_data.ctab
+│   ├── i2t.ctab
+│   ├── i_data.ctab
+│   ├── input_fastqs_checksums.md5
+│   ├── juvenile_ambient-checksums.md5
+│   ├── juvenile_ambient.cov_refs.gtf
+│   ├── juvenile_ambient.gtf
+│   ├── juvenile_ambient_hisat2.err
+│   ├── juvenile_ambient.sorted.bam
+│   ├── juvenile_ambient.sorted.bam.bai
+│   └── t_data.ctab
+├── juvenile_OA
+│   ├── e2t.ctab
+│   ├── e_data.ctab
+│   ├── i2t.ctab
+│   ├── i_data.ctab
+│   ├── input_fastqs_checksums.md5
+│   ├── juvenile_OA-checksums.md5
+│   ├── juvenile_OA.cov_refs.gtf
+│   ├── juvenile_OA.gtf
+│   ├── juvenile_OA_hisat2.err
+│   ├── juvenile_OA.sorted.bam
+│   ├── juvenile_OA.sorted.bam.bai
+│   └── t_data.ctab
+├── larvae
+│   ├── e2t.ctab
+│   ├── e_data.ctab
+│   ├── i2t.ctab
+│   ├── i_data.ctab
+│   ├── input_fastqs_checksums.md5
+│   ├── larvae-checksums.md5
+│   ├── larvae.cov_refs.gtf
+│   ├── larvae.gtf
+│   ├── larvae_hisat2.err
+│   ├── larvae.sorted.bam
+│   ├── larvae.sorted.bam.bai
+│   └── t_data.ctab
+├── original-fastq-checksums.md5
+├── Panopea-generosa-v1.0.1.ht2
+├── Panopea-generosa-v1.0.2.ht2
+├── Panopea-generosa-v1.0.3.ht2
+├── Panopea-generosa-v1.0.4.ht2
+├── Panopea-generosa-v1.0.5.ht2
+├── Panopea-generosa-v1.0.6.ht2
+├── Panopea-generosa-v1.0.7.ht2
+├── Panopea-generosa-v1.0.8.ht2
+├── Panopea-generosa-v1.0_hisat2_exons.tab
+├── Panopea-generosa-v1.0_hisat2_splice_sites.tab
+├── Panopea-generosa-v1.0.stringtie.gtf
+├── program_options.log
+├── slurm-3898886.out
+├── sorted_bams.list
+└── system_path.log
+```
