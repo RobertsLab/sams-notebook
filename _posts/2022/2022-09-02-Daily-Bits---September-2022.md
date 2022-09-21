@@ -9,6 +9,18 @@ categories:
   - Daily Bits
 ---
 
+
+
+---
+
+20220920
+
+- [ceabigr](https://github.com/sr320/ceabigr) meeting with Yaamini. Decided to generate list of genes with differing predominant isoforms between females and males - these were the only two comparisons Steven had produced so far. List will also use a binary system (i.e. `0` or `1` to indicate no different or different, respectively).
+
+  - Generated file(s). See [this Jupyter Notebook](https://github.com/sr320/ceabigr/blob/main/code/20220920-cvir-ceabigr-predominant_isoform-female_male.ipynb) (GitHub).
+
+---
+
 20220919
 
 - Did I finally fix the [SBATCH script for geoduck Hisat2 alignments](https://github.com/RobertsLab/sams-notebook/blob/master/sbatch_scripts/20220914-pgen-hisat2-Panopea-generosa-v1.0-index-align-stringtie_isoforms.sh)? It's looking that way...
