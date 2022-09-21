@@ -17,6 +17,19 @@ As part of [identifying long non-coding RNA (lncRNA) in Pacific geoduck](https:/
 
 [Trimmed RNAseq data from 20220908](https://robertslab.github.io/sams-notebook/2022/09/08/FastQ-Trimming-Geoduck-RNAseq-Data-Using-fastp-on-Mox.html) was aligned to our [_Panopea generosa_ (Pacific geoduck)](http://en.wikipedia.org/wiki/Geoduck) genome assembly, [Panopea-generosa-v1.0.fa](https://gannet.fish.washington.edu/Atumefaciens/20191105_swoose_pgen_v074_renaming/Panopea-generosa-v1.0.fa) (FastA; 914MB), using [`HISAT2`](https://daehwankimlab.github.io/hisat2/). Alternative transcripts and expression values were determined using [`StringTie`](https://ccb.jhu.edu/software/stringtie/). These were run on Mox.
 
+Here's a summary of the process:
+
+1. Generate necessary [`HISAT2`](https://daehwankimlab.github.io/hisat2/) reference files (e.g. splic sites, exons, genome indexes).
+
+2. Concatenate FastQ files based on tissue/age and/or OA treatment.
+
+3. Run [`HISAT2`](https://daehwankimlab.github.io/hisat2/) on concatenated FastQs.
+
+4. Run [`StringTie`](https://ccb.jhu.edu/software/stringtie/) on grouped samples, with output formatted for import into Ballgown.
+
+The SBATCH script below is very long. Skip to [RESULTS section](#results) if you want.
+
+
 SBATCH script (GitHub):
 
 - [20220914-pgen-hisat2-Panopea-generosa-v1.0-index-align-stringtie_isoforms.sh](https://github.com/RobertsLab/sams-notebook/blob/master/sbatch_scripts/20220914-pgen-hisat2-Panopea-generosa-v1.0-index-align-stringtie_isoforms.sh)
@@ -783,16 +796,17 @@ echo "Finished logging system $PATH."
 
 #### RESULTS
 
-Runtime was surprisingly fast; less than an hour:
+Runtime was 1 day and 17.5hrs:
 
-![Screencap of Mox job runtime emails, showing successful completion after 51mins and 41seconds](https://github.com/RobertsLab/sams-notebook/blob/master/images/screencaps/20220914-pgen-hisat2-Panopea-generosa-v1.0-index-align-stringtie_isoforms-runtime.png?raw=true)
+![Screencap of Mox job runtime emails, showing successful completion after 1 day and 17.5 hrs](https://github.com/RobertsLab/sams-notebook/blob/master/images/screencaps/20220914-pgen-hisat2-Panopea-generosa-v1.0-index-align-stringtie_isoforms-runtime.png?raw=true)
 
 Output folder:
 
 - [20220914-pgen-hisat2-Panopea-generosa-v1.0-index-align-stringtie_isoforms/](https://gannet.fish.washington.edu/Atumefaciens/20220914-pgen-hisat2-Panopea-generosa-v1.0-index-align-stringtie_isoforms/)
 
+Due to the large number of files, please just browse the directory linked above. A [directory tree](#output-directory-tree) is posted below for guidance. Sub-directories have been created, and subsequent tables, for direct import into Ballgown, if desired/needed.
 
-
+See the various MD5 checksum files to see which files were utilized for each step.
 
 #### OUTPUT DIRECTORY TREE
 
