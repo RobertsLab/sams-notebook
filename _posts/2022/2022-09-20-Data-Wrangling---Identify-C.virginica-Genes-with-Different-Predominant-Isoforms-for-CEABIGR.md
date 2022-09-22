@@ -31,3 +31,6 @@ Output files are available in the [ceabigr repo](https://github.com/sr320/ceabig
 
 Identified 4090 genes which had different predominant isoforms between sexes.
 
+Identified 2252 genes which had different predominant isoforms between OA-exposed and control females.
+
+Identified 1808 genes which had different predominant isoforms between OA-exposed and control males.
