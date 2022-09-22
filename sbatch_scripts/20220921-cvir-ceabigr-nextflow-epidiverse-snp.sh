@@ -23,14 +23,14 @@
 # These variables need to be set by user
 
 ## Directory with BAM(s)
-bams_dir="/gscratch/scrubbed/samwhite/outputs/20220914-pgen-hisat2-Panopea-generosa-v1.0-index-align-stringtie_isoforms/"
+bams_dir="/gscratch/scrubbed/samwhite/data/C_virginica/BSseq"
 
 ## Location of EpiDiverse/snp pipeline directory
 epi_snp="/gscratch/srlab/programs/epidiverse-pipelines/snp"
 
 ## FastA file is required to end with .fa
 ## Requires FastA index file to be present in same directory as FastA
-genome_fasta="/gscratch/srlab/sam/data/P_generosa/genomes/Panopea-generosa-v1.0.fa"
+genome_fasta="/gscratch/srlab/sam/data/C_virginica/genomes/GCF_002022765.2_C_virginica-3.0_genomic.fa"
 
 ## Location of Nextflow
 nextflow="/gscratch/srlab/programs/nextflow-21.10.6-all"
