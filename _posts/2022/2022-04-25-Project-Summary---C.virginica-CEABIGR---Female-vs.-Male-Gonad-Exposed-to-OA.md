@@ -55,7 +55,7 @@ This will be a “dynamic” notebook entry, whereby I will update this post con
 
 - [FastQ-Trimming-and-QC-C.virginica-Larval-BS-seq-Data-from-Lotterhos-Lab-and-Part-of-CEABIGR-Project-Using-fastp-on-Mox](https://robertslab.github.io/sams-notebook/2022/08/29/FastQ-Trimming-and-QC-C.virginica-Larval-BS-seq-Data-from-Lotterhos-Lab-and-Part-of-CEABIGR-Project-Using-fastp-on-Mox.html)
 
-#### Transcript Identification and Alignments'
+#### Transcript Identification and Alignments
 - [Transcript-Identification-and-Alignments-C.virginica-RNAseq-with-NCBI-Genome-GCF_002022765.2-Using-Hisat2-and-Stringtie-on-Mox](https://robertslab.github.io/sams-notebook/2022/02/25/Transcript-Identification-and-Alignments-C.virginica-RNAseq-with-NCBI-Genome-GCF_002022765.2-Using-Hisat2-and-Stringtie-on-Mox.html)
 
 #### Differential Gene and Transcript Expression
@@ -67,3 +67,11 @@ This will be a “dynamic” notebook entry, whereby I will update this post con
 - [Data-Wrangling-C.virginica-Gonad-RNAseq-Transcript-Counts-Per-Gene-Per-Sample-Using-Ballgown](https://robertslab.github.io/sams-notebook/2022/01/27/Data-Wrangling-C.virginica-Gonad-RNAseq-Transcript-Counts-Per-Gene-Per-Sample-Using-Ballgown.html)
 
   - [transcript-counts.Rmd](https://github.com/epigeneticstoocean/2018_L18-adult-methylation/blob/main/code/transcript-counts.Rmd)
+
+#### Predominant Isoform Identification
+
+- [Data-Wrangling-Identify-C.virginica-Genes-with-Different-Predominant-Isoforms-for-CEABIGR.html](https://robertslab.github.io/sams-notebook/2022/09/20/Data-Wrangling-Identify-C.virginica-Genes-with-Different-Predominant-Isoforms-for-CEABIGR.html)
+
+  - [42-predominant-isoform.Rmd](https://github.com/sr320/ceabigr/blob/main/code/42-predominant-isoform.Rmd) (GitHub)
+
+  - [20220920-cvir-ceabigr-predominant_isoform-female_male.ipynb](https://nbviewer.org/github/sr320/ceabigr/blob/main/code/20220920-cvir-ceabigr-predominant_isoform-female_male.ipynb) (NBviewer)
