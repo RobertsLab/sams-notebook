@@ -9,7 +9,15 @@ categories:
   - Daily Bits
 ---
 
+20220921
 
+- Updated [ceabigr predominant isoform R Markdown](https://github.com/sr320/ceabigr/blob/main/code/42-predominant-isoform.Rmd) (GitHub) to include vectors containing sample types, as well as generate files for control/exposed male samples.
+
+- Finished [notebook entry for geoduck HISAT2 alignments for lncRNA](https://robertslab.github.io/sams-notebook/2022/09/14/RNAseq-Alignments-P.generosa-Alignments-and-Alternative-Transcript-Identification-Using-Hisat2-and-StringTie-on-Mox.html).
+
+- Read more Circos info.
+
+- 
 
 ---
 
