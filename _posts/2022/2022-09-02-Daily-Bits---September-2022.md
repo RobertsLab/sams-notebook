@@ -9,6 +9,16 @@ categories:
   - Daily Bits
 ---
 
+20220922
+
+- Updated [ceabigr predominant isoform R Markdown](https://github.com/sr320/ceabigr/blob/main/code/42-predominant-isoform.Rmd) (GitHub) to generate files for control/exposed female samples.
+
+- Due to issue with R loading a package and getting this error: `libgsl.so.23: cannot open shared object file: No such file or directory`, I came across some suggestions that if your current version of R was built with a previous version of Ubuntu (which happens to be my case, since I upgraded Ubuntu earlier this month), I decided to upgrade and build R. Took awhile to compile... I also ended up having to re-install packages. Ugh!
+
+- Initiated `epidiverse/snp` pipeline on Mox for [_Crassostrea virginica_ (Eastern oyster)](https://en.wikipedia.org/wiki/Eastern_oyster) Bismark BAMs, per [this GitHub Issue](https://github.com/sr320/ceabigr/issues/69).
+
+---
+
 20220921
 
 - Updated [ceabigr predominant isoform R Markdown](https://github.com/sr320/ceabigr/blob/main/code/42-predominant-isoform.Rmd) (GitHub) to include vectors containing sample types, as well as generate files for control/exposed male samples.
@@ -16,8 +26,6 @@ categories:
 - Finished [notebook entry for geoduck HISAT2 alignments for lncRNA](https://robertslab.github.io/sams-notebook/2022/09/14/RNAseq-Alignments-P.generosa-Alignments-and-Alternative-Transcript-Identification-Using-Hisat2-and-StringTie-on-Mox.html).
 
 - Read more Circos info.
-
-- 
 
 ---
 
