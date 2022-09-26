@@ -30,7 +30,12 @@ It's all documented in the following Jupyter Notebook:
 
 #### RESULTS
 
+Alrighty, doing that we now have a BED file with gene names that matches all the genes in the Ballgown gene expression file!
+
 Output folder:
 
-- []()
+- [20220926-cvir-gff-to-bed-genes_and_pseudogenes/](https://gannet.fish.washington.edu/Atumefaciens/20220926-cvir-gff-to-bed-genes_and_pseudogenes/)
 
+  #### BED file
+
+  - [20220926-cvir-gff-to-bed-genes_and_pseudogenes/20220926-cvir-GCF_002022765.2-genes-and-pseudogenes.bed](https://gannet.fish.washington.edu/Atumefaciens/20220926-cvir-gff-to-bed-genes_and_pseudogenes/20220926-cvir-GCF_002022765.2-genes-and-pseudogenes.bed) (1.9MB)
