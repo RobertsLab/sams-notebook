@@ -9,6 +9,14 @@ categories:
   - Daily Bits
 ---
 
+20220923
+
+- Resubmitted `epidiverse/snp` pipeline on Mox for [_Crassostrea virginica_ (Eastern oyster)](https://en.wikipedia.org/wiki/Eastern_oyster) because I forgot that the pipeline has an aritficial cap of 10 BAMs. Edited the `nextflow.config` file to increase cap to 50 _and_ added code in the `bio_DNA-methylation.md` doc to count the number of BAMs and specify the `epidiverse/snp` command to use that number of BAMs. Prevents the aritficial limit from having any impact.
+
+- Science Hour. Helped Matt with some Mox/Trinity (system `$PATH` stuff).
+
+---
+
 20220922
 
 - Updated [ceabigr predominant isoform R Markdown](https://github.com/sr320/ceabigr/blob/main/code/42-predominant-isoform.Rmd) (GitHub) to generate files for control/exposed female samples.
