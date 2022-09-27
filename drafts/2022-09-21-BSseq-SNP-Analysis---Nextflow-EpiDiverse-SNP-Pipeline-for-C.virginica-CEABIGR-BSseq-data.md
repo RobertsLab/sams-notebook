@@ -148,7 +148,11 @@ echo "Finished logging system $PATH."
 
 #### RESULTS
 
+Run time was actually a bit longer than I was expecting (nearly two days). I think this could be shortened by adjusting some of the Nextflow config settings, as many steps seem limited to 2GB of RAM and 8CPUs for most steps. The pipeline was designed to run this type of stuff on less powerful computers, so I believe that's why those limits are there, but it's disappointing the pipeline isn't designed to scale a bit better.
+
+![Screencap of Mox emails showing start/end and a runtime of 1 day, 23hours, 6 minutes, and 36 seconds](https://github.com/RobertsLab/sams-notebook/blob/master/images/screencaps/20220921-cvir-ceabigr-nextflow-epidiverse-snp-runtime.png?raw=true)
+
 Output folder:
 
-- []()
+- [20220921-cvir-ceabigr-nextflow-epidiverse-snp/](https://gannet.fish.washington.edu/Atumefaciens/20220921-cvir-ceabigr-nextflow-epidiverse-snp/)
 
