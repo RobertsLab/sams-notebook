@@ -13,7 +13,7 @@ tags:
 categories: 
   - Miscellaneous
 ---
-
+Steven [asked that I identify SNPs from our _C.virginica_ CEABIGR BSseq data](https://github.com/sr320/ceabigr/issues/69) (GitHub Issue). So, I ran [sorted, deduplicated Bismark BAMs that Steven generated](https://gannet.fish.washington.edu/seashell/bu-mox/scrubbed/120321-cvBS/) through the [EpiDiverse/snp Nextflow pipeline](https://github.com/EpiDiverse/snp). The job was run on Mox.
 
 
 SBATCH script:
