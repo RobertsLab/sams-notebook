@@ -9,6 +9,15 @@ categories:
   - Daily Bits
 ---
 
+20220926
+
+- `epidiverse/snp` pipeline completed, so transferred data and wrote up [notebook entry]().
+
+- Generated CEABIGR mean gene expression files, formatted for Circos usage.
+
+
+---
+
 20220923
 
 - Resubmitted `epidiverse/snp` pipeline on Mox for [_Crassostrea virginica_ (Eastern oyster)](https://en.wikipedia.org/wiki/Eastern_oyster) because I forgot that the pipeline has an aritficial cap of 10 BAMs. Edited the `nextflow.config` file to increase cap to 50 _and_ added code in the `bio_DNA-methylation.md` doc to count the number of BAMs and specify the `epidiverse/snp` command to use that number of BAMs. Prevents the aritficial limit from having any impact.
