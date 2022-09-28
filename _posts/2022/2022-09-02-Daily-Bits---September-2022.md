@@ -9,6 +9,14 @@ categories:
   - Daily Bits
 ---
 
+20220927
+
+- Worked extensively on Circos stuff for CEABIGR project. Had to fix some R code, as well as file formatting, bash scripts, and learning how to manipulate the `circos.conf` file. Actually generated a plot:
+
+  ![Circos plot showing the C.virginica chromosome, NC_035781.1, as the black outer ring, with control female mean gene expression values (black inner ring) and exposed female mean gene expression values (green inner ring)](https://user-images.githubusercontent.com/4514104/192628263-9272ef7f-c73c-473d-a7b1-970cb3014e86.png)
+
+---
+
 20220926
 
 - `epidiverse/snp` pipeline completed, so transferred data and wrote up [notebook entry]().
