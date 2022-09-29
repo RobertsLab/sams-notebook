@@ -9,6 +9,12 @@ categories:
   - Daily Bits
 ---
 
+20220928
+
+- Worked extensively on Circos stuff for CEABIGR project again. Primarily generating Circos-formatted gene expression/methylation files. See [CEABIGR `50-circos-formatting` directory](https://github.com/sr320/ceabigr/tree/main/output/50-circos-formatting).
+
+---
+
 20220927
 
 - Worked extensively on Circos stuff for CEABIGR project. Had to fix some R code, as well as file formatting, bash scripts, and learning how to manipulate the `circos.conf` file. Actually generated a plot:
