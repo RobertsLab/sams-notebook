@@ -9,6 +9,19 @@ categories:
   - Daily Bits
 ---
 
+20220929
+
+- Pub-a-thon
+
+- Lab meeting
+
+  - Read Ch. 4 of "The Disordered Cosmos"
+
+- Helped [reinstall Stacks on Mox for Marta](https://github.com/RobertsLab/resources/issues/1526) (GitHub Issue)
+
+
+---
+
 20220928
 
 - Worked extensively on Circos stuff for CEABIGR project again. Primarily generating Circos-formatted gene expression/methylation files. See [CEABIGR `50-circos-formatting` directory](https://github.com/sr320/ceabigr/tree/main/output/50-circos-formatting).
