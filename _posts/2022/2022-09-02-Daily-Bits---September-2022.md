@@ -9,6 +9,18 @@ categories:
   - Daily Bits
 ---
 
+20220930
+
+- Continued to review Circos documentation.
+
+  - Thought about usefulness (uselessness?) of links for our use case. Possibly interesting to link genes with same GOslims?
+
+- Science Hour
+
+- Worked on CEABIGR/Circos organization. Should Circos be in it's own branch? Does this simplify things or complicate things for usage? Better way to keep recommended Circos organization, but setup working directories outside of Circos program install location?
+
+---
+
 20220929
 
 - Pub-a-thon
