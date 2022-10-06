@@ -17,6 +17,14 @@ categories:
 
   - Cleaned up my computer area.
 
+  - Cleaned up my old office.
+
+  - Moved Brent's stuff to FTR 228.
+
+  - Moved Friedman qPCR machine to FTR 228.
+
+  - Helped "clean" up MAR cold room (watched Steven sweep).
+
 ---
 
 20221004
