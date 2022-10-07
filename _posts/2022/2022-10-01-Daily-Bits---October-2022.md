@@ -8,6 +8,15 @@ categories:
   - Daily Bits
 ---
 
+20221006
+
+- Pub-a-thon
+
+- Continued reorganization of Circos directories within the CEABIGR repo.
+
+- Dealt with weird computer issues throughout the day (VMware Player kept freezing over and over). Potentially resolved by reducing number of CPUs that VM can use?
+
+---
 
 20221005
 
