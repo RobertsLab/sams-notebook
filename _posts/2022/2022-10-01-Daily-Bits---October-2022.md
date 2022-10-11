@@ -8,6 +8,17 @@ categories:
   - Daily Bits
 ---
 
+
+20221011
+
+- Worked a a lot on CEABIGR data.
+
+  - Reviewing predominant isoform data, to help clarify some questions Yaamini had.
+
+  - Working on Circos plots; specifically to try to generate something "pretty" for Yaamini to use in her talk at EPIMAR tomorrow.
+
+---
+
 20221006
 
 - Pub-a-thon
