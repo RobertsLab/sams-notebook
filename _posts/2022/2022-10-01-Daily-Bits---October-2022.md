@@ -8,6 +8,9 @@ categories:
   - Daily Bits
 ---
 
+20221012
+
+---
 
 20221011
 
@@ -16,6 +19,8 @@ categories:
   - Reviewing predominant isoform data, to help clarify some questions Yaamini had.
 
   - Working on Circos plots; specifically to try to generate something "pretty" for Yaamini to use in her talk at EPIMAR tomorrow.
+
+  - Migrating, and updating, code/data from [2018_L18-adult-methylation repo](https://github.com/epigeneticstoocean/2018_L18-adult-methylation) to CEABIGR repo. Annoying trying to keep track of which scripts/code is in which repo...
 
 ---
 
