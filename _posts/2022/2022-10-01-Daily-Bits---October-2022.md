@@ -10,6 +10,10 @@ categories:
 
 20221012
 
+- Continued the code/data migration from [2018_L18-adult-methylation repo](https://github.com/epigeneticstoocean/2018_L18-adult-methylation) to CEABIGR repo...
+
+- Spoke with Matt regarding RNAsequencing options/considerations for _M.trossolus_ transcriptome.
+
 ---
 
 20221011
