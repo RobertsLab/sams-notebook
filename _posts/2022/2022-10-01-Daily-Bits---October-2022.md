@@ -8,6 +8,17 @@ categories:
   - Daily Bits
 ---
 
+
+20221014
+
+- Continued the code/data migration from [2018_L18-adult-methylation repo](https://github.com/epigeneticstoocean/2018_L18-adult-methylation) to CEABIGR repo...
+
+---
+
+20221013
+
+- Continued the code/data migration from [2018_L18-adult-methylation repo](https://github.com/epigeneticstoocean/2018_L18-adult-methylation) to CEABIGR repo...
+
 20221012
 
 - Continued the code/data migration from [2018_L18-adult-methylation repo](https://github.com/epigeneticstoocean/2018_L18-adult-methylation) to CEABIGR repo...
