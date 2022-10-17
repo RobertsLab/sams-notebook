@@ -19,9 +19,9 @@ During today's discussion, Yaamini recommended we generate a list of genes with 
 
 I wrangled the data in a Jupyter Notebook:
 
-- [20220920-cvir-ceabigr-predominant_isoform-female_male.ipynb](https://github.com/sr320/ceabigr/blob/main/code/20220920-cvir-ceabigr-predominant_isoform-female_male.ipynb) (GitHub)
+- [42-predominant_isoform-female_male.ipynb](https://github.com/sr320/ceabigr/blob/main/code/42-predominant_isoform-female_male.ipynb) (GitHub)
 
-- [20220920-cvir-ceabigr-predominant_isoform-female_male.ipynb](https://nbviewer.org/github/sr320/ceabigr/blob/main/code/20220920-cvir-ceabigr-predominant_isoform-female_male.ipynb) (NBviewer)
+- [42-predominant_isoform-female_male.ipynb](https://nbviewer.org/github/sr320/ceabigr/blob/main/code/42-predominant_isoform-female_male.ipynb) (NBviewer)
 
 ---
 
