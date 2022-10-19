@@ -8,6 +8,15 @@ categories:
   - Daily Bits
 ---
 
+20221017
+
+- Read Ch. 5 of "The Disordered Cosmos"
+
+- Lab meeting - discussed Ch.5 of "The Disordered Cosmos".
+
+- Continued the code/data migration from [2018_L18-adult-methylation repo](https://github.com/epigeneticstoocean/2018_L18-adult-methylation) to CEABIGR repo...
+
+---
 
 20221014
 
