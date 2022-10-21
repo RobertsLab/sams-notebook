@@ -8,6 +8,18 @@ categories:
   - Daily Bits
 ---
 
+20221019
+
+- Began to revist Linda Rhode's stuff after negelecting it for an _entire month_??!! Whoa! I literally thought it had only been a couple of weeks... Yeesh.
+
+---
+
+20221018
+
+- Took day off
+
+---
+
 20221017
 
 - Read Ch. 5 of "The Disordered Cosmos"
