@@ -8,6 +8,12 @@ categories:
   - Daily Bits
 ---
 
+20221020
+
+- Continued to work on Linda's stuff. Tested her original ref seqs/taxonomy files, but got virtually same results as updated SILVA database/taxonomy (i.e. all samples have no assigned taxonomies)...
+
+---
+
 20221019
 
 - Began to revist Linda Rhode's stuff after negelecting it for an _entire month_??!! Whoa! I literally thought it had only been a couple of weeks... Yeesh.
