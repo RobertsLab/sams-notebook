@@ -8,6 +8,24 @@ categories:
   - Daily Bits
 ---
 
+20221021
+
+- Dungeness crab genome annotation meeting with NOAA people (Krista, Laura, Mac).
+
+- Met with Linda to discuss weird results.
+
+  - She's retiring at the end of the month, but will continue working on personal computer.
+
+  - She will provide data known to have generated classifications using the pipeline.
+
+  - She'll send me here GitHub username so I can establish a repo to simplify data sharing.
+
+  - I'll schedule recurring meetings to help keep me on task.
+
+- Lotterhos [_Crassostrea virginica_ (Eastern oyster)](https://en.wikipedia.org/wiki/Eastern_oyster) meeting.
+
+---
+
 20221020
 
 - Continued to work on Linda's stuff. Tested her original ref seqs/taxonomy files, but got virtually same results as updated SILVA database/taxonomy (i.e. all samples have no assigned taxonomies)...
