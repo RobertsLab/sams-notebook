@@ -8,6 +8,24 @@ categories:
   - Daily Bits
 ---
 
+20221024
+
+- Lab meeting
+
+- Oyster gene expression meeting (had to leave early due to contractors showing up)
+
+- Re-ran Linda Rhodes 16s pipeline with "new" MiSeq data.
+
+  - Used her original SILVA refseq and taxonomy files.
+
+  - Took hours to run on my laptop.
+
+  - Success!! Taxa barplot actually has a majority of reads in each of the samples _assigned_ to Bacteria!!
+
+  - Will now test the SILVA 138.99 refseq and taxonomy files that I generated (followed the QIIME2 guide).
+
+---
+
 20221021
 
 - Dungeness crab genome annotation meeting with NOAA people (Krista, Laura, Mac).
