@@ -24,6 +24,8 @@ categories:
 
   - Will now test the SILVA 138.99 refseq and taxonomy files that I generated (followed the QIIME2 guide).
 
+  - Created a [GitHub repo](https://github.com/kubu4/silva-16s-pipeline) for storing/updating various files/notebooks associated with this project.
+
 ---
 
 20221021
