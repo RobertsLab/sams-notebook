@@ -8,6 +8,12 @@ categories:
   - Daily Bits
 ---
 
+20221025
+
+- Ran Linda Rhodes' 16s pipeline with the "default" 138.99 refseqs/taxonomy. Still running...
+
+---
+
 20221024
 
 - Lab meeting
