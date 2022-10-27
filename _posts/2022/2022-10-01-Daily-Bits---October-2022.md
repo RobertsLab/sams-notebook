@@ -8,6 +8,18 @@ categories:
   - Daily Bits
 ---
 
+20221026
+
+- The 16s pipeline was still running after 24hrs. Decided this was too long, so killed it.
+
+  - Ran Linda Rhodes' 16s pipeline with the reduced 138.99 515-806 primer regions. Should help things move a bit faster.
+
+- Decided to install QIIME2 conda environment on Mox to see if we can speed the pipeline up.
+
+  - Ran a job on Mox with the reduced 138.99 515-806 primer regions to see if this would finish a bit quicker... Still running many hours later...
+
+---
+
 20221025
 
 - Ran Linda Rhodes' 16s pipeline with the "default" 138.99 refseqs/taxonomy. Still running...
