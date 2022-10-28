@@ -8,6 +8,16 @@ categories:
   - Daily Bits
 ---
 
+20221027
+
+- Worked on CEABIGR stuff - primarily creating a file of differences in max transcript counts between treatments/sexes for eventual use in Circos.
+
+- Pub-a-thon.
+
+- 16s pipelines are still running! Mox job actually died a little after 1 day of running due a mistake I made in variable naming. Ugh. Restarted late  tonight.
+
+---
+
 20221026
 
 - The 16s pipeline was still running after 24hrs. Decided this was too long, so killed it.
