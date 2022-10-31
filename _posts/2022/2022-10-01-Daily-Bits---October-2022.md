@@ -8,6 +8,14 @@ categories:
   - Daily Bits
 ---
 
+20221028
+
+- Science Hour
+
+- Worked heavily on getting CEABIGR max transcript counts Circos formatting.
+
+---
+
 20221027
 
 - Worked on CEABIGR stuff - primarily creating a file of differences in max transcript counts between treatments/sexes for eventual use in Circos.
