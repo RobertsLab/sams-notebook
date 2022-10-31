@@ -8,6 +8,17 @@ categories:
   - Daily Bits
 ---
 
+20221031
+
+- Lab meeting.
+
+  - Discussed Ch.6 of "The Disordered Cosmos".
+
+- Worked on CEABIGR manuscript in preparation for Friday's meeting with Kaite Lotterhos.
+
+
+---
+
 20221028
 
 - Science Hour
