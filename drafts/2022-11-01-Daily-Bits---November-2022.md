@@ -8,4 +8,6 @@ categories:
   - Daily Bits
 ---
 
+20221101
 
+- Worked on CEABIGR manuscript
