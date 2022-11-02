@@ -11,3 +11,5 @@ categories:
 20221101
 
 - Worked on CEABIGR manuscript
+
+- Transferred and updated Ballgown Rmd script to CEABIGR repo.
