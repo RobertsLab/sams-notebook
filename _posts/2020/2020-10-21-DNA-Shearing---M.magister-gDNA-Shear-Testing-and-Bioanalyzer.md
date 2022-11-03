@@ -101,4 +101,4 @@ Also, I ended up running three chips (gah!) to accommodate all of this (was not 
 
 ##### Gel comparison: 55, 60, 65, 70, 75, and 80 cycles
 
-![Bioanalyzer gel representation and comparison for _M.magister_ gDNA sheared for 40, 45, and 50 cycles](https://gannet.fish.washington.edu/Atumefaciens/20201021_mmag_bioanalyzer/20201021_mmag_bioanalyzer_gel_CHO5-21_shear-40-45-50-cycles.jpg)
+![Bioanalyzer gel representation and comparison for _M.magister_ gDNA sheared for 40, 45, and 50 cycles](https://gannet.fish.washington.edu/Atumefaciens/20201021_mmag_bioanalyzer/20201021_mmag_bioanalyzer_gel_CHO5-21_shear-55-60-65-70-75-80-cycles.JPG)
