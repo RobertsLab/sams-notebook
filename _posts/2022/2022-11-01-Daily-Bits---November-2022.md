@@ -8,6 +8,16 @@ categories:
   - Daily Bits
 ---
 
+20221103
+
+- Worked a bit on looking at Laura's _M.magister_ [MBD-BSseq FastQC data](https://github.com/laurahspencer/DuMOAR/issues/15) (GitHub Issue).
+
+- Pub-a-thon.
+
+- Worked a bit on looking into Linda Rhodes 16s pipeline to see if we can figure out how to speed up the `vsearch` step. Nothing definitive found yet.
+
+---
+
 20221102
 
 - Finished updating the Ballgown Rmd script for CEABIGR repo.
