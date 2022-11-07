@@ -8,6 +8,16 @@ categories:
   - Daily Bits
 ---
 
+20221104
+
+- Science Hour
+
+- Oyster meeting with Lotterhos group to dicuss CEABIGR data.
+
+- Power outage for a couple of hours...
+
+---
+
 20221103
 
 - Worked a bit on looking at Laura's _M.magister_ [MBD-BSseq FastQC data](https://github.com/laurahspencer/DuMOAR/issues/15) (GitHub Issue).
