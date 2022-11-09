@@ -8,7 +8,23 @@ categories:
   - Daily Bits
 ---
 
+20221108
+
+- Messed around a tiny bit with gettting max transcript count differences formatted for Circos.
+
+---
+
+20221107
+
+- Lab meeting.
+
+- C.virginica oyster gene expression meeting (i.e. CEABIGR)
+
+---
+
 20221104
+
+- Meeting with Linda Rhodes to discuss 16s results
 
 - Science Hour
 
@@ -17,6 +33,7 @@ categories:
 - Power outage for a couple of hours...
 
 ---
+
 
 20221103
 
