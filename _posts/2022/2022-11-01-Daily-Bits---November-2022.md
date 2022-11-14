@@ -8,6 +8,12 @@ categories:
   - Daily Bits
 ---
 
+20221110
+
+- Sort of giving up on the Circos exploration - plots of the data we have don't really fit into the Circos mode of data analysis (Circos is generally set up to examine spatial relationships of genome features).
+
+- Started trying to make dot plots of the differences between the maximum number of transcripts per gene.
+
 20221108
 
 - Messed around a tiny bit with gettting max transcript count differences formatted for Circos.
