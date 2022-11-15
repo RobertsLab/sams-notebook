@@ -8,6 +8,17 @@ categories:
   - Daily Bits
 ---
 
+
+20221114
+
+- Lab Meeting.
+
+  - Discussed Ch.7 of The Disordered Cosmos
+
+- C.virginica gene expression/DNA methylation meeting.
+
+---
+
 20221110
 
 - Sort of giving up on the Circos exploration - plots of the data we have don't really fit into the Circos mode of data analysis (Circos is generally set up to examine spatial relationships of genome features).
