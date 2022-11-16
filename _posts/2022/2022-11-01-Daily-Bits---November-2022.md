@@ -8,6 +8,13 @@ categories:
   - Daily Bits
 ---
 
+20221115
+
+- Worked heavily on CEABIGR CoV gene methylation.
+
+- Worked heavily on CEABIGR diffs in max transcripts and mean gene methylation.
+
+---
 
 20221114
 
