@@ -8,6 +8,7 @@ categories:
   - Daily Bits
 ---
 
+
 2022116
 
 - Went in to lab.
@@ -21,6 +22,14 @@ categories:
     - Struggled with converting data frame to matrix (required for `rowcvs()`).
 
     - RStudio Server locked up for a significant period of time.
+
+---
+
+20221115
+
+- Worked heavily on CEABIGR CoV gene methylation.
+
+- Worked heavily on CEABIGR diffs in max transcripts and mean gene methylation.
 
 ---
 
