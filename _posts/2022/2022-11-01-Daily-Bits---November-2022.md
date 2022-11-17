@@ -8,6 +8,21 @@ categories:
   - Daily Bits
 ---
 
+2022116
+
+- Went in to lab.
+
+  - Showed Arianna around, got her keys, etc.
+
+  - Updated/restarted Raven.
+
+  - Worked on generating gene methylation coefficients of variation.
+
+    - Struggled with converting data frame to matrix (required for `rowcvs()`).
+
+    - RStudio Server locked up for a significant period of time.
+
+---
 
 20221114
 
