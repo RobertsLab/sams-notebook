@@ -9,6 +9,14 @@ categories:
 ---
 
 
+20221117
+
+- Pub-a-thon
+
+- Dealt with some power outages in the morning.
+
+---
+
 2022116
 
 - Went in to lab.
