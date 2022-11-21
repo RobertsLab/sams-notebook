@@ -8,6 +8,19 @@ categories:
   - Daily Bits
 ---
 
+20221118
+
+- Short day due to early out for Audrey's school.
+
+- Meeting with Linda Rhodes
+
+  - Re-ran Jupyter Notebook using her original Silva files, but set to 99% clustering.
+
+  - Reviewed using Conda environments.
+
+  - Introduced her to using `git` and GitHub - [this repo](https://github.com/kubu4/silva-16s-pipeline)
+
+---
 
 20221117
 
