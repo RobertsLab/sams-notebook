@@ -8,6 +8,15 @@ categories:
   - Daily Bits
 ---
 
+
+20221121
+
+- Lab meeting
+
+- Short day due to early out for Audrey's school.
+
+---
+
 20221118
 
 - Short day due to early out for Audrey's school.
