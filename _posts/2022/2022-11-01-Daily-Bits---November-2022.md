@@ -9,24 +9,6 @@ categories:
 ---
 
 
-20221202
-
-- Worked on CEABIGR mean methylation coefficient of variation stuff - getting frustrating, but getting closer!
-
-- Science Hour
-
-- CEABIGR meeting with Sam Brogan and Steven.
-
----
-
-20221201
-
-- Worked on CEABIGR mean methylation coefficient of variation stuff - getting frustrating, but getting closer!
-
-- Helped Emma for awhile troubleshooting an issue with [`TrimGalore`](https://github.com/FelixKrueger/TrimGalore).
-
----
-
 20221121
 
 - Lab meeting
