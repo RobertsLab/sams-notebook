@@ -8,6 +8,16 @@ categories:
   - Daily Bits
 ---
 
+20221208
+
+- Participated in Katie Lotterhos workshop for designing Apps from Google Sheets.
+
+- Met with Linda Rhodes to discuss future of projects.
+
+  - Decision to cancel weekly meetings - will utilize GitHub issues instead.
+
+  - I'm going to try to figure out why new Silva 138 database doesn't work as well as the old 132, in her pipeline.
+
 20221207
 
 - Finally resolved [CEABIGR mean methylation coefficient of methylation calcs](https://github.com/sr320/ceabigr/blob/main/code/40-gene-methylation.Rmd) (GitHub; R Markdown)! And, I figured it out in a very satisfactory, clean way! Looks great, easy to read, easy to follow, and concise.
