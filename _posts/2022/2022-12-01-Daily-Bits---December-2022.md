@@ -8,6 +8,14 @@ categories:
   - Daily Bits
 ---
 
+20221209
+
+- Science Hour
+
+  - Worked extensively with Olivia and Steven regarding her citrate synthase assay data and analysis.
+
+---
+
 20221208
 
 - Participated in Katie Lotterhos workshop for designing Apps from Google Sheets.
