@@ -8,6 +8,22 @@ categories:
   - Daily Bits
 ---
 
+20221213
+
+- Mox maintenance today slowed effort to run some jobs.
+
+- Worked on getting script/config files ready to run `epidiverse/snp` pipeline on [Haws' lab _C.gigas_ Hawaii BAM files for Yaamini](https://github.com/RobertsLab/resources/issues/1558).
+
+---
+
+20221213
+
+- Read Ch.9 of "The Disordered Cosmos" for lab meeting.
+
+- Lab meeting.
+
+---
+
 20221209
 
 - Science Hour
