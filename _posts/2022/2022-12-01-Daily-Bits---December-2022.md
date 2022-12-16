@@ -8,6 +8,32 @@ categories:
   - Daily Bits
 ---
 
+20221216
+
+- Science Hour
+
+  - Looked through plottin Aidan's crab data with Steven.
+
+  - Steven eventually utilized Weka machine learning to mess around wih Aidan's data, too.
+
+---
+
+20221215
+
+- Ran `epidiverse/snp` pipeline on [Haws' lab _C.gigas_ Hawaii BAM files for Yaamini](https://github.com/RobertsLab/resources/issues/1558). using the base config file to compare runtime to the modified config file I used yesterday.
+
+  - This actually completed in 12hrs, whereas the run using the modified config file took ~31hrs...
+
+- Pub-a-thon
+
+---
+
+20221214
+
+- Got `epidiverse/snp` pipeline on [Haws' lab _C.gigas_ Hawaii BAM files for Yaamini](https://github.com/RobertsLab/resources/issues/1558).
+
+---
+
 20221213
 
 - Mox maintenance today slowed effort to run some jobs.
