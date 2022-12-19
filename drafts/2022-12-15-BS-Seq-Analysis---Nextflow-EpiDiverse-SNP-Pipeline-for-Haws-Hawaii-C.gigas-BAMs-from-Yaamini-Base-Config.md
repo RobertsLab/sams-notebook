@@ -161,7 +161,14 @@ echo "Finished logging system $PATH."
 
 #### RESULTS
 
+Runtime (~12hrs) was _remarkably_ faster than yerstday's runtime using the modified config file. In fact, using the defaul config file, the runtime was >50% _faster_! Good to know!
+
+~![Screencap showing runtime of 11hrs 50mins for 20221215-cgig-nextflow-epdiverse-snp-haws-hawaii-base_config job on Mox](https://github.com/RobertsLab/sams-notebook/blob/master/images/screencaps/20221215-cgig-nextflow-epdiverse-snp-haws-hawaii-base_config.png?raw=true)
+
 Output folder:
 
-- []()
+- [20221215-cgig-nextflow-epdiverse-snp-haws-hawaii-base_config/](https://gannet.fish.washington.edu/Atumefaciens/20221215-cgig-nextflow-epdiverse-snp-haws-hawaii-base_config/)
 
+  - #### Variant Call Format (VCF) files and index files:
+
+    - [20221215-cgig-nextflow-epdiverse-snp-haws-hawaii-base_config/snps/vcf/](https://gannet.fish.washington.edu/Atumefaciens/20221215-cgig-nextflow-epdiverse-snp-haws-hawaii-base_config/snps/vcf/)
