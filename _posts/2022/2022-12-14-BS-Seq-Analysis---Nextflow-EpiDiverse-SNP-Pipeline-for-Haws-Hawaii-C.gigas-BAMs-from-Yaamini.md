@@ -25,7 +25,9 @@ Genome FastA was a version of the `cgigas_uk_roslin_v1` genome in which Yaamini 
 
 As part of this, I decided to mess around with the [`EpiDivers/snp`](https://github.com/EpiDiverse/snp) base config file to try to speed things up a bit. I modified it to try to use maximum CPUs and memory (28 and 500GB, respectively) for each step, while running on Mox. I'll run a duplicate using he original base config file to compare runtimes. A link to the modified config file is linked in the [RESULTS section below](#results).
 
-As mentioned, he job was run on Mox.
+UPDATE 20221215: [The comparison job using the base config runs _much_ faster!](https://robertslab.github.io/sams-notebook/2022/12/15/BS-Seq-Analysis-Nextflow-EpiDiverse-SNP-Pipeline-for-Haws-Hawaii-C.gigas-BAMs-from-Yaamini-Base-Config.html)
+
+As mentioned, the job was run on Mox.
 
 SBATCH script (GitHub):
 
