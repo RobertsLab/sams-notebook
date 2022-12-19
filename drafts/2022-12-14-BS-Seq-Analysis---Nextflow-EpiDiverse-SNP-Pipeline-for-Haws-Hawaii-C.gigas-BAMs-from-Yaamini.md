@@ -13,11 +13,21 @@ tags:
 categories: 
   - Miscellaneous
 ---
+[Yaamini asked me to run the `epidiverse/snp` pipeline](https://github.com/RobertsLab/resources/issues/1558) (GitHub Issue) on her Haws [_Crassostrea gigas_ (Pacific oyster)](http://en.wikipedia.org/wiki/Pacific_oyster) Hawaii bisuflite sequencing BAMs for SNP identification.
 
+This was run using BAMs found here:
 
+- [`https://gannet.fish.washington.edu/spartina/project-oyster-oa/Haws/bismark-2/r3644*.deduplicated.sorted.bam`](https://gannet.fish.washington.edu/spartina/project-oyster-oa/Haws/bismark-2/)
 
+Genome FastA was a version of the `cgigas_uk_roslin_v1` genome in which Yaamini appended the mitochondrial sequences:
 
-SBATCH script:
+- [cgigas_uk_roslin_v1_genomic-mito.fa](https://gannet.fish.washington.edu/spartina/project-oyster-oa/Haws/data/cgigas_uk_roslin_v1_genomic-mito.fa) (FastA; 626MB)
+
+As part of this, I decided to mess around with the [`EpiDivers/snp`](https://github.com/EpiDiverse/snp) base config file to try to speed things up a bit. I modified it to try to use maximum CPUs and memory (28 and 500GB, respectively) for each step, while running on Mox. I'll run a duplicate using he original base config file to compare runtimes. A link to the modified config file is linked in the [RESULTS section below](#results).
+
+As mentioned, he job was run on Mox.
+
+SBATCH script (GitHub):
 
 - [20221214-cgig-nextflow-epidiverse-snp-haws-hawaii.sh](https://github.com/RobertsLab/sams-notebook/blob/master/sbatch_scripts/20221214-cgig-nextflow-epidiverse-snp-haws-hawaii.sh)
 
