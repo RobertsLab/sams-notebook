@@ -8,6 +8,18 @@ categories:
   - Daily Bits
 ---
 
+20221219
+
+- Finished notebook entries for [Haws `epidiverse/snp` analysis using default config](https://robertslab.github.io/sams-notebook/2022/12/14/BS-Seq-Analysis-Nextflow-EpiDiverse-SNP-Pipeline-for-Haws-Hawaii-C.gigas-BAMs-from-Yaamini.html), as well as a [run with a modified config file](https://robertslab.github.io/sams-notebook/2022/12/15/BS-Seq-Analysis-Nextflow-EpiDiverse-SNP-Pipeline-for-Haws-Hawaii-C.gigas-BAMs-from-Yaamini-Base-Config.html) to compare runtimes. Spoiler: Default config file is significantly faster (less than half the runtime) than the modified config file I created.
+
+- Lab meeting:
+
+  - Matt talked about ANOVA stuff.
+
+    - Provided [helpful guide he wrote up](https://mattgeorgephd.github.io/ANOVA-guide/).
+
+---
+
 20221216
 
 - Science Hour
