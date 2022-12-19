@@ -161,7 +161,18 @@ echo "Finished logging system $PATH."
 
 #### RESULTS
 
+Runtime was ~31hrs, which was longer than I expected - having modified the base config file to use more resources per task:
+
+![Screencapture showing runtime of 20221214-cgig-nextflow-epidiverse-snp-haws-hawaii job on Mox](https://github.com/RobertsLab/sams-notebook/blob/master/images/screencaps/20221214-cgig-nextflow-epidiverse-snp-haws-hawaii-runtime.png?raw=true)
+
 Output folder:
 
-- []()
+- [20221214-cgig-nextflow-epidiverse-snp-haws-hawaii/snps/](https://gannet.fish.washington.edu/Atumefaciens/20221214-cgig-nextflow-epidiverse-snp-haws-hawaii/snps/)
 
+  - #### Modified config file (text):
+
+    - [`20221214-cgig-nextflow-epidiverse-snp-haws-hawaii/base-srlab_500GB_node.config`](https://gannet.fish.washington.edu/Atumefaciens/20221214-cgig-nextflow-epidiverse-snp-haws-hawaii/base-srlab_500GB_node.config)
+
+  - #### Variant Call Format (VCF) files and index files:
+
+      - [20221214-cgig-nextflow-epidiverse-snp-haws-hawaii/snps/vcf/](https://gannet.fish.washington.edu/Atumefaciens/20221214-cgig-nextflow-epidiverse-snp-haws-hawaii/snps/vcf/)
