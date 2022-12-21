@@ -13,9 +13,9 @@ tags:
 categories: 
   - Miscellaneous
 ---
-As part of [this project](https://github.com/epigeneticstoocean/2018_L18-adult-methylation), Steven's asked that [I identify long, non-coding RNAs (lncRNAs)](https://github.com/RobertsLab/resources/issues/1375) (GitHub Issue) in the [_Crassostrea gigas_ (Pacific oyster)](http://en.wikipedia.org/wiki/Pacific_oyster) adult OA gonad RNAseq data we have. The initial step for this is to assemble transcriptome. I generated the necessary BAM alignment on [20220131](https://robertslab.github.io/sams-notebook/2022/01/31/RNAseq-Alignment-C.virginica-Adult-OA-Gonad-Data-to-GCF_002022765.2-Genome-Using-HISAT2-on-Mox.html). Next was to actually get the transcriptome assembled. I followed the [`Trinity`](https://github.com/trinityrnaseq/trinityrnaseq/wiki) genome-guided procedure.
+As part of [this project](https://github.com/epigeneticstoocean/2018_L18-adult-methylation), Steven's asked that [I identify long, non-coding RNAs (lncRNAs)](https://github.com/RobertsLab/resources/issues/1375) (GitHub Issue) in the [_Crassostrea virginica_ (Eastern oyster)](https://en.wikipedia.org/wiki/Eastern_oyster) adult OA gonad RNAseq data we have. The initial step for this is to assemble transcriptome. I generated the necessary BAM alignment on [20220131](https://robertslab.github.io/sams-notebook/2022/01/31/RNAseq-Alignment-C.virginica-Adult-OA-Gonad-Data-to-GCF_002022765.2-Genome-Using-HISAT2-on-Mox.html). Next was to actually get the transcriptome assembled. I followed the [`Trinity`](https://github.com/trinityrnaseq/trinityrnaseq/wiki) genome-guided procedure.
 
-I should add here that while this job was running, I figured out that the lncRNAs had already been annotated in the [_Crassostrea virginica_ (Eastern oyster)](https://en.wikipedia.org/wiki/Eastern_oyster) genome (NCBI GCF_002022765.2), so [I had already tackled the lncRNA asepct of things on 20220217](https://robertslab.github.io/sams-notebook/2022/02/17/Data-Wrangling-C.virginica-lncRNA-Extractions-from-NCBI-GCF_002022765.2-Using-GffRead.html). However, having a gonad transcriptome assembly won't hurt anything, so decided to let this continue running.
+I should add here that while this job was running, I figured out that the lncRNAs had already been annotated in the [_Crassostrea virginica_ (Eastern oyster)](https://en.wikipedia.org/wiki/Eastern_oyster) genome (NCBI GCF_002022765.2), so [I had already tackled the lncRNA aspect of things on 20220217](https://robertslab.github.io/sams-notebook/2022/02/17/Data-Wrangling-C.virginica-lncRNA-Extractions-from-NCBI-GCF_002022765.2-Using-GffRead.html). However, having a gonad transcriptome assembly won't hurt anything, so decided to let this continue running.
 
 The initial run of this got interrupted by [a corrupted SAM file](https://github.com/trinityrnaseq/trinityrnaseq/issues/1121) (GitHub Issue). It's unclear what caused this, but during the job, the Mox `/gscratch/scrubbed/` directory went over the storage quota... The solution was to attempt a re-run, which ran without issue. Although, I did implement a change suggested in that issue which was to set the `--max_memory` to 100G. I had previously been using 500G, but the developer explained this was excessive and not necessary.
 
@@ -231,7 +231,7 @@ echo "${PATH}" | tr : \\n
 
 #### RESULTS
 
-Runtime was lengthy at almost 10 days. NOTE: The runtime screencap indicates the job _failed_. Although technically true, the job failed after the Trinity assembly was completed during a command to `rsync` the finished files to anotehr directory on Mox. So, it's all good!
+Runtime was lengthy at almost 10 days. NOTE: The runtime screencap indicates the job _failed_. Although technically true, the job failed after the Trinity assembly was completed during a command to `rsync` the finished files to another directory on Mox. So, it's all good!
 
 ![screencap of C.virginica gonad transcriptome assembly runtime on Mox](https://github.com/RobertsLab/sams-notebook/blob/master/images/screencaps/20220212_cvir_trinity-gg_adult-oa-gonad_assembly-1.0_runtime.png?raw=true)
 
