@@ -8,6 +8,12 @@ categories:
   - Daily Bits
 ---
 
+20221227
+
+- Read Ch.10 of "The Disordered Cosmos."
+
+---
+
 20221221
 
 - Added transcriptome assembly info to [The Handbook](https://robertslab.github.io/resources/bio_Transcriptome-assembly/).
