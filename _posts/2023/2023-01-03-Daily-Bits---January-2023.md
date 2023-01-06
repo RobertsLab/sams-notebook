@@ -8,6 +8,21 @@ categories:
   - Daily Bits
 ---
 
+20230106
+
+- Worked on Dorothy's recommendation letter.
+
+- Science Hour.
+
+---
+
+20230105
+
+- Long lab meeting discussing ways to improve lab "life" with suggestions from everyone on what they'd like to see. Really interesting/informative session!
+
+- Continued to work on the [Roberts Lab Handbook transcriptome annotation](https://robertslab.github.io/resources/bio-Annotation/#transcriptome-trinity).
+
+---
 
 20230104
 
