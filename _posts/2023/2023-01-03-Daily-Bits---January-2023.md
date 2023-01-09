@@ -8,6 +8,18 @@ categories:
   - Daily Bits
 ---
 
+20230109
+
+- Read Ch.11 of "The Disordered Cosmos"
+
+- Lab meeting
+
+  - Discussed Ch.11 of "The Disordered Cosmos"
+
+- Wrote recommendation letter draft for Dorothy.
+
+---
+
 20230106
 
 - Worked on Dorothy's recommendation letter.
