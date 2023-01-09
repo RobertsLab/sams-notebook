@@ -18,6 +18,8 @@ categories:
 
 - Wrote recommendation letter draft for Dorothy.
 
+- Updated Owl.
+
 ---
 
 20230106
