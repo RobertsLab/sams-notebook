@@ -8,6 +8,18 @@ categories:
   - Daily Bits
 ---
 
+20230110
+
+- Worked extensively on troubleshooting "missing" row names in a list of data frames in CEABIGR project for coefficients of variaton of mean DNA methylation.
+
+  - Turns out, the row names _were_ present the entire time (i.e. I had written the code correctly from the start), but I couldn't figure out how to view the data frames within a list so that the row names would be visible.
+
+  - Additionally, the primary problem was that I wanted row names written in the output files. I in the `write.csv()`, I had the argument `row.names = FALSE`! Doh!
+
+- Answered [Yaamini's question regarding retrieving FastA sequences from NCBI](https://github.com/RobertsLab/resources/discussions/1565).
+
+---
+
 20230109
 
 - Read Ch.11 of "The Disordered Cosmos"
