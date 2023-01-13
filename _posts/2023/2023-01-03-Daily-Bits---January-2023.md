@@ -8,6 +8,27 @@ categories:
   - Daily Bits
 ---
 
+20230112
+
+- Spent a _very_ long time trying to update CEABIGR mean gene methylation CoV data frames in list so that I could add a delta of CoVs between comparison groups. Had to resort to using ChatGPT (OpenAI) and the bot solved it in less than a minute! Here was the successful solution:
+
+```r
+methylation.transposed.rownames.list <- lapply(methylation.transposed.rownames.list, function(df) {
+  df$delta <- abs(df[,1] - df[,2])
+  return(df)
+})
+```
+
+I had something _very_ similar to this, but didn't have the `return()` aspect of the data the function. I think that was crucial, as I was getting the `delta` column by itself as the result, but wasn't getting the full data frames with the new `delta` column added to them.
+
+---
+
+20230111
+
+- Messed around with plotting CEABIGR mean gene methylation CoV, via scatter plots. Trying to decide if this method provides any info or not. Also tried to figure out how to plot all data frames, as they are stored in a list.
+
+---
+
 20230110
 
 - Worked extensively on troubleshooting "missing" row names in a list of data frames in CEABIGR project for coefficients of variaton of mean DNA methylation.
