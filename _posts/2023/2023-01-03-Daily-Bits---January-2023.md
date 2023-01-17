@@ -8,6 +8,22 @@ categories:
   - Daily Bits
 ---
 
+
+
+---
+
+20230113
+
+- Made some scatter plots from the CEABIGR mean gene methylation coefficients of variation calcs. Not sure if they're useful or not, but here are some of them (animated GIF - changes every ~4s). Animated GIF cycling through scatter plots of different comparisions of mean gene methylation coefficients of variation (CoV). Point are colored by absolute value of differences (delta) between mean gene methylation CoV. Purple are lowest differences, while red are greatest differences. Blue line is the linear model regression line, while the redline is a an artificial regression line with a slope of `1`.
+
+![Animated GIF cycling through scatter plots of different comparisions of mean gene methylation coefficients of variation (CoV). Point are colored by absolute value of differences (delta) between mean gene methylation CoV. Purple are lowest differences, while red are greatest differences. Blue line is the linear model regression line, while the redline is a an artificial regression line with a slope of `1`.](https://github.com/RobertsLab/sams-notebook/blob/master/images/screencaps/20230113-ceabigr-scatter_plots-mean_gene_methylation_CoV.gif?raw=true)
+
+
+
+- Began work on [this Issue](*https://github.com/RobertsLab/resources/issues/1569) to download/QC some coral BS-seq and RNA-seq data from NCBI SRA. Downloads and conversion from SRA to FastQ took > 12hrs.
+
+---
+
 20230112
 
 - Spent a _very_ long time trying to update CEABIGR mean gene methylation CoV data frames in list so that I could add a delta of CoVs between comparison groups. Had to resort to using ChatGPT (OpenAI) and the bot solved it in less than a minute! Here was the successful solution:
