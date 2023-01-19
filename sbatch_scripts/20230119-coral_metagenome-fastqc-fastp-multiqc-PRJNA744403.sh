@@ -80,12 +80,14 @@ module load intel-python3_2017
 timestamp=$(date +%Y%m%d)
 
 # Sync raw FastQ files to working directory
+# Uses "P_[gm]*" to get only files from
+# P_grandis and P_meandrina directories
 echo ""
 echo "Transferring files via rsync..."
 rsync --archive \
 --verbose \
 --progress \
---files-from=<(find ../../data/P_grandis/metagenome/BS-seq -name "*.fastq.gz") \
+--files-from=<(find ../../data/P_[gm]* -name "*.fastq.gz") \
 ../../ .
 echo ""
 echo "File transfer complete."
