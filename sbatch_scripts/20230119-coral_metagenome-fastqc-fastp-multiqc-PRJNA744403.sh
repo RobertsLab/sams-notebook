@@ -1,6 +1,6 @@
 #!/bin/bash
 ## Job Name
-#SBATCH --job-name=202230119-coral_metagenome-fastqc-fastp-multiqc-PRJNA744403
+#SBATCH --job-name=20230119-coral_metagenome-fastqc-fastp-multiqc-PRJNA744403
 ## Allocation Definition
 #SBATCH --account=srlab
 #SBATCH --partition=srlab
@@ -15,7 +15,7 @@
 #SBATCH --mail-type=ALL
 #SBATCH --mail-user=samwhite@uw.edu
 ## Specify the working directory for this job
-#SBATCH --chdir=/gscratch/scrubbed/samwhite/outputs/202230119-coral_metagenome-fastqc-fastp-multiqc-PRJNA744403
+#SBATCH --chdir=/gscratch/scrubbed/samwhite/outputs/20230119-coral_metagenome-fastqc-fastp-multiqc-PRJNA744403
 
 ### FastQC and fastp trimming coral metagenome SRA BioProject PRJNA744403 sequencing data.
 
