@@ -198,8 +198,8 @@ do
 
       # Generate md5 checksums for newly trimmed files
       {
-          md5sum "${R1_sample_name}.fastp-trim.${timestamp}".fq.gz
-          md5sum "${R2_sample_name}.fastp-trim.${timestamp}".fq.gz
+          md5sum "SRA-${R1_sample_name}.${species}.fastp-trim.${timestamp}".fq.gz
+          md5sum "SRA-${R2_sample_name}.${species}.fastp-trim.${timestamp}".fq.gz
       } >> "${trimmed_checksums}"
     done
 
