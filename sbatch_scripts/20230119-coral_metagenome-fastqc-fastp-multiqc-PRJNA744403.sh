@@ -30,8 +30,11 @@
 
 # Set FastQ filename patterns
 fastq_pattern='*.fastq.gz'
-R1_fastq_pattern='*R1*.fastq.gz'
-R2_fastq_pattern='*R2*.fastq.gz'
+R1_fastq_pattern='*_1*.fastq.gz'
+R2_fastq_pattern='*_2*.fastq.gz'
+
+# Set species array
+species_array=(P_grandis P_meandrina)
 
 # Set number of CPUs to use
 threads=40
@@ -52,7 +55,6 @@ rnaseq_dir="metagenome/RNA-seq"
 raw_fastqs_array=()
 R1_names_array=()
 R2_names_array=()
-species_array=(P_grandis P_meandrina)
 
 # Paths to programs
 fastp=/gscratch/srlab/programs/fastp-0.20.0/fastp
@@ -109,7 +111,11 @@ do
     R2_names_array=()
 
     # Change to bisulfite data directory
-    cd "${working_dir}"/data/"${species}"/"${library}"
+    cd "${working_dir}/data/${species}/${library}"
+
+    echo ""
+    echo "Moving to ${working_dir}/data/${species}/${library}"
+    echo ""
 
     ### Run FastQC ###
 
