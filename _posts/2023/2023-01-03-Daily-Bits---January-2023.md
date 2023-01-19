@@ -9,6 +9,24 @@ categories:
 ---
 
 
+20230118
+
+- Continued work on [this Issue](https://github.com/RobertsLab/resources/issues/1569) (GitHub Issue) for dealing with coral metagenome SRA data (BioProject [PRJNA74403](https://www.ncbi.nlm.nih.gov/bioproject/?term=PRJNA744403)).
+
+  - `gzip`-ed all the data.
+
+  - Continued working on script to trim data.
+
+---
+
+20230117
+
+- Lab meeting.
+
+- Continued work on [this Issue](https://github.com/RobertsLab/resources/issues/1569) (GitHub Issue) for dealing with coral metagenome SRA data (BioProject [PRJNA74403](https://www.ncbi.nlm.nih.gov/bioproject/?term=PRJNA744403)).
+
+  - Continued working on script to trim data.
+
 
 ---
 
@@ -20,7 +38,7 @@ categories:
 
 
 
-- Began work on [this Issue](*https://github.com/RobertsLab/resources/issues/1569) to download/QC some coral BS-seq and RNA-seq data from NCBI SRA. Downloads and conversion from SRA to FastQ took > 12hrs.
+- Began work on [this Issue](https://github.com/RobertsLab/resources/issues/1569) to download/QC some coral BS-seq and RNA-seq data from NCBI SRA BioProject [PRJNA74403](https://www.ncbi.nlm.nih.gov/bioproject/?term=PRJNA744403)). Downloads and conversion from SRA to FastQ took > 12hrs.
 
 ---
 
