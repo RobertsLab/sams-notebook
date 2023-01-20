@@ -376,6 +376,10 @@ echo "${PATH}" | tr : \\n
 
 #### RESULTS
 
+Runtime was ~10.5hrs:
+
+![Screencap showing run time on Mox for computing job](20230119-coral_metagenome-fastqc-fastp-multiqc-PRJNA744403_runtime.png)
+
 Output folder:
 
 - []()
