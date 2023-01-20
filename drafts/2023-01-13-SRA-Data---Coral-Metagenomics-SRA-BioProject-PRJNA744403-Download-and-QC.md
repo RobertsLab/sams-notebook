@@ -182,9 +182,12 @@ do
   do
 
     ## Re-inititalize arrays
+    fastq_array_R1=()
+    fastq_array_R2=()
     raw_fastqs_array=()
     R1_names_array=()
     R2_names_array=()
+    trimmed_fastq_array=()
 
     # Change to bisulfite data directory
     cd "${working_dir}/data/${species}/${library}"
