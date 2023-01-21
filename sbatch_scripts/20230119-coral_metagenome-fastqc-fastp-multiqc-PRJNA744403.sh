@@ -1,6 +1,6 @@
 #!/bin/bash
 ## Job Name
-#SBATCH --job-name=20230119-coral_metagenome-fastqc-fastp-multiqc-PRJNA744403
+#SBATCH --job-name=20230119-coral-fastqc-fastp-multiqc-PRJNA744403
 ## Allocation Definition
 #SBATCH --account=srlab
 #SBATCH --partition=srlab
@@ -15,7 +15,7 @@
 #SBATCH --mail-type=ALL
 #SBATCH --mail-user=samwhite@uw.edu
 ## Specify the working directory for this job
-#SBATCH --chdir=/gscratch/scrubbed/samwhite/outputs/20230119-coral_metagenome-fastqc-fastp-multiqc-PRJNA744403
+#SBATCH --chdir=/gscratch/scrubbed/samwhite/outputs/20230119-coral-fastqc-fastp-multiqc-PRJNA744403
 
 ### FastQC and fastp trimming coral metagenome SRA BioProject PRJNA744403 sequencing data.
 
@@ -47,8 +47,8 @@ trimmed_checksums=trimmed_fastq_checksums.md5
 fastq_checksums=input_fastq_checksums.md5
 
 # Data directories
-bsseq_dir="metagenome/BS-seq"
-rnaseq_dir="metagenome/RNA-seq"
+bsseq_dir="BS-seq"
+rnaseq_dir="RNA-seq"
 
 
 ## Inititalize arrays
@@ -120,6 +120,9 @@ do
     echo "Moving to ${working_dir}/data/${species}/${library}"
     echo ""
 
+    # Create trimmed subdirectory
+    mkdir --parents trimmed
+
     ### Run FastQC ###
 
     ### NOTE: Do NOT quote raw_fastqc_list
@@ -142,6 +145,7 @@ do
     --outdir ${output_dir} \
     ${raw_fastqc_list}
 
+    echo ""
     echo "FastQC on raw reads complete!"
     echo ""
 
@@ -178,10 +182,21 @@ do
       echo ""
     done
 
+    ### RUN MULTIQC ###
+    echo "Beginning MultiQC..."
+    echo ""
+    ${programs_array[multiqc]} .
+    echo ""
+    echo "MultiQC complete."
+    echo ""
+
+    ### END MULTIQC ###
+
+
     ### RUN FASTP ###
 
     # Run fastp on files
-    # Adds JSON report output for downstream usage by MultiQ
+    # Adds JSON report output for downstream usage by MultiQC
     echo "Beginning fastp trimming."
     echo ""
 
@@ -194,23 +209,27 @@ do
       --in2 ${fastq_array_R2[index]} \
       --detect_adapter_for_pe \
       --thread ${threads} \
-      --html "SRA-${R1_sample_name%_*}.${species}.fastp-trim.${timestamp}".report.html \
-      --json "SRA-${R1_sample_name%_*}.${species}.fastp-trim.${timestamp}".report.json \
-      --out1 "SRA-${R1_sample_name}.${species}.fastp-trim.${timestamp}".fq.gz \
-      --out2 "SRA-${R2_sample_name}.${species}.fastp-trim.${timestamp}".fq.gz
+      --html trimmed/"SRA-${R1_sample_name%_*}.${species}.fastp-trim.${timestamp}".report.html \
+      --json trimmed/"SRA-${R1_sample_name%_*}.${species}.fastp-trim.${timestamp}".report.json \
+      --out1 trimmed/"SRA-${R1_sample_name}.${species}.fastp-trim.${timestamp}".fq.gz \
+      --out2 trimmed/"SRA-${R2_sample_name}.${species}.fastp-trim.${timestamp}".fq.gz
+
+      ### END FASTP ###
+
 
       # Generate md5 checksums for newly trimmed files
       {
-          md5sum "SRA-${R1_sample_name}.${species}.fastp-trim.${timestamp}".fq.gz
-          md5sum "SRA-${R2_sample_name}.${species}.fastp-trim.${timestamp}".fq.gz
+          md5sum trimmed/"SRA-${R1_sample_name}.${species}.fastp-trim.${timestamp}".fq.gz
+          md5sum trimmed/"SRA-${R2_sample_name}.${species}.fastp-trim.${timestamp}".fq.gz
       } >> "${trimmed_checksums}"
     done
-
-    ### END FASTP ###
 
     ### RUN FASTQC ###
 
     ### NOTE: Do NOT quote ${trimmed_fastqc_list}
+
+    # Change to trimmed directory
+    cd trimmed
 
     # Create array of trimmed FastQs
     trimmed_fastq_array=(*fastp-trim*.fq.gz)
@@ -235,7 +254,7 @@ do
     ### RUN MULTIQC ###
     echo "Beginning MultiQC..."
     echo ""
-    ${multiqc} .
+    ${programs_array[multiqc]} .
     echo ""
     echo "MultiQC complete."
     echo ""
