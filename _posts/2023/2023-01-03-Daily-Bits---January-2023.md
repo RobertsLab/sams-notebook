@@ -8,10 +8,25 @@ categories:
   - Daily Bits
 ---
 
+20230120
+
+- Re-ran QC/trimming SLURM script for coral SRA data (BioProject [PRJNA74403](https://www.ncbi.nlm.nih.gov/bioproject/?term=PRJNA744403)) a couple of times. Still dealing with some minor file output organization issues... Also, seems like `fastp` is trimming data (i.e. output reports indicate average read length _after_ filtering is ~140bp, but the resulting graphs of read lengths after trimming still show 150bp...).
+
+---
+
+20230119
+
+- Ran QC/trimming SLURM script for coral SRA data (BioProject [PRJNA74403](https://www.ncbi.nlm.nih.gov/bioproject/?term=PRJNA744403)).
+
+  - Took ~ 10.5hrs, but needed some adjustments...
+
+- Pub-a-thon
+
+---
 
 20230118
 
-- Continued work on [this Issue](https://github.com/RobertsLab/resources/issues/1569) (GitHub Issue) for dealing with coral metagenome SRA data (BioProject [PRJNA74403](https://www.ncbi.nlm.nih.gov/bioproject/?term=PRJNA744403)).
+- Continued work on [this Issue](https://github.com/RobertsLab/resources/issues/1569) (GitHub Issue) for dealing with coral SRA data (BioProject [PRJNA74403](https://www.ncbi.nlm.nih.gov/bioproject/?term=PRJNA744403)).
 
   - `gzip`-ed all the data.
 
@@ -23,7 +38,7 @@ categories:
 
 - Lab meeting.
 
-- Continued work on [this Issue](https://github.com/RobertsLab/resources/issues/1569) (GitHub Issue) for dealing with coral metagenome SRA data (BioProject [PRJNA74403](https://www.ncbi.nlm.nih.gov/bioproject/?term=PRJNA744403)).
+- Continued work on [this Issue](https://github.com/RobertsLab/resources/issues/1569) (GitHub Issue) for dealing with coral SRA data (BioProject [PRJNA74403](https://www.ncbi.nlm.nih.gov/bioproject/?term=PRJNA744403)).
 
   - Continued working on script to trim data.
 
