@@ -57,7 +57,7 @@ R1_names_array=()
 R2_names_array=()
 
 # Paths to programs
-fastp=/gscratch/srlab/programs/fastp-0.20.0/fastp
+fastp=/gscratch/srlab/programs/fastp.0.23.1
 fastqc=/gscratch/srlab/programs/fastqc_v0.11.9/fastqc
 multiqc=/gscratch/srlab/programs/anaconda3/bin/multiqc
 
@@ -221,7 +221,7 @@ do
       {
           md5sum trimmed/"SRA-${R1_sample_name}.${species}.fastp-trim.${timestamp}".fq.gz
           md5sum trimmed/"SRA-${R2_sample_name}.${species}.fastp-trim.${timestamp}".fq.gz
-      } >> "${trimmed_checksums}"
+      } >> trimmed/"${trimmed_checksums}"
     done
 
     ### RUN FASTQC ###
@@ -230,6 +230,9 @@ do
 
     # Change to trimmed directory
     cd trimmed
+
+    # Set FastQC output directory
+    output_dir=$(pwd)
 
     # Create array of trimmed FastQs
     trimmed_fastq_array=(*fastp-trim*.fq.gz)
@@ -263,6 +266,9 @@ do
   done
 
 done
+
+# Return to top directory
+cd "${working_dir}"
 
 ####################################################################
 
