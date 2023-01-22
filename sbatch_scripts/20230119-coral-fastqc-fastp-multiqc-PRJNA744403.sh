@@ -208,6 +208,9 @@ do
       --in1 ${fastq_array_R1[index]} \
       --in2 ${fastq_array_R2[index]} \
       --detect_adapter_for_pe \
+      --trim_poly_g \
+      --trim_front1 20 \
+      --trim_front2 20 \
       --thread ${threads} \
       --html trimmed/"SRA-${R1_sample_name%_*}.${species}.fastp-trim.${timestamp}".report.html \
       --json trimmed/"SRA-${R1_sample_name%_*}.${species}.fastp-trim.${timestamp}".report.json \
