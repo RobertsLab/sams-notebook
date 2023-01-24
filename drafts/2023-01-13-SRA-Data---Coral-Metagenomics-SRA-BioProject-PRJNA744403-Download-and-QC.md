@@ -67,6 +67,8 @@ Prior to QC, I had to get the data:
 
 6. Generated MD5 checksums for all files.
 
+Had to run QC/trimming SLURM script for coral SRA data (BioProject [PRJNA74403](https://www.ncbi.nlm.nih.gov/bioproject/?term=PRJNA744403)) a couple of times. Seemed like `fastp` was trimming data (i.e. output reports indicate average read length _after_ filtering is ~140bp, but the resulting graphs of read lengths after trimming still show 150bp...). Additionally, the first ~20bp looked rough, so decided to add a hard 20bp trim from 5' end of all reads...
+
 [`FastQC`](https://www.bioinformatics.babraham.ac.uk/projects/fastqc/), [`fastp`](https://github.com/OpenGene/fastp), and [`MultiQC`](https://multiqc.info/) were run on Mox.
 
 SBATCH script (GitHub):
@@ -400,8 +402,6 @@ echo ""
 printf "%0.s-" {1..10}
 echo "${PATH}" | tr : \\n
 } >> system_path.log
-
-
 ```
 
 
@@ -415,7 +415,7 @@ Runtime was ~10.5hrs:
 
 Due to the large number of files, along with attempts to keep things semi-organized, please refer to the [directory-tree](#directory-tree-text) first.
 
-To cut right to the chase, the following four files can be downloaded and then used with `wget` to download all of the desired files.
+To cut right to the chase, the following four files can be downloaded and then used with `wget` to download all of the described FastQ files.
 
 _P.grandis_ BS-seq raw FastQs
 
