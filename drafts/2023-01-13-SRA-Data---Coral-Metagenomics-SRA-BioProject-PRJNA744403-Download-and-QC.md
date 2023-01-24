@@ -415,6 +415,48 @@ Runtime was ~10.5hrs:
 
 Due to the large number of files, along with attempts to keep things semi-organized, please refer to the [directory-tree](#directory-tree-text) first.
 
+To cut right to the chase, the following four files can be downloaded and then used with `wget` to download all of the desired files.
+
+_P.grandis_ BS-seq raw FastQs
+
+- [20230119-coral-fastqc-fastp-multiqc-PRJNA744403/data/P_grandis/BS-seq/pgrandis.bs-seq.raw.download.list.txt](https://gannet.fish.washington.edu/Atumefaciens/20230119-coral-fastqc-fastp-multiqc-PRJNA744403/data/P_grandis/BS-seq/pgrandis.bs-seq.raw.download.list.txt)
+
+_P.grandis_ BS-seq trimmed FastQs
+
+- [20230119-coral-fastqc-fastp-multiqc-PRJNA744403/data/P_grandis/BS-seq/trimmed/pgrandis.bs-seq.trimmed.download.list.txt](https://gannet.fish.washington.edu/Atumefaciens/20230119-coral-fastqc-fastp-multiqc-PRJNA744403/data/P_grandis/BS-seq/trimmed/pgrandis.bs-seq.trimmed.download.list.txt)
+
+_P.grandis_ RNA-seq raw FastQs
+
+- [20230119-coral-fastqc-fastp-multiqc-PRJNA744403/data/P_grandis/RNA-seq/pgrandis.rna-seq.raw.download.list.txt](https://gannet.fish.washington.edu/Atumefaciens/20230119-coral-fastqc-fastp-multiqc-PRJNA744403/data/P_grandis/RNA-seq/pgrandis.rna-seq.raw.download.list.txt)
+
+_P.grandis_ RNA-seq trimmed FastQs
+
+- [20230119-coral-fastqc-fastp-multiqc-PRJNA744403/data/P_grandis/RNA-seq/trimmed/pgrandis.rna-seq.trimmed.download.list.txt](https://gannet.fish.washington.edu/Atumefaciens/20230119-coral-fastqc-fastp-multiqc-PRJNA744403/data/P_grandis/RNA-seq/trimmed/pgrandis.rna-seq.trimmed.download.list.txt)
+
+_P.meandrina_ BS-seq raw FastQs
+
+- [20230119-coral-fastqc-fastp-multiqc-PRJNA744403/data/P_meandrina/BS-seq/pmeandrina.bs-seq.raw.download.list.txt](https://gannet.fish.washington.edu/Atumefaciens/20230119-coral-fastqc-fastp-multiqc-PRJNA744403/data/P_meandrina/BS-seq/pmeandrina.bs-seq.raw.download.list.txt)
+
+_P.meandrina_ BS-seq trimmed FastQs
+
+- [20230119-coral-fastqc-fastp-multiqc-PRJNA744403/data/P_meandrina/BS-seq/trimmed/pmeandrina.bs-seq.trimmed.download.list.txt](https://gannet.fish.washington.edu/Atumefaciens/20230119-coral-fastqc-fastp-multiqc-PRJNA744403/data/P_meandrina/BS-seq/trimmed/pmeandrina.bs-seq.trimmed.download.list.txt)
+
+_P.meandrina_ RNA-seq raw FastQs
+
+- [20230119-coral-fastqc-fastp-multiqc-PRJNA744403/data/P_meandrina/RNA-seq/pmeandrina.rna-seq.raw.download.list.txt](https://gannet.fish.washington.edu/Atumefaciens/20230119-coral-fastqc-fastp-multiqc-PRJNA744403/data/P_meandrina/RNA-seq/pmeandrina.rna-seq.raw.download.list.txt)
+
+_P.meandrina_ RNA-seq trimmed FastQs
+
+- [20230119-coral-fastqc-fastp-multiqc-PRJNA744403/data/P_meandrina/RNA-seq/trimmed/pmeandrina.rna-seq.trimmed.download.list.txt](https://gannet.fish.washington.edu/Atumefaciens/20230119-coral-fastqc-fastp-multiqc-PRJNA744403/data/P_meandrina/RNA-seq/trimmed/pmeandrina.rna-seq.trimmed.download.list.txt)
+
+Example of how to use these files:
+
+`wget --input-file=pgrandis.bs-seq.raw.download.list.txt`
+
+This will download all of the _P.grandis_ BS-seq raw FastQ files _and_ an MD5 checksum file for verifying data after transfer.
+
+
+
 Output folder:
 
 - [20230119-coral_metagenome-fastqc-fastp-multiqc-PRJNA744403/](https://gannet.fish.washington.edu/Atumefaciens/20230119-coral_metagenome-fastqc-fastp-multiqc-PRJNA744403/)
