@@ -60,6 +60,7 @@ Prior to QC, I had to get the data:
     ```shell
     for file in *.sra; do /gscratch/srlab/programs/sratoolkit.2.11.3-centos_linux64/bin/fasterq-dump "${file}"; done
     ```
+
 4. Moved FastQ files to species-specific directories and library-specific (i.e. BS-seq or RNA-seq) directories.
 
 5. `gzip`-ed all FastQ files. This is needed for significant space savings, but also needed for some potential downstream pipelines we're considering running.
@@ -76,7 +77,7 @@ SBATCH script (GitHub):
 ```shell
 #!/bin/bash
 ## Job Name
-#SBATCH --job-name=20230119-coral_metagenome-fastqc-fastp-multiqc-PRJNA744403
+#SBATCH --job-name=20230119-coral-fastqc-fastp-multiqc-PRJNA744403
 ## Allocation Definition
 #SBATCH --account=srlab
 #SBATCH --partition=srlab
@@ -91,7 +92,7 @@ SBATCH script (GitHub):
 #SBATCH --mail-type=ALL
 #SBATCH --mail-user=samwhite@uw.edu
 ## Specify the working directory for this job
-#SBATCH --chdir=/gscratch/scrubbed/samwhite/outputs/20230119-coral_metagenome-fastqc-fastp-multiqc-PRJNA744403
+#SBATCH --chdir=/gscratch/scrubbed/samwhite/outputs/20230119-coral-fastqc-fastp-multiqc-PRJNA744403
 
 ### FastQC and fastp trimming coral metagenome SRA BioProject PRJNA744403 sequencing data.
 
@@ -123,8 +124,8 @@ trimmed_checksums=trimmed_fastq_checksums.md5
 fastq_checksums=input_fastq_checksums.md5
 
 # Data directories
-bsseq_dir="metagenome/BS-seq"
-rnaseq_dir="metagenome/RNA-seq"
+bsseq_dir="BS-seq"
+rnaseq_dir="RNA-seq"
 
 
 ## Inititalize arrays
@@ -133,7 +134,7 @@ R1_names_array=()
 R2_names_array=()
 
 # Paths to programs
-fastp=/gscratch/srlab/programs/fastp-0.20.0/fastp
+fastp=/gscratch/srlab/programs/fastp.0.23.1
 fastqc=/gscratch/srlab/programs/fastqc_v0.11.9/fastqc
 multiqc=/gscratch/srlab/programs/anaconda3/bin/multiqc
 
@@ -196,6 +197,9 @@ do
     echo "Moving to ${working_dir}/data/${species}/${library}"
     echo ""
 
+    # Create trimmed subdirectory
+    mkdir --parents trimmed
+
     ### Run FastQC ###
 
     ### NOTE: Do NOT quote raw_fastqc_list
@@ -218,6 +222,7 @@ do
     --outdir ${output_dir} \
     ${raw_fastqc_list}
 
+    echo ""
     echo "FastQC on raw reads complete!"
     echo ""
 
@@ -254,10 +259,21 @@ do
       echo ""
     done
 
+    ### RUN MULTIQC ###
+    echo "Beginning MultiQC..."
+    echo ""
+    ${programs_array[multiqc]} .
+    echo ""
+    echo "MultiQC complete."
+    echo ""
+
+    ### END MULTIQC ###
+
+
     ### RUN FASTP ###
 
     # Run fastp on files
-    # Adds JSON report output for downstream usage by MultiQ
+    # Adds JSON report output for downstream usage by MultiQC
     echo "Beginning fastp trimming."
     echo ""
 
@@ -269,24 +285,34 @@ do
       --in1 ${fastq_array_R1[index]} \
       --in2 ${fastq_array_R2[index]} \
       --detect_adapter_for_pe \
+      --trim_poly_g \
+      --trim_front1 20 \
+      --trim_front2 20 \
       --thread ${threads} \
-      --html "SRA-${R1_sample_name%_*}.${species}.fastp-trim.${timestamp}".report.html \
-      --json "SRA-${R1_sample_name%_*}.${species}.fastp-trim.${timestamp}".report.json \
-      --out1 "SRA-${R1_sample_name}.${species}.fastp-trim.${timestamp}".fq.gz \
-      --out2 "SRA-${R2_sample_name}.${species}.fastp-trim.${timestamp}".fq.gz
+      --html trimmed/"SRA-${R1_sample_name%_*}.${species}.fastp-trim.${timestamp}".report.html \
+      --json trimmed/"SRA-${R1_sample_name%_*}.${species}.fastp-trim.${timestamp}".report.json \
+      --out1 trimmed/"SRA-${R1_sample_name}.${species}.fastp-trim.${timestamp}".fq.gz \
+      --out2 trimmed/"SRA-${R2_sample_name}.${species}.fastp-trim.${timestamp}".fq.gz
+
+      ### END FASTP ###
+
 
       # Generate md5 checksums for newly trimmed files
       {
-          md5sum "SRA-${R1_sample_name}.${species}.fastp-trim.${timestamp}".fq.gz
-          md5sum "SRA-${R2_sample_name}.${species}.fastp-trim.${timestamp}".fq.gz
-      } >> "${trimmed_checksums}"
+          md5sum trimmed/"SRA-${R1_sample_name}.${species}.fastp-trim.${timestamp}".fq.gz
+          md5sum trimmed/"SRA-${R2_sample_name}.${species}.fastp-trim.${timestamp}".fq.gz
+      } >> trimmed/"${trimmed_checksums}"
     done
-
-    ### END FASTP ###
 
     ### RUN FASTQC ###
 
     ### NOTE: Do NOT quote ${trimmed_fastqc_list}
+
+    # Change to trimmed directory
+    cd trimmed
+
+    # Set FastQC output directory
+    output_dir=$(pwd)
 
     # Create array of trimmed FastQs
     trimmed_fastq_array=(*fastp-trim*.fq.gz)
@@ -311,7 +337,7 @@ do
     ### RUN MULTIQC ###
     echo "Beginning MultiQC..."
     echo ""
-    ${multiqc} .
+    ${programs_array[multiqc]} .
     echo ""
     echo "MultiQC complete."
     echo ""
@@ -320,6 +346,9 @@ do
   done
 
 done
+
+# Return to top directory
+cd "${working_dir}"
 
 ####################################################################
 
@@ -372,6 +401,7 @@ printf "%0.s-" {1..10}
 echo "${PATH}" | tr : \\n
 } >> system_path.log
 
+
 ```
 
 
@@ -381,9 +411,19 @@ echo "${PATH}" | tr : \\n
 
 Runtime was ~10.5hrs:
 
-![Screencap showing run time on Mox for computing job](20230119-coral_metagenome-fastqc-fastp-multiqc-PRJNA744403_runtime.png)
+![Screencap showing run time on Mox for computing job](https://github.com/RobertsLab/sams-notebook/blob/master/images/screencaps/20230119-coral_metagenome-fastqc-fastp-multiqc-PRJNA744403_runtime.png?raw=true)
 
 Output folder:
 
-- []()
+- [20230119-coral_metagenome-fastqc-fastp-multiqc-PRJNA744403/](https://gannet.fish.washington.edu/Atumefaciens/20230119-coral_metagenome-fastqc-fastp-multiqc-PRJNA744403/)
+
+  - #### Directory tree  (text)
+
+    - [20230119-coral_metagenome-fastqc-fastp-multiqc-PRJNA744403/directory-tree.txt](https://gannet.fish.washington.edu/Atumefaciens/20230119-coral_metagenome-fastqc-fastp-multiqc-PRJNA744403/directory-tree.txt)
+
+  - #### NCBI BioProject [PRJNA744403](https://www.ncbi.nlm.nih.gov/bioproject/?term=PRJNA744403) Metadata (CSV)
+
+    - [20230119-coral_metagenome-fastqc-fastp-multiqc-PRJNA744403/metadata-SraAccList-PRJNA744403.csv](https://gannet.fish.washington.edu/Atumefaciens/20230119-coral_metagenome-fastqc-fastp-multiqc-PRJNA744403/metadata-SraAccList-PRJNA744403.csv)
+
+    
 
