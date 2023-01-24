@@ -409,9 +409,9 @@ echo "${PATH}" | tr : \\n
 
 #### RESULTS
 
-Runtime was ~10.5hrs:
+Runtime was ~6.25hrs:
 
-![Screencap showing run time on Mox for computing job](https://github.com/RobertsLab/sams-notebook/blob/master/images/screencaps/20230119-coral_metagenome-fastqc-fastp-multiqc-PRJNA744403_runtime.png?raw=true)
+![Screencap showing run time on Mox for computing job](https://github.com/RobertsLab/sams-notebook/blob/master/images/screencaps/20230119-coral_fastqc-fastp-multiqc-PRJNA744403_runtime.png?raw=true)
 
 Due to the large number of files, along with attempts to keep things semi-organized, please refer to the [directory-tree](#directory-tree-text) first.
 
