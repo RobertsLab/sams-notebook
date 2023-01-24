@@ -413,6 +413,8 @@ Runtime was ~10.5hrs:
 
 ![Screencap showing run time on Mox for computing job](https://github.com/RobertsLab/sams-notebook/blob/master/images/screencaps/20230119-coral_metagenome-fastqc-fastp-multiqc-PRJNA744403_runtime.png?raw=true)
 
+Due to the large number of files, along with attempts to keep things semi-organized, please refer to the [directory-tree](#directory-tree-text) first.
+
 Output folder:
 
 - [20230119-coral_metagenome-fastqc-fastp-multiqc-PRJNA744403/](https://gannet.fish.washington.edu/Atumefaciens/20230119-coral_metagenome-fastqc-fastp-multiqc-PRJNA744403/)
@@ -426,4 +428,34 @@ Output folder:
     - [20230119-coral_metagenome-fastqc-fastp-multiqc-PRJNA744403/metadata-SraAccList-PRJNA744403.csv](https://gannet.fish.washington.edu/Atumefaciens/20230119-coral_metagenome-fastqc-fastp-multiqc-PRJNA744403/metadata-SraAccList-PRJNA744403.csv)
 
     
+  - #### _P.grandis_ BS-seq raw reads [`MultiQC`](https://multiqc.info/) report (HTML):
 
+    - [20230119-coral-fastqc-fastp-multiqc-PRJNA744403/data/P_grandis/BS-seq/multiqc_report.html](https://gannet.fish.washington.edu/Atumefaciens/20230119-coral-fastqc-fastp-multiqc-PRJNA744403/data/P_grandis/BS-seq/multiqc_report.html)
+
+  - #### _P.grandis_ BS-seq trimmed reads [`MultiQC`](https://multiqc.info/) report (HTML):
+
+    - [20230119-coral-fastqc-fastp-multiqc-PRJNA744403/data/P_grandis/BS-seq/trimmed/multiqc_report.html](https://gannet.fish.washington.edu/Atumefaciens/20230119-coral-fastqc-fastp-multiqc-PRJNA744403/data/P_grandis/BS-seq/trimmed/multiqc_report.html)
+
+  - #### _P.grandis_ RNA-seq raw reads [`MultiQC`](https://multiqc.info/) report (HTML):
+
+    - [20230119-coral-fastqc-fastp-multiqc-PRJNA744403/data/P_grandis/RNA-seq/multiqc_report.html](https://gannet.fish.washington.edu/Atumefaciens/20230119-coral-fastqc-fastp-multiqc-PRJNA744403/data/P_grandis/RNA-seq/multiqc_report.html)
+
+  - #### _P.grandis_ RNA-seq trimmed reads [`MultiQC`](https://multiqc.info/) report (HTML):
+
+    - [20230119-coral-fastqc-fastp-multiqc-PRJNA744403/data/P_grandis/RNA-seq/trimmed/multiqc_report.html](https://gannet.fish.washington.edu/Atumefaciens/20230119-coral-fastqc-fastp-multiqc-PRJNA744403/data/P_grandis/RNA-seq/trimmed/multiqc_report.html)
+
+  - #### _P.meandrina_ BS-seq raw reads [`MultiQC`](https://multiqc.info/) report (HTML):
+
+    - [20230119-coral-fastqc-fastp-multiqc-PRJNA744403/data/P_meandrina/BS-seq/multiqc_report.html](https://gannet.fish.washington.edu/Atumefaciens/20230119-coral-fastqc-fastp-multiqc-PRJNA744403/data/P_meandrina/BS-seq/multiqc_report.html)
+
+  - #### _P.meandrina_ BS-seq trimmed reads [`MultiQC`](https://multiqc.info/) report (HTML):
+
+    - [20230119-coral-fastqc-fastp-multiqc-PRJNA744403/data/P_meandrina/BS-seq/trimmed/multiqc_report.html](https://gannet.fish.washington.edu/Atumefaciens/20230119-coral-fastqc-fastp-multiqc-PRJNA744403/data/P_meandrina/BS-seq/trimmed/multiqc_report.html)
+
+  - #### _P.meandrina_ RNA-seq raw reads [`MultiQC`](https://multiqc.info/) report (HTML):
+
+    - [20230119-coral-fastqc-fastp-multiqc-PRJNA744403/data/P_meandrina/RNA-seq/multiqc_report.html](https://gannet.fish.washington.edu/Atumefaciens/20230119-coral-fastqc-fastp-multiqc-PRJNA744403/data/P_meandrina/RNA-seq/multiqc_report.html)
+
+  - #### _P.meandrina_ RNA-seq trimmed reads [`MultiQC`](https://multiqc.info/) report (HTML):
+
+    - [20230119-coral-fastqc-fastp-multiqc-PRJNA744403/data/P_meandrina/RNA-seq/trimmed/multiqc_report.html](https://gannet.fish.washington.edu/Atumefaciens/20230119-coral-fastqc-fastp-multiqc-PRJNA744403/data/P_meandrina/RNA-seq/trimmed/multiqc_report.html)
