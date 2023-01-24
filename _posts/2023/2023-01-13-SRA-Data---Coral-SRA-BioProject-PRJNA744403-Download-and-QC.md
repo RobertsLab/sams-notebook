@@ -1,6 +1,6 @@
 ---
 layout: post
-title: SRA Data - Coral Metagenomics SRA BioProject PRJNA744403 Download and QC
+title: SRA Data - Coral SRA BioProject PRJNA744403 Download and QC
 date: '2023-01-13 10:14'
 tags: 
   - PRJNA744403
