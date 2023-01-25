@@ -8,6 +8,12 @@ categories:
   - Daily Bits
 ---
 
+20230124
+
+- Put together full notebook entry regarding coral SRA BioProject [PRJNA74403](https://www.ncbi.nlm.nih.gov/bioproject/?term=PRJNA744403) download/QC/trimming: https://robertslab.github.io/sams-notebook/2022/07/06/SRA-Data-S.namaycush-SRA-BioProject-PRJNA674328-Download-and-QC.html
+
+---
+
 20230120
 
 - Re-ran QC/trimming SLURM script for coral SRA data (BioProject [PRJNA74403](https://www.ncbi.nlm.nih.gov/bioproject/?term=PRJNA744403)) a couple of times. Still dealing with some minor file output organization issues... Also, seems like `fastp` is trimming data (i.e. output reports indicate average read length _after_ filtering is ~140bp, but the resulting graphs of read lengths after trimming still show 150bp...).
