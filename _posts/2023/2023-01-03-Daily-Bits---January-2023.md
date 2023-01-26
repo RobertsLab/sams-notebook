@@ -8,6 +8,26 @@ categories:
   - Daily Bits
 ---
 
+20230125
+
+- Downloaded genome data for the following species. For those hosted on NCBI, I got the commands using NCBI's very useful `curl` commands now provided on the beta page for a given genome.
+
+  - _P.verrucosa_: `curl -OJX GET "https://api.ncbi.nlm.nih.gov/datasets/v2alpha/genome/accession/GCA_014529365.1/download?include_annotation_type=GENOME_FASTA,GENOME_GFF,SEQUENCE_REPORT&filename=GCA_014529365.1.zip" -H "Accept: application/zip"`
+
+    - NOTE: No annotaiton file(s) (i.e. no GFF) available.
+
+  - _M.capitata_: `curl -OJX GET "https://api.ncbi.nlm.nih.gov/datasets/v2alpha/genome/accession/GCA_006542545.1/download?include_annotation_type=GENOME_FASTA,GENOME_GFF,SEQUENCE_REPORT&filename=GCA_006542545.1.zip" -H "Accept: application/zip"`
+
+    - NOTE: No annotaiton file(s) (i.e. no GFF) available.
+
+  - _P.acuta_:
+  
+    - Genome FastA: `wget http://cyanophora.rutgers.edu/Pocillopora_acuta/Pocillopora_acuta_HIv2.assembly.fasta.gz`
+
+    - Genome GFF: `http://cyanophora.rutgers.edu/Pocillopora_acuta/Pocillopora_acuta_HIv2.genes.gff3.gz`
+
+---
+
 20230124
 
 - Put together full notebook entry regarding coral SRA BioProject [PRJNA74403](https://www.ncbi.nlm.nih.gov/bioproject/?term=PRJNA744403) download/QC/trimming: https://robertslab.github.io/sams-notebook/2022/07/06/SRA-Data-S.namaycush-SRA-BioProject-PRJNA674328-Download-and-QC.html
