@@ -30,5 +30,10 @@ https://nbviewer.org/github/RobertsLab/code/blob/master/notebooks/sam/20230126-p
 
 Output folder:
 
-- []()
+- [20230126-pacu-gff_to_gtf](https://gannet.fish.washington.edu/Atumefaciens/20230126-pacu-gff_to_gtf)
 
+  #### GTF
+
+  - [20230126-pacu-gff_to_gtf/Pocillopora_acuta_HIv2.gtf](https://gannet.fish.washington.edu/Atumefaciens/20230126-pacu-gff_to_gtf/Pocillopora_acuta_HIv2.gtf) (61MB)
+
+  - MD5 checkum: `14f8c9bdd2ce4f3d713baf211469c13f`
