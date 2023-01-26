@@ -11,7 +11,7 @@ tags:
 categories: 
   - Miscellaneous
 ---
-
+As part of getting [these three coral species genome files](https://github.com/RobertsLab/resources/issues/1571) (GitHub Issue) added to our [Lab Handbook Genomic Resources page](https://robertslab.github.io/resources/Genomic-Resources/), I will index the _P.acuta_ genome file using [`HISAT2`](https://daehwankimlab.github.io/hisat2/), but need a GTF file to also identify exon/intro splice sites. Since a GTF file is not available, but a GFF file is, I needed to convert the GFF to GTF. Used `gffread` to do this on my computer. Process is documented in Jupyter Notebook linked below.
 
 Jupyter Notebook (GitHub):
 
