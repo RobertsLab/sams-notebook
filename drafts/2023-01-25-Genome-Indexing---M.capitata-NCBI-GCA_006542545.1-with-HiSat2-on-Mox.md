@@ -170,7 +170,18 @@ echo "Finished logging system $PATH."
 
 #### RESULTS
 
+Run time was ridiculously short: 3.5mins:
+
+![Screencap of Hisat2 genome index runtime on Mox of 3mins 31secsfor NCBI M.capitata genome.](https://github.com/RobertsLab/sams-notebook/blob/master/images/screencaps/20230125-mcap-hisat2-GCA_006542545.1-index_runtime.png?raw=true)
+
 Output folder:
 
-- []()
+- [20230125-mcap-hisat2-GCA_006542545.1-index/](https://gannet.fish.washington.edu/Atumefaciens/20230125-mcap-hisat2-GCA_006542545.1-index/)
 
+  #### HiSat2 Genome Index
+
+    - [20230125-mcap-hisat2-GCA_006542545.1-index/mcap-GCA_006542545.1-hisat2-indices.tar.gz](https://gannet.fish.washington.edu/Atumefaciens/20230125-mcap-hisat2-GCA_006542545.1-index/mcap-GCA_006542545.1-hisat2-indices.tar.gz) (tarball gzip)
+
+    - MD5 checksum: `1fd78407ed6416350d832a124212b1bc`
+
+    - Needs to be unpacked before use!
