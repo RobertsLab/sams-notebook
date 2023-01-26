@@ -8,23 +8,41 @@ categories:
   - Daily Bits
 ---
 
+20230126
+
+- Created [`HISAT2`](https://daehwankimlab.github.io/hisat2/) genome index for:
+
+  - [_P.acuta_](https://robertslab.github.io/sams-notebook/2023/01/26/Genome-Indexing-P.acuta-HIv2-Assembly-with-HiSat2-on-Mox.html) (Notebook entry)
+
+- Added _M.capitata_, _P.acuta_, and _P.verrucosa_ genomes and corresponding [`HISAT2`](https://daehwankimlab.github.io/hisat2/) indexes to The Roberts Lab Handbook [Genomic Resources page](https://robertslab.github.io/resources/Genomic-Resources/).
+
+---
+
 20230125
 
 - Downloaded genome data for the following species. For those hosted on NCBI, I got the commands using NCBI's very useful `curl` commands now provided on the beta page for a given genome.
 
   - _P.verrucosa_: `curl -OJX GET "https://api.ncbi.nlm.nih.gov/datasets/v2alpha/genome/accession/GCA_014529365.1/download?include_annotation_type=GENOME_FASTA,GENOME_GFF,SEQUENCE_REPORT&filename=GCA_014529365.1.zip" -H "Accept: application/zip"`
 
-    - NOTE: No annotaiton file(s) (i.e. no GFF) available.
+    - NOTE: No annotation file(s) (i.e. no GFF) available.
 
   - _M.capitata_: `curl -OJX GET "https://api.ncbi.nlm.nih.gov/datasets/v2alpha/genome/accession/GCA_006542545.1/download?include_annotation_type=GENOME_FASTA,GENOME_GFF,SEQUENCE_REPORT&filename=GCA_006542545.1.zip" -H "Accept: application/zip"`
 
-    - NOTE: No annotaiton file(s) (i.e. no GFF) available.
+    - NOTE: No annotation file(s) (i.e. no GFF) available.
 
   - _P.acuta_:
   
     - Genome FastA: `wget http://cyanophora.rutgers.edu/Pocillopora_acuta/Pocillopora_acuta_HIv2.assembly.fasta.gz`
 
     - Genome GFF: `http://cyanophora.rutgers.edu/Pocillopora_acuta/Pocillopora_acuta_HIv2.genes.gff3.gz`
+
+  - Created [`HISAT2`](https://daehwankimlab.github.io/hisat2/) genome indexes for:
+
+    - [_M.captita_](https://robertslab.github.io/sams-notebook/2023/01/25/Genome-Indexing-M.capitata-NCBI-GCA_006542545.1-with-HiSat2-on-Mox.html) (Notebook entry)
+
+    - [P.verrucosa_](https://robertslab.github.io/sams-notebook/2023/01/25/Genome-Indexing-P.verrucosa-NCBI-GCA_014529365.1-with-HiSat2-on-Mox.html) (Notebook entry)
+
+- Helped resolve Grace's [Trinity issue](https://github.com/RobertsLab/resources/issues/1476#issuecomment-1404328510) (GitHub Issue).
 
 ---
 
