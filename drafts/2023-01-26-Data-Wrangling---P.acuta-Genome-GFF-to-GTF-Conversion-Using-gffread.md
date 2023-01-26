@@ -13,6 +13,16 @@ categories:
 ---
 
 
+Jupyter Notebook (GitHub):
+
+https://github.com/RobertsLab/code/blob/master/notebooks/sam/20230126-pacu-gff_to_gtf.ipynb
+
+Jupyter Notebook (NBviewier):
+
+https://nbviewer.org/github/RobertsLab/code/blob/master/notebooks/sam/20230126-pacu-gff_to_gtf.ipynb
+
+
+<iframe src="https://nbviewer.org/github/RobertsLab/code/blob/master/notebooks/sam/20230126-pacu-gff_to_gtf.ipynb" width="100%" height="1000" scrolling="yes"></iframe>
 
 ---
 
