@@ -212,7 +212,7 @@ Output folder:
 
   #### HiSat2 Genome Index
 
-    - [20230131-mcap-HIv3-hisat2-build-index/Pocillopora_acuta_HIv2-hisat2-indices.tar.gz](https://gannet.fish.washington.edu/Atumefaciens/20230126-pacu-HIv2-hisat2-build-index/Montipora_capitata_HIv3-hisat2-indices.tar.gz) (tarball gzip; 1.2GB)
+    - [20230131-mcap-HIv3-hisat2-build-index/Pocillopora_acuta_HIv2-hisat2-indices.tar.gz](https://gannet.fish.washington.edu/Atumefaciens/20230131-mcap-HIv3-hisat2-build-index/Montipora_capitata_HIv3-hisat2-indices.tar.gz) (tarball gzip; 1.2GB)
 
     - MD5 checksum: `c8accb6c54e843198c776f0d6f0c603d`
 
