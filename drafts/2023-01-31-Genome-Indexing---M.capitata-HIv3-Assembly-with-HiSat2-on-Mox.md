@@ -218,12 +218,3 @@ Output folder:
 
     - Needs to be unpacked before use!
 
-
----
-
-#### RESULTS
-
-Output folder:
-
-- []()
-
