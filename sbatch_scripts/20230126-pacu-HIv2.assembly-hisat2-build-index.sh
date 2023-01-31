@@ -1,6 +1,6 @@
 #!/bin/bash
 ## Job Name
-#SBATCH --job-name=20230126-pacu-HIv2.assembly-hisat2-build-index
+#SBATCH --job-name=20230131-pacu-HIv2.assembly-hisat2-build-index
 ## Allocation Definition
 #SBATCH --account=srlab
 #SBATCH --partition=srlab
@@ -15,13 +15,13 @@
 #SBATCH --mail-type=ALL
 #SBATCH --mail-user=samwhite@uw.edu
 ## Specify the working directory for this job
-#SBATCH --chdir=/gscratch/scrubbed/samwhite/outputs/20230126-pacu-HIv2-hisat2-build-index
+#SBATCH --chdir=/gscratch/scrubbed/samwhite/outputs/20230131-pacu-HIv2-hisat2-build-index
 
 ## Script using HiSat2 to build a genome index, identify exons, and splice sites in P.acuta genome assembly using Hisat2.
 
 ## Genome and GFF from here: http://cyanophora.rutgers.edu/Pocillopora_acuta/
 
-## FYI - can't seem to get exon/splice sites to work with the GTF generated on 20260126 by SJW:
+## GTF generated on 20260126 by SJW:
 ## https://robertslab.github.io/sams-notebook/2023/01/26/Data-Wrangling-P.acuta-Genome-GFF-to-GTF-Conversion-Using-gffread.html
 
 ###################################################################################
@@ -38,16 +38,25 @@ genome_index_name="Pocillopora_acuta_HIv2"
 # Paths to programs
 hisat2_dir="/gscratch/srlab/programs/hisat2-2.2.0"
 hisat2_build="${hisat2_dir}/hisat2-build"
+hisat2_exons="${hisat2_dir}/hisat2_extract_exons.py"
+hisat2_splice_sites="${hisat2_dir}/hisat2_extract_splice_sites.py"
 
 # Input/output files
+exons="Panopea-generosa-v1.0_hisat2_exons.tab"
 genome_dir="/gscratch/srlab/sam/data/P_acuta/genomes"
 genome_fasta="${genome_dir}/Pocillopora_acuta_HIv2.assembly.fasta"
+genome_gff="${genome_index_dir}/Pocillopora_acuta_HIv2.genes.gff3"
+splice_sites="Pocillopora_acuta_HIv2_hisat2_splice_sites.tab"
+transcripts_gtf="${genome_dir}/Pocillopora_acuta_HIv2.gtf"
 
 
 # Programs associative array
 declare -A programs_array
 programs_array=(
-[hisat2_build]="${hisat2_build}"
+[hisat2]="${hisat2}" \
+[hisat2_build]="${hisat2_build}" \
+[hisat2_exons]="${hisat2_exons}" \
+[hisat2_splice_sites]="${hisat2_splice_sites}"
 )
 
 
@@ -59,26 +68,45 @@ set -e
 # Load Python Mox module for Python module availability
 module load intel-python3_2017
 
+# Create Hisat2 exons tab file
+echo "Generating Hisat2 exons file..."
+"${programs_array[hisat2_exons]}" \
+"${transcripts_gtf}" \
+> "${exons}"
+echo "Exons file created: ${exons}."
+echo ""
+
+# Create Hisat2 splice sites tab file
+echo "Generating Hisat2 splice sites file..."
+"${programs_array[hisat2_splice_sites]}" \
+"${transcripts_gtf}" \
+> "${splice_sites}"
+echo "Splice sites file created: ${splice_sites}."
+echo ""
+
+
 # Build Hisat2 reference index using splice sites and exons
 echo "Beginning HiSat2 genome indexing..."
 echo ""
 "${programs_array[hisat2_build]}" \
 "${genome_fasta}" \
 "${genome_index_name}" \
+--exon "${exons}" \
+--ss "${splice_sites}" \
 -p "${threads}" \
 2> "${genome_index_name}-hisat2_build.stats.txt"
 echo "HiSat2 genome index files completed."
 echo ""
 
 # Tar/gzip index files into single gzip-ed tarball
-tar cvzf "${genome_index_name}-hisat2-indices.tar.gz" *.ht2
+tar -cvzf "${genome_index_name}-hisat2-indices.tar.gz" *.ht2
 
 # Remove individual index files
 rm *.ht2
 
 # Copy Hisat2 index files to my data directory for later use with StringTie
 echo "rsync-ing HiSat2 genome index files to ${genome_dir}."
-rsync -av "${genome_index_name}"*-hisat2-indices.tar.gz "${genome_dir}"
+rsync -avP "${genome_index_name}"*-hisat2-indices.tar.gz "${genome_dir}"
 echo "rsync completed."
 echo ""
 
