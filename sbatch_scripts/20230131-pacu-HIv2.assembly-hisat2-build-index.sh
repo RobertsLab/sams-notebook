@@ -42,7 +42,7 @@ hisat2_exons="${hisat2_dir}/hisat2_extract_exons.py"
 hisat2_splice_sites="${hisat2_dir}/hisat2_extract_splice_sites.py"
 
 # Input/output files
-exons="Panopea-generosa-v1.0_hisat2_exons.tab"
+exons="Pocillopora_acuta_HIv2_hisat2_exons.tab"
 genome_dir="/gscratch/srlab/sam/data/P_acuta/genomes"
 genome_fasta="${genome_dir}/Pocillopora_acuta_HIv2.assembly.fasta"
 genome_gff="${genome_index_dir}/Pocillopora_acuta_HIv2.genes.gff3"
