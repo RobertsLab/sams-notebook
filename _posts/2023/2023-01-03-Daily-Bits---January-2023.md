@@ -8,6 +8,14 @@ categories:
   - Daily Bits
 ---
 
+---
+
+20230127
+
+- Encountered [an issue with coral GTFs](https://github.com/RobertsLab/resources/issues/1575) (GitHub Issue) not being compatible with [`HISAT2`](https://daehwankimlab.github.io/hisat2/) `extract_exons.py` script. Working on fixing...
+
+---
+
 20230126
 
 - Created [`HISAT2`](https://daehwankimlab.github.io/hisat2/) genome index for:
