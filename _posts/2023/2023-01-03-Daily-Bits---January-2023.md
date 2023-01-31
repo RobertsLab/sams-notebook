@@ -8,6 +8,12 @@ categories:
   - Daily Bits
 ---
 
+20230130
+
+- Resolved [the issue with the coral GTFs](https://github.com/RobertsLab/resources/issues/1575) (GitHub Issue)!!!
+
+- Lab meeting.
+
 ---
 
 20230127
