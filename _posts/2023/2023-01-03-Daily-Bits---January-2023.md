@@ -8,11 +8,27 @@ categories:
   - Daily Bits
 ---
 
+20230131
+
+- Updated coral GTFs:
+
+  - [Data-Wrangling-P.acuta-Genome-GFF-to-GTF-Conversion-Using-gffread](https://robertslab.github.io/sams-notebook/2023/01/26/Data-Wrangling-P.acuta-Genome-GFF-to-GTF-Conversion-Using-gffread.html)
+
+  - [Data-Wrangling-M.capitata-Genome-GFF-to-GTF-Using-gffread](https://robertslab.github.io/sams-notebook/2023/01/27/Data-Wrangling-M.capitata-Genome-GFF-to-GTF-Using-gffread.html)
+
+  - Added GTFs to [Genomic Resources handbook page](https://robertslab.github.io/resources/Genomic-Resources/).
+
+- Added updated coral genome [`HISAT2`](https://daehwankimlab.github.io/hisat2/) indexes to [Genomic Resources handbook page](https://robertslab.github.io/resources/Genomic-Resources/).
+
+---
+
 20230130
 
 - Resolved [the issue with the coral GTFs](https://github.com/RobertsLab/resources/issues/1575) (GitHub Issue)!!!
 
 - Lab meeting.
+
+- Added additional coral GFFs/genomes to [Roberts Lab Handbook](https://robertslab.github.io/resources/Genomic-Resources/).
 
 ---
 
