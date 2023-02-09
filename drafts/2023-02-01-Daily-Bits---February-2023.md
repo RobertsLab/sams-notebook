@@ -8,6 +8,12 @@ categories:
   - Daily Bits
 ---
 
+20230208
+
+- Worked on Ariana's [Tidy Tuesday assignment](https://github.com/RobertsLab/resources/discussions/1574) for lab meeting next week.
+
+---
+
 20230207
 
 - In lab helping Laura & Steven get supplies ready for cod sampling in Oregon tomorrow.
