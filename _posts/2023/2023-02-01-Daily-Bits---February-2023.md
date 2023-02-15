@@ -8,6 +8,38 @@ categories:
   - Daily Bits
 ---
 
+20230214
+
+- Helped with an issue that Marta Gomez-Buckley [was having trying to install RAxML-NG on the UW HPC (Klone)](https://github.com/RobertsLab/resources/issues/1578).
+
+- Continued to help Emma Strand with her issue getting EpiDiverse/snp installed on their HPC at URI.
+
+---
+
+20230213
+
+- Lab meeting.
+
+- CEABIGR meeting w/Yaamini.
+
+  - Just worked on adding text (Methods) to manuscript.
+
+- Continued to help Emma Strand with her issue getting EpiDiverse/snp installed on their HPC at URI.
+
+---
+
+20230210
+
+- Worked a lot with Emma Strand from URI to try to troubleshoot her usage of the Nextflow [EpiDiverse/snp pipeline](https://github.com/EpiDiverse/snp). Read [this notebook entry of hers](https://github.com/emmastrand/EmmaStrand_Notebook/blob/master/_posts/2023-02-06-EpiDiverse-Bleaching-Pairs-Analysis.md#troubleshooting) for some details on the error. Seems to be related to use of Singularity (now Apptainer) container; particularly after she ran the pipeline using the `test` command and got the same error message as when she ran with her own data set.
+
+- Transferred Danielle Becker Coral E5 data from Mox to Gannet:
+
+  - [hputnam-Becker_E5/](https://gannet.fish.washington.edu/Atumefaciens/hputnam-Becker_E5/)
+
+    - NOTE: There are no README files, so I can only glean info regarding contents from directory names. Will potentially discuss contents in more detail with Danielle at a later date.
+
+---
+
 20230209
 
 - Worked with Danielle Becker, as part of the Coral E5 project, to transfer data related to [this repo](https://github.com/hputnam/Becker_E5), from her HPC (Univ. of Rhode Island; Andromeda) to ours (Univ. of Washington; Mox) in order to eventually transfer to Gannet so that these files are publicly accessible to all members of the Coral E5 project.
@@ -20,8 +52,8 @@ categories:
     [becker]
     type = s3
     provider = Ceph
-    access_key_id = C6IHOMBWWBAC10UY4I87
-    secret_access_key = Y24jMNaMZCiw9Wr2GftibTC+ue+a5y
+    access_key_id = <redacted>
+    secret_access_key = <redacted>
     endpoint = https://sdsc.osn.xsede.org/
     ```
 
