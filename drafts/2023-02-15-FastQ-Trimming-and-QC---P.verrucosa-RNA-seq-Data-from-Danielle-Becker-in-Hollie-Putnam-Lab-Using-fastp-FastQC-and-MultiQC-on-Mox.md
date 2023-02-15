@@ -299,6 +299,11 @@ echo "${PATH}" | tr : \\n
 
 #### RESULTS
 
+Runtime was Just under two hours:
+
+![Screencap showing runtime of 1 hour 48 minutes and 29 seconds for trimming and QC on Mox for Danielle Becker RNA-seq data](https://github.com/RobertsLab/sams-notebook/blob/master/images/screencaps/20230215-pver-fastqc-fastp-multiqc-E5-RNAseq_runtime.png?raw=true)
+
+
 Output folder:
 
 - []()
