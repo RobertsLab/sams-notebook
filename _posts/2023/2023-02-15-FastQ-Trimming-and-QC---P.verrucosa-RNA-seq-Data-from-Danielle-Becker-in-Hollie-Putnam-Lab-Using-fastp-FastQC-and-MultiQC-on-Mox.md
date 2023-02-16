@@ -20,7 +20,9 @@ After receiving the _P.verrucosa_ RNA-seq data from Danielle Becker (Hollie Putn
 
 
 
-If they had been trimmed, then the average read length should be shorter than 150bp... Oddly, I experienced this [with other coral sequencing data from the Putnam Lab back in January](https://robertslab.github.io/sams-notebook/2023/01/13/SRA-Data-Coral-SRA-BioProject-PRJNA744403-Download-and-QC.html). Additionally, I decided to add the same 20bp 5' end hard trim to all reads that I did [with the other coral sequencing data from the Putnam Lab back in January](https://robertslab.github.io/sams-notebook/2023/01/13/SRA-Data-Coral-SRA-BioProject-PRJNA744403-Download-and-QC.html).
+If they had been trimmed, then the average read length should be shorter than 150bp... Oddly, I experienced this [with other coral sequencing data from the Putnam Lab back in January](https://robertslab.github.io/sams-notebook/2023/01/13/SRA-Data-Coral-SRA-BioProject-PRJNA744403-Download-and-QC.html).
+
+So, with all of this info, I decided to trim the raw FastQs using [`fastp`](https://github.com/OpenGene/fastp), and perform a 20bp 5' end hard trim to all reads like I did [with the other coral sequencing data from the Putnam Lab back in January](https://robertslab.github.io/sams-notebook/2023/01/13/SRA-Data-Coral-SRA-BioProject-PRJNA744403-Download-and-QC.html).
 
 Job was run on Mox using [`fastp`](https://github.com/OpenGene/fastp), [`FastQC`](https://www.bioinformatics.babraham.ac.uk/projects/fastqc/), and [`MultiQC`](https://multiqc.info/).
 
@@ -336,4 +338,4 @@ Output folder:
       - _trimmed_ (e.g. `C17_R[12]`)
       - _fastp_ (e.g. `C17`)
 
-Next steps will be to align the trimmed reads to the _P.verrucosa_ genomes and the endosymbiont genome(s) in order to seperate reads matching to each genome.
+Okay, the trimmed FastQs look better - no adapter contamination in R1 or R2 reads, and no "bumpy stuff" at 5' ends of reads. Plus, average read length is 130bp, reflecting the trimming that was supposed to take place. Next steps will be to align the trimmed reads to the _P.verrucosa_ genomes and the endosymbiont genome(s) in order to seperate reads matching to each genome.
