@@ -8,7 +8,7 @@
 ## Nodes
 #SBATCH --nodes=1
 ## Walltime (days-hours:minutes:seconds format)
-#SBATCH --time=3-12:00:00
+#SBATCH --time=12-00:00:00
 ## Memory per node
 #SBATCH --mem=500G
 ##turn on e-mail notification
@@ -222,10 +222,16 @@ do
   fastq_list_R2=$(echo "${joined_R2%,}")
 
   # Create and switch to dedicated sample directory
+  echo ""
+  echo "Creating ${sample} directory."
   mkdir "${sample}" && cd "$_"
+  echo ""
+  echo "Now in ${sample} directory."
 
   # HiSat2 alignments
   # Sets read group info (RG) using samples array
+  echo ""
+  echo "Running HiSat2..."
   "${programs_array[hisat2]}" \
   -x "${genome_index_name}" \
   -1 "${fastq_list_R1}" \
@@ -234,16 +240,31 @@ do
   --rg-id "${sample}" \
   --rg "SM:""${samples_associative_array[$sample]}" \
   2> "${sample}-hisat2_stats.txt"
+  echo ""
+  echo "Hisat2 for  ${fastq_list_R1} and ${fastq_list_R2} complete."
+  echo ""
 
   # Sort SAM files, convert to BAM, and index
+  echo ""
+  echo "Sorting ${sample}.sam..."
+  echo ""
   ${programs_array[samtools_view]} \
   -@ "${threads}" \
   -Su "${sample}".sam \
   | ${programs_array[samtools_sort]} - \
   -@ "${threads}" \
   -o "${sample}".sorted.bam
+  echo "Created "${sample}".sorted.bam"
+  echo ""
+
+
   # Index BAM
+  echo ""
+  echo "Indexing ${sample}.sorted.bam..."
   ${programs_array[samtools_index]} "${sample}".sorted.bam
+  echo ""
+  echo "Indexing complete for ${sample}.sorted.bam."
+  echo ""
 
 #### END HISAT2 ALIGNMENTS ####
 
@@ -253,6 +274,8 @@ do
   # Uses "-B" option to output tables intended for use in Ballgown
   # Uses "-e" option; recommended when using "-B" option.
   # Limits analysis to only reads alignments matching reference.
+  echo "Beginning StringTie analysis on ${sample}.sorted.bam."
+  echo ""
   "${programs_array[stringtie]}" "${sample}".sorted.bam \
   -p "${threads}" \
   -o "${sample}".gtf \
@@ -260,30 +283,46 @@ do
   -C "${sample}.cov_refs.gtf" \
   -B \
   -e
+  echo "StringTie analysi finished for ${sample}.sorted.bam."
 #### END STRINGTIE ####
 
 # Add GTFs to list file, only if non-empty
 # Identifies GTF files that only have header
+  echo ""
+  echo "Adding ${sample}.gtf to ../${gtf_list}."
   gtf_lines=$(wc -l < "${sample}".gtf )
   if [ "${gtf_lines}" -gt 2 ]; then
     echo "$(pwd)/${sample}.gtf" >> ../"${gtf_list}"
   fi
+  echo ""
 
   # Delete unneeded SAM files
+  echo "Removing any SAM files."
+  echo ""
   rm ./*.sam
 
   # Generate checksums
   for file in *
   do
-    md5sum "${file}" >> "${sample}_checksums.md5"
+    echo ""
+    echo "Generating MD5 checksum for ${file}."
+    echo ""
+    md5sum "${file}" | tee --append "${sample}_checksums.md5"
+    echo ""
+    echo "${file} checksum added to ${sample}_checksums.md5."
+    echo ""
   done
 
   # Move up to orig. working directory
+  echo "Moving to original working directory."
+  echo ""
   cd ../
+  echo "Now in $(pwd)."
+  echo ""
 
 done
 
-echo "Finished HiSat2 alignments and StringTie analysis."
+echo "Finished all HiSat2 alignments and StringTie analysis."
 echo ""
 
 
@@ -291,7 +330,11 @@ echo ""
 
 # Merge all BAMs to singular BAM for use in transcriptome assembly later
 ## Create list of sorted BAMs for merging
+echo ""
+echo "Creating list file of sorted BAMs..."
 find . -name "*sorted.bam" > sorted_bams.list
+echo "List of BAMs created: sorted_bams.list"
+echo ""
 
 ## Merge sorted BAMs
 echo "Merging all BAM files..."
@@ -334,7 +377,7 @@ echo ""
 
 # Delete unneccessary index files
 echo ""
-echo "Remvoing HiSat2 genome index files..."
+echo "Removing HiSat2 genome index files..."
 echo ""
 rm "${genome_index_name}"*.ht2
 echo "All genome index files removed."
@@ -350,6 +393,7 @@ echo ""
 "${genome_index_name}.stringtie.gtf"
 echo ""
 echo "Finished gffcompare"
+echo ""
 
 #### END GFFCOMPARE ####
 
