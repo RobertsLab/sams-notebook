@@ -12,7 +12,17 @@ tags:
 categories: 
   - E5
 ---
+After receiving the _P.verrucosa_ RNA-seq data from Danielle Becker (Hollie Putnam's Lab, Univ. of Rhode Island), I noticed that [the trimmed reads](https://gannet.fish.washington.edu/Atumefaciens/hputnam-Becker_E5/Becker_RNASeq/data/trimmed/) didn't appear to actually be trimmed. There was still adapter contamination (solely in R2 reads - suggesting the `detect_adapter_for_pe` option had been omitted from the `fastp` command?), but the reads had an average read length of 150bp - _except_ when looking at the adapter content report!!??.
 
+![Screencap of FastQC Adapter content report for trimmed sample C17_R2_001.fastq.gz. Plot shows read lengths of 150bp, despite trimming. Additionally, shows "bumpy" stuff in first 20bp of all reads.](https://github.com/RobertsLab/sams-notebook/blob/master/images/screencaps/20230215-pver-fastqc-fastp-multiqc-E5-RNAseq-previous_fastqc-01.png?raw=true)
+
+![Screencap of FastQC Per base sequence content report for trimmed sample C17_R2_001.fastq.gz. Plot shows residual adapter content, and, inexplicalbly, shows read lengths of <150bp, despite what's reported in all other length-based reports in the FastQC output!](https://github.com/RobertsLab/sams-notebook/blob/master/images/screencaps/20230215-pver-fastqc-fastp-multiqc-E5-RNAseq-previous_fastqc-02.png?raw=true)
+
+
+
+If they had been trimmed, then the average read length should be shorter than 150bp... Oddly, I experienced this [with other coral sequencing data from the Putnam Lab back in January](https://robertslab.github.io/sams-notebook/2023/01/13/SRA-Data-Coral-SRA-BioProject-PRJNA744403-Download-and-QC.html). Additionally, I decided to add the same 20bp 5' end hard trim to all reads that I did [with the other coral sequencing data from the Putnam Lab back in January](https://robertslab.github.io/sams-notebook/2023/01/13/SRA-Data-Coral-SRA-BioProject-PRJNA744403-Download-and-QC.html).
+
+Job was run on Mox using [`fastp`](https://github.com/OpenGene/fastp), [`FastQC`](https://www.bioinformatics.babraham.ac.uk/projects/fastqc/), and [`MultiQC`](https://multiqc.info/).
 
 SBATCH script (GitHub):
 
@@ -306,5 +316,24 @@ Runtime was Just under two hours:
 
 Output folder:
 
-- []()
+- [20230215-pver-fastqc-fastp-multiqc-E5-RNAseq/](https://gannet.fish.washington.edu/Atumefaciens/20230215-pver-fastqc-fastp-multiqc-E5-RNAseq/)
 
+    #### Trimmed FastQs (FastQ)
+
+    - All trimmed FastQs follow this pattern: `*fastp-trim.20230215.fq.gz`
+
+    #### Trimmed FastQ MD5 checksums (text)
+
+    - [20230215-pver-fastqc-fastp-multiqc-E5-RNAseq/trimmed_fastq_checksums.md5](https://gannet.fish.washington.edu/Atumefaciens/20230215-pver-fastqc-fastp-multiqc-E5-RNAseq/trimmed_fastq_checksums.md5)
+
+    #### MultiQC Report (HTML)
+
+    - [20230215-pver-fastqc-fastp-multiqc-E5-RNAseq/multiqc_report.html](https://gannet.fish.washington.edu/Atumefaciens/20230215-pver-fastqc-fastp-multiqc-E5-RNAseq/multiqc_report.html)
+
+    - NOTE: The report is a bit confusing due to the fact that it has summarized the follwing in a single report:
+    
+      - _raw_ (e.g. `C17_R[12]_001`)
+      - _trimmed_ (e.g. `C17_R[12]`)
+      - _fastp_ (e.g. `C17`)
+
+Next steps will be to align the trimmed reads to the _P.verrucosa_ genomes and the endosymbiont genome(s) in order to seperate reads matching to each genome.
