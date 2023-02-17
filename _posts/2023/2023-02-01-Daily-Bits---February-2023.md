@@ -8,6 +8,41 @@ categories:
   - Daily Bits
 ---
 
+
+20230217
+
+- Science Hour
+
+- [Created _C.goreaui_ (_P.verrucosa_ endosymbiont) GTF](https://robertslab.github.io/sams-notebook/2023/02/17/Data-Wrangling-C.goreaui-Genome-GFF-to-GTF-Using-gffread.html) and added to [Genomic Resources Handbook page](https://robertslab.github.io/resources/Genomic-Resources/).
+
+- Read a lot about container usage in order to be able to effectively use `coenv` node on Klone...
+
+---
+
+20230216
+
+- Pub-a-thon
+
+- Long meeting with Emma Strand trying to troubleshoot conda install of EpiDiverse/snp on her HPC cluster. No luck. Advised her to talk with her IT dept.
+
+- Downloaded _P.verrucosa_ endosymbiont genome and GFF files.
+
+- Began [`HISAT2`](https://daehwankimlab.github.io/hisat2/) alignments and StringTie analysis using E5 _P.verrucosa_ [trimmed RNA-seq data]((https://robertslab.github.io/sams-notebook/2023/02/15/FastQ-Trimming-and-QC-P.verrucosa-RNA-seq-Data-from-Danielle-Becker-in-Hollie-Putnam-Lab-Using-fastp-FastQC-and-MultiQC-on-Mox.html)).
+
+---
+
+20230215
+
+- Long Slack chat with Danielle Becker regarding her E5 _P.verrucosa_ RNA-seq data.
+
+  - [Trimming doesn't look like it worked](https://gannet.fish.washington.edu/Atumefaciens/hputnam-Becker_E5/Becker_RNASeq/data/trimmed/trimmed_qc/multiqc_report.html) (MultiQC Report; HTML).
+
+  - I trimmed raw data:
+
+    - [https://robertslab.github.io/sams-notebook/2023/02/15/FastQ-Trimming-and-QC-P.verrucosa-RNA-seq-Data-from-Danielle-Becker-in-Hollie-Putnam-Lab-Using-fastp-FastQC-and-MultiQC-on-Mox.html](https://robertslab.github.io/sams-notebook/2023/02/15/FastQ-Trimming-and-QC-P.verrucosa-RNA-seq-Data-from-Danielle-Becker-in-Hollie-Putnam-Lab-Using-fastp-FastQC-and-MultiQC-on-Mox.html)
+
+---
+
 20230214
 
 - Helped with an issue that Marta Gomez-Buckley [was having trying to install RAxML-NG on the UW HPC (Klone)](https://github.com/RobertsLab/resources/issues/1578).
