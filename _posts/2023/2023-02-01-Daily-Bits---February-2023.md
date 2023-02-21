@@ -8,6 +8,11 @@ categories:
   - Daily Bits
 ---
 
+20230220
+
+- Discovered (after HiSat2/Stringtie analysis failed) that the _P.verrucosa_ GFF3 file is not a valid GFF. A number of rows had more than nine fields, which is not a valid GFF. So, had to deal with figuring out how to fix that. Will re-run the analysis using the fixed GFF, and the corresponding updated GTF...
+
+---
 
 20230217
 
