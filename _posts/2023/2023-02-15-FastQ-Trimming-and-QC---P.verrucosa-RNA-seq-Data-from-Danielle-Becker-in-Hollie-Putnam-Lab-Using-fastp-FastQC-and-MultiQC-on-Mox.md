@@ -320,14 +320,14 @@ Output folder:
 
 - [20230215-pver-fastqc-fastp-multiqc-E5-RNAseq/](https://gannet.fish.washington.edu/Atumefaciens/20230215-pver-fastqc-fastp-multiqc-E5-RNAseq/)  
     - #### Trimmed FastQs (FastQ)
-      - All trimmed FastQs follow this pattern: `*fastp-trim.20230215.fq.gz`
+        - All trimmed FastQs follow this pattern: `*fastp-trim.20230215.fq.gz`
     - #### Trimmed FastQ MD5 checksums (text)
-      - [20230215-pver-fastqc-fastp-multiqc-E5-RNAseq/trimmed_fastq_checksums.md5](https://gannet.fish.washington.edu/Atumefaciens/20230215-pver-fastqc-fastp-multiqc-E5-RNAseq/trimmed_fastq_checksums.md5)
+        - [20230215-pver-fastqc-fastp-multiqc-E5-RNAseq/trimmed_fastq_checksums.md5](https://gannet.fish.washington.edu/Atumefaciens/20230215-pver-fastqc-fastp-multiqc-E5-RNAseq/trimmed_fastq_checksums.md5)
     - #### MultiQC Report (HTML)
-      - [20230215-pver-fastqc-fastp-multiqc-E5-RNAseq/multiqc_report.html](https://gannet.fish.washington.edu/Atumefaciens/20230215-pver-fastqc-fastp-multiqc-E5-RNAseq/multiqc_report.html)
-      - NOTE: The report is a bit confusing due to the fact that it has summarized the follwing in a single report:
-        - _raw_ (e.g. `C17_R[12]_001`)
-        - _trimmed_ (e.g. `C17_R[12]`)
-        - _fastp_ (e.g. `C17`)
+        - [20230215-pver-fastqc-fastp-multiqc-E5-RNAseq/multiqc_report.html](https://gannet.fish.washington.edu/Atumefaciens/20230215-pver-fastqc-fastp-multiqc-E5-RNAseq/multiqc_report.html)
+        - NOTE: The report is a bit confusing due to the fact that it has summarized the follwing in a single report:
+            - _raw_ (e.g. `C17_R[12]_001`)
+            - _trimmed_ (e.g. `C17_R[12]`)
+            - _fastp_ (e.g. `C17`)
 
 Okay, the trimmed FastQs look better - no adapter contamination in R1 or R2 reads, and no "bumpy stuff" at 5' ends of reads. Plus, average read length is 130bp, reflecting the trimming that was supposed to take place. Next steps will be to align the trimmed reads to the _P.verrucosa_ genomes and the endosymbiont genome(s) in order to seperate reads matching to each genome.
