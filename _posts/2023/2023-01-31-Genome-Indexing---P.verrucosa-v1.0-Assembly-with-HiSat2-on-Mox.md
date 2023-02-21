@@ -71,9 +71,9 @@ hisat2_splice_sites="${hisat2_dir}/hisat2_extract_splice_sites.py"
 exons="Pver_genome_assembly_v1.0_hisat2_exons.tab"
 genome_dir="/gscratch/srlab/sam/data/P_verrucosa/genomes"
 genome_fasta="${genome_dir}/Pver_genome_assembly_v1.0.fasta"
-genome_gff="${genome_index_dir}/Pver_genome_assembly_v1.0.gff3"
+genome_gff="${genome_index_dir}/Pver_genome_assembly_v1.0-valid.gff3"
 splice_sites="Pver_genome_assembly_v1.0_hisat2_splice_sites.tab"
-transcripts_gtf="${genome_dir}/Pver_genome_assembly_v1.0.gtf"
+transcripts_gtf="${genome_dir}/Pver_genome_assembly_v1.0-valid.gtf"
 
 
 # Programs associative array
@@ -196,7 +196,7 @@ echo ""
 printf "%0.s-" {1..10}
 echo "${PATH}" | tr : \\n
 } >> system_path.log
-echo "Finished logging system $PATH."
+echo "Finished logging system $PATH.""
 ```
 ---
 
