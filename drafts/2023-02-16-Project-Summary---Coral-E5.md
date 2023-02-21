@@ -11,6 +11,21 @@ categories:
   - E5
 ---
 
+### _C.goreaui_
+
+#### _C.goreaui_ GFF to GTF
+
+- Notebook:
+
+  - [https://robertslab.github.io/sams-notebook/2023/02/17/Data-Wrangling-C.goreaui-Genome-GFF-to-GTF-Using-gffread.html](https://robertslab.github.io/sams-notebook/2023/02/17/Data-Wrangling-C.goreaui-Genome-GFF-to-GTF-Using-gffread.html)
+
+- Output directory:
+
+  - [https://gannet.fish.washington.edu/Atumefaciens/20230217-cgor-gff_to_gtf/](https://gannet.fish.washington.edu/Atumefaciens/20230217-cgor-gff_to_gtf/)
+
+
+---
+
 ### _M.capitata_
 
 #### _M.capitata_ 
@@ -43,7 +58,7 @@ categories:
 
 ---
 
-### _P.meadrina_
+### _P.meandrina_
 
 ####
 
