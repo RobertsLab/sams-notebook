@@ -8,7 +8,7 @@
 ## Nodes
 #SBATCH --nodes=1
 ## Walltime (days-hours:minutes:seconds format)
-#SBATCH --time=3-12:00:00
+#SBATCH --time=12-00:00:00
 ## Memory per node
 #SBATCH --mem=120G
 ##turn on e-mail notification
@@ -46,6 +46,9 @@ fastq_dir=/gscratch/srlab/sam/data/P_verrucosa/RNAseq
 
 # CPU threads
 threads=40
+
+# MEGAN memory limit
+mem_limit=100G
 
 # Programs associative array
 declare -A programs_array
@@ -90,6 +93,7 @@ do
 	--top 5 \
 	--block-size 15.0 \
 	--index-chunks 4 \
+    --memory-limit ${mem_limit} \
     --threads ${threads}
     echo "DIAMOND BLASTx on ${fastq} complete: ${no_ext}.blastx.meganized.daa"
     echo ""
