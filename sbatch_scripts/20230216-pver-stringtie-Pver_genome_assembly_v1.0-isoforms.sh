@@ -70,7 +70,7 @@ stringtie="/gscratch/srlab/programs/stringtie-1.3.6.Linux_x86_64/stringtie"
 
 # Input/output files
 genome_index_dir="/gscratch/srlab/sam/data/P_verrucosa/genomes"
-genome_gff="${genome_index_dir}/Pver_genome_assembly_v1.0.gff3"
+genome_gff="${genome_index_dir}/Pver_genome_assembly_v1.0-valid.gff3"
 fastq_dir="/gscratch/srlab/sam/data/P_verrucosa/RNAseq/"
 gtf_list="gtf_list.txt"
 merged_bam="20230216-pver-stringtie-pver_v1.0-sorted-bams-merged.bam"
@@ -225,13 +225,12 @@ do
   echo ""
   echo "Creating ${sample} directory."
   mkdir "${sample}" && cd "$_"
-  echo ""
   echo "Now in ${sample} directory."
 
   # HiSat2 alignments
   # Sets read group info (RG) using samples array
   echo ""
-  echo "Running HiSat2..."
+  echo "Running HiSat2 for sample ${sample}."
   "${programs_array[hisat2]}" \
   -x "${genome_index_name}" \
   -1 "${fastq_list_R1}" \
@@ -246,7 +245,7 @@ do
 
   # Sort SAM files, convert to BAM, and index
   echo ""
-  echo "Sorting ${sample}.sam..."
+  echo "Sorting ${sample}.sam and creating sorted BAM."
   echo ""
   ${programs_array[samtools_view]} \
   -@ "${threads}" \
@@ -266,6 +265,10 @@ do
   echo "Indexing complete for ${sample}.sorted.bam."
   echo ""
 
+  echo ""
+  echo "HiSat2 completed for sample ${sample}."
+  echo ""
+
 #### END HISAT2 ALIGNMENTS ####
 
 #### BEGIN STRINGTIE ####
@@ -275,7 +278,6 @@ do
   # Uses "-e" option; recommended when using "-B" option.
   # Limits analysis to only reads alignments matching reference.
   echo "Beginning StringTie analysis on ${sample}.sorted.bam."
-  echo ""
   "${programs_array[stringtie]}" "${sample}".sorted.bam \
   -p "${threads}" \
   -o "${sample}".gtf \
@@ -283,7 +285,8 @@ do
   -C "${sample}.cov_refs.gtf" \
   -B \
   -e
-  echo "StringTie analysi finished for ${sample}.sorted.bam."
+  echo "StringTie analysis finished for ${sample}.sorted.bam."
+  echo ""
 #### END STRINGTIE ####
 
 # Add GTFs to list file, only if non-empty
@@ -377,7 +380,7 @@ echo ""
 
 # Delete unneccessary index files
 echo ""
-echo "Removing HiSat2 genome index files..."
+echo "Removing HiSat2 *.ht2 genome index files..."
 echo ""
 rm "${genome_index_name}"*.ht2
 echo "All genome index files removed."
@@ -404,9 +407,11 @@ do
   echo "Generating checksum for ${file}..."
   echo ""
   md5sum "${file}" | tee --append checksums.md5
-  echo ""
   echo "Checksum generated."
 done
+
+# Remove genome index tarball
+rm "${index_tarball}"
 
 #######################################################################################################
 
