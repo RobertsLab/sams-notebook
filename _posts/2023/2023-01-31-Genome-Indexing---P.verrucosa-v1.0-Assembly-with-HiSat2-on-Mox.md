@@ -214,6 +214,6 @@ Output folder:
 
     - [20230131-pver-v1.0-hisat2-build-index/Pver_genome_assembly_v1.0-hisat2-indices.tar.gz](https://gannet.fish.washington.edu/Atumefaciens/20230131-pver-v1.0-hisat2-build-index/Pver_genome_assembly_v1.0-hisat2-indices.tar.gz) (tarball gzip; 595GB)
 
-    - MD5 checksum: `a7cae695134fe93a795df7b395e7d5fc`
+    - MD5 checksum: `57e193e101396fab67de04c851f63240`
 
     - Needs to be unpacked before use!
