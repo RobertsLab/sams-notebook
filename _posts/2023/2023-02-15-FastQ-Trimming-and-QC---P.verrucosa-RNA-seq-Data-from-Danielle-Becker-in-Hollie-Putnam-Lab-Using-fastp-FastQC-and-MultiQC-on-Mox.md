@@ -319,7 +319,6 @@ Runtime was Just under two hours:
 Output folder:
 
 - [20230215-pver-fastqc-fastp-multiqc-E5-RNAseq/](https://gannet.fish.washington.edu/Atumefaciens/20230215-pver-fastqc-fastp-multiqc-E5-RNAseq/)  
-
     - #### Trimmed FastQs (FastQ)
       - All trimmed FastQs follow this pattern: `*fastp-trim.20230215.fq.gz`
     - #### Trimmed FastQ MD5 checksums (text)
