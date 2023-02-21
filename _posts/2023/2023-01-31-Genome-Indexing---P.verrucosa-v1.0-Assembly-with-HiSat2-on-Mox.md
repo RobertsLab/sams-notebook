@@ -204,7 +204,7 @@ echo "Finished logging system $PATH.""
 
 Run time was fast, just over 8mins:
 
-![Screenshot showing HiSat2 indexing of P.verrucosa v1.0 genome run time of 8mins 26secs on Mox.](https://github.com/RobertsLab/sams-notebook/blob/master/images/screencaps/20230131-pver-v1.0-hisat2-build-index_runtime.png?raw=true)
+![Screenshot showing HiSat2 indexing of P.verrucosa v1.0 genome run time of 8mins 25secs on Mox.](https://github.com/RobertsLab/sams-notebook/blob/master/images/screencaps/20230131-pver-v1.0-hisat2-build-index_runtime.png?raw=true)
 
 Output folder:
 
