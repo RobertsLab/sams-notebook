@@ -1,0 +1,980 @@
+---
+layout: post
+title: Transcript Identification and Alignments - P.verrucosa RNA-seq with Pver_genome_assembly_v1.0 Using HiSat2 and Stringtie on Mox
+date: '2023-02-16 08:20'
+tags: 
+  - hisat2
+  - stringtie
+  - mox
+  - RNAseq
+  - ballgown
+  - Pocllipora verrucosa
+  - cora
+  - E5
+categories: 
+  - E5
+---
+After getting the [RNA-seq data trimmed](https://robertslab.github.io/sams-notebook/2023/02/15/FastQ-Trimming-and-QC-P.verrucosa-RNA-seq-Data-from-Danielle-Becker-in-Hollie-Putnam-Lab-Using-fastp-FastQC-and-MultiQC-on-Mox.html), it was time to perform alignments and determine expression levels of transcripts/isoforms using with [`HISAT2`](https://daehwankimlab.github.io/hisat2/) and [`StringTie`](https://ccb.jhu.edu/software/stringtie/), respectively. [`StringTie`](https://ccb.jhu.edu/software/stringtie/) was set to output tables formatted for import into [`ballgown`](https://github.com/alyssafrazee/ballgown). After those two analyses were complete, I ran [`gffcompare`](https://ccb.jhu.edu/software/stringtie/gffcompare.shtml), using the merged [`StringTie`](https://ccb.jhu.edu/software/stringtie/) GTF and the input GFF3. I caught this in one of Danielle Becker's scripts and thought it might be interesting. The analsyes were run on Mox.
+
+SBATCH Script (GitHub):
+
+- [20230216-pver-stringtie-Pver_genome_assembly_v1.0-isoforms.sh](https://github.com/RobertsLab/sams-notebook/blob/master/sbatch_scripts/20230216-pver-stringtie-Pver_genome_assembly_v1.0-isoforms.sh)
+
+```shell
+#!/bin/bash
+## Job Name
+#SBATCH --job-name=20230216-pver-stringtie-Pver_genome_assembly_v1.0-isoforms
+## Allocation Definition
+#SBATCH --account=srlab
+#SBATCH --partition=srlab
+## Resources
+## Nodes
+#SBATCH --nodes=1
+## Walltime (days-hours:minutes:seconds format)
+#SBATCH --time=12-00:00:00
+## Memory per node
+#SBATCH --mem=500G
+##turn on e-mail notification
+#SBATCH --mail-type=ALL
+#SBATCH --mail-user=samwhite@uw.edu
+## Specify the working directory for this job
+#SBATCH --chdir=/gscratch/scrubbed/samwhite/outputs/20230216-pver-stringtie-Pver_genome_assembly_v1.0-isoforms
+
+
+## Script using Stringtie with P.verrucosa v1.0 genome assembly
+## and HiSat2 index generated on 20230131.
+
+## Genome and GFF from here: http://pver.reefgenomics.org/download/
+
+## GTF generated on 20230127 by SJW:
+## https://robertslab.github.io/sams-notebook/2023/01/27/Data-Wrangling-P.verrucosa-Genome-GFF-to-GTF-Using-gffread.html
+
+## HiSat2 index generated on 20230131 by SJW:
+## https://robertslab.github.io/sams-notebook/2023/01/31/Genome-Indexing-P.verrucosa-v1.0-Assembly-with-HiSat2-on-Mox.html
+
+## Using trimmed FastQs from 20230215.
+
+## Expects FastQ input filenames to match <sample name>_R[12].fastp-trim.20230215.fq.gz
+
+
+###################################################################################
+# These variables need to be set by user
+
+## Assign Variables
+
+# Set total number of SAMPLES (NOT number of FastQ files)
+total_samples=32
+
+# Set number of CPUs to use
+threads=28
+
+# Index name for Hisat2 use
+# Needs to match index naem used in previous Hisat2 indexing step
+genome_index_name="Pver_genome_assembly_v1.0"
+
+# HiSat2 indexes tarball
+index_tarball="Pver_genome_assembly_v1.0-hisat2-indices.tar.gz"
+
+# Set input FastQ patterns
+R1_fastq_pattern='*R1*fq.gz'
+fastq_pattern='*.fastp-trim.20230215.fq.gz'
+
+# Location of Hisat2 index files
+# Must keep variable name formatting, as it's used by HiSat2
+HISAT2_INDEXES=$(pwd)
+export HISAT2_INDEXES
+
+# Paths to programs
+gffcompare="/gscratch/srlab/programs/gffcompare-0.12.6.Linux_x86_64/gffcompare"
+hisat2_dir="/gscratch/srlab/programs/hisat2-2.1.0"
+hisat2="${hisat2_dir}/hisat2"
+samtools="/gscratch/srlab/programs/samtools-1.10/samtools"
+stringtie="/gscratch/srlab/programs/stringtie-1.3.6.Linux_x86_64/stringtie"
+
+# Input/output files
+genome_index_dir="/gscratch/srlab/sam/data/P_verrucosa/genomes"
+genome_gff="${genome_index_dir}/Pver_genome_assembly_v1.0.gff3"
+fastq_dir="/gscratch/srlab/sam/data/P_verrucosa/RNAseq/"
+gtf_list="gtf_list.txt"
+merged_bam="20230216-pver-stringtie-pver_v1.0-sorted-bams-merged.bam"
+
+# Declare associative array of sample names and metadata
+declare -A samples_associative_array=()
+
+# Programs associative array
+declare -A programs_array
+programs_array=(
+[gffcompare]="${gffcompare}" \
+[hisat2]="${hisat2}" \
+[samtools_index]="${samtools} index" \
+[samtools_merge]="${samtools} merge" \
+[samtools_sort]="${samtools} sort" \
+[samtools_view]="${samtools} view" \
+[stringtie]="${stringtie}"
+)
+
+
+###################################################################################################
+
+# Exit script if any command fails
+set -e
+
+# Load Python Mox module for Python module availability
+
+module load intel-python3_2017
+
+## Load associative array
+## Only need to use one set of reads to capture sample name
+
+# Set sample counter for array verification
+sample_counter=0
+
+# Load array
+# DO NOT QUOTE ${R1_fastq_pattern} - WILL NOT POPULATE ARRAY!
+for fastq in "${fastq_dir}"${R1_fastq_pattern}
+do
+  # Increment counter
+  ((sample_counter+=1))
+
+  # Remove path
+  sample_name="${fastq##*/}"
+
+  # Get sample name from first _-delimited field
+  sample_name=$(echo "${sample_name}" | awk -F "_" '{print $1}')
+  
+  # Set treatment condition for each sample
+  # Used for setting read group (@RG) in SAM files
+  if [[ "${sample_name}" == "C17" ]] || \
+[[ "${sample_name}" == "C18" ]] || \
+[[ "${sample_name}" == "C19" ]] || \
+[[ "${sample_name}" == "C20" ]] || \
+[[ "${sample_name}" == "C21" ]] || \
+[[ "${sample_name}" == "C22" ]] || \
+[[ "${sample_name}" == "C23" ]] || \
+[[ "${sample_name}" == "C24" ]] || \
+[[ "${sample_name}" == "C25" ]] || \
+[[ "${sample_name}" == "C26" ]] || \
+[[ "${sample_name}" == "C27" ]] || \
+[[ "${sample_name}" == "C28" ]] || \
+[[ "${sample_name}" == "C29" ]] || \
+[[ "${sample_name}" == "C30" ]] || \
+[[ "${sample_name}" == "C31" ]] || \
+[[ "${sample_name}" == "C32" ]];
+  then
+    treatment="control"
+  else
+    treatment="enriched"
+  fi
+
+  # Append to associative array
+  samples_associative_array+=(["${sample_name}"]="${treatment}")
+
+done
+
+# Check array size to confirm it has all expected samples
+# Exit if mismatch
+if [[ "${#samples_associative_array[@]}" != "${sample_counter}" ]] \
+|| [[ "${#samples_associative_array[@]}" != "${total_samples}" ]]
+  then
+    echo "samples_associative_array doesn't have all ${total_samples} samples."
+    echo ""
+    echo "samples_associative_array contents:"
+    echo ""
+    for item in "${!samples_associative_array[@]}"
+    do
+      printf "%s\t%s\n" "${item}" "${samples_associative_array[${item}]}"
+    done
+
+    exit
+fi
+
+# Copy Hisat2 genome index files
+echo ""
+echo "Transferring HiSat2 index file now."
+echo ""
+rsync -av "${genome_index_dir}/${index_tarball}" .
+echo ""
+
+# Unpack Hisat2 index files
+echo ""
+echo "Unpacking Hisat2 index tarball: ${index_tarball}..."
+echo ""
+tar -xzvf ${index_tarball}
+echo "Finished unpacking ${index_tarball}"
+echo ""
+
+#### BEGIN HISAT2 ALIGNMENTS ####
+echo "Beginning HiSat2 alignments and StringTie analysis..."
+echo ""
+for sample in "${!samples_associative_array[@]}"
+do
+
+  ## Inititalize arrays
+  fastq_array_R1=()
+  fastq_array_R2=()
+
+  # Create array of fastq R1 files
+  # and generated MD5 checksums file.
+
+  # DO NOT QUOTE ${fastq_pattern} 
+  for fastq in "${fastq_dir}""${sample}"*_R1${fastq_pattern}
+  do
+    fastq_array_R1+=("${fastq}")
+    echo "Generating checksum for ${fastq}..."
+    md5sum "${fastq}" >> input_fastqs_checksums.md5
+    echo "Checksum for ${fastq} completed."
+    echo ""
+  done
+
+  # Create array of fastq R2 files
+  # DO NOT QUOTE ${fastq_pattern} 
+  for fastq in "${fastq_dir}""${sample}"*_R2${fastq_pattern}
+  do
+    fastq_array_R2+=("${fastq}")
+    echo "Generating checksum for ${fastq}..."
+    md5sum "${fastq}" >> input_fastqs_checksums.md5
+    echo "Checksum for ${fastq} completed."
+    echo ""
+  done
+
+  # Create comma-separated lists of FastQs for Hisat2
+  printf -v joined_R1 '%s,' "${fastq_array_R1[@]}"
+  fastq_list_R1=$(echo "${joined_R1%,}")
+
+  printf -v joined_R2 '%s,' "${fastq_array_R2[@]}"
+  fastq_list_R2=$(echo "${joined_R2%,}")
+
+  # Create and switch to dedicated sample directory
+  echo ""
+  echo "Creating ${sample} directory."
+  mkdir "${sample}" && cd "$_"
+  echo ""
+  echo "Now in ${sample} directory."
+
+  # HiSat2 alignments
+  # Sets read group info (RG) using samples array
+  echo ""
+  echo "Running HiSat2..."
+  "${programs_array[hisat2]}" \
+  -x "${genome_index_name}" \
+  -1 "${fastq_list_R1}" \
+  -2 "${fastq_list_R2}" \
+  -S "${sample}".sam \
+  --rg-id "${sample}" \
+  --rg "SM:""${samples_associative_array[$sample]}" \
+  2> "${sample}-hisat2_stats.txt"
+  echo ""
+  echo "Hisat2 for  ${fastq_list_R1} and ${fastq_list_R2} complete."
+  echo ""
+
+  # Sort SAM files, convert to BAM, and index
+  echo ""
+  echo "Sorting ${sample}.sam..."
+  echo ""
+  ${programs_array[samtools_view]} \
+  -@ "${threads}" \
+  -Su "${sample}".sam \
+  | ${programs_array[samtools_sort]} - \
+  -@ "${threads}" \
+  -o "${sample}".sorted.bam
+  echo "Created "${sample}".sorted.bam"
+  echo ""
+
+
+  # Index BAM
+  echo ""
+  echo "Indexing ${sample}.sorted.bam..."
+  ${programs_array[samtools_index]} "${sample}".sorted.bam
+  echo ""
+  echo "Indexing complete for ${sample}.sorted.bam."
+  echo ""
+
+#### END HISAT2 ALIGNMENTS ####
+
+#### BEGIN STRINGTIE ####
+
+  # Run stringtie on alignments
+  # Uses "-B" option to output tables intended for use in Ballgown
+  # Uses "-e" option; recommended when using "-B" option.
+  # Limits analysis to only reads alignments matching reference.
+  echo "Beginning StringTie analysis on ${sample}.sorted.bam."
+  echo ""
+  "${programs_array[stringtie]}" "${sample}".sorted.bam \
+  -p "${threads}" \
+  -o "${sample}".gtf \
+  -G "${genome_gff}" \
+  -C "${sample}.cov_refs.gtf" \
+  -B \
+  -e
+  echo "StringTie analysi finished for ${sample}.sorted.bam."
+#### END STRINGTIE ####
+
+# Add GTFs to list file, only if non-empty
+# Identifies GTF files that only have header
+  echo ""
+  echo "Adding ${sample}.gtf to ../${gtf_list}."
+  gtf_lines=$(wc -l < "${sample}".gtf )
+  if [ "${gtf_lines}" -gt 2 ]; then
+    echo "$(pwd)/${sample}.gtf" >> ../"${gtf_list}"
+  fi
+  echo ""
+
+  # Delete unneeded SAM files
+  echo "Removing any SAM files."
+  echo ""
+  rm ./*.sam
+
+  # Generate checksums
+  for file in *
+  do
+    echo ""
+    echo "Generating MD5 checksum for ${file}."
+    echo ""
+    md5sum "${file}" | tee --append "${sample}_checksums.md5"
+    echo ""
+    echo "${file} checksum added to ${sample}_checksums.md5."
+    echo ""
+  done
+
+  # Move up to orig. working directory
+  echo "Moving to original working directory."
+  echo ""
+  cd ../
+  echo "Now in $(pwd)."
+  echo ""
+
+done
+
+echo "Finished all HiSat2 alignments and StringTie analysis."
+echo ""
+
+
+#### BEGIN MERGING BAMs ####
+
+# Merge all BAMs to singular BAM for use in transcriptome assembly later
+## Create list of sorted BAMs for merging
+echo ""
+echo "Creating list file of sorted BAMs..."
+find . -name "*sorted.bam" > sorted_bams.list
+echo "List of BAMs created: sorted_bams.list"
+echo ""
+
+## Merge sorted BAMs
+echo "Merging all BAM files..."
+echo ""
+${programs_array[samtools_merge]} \
+-b sorted_bams.list \
+${merged_bam} \
+--threads ${threads}
+echo ""
+echo "Finished creating ${merged_bam}."
+
+#### END MERGING BAMs ####
+
+#### BEGIN INDEXING MERGED BAM ####
+
+## Index merged BAM
+echo ""
+echo "Indexing ${merged_bam}..."
+echo ""
+${programs_array[samtools_index]} ${merged_bam}
+echo "Finished indexing ${merged_bam}."
+echo ""
+
+#### END INDEXING MERGED BAM ####
+
+#### BEGIN MERGE STRINGTIE GTFs ####
+
+# Create singular transcript file, using GTF list file
+echo "Merging GTFs..."
+echo ""
+"${programs_array[stringtie]}" --merge \
+"${gtf_list}" \
+-p "${threads}" \
+-G "${genome_gff}" \
+-o "${genome_index_name}.stringtie.gtf"
+echo ""
+echo "Finished merging GTFs into ${genome_index_name}.stringtie.gtf"
+echo ""
+#### END MERGE STRINGTIE GTFs ####
+
+# Delete unneccessary index files
+echo ""
+echo "Removing HiSat2 genome index files..."
+echo ""
+rm "${genome_index_name}"*.ht2
+echo "All genome index files removed."
+echo ""
+
+#### BEGIN GFFCOMPARE ####
+echo ""
+echo "Beginning gffcompare..."
+echo ""
+"${programs_array[gffcompare]}" \
+-r "${genome_gff}" \
+-o "${genome_index_name}-gffcmp" \
+"${genome_index_name}.stringtie.gtf"
+echo ""
+echo "Finished gffcompare"
+echo ""
+
+#### END GFFCOMPARE ####
+
+# Generate checksums
+for file in *
+do
+  echo ""
+  echo "Generating checksum for ${file}..."
+  echo ""
+  md5sum "${file}" | tee --append checksums.md5
+  echo ""
+  echo "Checksum generated."
+done
+
+#######################################################################################################
+
+# Capture program options
+if [[ "${#programs_array[@]}" -gt 0 ]]; then
+  echo "Logging program options..."
+  for program in "${!programs_array[@]}"
+  do
+    {
+    echo "Program options for ${program}: "
+    echo ""
+    # Handle samtools help menus
+    if [[ "${program}" == "samtools_index" ]] \
+    || [[ "${program}" == "samtools_sort" ]] \
+    || [[ "${program}" == "samtools_view" ]]
+    then
+      ${programs_array[$program]}
+
+    # Handle DIAMOND BLAST menu
+    elif [[ "${program}" == "diamond" ]]; then
+      ${programs_array[$program]} help
+
+    # Handle NCBI BLASTx menu
+    elif [[ "${program}" == "blastx" ]]; then
+      ${programs_array[$program]} -help
+    fi
+    ${programs_array[$program]} -h
+    echo ""
+    echo ""
+    echo "----------------------------------------------"
+    echo ""
+    echo ""
+  } &>> program_options.log || true
+
+    # If MultiQC is in programs_array, copy the config file to this directory.
+    if [[ "${program}" == "multiqc" ]]; then
+      cp --preserve ~/.multiqc_config.yaml multiqc_config.yaml
+    fi
+  done
+  echo "Finished logging programs options."
+  echo ""
+fi
+
+
+# Document programs in PATH (primarily for program version ID)
+echo "Logging system $PATH..."
+{
+date
+echo ""
+echo "System PATH for $SLURM_JOB_ID"
+echo ""
+printf "%0.s-" {1..10}
+echo "${PATH}" | tr : \\n
+} >> system_path.log
+echo "Finished logging system $PATH."
+```
+
+---
+
+#### RESULTS
+
+This took a bit over 2 days to run. I'm not posting a screencap of runtime like I usually do because the job died due to the Mox `scrubbed` partition being full. I ran the remaining commands manually in order to get this done while that storage issue got resolved.
+
+Output folder:
+
+- [20230216-pver-stringtie-Pver_genome_assembly_v1.0-isoforms](https://gannet.fish.washington.edu/Atumefaciens/20230216-pver-stringtie-Pver_genome_assembly_v1.0-isoforms)
+
+  - List of input FastQs and checksums (text):
+
+    - [20230216-pver-stringtie-Pver_genome_assembly_v1.0-isoforms/input_fastqs_checksums.md5](https://gannet.fish.washington.edu/Atumefaciens/20230216-pver-stringtie-Pver_genome_assembly_v1.0-isoforms/input_fastqs_checksums.md5)
+
+  - Merged GTF file (GTF; 37MB):
+
+    - [20230216-pver-stringtie-Pver_genome_assembly_v1.0-isoforms/Pver_genome_assembly_v1.0.stringtie.gtf](https://gannet.fish.washington.edu/Atumefaciens/20230216-pver-stringtie-Pver_genome_assembly_v1.0-isoforms/Pver_genome_assembly_v1.0.stringtie.gtf)
+
+  - Merged BAM file (95GB):
+
+    - [20230216-pver-stringtie-Pver_genome_assembly_v1.0-isoforms/20230216-pver-stringtie-pver_v1.0-sorted-bams-merged.bam](https://gannet.fish.washington.edu/Atumefaciens/20230216-pver-stringtie-Pver_genome_assembly_v1.0-isoforms/20230216-pver-stringtie-pver_v1.0-sorted-bams-merged.bam)
+
+      - MD5 checksum:
+
+        - `6b57660fa1795fdb478850ad09b88b51`
+
+    - Merged BAM index file (useful for IGV; 11MB):
+
+      - [20230216-pver-stringtie-Pver_genome_assembly_v1.0-isoforms/20230216-pver-stringtie-pver_v1.0-sorted-bams-merged.bam.bai](https://gannet.fish.washington.edu/Atumefaciens/20230216-pver-stringtie-Pver_genome_assembly_v1.0-isoforms/20230216-pver-stringtie-pver_v1.0-sorted-bams-merged.bam.bai)
+
+    - [`gffcompare`](https://ccb.jhu.edu/software/stringtie/gffcompare.shtml) files (text):
+
+      - `Pver_genome_assembly_v1.0-gffcmp*`: See link above for file descriptions. Contents of summary file (`Pver_genome_assembly_v1.0-gffcmp`):
+
+          ```
+          # gffcompare v0.12.6 | Command line was:
+          #/gscratch/srlab/programs/gffcompare-0.12.6.Linux_x86_64/gffcompare -r /gscratch/srlab/sam/data/P_verrucosa/genomes/Pver_genome_assembly_v1.0-valid.gff3 -o Pver_genome_assembly_v1.0-gffcmp Pver_genome_assembly_v1.0.stringtie.gtf
+          #
+
+          #= Summary for dataset: Pver_genome_assembly_v1.0.stringtie.gtf 
+          #     Query mRNAs :   27730 in   27400 loci  (24124 multi-exon transcripts)
+          #            (294 multi-transcript loci, ~1.0 transcripts per locus)
+          # Reference mRNAs :   27695 in   27400 loci  (24124 multi-exon)
+          # Super-loci w/ reference transcripts:    27400
+          #-----------------| Sensitivity | Precision  |
+                  Base level:   100.0     |   100.0    |
+                  Exon level:   100.0     |   100.0    |
+                Intron level:   100.0     |   100.0    |
+          Intron chain level:   100.0     |   100.0    |
+            Transcript level:   100.0     |    99.9    |
+                Locus level:   100.0     |   100.0    |
+
+              Matching intron chains:   24124
+                Matching transcripts:   27695
+                        Matching loci:   27400
+
+                    Missed exons:       0/208892	(  0.0%)
+                    Novel exons:       0/208892	(  0.0%)
+                  Missed introns:       0/181193	(  0.0%)
+                  Novel introns:       0/181193	(  0.0%)
+                    Missed loci:       0/27400	(  0.0%)
+                      Novel loci:       0/27400	(  0.0%)
+
+          Total union super-loci across all input datasets: 27400 
+          27730 out of 27730 consensus transcripts written in Pver_genome_assembly_v1.0-gffcmp.annotated.gtf (0 discarded as redundant)
+          ```
+
+Since there are a large number of folders/files, the resulting directory structure for all of the [`StringTie`](https://ccb.jhu.edu/software/stringtie/) output is shown at the end of this post. Here's a description of all the file types found in each directory:
+
+- `*.ctab`: See [`ballgown` documentation](https://github.com/alyssafrazee/ballgown) for description of these.
+
+- `*.checksums.md5`: MD5 checksums for all files in each directory.
+
+- `*.cov_refs.gtf`: Coverage GTF generate by [`StringTie`](https://ccb.jhu.edu/software/stringtie/) and used to generate final GTF for each sample.
+
+- `*.gtf`: Final GTF file produced by [`StringTie`](https://ccb.jhu.edu/software/stringtie/) for each sample.
+
+- `*_hisat2.err`: Standard error output from [`HISAT2`](https://daehwankimlab.github.io/hisat2/). Contains alignment info.
+
+- `*.sorted.bam`: Sorted BAM alignments file produced by [`HISAT2`](https://daehwankimlab.github.io/hisat2/).
+
+- `*.sorted.bam.bai`: BAM index file.
+
+
+Next up is to get these files imported into [`ballgown`](https://github.com/alyssafrazee/ballgown) for expression/isoform analyses.
+
+
+```
+[205G]  .
+|-- [ 12K]  20230216-pver-stringtie-Pver_genome_assembly_v1.0-isoforms.sh
+|-- [ 95G]  20230216-pver-stringtie-pver_v1.0-sorted-bams-merged.bam
+|-- [ 11M]  20230216-pver-stringtie-pver_v1.0-sorted-bams-merged.bam.bai
+|-- [3.0G]  C17
+|   |-- [ 474]  C17_checksums.md5
+|   |-- [7.8M]  C17.cov_refs.gtf
+|   |-- [ 36M]  C17.gtf
+|   |-- [1014]  C17-hisat2_stats.txt
+|   |-- [3.0G]  C17.sorted.bam
+|   |-- [1.7M]  C17.sorted.bam.bai
+|   |-- [2.4M]  e2t.ctab
+|   |-- [ 18M]  e_data.ctab
+|   |-- [2.1M]  i2t.ctab
+|   |-- [ 10M]  i_data.ctab
+|   `-- [2.8M]  t_data.ctab
+|-- [2.6G]  C18
+|   |-- [ 474]  C18_checksums.md5
+|   |-- [7.9M]  C18.cov_refs.gtf
+|   |-- [ 36M]  C18.gtf
+|   |-- [1011]  C18-hisat2_stats.txt
+|   |-- [2.5G]  C18.sorted.bam
+|   |-- [1.6M]  C18.sorted.bam.bai
+|   |-- [2.4M]  e2t.ctab
+|   |-- [ 18M]  e_data.ctab
+|   |-- [2.1M]  i2t.ctab
+|   |-- [ 10M]  i_data.ctab
+|   `-- [2.8M]  t_data.ctab
+|-- [2.8G]  C19
+|   |-- [ 474]  C19_checksums.md5
+|   |-- [7.8M]  C19.cov_refs.gtf
+|   |-- [ 36M]  C19.gtf
+|   |-- [1012]  C19-hisat2_stats.txt
+|   |-- [2.7G]  C19.sorted.bam
+|   |-- [1.6M]  C19.sorted.bam.bai
+|   |-- [2.4M]  e2t.ctab
+|   |-- [ 18M]  e_data.ctab
+|   |-- [2.1M]  i2t.ctab
+|   |-- [ 10M]  i_data.ctab
+|   `-- [2.8M]  t_data.ctab
+|-- [2.8G]  C20
+|   |-- [ 474]  C20_checksums.md5
+|   |-- [7.9M]  C20.cov_refs.gtf
+|   |-- [ 36M]  C20.gtf
+|   |-- [1011]  C20-hisat2_stats.txt
+|   |-- [2.7G]  C20.sorted.bam
+|   |-- [1.6M]  C20.sorted.bam.bai
+|   |-- [2.4M]  e2t.ctab
+|   |-- [ 18M]  e_data.ctab
+|   |-- [2.1M]  i2t.ctab
+|   |-- [ 10M]  i_data.ctab
+|   `-- [2.8M]  t_data.ctab
+|-- [1.9G]  C21
+|   |-- [ 474]  C21_checksums.md5
+|   |-- [7.4M]  C21.cov_refs.gtf
+|   |-- [ 36M]  C21.gtf
+|   |-- [1008]  C21-hisat2_stats.txt
+|   |-- [1.9G]  C21.sorted.bam
+|   |-- [1.4M]  C21.sorted.bam.bai
+|   |-- [2.4M]  e2t.ctab
+|   |-- [ 18M]  e_data.ctab
+|   |-- [2.1M]  i2t.ctab
+|   |-- [ 10M]  i_data.ctab
+|   `-- [2.8M]  t_data.ctab
+|-- [2.8G]  C22
+|   |-- [ 474]  C22_checksums.md5
+|   |-- [7.7M]  C22.cov_refs.gtf
+|   |-- [ 36M]  C22.gtf
+|   |-- [1014]  C22-hisat2_stats.txt
+|   |-- [2.7G]  C22.sorted.bam
+|   |-- [1.6M]  C22.sorted.bam.bai
+|   |-- [2.4M]  e2t.ctab
+|   |-- [ 18M]  e_data.ctab
+|   |-- [2.1M]  i2t.ctab
+|   |-- [ 10M]  i_data.ctab
+|   `-- [2.8M]  t_data.ctab
+|-- [2.4G]  C23
+|   |-- [ 474]  C23_checksums.md5
+|   |-- [7.5M]  C23.cov_refs.gtf
+|   |-- [ 36M]  C23.gtf
+|   |-- [1011]  C23-hisat2_stats.txt
+|   |-- [2.3G]  C23.sorted.bam
+|   |-- [1.5M]  C23.sorted.bam.bai
+|   |-- [2.4M]  e2t.ctab
+|   |-- [ 18M]  e_data.ctab
+|   |-- [2.1M]  i2t.ctab
+|   |-- [ 10M]  i_data.ctab
+|   `-- [2.8M]  t_data.ctab
+|-- [2.8G]  C24
+|   |-- [ 474]  C24_checksums.md5
+|   |-- [7.7M]  C24.cov_refs.gtf
+|   |-- [ 36M]  C24.gtf
+|   |-- [1014]  C24-hisat2_stats.txt
+|   |-- [2.7G]  C24.sorted.bam
+|   |-- [1.7M]  C24.sorted.bam.bai
+|   |-- [2.4M]  e2t.ctab
+|   |-- [ 18M]  e_data.ctab
+|   |-- [2.1M]  i2t.ctab
+|   |-- [ 10M]  i_data.ctab
+|   `-- [2.8M]  t_data.ctab
+|-- [3.6G]  C25
+|   |-- [ 474]  C25_checksums.md5
+|   |-- [8.2M]  C25.cov_refs.gtf
+|   |-- [ 36M]  C25.gtf
+|   |-- [1014]  C25-hisat2_stats.txt
+|   |-- [3.5G]  C25.sorted.bam
+|   |-- [1.8M]  C25.sorted.bam.bai
+|   |-- [2.4M]  e2t.ctab
+|   |-- [ 18M]  e_data.ctab
+|   |-- [2.1M]  i2t.ctab
+|   |-- [ 10M]  i_data.ctab
+|   `-- [2.8M]  t_data.ctab
+|-- [2.8G]  C26
+|   |-- [ 474]  C26_checksums.md5
+|   |-- [7.8M]  C26.cov_refs.gtf
+|   |-- [ 36M]  C26.gtf
+|   |-- [1014]  C26-hisat2_stats.txt
+|   |-- [2.8G]  C26.sorted.bam
+|   |-- [1.7M]  C26.sorted.bam.bai
+|   |-- [2.4M]  e2t.ctab
+|   |-- [ 18M]  e_data.ctab
+|   |-- [2.1M]  i2t.ctab
+|   |-- [ 10M]  i_data.ctab
+|   `-- [2.8M]  t_data.ctab
+|-- [3.0G]  C27
+|   |-- [ 474]  C27_checksums.md5
+|   |-- [7.9M]  C27.cov_refs.gtf
+|   |-- [ 36M]  C27.gtf
+|   |-- [1014]  C27-hisat2_stats.txt
+|   |-- [2.9G]  C27.sorted.bam
+|   |-- [1.7M]  C27.sorted.bam.bai
+|   |-- [2.4M]  e2t.ctab
+|   |-- [ 18M]  e_data.ctab
+|   |-- [2.1M]  i2t.ctab
+|   |-- [ 10M]  i_data.ctab
+|   `-- [2.8M]  t_data.ctab
+|-- [2.9G]  C28
+|   |-- [ 474]  C28_checksums.md5
+|   |-- [8.0M]  C28.cov_refs.gtf
+|   |-- [ 36M]  C28.gtf
+|   |-- [1014]  C28-hisat2_stats.txt
+|   |-- [2.8G]  C28.sorted.bam
+|   |-- [1.7M]  C28.sorted.bam.bai
+|   |-- [2.4M]  e2t.ctab
+|   |-- [ 18M]  e_data.ctab
+|   |-- [2.1M]  i2t.ctab
+|   |-- [ 10M]  i_data.ctab
+|   `-- [2.8M]  t_data.ctab
+|-- [2.2G]  C29
+|   |-- [ 474]  C29_checksums.md5
+|   |-- [7.6M]  C29.cov_refs.gtf
+|   |-- [ 36M]  C29.gtf
+|   |-- [1010]  C29-hisat2_stats.txt
+|   |-- [2.1G]  C29.sorted.bam
+|   |-- [1.6M]  C29.sorted.bam.bai
+|   |-- [2.4M]  e2t.ctab
+|   |-- [ 18M]  e_data.ctab
+|   |-- [2.1M]  i2t.ctab
+|   |-- [ 10M]  i_data.ctab
+|   `-- [2.8M]  t_data.ctab
+|-- [3.2G]  C30
+|   |-- [ 474]  C30_checksums.md5
+|   |-- [7.9M]  C30.cov_refs.gtf
+|   |-- [ 36M]  C30.gtf
+|   |-- [1014]  C30-hisat2_stats.txt
+|   |-- [3.1G]  C30.sorted.bam
+|   |-- [1.7M]  C30.sorted.bam.bai
+|   |-- [2.4M]  e2t.ctab
+|   |-- [ 18M]  e_data.ctab
+|   |-- [2.1M]  i2t.ctab
+|   |-- [ 10M]  i_data.ctab
+|   `-- [2.8M]  t_data.ctab
+|-- [2.8G]  C31
+|   |-- [ 474]  C31_checksums.md5
+|   |-- [7.9M]  C31.cov_refs.gtf
+|   |-- [ 36M]  C31.gtf
+|   |-- [1012]  C31-hisat2_stats.txt
+|   |-- [2.7G]  C31.sorted.bam
+|   |-- [1.6M]  C31.sorted.bam.bai
+|   |-- [2.4M]  e2t.ctab
+|   |-- [ 18M]  e_data.ctab
+|   |-- [2.1M]  i2t.ctab
+|   |-- [ 10M]  i_data.ctab
+|   `-- [2.8M]  t_data.ctab
+|-- [3.2G]  C32
+|   |-- [ 474]  C32_checksums.md5
+|   |-- [8.0M]  C32.cov_refs.gtf
+|   |-- [ 36M]  C32.gtf
+|   |-- [1014]  C32-hisat2_stats.txt
+|   |-- [3.1G]  C32.sorted.bam
+|   |-- [1.7M]  C32.sorted.bam.bai
+|   |-- [2.4M]  e2t.ctab
+|   |-- [ 18M]  e_data.ctab
+|   |-- [2.1M]  i2t.ctab
+|   |-- [ 10M]  i_data.ctab
+|   `-- [2.8M]  t_data.ctab
+|-- [1.1K]  checksums.md5
+|-- [ 23G]  E1
+|   |-- [ 469]  E1_checksums.md5
+|   |-- [9.8M]  E1.cov_refs.gtf
+|   |-- [ 36M]  E1.gtf
+|   |-- [1022]  E1-hisat2_stats.txt
+|   |-- [ 22G]  E1.sorted.bam
+|   |-- [4.0M]  E1.sorted.bam.bai
+|   |-- [2.4M]  e2t.ctab
+|   |-- [ 19M]  e_data.ctab
+|   |-- [2.1M]  i2t.ctab
+|   |-- [ 11M]  i_data.ctab
+|   `-- [2.9M]  t_data.ctab
+|-- [3.5G]  E10
+|   |-- [ 474]  E10_checksums.md5
+|   |-- [8.0M]  E10.cov_refs.gtf
+|   |-- [ 36M]  E10.gtf
+|   |-- [1014]  E10-hisat2_stats.txt
+|   |-- [3.4G]  E10.sorted.bam
+|   |-- [1.8M]  E10.sorted.bam.bai
+|   |-- [2.4M]  e2t.ctab
+|   |-- [ 18M]  e_data.ctab
+|   |-- [2.1M]  i2t.ctab
+|   |-- [ 10M]  i_data.ctab
+|   `-- [2.8M]  t_data.ctab
+|-- [2.2G]  E11
+|   |-- [ 474]  E11_checksums.md5
+|   |-- [7.6M]  E11.cov_refs.gtf
+|   |-- [ 36M]  E11.gtf
+|   |-- [1008]  E11-hisat2_stats.txt
+|   |-- [2.1G]  E11.sorted.bam
+|   |-- [1.5M]  E11.sorted.bam.bai
+|   |-- [2.4M]  e2t.ctab
+|   |-- [ 18M]  e_data.ctab
+|   |-- [2.1M]  i2t.ctab
+|   |-- [ 10M]  i_data.ctab
+|   `-- [2.8M]  t_data.ctab
+|-- [3.4G]  E12
+|   |-- [ 474]  E12_checksums.md5
+|   |-- [8.0M]  E12.cov_refs.gtf
+|   |-- [ 36M]  E12.gtf
+|   |-- [1014]  E12-hisat2_stats.txt
+|   |-- [3.3G]  E12.sorted.bam
+|   |-- [1.7M]  E12.sorted.bam.bai
+|   |-- [2.4M]  e2t.ctab
+|   |-- [ 18M]  e_data.ctab
+|   |-- [2.1M]  i2t.ctab
+|   |-- [ 10M]  i_data.ctab
+|   `-- [2.8M]  t_data.ctab
+|-- [3.0G]  E13
+|   |-- [ 474]  E13_checksums.md5
+|   |-- [7.9M]  E13.cov_refs.gtf
+|   |-- [ 36M]  E13.gtf
+|   |-- [1014]  E13-hisat2_stats.txt
+|   |-- [2.9G]  E13.sorted.bam
+|   |-- [1.7M]  E13.sorted.bam.bai
+|   |-- [2.4M]  e2t.ctab
+|   |-- [ 18M]  e_data.ctab
+|   |-- [2.1M]  i2t.ctab
+|   |-- [ 10M]  i_data.ctab
+|   `-- [2.8M]  t_data.ctab
+|-- [2.6G]  E14
+|   |-- [ 474]  E14_checksums.md5
+|   |-- [7.8M]  E14.cov_refs.gtf
+|   |-- [ 36M]  E14.gtf
+|   |-- [1011]  E14-hisat2_stats.txt
+|   |-- [2.5G]  E14.sorted.bam
+|   |-- [1.6M]  E14.sorted.bam.bai
+|   |-- [2.4M]  e2t.ctab
+|   |-- [ 18M]  e_data.ctab
+|   |-- [2.1M]  i2t.ctab
+|   |-- [ 10M]  i_data.ctab
+|   `-- [2.8M]  t_data.ctab
+|-- [2.8G]  E15
+|   |-- [ 474]  E15_checksums.md5
+|   |-- [7.7M]  E15.cov_refs.gtf
+|   |-- [ 36M]  E15.gtf
+|   |-- [1013]  E15-hisat2_stats.txt
+|   |-- [2.8G]  E15.sorted.bam
+|   |-- [1.6M]  E15.sorted.bam.bai
+|   |-- [2.4M]  e2t.ctab
+|   |-- [ 18M]  e_data.ctab
+|   |-- [2.1M]  i2t.ctab
+|   |-- [ 10M]  i_data.ctab
+|   `-- [2.8M]  t_data.ctab
+|-- [3.3G]  E16
+|   |-- [ 474]  E16_checksums.md5
+|   |-- [8.1M]  E16.cov_refs.gtf
+|   |-- [ 36M]  E16.gtf
+|   |-- [1013]  E16-hisat2_stats.txt
+|   |-- [3.2G]  E16.sorted.bam
+|   |-- [1.7M]  E16.sorted.bam.bai
+|   |-- [2.4M]  e2t.ctab
+|   |-- [ 18M]  e_data.ctab
+|   |-- [2.1M]  i2t.ctab
+|   |-- [ 10M]  i_data.ctab
+|   `-- [2.8M]  t_data.ctab
+|-- [2.9G]  E2
+|   |-- [ 469]  E2_checksums.md5
+|   |-- [8.0M]  E2.cov_refs.gtf
+|   |-- [ 36M]  E2.gtf
+|   |-- [1014]  E2-hisat2_stats.txt
+|   |-- [2.8G]  E2.sorted.bam
+|   |-- [1.7M]  E2.sorted.bam.bai
+|   |-- [2.4M]  e2t.ctab
+|   |-- [ 18M]  e_data.ctab
+|   |-- [2.1M]  i2t.ctab
+|   |-- [ 10M]  i_data.ctab
+|   `-- [2.8M]  t_data.ctab
+|-- [2.9G]  E3
+|   |-- [2.4M]  e2t.ctab
+|   |-- [ 469]  E3_checksums.md5
+|   |-- [7.9M]  E3.cov_refs.gtf
+|   |-- [ 36M]  E3.gtf
+|   |-- [1012]  E3-hisat2_stats.txt
+|   |-- [2.8G]  E3.sorted.bam
+|   |-- [1.6M]  E3.sorted.bam.bai
+|   |-- [ 18M]  e_data.ctab
+|   |-- [2.1M]  i2t.ctab
+|   |-- [ 10M]  i_data.ctab
+|   `-- [2.8M]  t_data.ctab
+|-- [2.5G]  E4
+|   |-- [2.4M]  e2t.ctab
+|   |-- [ 469]  E4_checksums.md5
+|   |-- [7.7M]  E4.cov_refs.gtf
+|   |-- [ 36M]  E4.gtf
+|   |-- [1011]  E4-hisat2_stats.txt
+|   |-- [2.4G]  E4.sorted.bam
+|   |-- [1.5M]  E4.sorted.bam.bai
+|   |-- [ 18M]  e_data.ctab
+|   |-- [2.1M]  i2t.ctab
+|   |-- [ 10M]  i_data.ctab
+|   `-- [2.8M]  t_data.ctab
+|-- [2.0G]  E5
+|   |-- [2.4M]  e2t.ctab
+|   |-- [ 469]  E5_checksums.md5
+|   |-- [7.5M]  E5.cov_refs.gtf
+|   |-- [ 36M]  E5.gtf
+|   |-- [1010]  E5-hisat2_stats.txt
+|   |-- [2.0G]  E5.sorted.bam
+|   |-- [1.5M]  E5.sorted.bam.bai
+|   |-- [ 18M]  e_data.ctab
+|   |-- [2.1M]  i2t.ctab
+|   |-- [ 10M]  i_data.ctab
+|   `-- [2.8M]  t_data.ctab
+|-- [2.8G]  E6
+|   |-- [2.4M]  e2t.ctab
+|   |-- [ 469]  E6_checksums.md5
+|   |-- [7.7M]  E6.cov_refs.gtf
+|   |-- [ 36M]  E6.gtf
+|   |-- [1011]  E6-hisat2_stats.txt
+|   |-- [2.7G]  E6.sorted.bam
+|   |-- [1.6M]  E6.sorted.bam.bai
+|   |-- [ 18M]  e_data.ctab
+|   |-- [2.1M]  i2t.ctab
+|   |-- [ 10M]  i_data.ctab
+|   `-- [2.8M]  t_data.ctab
+|-- [2.7G]  E7
+|   |-- [2.4M]  e2t.ctab
+|   |-- [ 469]  E7_checksums.md5
+|   |-- [8.0M]  E7.cov_refs.gtf
+|   |-- [ 36M]  E7.gtf
+|   |-- [1011]  E7-hisat2_stats.txt
+|   |-- [2.7G]  E7.sorted.bam
+|   |-- [1.6M]  E7.sorted.bam.bai
+|   |-- [ 18M]  e_data.ctab
+|   |-- [2.1M]  i2t.ctab
+|   |-- [ 10M]  i_data.ctab
+|   `-- [2.8M]  t_data.ctab
+|-- [2.7G]  E8
+|   |-- [2.4M]  e2t.ctab
+|   |-- [ 469]  E8_checksums.md5
+|   |-- [7.8M]  E8.cov_refs.gtf
+|   |-- [ 36M]  E8.gtf
+|   |-- [1011]  E8-hisat2_stats.txt
+|   |-- [2.6G]  E8.sorted.bam
+|   |-- [1.6M]  E8.sorted.bam.bai
+|   |-- [ 18M]  e_data.ctab
+|   |-- [2.1M]  i2t.ctab
+|   |-- [ 10M]  i_data.ctab
+|   `-- [2.8M]  t_data.ctab
+|-- [3.1G]  E9
+|   |-- [2.4M]  e2t.ctab
+|   |-- [ 469]  E9_checksums.md5
+|   |-- [7.8M]  E9.cov_refs.gtf
+|   |-- [ 36M]  E9.gtf
+|   |-- [1014]  E9-hisat2_stats.txt
+|   |-- [3.0G]  E9.sorted.bam
+|   |-- [1.7M]  E9.sorted.bam.bai
+|   |-- [ 18M]  e_data.ctab
+|   |-- [2.1M]  i2t.ctab
+|   |-- [ 10M]  i_data.ctab
+|   `-- [2.8M]  t_data.ctab
+|-- [3.3K]  gtf_list.txt
+|-- [8.4K]  input_fastqs_checksums.md5
+|-- [1.5K]  Pver_genome_assembly_v1.0-gffcmp
+|-- [ 33M]  Pver_genome_assembly_v1.0-gffcmp.annotated.gtf
+|-- [2.6M]  Pver_genome_assembly_v1.0-gffcmp.loci
+|-- [1.6M]  Pver_genome_assembly_v1.0-gffcmp.Pver_genome_assembly_v1.0.stringtie.gtf.refmap
+|-- [3.1M]  Pver_genome_assembly_v1.0-gffcmp.Pver_genome_assembly_v1.0.stringtie.gtf.tmap
+|-- [3.3M]  Pver_genome_assembly_v1.0-gffcmp.tracking
+|-- [ 37M]  Pver_genome_assembly_v1.0.stringtie.gtf
+|-- [ 87K]  slurm-4469382.out
+`-- [ 654]  sorted_bams.list
+
+ 205G used in 32 directories, 367 files
+ ```
