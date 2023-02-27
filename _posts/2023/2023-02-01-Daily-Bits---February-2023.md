@@ -8,6 +8,62 @@ categories:
   - Daily Bits
 ---
 
+20230223
+
+
+- Created a genes BED file to use in E5 isoform analysis and added to the [Genomic Resources Handbook page](https://robertslab.github.io/resources/Genomic-Resources/):
+
+    ```shell
+    bedops_linux_x86_64-v2.4.40/gff2bed \
+    < Pver_genome_assembly_v1.0-valid.genes.gff3 \
+    > Pver_genome_assembly_v1.0.genes.bed
+    ```
+
+---
+
+20230222
+
+- Managed to fix missing "Edit" icon from the [The Roberts Lab Handbook](https://robertslab.github.io/resources/). Not sure which of the following was the final fix, but here's what was done after I noticed that the MkDocs "Material" theme had been updated:
+
+  - New update requires explicit declaration for "edit" button. Added this to the `mkdocs.yml`:
+
+      ```
+      features:
+        - content.action.edit
+      ```
+
+  - Updated GitHub action (`github_actions.yml`) to match "Material" theme documentation:
+
+        
+        # Runs mkdocs-material theme for readthedocs documentation
+        # Automatically deploys documentation to https://robertslab.github.io/resources/
+        name: ci 
+        on:
+          push:
+            branches:
+              - master 
+              - main
+        permissions:
+          contents: write
+        jobs:
+          deploy:
+            runs-on: ubuntu-latest
+            steps:
+              - uses: actions/checkout@v3
+              - uses: actions/setup-python@v4
+                with:
+                  python-version: 3.x
+              - uses: actions/cache@v2
+                with:
+                  key: ${{ github.ref }}
+                  path: .cache
+              - run: pip install mkdocs-material 
+              - run: mkdocs gh-deploy --force
+        
+      
+
+---
+
 20230221
 
 - Initiated MEGAN6 taxonomic classification on _P.verrucosa_ E5 RNA-seq reads.
