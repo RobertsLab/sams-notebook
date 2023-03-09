@@ -8,7 +8,7 @@ categories:
   - Daily Bits
 ---
 
-20230309
+20230308
 
 - Spent all day (seriously) working on [this GitHub Issue to update our geoduck gene annotations file](https://github.com/RobertsLab/resources/issues/1602) to include GOslim and "aspect" (i.e. Biological Process, Molecular Function, or Celullar Component). Unfortunately, this is kind of complicated. Here's the process I'm (attempting) to employ:
 
