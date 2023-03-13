@@ -8,6 +8,26 @@ categories:
   - Daily Bits
 ---
 
+20230310
+
+- E5 bi-monthly meeting:
+
+  - Assigned to work on [this GitHub Issue](https://github.com/urol-e5/deep-dive/issues/1).
+
+- Worked on E5 deep dive [developing workflow for isoform expression](https://github.com/urol-e5/deep-dive/issues/1) (GitHub Issue).
+
+- Science Hour.
+
+---
+
+20230309
+
+- Pub-a-thon
+
+- Continued working on [this GitHub Issue to update our geoduck gene annotations file](https://github.com/RobertsLab/resources/issues/1602).
+
+---
+
 20230308
 
 - Spent all day (seriously) working on [this GitHub Issue to update our geoduck gene annotations file](https://github.com/RobertsLab/resources/issues/1602) to include GOslim and "aspect" (i.e. Biological Process, Molecular Function, or Celullar Component). Unfortunately, this is kind of complicated. Here's the process I'm (attempting) to employ:
