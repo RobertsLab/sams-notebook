@@ -8,6 +8,18 @@ categories:
   - Daily Bits
 ---
 
+20230313
+
+- Helped Javi get access to UW Husky OnNet for Raven usage for E5.
+
+- Added administrative instructions to the CEABIGR wiki to aid in setting up UW Husky OnNet access/provisioning.
+
+- Lab meeting.
+
+- CEABIGR meeting.
+
+---
+
 20230310
 
 - E5 bi-monthly meeting:
