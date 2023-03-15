@@ -35,10 +35,10 @@ All analysis was run in the following Jupyter Notebook:
 
 - [20220419-pgen-gene_annotation_mapping.ipynb](https://github.com/RobertsLab/code/blob/master/notebooks/sam/20220419-pgen-gene_annotation_mapping.ipynb) (GitHub)
 
-- [20220419-pgen-gene_annotation_mapping.ipynb](https://nbviewer.ipython.org/github/RobertsLab/code/blob/master/notebooks/sam/20220419-pgen-gene_annotation_mapping.ipynb) (NBViewer)
+- [20220419-pgen-gene_annotation_mapping.ipynb](https://nbviewer.org/github/RobertsLab/code/blob/master/notebooks/sam/20220419-pgen-gene_annotation_mapping.ipynb) (NBViewer)
 
 
-<iframe src="https://nbviewer.ipython.org/github/RobertsLab/code/blob/master/notebooks/sam/20220419-pgen-gene_annotation_mapping.ipynb" width="100%" height="2000" scrolling="yes"></iframe>
+<iframe src="https://nbviewer.org/github/RobertsLab/code/blob/master/notebooks/sam/20220419-pgen-gene_annotation_mapping.ipynb" width="100%" height="2000" scrolling="yes"></iframe>
 
 
 ---
