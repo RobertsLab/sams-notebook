@@ -73,7 +73,7 @@ Had to run QC/trimming SLURM script for coral SRA data (BioProject [PRJNA74403](
 
 SBATCH script (GitHub):
 
-- [20230119-coral_metagenome-fastqc-fastp-multiqc-PRJNA744403.sh](https://github.com/RobertsLab/sams-notebook/blob/master/sbatch_scripts/20230119-coral_metagenome-fastqc-fastp-multiqc-PRJNA744403.sh)
+- [20230119-coral-fastqc-fastp-multiqc-PRJNA744403.sh](https://github.com/RobertsLab/sams-notebook/blob/master/sbatch_scripts/20230119-coral-fastqc-fastp-multiqc-PRJNA744403.sh)
 
 
 ```shell
@@ -459,15 +459,15 @@ This will download all of the _P.grandis_ BS-seq raw FastQ files _and_ an MD5 ch
 
 Output folder:
 
-- [20230119-coral_metagenome-fastqc-fastp-multiqc-PRJNA744403/](https://gannet.fish.washington.edu/Atumefaciens/20230119-coral_metagenome-fastqc-fastp-multiqc-PRJNA744403/)
+- [20230119-coral-fastqc-fastp-multiqc-PRJNA744403/](https://gannet.fish.washington.edu/Atumefaciens/20230119-coral-fastqc-fastp-multiqc-PRJNA744403/)
 
   - #### Directory tree  (text)
 
-    - [20230119-coral_metagenome-fastqc-fastp-multiqc-PRJNA744403/directory-tree.txt](https://gannet.fish.washington.edu/Atumefaciens/20230119-coral_metagenome-fastqc-fastp-multiqc-PRJNA744403/directory-tree.txt)
+    - [20230119-coral-fastqc-fastp-multiqc-PRJNA744403/directory-tree.txt](https://gannet.fish.washington.edu/Atumefaciens/20230119-coral-fastqc-fastp-multiqc-PRJNA744403/directory-tree.txt)
 
   - #### NCBI BioProject [PRJNA744403](https://www.ncbi.nlm.nih.gov/bioproject/?term=PRJNA744403) Metadata (CSV)
 
-    - [20230119-coral_metagenome-fastqc-fastp-multiqc-PRJNA744403/metadata-SraAccList-PRJNA744403.csv](https://gannet.fish.washington.edu/Atumefaciens/20230119-coral_metagenome-fastqc-fastp-multiqc-PRJNA744403/metadata-SraAccList-PRJNA744403.csv)
+    - [20230119-coral-fastqc-fastp-multiqc-PRJNA744403/metadata-SraAccList-PRJNA744403.csv](https://gannet.fish.washington.edu/Atumefaciens/20230119-coral-fastqc-fastp-multiqc-PRJNA744403/metadata-SraAccList-PRJNA744403.csv)
 
     
   - #### _P.grandis_ BS-seq raw reads [`MultiQC`](https://multiqc.info/) report (HTML):
