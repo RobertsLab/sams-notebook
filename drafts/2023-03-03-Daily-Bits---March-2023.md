@@ -8,6 +8,14 @@ categories:
   - Daily Bits
 ---
 
+20230314
+
+- Spent most of the day attempting to gain remote desktop access and/or X11 forwarding on `raven` and `swoose`. Couldn't get either to work on `raven`, as it's likely tied to the inability to get `raven` to boot to the Ubuntu login screen (suggests a disply problem). On `swoose` X11 forwarding works (needed for MEGAN6), but remote desktop does not. This is an issue because it is taking _hours_ to import [`DIAMOND`](https://github.com/bbuchfink/diamond) BLASTx MEGANIZED-DAA files. If `ssh` connection is lost, then MEGAN6 is killed (even when using `tmux`).
+
+- Helped Steven and Matt with a weird problem Matt was having trying to get a PO number using the TREQ purchasing system. He never received a PO, but I was able to search Ariba and find that a PO had actually been issued... Provided him with PO.
+
+---
+
 20230313
 
 - Helped Javi get access to UW Husky OnNet for Raven usage for E5.
