@@ -12,11 +12,13 @@ tags:
 categories: 
   - Miscellaneous
 ---
+Running DIAMOND BLASTx, followed by [MEGAN6](https://software-ab.cs.uni-tuebingen.de/download/megan6/welcome.html) `daa-meganizer` for taxonomic classification of NOAA _M.magister_ trimmed RNA-seq reads (provided by Giles Goetz on [20230301](https://robertslab.github.io/sams-notebook/2023/03/01/Data-Received-Trimmed-M.magister-RNA-seq-from-NOAA.html)). This is primarily just for curiosity, per [Steven's GitHub Issue](https://github.com/RobertsLab/resources/issues/1597). This was run on Mox.
+
 
 
 SBATCH Script (GitHub):
 
-- [20230316-mmag-diamond-meganizer-RNAseq.sh]()
+- [20230316-mmag-diamond-meganizer-RNAseq.sh](https://github.com/RobertsLab/sams-notebook/blob/master/sbatch_scripts/20230316-mmag-diamond-meganizer-RNAseq.sh)
 
 ```shell
 #!/bin/bash
