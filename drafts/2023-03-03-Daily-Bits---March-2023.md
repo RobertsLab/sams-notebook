@@ -8,6 +8,18 @@ categories:
   - Daily Bits
 ---
 
+20230315
+
+- Helped with [Arianna downloading SRA data using SRA Tool Kit](https://github.com/RobertsLab/resources/issues/1569#issuecomment-1468576816) (GitHub Issue).
+
+- Discovered "fix" to inability to `ssh` into Mox after connection is broken. Need to exit the `ssh` master session:
+
+    ```bash
+    ssh -O exit mox
+    ```
+
+---
+
 20230314
 
 - Spent most of the day attempting to gain remote desktop access and/or X11 forwarding on `raven` and `swoose`. Couldn't get either to work on `raven`, as it's likely tied to the inability to get `raven` to boot to the Ubuntu login screen (suggests a disply problem). On `swoose` X11 forwarding works (needed for MEGAN6), but remote desktop does not. This is an issue because it is taking _hours_ to import [`DIAMOND`](https://github.com/bbuchfink/diamond) BLASTx MEGANIZED-DAA files. If `ssh` connection is lost, then MEGAN6 is killed (even when using `tmux`).
