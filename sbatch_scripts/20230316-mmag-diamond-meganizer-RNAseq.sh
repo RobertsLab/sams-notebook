@@ -78,9 +78,9 @@ do
     echo ""
 
 	# Strip leading path ${fastq##*/} by eliminating all text up to and including last slash from the left side.
-    # Strip extensions by eliminating all text up to and including the last "." from the right side.
+    # Strip extensions by eliminating ".fastq.gz" from the right side.
 	no_path=$(echo "${fastq##*/}")
-	no_ext=$(echo "${no_path%%.*}")
+	no_ext=$(echo "${no_path%%.fastq.gz}")
 
 	# Run DIAMOND with blastx
 	# Output format 100 produces a DAA binary file for use with MEGAN
