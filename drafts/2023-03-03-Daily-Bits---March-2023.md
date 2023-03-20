@@ -8,6 +8,14 @@ categories:
   - Daily Bits
 ---
 
+20230316
+
+- Messed around extensively trying to set up/use remote desktop access to `raven` and `swoose`. Was unsuccessful on both fronts. Need to enable remote desktop in person on `swoose` (although, I swear I've used `remmina` to do this in the past...). X11 forwarding is insufficient for the long run times of MEGAN6.
+
+- Pub-a-thon
+
+---
+
 20230315
 
 - Helped with [Arianna downloading SRA data using SRA Tool Kit](https://github.com/RobertsLab/resources/issues/1569#issuecomment-1468576816) (GitHub Issue).
