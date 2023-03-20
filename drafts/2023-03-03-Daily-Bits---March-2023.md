@@ -8,6 +8,24 @@ categories:
   - Daily Bits
 ---
 
+20230320
+
+- Read Ch.1 & 2 of "Invisible Women" for lab meeting.
+
+- Lab meeting.
+
+- Submitted for coral miRNA sequencing to genohub.
+
+- Still trying to figure out UniProt API. Responses from UniProt help desk were mostly unhelpful at this time.
+
+---
+
+20230318
+
+- Stopped in at lab and enabled remote desktop access on `swoose`.
+
+---
+
 20230317
 
 -Science hour
