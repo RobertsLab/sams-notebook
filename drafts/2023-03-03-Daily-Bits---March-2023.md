@@ -18,6 +18,10 @@ categories:
   
   - Figured out how to parse/organize gene ontology (GO) aspect (biological process, cellular component, molecular function) from the previous UniProt batch retrieval file.
 
+- Continued to help Danielle Becker (Putnam Lab) with her WGBS analysis using `nf-core/methylseq` pipeline.
+
+  - This time (using the WGBS data instead of RNA-seq) I noticed that all of her R2 sequences (and none of her R1 seqs) showed overrepresented sequences in the MultiQC report. I suspected this might by polyG sequences (a known issue with Illumina NextSeq) and reviewed her FastQC for the R2 reads. Turns out, I was right. So, suggested she re-trim and enable polyG detection in whichever trimming software she's using.
+
 ---
 
 20230321
