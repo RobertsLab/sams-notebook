@@ -8,6 +8,18 @@ categories:
   - Daily Bits
 ---
 
+20230322
+
+- Olivia's NSA practice talk.
+
+- Made progress on [this GitHub Issue asking me to update our "cannonical" _P.generosa_ anotation file with gene ontology (GO)aspect info](https://github.com/RobertsLab/resources/issues/1602).
+
+  - Remembered that I don't actually need to use the updated UniProt programmatic API (which I've had problems getting to work), since I saved the output [https://gannet.fish.washington.edu/Atumefaciens/20220419-pgen-gene_annotation_mapping/20220419-pgen-uniprot_batch-results.txt](https://gannet.fish.washington.edu/Atumefaciens/20220419-pgen-gene_annotation_mapping/20220419-pgen-uniprot_batch-results.txt) when I originally generated the original annotaiton file.
+  
+  - Figured out how to parse/organize gene ontology (GO) aspect (biological process, cellular component, molecular function) from the previous UniProt batch retrieval file.
+
+---
+
 20230321
 
 - Helped out Danielle Becker (Putnam Lab) figure out issue(s) with her `nf-core/methylseq` pipeline. She is/was testing alignment of _P.meandrina_ WGBS reads to _P.verrucosa_ (which used to be the closest geneome available) and _P.meandrina_ (which recently became available).
