@@ -8,6 +8,16 @@ categories:
   - Daily Bits
 ---
 
+20230321
+
+- Helped out Danielle Becker (Putnam Lab) figure out issue(s) with her `nf-core/methylseq` pipeline. She is/was testing alignment of _P.meandrina_ WGBS reads to _P.verrucosa_ (which used to be the closest geneome available) and _P.meandrina_ (which recently became available).
+
+  - Her issue was the she was using her RNA-seq data instead of her WGBS data...
+
+- Still can't figure out the UniProt programmatic retrieval issue.
+
+---
+
 20230320
 
 - Read Ch.1 & 2 of "Invisible Women" for lab meeting.
@@ -17,6 +27,10 @@ categories:
 - Submitted for coral miRNA sequencing to genohub.
 
 - Still trying to figure out UniProt API. Responses from UniProt help desk were mostly unhelpful at this time.
+
+- CEABIGR meeting.
+
+  - Yaamini showed a bunch of dot plots of transcriptional noise.
 
 ---
 
