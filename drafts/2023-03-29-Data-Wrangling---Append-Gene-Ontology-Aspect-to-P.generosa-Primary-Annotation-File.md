@@ -1,9 +1,9 @@
 ---
 layout: post
 title: Data Wrangling - Append Gene Ontology Aspect to P.generosa Primary Annotation File
-date: '2023-03-22 14:15'
+date: '2023-03-29 14:15'
 tags: 
-  - jupyter
+  - R
   - Panopea generosa
   - Pacific geoduck
 categories: 
