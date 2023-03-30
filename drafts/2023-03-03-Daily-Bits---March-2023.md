@@ -8,6 +8,42 @@ categories:
   - Daily Bits
 ---
 
+20230329
+
+- Completely nuked `raven`, but managed to recover - with improvements!. Here's how it happened:
+
+  1. Couldn't run R Markdown code that I had tested on my laptop on RStudio Server on `raven`. Required updating of `tidyverse`, but the update always failed when trying to install a dependency (`ragg`).
+
+  2. Tried to resolve `ragg` installation failure led to me down a rabbit hole of trying to figure out why `jpeglib.h` kept triggering an error. Attmempted to install/re-install numerous Linux jpeg libraries to no avail.
+
+    - During this process, I came across this command `apt policy ubuntu-desktop` which revealed that `raven` didn't have a "desktop" installed! Could this explain why `raven` doesn't boot to the GUI login screen??!!
+
+      - Tried this as a potential solution: `sudo apt-get install --reinstall ubuntu-desktop`. When I ran `apt policy ubuntu-desktop` after that, the output now shows a desktop is installed!! Can't wait to swing by lab to see if it worked!
+
+  3. Finally figured I'd remove and uninstall the system library associated with `jpgelib.h`: `sudo apt remove libjpeg-dev`. The amount of things that scrolled through the screen, and the time it took (~10 minutes), made it seem like it was removing many/most of the system programs (e.g. Thunderbird, Gnome stuff, ...). Not good!
+
+  4. Found [this post on StackOverflow](https://askubuntu.com/questions/1396544/repair-ubuntu-after-uninstall-of-libjpeg), which ironically was where I got the idea to try to remove that `libjpeg-dev` library, and ran `sudo apt install ubuntu-desktop`. This also took a very long time (15 minutes), but became clear it was reinstalling all of the stuff that had just been removed. Whew!
+
+  5. After that, went to use RStudio Server and could no longer access. Gah!
+
+  6. After a bunch of rigamarole, poking around RStudio Server config files and whatnot, I just decided to follow the instructions (which are clearly writen and explained) on the Posit (RStudio) website.
+
+  7. Unfortunately, that didn't prove to be the full crux of the problem. Now, even though RStudio Server would start, it couldn't find the R installation (even though it was showing the correct path from the previous R installation). It turns out, the previous R installation didn't survive that `sudo apt remove libjpeg-dev` command...
+
+  8. Followed instructions for installing R binaries on Ubuntu and specifiying the install location. Updated `/etc/rstudio/rstudio.conf` with the new R version path, and boom! Back in business!!
+
+  9. Bonus: Updated versions of R and RStudio Server. The later now enables use of Quarto within RStudio Server.
+
+- Finally, _finally_ managed to finish  updating ["cannonical" _P.generosa_ anotation file with gene ontology (GO)aspect info](https://github.com/RobertsLab/resources/issues/1602)!
+
+---
+
+20230328
+
+- Worked on updating ["cannonical" _P.generosa_ anotation file with gene ontology (GO)aspect info](https://github.com/RobertsLab/resources/issues/1602) by creating a singlur R Project/repo, instead of bouncing between a Jupyter Notebook and R. Additionally, decided to abondon trying to work within the `GSEAbase` package to map gene IDs with GO/GOslim IDs. Resulted in taking the "old fashioned" approach of creating a large "flat file" for joining/merging.
+
+---
+
 20230322
 
 - Olivia's NSA practice talk.
