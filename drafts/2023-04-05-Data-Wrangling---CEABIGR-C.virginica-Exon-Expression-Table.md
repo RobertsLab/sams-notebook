@@ -11,8 +11,9 @@ tags:
 categories: 
   - CEABIGR
 ---
+As part of the [CEABIGR project]() (GitHub repo), Steven asked that I [generate an exon expression table](https://github.com/RobertsLab/resources/issues/1609) (GitHub Issue) where each row is a gene and the columns are the corresponding exons, filled with their expression value. For this, I planned on using the read count from the `ballgown` `e_data.ctab` files as an expression value.
 
-
+Although the final code in the repo (linked in [RESULTS](#results)) is nice an tidy, it was generated through days and days of "fighting" with ChatGPT. Had to go through many rounds of trying ChatGPT to get this task accomplished. I was finally successful in getting ChatGPT to generate functional code by narrowing the scope of the work and sepcifying specific tools to use (i.e. `bedtools`) instead of relying on ChatGPT to select the correct tools on its own.
 
 ---
 
