@@ -303,7 +303,11 @@ echo "${PATH}" | tr : \\n
 
 #### RESULTS
 
+Run time was ~2hrs 45mins:
+
+![Screencap showing runtime of 02:43:56](https://github.com/RobertsLab/sams-notebook/blob/master/images/screencaps/20230426-pgen-fastqc-fastp-multiqc-RNAseq-runtime.png?raw=true)
+
 Output folder:
 
-- []()
+- [20230426-pgen-fastqc-fastp-multiqc-RNAseq/](https://gannet.fish.washington.edu/Atumefaciens/20230426-pgen-fastqc-fastp-multiqc-RNAseq/)
 
