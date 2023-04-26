@@ -28,7 +28,7 @@
 
 ## Assign Variables
 
-fastq_pattern='*.trimmed.R[12].fastq.gz'
+fastq_pattern='CH[01][079]*.trimmed.R[12].fastq.gz'
 
 # Program paths
 diamond=/gscratch/srlab/programs/diamond-v2.1.1/diamond
