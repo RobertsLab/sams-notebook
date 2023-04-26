@@ -15,6 +15,520 @@ categories:
 ---
 
 
+SLURM script posted below is very long. Skip to [RESULTS section](#results).
+
+SLURM script (GitHub):
+
+- [20230426-pgen-HISAT2-stringtie-gffcompare-RNAseq.sh](https://github.com/RobertsLab/sams-notebook/blob/master/sbatch_scripts/20230426-pgen-HISAT2-stringtie-gffcompare-RNAseq.sh)
+
+```bash
+#!/bin/bash
+## Job Name
+#SBATCH --job-name=20230426-pgen-HISAT2-stringtie-gffcompare-RNAseq
+## Allocation Definition
+#SBATCH --account=srlab
+#SBATCH --partition=srlab
+## Resources
+## Nodes
+#SBATCH --nodes=1
+## Walltime (days-hours:minutes:seconds format)
+#SBATCH --time=12-00:00:00
+## Memory per node
+#SBATCH --mem=120G
+##turn on e-mail notification
+#SBATCH --mail-type=ALL
+#SBATCH --mail-user=samwhite@uw.edu
+## Specify the working directory for this job
+#SBATCH --chdir=/gscratch/scrubbed/samwhite/outputs/20230426-pgen-HISAT2-stringtie-gffcompare-RNAseq
+
+
+## Script for HiSat2 alignments to P.generosa genome assembly Panopea-generosa-v1.0, running Stringtie to identify splice sites and calculate gene/transcript
+##expression values (FPKM), formatted for import into Ballgown (R/Bioconductor), and gffcompare for GTF annotation.
+
+## Process is part of identification of long non-coding RNAs (lnRNA) in geoduck.
+
+## HiSat2 index generated on 20220914.
+## https://robertslab.github.io/sams-notebook/2022/09/14/RNAseq-Alignments-P.generosa-Alignments-and-Alternative-Transcript-Identification-Using-Hisat2-and-StringTie-on-Mox.html
+
+## Using trimmed FastQs from 20230426.
+
+## Expects FastQ input filenames to match <sample name>_val_[12].fastp-trim.20230426.fq.gz
+## E.g. ctenidia_1_val_1.fastp-trim.20230426.fq.gz
+
+###################################################################################
+# These variables need to be set by user
+
+## Assign Variables
+
+# Set total number of SAMPLES (NOT number of FastQ files)
+total_samples=5
+
+# Set number of CPUs to use
+threads=28
+
+# Index name for Hisat2 use
+# Needs to match index name used in previous Hisat2 indexing step
+genome_index_name="Panopea-generosa-v1.0"
+
+# Set input FastQ patterns
+R1_fastq_pattern='*_val_1*fq.gz'
+R2_fastq_pattern='*_val_2*fq.gz'
+
+# Location of Hisat2 index files
+# Must keep variable name formatting, as it's used by HiSat2
+HISAT2_INDEXES=$(pwd)
+export HISAT2_INDEXES
+
+# Paths to programs
+gffcompare="/gscratch/srlab/programs/gffcompare-0.12.6.Linux_x86_64/gffcompare"
+hisat2_dir="/gscratch/srlab/programs/hisat2-2.1.0"
+hisat2="${hisat2_dir}/hisat2"
+samtools="/gscratch/srlab/programs/samtools-1.10/samtools"
+stringtie="/gscratch/srlab/programs/stringtie-1.3.6.Linux_x86_64/stringtie"
+
+# Input files/directories
+genome_index_dir="/gscratch/srlab/sam/data/P_generosa/genomes"
+genome_gff="${genome_index_dir}/Panopea-generosa-v1.0.a4_biotype-trna_strand_converted-no_RNAmmer.gff"
+fastq_dir="/gscratch/scrubbed/samwhite/outputs/20230426-pgen-fastqc-fastp-multiqc-RNAseq/"
+index_tarball="Panopea-generosa-v1.0-hisat2-indices.tar.gz"
+
+# Output files/directories
+gtf_list="gtf_list.txt"
+merged_bam="20230216-pver-stringtie-pver_v1.0-sorted-bams-merged.bam"
+
+# Declare associative array of sample names and metadata
+declare -A samples_associative_array=()
+
+# Programs associative array
+declare -A programs_array
+programs_array=(
+[gffcompare]="${gffcompare}" \
+[hisat2]="${hisat2}" \
+[samtools_index]="${samtools} index" \
+[samtools_merge]="${samtools} merge" \
+[samtools_sort]="${samtools} sort" \
+[samtools_view]="${samtools} view" \
+[stringtie]="${stringtie}"
+)
+
+
+###################################################################################################
+
+# Exit script if any command fails
+set -e
+
+# Load Python Mox module for Python module availability
+
+module load intel-python3_2017
+
+## Load associative array
+## Only need to use one set of reads to capture sample name
+
+# Set sample counter for array verification
+sample_counter=0
+
+# Load array
+# DO NOT QUOTE ${R1_fastq_pattern} - WILL NOT POPULATE ARRAY!
+for fastq in "${fastq_dir}"${R1_fastq_pattern}
+do
+  # Increment counter
+  ((sample_counter+=1))
+
+  # Remove path
+  sample_name="${fastq##*/}"
+
+  # Get sample name from first _-delimited field
+  sample_name=$(echo "${sample_name}" | awk -F "_" '{print $1}')
+  
+  # Set treatment condition for each sample
+  # Used for setting read group (@RG) in SAM files
+  if [[ "${sample_name}" == "gonad" ]]
+  then
+    treatment="gonad"
+  elif [[ "${sample_name}" == "heart" ]]
+  then
+    treatment="heart"
+  elif [[ "${sample_name}" == "juvenile" ]]
+  then
+    treatment="juvenile"
+  elif [[ "${sample_name}" == "larvae" ]]
+  then
+    treatment="larvae"
+  fi
+
+  # Append to associative array
+  samples_associative_array+=(["${sample_name}"]="${treatment}")
+
+done
+
+# Check array size to confirm it has all expected samples
+# Exit if mismatch
+if [[ "${#samples_associative_array[@]}" != "${sample_counter}" ]] \
+|| [[ "${#samples_associative_array[@]}" != "${total_samples}" ]]
+  then
+    echo "samples_associative_array doesn't have all ${total_samples} samples."
+    echo ""
+    echo "samples_associative_array contents:"
+    echo ""
+    for item in "${!samples_associative_array[@]}"
+    do
+      printf "%s\t%s\n" "${item}" "${samples_associative_array[${item}]}"
+    done
+
+    exit
+fi
+
+# Copy Hisat2 genome index files
+echo ""
+echo "Transferring HiSat2 index file now."
+echo ""
+rsync -av "${genome_index_dir}/${index_tarball}" .
+echo ""
+
+# Unpack Hisat2 index files
+echo ""
+echo "Unpacking Hisat2 index tarball: ${index_tarball}..."
+echo ""
+tar -xzvf ${index_tarball}
+echo "Finished unpacking ${index_tarball}"
+echo ""
+
+#### BEGIN HISAT2 ALIGNMENTS ####
+echo "Beginning HiSat2 alignments and StringTie analysis..."
+echo ""
+for sample in "${!samples_associative_array[@]}"
+do
+
+  ## Inititalize arrays
+  fastq_array_R1=()
+  fastq_array_R2=()
+
+  # Create array of fastq R1 files
+  # and generated MD5 checksums file.
+
+  # DO NOT QUOTE ${fastq_pattern} 
+  for fastq in "${fastq_dir}"${R1_fastq_pattern}
+  do
+    fastq_array_R1+=("${fastq}")
+    echo "Generating checksum for ${fastq}..."
+    md5sum "${fastq}" >> input_fastqs_checksums.md5
+    echo "Checksum for ${fastq} completed."
+    echo ""
+  done
+
+  # Create array of fastq R2 files
+  # DO NOT QUOTE ${fastq_pattern} 
+  for fastq in "${fastq_dir}"${R2_fastq_pattern}
+  do
+    fastq_array_R2+=("${fastq}")
+    echo "Generating checksum for ${fastq}..."
+    md5sum "${fastq}" >> input_fastqs_checksums.md5
+    echo "Checksum for ${fastq} completed."
+    echo ""
+  done
+
+  # Create comma-separated lists of FastQs for Hisat2
+  printf -v joined_R1 '%s,' "${fastq_array_R1[@]}"
+  fastq_list_R1=$(echo "${joined_R1%,}")
+
+  printf -v joined_R2 '%s,' "${fastq_array_R2[@]}"
+  fastq_list_R2=$(echo "${joined_R2%,}")
+
+  # Create and switch to dedicated sample directory
+  echo ""
+  echo "Creating ${sample} directory."
+  mkdir "${sample}" && cd "$_"
+  echo "Now in ${sample} directory."
+
+  # HiSat2 alignments
+  # Sets read group info (RG) using samples array
+  echo ""
+  echo "Running HiSat2 for sample ${sample}."
+  "${programs_array[hisat2]}" \
+  -x "${genome_index_name}" \
+  -1 "${fastq_list_R1}" \
+  -2 "${fastq_list_R2}" \
+  -S "${sample}".sam \
+  --rg-id "${sample}" \
+  --rg "SM:""${samples_associative_array[$sample]}" \
+  --threads "${threads}" \
+  2> "${sample}-hisat2_stats.txt"
+  echo ""
+  echo "Hisat2 for  ${fastq_list_R1} and ${fastq_list_R2} complete."
+  echo ""
+
+  # Sort SAM files and convert to BAM
+  echo ""
+  echo "Sorting ${sample}.sam and creating sorted BAM."
+  echo ""
+  ${programs_array[samtools_view]} \
+  -@ "${threads}" \
+  -Su "${sample}".sam \
+  | ${programs_array[samtools_sort]} - \
+  -@ "${threads}" \
+  -o "${sample}".sorted.bam
+  echo "Created ${sample}.sorted.bam"
+  echo ""
+
+
+  # Index BAM
+  echo ""
+  echo "Indexing ${sample}.sorted.bam..."
+  ${programs_array[samtools_index]} "${sample}".sorted.bam
+  echo ""
+  echo "Indexing complete for ${sample}.sorted.bam."
+  echo ""
+
+  echo ""
+  echo "HiSat2 completed for sample ${sample}."
+  echo ""
+
+#### END HISAT2 ALIGNMENTS ####
+
+#### BEGIN STRINGTIE ####
+
+  # Run stringtie on alignments
+  # Uses "-B" option to output tables intended for use in Ballgown
+  # Uses "-e" option; recommended when using "-B" option.
+  # Limits analysis to only reads alignments matching reference.
+  echo "Beginning StringTie analysis on ${sample}.sorted.bam."
+  "${programs_array[stringtie]}" "${sample}".sorted.bam \
+  -p "${threads}" \
+  -o "${sample}".gtf \
+  -G "${genome_gff}" \
+  -C "${sample}.cov_refs.gtf" \
+  -B \
+  -e
+  echo "StringTie analysis finished for ${sample}.sorted.bam."
+  echo ""
+#### END STRINGTIE ####
+
+# Add GTFs to list file, only if non-empty
+# Identifies GTF files that only have header
+  echo ""
+  echo "Adding ${sample}.gtf to ../${gtf_list}."
+
+  gtf_lines=$(wc -l < "${sample}".gtf )
+
+  if [ "${gtf_lines}" -gt 2 ]; then
+    echo "$(pwd)/${sample}.gtf" >> ../"${gtf_list}"
+  fi
+
+  echo ""
+
+  # Delete unneeded SAM files
+  echo "Removing SAM files."
+  echo ""
+  rm ./*.sam
+
+  # Generate checksums
+  for file in *
+  do
+    echo ""
+    echo "Generating MD5 checksum for ${file}."
+    echo ""
+    md5sum "${file}" | tee --append "${sample}_checksums.md5"
+    echo ""
+    echo "${file} checksum added to ${sample}_checksums.md5."
+    echo ""
+  done
+
+  # Move up to orig. working directory
+  echo "Moving to original working directory."
+  echo ""
+
+  cd ../
+
+  echo "Now in $(pwd)."
+  echo ""
+
+done
+
+echo "Finished all HiSat2 alignments and StringTie analysis."
+echo ""
+
+
+#### BEGIN MERGING BAMs ####
+
+# Merge all BAMs to singular BAM for use in transcriptome assembly later
+## Create list of sorted BAMs for merging
+echo ""
+echo "Creating list file of sorted BAMs..."
+
+find . -name "*sorted.bam" > sorted_bams.list
+
+echo "List of BAMs created: sorted_bams.list"
+echo ""
+
+## Merge sorted BAMs
+echo "Merging all BAM files..."
+echo ""
+
+${programs_array[samtools_merge]} \
+-b sorted_bams.list \
+${merged_bam} \
+--threads ${threads}
+
+echo ""
+echo "Finished creating ${merged_bam}."
+
+#### END MERGING BAMs ####
+
+#### BEGIN INDEXING MERGED BAM ####
+
+## Index merged BAM
+echo ""
+echo "Indexing ${merged_bam}..."
+echo ""
+
+${programs_array[samtools_index]} ${merged_bam}
+
+echo "Finished indexing ${merged_bam}."
+echo ""
+
+#### END INDEXING MERGED BAM ####
+
+#### BEGIN MERGE STRINGTIE GTFs ####
+
+# Create singular transcript file, using GTF list file
+echo "Merging GTFs..."
+echo ""
+
+"${programs_array[stringtie]}" --merge \
+"${gtf_list}" \
+-p "${threads}" \
+-G "${genome_gff}" \
+-o "${genome_index_name}.stringtie.gtf"
+
+echo ""
+echo "Finished merging GTFs into ${genome_index_name}.stringtie.gtf"
+echo ""
+#### END MERGE STRINGTIE GTFs ####
+
+# Delete unneccessary index files
+echo ""
+echo "Removing HiSat2 *.ht2 genome index files..."
+echo ""
+
+rm "${genome_index_name}"*.ht2
+
+echo "All genome index files removed."
+echo ""
+
+#### BEGIN GFFCOMPARE ####
+echo ""
+echo "Beginning gffcompare..."
+echo ""
+
+# Make ggfcompare output directory and
+# change into that directory
+mkdir --parents gffcompare && cd "$_"
+
+# Run gffcompare
+"${programs_array[gffcompare]}" \
+-r ../"${genome_gff}" \
+-o "${genome_index_name}-gffcmp" \
+../"${genome_index_name}.stringtie.gtf"
+
+echo ""
+echo "Finished gffcompare"
+echo ""
+
+# Generate checksums
+for file in *
+do
+  echo ""
+  echo "Generating checksum for ${file}..."
+  echo ""
+
+  md5sum "${file}" | tee --append checksums.md5
+
+  echo "Checksum generated."
+done
+
+# Move to previous directory
+cd -
+
+#### END GFFCOMPARE ####
+
+
+# Generate checksums
+for file in *
+do
+  echo ""
+  echo "Generating checksum for ${file}..."
+  echo ""
+
+  md5sum "${file}" | tee --append checksums.md5
+
+  echo "Checksum generated."
+done
+
+# Remove genome index tarball
+rm "${index_tarball}"
+
+echo ""
+
+#######################################################################################################
+
+# Capture program options
+if [[ "${#programs_array[@]}" -gt 0 ]]; then
+  echo "Logging program options..."
+  for program in "${!programs_array[@]}"
+  do
+    {
+    echo "Program options for ${program}: "
+    echo ""
+    # Handle samtools help menus
+    if [[ "${program}" == "samtools_index" ]] \
+    || [[ "${program}" == "samtools_sort" ]] \
+    || [[ "${program}" == "samtools_view" ]]
+    then
+      ${programs_array[$program]}
+
+    # Handle DIAMOND BLAST menu
+    elif [[ "${program}" == "diamond" ]]; then
+      ${programs_array[$program]} help
+
+    # Handle NCBI BLASTx menu
+    elif [[ "${program}" == "blastx" ]]; then
+      ${programs_array[$program]} -help
+    fi
+    ${programs_array[$program]} -h
+    echo ""
+    echo ""
+    echo "----------------------------------------------"
+    echo ""
+    echo ""
+  } &>> program_options.log || true
+
+    # If MultiQC is in programs_array, copy the config file to this directory.
+    if [[ "${program}" == "multiqc" ]]; then
+      cp --preserve ~/.multiqc_config.yaml multiqc_config.yaml
+    fi
+  done
+  echo "Finished logging programs options."
+  echo ""
+fi
+
+
+# Document programs in PATH (primarily for program version ID)
+echo "Logging system $PATH..."
+
+{
+date
+echo ""
+echo "System PATH for $SLURM_JOB_ID"
+echo ""
+printf "%0.s-" {1..10}
+echo "${PATH}" | tr : \\n
+} >> system_path.log
+
+echo "Finished logging system $PATH."
+echo ""
+
+echo "Script complete!"
+```
 
 ---
 
