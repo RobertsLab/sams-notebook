@@ -18,7 +18,7 @@ Addressing the update to [this GitHub Issue](https://github.com/RobertsLab/resou
 
 SLURM Script (GitHub):
 
-- [20230426-pgen-fastqc-fastp-multiqc-RNAseq.sh]()
+- [20230426-pgen-fastqc-fastp-multiqc-RNAseq.sh](https://github.com/RobertsLab/sams-notebook/blob/master/sbatch_scripts/20230426-pgen-fastqc-fastp-multiqc-RNAseq.sh)
 
 ```bash
 #!/bin/bash
