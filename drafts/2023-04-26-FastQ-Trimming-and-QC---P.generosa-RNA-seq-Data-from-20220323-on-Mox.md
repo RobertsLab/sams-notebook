@@ -307,7 +307,56 @@ Run time was ~2hrs 45mins:
 
 ![Screencap showing runtime of 02:43:56](https://github.com/RobertsLab/sams-notebook/blob/master/images/screencaps/20230426-pgen-fastqc-fastp-multiqc-RNAseq-runtime.png?raw=true)
 
+Overall, trimming looks satisfactory. Will proceed with next step(s) - [`HISAT2`](https://daehwankimlab.github.io/hisat2/) alignment, [`StringTie`](https://ccb.jhu.edu/software/stringtie/) analysis, and gffcompare.
+
+---
+
 Output folder:
 
 - [20230426-pgen-fastqc-fastp-multiqc-RNAseq/](https://gannet.fish.washington.edu/Atumefaciens/20230426-pgen-fastqc-fastp-multiqc-RNAseq/)
 
+  #### MultiQC Report (HTML)
+
+  - [20230426-pgen-fastqc-fastp-multiqc-RNAseq/multiqc_report.html](https://gannet.fish.washington.edu/Atumefaciens/20230426-pgen-fastqc-fastp-multiqc-RNAseq/multiqc_report.html)
+
+  #### Trimmed FastQs
+
+  - [ctenidia_1_val_1.fastp-trim.20230426.fq.gz](https://gannet.fish.washington.edu/Atumefaciens/20230426-pgen-fastqc-fastp-multiqc-RNAseq/ctenidia_1_val_1.fastp-trim.20230426.fq.gz) (3.8G)
+
+    - MD5: `d8dfc9356937726c87f8a9e0cccc54f7`
+
+  - [ctenidia_2_val_2.fastp-trim.20230426.fq.gz](https://gannet.fish.washington.edu/Atumefaciens/20230426-pgen-fastqc-fastp-multiqc-RNAseq/ctenidia_2_val_2.fastp-trim.20230426.fq.gz) (4.0G)
+
+    - MD5: `c922ade826ad86785f5fab83d14402bf`
+
+  - [gonad_1_val_1.fastp-trim.20230426.fq.gz](https://gannet.fish.washington.edu/Atumefaciens/20230426-pgen-fastqc-fastp-multiqc-RNAseq/gonad_1_val_1.fastp-trim.20230426.fq.gz) (4.1G)
+
+    - MD5: `ba2fe679cb38f69678a92ec30558003b`
+
+  - [gonad_2_val_2.fastp-trim.20230426.fq.gz](https://gannet.fish.washington.edu/Atumefaciens/20230426-pgen-fastqc-fastp-multiqc-RNAseq/gonad_2_val_2.fastp-trim.20230426.fq.gz) (4.4G)
+
+    - MD5: `9628a62060e456e9e3a9522580306cd4`
+
+  - [heart_1_val_1.fastp-trim.20230426.fq.gz](https://gannet.fish.washington.edu/Atumefaciens/20230426-pgen-fastqc-fastp-multiqc-RNAseq/heart_1_val_1.fastp-trim.20230426.fq.gz) (7.2G)
+
+    - MD5: `7a0752fe1d366cd6e9dbd16288c9785d`
+
+  - [heart_2_val_2.fastp-trim.20230426.fq.gz](https://gannet.fish.washington.edu/Atumefaciens/20230426-pgen-fastqc-fastp-multiqc-RNAseq/heart_2_val_2.fastp-trim.20230426.fq.gz) (7.1G)
+
+    - MD5: `34519d234870317a953939f1742f5ea2`
+
+  - [juvenile_1_val_1.fastp-trim.20230426.fq.gz](https://gannet.fish.washington.edu/Atumefaciens/20230426-pgen-fastqc-fastp-multiqc-RNAseq/juvenile_1_val_1.fastp-trim.20230426.fq.gz) (23G)
+
+    - MD5: `974d17adfd390c6dba379c06d3d5b637`
+
+  - [juvenile_2_val_2.fastp-trim.20230426.fq.gz](https://gannet.fish.washington.edu/Atumefaciens/20230426-pgen-fastqc-fastp-multiqc-RNAseq/juvenile_2_val_2.fastp-trim.20230426.fq.gz) (23G)
+
+    - MD5: `6740608da69688b7d8e61d4c5ae431e1`
+
+  - [larvae_1_val_1.fastp-trim.20230426.fq.gz](https://gannet.fish.washington.edu/Atumefaciens/20230426-pgen-fastqc-fastp-multiqc-RNAseq/larvae_1_val_1.fastp-trim.20230426.fq.gz) (4.7G)
+
+    - MD5: `97c5715a26ade72efb305b9496bd1cec`
+
+  - [larvae_2_val_2.fastp-trim.20230426.fq.gz](https://gannet.fish.washington.edu/Atumefaciens/20230426-pgen-fastqc-fastp-multiqc-RNAseq/larvae_2_val_2.fastp-trim.20230426.fq.gz) (5.0G)
+
+    - MD5: `49217a766a3f835f53b93441b890fa5e`
