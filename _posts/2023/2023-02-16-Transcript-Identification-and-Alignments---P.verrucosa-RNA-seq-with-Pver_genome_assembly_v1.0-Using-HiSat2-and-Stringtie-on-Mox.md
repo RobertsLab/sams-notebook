@@ -33,7 +33,7 @@ SBATCH Script (GitHub):
 ## Walltime (days-hours:minutes:seconds format)
 #SBATCH --time=12-00:00:00
 ## Memory per node
-#SBATCH --mem=500G
+#SBATCH --mem=120G
 ##turn on e-mail notification
 #SBATCH --mail-type=ALL
 #SBATCH --mail-user=samwhite@uw.edu
@@ -77,6 +77,7 @@ index_tarball="Pver_genome_assembly_v1.0-hisat2-indices.tar.gz"
 
 # Set input FastQ patterns
 R1_fastq_pattern='*R1*fq.gz'
+R2_fastq_pattern='*R2*fq.gz'
 fastq_pattern='*.fastp-trim.20230215.fq.gz'
 
 # Location of Hisat2 index files
@@ -93,7 +94,7 @@ stringtie="/gscratch/srlab/programs/stringtie-1.3.6.Linux_x86_64/stringtie"
 
 # Input/output files
 genome_index_dir="/gscratch/srlab/sam/data/P_verrucosa/genomes"
-genome_gff="${genome_index_dir}/Pver_genome_assembly_v1.0.gff3"
+genome_gff="${genome_index_dir}/Pver_genome_assembly_v1.0-valid.gff3"
 fastq_dir="/gscratch/srlab/sam/data/P_verrucosa/RNAseq/"
 gtf_list="gtf_list.txt"
 merged_bam="20230216-pver-stringtie-pver_v1.0-sorted-bams-merged.bam"
@@ -217,25 +218,58 @@ do
   # and generated MD5 checksums file.
 
   # DO NOT QUOTE ${fastq_pattern} 
-  for fastq in "${fastq_dir}""${sample}"*_R1${fastq_pattern}
+  for fastq in "${fastq_dir}"${R1_fastq_pattern}
   do
-    fastq_array_R1+=("${fastq}")
-    echo "Generating checksum for ${fastq}..."
-    md5sum "${fastq}" >> input_fastqs_checksums.md5
-    echo "Checksum for ${fastq} completed."
-    echo ""
+
+    # Remove path
+    sample_name="${fastq##*/}"
+
+    # Get sample name from first _-delimited field
+    sample_name=$(echo "${sample_name}" | awk -F "_" '{print $1}')
+
+    # Check sample names for match
+    if [[ "${sample_name}" == "${sample}" ]]
+    then
+      echo "Now working on ${sample} Read 1 FastQs."
+
+      fastq_array_R1+=("${fastq}")
+
+      echo "Generating checksum for ${fastq}..."
+
+      md5sum "${fastq}" >> input_fastqs_checksums.md5
+
+      echo "Checksum for ${fastq} completed."
+      echo ""
+    fi
+
   done
 
   # Create array of fastq R2 files
   # DO NOT QUOTE ${fastq_pattern} 
-  for fastq in "${fastq_dir}""${sample}"*_R2${fastq_pattern}
+  for fastq in "${fastq_dir}"${R2_fastq_pattern}
   do
-    fastq_array_R2+=("${fastq}")
-    echo "Generating checksum for ${fastq}..."
-    md5sum "${fastq}" >> input_fastqs_checksums.md5
-    echo "Checksum for ${fastq} completed."
-    echo ""
-  done
+    # Remove path
+    sample_name="${fastq##*/}"
+
+    # Get sample name from first _-delimited field
+    sample_name=$(echo "${sample_name}" | awk -F "_" '{print $1}')
+
+    # Check sample names for match
+    if [[ "${sample_name}" == "${sample}" ]]
+    then
+      echo "Now working on ${sample} Read 2 FastQs."
+
+      fastq_array_R2+=("${fastq}")
+
+      echo "Generating checksum for ${fastq}..."
+
+      md5sum "${fastq}" >> input_fastqs_checksums.md5
+      
+      echo "Checksum for ${fastq} completed."
+      echo ""
+    fi
+
+  echo "Checksums for ${sample} Read 1 and 2 completed."
 
   # Create comma-separated lists of FastQs for Hisat2
   printf -v joined_R1 '%s,' "${fastq_array_R1[@]}"
@@ -248,13 +282,12 @@ do
   echo ""
   echo "Creating ${sample} directory."
   mkdir "${sample}" && cd "$_"
-  echo ""
   echo "Now in ${sample} directory."
 
   # HiSat2 alignments
   # Sets read group info (RG) using samples array
   echo ""
-  echo "Running HiSat2..."
+  echo "Running HiSat2 for sample ${sample}."
   "${programs_array[hisat2]}" \
   -x "${genome_index_name}" \
   -1 "${fastq_list_R1}" \
@@ -262,6 +295,7 @@ do
   -S "${sample}".sam \
   --rg-id "${sample}" \
   --rg "SM:""${samples_associative_array[$sample]}" \
+  --threads "${threads}" \
   2> "${sample}-hisat2_stats.txt"
   echo ""
   echo "Hisat2 for  ${fastq_list_R1} and ${fastq_list_R2} complete."
@@ -269,7 +303,7 @@ do
 
   # Sort SAM files, convert to BAM, and index
   echo ""
-  echo "Sorting ${sample}.sam..."
+  echo "Sorting ${sample}.sam and creating sorted BAM."
   echo ""
   ${programs_array[samtools_view]} \
   -@ "${threads}" \
@@ -289,6 +323,10 @@ do
   echo "Indexing complete for ${sample}.sorted.bam."
   echo ""
 
+  echo ""
+  echo "HiSat2 completed for sample ${sample}."
+  echo ""
+
 #### END HISAT2 ALIGNMENTS ####
 
 #### BEGIN STRINGTIE ####
@@ -298,7 +336,6 @@ do
   # Uses "-e" option; recommended when using "-B" option.
   # Limits analysis to only reads alignments matching reference.
   echo "Beginning StringTie analysis on ${sample}.sorted.bam."
-  echo ""
   "${programs_array[stringtie]}" "${sample}".sorted.bam \
   -p "${threads}" \
   -o "${sample}".gtf \
@@ -306,7 +343,8 @@ do
   -C "${sample}.cov_refs.gtf" \
   -B \
   -e
-  echo "StringTie analysi finished for ${sample}.sorted.bam."
+  echo "StringTie analysis finished for ${sample}.sorted.bam."
+  echo ""
 #### END STRINGTIE ####
 
 # Add GTFs to list file, only if non-empty
@@ -341,6 +379,9 @@ do
   echo ""
   cd ../
   echo "Now in $(pwd)."
+  echo ""
+
+  echo "Finished HiSat2 alignments and StringTie analysis for ${sample} FastQs."
   echo ""
 
 done
@@ -400,7 +441,7 @@ echo ""
 
 # Delete unneccessary index files
 echo ""
-echo "Removing HiSat2 genome index files..."
+echo "Removing HiSat2 *.ht2 genome index files..."
 echo ""
 rm "${genome_index_name}"*.ht2
 echo "All genome index files removed."
@@ -410,6 +451,11 @@ echo ""
 echo ""
 echo "Beginning gffcompare..."
 echo ""
+
+# Make ggfcompare output directory and
+# change into that directory
+mkdir --parents gffcompare && cd "$_"
+
 "${programs_array[gffcompare]}" \
 -r "${genome_gff}" \
 -o "${genome_index_name}-gffcmp" \
@@ -418,18 +464,51 @@ echo ""
 echo "Finished gffcompare"
 echo ""
 
-#### END GFFCOMPARE ####
-
 # Generate checksums
 for file in *
 do
   echo ""
   echo "Generating checksum for ${file}..."
   echo ""
+
   md5sum "${file}" | tee --append checksums.md5
-  echo ""
+
   echo "Checksum generated."
 done
+
+# Move to previous directory
+echo "Moving to previous directory..."
+echo ""
+
+cd -
+
+echo "Now in $(pwd)."
+echo ""
+
+#### END GFFCOMPARE ####
+
+# Generate checksums
+echo "Generating checksums for files in $(pwd)."
+
+for file in *
+do
+  echo ""
+  echo "Generating checksum for ${file}..."
+  echo ""
+
+  md5sum "${file}" | tee --append checksums.md5
+
+  echo "Checksum generated."
+done
+
+# Remove genome index tarball
+echo ""
+echo "Removing ${index_tarball}."
+
+rm "${index_tarball}"
+
+echo "${index_tarball} has been deleted."
+echo ""
 
 #######################################################################################################
 

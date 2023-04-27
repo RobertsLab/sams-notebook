@@ -10,7 +10,7 @@
 ## Walltime (days-hours:minutes:seconds format)
 #SBATCH --time=12-00:00:00
 ## Memory per node
-#SBATCH --mem=500G
+#SBATCH --mem=120G
 ##turn on e-mail notification
 #SBATCH --mail-type=ALL
 #SBATCH --mail-user=samwhite@uw.edu
@@ -54,6 +54,7 @@ index_tarball="Pver_genome_assembly_v1.0-hisat2-indices.tar.gz"
 
 # Set input FastQ patterns
 R1_fastq_pattern='*R1*fq.gz'
+R2_fastq_pattern='*R2*fq.gz'
 fastq_pattern='*.fastp-trim.20230215.fq.gz'
 
 # Location of Hisat2 index files
@@ -194,25 +195,58 @@ do
   # and generated MD5 checksums file.
 
   # DO NOT QUOTE ${fastq_pattern} 
-  for fastq in "${fastq_dir}""${sample}"*_R1${fastq_pattern}
+  for fastq in "${fastq_dir}"${R1_fastq_pattern}
   do
-    fastq_array_R1+=("${fastq}")
-    echo "Generating checksum for ${fastq}..."
-    md5sum "${fastq}" >> input_fastqs_checksums.md5
-    echo "Checksum for ${fastq} completed."
-    echo ""
+
+    # Remove path
+    sample_name="${fastq##*/}"
+
+    # Get sample name from first _-delimited field
+    sample_name=$(echo "${sample_name}" | awk -F "_" '{print $1}')
+
+    # Check sample names for match
+    if [[ "${sample_name}" == "${sample}" ]]
+    then
+      echo "Now working on ${sample} Read 1 FastQs."
+
+      fastq_array_R1+=("${fastq}")
+
+      echo "Generating checksum for ${fastq}..."
+
+      md5sum "${fastq}" >> input_fastqs_checksums.md5
+
+      echo "Checksum for ${fastq} completed."
+      echo ""
+    fi
+
   done
 
   # Create array of fastq R2 files
   # DO NOT QUOTE ${fastq_pattern} 
-  for fastq in "${fastq_dir}""${sample}"*_R2${fastq_pattern}
+  for fastq in "${fastq_dir}"${R2_fastq_pattern}
   do
-    fastq_array_R2+=("${fastq}")
-    echo "Generating checksum for ${fastq}..."
-    md5sum "${fastq}" >> input_fastqs_checksums.md5
-    echo "Checksum for ${fastq} completed."
-    echo ""
-  done
+    # Remove path
+    sample_name="${fastq##*/}"
+
+    # Get sample name from first _-delimited field
+    sample_name=$(echo "${sample_name}" | awk -F "_" '{print $1}')
+
+    # Check sample names for match
+    if [[ "${sample_name}" == "${sample}" ]]
+    then
+      echo "Now working on ${sample} Read 2 FastQs."
+
+      fastq_array_R2+=("${fastq}")
+
+      echo "Generating checksum for ${fastq}..."
+
+      md5sum "${fastq}" >> input_fastqs_checksums.md5
+      
+      echo "Checksum for ${fastq} completed."
+      echo ""
+    fi
+
+  echo "Checksums for ${sample} Read 1 and 2 completed."
 
   # Create comma-separated lists of FastQs for Hisat2
   printf -v joined_R1 '%s,' "${fastq_array_R1[@]}"
@@ -238,6 +272,7 @@ do
   -S "${sample}".sam \
   --rg-id "${sample}" \
   --rg "SM:""${samples_associative_array[$sample]}" \
+  --threads "${threads}" \
   2> "${sample}-hisat2_stats.txt"
   echo ""
   echo "Hisat2 for  ${fastq_list_R1} and ${fastq_list_R2} complete."
@@ -323,6 +358,9 @@ do
   echo "Now in $(pwd)."
   echo ""
 
+  echo "Finished HiSat2 alignments and StringTie analysis for ${sample} FastQs."
+  echo ""
+
 done
 
 echo "Finished all HiSat2 alignments and StringTie analysis."
@@ -390,6 +428,11 @@ echo ""
 echo ""
 echo "Beginning gffcompare..."
 echo ""
+
+# Make ggfcompare output directory and
+# change into that directory
+mkdir --parents gffcompare && cd "$_"
+
 "${programs_array[gffcompare]}" \
 -r "${genome_gff}" \
 -o "${genome_index_name}-gffcmp" \
@@ -398,20 +441,51 @@ echo ""
 echo "Finished gffcompare"
 echo ""
 
-#### END GFFCOMPARE ####
-
 # Generate checksums
 for file in *
 do
   echo ""
   echo "Generating checksum for ${file}..."
   echo ""
+
   md5sum "${file}" | tee --append checksums.md5
+
+  echo "Checksum generated."
+done
+
+# Move to previous directory
+echo "Moving to previous directory..."
+echo ""
+
+cd -
+
+echo "Now in $(pwd)."
+echo ""
+
+#### END GFFCOMPARE ####
+
+# Generate checksums
+echo "Generating checksums for files in $(pwd)."
+
+for file in *
+do
+  echo ""
+  echo "Generating checksum for ${file}..."
+  echo ""
+
+  md5sum "${file}" | tee --append checksums.md5
+
   echo "Checksum generated."
 done
 
 # Remove genome index tarball
+echo ""
+echo "Removing ${index_tarball}."
+
 rm "${index_tarball}"
+
+echo "${index_tarball} has been deleted."
+echo ""
 
 #######################################################################################################
 
