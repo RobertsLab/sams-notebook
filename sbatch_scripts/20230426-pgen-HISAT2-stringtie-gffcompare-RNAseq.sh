@@ -181,27 +181,62 @@ do
 
   # Create array of fastq R1 files
   # and generated MD5 checksums file.
+  
 
   # DO NOT QUOTE ${fastq_pattern} 
   for fastq in "${fastq_dir}"${R1_fastq_pattern}
   do
-    fastq_array_R1+=("${fastq}")
-    echo "Generating checksum for ${fastq}..."
-    md5sum "${fastq}" >> input_fastqs_checksums.md5
-    echo "Checksum for ${fastq} completed."
-    echo ""
+
+    # Remove path
+    sample_name="${fastq##*/}"
+
+    # Get sample name from first _-delimited field
+    sample_name=$(echo "${sample_name}" | awk -F "_" '{print $1}')
+
+    # Check sample names for match
+    if [[ "${sample_name}" == "${sample}" ]]
+    then
+      echo "Now working on ${sample} Read 1 FastQs."
+
+      fastq_array_R1+=("${fastq}")
+
+      echo "Generating checksum for ${fastq}..."
+
+      md5sum "${fastq}" >> input_fastqs_checksums.md5
+
+      echo "Checksum for ${fastq} completed."
+      echo ""
+    fi
+
   done
 
   # Create array of fastq R2 files
   # DO NOT QUOTE ${fastq_pattern} 
   for fastq in "${fastq_dir}"${R2_fastq_pattern}
   do
-    fastq_array_R2+=("${fastq}")
-    echo "Generating checksum for ${fastq}..."
-    md5sum "${fastq}" >> input_fastqs_checksums.md5
-    echo "Checksum for ${fastq} completed."
-    echo ""
+    # Remove path
+    sample_name="${fastq##*/}"
+
+    # Get sample name from first _-delimited field
+    sample_name=$(echo "${sample_name}" | awk -F "_" '{print $1}')
+
+    # Check sample names for match
+    if [[ "${sample_name}" == "${sample}" ]]
+    then
+      echo "Now working on ${sample} Read 2 FastQs."
+
+      fastq_array_R2+=("${fastq}")
+
+      echo "Generating checksum for ${fastq}..."
+
+      md5sum "${fastq}" >> input_fastqs_checksums.md5
+      
+      echo "Checksum for ${fastq} completed."
+      echo ""
+    fi
   done
+
+  echo "Checksums for ${sample} Read 1 and 2 completed."
 
   # Create comma-separated lists of FastQs for Hisat2
   printf -v joined_R1 '%s,' "${fastq_array_R1[@]}"
@@ -308,6 +343,9 @@ do
     echo "${file} checksum added to ${sample}_checksums.md5."
     echo ""
   done
+
+  echo "Finished HiSat2 alignments and StringTie analysis for ${sample} FastQs."
+  echo ""
 
   # Move up to orig. working directory
   echo "Moving to original working directory."
@@ -423,12 +461,20 @@ do
 done
 
 # Move to previous directory
+echo "Moving to previous directory..."
+echo ""
+
 cd -
+
+echo "Now in $(pwd)."
+echo ""
 
 #### END GFFCOMPARE ####
 
 
 # Generate checksums
+echo "Generating checksums for files in $(pwd)."
+
 for file in *
 do
   echo ""
@@ -441,8 +487,12 @@ do
 done
 
 # Remove genome index tarball
+echo ""
+echo "Removing ${index_tarball}."
+
 rm "${index_tarball}"
 
+echo "${index_tarball} has been deleted."
 echo ""
 
 #######################################################################################################
