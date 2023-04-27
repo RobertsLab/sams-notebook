@@ -67,7 +67,7 @@ gffcompare="/gscratch/srlab/programs/gffcompare-0.12.6.Linux_x86_64/gffcompare"
 hisat2_dir="/gscratch/srlab/programs/hisat2-2.1.0"
 hisat2="${hisat2_dir}/hisat2"
 samtools="/gscratch/srlab/programs/samtools-1.10/samtools"
-stringtie="/gscratch/srlab/programs/stringtie-1.3.6.Linux_x86_64/stringtie"
+stringtie="/gscratch/srlab/programs/stringtie-2.2.1.Linux_x86_64/stringtie"
 
 # Input/output files
 genome_index_dir="/gscratch/srlab/sam/data/P_verrucosa/genomes"
