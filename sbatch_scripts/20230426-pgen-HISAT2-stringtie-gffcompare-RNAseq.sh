@@ -308,8 +308,8 @@ do
   -o "${sample}".gtf \
   -G "${genome_gff}" \
   -C "${sample}.cov_refs.gtf" \
-  -B \
-  -e
+  -B
+  
   echo "StringTie analysis finished for ${sample}.sorted.bam."
   echo ""
 #### END STRINGTIE ####
@@ -440,7 +440,7 @@ mkdir --parents gffcompare && cd "$_"
 
 # Run gffcompare
 "${programs_array[gffcompare]}" \
--r ../"${genome_gff}" \
+-r "${genome_gff}" \
 -o "${genome_index_name}-gffcmp" \
 ../"${genome_index_name}.stringtie.gtf"
 

@@ -268,6 +268,7 @@ do
       echo "Checksum for ${fastq} completed."
       echo ""
     fi
+  done
 
   echo "Checksums for ${sample} Read 1 and 2 completed."
 
@@ -311,7 +312,7 @@ do
   | ${programs_array[samtools_sort]} - \
   -@ "${threads}" \
   -o "${sample}".sorted.bam
-  echo "Created "${sample}".sorted.bam"
+  echo "Created ${sample}.sorted.bam"
   echo ""
 
 
@@ -327,6 +328,7 @@ do
   echo "HiSat2 completed for sample ${sample}."
   echo ""
 
+
 #### END HISAT2 ALIGNMENTS ####
 
 #### BEGIN STRINGTIE ####
@@ -341,8 +343,8 @@ do
   -o "${sample}".gtf \
   -G "${genome_gff}" \
   -C "${sample}.cov_refs.gtf" \
-  -B \
-  -e
+  -B
+  
   echo "StringTie analysis finished for ${sample}.sorted.bam."
   echo ""
 #### END STRINGTIE ####
@@ -459,7 +461,7 @@ mkdir --parents gffcompare && cd "$_"
 "${programs_array[gffcompare]}" \
 -r "${genome_gff}" \
 -o "${genome_index_name}-gffcmp" \
-"${genome_index_name}.stringtie.gtf"
+../"${genome_index_name}.stringtie.gtf"
 echo ""
 echo "Finished gffcompare"
 echo ""
