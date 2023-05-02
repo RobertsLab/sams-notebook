@@ -13,7 +13,7 @@ tags:
 categories: 
   - Miscellaneous
 ---
-
+This is a continuation of the process for identification of lncRNAs,. I aligned FastQs which were [previously trimmed earlier today](https://robertslab.github.io/sams-notebook/2023/04/26/FastQ-Trimming-and-QC-P.generosa-RNA-seq-Data-from-20220323-on-Mox.html) to our Panopea-generosa-v1.0 genome FastA using [`HISAT2`](https://daehwankimlab.github.io/hisat2/). I used the [`HISAT2`](https://daehwankimlab.github.io/hisat2/) genome index [created on 20190723](https://robertslab.github.io/sams-notebook/2019/07/23/Genome-Annotation-Pgenerosa_v074-Hisat2-Transcript-Isoform-Index.html), which was created with options to identify exons and splice sites. The GFF used was [from 20220323](https://robertslab.github.io/sams-notebook/2022/03/23/Differential-Gene-Expression-P.generosa-DGE-Between-Tissues-Using-Nextlow-NF-Core-RNAseq-Pipeline-on-Mox.html). [`StringTie`](https://ccb.jhu.edu/software/stringtie/) was used to identify alternative transcripts, assign expression values, and create expression tables for use with `ballgown`. The job was run on Mox.
 
 SLURM script posted below is very long. Skip to [RESULTS section](#results).
 
@@ -593,7 +593,13 @@ Output folder:
 
 - [20230426-pgen-HISAT2-stringtie-gffcompare-RNAseq/](https://gannet.fish.washington.edu/Atumefaciens/20230426-pgen-HISAT2-stringtie-gffcompare-RNAseq/)
 
-Due to the number of files and various subdirectories, I don't be providing links to individual files. Instead, here's a tree overview of the directory layouts:
+Due to the number of files and various subdirectories, I won't be providing links to individual files. Instead, there's a tree overview of the directory layouts below.
+
+The resulting `gffcompare/Panopea-generosa-v1.0-gffcmp.annotated.gtf` will be used for downstream lncRNA identification.
+
+Also, the resulting `*.ctab` files can be used for gene/isoform expression analysis in `ballgown`.
+
+---
 
 ```
 [4.0K]  .
