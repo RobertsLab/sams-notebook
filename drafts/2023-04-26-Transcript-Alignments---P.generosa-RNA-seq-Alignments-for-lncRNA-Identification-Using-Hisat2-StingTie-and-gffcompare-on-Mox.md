@@ -587,5 +587,89 @@ echo "Script complete!"
 
 Output folder:
 
-- []()
+- [20230426-pgen-HISAT2-stringtie-gffcompare-RNAseq/](https://gannet.fish.washington.edu/Atumefaciens/20230426-pgen-HISAT2-stringtie-gffcompare-RNAseq/)
 
+Due to the number of files and various subdirectories, I don't be providing links to individual files. Instead, here's a tree overview of the directory layouts:
+
+```
+[4.0K]  .
+├── [ 70G]  20230216-pver-stringtie-pver_v1.0-sorted-bams-merged.bam
+├── [6.6M]  20230216-pver-stringtie-pver_v1.0-sorted-bams-merged.bam.bai
+├── [ 14K]  20230426-pgen-HISAT2-stringtie-gffcompare-RNAseq.sh
+├── [ 841]  checksums.md5
+├── [4.0K]  ctenidia
+│   ├── [ 499]  ctenidia_checksums.md5
+│   ├── [4.9M]  ctenidia.cov_refs.gtf
+│   ├── [ 39M]  ctenidia.gtf
+│   ├── [ 643]  ctenidia-hisat2_stats.txt
+│   ├── [6.3G]  ctenidia.sorted.bam
+│   ├── [1.4M]  ctenidia.sorted.bam.bai
+│   ├── [2.7M]  e2t.ctab
+│   ├── [ 14M]  e_data.ctab
+│   ├── [2.3M]  i2t.ctab
+│   ├── [7.2M]  i_data.ctab
+│   └── [3.7M]  t_data.ctab
+├── [4.0K]  gffcompare
+│   ├── [ 280]  checksums.md5
+│   ├── [1.5K]  Panopea-generosa-v1.0-gffcmp
+│   ├── [ 74M]  Panopea-generosa-v1.0-gffcmp.annotated.gtf
+│   ├── [4.7M]  Panopea-generosa-v1.0-gffcmp.loci
+│   └── [9.4M]  Panopea-generosa-v1.0-gffcmp.tracking
+├── [4.0K]  gonad
+│   ├── [2.7M]  e2t.ctab
+│   ├── [ 14M]  e_data.ctab
+│   ├── [ 484]  gonad_checksums.md5
+│   ├── [2.1M]  gonad.cov_refs.gtf
+│   ├── [ 26M]  gonad.gtf
+│   ├── [ 643]  gonad-hisat2_stats.txt
+│   ├── [6.3G]  gonad.sorted.bam
+│   ├── [1.4M]  gonad.sorted.bam.bai
+│   ├── [2.3M]  i2t.ctab
+│   ├── [7.2M]  i_data.ctab
+│   └── [3.7M]  t_data.ctab
+├── [ 519]  gtf_list.txt
+├── [4.0K]  heart
+│   ├── [2.7M]  e2t.ctab
+│   ├── [ 14M]  e_data.ctab
+│   ├── [ 484]  heart_checksums.md5
+│   ├── [5.4M]  heart.cov_refs.gtf
+│   ├── [ 38M]  heart.gtf
+│   ├── [ 647]  heart-hisat2_stats.txt
+│   ├── [ 12G]  heart.sorted.bam
+│   ├── [2.0M]  heart.sorted.bam.bai
+│   ├── [2.3M]  i2t.ctab
+│   ├── [7.3M]  i_data.ctab
+│   └── [3.7M]  t_data.ctab
+├── [1.5K]  input_fastqs_checksums.md5
+├── [4.0K]  juvenile
+│   ├── [2.7M]  e2t.ctab
+│   ├── [ 15M]  e_data.ctab
+│   ├── [2.3M]  i2t.ctab
+│   ├── [7.5M]  i_data.ctab
+│   ├── [ 499]  juvenile_checksums.md5
+│   ├── [8.9M]  juvenile.cov_refs.gtf
+│   ├── [ 69M]  juvenile.gtf
+│   ├── [ 653]  juvenile-hisat2_stats.txt
+│   ├── [ 38G]  juvenile.sorted.bam
+│   ├── [3.9M]  juvenile.sorted.bam.bai
+│   └── [3.7M]  t_data.ctab
+├── [4.0K]  larvae
+│   ├── [2.7M]  e2t.ctab
+│   ├── [ 15M]  e_data.ctab
+│   ├── [2.3M]  i2t.ctab
+│   ├── [7.3M]  i_data.ctab
+│   ├── [ 489]  larvae_checksums.md5
+│   ├── [5.4M]  larvae.cov_refs.gtf
+│   ├── [ 45M]  larvae.gtf
+│   ├── [ 645]  larvae-hisat2_stats.txt
+│   ├── [7.9G]  larvae.sorted.bam
+│   ├── [1.5M]  larvae.sorted.bam.bai
+│   └── [3.7M]  t_data.ctab
+├── [2.6M]  Panopea-generosa-v1.0-gffcmp.Panopea-generosa-v1.0.stringtie.gtf.refmap
+├── [8.7M]  Panopea-generosa-v1.0-gffcmp.Panopea-generosa-v1.0.stringtie.gtf.tmap
+├── [ 73M]  Panopea-generosa-v1.0.stringtie.gtf
+├── [ 19K]  program_options.log
+├── [ 42M]  slurm-4571580.out
+├── [ 139]  sorted_bams.list
+└── [1.1K]  system_path.log
+```
