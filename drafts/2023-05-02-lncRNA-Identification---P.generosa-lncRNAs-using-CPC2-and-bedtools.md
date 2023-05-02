@@ -28,7 +28,20 @@ Jupyter Notebook (NB Viewer):
 
 #### RESULTS
 
+Some very brief "stats":
+
+Total P.generosa transccripts ID's by HiSat2/Stringtie: `79,269`
+
+Total P.generosa lncRNA ID'd by CPC2 (>= 200bp): `13,606`
+
+Percentage of transcripts which are lncRNAs: `17%`
+
 Output folder:
 
-- []()
+- [20230426-pgen-HISAT2-stringtie-gffcompare-RNAseq/](https://gannet.fish.washington.edu/Atumefaciens/20230426-pgen-HISAT2-stringtie-gffcompare-RNAseq/)
 
+  #### lncRNA GTF
+  
+    - [20230502-pgen-lncRNA-IDs.gtf](https://gannet.fish.washington.edu/Atumefaciens/20230426-pgen-HISAT2-stringtie-gffcompare-RNAseq/20230502-pgen-lncRNA-IDs.gtf) (2.2M)
+
+    - MD5: `9adb7efc18fe1bfedcad24c86da1161f`
