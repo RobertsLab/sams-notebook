@@ -585,6 +585,10 @@ echo "Script complete!"
 
 #### RESULTS
 
+Run time was ~5.5hrs:
+
+![Screencap showing runtime of 5hrs, 27mins, 19s on Mox](https://github.com/RobertsLab/sams-notebook/blob/master/images/screencaps/20230426-pgen-HISAT2-stringtie-gffcompare-RNAseq-runtime.png?raw=true)
+
 Output folder:
 
 - [20230426-pgen-HISAT2-stringtie-gffcompare-RNAseq/](https://gannet.fish.washington.edu/Atumefaciens/20230426-pgen-HISAT2-stringtie-gffcompare-RNAseq/)
