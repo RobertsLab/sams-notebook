@@ -10,27 +10,148 @@ tags:
 categories: 
   - Miscellaneous
 ---
+At some point, our HPC nodes on Mox will be retired. When that happens, we'll likely purchase new nodes on the newest UW cluster, [Klone](https://www.gutenberg.org/cache/epub/35492/pg35492-images.html). Additionally, the `coenv` nodes are no longer available on Mox. One was decommissioned and one was "migratated" to Klone. The primary issue at hand is that the base operating system for [Klone](https://www.gutenberg.org/cache/epub/35492/pg35492-images.html) appears to be very, very basic. I'd previously attempted to build/install some bioinformatics software on [Klone](https://www.gutenberg.org/cache/epub/35492/pg35492-images.html), but could not due to a variety of missing libraries; these libraries are available by default on Mox... Part of this isn't surprising, as UW IT has been making a concerted effort to get users to switch to containerization - specifically using [Apptainer](https://apptainer.org/) (formerly Singularity) containers.
+
+There are significant benefits to containerization (chiefly, reproducibility; containers can be transferred to other computers and run without the end user needing to modify/change anything), but the learning curve for how to create and use containers can be a bit tricky for those (i.e. members of the Roberts Lab) who haven't previously worked with them. Combine this with the fact that these containers need to run in using the [SLURM workload management system](https://slurm.schedmd.com/documentation.html) in place on Mox/Klone, the learning process can seem a bit convoluted.
+
+Anyway, in an effort to be proactive, I've begun a concerted effort into developing and using containers on [Klone](https://www.gutenberg.org/cache/epub/35492/pg35492-images.html) (although, I had put in [previous effort about 6yrs ago](https://github.com/RobertsLab/code/tree/master/dockerfiles) to try to get the lab to start using Docker, which wasn't really adopted by anyone; including myself). Admittedly, part of the drive is a selfish one, as I _really_ want to be able to use the `coenv` node that's there...
+
+I've established a [GitHub repo subdirectory](https://github.com/RobertsLab/code/tree/master/apptainer_definition_files) for storing [Apptainer](https://apptainer.org/) definition files. Although these won't get modified with any frequency, since once the containers are built people will just use those, this repo will provide a resource for people to refer to. Additionally, I'll be adding a section about this to the [Roberts Lab Handbook](https://robertslab.github.io/resources/). Another decent resource regarding building/using containers is the [UW Research Computing website](https://hyak.uw.edu/docs/tools/software). It provides a decent overview, but is still a bit confusing. Below is a quick overview, specific to [the Roberts Lab's](https://robertslab.github.io/resources/) of how to build and use containers.
 
 
-Create base image:
+
+First, we'll create a "base" image. All subsequent containers will be built using this base image. This helps to keep the subsequent defection files for other containers much shorter, cleaner, and easier to read. The [`ubuntu-22.04-base.def`](https://github.com/RobertsLab/code/blob/master/apptainer_definition_files/ubuntu-22.04-base.def) (GitHub) builds a basic Ubuntu 22.04 image, as well as adds the necessary libraries for building/installing other software later on. It also creates the `/gscratch/srlab/programs` directory. This is to help with the migration from using Mox, to Klone; Roberts Lab users will know where to look for software with the containers, if they need to find it. Although I'm documenting how to build containers, most of the container building will be one-off jobs. After a container is built, it can be used by anyone. There likely won't be many (any) reasons to rebuild a container once it's been built.
+
+There is one shortcoming to our current usage - we don't really have a way to link changes to definition files to container images. E.g. If someone updates a definition file, they may forget to rebuild the image with the updated definition file. Additionally, if they _do_ update the container image, how does one indicate that it is different than it used to be? There are ways to do this (using Docker Hub and/or some other container registry, combined with using GitHub automated builds, but this is likely beyond our technical expertise, as well as a bit of overkill for our use cases).
+
+Anyway, here's how to get started. First, build the base image:
+
+
+
+### Build base container
 
 ```bash
 apptainer build \
 --sandbox \
 --fakeroot \
-/tmp/ubuntu-22.04.sandbox ./ubuntu-22.04.def \
+/tmp/ubuntu-22.04-base.sandbox ./ubuntu-22.04-base.def \
 && apptainer build \
-/tmp/ubuntu-22.04.sif /tmp/ubuntu-22.04.sandbox \
-&& mv /tmp/ubuntu-22.04.sif .
+/tmp/ubuntu-22.04-base.sif /tmp/ubuntu-22.04-base.sandbox \
+&& mv /tmp/ubuntu-22.04-base.sif .
 ```
 
-Create `bedtools` container, based on base image above:
+NOTES:
+
+- The `--sandbox` option is necessary to allow the _persistence_ of the `/gscratch/srlab/programs` directory in the container to all subsequent builds that utilize `ubuntu-22.04-base.sif` as a base. Otherwise, the directory would need to be created in every subsequent image built off of this one.
+
+- The `/gscratch/srlab/programs` directory is also added to the system `$PATH` in the container. This means that any programs added there by containers built on this base image will be accessible _without_ the need to specify the full path to the program. E.g. To call `bedtools` the user will only need to type `bedtools`, not `/gscratch/srlab/programs/bedtools`.
+
+- Building the image in `/tmp/` and then moving to desired directory is recommended by [UW Research Computing](https://hyak.uw.edu/docs/tools/software).
+
+
+### Build `bedtools` container
+
+For a basic example, we'll create an image based on base image above which installs an additional piece of software: [`bedtools`](https://bedtools.readthedocs.io/). Here're the contents of the [`bedtools-2.31.0.def`](https://github.com/RobertsLab/code/blob/master/apptainer_definition_files/bedtools-2.31.1.def) (GitHub):
+
+
+```
+Bootstrap: localimage
+From: ubuntu-22.04-base.sif
+
+%post
+  echo "$PWD"
+  ls -l /
+  ls -l /gscratch
+  cd /gscratch/srlab/programs
+  wget https://github.com/arq5x/bedtools2/releases/download/v2.31.0/bedtools.static
+  mv bedtools.static bedtools
+  chmod a+x bedtools
+
+%labels
+  Author Sam White
+  Version v0.0.1
+
+%help
+  This is a definition file for a bedtools-v2.31.0 image.
+```
+
+It's much, much shorter than the [`ubuntu-22.04-base.def`](https://github.com/RobertsLab/code/blob/master/apptainer_definition_files/ubuntu-22.04-base.def) (GitHub) because it's using all of the stuff that's already been installed in [`ubuntu-22.04-base.def`](https://github.com/RobertsLab/code/blob/master/apptainer_definition_files/ubuntu-22.04-base.def) (GitHub). There're some extraneous lines that are leftover from my initial testing (namely the `echo`, `ls` and `ls -l` commands) which I'll get rid of later, but it should be relatively easy to see what's happening:
+
+- Change to the `/gscratch/srlab/programs` directory.
+
+- Download the `bedtools` program.
+
+- Use the `mv` command to rename it to just `bedtools` (instead of `bedtools.static`).
+
+- Make the program executable using `chmod`.
+
+
+To actually _build_ the `bedtools` image, we run the following. NOTE: The `bedtools-2.31.0.def` definition file has to be in same directory as the `ubuntu-22.04-base.sif`.
 
 ```bash
 apptainer build \
-/tmp/bedtools-2.29.1.sif ./bedtools-2.29.1.def \
-&& mv /tmp/bedtools-2.29.1.sif .
+/tmp/bedtools-2.31.0.sif ./bedtools-2.31.0.def \
+&& mv /tmp/bedtools-2.31.0.sif .
 ```
 
+### Using SLURM with an image
 
+First, we'll want to create a (`bash`) script (e.g. `bedtools.sh` ) with all of our commands. We'll also need to ensure the script is executable (`chmod a+x bedtools.sh`). Here's an example of a version of that script which will print (`echo`) a statement and then pull up the help menu for `bedtools`:
 
+```bash
+$cat bedtools.sh
+
+#!/bin/bash
+echo "Going to try to execute bedtools..."
+
+bedtools -h
+```
+
+Next, we'll need our usual SLURM script with all the header stuff. I'm going to call the script `container_test.sh`.
+
+```bash
+$cat container_test.sh
+
+#!/bin/bash
+## Job Name
+#SBATCH --job-name=container_test
+## Allocation Definition
+#SBATCH --account=coenv
+#SBATCH --partition=compute
+## Resources
+## Nodes
+#SBATCH --nodes=1
+## Walltime (days-hours:minutes:seconds format)
+#SBATCH --time=01-00:00:00
+## Memory per node
+#SBATCH --mem=100G
+##turn on e-mail notification
+#SBATCH --mail-type=ALL
+#SBATCH --mail-user=samwhite@uw.edu
+## Specify the working directory for this job
+#SBATCH --chdir=/mmfs1/home/samwhite/container_testbedtools-2.31.0.sif
+
+# Load Apptainer module
+module load apptainer
+
+# Execute the bedtools-2.31.0.sif container
+# Run the bedtools.sh script
+apptainer exec \
+--home $PWD \
+--bind /mmfs1/home/ \
+--bind /mmfs1/gscratch/ \
+~/apptainers/bedtools-2.31.0.sif \
+~/container_test/bedtools.sh
+```
+
+In this SLURM batch script, we have our usual header stuff defining computing accounts/partitions, memory, runtime, etc. Then, we need to load the `apptainer` module (provided by UW) so we can actually run the `apptainer` command.
+
+The subsequent `apptainer exec` command "binds" (i.e. connects) directories on Klone to the specified location within the `bedtools-2.31.0.sif` container. Since there's only a single entry after the `--bind` and `--home` arguments, it's connecting that directory path on Klone to the exact same location within the `bedtools-2.31.0.sif` container. If we wanted to bind a location on Klone to a different location within the container, we could make it look something like `--bind /mmfs1/home/:/container/working_dir/`.
+
+Then, we tell `apptainer` which image to use (`bedtools-2.31.0.sif`), followed by an argument. In our case, we want the `bedtools-2.31.0.sif` container to run our `bedtools.sh` script.
+
+Finally, to actually submit this to the SLURM scheduler we run the following command:
+
+```bash
+sbatch container_test.sh
+```
