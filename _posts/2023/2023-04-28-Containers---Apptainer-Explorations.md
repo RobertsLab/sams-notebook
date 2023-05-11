@@ -89,6 +89,9 @@ It's much, much shorter than the [`ubuntu-22.04-base.def`](https://github.com/Ro
 To actually _build_ the `bedtools` image, we run the following. NOTE: The `bedtools-2.31.0.def` definition file has to be in same directory as the `ubuntu-22.04-base.sif`.
 
 ```bash
+# Load the apptainer module
+module load apptainer
+
 apptainer build \
 /tmp/bedtools-2.31.0.sif ./bedtools-2.31.0.def \
 && mv /tmp/bedtools-2.31.0.sif .
