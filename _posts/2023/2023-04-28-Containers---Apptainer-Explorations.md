@@ -10,7 +10,7 @@ tags:
 categories: 
   - Miscellaneous
 ---
-At some point, our HPC nodes on Mox will be retired. When that happens, we'll likely purchase new nodes on the newest UW cluster, [Klone](https://www.gutenberg.org/cache/epub/35492/pg35492-images.html). Additionally, the `coenv` nodes are no longer available on Mox. One was decommissioned and one was "migratated" to Klone. The primary issue at hand is that the base operating system for [Klone](https://www.gutenberg.org/cache/epub/35492/pg35492-images.html) appears to be very, very basic. I'd previously attempted to build/install some bioinformatics software on [Klone](https://www.gutenberg.org/cache/epub/35492/pg35492-images.html), but could not due to a variety of missing libraries; these libraries are available by default on Mox... Part of this isn't surprising, as UW IT has been making a concerted effort to get users to switch to containerization - specifically using [Apptainer](https://apptainer.org/) (formerly Singularity) containers.
+At some point, our HPC nodes on Mox will be retired. When that happens, we'll likely purchase new nodes on the newest UW cluster, [Klone](https://www.gutenberg.org/cache/epub/35492/pg35492-images.html). Additionally, the `coenv` nodes are no longer available on Mox. One was decommissioned and one was "migrated" to Klone. The primary issue at hand is that the base operating system for [Klone](https://www.gutenberg.org/cache/epub/35492/pg35492-images.html) appears to be very, very basic. I'd previously attempted to build/install some bioinformatics software on [Klone](https://www.gutenberg.org/cache/epub/35492/pg35492-images.html), but could not due to a variety of missing libraries; these libraries are available by default on Mox... Part of this isn't surprising, as UW IT has been making a concerted effort to get users to switch to containerization - specifically using [Apptainer](https://apptainer.org/) (formerly Singularity) containers.
 
 There are significant benefits to containerization (chiefly, reproducibility; containers can be transferred to other computers and run without the end user needing to modify/change anything), but the learning curve for how to create and use containers can be a bit tricky for those (i.e. members of the Roberts Lab) who haven't previously worked with them. Combine this with the fact that these containers need to run in using the [SLURM workload management system](https://slurm.schedmd.com/documentation.html) in place on Mox/Klone, the learning process can seem a bit convoluted.
 
@@ -51,7 +51,7 @@ NOTES:
 
 ### Build `bedtools` container
 
-For a basic example, we'll create an image based on base image above which installs an additional piece of software: [`bedtools`](https://bedtools.readthedocs.io/). Here're the contents of the [`bedtools-2.31.0.def`](https://github.com/RobertsLab/code/blob/master/apptainer_definition_files/bedtools-2.31.1.def) (GitHub):
+For a basic example, we'll create a new image, based on the base image above, which installs an additional piece of software: [`bedtools`](https://bedtools.readthedocs.io/). Here're the contents of the [`bedtools-2.31.0.def`](https://github.com/RobertsLab/code/blob/master/apptainer_definition_files/bedtools-2.31.1.def) (GitHub):
 
 
 ```
