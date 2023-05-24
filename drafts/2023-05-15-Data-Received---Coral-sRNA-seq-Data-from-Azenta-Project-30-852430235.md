@@ -11,13 +11,13 @@ tags:
 categories: 
   - Data Received
 ---
-Small RNA-seq (sRNA-seq) data was made available from the coral E5 Azenta project 30-852430235. Sample sheet:
+Small RNA-seq (sRNA-seq) data was made available from the coral E5 Azenta project 30-852430235. Sample sheet is below.
+
+NOTE: Two samples (` POR-71-S1-TP2`, `POR-76-S1-TP2`) were unable to be sequenced due to failed library prep. This [was acknowledged and approved on 20230511 in this GitHub Issue](https://github.com/RobertsLab/resources/issues/1632#issuecomment-1544480844).
 
 | Sample Name*   | Species/Strain*       |
 |----------------|-----------------------|
-| POR-71-S1-TP2  | Porites evermanni     |
 | POR-73-S1-TP2  | Porites evermanni     |
-| POR-76-S1-TP2  | Porites evermanni     |
 | POR-79-S1-TP2  | Porites evermanni     |
 | POR-82-S1-TP2  | Porites evermanni     |
 | POC-47-S1-TP2  | Pocillopora meandrina |
