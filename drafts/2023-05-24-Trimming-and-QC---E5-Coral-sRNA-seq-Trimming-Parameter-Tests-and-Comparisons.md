@@ -34,5 +34,41 @@ Jupyter Notebook (NB Viewer):
 
 Output folder:
 
-- []()
+- [20230524-E5-coral-sRNAseq_trimmings_comparisons](https://gannet.fish.washington.edu/Atumefaciens/20230524-E5-coral-sRNAseq_trimmings_comparisons)
 
+  - MultiQC Report (HTML)
+
+    - [20230524-E5-coral-sRNAseq_trimmings_comparisons/multiqc_report.html](https://gannet.fish.washington.edu/Atumefaciens/20230524-E5-coral-sRNAseq_trimmings_comparisons/multiqc_report.html)
+
+  - Adapter Trim Only FastQC Reports (HTML)
+
+    - https://gannet.fish.washington.edu/Atumefaciens/20230524-E5-coral-sRNAseq_trimmings_comparisons/sRNA-ACR-140-S1-TP2_R1_001-adapter_trim_only_1_fastqc.html
+
+    - https://gannet.fish.washington.edu/Atumefaciens/20230524-E5-coral-sRNAseq_trimmings_comparisons/sRNA-ACR-140-S1-TP2_R1_001-adapter_trim_only_2_fastqc.html
+
+  - Adapter and 50bp length trim FastQC Reports (HTML)
+
+    - https://gannet.fish.washington.edu/Atumefaciens/20230524-E5-coral-sRNAseq_trimmings_comparisons/sRNA-ACR-140-S1-TP2_R1_001-adapter-and-length-50_1_fastqc.html
+
+    - https://gannet.fish.washington.edu/Atumefaciens/20230524-E5-coral-sRNAseq_trimmings_comparisons/sRNA-ACR-140-S1-TP2_R1_001-adapter-and-length-50_2_fastqc.html
+
+Let's take a brief look at the data:
+
+---
+
+### Adapter trimming only
+
+![FastQC plot of Per Base Sequence Content of read with only adapter trimming. Shows the presence of poly-G (black line) at end of reads. Also shows persistance of 150bp read lengths, despite trimming.](https://github.com/RobertsLab/sams-notebook/blob/master/images/screencaps/20230524-E5-coral-sRNAseq_trimmings_comparisons-adapter_trim_only-fastqc_screenshot.png.png?raw=true)
+
+FastQC of adapter trim _only_ still shows read lengths of 150bp. Additionally, the bulk of the 3' end of the reads show extensive poly-G signals. Admittedly, [`flexbar`](https://github.com/seqan/flexbar) doesn't have a default poly-G trimming option. However, using [`fastp`](https://github.com/OpenGene/fastp), which does have a poly-G trimming option, still showed similar results (data not shown - not comparing trimmers, just highlighting persistence of long reads).
+
+---
+### Adapter and length trimming
+
+![FastQC plot of Per Base Sequence Content of read with adapter trimming and trimming to a length of 50bp (from the 3' end). Shows elimination of 150bp reads and poly-G. Also shows an increase in heterogeneity (i.e. more drastic spikes in plots) after ~30bp.](https://github.com/RobertsLab/sams-notebook/blob/master/images/screencaps/20230524-E5-coral-sRNAseq_trimmings_comparisons-adapter_and_length_50-fastqc_screenshot.png?raw=true)
+
+FastQC of adapter trim _and_ trimming to a length of 50bp (from the 3' end). As expected, performing length trimming removed all reads longer than 50bp, which also resulted in removal of poly-G sequence. Also shows an increase in heterogeneity (i.e. more drastic spikes in plots) after ~30bp. This is probably expected, as the [NEBNext® Multiplex Small RNA Library Prep Set for Illumina](https://www.neb.com/-/media/nebus/files/manuals/manuale7300_e7330_e7560_e7580.pdf?rev=d0964a2e637843b1afcb9f7d666d07b2&hash=5B733FC9B41103A865143C75D0F3FC5D) (PDF) manual indicates that miRNA should be ~21bp and piRNAs ~31bp. Thus, the sequence after that could be something else.
+
+---
+
+Will share with E5 group to get feedback.
