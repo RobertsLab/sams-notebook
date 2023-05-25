@@ -375,6 +375,10 @@ echo "${PATH}" | tr : \\n
 ```
 ---
 
+Took approximately 2hrs to run:
+
+![Runtime for Mox job showing 2hrs, 3mins, and 39secs.](https://github.com/RobertsLab/sams-notebook/blob/master/images/screencaps/20230519-E5_coral-fastqc-fastp-multiqc-RNAseq.png?raw=true)
+
 #### RESULTS
 
 Output folders:
