@@ -403,43 +403,43 @@ Output folders:
 
   - FastQ (gzipped)
 
-    - [RNA-ACR-140-S1-TP2_R1_001.fastp-trim.20230519.fastq.gz](https://gannet.fish.washington.edu/Atumefaciens/20230519-E5_coral-fastqc-fastp-multiqc-RNAseq/A_pulchra/trimmedRNA-ACR-140-S1-TP2_R1_001.fastp-trim.20230519.fastq.gz) (2.9G)
+    - [RNA-ACR-140-S1-TP2_R1_001.fastp-trim.20230519.fastq.gz](https://gannet.fish.washington.edu/Atumefaciens/20230519-E5_coral-fastqc-fastp-multiqc-RNAseq/A_pulchra/trimmed/RNA-ACR-140-S1-TP2_R1_001.fastp-trim.20230519.fastq.gz) (2.9G)
 
       - MD5: `eef049ee0098417d77990b6dd6a0579e`
 
-    - [RNA-ACR-140-S1-TP2_R2_001.fastp-trim.20230519.fastq.gz](https://gannet.fish.washington.edu/Atumefaciens/20230519-E5_coral-fastqc-fastp-multiqc-RNAseq/A_pulchra/trimmedRNA-ACR-140-S1-TP2_R2_001.fastp-trim.20230519.fastq.gz) (3.0G)
+    - [RNA-ACR-140-S1-TP2_R2_001.fastp-trim.20230519.fastq.gz](https://gannet.fish.washington.edu/Atumefaciens/20230519-E5_coral-fastqc-fastp-multiqc-RNAseq/A_pulchra/trimmed/RNA-ACR-140-S1-TP2_R2_001.fastp-trim.20230519.fastq.gz) (3.0G)
 
       - MD5: `e0afac6164512ef22e695f7bfd14329e`
 
-    - [RNA-ACR-145-S1-TP2_R1_001.fastp-trim.20230519.fastq.gz](https://gannet.fish.washington.edu/Atumefaciens/20230519-E5_coral-fastqc-fastp-multiqc-RNAseq/A_pulchra/trimmedRNA-ACR-145-S1-TP2_R1_001.fastp-trim.20230519.fastq.gz) (2.6G)
+    - [RNA-ACR-145-S1-TP2_R1_001.fastp-trim.20230519.fastq.gz](https://gannet.fish.washington.edu/Atumefaciens/20230519-E5_coral-fastqc-fastp-multiqc-RNAseq/A_pulchra/trimmed/RNA-ACR-145-S1-TP2_R1_001.fastp-trim.20230519.fastq.gz) (2.6G)
 
       - MD5: `89fd1fbcd090132ee4be4523615c62e7`
 
-    - [RNA-ACR-145-S1-TP2_R2_001.fastp-trim.20230519.fastq.gz](https://gannet.fish.washington.edu/Atumefaciens/20230519-E5_coral-fastqc-fastp-multiqc-RNAseq/A_pulchra/trimmedRNA-ACR-145-S1-TP2_R2_001.fastp-trim.20230519.fastq.gz) (2.6G)
+    - [RNA-ACR-145-S1-TP2_R2_001.fastp-trim.20230519.fastq.gz](https://gannet.fish.washington.edu/Atumefaciens/20230519-E5_coral-fastqc-fastp-multiqc-RNAseq/A_pulchra/trimmed/RNA-ACR-145-S1-TP2_R2_001.fastp-trim.20230519.fastq.gz) (2.6G)
 
       - MD5: `1344e89bcb77ec9b2a62a74062410bcc`
 
-    - [RNA-ACR-150-S1-TP2_R1_001.fastp-trim.20230519.fastq.gz](https://gannet.fish.washington.edu/Atumefaciens/20230519-E5_coral-fastqc-fastp-multiqc-RNAseq/A_pulchra/trimmedRNA-ACR-150-S1-TP2_R1_001.fastp-trim.20230519.fastq.gz) (2.6G)
+    - [RNA-ACR-150-S1-TP2_R1_001.fastp-trim.20230519.fastq.gz](https://gannet.fish.washington.edu/Atumefaciens/20230519-E5_coral-fastqc-fastp-multiqc-RNAseq/A_pulchra/trimmed/RNA-ACR-150-S1-TP2_R1_001.fastp-trim.20230519.fastq.gz) (2.6G)
 
       - MD5: `6f97d5b6bc43afdb10209147d8079674`
 
-    - [RNA-ACR-150-S1-TP2_R2_001.fastp-trim.20230519.fastq.gz](https://gannet.fish.washington.edu/Atumefaciens/20230519-E5_coral-fastqc-fastp-multiqc-RNAseq/A_pulchra/trimmedRNA-ACR-150-S1-TP2_R2_001.fastp-trim.20230519.fastq.gz) (2.7G)
+    - [RNA-ACR-150-S1-TP2_R2_001.fastp-trim.20230519.fastq.gz](https://gannet.fish.washington.edu/Atumefaciens/20230519-E5_coral-fastqc-fastp-multiqc-RNAseq/A_pulchra/trimmed/RNA-ACR-150-S1-TP2_R2_001.fastp-trim.20230519.fastq.gz) (2.7G)
 
       - MD5: `7df99937e219fea0780c4e0445e6bebe`
 
-    - [RNA-ACR-173-S1-TP2_R1_001.fastp-trim.20230519.fastq.gz](https://gannet.fish.washington.edu/Atumefaciens/20230519-E5_coral-fastqc-fastp-multiqc-RNAseq/A_pulchra/trimmedRNA-ACR-173-S1-TP2_R1_001.fastp-trim.20230519.fastq.gz) (2.9G)
+    - [RNA-ACR-173-S1-TP2_R1_001.fastp-trim.20230519.fastq.gz](https://gannet.fish.washington.edu/Atumefaciens/20230519-E5_coral-fastqc-fastp-multiqc-RNAseq/A_pulchra/trimmed/RNA-ACR-173-S1-TP2_R1_001.fastp-trim.20230519.fastq.gz) (2.9G)
 
       - MD5: `fa620acd4713931ae91c888579ec8d1c`
 
-    - [RNA-ACR-173-S1-TP2_R2_001.fastp-trim.20230519.fastq.gz](https://gannet.fish.washington.edu/Atumefaciens/20230519-E5_coral-fastqc-fastp-multiqc-RNAseq/A_pulchra/trimmedRNA-ACR-173-S1-TP2_R2_001.fastp-trim.20230519.fastq.gz) (3.0G)
+    - [RNA-ACR-173-S1-TP2_R2_001.fastp-trim.20230519.fastq.gz](https://gannet.fish.washington.edu/Atumefaciens/20230519-E5_coral-fastqc-fastp-multiqc-RNAseq/A_pulchra/trimmed/RNA-ACR-173-S1-TP2_R2_001.fastp-trim.20230519.fastq.gz) (3.0G)
 
       - MD5: `5ee3263192a30e3e7d294895211d4499`
 
-    - [RNA-ACR-178-S1-TP2_R1_001.fastp-trim.20230519.fastq.gz](https://gannet.fish.washington.edu/Atumefaciens/20230519-E5_coral-fastqc-fastp-multiqc-RNAseq/A_pulchra/trimmedRNA-ACR-178-S1-TP2_R1_001.fastp-trim.20230519.fastq.gz) (2.6G)
+    - [RNA-ACR-178-S1-TP2_R1_001.fastp-trim.20230519.fastq.gz](https://gannet.fish.washington.edu/Atumefaciens/20230519-E5_coral-fastqc-fastp-multiqc-RNAseq/A_pulchra/trimmed/RNA-ACR-178-S1-TP2_R1_001.fastp-trim.20230519.fastq.gz) (2.6G)
 
       - MD5: `9b66f6ee9200dc4c05d16273e0fb6eb4`
 
-    - [RNA-ACR-178-S1-TP2_R2_001.fastp-trim.20230519.fastq.gz](https://gannet.fish.washington.edu/Atumefaciens/20230519-E5_coral-fastqc-fastp-multiqc-RNAseq/A_pulchra/trimmedRNA-ACR-178-S1-TP2_R2_001.fastp-trim.20230519.fastq.gz) (2.7G)
+    - [RNA-ACR-178-S1-TP2_R2_001.fastp-trim.20230519.fastq.gz](https://gannet.fish.washington.edu/Atumefaciens/20230519-E5_coral-fastqc-fastp-multiqc-RNAseq/A_pulchra/trimmed/RNA-ACR-178-S1-TP2_R2_001.fastp-trim.20230519.fastq.gz) (2.7G)
 
       - MD5: `284c36d72ead05f11cf7a7524ca7c916`
 
@@ -466,43 +466,43 @@ Output folders:
 
   - FastQs (gzipped)
 
-    - [RNA-POR-71-S1-TP2_R1_001.fastp-trim.20230519.fastq.gz](https://gannet.fish.washington.edu/Atumefaciens/20230519-E5_coral-fastqc-fastp-multiqc-RNAseq/P_evermanni/trimmedRNA-POR-71-S1-TP2_R1_001.fastp-trim.20230519.fastq.gz) (2.5G)
+    - [RNA-POR-71-S1-TP2_R1_001.fastp-trim.20230519.fastq.gz](https://gannet.fish.washington.edu/Atumefaciens/20230519-E5_coral-fastqc-fastp-multiqc-RNAseq/P_evermanni/trimmed/RNA-POR-71-S1-TP2_R1_001.fastp-trim.20230519.fastq.gz) (2.5G)
 
       - MD5: `a622b00b0553fc35d62896b0b6763331`
 
-    - [RNA-POR-71-S1-TP2_R2_001.fastp-trim.20230519.fastq.gz](https://gannet.fish.washington.edu/Atumefaciens/20230519-E5_coral-fastqc-fastp-multiqc-RNAseq/P_evermanni/trimmedRNA-POR-71-S1-TP2_R2_001.fastp-trim.20230519.fastq.gz) (2.6G)
+    - [RNA-POR-71-S1-TP2_R2_001.fastp-trim.20230519.fastq.gz](https://gannet.fish.washington.edu/Atumefaciens/20230519-E5_coral-fastqc-fastp-multiqc-RNAseq/P_evermanni/trimmed/RNA-POR-71-S1-TP2_R2_001.fastp-trim.20230519.fastq.gz) (2.6G)
 
       - MD5: `b5f764aa1727d92a8cf74b0995724df6`
 
-    - [RNA-POR-73-S1-TP2_R1_001.fastp-trim.20230519.fastq.gz](https://gannet.fish.washington.edu/Atumefaciens/20230519-E5_coral-fastqc-fastp-multiqc-RNAseq/P_evermanni/trimmedRNA-POR-73-S1-TP2_R1_001.fastp-trim.20230519.fastq.gz) (2.2G)
+    - [RNA-POR-73-S1-TP2_R1_001.fastp-trim.20230519.fastq.gz](https://gannet.fish.washington.edu/Atumefaciens/20230519-E5_coral-fastqc-fastp-multiqc-RNAseq/P_evermanni/trimmed/RNA-POR-73-S1-TP2_R1_001.fastp-trim.20230519.fastq.gz) (2.2G)
 
       - MD5: `3168aeb2cb7790d7c1e6584a992ab5d7`
 
-    - [RNA-POR-73-S1-TP2_R2_001.fastp-trim.20230519.fastq.gz](https://gannet.fish.washington.edu/Atumefaciens/20230519-E5_coral-fastqc-fastp-multiqc-RNAseq/P_evermanni/trimmedRNA-POR-73-S1-TP2_R2_001.fastp-trim.20230519.fastq.gz) (2.4G)
+    - [RNA-POR-73-S1-TP2_R2_001.fastp-trim.20230519.fastq.gz](https://gannet.fish.washington.edu/Atumefaciens/20230519-E5_coral-fastqc-fastp-multiqc-RNAseq/P_evermanni/trimmed/RNA-POR-73-S1-TP2_R2_001.fastp-trim.20230519.fastq.gz) (2.4G)
 
       - MD5: `1069960c8446b130f5b3810e1e9870c2`
 
-    - [RNA-POR-76-S1-TP2_R1_001.fastp-trim.20230519.fastq.gz](https://gannet.fish.washington.edu/Atumefaciens/20230519-E5_coral-fastqc-fastp-multiqc-RNAseq/P_evermanni/trimmedRNA-POR-76-S1-TP2_R1_001.fastp-trim.20230519.fastq.gz) (2.4G)
+    - [RNA-POR-76-S1-TP2_R1_001.fastp-trim.20230519.fastq.gz](https://gannet.fish.washington.edu/Atumefaciens/20230519-E5_coral-fastqc-fastp-multiqc-RNAseq/P_evermanni/trimmed/RNA-POR-76-S1-TP2_R1_001.fastp-trim.20230519.fastq.gz) (2.4G)
 
       - MD5: `c08c9e6385524793a072d4c14721330e`
 
-    - [RNA-POR-76-S1-TP2_R2_001.fastp-trim.20230519.fastq.gz](https://gannet.fish.washington.edu/Atumefaciens/20230519-E5_coral-fastqc-fastp-multiqc-RNAseq/P_evermanni/trimmedRNA-POR-76-S1-TP2_R2_001.fastp-trim.20230519.fastq.gz) (2.5G)
+    - [RNA-POR-76-S1-TP2_R2_001.fastp-trim.20230519.fastq.gz](https://gannet.fish.washington.edu/Atumefaciens/20230519-E5_coral-fastqc-fastp-multiqc-RNAseq/P_evermanni/trimmed/RNA-POR-76-S1-TP2_R2_001.fastp-trim.20230519.fastq.gz) (2.5G)
 
       - MD5: `8ed83046e639f05d1227b74fe87d9bdc`
 
-    - [RNA-POR-79-S1-TP2_R1_001.fastp-trim.20230519.fastq.gz](https://gannet.fish.washington.edu/Atumefaciens/20230519-E5_coral-fastqc-fastp-multiqc-RNAseq/P_evermanni/trimmedRNA-POR-79-S1-TP2_R1_001.fastp-trim.20230519.fastq.gz) (2.1G)
+    - [RNA-POR-79-S1-TP2_R1_001.fastp-trim.20230519.fastq.gz](https://gannet.fish.washington.edu/Atumefaciens/20230519-E5_coral-fastqc-fastp-multiqc-RNAseq/P_evermanni/trimmed/RNA-POR-79-S1-TP2_R1_001.fastp-trim.20230519.fastq.gz) (2.1G)
 
       - MD5: `9ecddf149b27f0b18c7505f58d2e9481`
 
-    - [RNA-POR-79-S1-TP2_R2_001.fastp-trim.20230519.fastq.gz](https://gannet.fish.washington.edu/Atumefaciens/20230519-E5_coral-fastqc-fastp-multiqc-RNAseq/P_evermanni/trimmedRNA-POR-79-S1-TP2_R2_001.fastp-trim.20230519.fastq.gz) (2.3G)
+    - [RNA-POR-79-S1-TP2_R2_001.fastp-trim.20230519.fastq.gz](https://gannet.fish.washington.edu/Atumefaciens/20230519-E5_coral-fastqc-fastp-multiqc-RNAseq/P_evermanni/trimmed/RNA-POR-79-S1-TP2_R2_001.fastp-trim.20230519.fastq.gz) (2.3G)
 
       - MD5: `55ffc991dffd9c9b2f48e8138e499373`
 
-    - [RNA-POR-82-S1-TP2_R1_001.fastp-trim.20230519.fastq.gz](https://gannet.fish.washington.edu/Atumefaciens/20230519-E5_coral-fastqc-fastp-multiqc-RNAseq/P_evermanni/trimmedRNA-POR-82-S1-TP2_R1_001.fastp-trim.20230519.fastq.gz) (2.6G)
+    - [RNA-POR-82-S1-TP2_R1_001.fastp-trim.20230519.fastq.gz](https://gannet.fish.washington.edu/Atumefaciens/20230519-E5_coral-fastqc-fastp-multiqc-RNAseq/P_evermanni/trimmed/RNA-POR-82-S1-TP2_R1_001.fastp-trim.20230519.fastq.gz) (2.6G)
 
       - MD5: `df6f11bb9e44165889a4984d5a160257`
 
-    - [RNA-POR-82-S1-TP2_R2_001.fastp-trim.20230519.fastq.gz](https://gannet.fish.washington.edu/Atumefaciens/20230519-E5_coral-fastqc-fastp-multiqc-RNAseq/P_evermanni/trimmedRNA-POR-82-S1-TP2_R2_001.fastp-trim.20230519.fastq.gz) (2.7G)
+    - [RNA-POR-82-S1-TP2_R2_001.fastp-trim.20230519.fastq.gz](https://gannet.fish.washington.edu/Atumefaciens/20230519-E5_coral-fastqc-fastp-multiqc-RNAseq/P_evermanni/trimmed/RNA-POR-82-S1-TP2_R2_001.fastp-trim.20230519.fastq.gz) (2.7G)
 
       - MD5: `b4fbf6e9522ba299e2e8bbd249a9aa0d`
 
@@ -528,42 +528,42 @@ Output folders:
 
   - FastQs (gzipped)
 
-    - [RNA-POC-47-S1-TP2_R1_001.fastp-trim.20230519.fastq.gz](https://gannet.fish.washington.edu/Atumefaciens/20230519-E5_coral-fastqc-fastp-multiqc-RNAseq/P_meandrina/trimmedRNA-POC-47-S1-TP2_R1_001.fastp-trim.20230519.fastq.gz) (3.2G)
+    - [RNA-POC-47-S1-TP2_R1_001.fastp-trim.20230519.fastq.gz](https://gannet.fish.washington.edu/Atumefaciens/20230519-E5_coral-fastqc-fastp-multiqc-RNAseq/P_meandrina/trimmed/RNA-POC-47-S1-TP2_R1_001.fastp-trim.20230519.fastq.gz) (3.2G)
 
       - MD5: `dcc32b44272656f7c0390a157f8d5c87`
 
-    - [RNA-POC-47-S1-TP2_R2_001.fastp-trim.20230519.fastq.gz](https://gannet.fish.washington.edu/Atumefaciens/20230519-E5_coral-fastqc-fastp-multiqc-RNAseq/P_meandrina/trimmedRNA-POC-47-S1-TP2_R2_001.fastp-trim.20230519.fastq.gz) (3.3G)
+    - [RNA-POC-47-S1-TP2_R2_001.fastp-trim.20230519.fastq.gz](https://gannet.fish.washington.edu/Atumefaciens/20230519-E5_coral-fastqc-fastp-multiqc-RNAseq/P_meandrina/trimmed/RNA-POC-47-S1-TP2_R2_001.fastp-trim.20230519.fastq.gz) (3.3G)
 
       - MD5: `71d226bb032554d46c861f61dcb708e5`
 
-    - [RNA-POC-48-S1-TP2_R1_001.fastp-trim.20230519.fastq.gz](https://gannet.fish.washington.edu/Atumefaciens/20230519-E5_coral-fastqc-fastp-multiqc-RNAseq/P_meandrina/trimmedRNA-POC-48-S1-TP2_R1_001.fastp-trim.20230519.fastq.gz) (3.0G)
+    - [RNA-POC-48-S1-TP2_R1_001.fastp-trim.20230519.fastq.gz](https://gannet.fish.washington.edu/Atumefaciens/20230519-E5_coral-fastqc-fastp-multiqc-RNAseq/P_meandrina/trimmed/RNA-POC-48-S1-TP2_R1_001.fastp-trim.20230519.fastq.gz) (3.0G)
 
       - MD5: `8c8c778d6963789ba3907f42a0749fbe`
 
-    - [RNA-POC-48-S1-TP2_R2_001.fastp-trim.20230519.fastq.gz](https://gannet.fish.washington.edu/Atumefaciens/20230519-E5_coral-fastqc-fastp-multiqc-RNAseq/P_meandrina/trimmedRNA-POC-48-S1-TP2_R2_001.fastp-trim.20230519.fastq.gz) (3.1G)
+    - [RNA-POC-48-S1-TP2_R2_001.fastp-trim.20230519.fastq.gz](https://gannet.fish.washington.edu/Atumefaciens/20230519-E5_coral-fastqc-fastp-multiqc-RNAseq/P_meandrina/trimmed/RNA-POC-48-S1-TP2_R2_001.fastp-trim.20230519.fastq.gz) (3.1G)
 
       - MD5: `5d0dadb66923b6d8762ce93905f9ee49`
 
-    - [RNA-POC-50-S1-TP2_R1_001.fastp-trim.20230519.fastq.gz](https://gannet.fish.washington.edu/Atumefaciens/20230519-E5_coral-fastqc-fastp-multiqc-RNAseq/P_meandrina/trimmedRNA-POC-50-S1-TP2_R1_001.fastp-trim.20230519.fastq.gz) (3.3G)
+    - [RNA-POC-50-S1-TP2_R1_001.fastp-trim.20230519.fastq.gz](https://gannet.fish.washington.edu/Atumefaciens/20230519-E5_coral-fastqc-fastp-multiqc-RNAseq/P_meandrina/trimmed/RNA-POC-50-S1-TP2_R1_001.fastp-trim.20230519.fastq.gz) (3.3G)
 
       - MD5: `43dcb5cca9ac2f98c7ad94c7bc634e28`
 
-    - [RNA-POC-50-S1-TP2_R2_001.fastp-trim.20230519.fastq.gz](https://gannet.fish.washington.edu/Atumefaciens/20230519-E5_coral-fastqc-fastp-multiqc-RNAseq/P_meandrina/trimmedRNA-POC-50-S1-TP2_R2_001.fastp-trim.20230519.fastq.gz) (3.4G)
+    - [RNA-POC-50-S1-TP2_R2_001.fastp-trim.20230519.fastq.gz](https://gannet.fish.washington.edu/Atumefaciens/20230519-E5_coral-fastqc-fastp-multiqc-RNAseq/P_meandrina/trimmed/RNA-POC-50-S1-TP2_R2_001.fastp-trim.20230519.fastq.gz) (3.4G)
 
       - MD5: `577fffdd620cd680ec9ffcfa5a722ae6`
 
-    - [RNA-POC-53-S1-TP2_R1_001.fastp-trim.20230519.fastq.gz](https://gannet.fish.washington.edu/Atumefaciens/20230519-E5_coral-fastqc-fastp-multiqc-RNAseq/P_meandrina/trimmedRNA-POC-53-S1-TP2_R1_001.fastp-trim.20230519.fastq.gz) (3.2G)
+    - [RNA-POC-53-S1-TP2_R1_001.fastp-trim.20230519.fastq.gz](https://gannet.fish.washington.edu/Atumefaciens/20230519-E5_coral-fastqc-fastp-multiqc-RNAseq/P_meandrina/trimmed/RNA-POC-53-S1-TP2_R1_001.fastp-trim.20230519.fastq.gz) (3.2G)
 
       - MD5: `766e4544396b2c8abe377434212845e6`
 
-    - [RNA-POC-53-S1-TP2_R2_001.fastp-trim.20230519.fastq.gz](https://gannet.fish.washington.edu/Atumefaciens/20230519-E5_coral-fastqc-fastp-multiqc-RNAseq/P_meandrina/trimmedRNA-POC-53-S1-TP2_R2_001.fastp-trim.20230519.fastq.gz) (3.3G)
+    - [RNA-POC-53-S1-TP2_R2_001.fastp-trim.20230519.fastq.gz](https://gannet.fish.washington.edu/Atumefaciens/20230519-E5_coral-fastqc-fastp-multiqc-RNAseq/P_meandrina/trimmed/RNA-POC-53-S1-TP2_R2_001.fastp-trim.20230519.fastq.gz) (3.3G)
 
       - MD5: `a2411c6d56235dd9aff377039d12672a`
 
-    - [RNA-POC-57-S1-TP2_R1_001.fastp-trim.20230519.fastq.gz](https://gannet.fish.washington.edu/Atumefaciens/20230519-E5_coral-fastqc-fastp-multiqc-RNAseq/P_meandrina/trimmedRNA-POC-57-S1-TP2_R1_001.fastp-trim.20230519.fastq.gz) (2.5G)
+    - [RNA-POC-57-S1-TP2_R1_001.fastp-trim.20230519.fastq.gz](https://gannet.fish.washington.edu/Atumefaciens/20230519-E5_coral-fastqc-fastp-multiqc-RNAseq/P_meandrina/trimmed/RNA-POC-57-S1-TP2_R1_001.fastp-trim.20230519.fastq.gz) (2.5G)
 
       - MD5: `b3d94288439f57be25f5440a9beccfc0`
 
-    - [RNA-POC-57-S1-TP2_R2_001.fastp-trim.20230519.fastq.gz](https://gannet.fish.washington.edu/Atumefaciens/20230519-E5_coral-fastqc-fastp-multiqc-RNAseq/P_meandrina/trimmedRNA-POC-57-S1-TP2_R2_001.fastp-trim.20230519.fastq.gz) (2.6G)
+    - [RNA-POC-57-S1-TP2_R2_001.fastp-trim.20230519.fastq.gz](https://gannet.fish.washington.edu/Atumefaciens/20230519-E5_coral-fastqc-fastp-multiqc-RNAseq/P_meandrina/trimmed/RNA-POC-57-S1-TP2_R2_001.fastp-trim.20230519.fastq.gz) (2.6G)
 
       - MD5: `d0f0d1b29bbeebce67ea22d4bb333988`
