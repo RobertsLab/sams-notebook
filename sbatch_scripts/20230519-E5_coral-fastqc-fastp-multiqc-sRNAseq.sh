@@ -1,6 +1,6 @@
 #!/bin/bash
 ## Job Name
-#SBATCH --job-name=20230519-E5_coral-fastqc-fastp-multiqc-sRNAseq
+#SBATCH --job-name=20230602-E5_coral-fastqc-fastp-multiqc-sRNAseq
 ## Allocation Definition
 #SBATCH --account=srlab
 #SBATCH --partition=srlab
@@ -10,18 +10,18 @@
 ## Walltime (days-hours:minutes:seconds format)
 #SBATCH --time=2-00:00:00
 ## Memory per node
-#SBATCH --mem=120G
+#SBATCH --mem=500G
 ##turn on e-mail notification
 #SBATCH --mail-type=ALL
 #SBATCH --mail-user=samwhite@uw.edu
 ## Specify the working directory for this job
-#SBATCH --chdir=/gscratch/scrubbed/samwhite/outputs/20230519-E5_coral-fastqc-fastp-multiqc-sRNAseq
+#SBATCH --chdir=/gscratch/scrubbed/samwhite/outputs/20230602-E5_coral-fastqc-fastp-multiqc-sRNAseq
 
 ### FastQC and fastp trimming of E5 coral species sRNA-seq data from 202230515.
 
-
-
 ### fastp expects input FastQ files to be in format: sRNA-ACR-178-S1-TP2_R1_001.fastq.gz
+
+### Adapter trimming and read length trimming is based off of NEB nebnext-small-rna-library-prep-set-for-illumina kit.
 
 
 ###################################################################################
@@ -37,9 +37,18 @@ R2_fastq_pattern='*_R2_*.fastq.gz'
 # Set number of CPUs to use
 threads=40
 
+# Set maximum read length
+max_read_length=50
+
 # Input/output files
 trimmed_checksums=trimmed_fastq_checksums.md5
 fastq_checksums=input_fastq_checksums.md5
+NEB_adapters_fasta=NEB-adapters.fasta
+
+## NEB nebnext-small-rna-library-prep-set-for-illumina adapters
+first_adapter="AGATCGGAAGAGCACACGTCTGAACTCCAGTCAC"
+second_adapter="GATCGTCGGACTGTAGAACTCTGAACGTGTAGATCTCGGTGGTCGCCGTATCATT"
+
 
 
 # Data directories
@@ -79,6 +88,15 @@ module load intel-python3_2017
 
 # Capture date
 timestamp=$(date +%Y%m%d)
+
+# Create adapters FastA for use with fastp trimming
+adapter_count=0
+
+for adapter in "${first_adapter}" "${second_adapter}"
+do
+  ((adapter_count++))
+  printf ">%s\n%s\n" "adapter_${adapter_count}" "${adapter}"
+done >> "${NEB_adapters_fasta}"
 
 
 # Set working directory
@@ -158,22 +176,22 @@ do
     # Do NOT quote R1_fastq_pattern variable
     for fastq in ${R1_fastq_pattern}
     do
-    fastq_array_R1+=("${fastq}")
+      fastq_array_R1+=("${fastq}")
 
-    # Use parameter substitution to remove all text up to and including last "." from
-    # right side of string.
-    R1_names_array+=("${fastq%%.*}")
+      # Use parameter substitution to remove all text up to and including last "." from
+      # right side of string.
+      R1_names_array+=("${fastq%%.*}")
     done
 
     # Create array of fastq R2 files
     # Do NOT quote R2_fastq_pattern variable
     for fastq in ${R2_fastq_pattern}
     do
-    fastq_array_R2+=("${fastq}")
+      fastq_array_R2+=("${fastq}")
 
-    # Use parameter substitution to remove all text up to and including last "." from
-    # right side of string.
-    R2_names_array+=("${fastq%%.*}")
+      # Use parameter substitution to remove all text up to and including last "." from
+      # right side of string.
+      R2_names_array+=("${fastq%%.*}")
     done
 
 
@@ -206,8 +224,8 @@ do
         --in2 ${fastq_array_R2[index]} \
         --detect_adapter_for_pe \
         --trim_poly_g \
-        --trim_front1 20 \
-        --trim_front2 20 \
+        --adapter_sequence ${NEB_adapters_fasta} \
+        --max_len ${max_read_length} \
         --thread ${threads} \
         --html "../trimmed/${R1_sample_name%%_*}".fastp-trim."${timestamp}".report.html \
         --json "../trimmed/${R1_sample_name%%_*}".fastp-trim."${timestamp}".report.json \
@@ -321,6 +339,10 @@ if [[ "${#programs_array[@]}" -gt 0 ]]; then
     # Handle NCBI BLASTx menu
     elif [[ "${program}" == "blastx" ]]; then
       ${programs_array[$program]} -help
+
+    # Handle fastp menu
+    elif [[ "${program}" == "fastp" ]]; then
+      ${programs_array[$program]} --help
     fi
     ${programs_array[$program]} -h
     echo ""
