@@ -8,6 +8,23 @@ categories:
   - Daily Bits
 ---
 
+20230605
+
+- Lab meeting:
+
+  - Discussed containerization
+
+- Went through online training for financial transition to Workday
+
+---
+
+20230602
+
+- E5 Coral meeting
+
+- Science Hour
+
+---
 
 20230601
 
@@ -17,5 +34,5 @@ categories:
 
   - Created [summary table of various transcript counts(https://docs.google.com/spreadsheets/d/1t26-CbrCdU5ZFWKu-1dFKxaqy8PQnNXFu_5SWlc3jSg/edit?usp=sharing).
   
-- Pub-a-thon]
+- Pub-a-thon
 
