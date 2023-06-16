@@ -188,7 +188,6 @@ do
     # Run fastp on files
     # Adds JSON report output for downstream usage by MultiQC
     # Trims 20bp from 5' end of all reads
-    # Trims 20bp from 3' end of all reads
     # Trims poly G, if present
     # Uses parameter substitution (e.g. ${R1_sample_name%%_*})to rm the _R[12] for report names.
     echo "Beginning fastp trimming."
@@ -203,8 +202,8 @@ do
         --in2 ${fastq_array_R2[index]} \
         --detect_adapter_for_pe \
         --trim_poly_g \
-        --adapter_sequence ${NEB_adapters_fasta} \
-        --max_len ${max_read_length} \
+        --trim_front1 20 \
+        --trim_front2 20 \
         --thread ${threads} \
         --html "../trimmed/${R1_sample_name%%_*}".fastp-trim."${timestamp}".report.html \
         --json "../trimmed/${R1_sample_name%%_*}".fastp-trim."${timestamp}".report.json \
