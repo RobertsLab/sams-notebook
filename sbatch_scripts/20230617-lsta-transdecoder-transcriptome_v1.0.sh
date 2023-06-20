@@ -17,6 +17,8 @@
 ## Specify the working directory for this job
 #SBATCH --chdir=/gscratch/scrubbed/samwhite/outputs/20230617-lsta-transdecoder-transcriptome_v1.0
 
+# Transdecoder to identify ORFs and "functional" contigs from 20230616 L.staminea
+# de novo transcriptome assembly v1.0.
 
 ###################################################################################
 # These variables need to be set by user
@@ -25,19 +27,21 @@
 
 threads=28
 
+
 # Paths to input/output files
-blastp_out_dir="${wd}/blastp_out"
-transdecoder_out_dir="${wd}/Trinity.fasta.transdecoder_dir"
-pfam_out_dir="${wd}/pfam_out"
+
+trinity_fasta="/gscratch/scrubbed/samwhite/outputs/20230616-lsta-trinity-RNAseq/lsta-de_novo-transcriptome_v1.0.fasta"
+trinity_gene_trans_map="/gscratch/scrubbed/samwhite/outputs/20230616-lsta-trinity-RNAseq/lsta-de_novo-transcriptome_v1.0.fasta.gene_trans_map"
+
+blastp_out_dir="blastp_out"
+transdecoder_out_dir="${trinity_fasta##*/}.transdecoder_dir"
+pfam_out_dir="pfam_out"
 blastp_out="${blastp_out_dir}/blastp.outfmt6"
 
 pfam_out="${pfam_out_dir}/pfam.domtblout"
 lORFs_pep="${transdecoder_out_dir}/longest_orfs.pep"
 pfam_db="/gscratch/srlab/programs/Trinotate-v3.1.1/admin/Pfam-A.hmm"
 sp_db="/gscratch/srlab/programs/Trinotate-v3.1.1/admin/uniprot_sprot.pep"
-
-trinity_fasta="/gscratch/scrubbed/samwhite/outputs/20230616-lsta-trinity-RNAseq/lsta-de_novo-transcriptome_v1.0.fasta"
-trinity_gene_trans_map="/gscratch/scrubbed/samwhite/outputs/20230616-lsta-trinity-RNAseq/lsta-de_novo-transcriptome_v1.0.fasta.gene_trans_map"
 
 # Paths to programs
 blast_dir="/gscratch/srlab/programs/ncbi-blast-2.8.1+/bin"
@@ -54,12 +58,9 @@ transdecoder_predict="${transdecoder_dir}/TransDecoder.Predict"
 module load intel-python3_2017
 
 
-wd="$(pwd)"
-
-
 # Make output directories
-mkdir --parents ${blastp_out_dir}
-mkdir --parents ${pfam_out_dir}
+mkdir --parents "${blastp_out_dir}"
+mkdir --parents "${pfam_out_dir}"
 
 # Extract long open reading frames
 ${transdecoder_lORFs} \
