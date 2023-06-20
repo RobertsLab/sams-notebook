@@ -247,7 +247,82 @@ echo "${PATH}" | tr : \\n
 
 #### RESULTS
 
+Run time was ~20hrs:
+
+![Screencap of Trinity runtime on Mox showing a run time of 20hrs, 12mins, 57secs](https://github.com/RobertsLab/sams-notebook/blob/master/images/screencaps/20230616-lsta-trinity-RNAseq-runtime.png?raw=true)
+
 Output folder:
 
-- []()
+- [20230616-lsta-trinity-RNAseq/](https://gannet.fish.washington.edu/Atumefaciens/20230616-lsta-trinity-RNAseq/)
+
+  #### Transcriptome FastA
+
+  - [lsta-de_novo-transcriptome_v1.0.fasta](https://gannet.fish.washington.edu/Atumefaciens/20230616-lsta-trinity-RNAseq/lsta-de_novo-transcriptome_v1.0.fasta) (360M)
+
+    - MD5: `1b5029cd4dbd5ff55bcf81c8dd62f236`
+
+  #### FastA Index (text)
+  - [lsta-de_novo-transcriptome_v1.0.fasta.fai](https://gannet.fish.washington.edu/Atumefaciens/20230616-lsta-trinity-RNAseq/lsta-de_novo-transcriptome_v1.0.fasta.fai) (30M)
+
+    - MD5: `72a57424bd9f93fbca20abca48cdc4fb`
+
+  #### Trinity gene-to-transcript map (text)
+  - [lsta-de_novo-transcriptome_v1.0.fasta.gene_trans_map](https://gannet.fish.washington.edu/Atumefaciens/20230616-lsta-trinity-RNAseq/lsta-de_novo-transcriptome_v1.0.fasta.gene_trans_map) (30M)
+
+    - MD5: `0ee5004626d3b7f4cb8baabf859b6208`
+
+  #### Trinity sequence lengths file (text)
+
+  This is useful for other Trinity-related downstream tools (e.g. Transdecoder and Trinotate
+  )
+  - [lsta-de_novo-transcriptome_v1.0.fasta.seq_lens](https://gannet.fish.washington.edu/Atumefaciens/20230616-lsta-trinity-RNAseq/lsta-de_novo-transcriptome_v1.0.fasta.seq_lens) (19M)
+
+    - MD5: `703959bd01bd2b948d800c51a2bc684c`
+
+  #### Trinity assembly stats (text)
+  - [lsta-de_novo-transcriptome_v1.0.fasta_assembly_stats.txt](https://gannet.fish.washington.edu/Atumefaciens/20230616-lsta-trinity-RNAseq/lsta-de_novo-transcriptome_v1.0.fasta_assembly_stats.txt) (4.0K)
+
+    - MD5: `bf44012682dee5edf5c27ca5cb738960`
+
+```
+################################
+## Counts of transcripts, etc.
+################################
+Total trinity 'genes':	502826
+Total trinity transcripts:	645444
+Percent GC: 36.80
+
+########################################
+Stats based on ALL transcript contigs:
+########################################
+
+	Contig N10: 3398
+	Contig N20: 2073
+	Contig N30: 1301
+	Contig N40: 862
+	Contig N50: 609
+
+	Median contig length: 319
+	Average contig: 516.94
+	Total assembled bases: 333658646
+
+
+#####################################################
+## Stats based on ONLY LONGEST ISOFORM per 'GENE':
+#####################################################
+
+	Contig N10: 2495
+	Contig N20: 1337
+	Contig N30: 829
+	Contig N40: 588
+	Contig N50: 455
+
+	Median contig length: 300
+	Average contig: 439.38
+	Total assembled bases: 220929754
+```
+
+Well, there are very large numbers of "genes" and transcripts! I'm not sure I've seen such high numbers in a transcriptome assembly before. I expect the numbers to be large (100,000 - 300,000 is somewhat normal), but no this large. I'm wondering if this is due to the limited data set used for assembly. The assembly was generated with just one set of paired-end reads. This could lead to a _lot_ of reads that don't end up aligning with anything. It also increases the likelihood of picking up lots of lowly expressed transcripts which normally are missed when there's an overwhelming amount of data present for assembly.
+
+I'll go ahead and run this assembly through [Transdecoder](https://github.com/TransDecoder/TransDecoder/wiki) to identify open reading frames and try to get a better idea of which contigs are potentially "functional." Could provide a more "realistic" set of genes for use (in whatever this project is; I haven't been given much background info on this).
 
