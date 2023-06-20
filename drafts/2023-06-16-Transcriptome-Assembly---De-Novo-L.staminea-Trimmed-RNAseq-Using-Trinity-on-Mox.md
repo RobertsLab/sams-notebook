@@ -12,7 +12,7 @@ tags:
 categories: 
   - Miscellaneous
 ---
-
+As part of [this GitHub Issue to create a _de novo_ transcriptome assembly](https://github.com/RobertsLab/resources/issues/1655) from _L.staminea_ RNA-seq data, I [trimmed the reads earlier today](https://robertslab.github.io/sams-notebook/2023/06/16/Trimming-L.staminea-RNA-seq-Using-FastQC-fastp-and-MultiQC-on-Mox.html). Next up is the actual _do novo_ assembly. I performed this using [`Trinity`](https://github.com/trinityrnaseq/trinityrnaseq/wiki) on Mox.
 
 SLURM script (GitHub):
 
