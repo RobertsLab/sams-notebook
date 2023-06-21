@@ -1,6 +1,6 @@
 #!/bin/bash
 ## Job Name
-#SBATCH --job-name=20230602-E5_coral-fastqc-fastp-multiqc-sRNAseq
+#SBATCH --job-name=20230620-E5_coral-fastqc-flexbar-multiqc-sRNAseq
 ## Allocation Definition
 #SBATCH --account=srlab
 #SBATCH --partition=srlab
@@ -8,18 +8,18 @@
 ## Nodes
 #SBATCH --nodes=1
 ## Walltime (days-hours:minutes:seconds format)
-#SBATCH --time=2-00:00:00
+#SBATCH --time=10-00:00:00
 ## Memory per node
 #SBATCH --mem=500G
 ##turn on e-mail notification
 #SBATCH --mail-type=ALL
 #SBATCH --mail-user=samwhite@uw.edu
 ## Specify the working directory for this job
-#SBATCH --chdir=/gscratch/scrubbed/samwhite/outputs/20230602-E5_coral-fastqc-fastp-multiqc-sRNAseq
+#SBATCH --chdir=/gscratch/scrubbed/samwhite/outputs/20230620-E5_coral-fastqc-flexbar-multiqc-sRNAseq
 
-### FastQC and fastp trimming of E5 coral species sRNA-seq data from 202230515.
+### FastQC and flexbar trimming of E5 coral species sRNA-seq data from 202230515.
 
-### fastp expects input FastQ files to be in format: sRNA-ACR-178-S1-TP2_R1_001.fastq.gz
+### flexbar expects input FastQ files to be in format: sRNA-ACR-178-S1-TP2_R1_001.fastq.gz
 
 ### Adapter trimming and read length trimming is based off of NEB nebnext-small-rna-library-prep-set-for-illumina kit.
 
@@ -65,16 +65,15 @@ fastq_array_R1=()
 fastq_array_R2=()
 
 # Paths to programs
-fastp=/gscratch/srlab/programs/fastp.0.23.1
 fastqc=/gscratch/srlab/programs/fastqc_v0.11.9/fastqc
 multiqc=/gscratch/srlab/programs/anaconda3/bin/multiqc
 
 # Programs associative array
 declare -A programs_array
 programs_array=(
-[fastqc]="${fastqc}"
-[fastp]="${fastp}" \
-[multiqc]="${multiqc}"
+[fastqc]="${fastqc}" \
+[multiqc]="${multiqc}" \
+[flexbar]="flexbar"
 )
 
 
@@ -83,20 +82,31 @@ programs_array=(
 # Exit script if any command fails
 set -e
 
-# Load Python Mox module for Python module availability
-module load intel-python3_2017
+# Load Anaconda
+# Uknown why this is needed, but Anaconda will not run if this line is not included.
+. "/gscratch/srlab/programs/anaconda3/etc/profile.d/conda.sh"
+
+# Activate flexbar environment
+conda activate flexbar-3.5.0
 
 # Capture date
 timestamp=$(date +%Y%m%d)
 
-# Create adapters FastA for use with fastp trimming
+# Create adapters FastA for use with flexbar trimming
+echo "Creating adapters FastA."
+echo ""
 adapter_count=0
 
 for adapter in "${first_adapter}" "${second_adapter}"
 do
-  ((adapter_count++))
+  adapter_count=$((adapter_count + 1))
   printf ">%s\n%s\n" "adapter_${adapter_count}" "${adapter}"
 done >> "${NEB_adapters_fasta}"
+
+echo "Adapters FastA:"
+echo ""
+cat "${NEB_adapters_fasta}"
+echo ""
 
 
 # Set working directory
@@ -204,36 +214,40 @@ do
     done
 
 
-    ### RUN FASTP ###
+    ### RUN FLEXBAR ###
+    # Uses parameter substitution (e.g. ${R1_sample_name%%_*})to rm the _R[12]
+    # Uses NEB adapter file
+    # --adapter-pair-overlap ON: Recommended by NEB sRNA kit
+    # --qtrim-threshold 25: Minimum quality
+    # --qtrim-format i1.8: Sets sequencer as illumina
+    # --post-trim-length: Trim reads from 3' end to max length
+    # --target: Sets file naming patterns
+    # --zip-output GZ: Sets type of compression. GZ = gzip
 
-    # Run fastp on files
-    # Adds JSON report output for downstream usage by MultiQC
-    # Trims 20bp from 5' end of all reads
-    # Trims 20bp from 3' end of all reads
-    # Trims poly G, if present
-    # Uses parameter substitution (e.g. ${R1_sample_name%%_*})to rm the _R[12] for report names.
-    echo "Beginning fastp trimming."
+    # Run flexbar on files
+    echo "Beginning flexbar trimming."
     echo ""
 
     for index in "${!fastq_array_R1[@]}"
     do
-        R1_sample_name="${R1_names_array[index]}"
-        R2_sample_name="${R2_names_array[index]}"
-        ${fastp} \
-        --in1 ${fastq_array_R1[index]} \
-        --in2 ${fastq_array_R2[index]} \
-        --detect_adapter_for_pe \
-        --trim_poly_g \
-        --adapter_sequence ${NEB_adapters_fasta} \
-        --max_len ${max_read_length} \
-        --thread ${threads} \
-        --html "../trimmed/${R1_sample_name%%_*}".fastp-trim."${timestamp}".report.html \
-        --json "../trimmed/${R1_sample_name%%_*}".fastp-trim."${timestamp}".report.json \
-        --out1 "../trimmed/${R1_sample_name}".fastp-trim."${timestamp}".fastq.gz \
-        --out2 "../trimmed/${R2_sample_name}".fastp-trim."${timestamp}".fastq.gz
+      R1_sample_name="${R1_names_array[index]}"
+      R2_sample_name="${R2_names_array[index]}"
+
+      # Begin flexbar trimming
+      flexbar \
+      --reads ${fastq_array_R1[index]} \
+      --reads2 ${fastq_array_R2[index]}  \
+      --adapters ../../${NEB_adapters_fasta} \
+      --adapter-pair-overlap ON \
+      --qtrim-format i1.8 \
+      --qtrim-threshold 25 \
+      --post-trim-length ${max_read_length} \
+      --threads ${threads} \
+      --target "../trimmed/${R1_sample_name%%_*}.flexbar_trim.${timestamp}" \
+      --zip-output GZ
         
         # Move to trimmed directory
-        # This is done so checksums file doesn't include excess path in
+        # This is done so checksums file doesn't include excess path
         cd ../trimmed/
 
         echo "Moving to ${PWD}."
@@ -241,8 +255,8 @@ do
 
         # Generate md5 checksums for newly trimmed files
         {
-            md5sum "${R1_sample_name}".fastp-trim."${timestamp}".fastq.gz
-            md5sum "${R2_sample_name}".fastp-trim."${timestamp}".fastq.gz
+            md5sum "${R1_sample_name%%_*}.flexbar_trim.${timestamp}_1.fastq.gz"
+            md5sum "${R2_sample_name%%_*}.flexbar_trim.${timestamp}_2.fastq.gz"
         } >> "${trimmed_checksums}"
 
 
@@ -260,10 +274,10 @@ do
     done
 
     echo ""
-    echo "fastp trimming complete."
+    echo "flexbar trimming complete."
     echo ""
 
-    ### END FASTP ###
+    ### END FLEXBAR ###
 
 
     ### RUN FASTQC ON TRIMMED READS ###
@@ -280,7 +294,7 @@ do
     output_dir=$(pwd)
 
     # Create array of trimmed FastQs
-    trimmed_fastq_array=(*fastp-trim*.fastq.gz)
+    trimmed_fastq_array=(*flexbar_trim*.fastq.gz)
 
     # Pass array contents to new variable as space-delimited list
     trimmed_fastqc_list=$(echo "${trimmed_fastq_array[*]}")
@@ -341,10 +355,11 @@ if [[ "${#programs_array[@]}" -gt 0 ]]; then
       ${programs_array[$program]} -help
 
     # Handle fastp menu
-    elif [[ "${program}" == "fastp" ]]; then
+    elif [[ "${program}" == "[`fastp`](https://github.com/OpenGene/fastp)" ]]; then
       ${programs_array[$program]} --help
-    fi
+    else
     ${programs_array[$program]} -h
+    fi
     echo ""
     echo ""
     echo "----------------------------------------------"
