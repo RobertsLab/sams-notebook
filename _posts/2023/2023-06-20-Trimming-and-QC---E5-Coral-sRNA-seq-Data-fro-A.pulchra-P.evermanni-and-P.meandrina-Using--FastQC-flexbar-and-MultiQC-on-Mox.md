@@ -62,7 +62,7 @@ R2_fastq_pattern='*_R2_*.fastq.gz'
 threads=40
 
 # Set maximum read length
-max_read_length=50
+max_read_length=35
 
 # Input/output files
 trimmed_checksums=trimmed_fastq_checksums.md5
