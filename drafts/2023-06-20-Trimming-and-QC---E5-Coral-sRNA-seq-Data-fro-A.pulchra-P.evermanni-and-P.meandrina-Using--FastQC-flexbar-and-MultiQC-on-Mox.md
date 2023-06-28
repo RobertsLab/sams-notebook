@@ -414,7 +414,163 @@ echo "${PATH}" | tr : \\n
 
 #### RESULTS
 
+Run time was relatively quick; a little less than 1hr 30mins:
+
+![Screencap showing runtime of flexbar trimming on Mox with a run time of 1hr 28mins and 26secs](https://github.com/RobertsLab/sams-notebook/blob/master/images/screencaps/20230620-E5_coral-fastqc-flexbar-multiqc-sRNAseq-runtime.png?raw=true)
+
 Output folder:
 
-- []()
+- [20230620-E5_coral-fastqc-flexbar-multiqc-sRNAseq/](https://gannet.fish.washington.edu/Atumefaciens/20230620-E5_coral-fastqc-flexbar-multiqc-sRNAseq/)
 
+### _A.pulchra_
+
+&nbsp;&nbsp;&nbsp;&nbsp;#### Raw FastQs:
+
+  - MultiQC Report (HTML)
+
+    - [A_pulchra/raw_fastqc/multiqc_report.html](https://gannet.fish.washington.edu/Atumefaciens/20230620-E5_coral-fastqc-flexbar-multiqc-sRNAseq/A_pulchra/raw_fastqc/multiqc_report.html)
+
+  - MD5 checksums (text)
+
+    - [A_pulchra/raw_fastqc/input_fastq_checksums.md5](https://gannet.fish.washington.edu/Atumefaciens/20230620-E5_coral-fastqc-flexbar-multiqc-sRNAseq/A_pulchra/raw_fastqc/input_fastq_checksums.md5)
+
+&nbsp;&nbsp;&nbsp;&nbsp;#### Trimmed FastQs:
+
+  - MultiQC Report (HTML)
+
+    - [A_pulchra/trimmed/multiqc_report.html](https://gannet.fish.washington.edu/Atumefaciens/20230620-E5_coral-fastqc-flexbar-multiqc-sRNAseq/A_pulchra/trimmed/multiqc_report.html)
+
+  - FastQ (gzipped)
+
+    - [sRNA-ACR-140-S1-TP2.flexbar_trim.20230621_1.fastq.gz](https://gannet.fish.washington.edu/Atumefaciens/20230620-E5_coral-fastqc-flexbar-multiqc-sRNAseq/A_pulchra/trimmed/sRNA-ACR-140-S1-TP2.flexbar_trim.20230621_1.fastq.gz) (285M)
+
+      - MD5: `bc9dfcac504fa9f54414666222c231ee`
+
+    - [sRNA-ACR-140-S1-TP2.flexbar_trim.20230621_2.fastq.gz](https://gannet.fish.washington.edu/Atumefaciens/20230620-E5_coral-fastqc-flexbar-multiqc-sRNAseq/A_pulchra/trimmed/sRNA-ACR-140-S1-TP2.flexbar_trim.20230621_2.fastq.gz) (288M)
+
+      - MD5: `787108939a905fbba8ca1afa2d1d6584`
+
+    - [sRNA-ACR-145-S1-TP2.flexbar_trim.20230621_1.fastq.gz](https://gannet.fish.washington.edu/Atumefaciens/20230620-E5_coral-fastqc-flexbar-multiqc-sRNAseq/A_pulchra/trimmed/sRNA-ACR-145-S1-TP2.flexbar_trim.20230621_1.fastq.gz) (320M)
+
+      - MD5: `7ecbac6b60a9a0fa4ac8c9c7dbc84aaa`
+
+    - [sRNA-ACR-145-S1-TP2.flexbar_trim.20230621_2.fastq.gz](https://gannet.fish.washington.edu/Atumefaciens/20230620-E5_coral-fastqc-flexbar-multiqc-sRNAseq/A_pulchra/trimmed/sRNA-ACR-145-S1-TP2.flexbar_trim.20230621_2.fastq.gz) (320M)
+
+      - MD5: `3c128af4fb73b180ebd4116740f62f3d`
+
+    - [sRNA-ACR-150-S1-TP2.flexbar_trim.20230621_1.fastq.gz](https://gannet.fish.washington.edu/Atumefaciens/20230620-E5_coral-fastqc-flexbar-multiqc-sRNAseq/A_pulchra/trimmed/sRNA-ACR-150-S1-TP2.flexbar_trim.20230621_1.fastq.gz) (338M)
+
+      - MD5: `5084ae9dd5d94000ae5c50c26f81961b`
+
+    - [sRNA-ACR-150-S1-TP2.flexbar_trim.20230621_2.fastq.gz](https://gannet.fish.washington.edu/Atumefaciens/20230620-E5_coral-fastqc-flexbar-multiqc-sRNAseq/A_pulchra/trimmed/sRNA-ACR-150-S1-TP2.flexbar_trim.20230621_2.fastq.gz) (341M)
+
+      - MD5: `e320774cfc8150a23bcf57458a47afb1`
+
+    - [sRNA-ACR-173-S1-TP2.flexbar_trim.20230621_1.fastq.gz](https://gannet.fish.washington.edu/Atumefaciens/20230620-E5_coral-fastqc-flexbar-multiqc-sRNAseq/A_pulchra/trimmed/sRNA-ACR-173-S1-TP2.flexbar_trim.20230621_1.fastq.gz) (296M)
+
+      - MD5: `14db8b0e55941025ffddecdd84609901`
+
+    - [sRNA-ACR-173-S1-TP2.flexbar_trim.20230621_2.fastq.gz](https://gannet.fish.washington.edu/Atumefaciens/20230620-E5_coral-fastqc-flexbar-multiqc-sRNAseq/A_pulchra/trimmed/sRNA-ACR-173-S1-TP2.flexbar_trim.20230621_2.fastq.gz) (299M)
+
+      - MD5: `3731817b3e0c0c48e22123245b50998a`
+
+    - [sRNA-ACR-178-S1-TP2.flexbar_trim.20230621_1.fastq.gz](https://gannet.fish.washington.edu/Atumefaciens/20230620-E5_coral-fastqc-flexbar-multiqc-sRNAseq/A_pulchra/trimmed/sRNA-ACR-178-S1-TP2.flexbar_trim.20230621_1.fastq.gz) (265M)
+
+      - MD5: `9a128ada9b1b2aa8b9e691be465d4c25`
+
+    - [sRNA-ACR-178-S1-TP2.flexbar_trim.20230621_2.fastq.gz](https://gannet.fish.washington.edu/Atumefaciens/20230620-E5_coral-fastqc-flexbar-multiqc-sRNAseq/A_pulchra/trimmed/sRNA-ACR-178-S1-TP2.flexbar_trim.20230621_2.fastq.gz) (266M)
+
+      - MD5: `51cca9edaf909a34e5b90c3e05bcd275`
+
+---
+
+
+### _P.evermanni_
+
+&nbsp;&nbsp;&nbsp;&nbsp;#### Raw FastQs:
+
+  - MultiQC Report (HTML)
+
+    - [P_evermanni/raw_fastqc/multiqc_report.html](https://gannet.fish.washington.edu/Atumefaciens/20230620-E5_coral-fastqc-flexbar-multiqc-sRNAseq/P_evermanni/raw_fastqc/multiqc_report.html)
+
+  - MD5 checksums (text)
+
+    - [P_evermanni/raw_fastqc/input_fastq_checksums.md5](https://gannet.fish.washington.edu/Atumefaciens/20230620-E5_coral-fastqc-flexbar-multiqc-sRNAseq/P_evermanni/raw_fastqc/input_fastq_checksums.md5)
+
+&nbsp;&nbsp;&nbsp;&nbsp;#### Trimmed FastQs:
+
+  - MultiQC Report (HTML)
+
+    - [P_evermanni/trimmed/multiqc_report.html](https://gannet.fish.washington.edu/Atumefaciens/20230620-E5_coral-fastqc-flexbar-multiqc-sRNAseq/P_evermanni/trimmed/multiqc_report.html)
+
+  - FastQs (gzipped)
+
+    - [sRNA-POR-73-S1-TP2.flexbar_trim.20230621_1.fastq.gz](https://gannet.fish.washington.edu/Atumefaciens/20230620-E5_coral-fastqc-flexbar-multiqc-sRNAseq/P_evermanni/trimmed/sRNA-POR-73-S1-TP2.flexbar_trim.20230621_1.fastq.gz) (219M)
+
+      - MD5: `3849770b95a8a255e9583dfdb8b62803`
+
+    - [sRNA-POR-73-S1-TP2.flexbar_trim.20230621_2.fastq.gz](https://gannet.fish.washington.edu/Atumefaciens/20230620-E5_coral-fastqc-flexbar-multiqc-sRNAseq/P_evermanni/trimmed/sRNA-POR-73-S1-TP2.flexbar_trim.20230621_2.fastq.gz) (219M)
+
+      - MD5: `d7dc9f9e757415f69fb09ed80132635c`
+
+    - [sRNA-POR-79-S1-TP2.flexbar_trim.20230621_1.fastq.gz](https://gannet.fish.washington.edu/Atumefaciens/20230620-E5_coral-fastqc-flexbar-multiqc-sRNAseq/P_evermanni/trimmed/sRNA-POR-79-S1-TP2.flexbar_trim.20230621_1.fastq.gz) (240M)
+
+      - MD5: `94a55da7bc0081cdebe8e77cf6c9d82d`
+
+    - [sRNA-POR-79-S1-TP2.flexbar_trim.20230621_2.fastq.gz](https://gannet.fish.washington.edu/Atumefaciens/20230620-E5_coral-fastqc-flexbar-multiqc-sRNAseq/P_evermanni/trimmed/sRNA-POR-79-S1-TP2.flexbar_trim.20230621_2.fastq.gz) (239M)
+
+      - MD5: `e87d8f2cf923e195d25c0207d96126f5`
+
+    - [sRNA-POR-82-S1-TP2.flexbar_trim.20230621_1.fastq.gz](https://gannet.fish.washington.edu/Atumefaciens/20230620-E5_coral-fastqc-flexbar-multiqc-sRNAseq/P_evermanni/trimmed/sRNA-POR-82-S1-TP2.flexbar_trim.20230621_1.fastq.gz) (268M)
+
+      - MD5: `0c7b8bf7726112c21bebad8bd4f44914`
+
+    - [sRNA-POR-82-S1-TP2.flexbar_trim.20230621_2.fastq.gz](https://gannet.fish.washington.edu/Atumefaciens/20230620-E5_coral-fastqc-flexbar-multiqc-sRNAseq/P_evermanni/trimmed/sRNA-POR-82-S1-TP2.flexbar_trim.20230621_2.fastq.gz) (266M)
+
+      - MD5: `f83c5157ddee1b97c5e9fc29350b67cf`
+
+---
+
+### _P.meandrina_
+
+&nbsp;&nbsp;&nbsp;&nbsp;#### Raw FastQs:
+
+  - MultiQC Report (HTML)
+
+    - [P_meandrina/raw_fastqc/multiqc_report.html](https://gannet.fish.washington.edu/Atumefaciens/20230620-E5_coral-fastqc-flexbar-multiqc-sRNAseq/P_meandrina/raw_fastqc/multiqc_report.html)
+
+  - MD5 checksums (text)
+
+    - [P_meandrina/raw_fastqc/input_fastq_checksums.md5](https://gannet.fish.washington.edu/Atumefaciens/20230620-E5_coral-fastqc-flexbar-multiqc-sRNAseq/P_meandrina/raw_fastqc/input_fastq_checksums.md5)
+
+&nbsp;&nbsp;&nbsp;&nbsp;#### Trimmed FastQs:
+
+  - MultiQC Report (HTML)
+
+    - [P_meandrina/trimmed/multiqc_report.html](https://gannet.fish.washington.edu/Atumefaciens/20230620-E5_coral-fastqc-flexbar-multiqc-sRNAseq/P_meandrina/trimmed/multiqc_report.html)
+
+  - FastQs (gzipped)
+
+    - [sRNA-POR-73-S1-TP2.flexbar_trim.20230621_1.fastq.gz](https://gannet.fish.washington.edu/Atumefaciens/20230620-E5_coral-fastqc-flexbar-multiqc-sRNAseq/P_meandrina/trimmed/sRNA-POR-73-S1-TP2.flexbar_trim.20230621_1.fastq.gz) (219M)
+
+      - MD5: `3849770b95a8a255e9583dfdb8b62803`
+
+    - [sRNA-POR-73-S1-TP2.flexbar_trim.20230621_2.fastq.gz](https://gannet.fish.washington.edu/Atumefaciens/20230620-E5_coral-fastqc-flexbar-multiqc-sRNAseq/P_meandrina/trimmed/sRNA-POR-73-S1-TP2.flexbar_trim.20230621_2.fastq.gz) (219M)
+
+      - MD5: `d7dc9f9e757415f69fb09ed80132635c`
+
+    - [sRNA-POR-79-S1-TP2.flexbar_trim.20230621_1.fastq.gz](https://gannet.fish.washington.edu/Atumefaciens/20230620-E5_coral-fastqc-flexbar-multiqc-sRNAseq/P_meandrina/trimmed/sRNA-POR-79-S1-TP2.flexbar_trim.20230621_1.fastq.gz) (240M)
+
+      - MD5: `94a55da7bc0081cdebe8e77cf6c9d82d`
+
+    - [sRNA-POR-79-S1-TP2.flexbar_trim.20230621_2.fastq.gz](https://gannet.fish.washington.edu/Atumefaciens/20230620-E5_coral-fastqc-flexbar-multiqc-sRNAseq/P_meandrina/trimmed/sRNA-POR-79-S1-TP2.flexbar_trim.20230621_2.fastq.gz) (239M)
+
+      - MD5: `e87d8f2cf923e195d25c0207d96126f5`
+
+    - [sRNA-POR-82-S1-TP2.flexbar_trim.20230621_1.fastq.gz](https://gannet.fish.washington.edu/Atumefaciens/20230620-E5_coral-fastqc-flexbar-multiqc-sRNAseq/P_meandrina/trimmed/sRNA-POR-82-S1-TP2.flexbar_trim.20230621_1.fastq.gz) (268M)
+
+      - MD5: `0c7b8bf7726112c21bebad8bd4f44914`
+
+    - [sRNA-POR-82-S1-TP2.flexbar_trim.20230621_2.fastq.gz](https://gannet.fish.washington.edu/Atumefaciens/20230620-E5_coral-fastqc-flexbar-multiqc-sRNAseq/P_meandrina/trimmed/sRNA-POR-82-S1-TP2.flexbar_trim.20230621_2.fastq.gz) (266M)
+
+      - MD5: `f83c5157ddee1b97c5e9fc29350b67cf`
