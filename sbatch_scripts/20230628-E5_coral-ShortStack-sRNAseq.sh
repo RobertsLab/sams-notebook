@@ -62,6 +62,7 @@ programs_array=(
     )
 
 # Genomes associative array
+declare -A genomes_array
 genomes_array=(
     [A_pulchra]="/gscratch/srlab/sam/data/A_millepora/genomes/GCF_013753865.1_Amil_v2.1_genomic.fna" \
     [P_meandrina]="/gscratch/srlab/sam/data/P_meandrina/genomes/Pocillopora_meandrina_HIv1.assembly.fasta"
