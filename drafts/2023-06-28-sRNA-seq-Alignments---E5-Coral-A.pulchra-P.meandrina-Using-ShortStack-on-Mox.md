@@ -257,6 +257,9 @@ Run time seemed relatively fast; just a bit over 4hrs:
 
 ![Screencap showing ShortStack runtime on Mox of 4hrs 11mins 59secs](https://github.com/RobertsLab/sams-notebook/blob/master/images/screencaps/20230628-E5_coral-ShortStack-sRNAseq-runtime.png?raw=true)
 
+The results and links to various files are below. At this time, I have not done any evaluation of the results, nor have I looked into the [ShortStack](https://github.com/MikeAxtell/ShortStack) documentation to read how the results are formatted; will leave this for a future date and/or somebody else.
+
+
 Output folder:
 
 - [20230628-E5_coral-ShortStack-sRNAseq/](https://gannet.fish.washington.edu/Atumefaciens/20230628-E5_coral-ShortStack-sRNAseq/)
