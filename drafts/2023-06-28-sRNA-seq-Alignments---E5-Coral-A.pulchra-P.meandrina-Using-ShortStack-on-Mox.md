@@ -13,7 +13,9 @@ tags:
 categories: 
   - E5
 ---
+Steven had [asked that I align the coral E5 sRNA-seq reads using ShortStack](https://github.com/urol-e5/deep-dive/issues/19) (GitHub Issue). I previously [trimmed the sRNA-seq reads to 35bp in length](https://robertslab.github.io/sams-notebook/2023/06/20/Trimming-and-QC-E5-Coral-sRNA-seq-Data-fro-A.pulchra-P.evermanni-and-P.meandrina-Using-FastQC-flexbar-and-MultiQC-on-Mox.html) (notebook). Next up was to actually perform the alignments using [ShortStack4](https://github.com/MikeAxtell/ShortStack). _A.pulchra_ was aligned to the _P.millepora_ genome, per [this GitHub Issue](https://github.com/urol-e5/deep-dive/issues/20#issuecomment-1574121809). This was run on Mox.
 
+NOTE: Up to this point, I've processed all three species simultaneously for which we currently have sRNA-seq data: _A.pulchra_, _P.evermanni_, and _P.meandrina_. However, [we currently haven't decided on the canonical genome to use for _P.evermanni_](https://github.com/urol-e5/deep-dive/issues/21#issuecomment-1579178682) (GitHub Issue), so _P.evermanni_ is _not_ included in this analysis.
 
 SLURM script (GitHub):
 
@@ -248,6 +250,10 @@ echo "${PATH}" | tr : \\n
 ---
 
 #### RESULTS
+
+Run time seemed relatively fast; just a bit over 4hrs:
+
+![Screencap showing ShortStack runtime on Mox of 4hrs 11mins 59secs](https://github.com/RobertsLab/sams-notebook/blob/master/images/screencaps/20230628-E5_coral-ShortStack-sRNAseq-runtime.png?raw=true)
 
 Output folder:
 
