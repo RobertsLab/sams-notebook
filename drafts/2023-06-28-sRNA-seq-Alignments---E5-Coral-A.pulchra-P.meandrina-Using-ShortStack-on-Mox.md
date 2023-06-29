@@ -375,7 +375,74 @@ Output folder:
 
 &nbsp;&nbsp;&nbsp;&nbsp;#### Results files:
 
-  - 
+- [Counts.txt](https://gannet.fish.washington.edu/Atumefaciens/20230628-E5_coral-ShortStack-sRNAseq/P_meandrina/ShortStack_out/Counts.txt) (684K)
+
+  - MD5: `45c7fa265a74c685ce60848447fa4566`
+
+| Coords                                               | Name      | MIRNA | sRNA-POC-47-S1-TP2.flexbar_trim.20230621_1 | sRNA-POC-47-S1-TP2.flexbar_trim.20230621_2 | sRNA-POC-48-S1-TP2.flexbar_trim.20230621_1 | sRNA-POC-48-S1-TP2.flexbar_trim.20230621_2 | sRNA-POC-50-S1-TP2.flexbar_trim.20230621_1 | sRNA-POC-50-S1-TP2.flexbar_trim.20230621_2 | sRNA-POC-53-S1-TP2.flexbar_trim.20230621_1 | sRNA-POC-53-S1-TP2.flexbar_trim.20230621_2 | sRNA-POC-57-S1-TP2.flexbar_trim.20230621_1 | sRNA-POC-57-S1-TP2.flexbar_trim.20230621_2 |
+|------------------------------------------------------|-----------|-------|--------------------------------------------|--------------------------------------------|--------------------------------------------|--------------------------------------------|--------------------------------------------|--------------------------------------------|--------------------------------------------|--------------------------------------------|--------------------------------------------|--------------------------------------------|
+| Pocillopora_meandrina_HIv1___Sc0000000:9091-9526     | Cluster_1 | N     | 1828                                       | 1784                                       | 1393                                       | 1412                                       | 1842                                       | 1812                                       | 3219                                       | 3286                                       | 3565                                       | 3477                                       |
+| Pocillopora_meandrina_HIv1___Sc0000000:53578-53997   | Cluster_2 | N     | 24                                         | 24                                         | 52                                         | 53                                         | 67                                         | 67                                         | 53                                         | 55                                         | 95                                         | 91                                         |
+| Pocillopora_meandrina_HIv1___Sc0000000:146768-147202 | Cluster_3 | N     | 3                                          | 248                                        | 2                                          | 73                                         | 0                                          | 116                                        | 0                                          | 107                                        | 5                                          | 226                                        |
+| Pocillopora_meandrina_HIv1___Sc0000000:150243-150718 | Cluster_4 | N     | 437                                        | 422                                        | 691                                        | 676                                        | 813                                        | 804                                        | 692                                        | 700                                        | 1021                                       | 1007                                       |
+| Pocillopora_meandrina_HIv1___Sc0000000:173728-174150 | Cluster_5 | N     | 171                                        | 167                                        | 169                                        | 167                                        | 269                                        | 271                                        | 317                                        | 318                                        | 336                                        | 334                                        |
+| Pocillopora_meandrina_HIv1___Sc0000000:187648-188072 | Cluster_6 | N     | 8                                          | 7                                          | 16                                         | 13                                         | 28                                         | 27                                         | 59                                         | 72                                         | 76                                         | 76                                         |
+| Pocillopora_meandrina_HIv1___Sc0000000:485727-486254 | Cluster_7 | N     | 114                                        | 112                                        | 98                                         | 96                                         | 49                                         | 50                                         | 165                                        | 168                                        | 270                                        | 259                                        |
+| Pocillopora_meandrina_HIv1___Sc0000000:525310-527341 | Cluster_8 | N     | 3753                                       | 3707                                       | 1260                                       | 1254                                       | 4711                                       | 4627                                       | 2811                                       | 2878                                       | 2607                                       | 2572                                       |
+| Pocillopora_meandrina_HIv1___Sc0000000:541262-541723 | Cluster_9 | N     | 127                                        | 130                                        | 86                                         | 91                                         | 85                                         | 96                                         | 331                                        | 317                                        | 85                                         | 87                                         |
+
+- [Results.txt](https://gannet.fish.washington.edu/Atumefaciens/20230628-E5_coral-ShortStack-sRNAseq/P_meandrina/ShortStack_out/Results.txt) (1.4M)
+
+  - MD5: `7b96db202d049a53f154ee3fc1fcda08`
+
+Locus	Name	Chrom	Start	End	Length	Reads	UniqueReads	FracTop	Strand	MajorRNA	MajorRNAReads	Short	Long	21	22	23	24	DicerCall	MIRNA	known_miRNAs
+Pocillopora_meandrina_HIv1___Sc0000000:9091-9526	Cluster_1	Pocillopora_meandrina_HIv1___Sc0000000	9091	9526	436	23618	903	0.501566601744432	.	UCUACCACUGAGCUAUACCCCC	3810	2853	9677	1223	8614	359	892	N	N	NA
+Pocillopora_meandrina_HIv1___Sc0000000:53578-53997	Cluster_2	Pocillopora_meandrina_HIv1___Sc0000000	53578	53997	420	581	27	0.500860585197935	.	GCCUAAGUUGCUUGGAACA	142	577	4	0	0	0	0	N	N	NA
+Pocillopora_meandrina_HIv1___Sc0000000:146768-147202	Cluster_3	Pocillopora_meandrina_HIv1___Sc0000000	146768	147202	435	780	108	0.971794871794872	+	AGCAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA	267	2	773	4	0	1	0	N	N	NA
+Pocillopora_meandrina_HIv1___Sc0000000:150243-150718	Cluster_4	Pocillopora_meandrina_HIv1___Sc0000000	150243	150718	476	7263	645	0.496902106567534	.	UUAUGUGAUGAGUAUGUUAAUGUACUCUCUGAGC	566	1692	2932	1272	749	280	338	N	N	NA
+Pocillopora_meandrina_HIv1___Sc0000000:173728-174150	Cluster_5	Pocillopora_meandrina_HIv1___Sc0000000	173728	174150	423	2519	134	0.500992457324335	.	CAACCAGAUCACAGCAAUCAAA	438	212	8	83	1269	887	60	22	N	NA
+Pocillopora_meandrina_HIv1___Sc0000000:187648-188072	Cluster_6	Pocillopora_meandrina_HIv1___Sc0000000	187648	188072	425	382	74	0.523560209424084	.	AUAAAUGUCACUACAAGAAACCUGAAAUCGU	25	1	366	2	2	4	7	N	N	NA
+Pocillopora_meandrina_HIv1___Sc0000000:485727-486254	Cluster_7	Pocillopora_meandrina_HIv1___Sc0000000	485727	486254	528	1381	391	0.503982621288921	.	UUGCACUAGAACAGACUGUGCUUCCAUAUCAGCUG	152	132	1174	14	22	6	33	N	N	NA
+Pocillopora_meandrina_HIv1___Sc0000000:525310-527341	Cluster_8	Pocillopora_meandrina_HIv1___Sc0000000	525310	527341	2032	30180	6208	0.498939695162359	.	UUUUCGUCACUUUCUUCAGCCUCAGAGU	973	277	27960	102	211	625	1005	N	N	NA
+Pocillopora_meandrina_HIv1___Sc0000000:541262-541723	Cluster_9	Pocillopora_meandrina_HIv1___Sc0000000	541262	541723	462	1435	283	0.500348432055749	.	UUGGACGAAAUUUCGAGGUUCACACUCGUU	86	0	1425	0	7	2	1	N	N	NA
+
+
+- [alignment_details.tsv](https://gannet.fish.washington.edu/Atumefaciens/20230628-E5_coral-ShortStack-sRNAseq/P_meandrina/ShortStack_out/alignment_details.tsv) (48K)
+
+  - MD5: `b89a4d5f7d1c49fcc8b3c31fdb316837`
+
+readfile	mapping_type	read_length	count
+/gscratch/scrubbed/samwhite/outputs/20230628-E5_coral-ShortStack-sRNAseq/P_meandrina/ShortStack_out/sRNA-POC-47-S1-TP2.flexbar_trim.20230621_1.bam	U	<21	277334
+/gscratch/scrubbed/samwhite/outputs/20230628-E5_coral-ShortStack-sRNAseq/P_meandrina/ShortStack_out/sRNA-POC-47-S1-TP2.flexbar_trim.20230621_1.bam	U	21	114752
+/gscratch/scrubbed/samwhite/outputs/20230628-E5_coral-ShortStack-sRNAseq/P_meandrina/ShortStack_out/sRNA-POC-47-S1-TP2.flexbar_trim.20230621_1.bam	U	22	331234
+/gscratch/scrubbed/samwhite/outputs/20230628-E5_coral-ShortStack-sRNAseq/P_meandrina/ShortStack_out/sRNA-POC-47-S1-TP2.flexbar_trim.20230621_1.bam	U	23	133358
+/gscratch/scrubbed/samwhite/outputs/20230628-E5_coral-ShortStack-sRNAseq/P_meandrina/ShortStack_out/sRNA-POC-47-S1-TP2.flexbar_trim.20230621_1.bam	U	24	46856
+/gscratch/scrubbed/samwhite/outputs/20230628-E5_coral-ShortStack-sRNAseq/P_meandrina/ShortStack_out/sRNA-POC-47-S1-TP2.flexbar_trim.20230621_1.bam	U	>24	1441069
+/gscratch/scrubbed/samwhite/outputs/20230628-E5_coral-ShortStack-sRNAseq/P_meandrina/ShortStack_out/sRNA-POC-47-S1-TP2.flexbar_trim.20230621_1.bam	P	<21	472110
+/gscratch/scrubbed/samwhite/outputs/20230628-E5_coral-ShortStack-sRNAseq/P_meandrina/ShortStack_out/sRNA-POC-47-S1-TP2.flexbar_trim.20230621_1.bam	P	21	109577
+/gscratch/scrubbed/samwhite/outputs/20230628-E5_coral-ShortStack-sRNAseq/P_meandrina/ShortStack_out/sRNA-POC-47-S1-TP2.flexbar_trim.20230621_1.bam	P	22	119506
+/gscratch/scrubbed/samwhite/outputs/20230628-E5_coral-ShortStack-sRNAseq/P_meandrina/ShortStack_out/sRNA-POC-47-S1-TP2.flexbar_trim.20230621_1.bam	P	23	96527
+/gscratch/scrubbed/samwhite/outputs/20230628-E5_coral-ShortStack-sRNAseq/P_meandrina/ShortStack_out/sRNA-POC-47-S1-TP2.flexbar_trim.20230621_1.bam	P	24	73770
+/gscratch/scrubbed/samwhite/outputs/20230628-E5_coral-ShortStack-sRNAseq/P_meandrina/ShortStack_out/sRNA-POC-47-S1-TP2.flexbar_trim.20230621_1.bam	P	>24	3922569
+/gscratch/scrubbed/samwhite/outputs/20230628-E5_coral-ShortStack-sRNAseq/P_meandrina/ShortStack_out/sRNA-POC-47-S1-TP2.flexbar_trim.20230621_1.bam	R	<21	270975
+/gscratch/scrubbed/samwhite/outputs/20230628-E5_coral-ShortStack-sRNAseq/P_meandrina/ShortStack_out/sRNA-POC-47-S1-TP2.flexbar_trim.20230621_1.bam	R	21	95814
+/gscratch/scrubbed/samwhite/outputs/20230628-E5_coral-ShortStack-sRNAseq/P_meandrina/ShortStack_out/sRNA-POC-47-S1-TP2.flexbar_trim.20230621_1.bam	R	22	130073
+/gscratch/scrubbed/samwhite/outputs/20230628-E5_coral-ShortStack-sRNAseq/P_meandrina/ShortStack_out/sRNA-POC-47-S1-TP2.flexbar_trim.20230621_1.bam	R	23	82638
+/gscratch/scrubbed/samwhite/outputs/20230628-E5_coral-ShortStack-sRNAseq/P_meandrina/ShortStack_out/sRNA-POC-47-S1-TP2.flexbar_trim.20230621_1.bam	R	24	190938
+/gscratch/scrubbed/samwhite/outputs/20230628-E5_coral-ShortStack-sRNAseq/P_meandrina/ShortStack_out/sRNA-POC-47-S1-TP2.flexbar_trim.20230621_1.bam	R	>24	1254706
+/gscratch/scrubbed/samwhite/outputs/20230628-E5_coral-ShortStack-sRNAseq/P_meandrina/ShortStack_out/sRNA-POC-47-S1-TP2.flexbar_trim.20230621_1.bam	H	<21	20811
+/gscratch/scrubbed/samwhite/outputs/20230628-E5_coral-ShortStack-sRNAseq/P_meandrina/ShortStack_out/sRNA-POC-47-S1-TP2.flexbar_trim.20230621_1.bam	H	21	5811
+/gscratch/scrubbed/samwhite/outputs/20230628-E5_coral-ShortStack-sRNAseq/P_meandrina/ShortStack_out/sRNA-POC-47-S1-TP2.flexbar_trim.20230621_1.bam	H	22	5117
+/gscratch/scrubbed/samwhite/outputs/20230628-E5_coral-ShortStack-sRNAseq/P_meandrina/ShortStack_out/sRNA-POC-47-S1-TP2.flexbar_trim.20230621_1.bam	H	23	5552
+/gscratch/scrubbed/samwhite/outputs/20230628-E5_coral-ShortStack-sRNAseq/P_meandrina/ShortStack_out/sRNA-POC-47-S1-TP2.flexbar_trim.20230621_1.bam	H	24	5909
+/gscratch/scrubbed/samwhite/outputs/20230628-E5_coral-ShortStack-sRNAseq/P_meandrina/ShortStack_out/sRNA-POC-47-S1-TP2.flexbar_trim.20230621_1.bam	H	>24	47393
+/gscratch/scrubbed/samwhite/outputs/20230628-E5_coral-ShortStack-sRNAseq/P_meandrina/ShortStack_out/sRNA-POC-47-S1-TP2.flexbar_trim.20230621_1.bam	N	<21	122944
+/gscratch/scrubbed/samwhite/outputs/20230628-E5_coral-ShortStack-sRNAseq/P_meandrina/ShortStack_out/sRNA-POC-47-S1-TP2.flexbar_trim.20230621_1.bam	N	21	59503
+/gscratch/scrubbed/samwhite/outputs/20230628-E5_coral-ShortStack-sRNAseq/P_meandrina/ShortStack_out/sRNA-POC-47-S1-TP2.flexbar_trim.20230621_1.bam	N	22	101407
+/gscratch/scrubbed/samwhite/outputs/20230628-E5_coral-ShortStack-sRNAseq/P_meandrina/ShortStack_out/sRNA-POC-47-S1-TP2.flexbar_trim.20230621_1.bam	N	23	92953
+/gscratch/scrubbed/samwhite/outputs/20230628-E5_coral-ShortStack-sRNAseq/P_meandrina/ShortStack_out/sRNA-POC-47-S1-TP2.flexbar_trim.20230621_1.bam	N	24	117111
+/gscratch/scrubbed/samwhite/outputs/20230628-E5_coral-ShortStack-sRNAseq/P_meandrina/ShortStack_out/sRNA-POC-47-S1-TP2.flexbar_trim.20230621_1.bam	N	>24	5315658
+
 
 &nbsp;&nbsp;&nbsp;&nbsp;#### GFFs:
 
