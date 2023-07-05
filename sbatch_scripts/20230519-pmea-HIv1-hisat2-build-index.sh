@@ -19,10 +19,11 @@
 
 ## Script using HiSat2 to build a genome index, identify exons, and splice sites in P.meandrina genome assembly using Hisat2.
 
-## Genome and GFF from here: http://cyanophora.rutgers.edu/Pocillopora_meandrina/
+## Genome from here: http://cyanophora.rutgers.edu/Pocillopora_meandrina/
 
-## GTF generated on 20230519 by SJW:
-## https://robertslab.github.io/sams-notebook/2023/05/19/Data-Wrangling-P.meandrina-Genome-GFF-to-GTF-Using-gffread.html
+## GFF from here: https://owl.fish.washington.edu/halfshell/genomic-databank/Pocillopora_meandrina_HIv1.genes-valid.gff3
+
+## GTF generated on 20230705 by SJW:
 
 ###################################################################################
 # These variables need to be set by user
@@ -45,9 +46,9 @@ hisat2_splice_sites="${hisat2_dir}/hisat2_extract_splice_sites.py"
 exons="Pocillopora_meandrina_HIv1_hisat2_exons.tab"
 genome_dir="/gscratch/srlab/sam/data/P_meandrina/genomes"
 genome_fasta="${genome_dir}/Pocillopora_meandrina_HIv1.assembly.fasta"
-genome_gff="${genome_index_dir}/Pocillopora_meandrina_HIv1.genes.gff3"
+genome_gff="${genome_index_dir}/Pocillopora_meandrina_HIv1.genes-valid.gff3"
 splice_sites="Pocillopora_meandrina_HIv1_hisat2_splice_sites.tab"
-transcripts_gtf="${genome_dir}/Pocillopora_meandrina_HIv1.genes.gtf"
+transcripts_gtf="${genome_dir}/Pocillopora_meandrina_HIv1-valid.genes.gtf"
 
 
 # Programs associative array
