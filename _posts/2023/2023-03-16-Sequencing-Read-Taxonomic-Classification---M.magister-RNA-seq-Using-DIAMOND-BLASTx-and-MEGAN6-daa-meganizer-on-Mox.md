@@ -220,3 +220,196 @@ Output folder:
 
 - [20230316-mmag-diamond-meganizer-RNAseq/](https://gannet.fish.washington.edu/Atumefaciens/20230316-mmag-diamond-meganizer-RNAseq/)
 
+### MEGANized DAA files (DAA)
+
+  - [CH01-06.trimmed.R1.blastx.meganized.daa](https://gannet.fish.washington.edu/Atumefaciens/20230316-mmag-diamond-meganizer-RNAseq/CH01-06.trimmed.R1.blastx.meganized.daa) (170G)
+
+    - MD5: `40cd0e6b88ebbcc623bcc703c1165767`
+
+  - [CH01-06.trimmed.R2.blastx.meganized.daa](https://gannet.fish.washington.edu/Atumefaciens/20230316-mmag-diamond-meganizer-RNAseq/CH01-06.trimmed.R2.blastx.meganized.daa) (172G)
+
+    - MD5: `f0e49f829efcd8bd2759e77022ef1243`
+
+  - [CH01-14.trimmed.R1.blastx.meganized.daa](https://gannet.fish.washington.edu/Atumefaciens/20230316-mmag-diamond-meganizer-RNAseq/CH01-14.trimmed.R1.blastx.meganized.daa) (278G)
+
+    - MD5: `aa2bd2293618975323e433b1c5b46af1`
+
+  - [CH01-14.trimmed.R2.blastx.meganized.daa](https://gannet.fish.washington.edu/Atumefaciens/20230316-mmag-diamond-meganizer-RNAseq/CH01-14.trimmed.R2.blastx.meganized.daa) (280G)
+
+    - MD5: `9db3adecd8dcbb7bf35c609fe524e28c`
+
+  - [CH01-22.trimmed.R1.blastx.meganized.daa](https://gannet.fish.washington.edu/Atumefaciens/20230316-mmag-diamond-meganizer-RNAseq/CH01-22.trimmed.R1.blastx.meganized.daa) (118G)
+
+    - MD5: `bb83f0f662d2ad048f6ea06fbd16cdd6`
+
+  - [CH01-22.trimmed.R2.blastx.meganized.daa](https://gannet.fish.washington.edu/Atumefaciens/20230316-mmag-diamond-meganizer-RNAseq/CH01-22.trimmed.R2.blastx.meganized.daa) (117G)
+
+    - MD5: `26c9a3d732dc97b42d68fed33580989a`
+
+  - [CH01-38.trimmed.R1.blastx.meganized.daa](https://gannet.fish.washington.edu/Atumefaciens/20230316-mmag-diamond-meganizer-RNAseq/CH01-38.trimmed.R1.blastx.meganized.daa) (324G)
+
+    - MD5: `24f600b7d0dc6625b1abd61abd40ba1a`
+
+  - [CH01-38.trimmed.R2.blastx.meganized.daa](https://gannet.fish.washington.edu/Atumefaciens/20230316-mmag-diamond-meganizer-RNAseq/CH01-38.trimmed.R2.blastx.meganized.daa) (327G)
+
+    - MD5: `2c826f5c4d4cbe7e292c8633eda0045e`
+
+  - [CH03-04.trimmed.R1.blastx.meganized.daa](https://gannet.fish.washington.edu/Atumefaciens/20230316-mmag-diamond-meganizer-RNAseq/CH03-04.trimmed.R1.blastx.meganized.daa) (115G)
+
+    - MD5: `221647010a04a7b90b5f43c09a66d255`
+
+  - [CH03-04.trimmed.R2.blastx.meganized.daa](https://gannet.fish.washington.edu/Atumefaciens/20230316-mmag-diamond-meganizer-RNAseq/CH03-04.trimmed.R2.blastx.meganized.daa) (115G)
+
+    - MD5: `71aadedcb59ec1674aab190ea5e0b074`
+
+  - [CH03-15.trimmed.R1.blastx.meganized.daa](https://gannet.fish.washington.edu/Atumefaciens/20230316-mmag-diamond-meganizer-RNAseq/CH03-15.trimmed.R1.blastx.meganized.daa) (144G)
+
+    - MD5: `d28e53896fb69761525dc3ebe51cd6d9`
+
+  - [CH03-15.trimmed.R2.blastx.meganized.daa](https://gannet.fish.washington.edu/Atumefaciens/20230316-mmag-diamond-meganizer-RNAseq/CH03-15.trimmed.R2.blastx.meganized.daa) (146G)
+
+    - MD5: `f8c7cb85b6fe53fa8f29e35545a611cb`
+
+  - [CH03-33.trimmed.R1.blastx.meganized.daa](https://gannet.fish.washington.edu/Atumefaciens/20230316-mmag-diamond-meganizer-RNAseq/CH03-33.trimmed.R1.blastx.meganized.daa) (125G)
+
+    - MD5: `1a48b209c2a5f378f68f2bd480edb909`
+
+  - [CH03-33.trimmed.R2.blastx.meganized.daa](https://gannet.fish.washington.edu/Atumefaciens/20230316-mmag-diamond-meganizer-RNAseq/CH03-33.trimmed.R2.blastx.meganized.daa) (128G)
+
+    - MD5: `8e945f239f12e21cde91d96c3bfd22b0`
+
+  - [CH05-01.trimmed.R1.blastx.meganized.daa](https://gannet.fish.washington.edu/Atumefaciens/20230316-mmag-diamond-meganizer-RNAseq/CH05-01.trimmed.R1.blastx.meganized.daa) (192G)
+
+    - MD5: `1b0ce1658f4e82702574b087069f44fe`
+
+  - [CH05-01.trimmed.R2.blastx.meganized.daa](https://gannet.fish.washington.edu/Atumefaciens/20230316-mmag-diamond-meganizer-RNAseq/CH05-01.trimmed.R2.blastx.meganized.daa) (193G)
+
+    - MD5: `60a20767d13faa5147ae48182bc2f822`
+
+  - [CH05-06.trimmed.R1.blastx.meganized.daa](https://gannet.fish.washington.edu/Atumefaciens/20230316-mmag-diamond-meganizer-RNAseq/CH05-06.trimmed.R1.blastx.meganized.daa) (225G)
+
+    - MD5: `0cbd183dd93be39311d087a957f336bc`
+
+  - [CH05-06.trimmed.R2.blastx.meganized.daa](https://gannet.fish.washington.edu/Atumefaciens/20230316-mmag-diamond-meganizer-RNAseq/CH05-06.trimmed.R2.blastx.meganized.daa) (227G)
+
+    - MD5: `321269d6616c95bc46e7939ff7c54cf2`
+
+  - [CH05-07.trimmed.R1.blastx.meganized.daa](https://gannet.fish.washington.edu/Atumefaciens/20230316-mmag-diamond-meganizer-RNAseq/CH05-07.trimmed.R1.blastx.meganized.daa) (82G)
+
+    - MD5: `d5d031054bf50b8b57db08970255ce38`
+
+  - [CH05-07.trimmed.R2.blastx.meganized.daa](https://gannet.fish.washington.edu/Atumefaciens/20230316-mmag-diamond-meganizer-RNAseq/CH05-07.trimmed.R2.blastx.meganized.daa) (83G)
+
+    - MD5: `113fa38a7016da670082b1731bc52e3b`
+
+  - [CH05-09.trimmed.R1.blastx.meganized.daa](https://gannet.fish.washington.edu/Atumefaciens/20230316-mmag-diamond-meganizer-RNAseq/CH05-09.trimmed.R1.blastx.meganized.daa) (299G)
+
+    - MD5: `3786ac49865bf0bdf35bb4f568c7b3fc`
+
+  - [CH05-09.trimmed.R2.blastx.meganized.daa](https://gannet.fish.washington.edu/Atumefaciens/20230316-mmag-diamond-meganizer-RNAseq/CH05-09.trimmed.R2.blastx.meganized.daa) (305G)
+
+    - MD5: `b55eba3282c87da57b5d321ac937e96c`
+
+  - [CH05-14.trimmed.R1.blastx.meganized.daa](https://gannet.fish.washington.edu/Atumefaciens/20230316-mmag-diamond-meganizer-RNAseq/CH05-14.trimmed.R1.blastx.meganized.daa) (362G)
+
+    - MD5: `d7212d9be6c2c77ec84f84097d25fca1`
+
+  - [CH05-14.trimmed.R2.blastx.meganized.daa](https://gannet.fish.washington.edu/Atumefaciens/20230316-mmag-diamond-meganizer-RNAseq/CH05-14.trimmed.R2.blastx.meganized.daa) (364G)
+
+    - MD5: `e78be89442559acb8566af51b44b9853`
+
+  - [CH05-21.trimmed.R1.blastx.meganized.daa](https://gannet.fish.washington.edu/Atumefaciens/20230316-mmag-diamond-meganizer-RNAseq/CH05-21.trimmed.R1.blastx.meganized.daa) (380G)
+
+    - MD5: `e263a8bb62cdd6fa6ca79bef6b1cc69c`
+
+  - [CH05-21.trimmed.R2.blastx.meganized.daa](https://gannet.fish.washington.edu/Atumefaciens/20230316-mmag-diamond-meganizer-RNAseq/CH05-21.trimmed.R2.blastx.meganized.daa) (385G)
+
+    - MD5: `36fdfcbf693680e1cd950b21f7231159`
+
+  - [CH05-29.trimmed.R1.blastx.meganized.daa](https://gannet.fish.washington.edu/Atumefaciens/20230316-mmag-diamond-meganizer-RNAseq/CH05-29.trimmed.R1.blastx.meganized.daa) (189G)
+
+    - MD5: `aa9c9a24e11f568cd3edf1ace1b8e0c5`
+
+  - [CH05-29.trimmed.R2.blastx.meganized.daa](https://gannet.fish.washington.edu/Atumefaciens/20230316-mmag-diamond-meganizer-RNAseq/CH05-29.trimmed.R2.blastx.meganized.daa) (191G)
+
+    - MD5: `5893a50b3e354b191f2351696fa546b9`
+
+  - [CH07-04.trimmed.R1.blastx.meganized.daa](https://gannet.fish.washington.edu/Atumefaciens/20230316-mmag-diamond-meganizer-RNAseq/CH07-04.trimmed.R1.blastx.meganized.daa) (150G)
+
+    - MD5: `fbc88fc2d5294b48a6f95e36cd18749a`
+
+  - [CH07-04.trimmed.R2.blastx.meganized.daa](https://gannet.fish.washington.edu/Atumefaciens/20230316-mmag-diamond-meganizer-RNAseq/CH07-04.trimmed.R2.blastx.meganized.daa) (151G)
+
+    - MD5: `7f9b2f4d381a0e2d8c6cf1fed29b111e`
+
+  - [CH07-06.trimmed.R1.blastx.meganized.daa](https://gannet.fish.washington.edu/Atumefaciens/20230316-mmag-diamond-meganizer-RNAseq/CH07-06.trimmed.R1.blastx.meganized.daa) (287G)
+
+    - MD5: `58fb37a4318fa24e11973bbecc738f2c`
+
+  - [CH07-06.trimmed.R2.blastx.meganized.daa](https://gannet.fish.washington.edu/Atumefaciens/20230316-mmag-diamond-meganizer-RNAseq/CH07-06.trimmed.R2.blastx.meganized.daa) (292G)
+
+    - MD5: `f16e101aee88ee4dbb266524bf057b33`
+
+  - [CH07-08.trimmed.R1.blastx.meganized.daa](https://gannet.fish.washington.edu/Atumefaciens/20230316-mmag-diamond-meganizer-RNAseq/CH07-08.trimmed.R1.blastx.meganized.daa) (769G)
+
+    - MD5: `8f1ccc1acf69eb131fcdb2b9a5589cad`
+
+  - [CH07-08.trimmed.R2.blastx.meganized.daa](https://gannet.fish.washington.edu/Atumefaciens/20230316-mmag-diamond-meganizer-RNAseq/CH07-08.trimmed.R2.blastx.meganized.daa) (774G)
+
+    - MD5: `c950134f0975623f99a0c7be6dc80129`
+
+  - [CH07-11.trimmed.R1.blastx.meganized.daa](https://gannet.fish.washington.edu/Atumefaciens/20230316-mmag-diamond-meganizer-RNAseq/CH07-11.trimmed.R1.blastx.meganized.daa) (275G)
+
+    - MD5: `3e546f482ab9c0b754f8b5138b153c30`
+
+  - [CH07-11.trimmed.R2.blastx.meganized.daa](https://gannet.fish.washington.edu/Atumefaciens/20230316-mmag-diamond-meganizer-RNAseq/CH07-11.trimmed.R2.blastx.meganized.daa) (280G)
+
+    - MD5: `0b1ee907aa70051f4868d83a8bedf442`
+
+  - [CH07-24.trimmed.R1.blastx.meganized.daa](https://gannet.fish.washington.edu/Atumefaciens/20230316-mmag-diamond-meganizer-RNAseq/CH07-24.trimmed.R1.blastx.meganized.daa) (848G)
+
+    - MD5: `cce94a417a5f52bc35f747b34c8f38cb`
+
+  - [CH07-24.trimmed.R2.blastx.meganized.daa](https://gannet.fish.washington.edu/Atumefaciens/20230316-mmag-diamond-meganizer-RNAseq/CH07-24.trimmed.R2.blastx.meganized.daa) (856G)
+
+    - MD5: `643b6a4a5338c68f5e7d83882f312e14`
+
+  - [CH09-02.trimmed.R1.blastx.meganized.daa](https://gannet.fish.washington.edu/Atumefaciens/20230316-mmag-diamond-meganizer-RNAseq/CH09-02.trimmed.R1.blastx.meganized.daa) (115G)
+
+    - MD5: `f18701d768fd7b88ee17f34fde6af332`
+
+  - [CH09-02.trimmed.R2.blastx.meganized.daa](https://gannet.fish.washington.edu/Atumefaciens/20230316-mmag-diamond-meganizer-RNAseq/CH09-02.trimmed.R2.blastx.meganized.daa) (116G)
+
+    - MD5: `704d7e770b98a8640b6380a31e87b2d8`
+
+  - [CH09-13.trimmed.R1.blastx.meganized.daa](https://gannet.fish.washington.edu/Atumefaciens/20230316-mmag-diamond-meganizer-RNAseq/CH09-13.trimmed.R1.blastx.meganized.daa) (68G)
+
+    - MD5: `f17ffe982e1cfab2990cdbbd262437f0`
+
+  - [CH09-13.trimmed.R2.blastx.meganized.daa](https://gannet.fish.washington.edu/Atumefaciens/20230316-mmag-diamond-meganizer-RNAseq/CH09-13.trimmed.R2.blastx.meganized.daa) (69G)
+
+    - MD5: `fd3905e5c4b3ef8a4a8de2cee1d7ffea`
+
+  - [CH09-28.trimmed.R1.blastx.meganized.daa](https://gannet.fish.washington.edu/Atumefaciens/20230316-mmag-diamond-meganizer-RNAseq/CH09-28.trimmed.R1.blastx.meganized.daa) (72G)
+
+    - MD5: `9878ae6dc902124f6e20b0047549f100`
+
+  - [CH09-28.trimmed.R2.blastx.meganized.daa](https://gannet.fish.washington.edu/Atumefaciens/20230316-mmag-diamond-meganizer-RNAseq/CH09-28.trimmed.R2.blastx.meganized.daa) (73G)
+
+    - MD5: `bd5079f578dc0b03ef8bdbeb12e013b4`
+
+  - [CH10-08.trimmed.R1.blastx.meganized.daa](https://gannet.fish.washington.edu/Atumefaciens/20230316-mmag-diamond-meganizer-RNAseq/CH10-08.trimmed.R1.blastx.meganized.daa) (247G)
+
+    - MD5: `2591f18e401dc13003b3c6e74f40b726`
+
+  - [CH10-08.trimmed.R2.blastx.meganized.daa](https://gannet.fish.washington.edu/Atumefaciens/20230316-mmag-diamond-meganizer-RNAseq/CH10-08.trimmed.R2.blastx.meganized.daa) (248G)
+
+    - MD5: `171de114cdc7e656004da6fc88ce296e`
+
+  - [CH10-11.trimmed.R1.blastx.meganized.daa](https://gannet.fish.washington.edu/Atumefaciens/20230316-mmag-diamond-meganizer-RNAseq/CH10-11.trimmed.R1.blastx.meganized.daa) (97G)
+
+    - MD5: `771d532b1ff7d71d108aae16cfc0fc0a`
+
+  - [CH10-11.trimmed.R2.blastx.meganized.daa](https://gannet.fish.washington.edu/Atumefaciens/20230316-mmag-diamond-meganizer-RNAseq/CH10-11.trimmed.R2.blastx.meganized.daa) (97G)
+
+    - MD5: `83eefbb73c44b62fce38b6767fdc6a7d`
