@@ -1,6 +1,6 @@
 #!/bin/bash
 ## Job Name
-#SBATCH --job-name=20230519-pmea-HIv1-hisat2-build-index
+#SBATCH --job-name=20230705-pmea-HIv1-hisat2-build-index
 ## Allocation Definition
 #SBATCH --account=srlab
 #SBATCH --partition=srlab
@@ -15,7 +15,7 @@
 #SBATCH --mail-type=ALL
 #SBATCH --mail-user=samwhite@uw.edu
 ## Specify the working directory for this job
-#SBATCH --chdir=/gscratch/scrubbed/samwhite/outputs/20230519-pmea-HIv1-hisat2-build-index
+#SBATCH --chdir=/gscratch/scrubbed/samwhite/outputs/20230705-pmea-HIv1-hisat2-build-index
 
 ## Script using HiSat2 to build a genome index, identify exons, and splice sites in P.meandrina genome assembly using Hisat2.
 
