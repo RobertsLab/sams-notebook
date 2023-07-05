@@ -209,7 +209,14 @@ echo "Finished logging system $PATH."
 
 #### RESULTS
 
+This took an insane amount of time to run: 41 _days_! This required me to run the remainder of the files in a second Mox job after the initial job exceeded the time limit I specified.
+
+![Screenshot showing runtimes of the two jobs needed to process all of the M.magister DIAMOND BLASTx MEGANization.](https://github.com/RobertsLab/sams-notebook/blob/master/images/screencaps/20230316-mmag-diamond-meganizer-RNAseq-runtime.png?raw=true)
+
+
+The output files generated from this are absolutely _huge_! The _smallest_ file size is 68GB! The next step is two open these up in MEGAN6 and get a sense of the taxonomic breakdowns.
+
 Output folder:
 
-- []()
+- [20230316-mmag-diamond-meganizer-RNAseq/](https://gannet.fish.washington.edu/Atumefaciens/20230316-mmag-diamond-meganizer-RNAseq/)
 
