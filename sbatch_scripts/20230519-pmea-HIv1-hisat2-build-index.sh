@@ -72,6 +72,7 @@ module load intel-python3_2017
 echo "Generating Hisat2 exons file..."
 "${programs_array[hisat2_exons]}" \
 "${transcripts_gtf}" \
+--verbose \
 > "${exons}"
 echo "Exons file created: ${exons}."
 echo ""
@@ -80,6 +81,7 @@ echo ""
 echo "Generating Hisat2 splice sites file..."
 "${programs_array[hisat2_splice_sites]}" \
 "${transcripts_gtf}" \
+--verbose \
 > "${splice_sites}"
 echo "Splice sites file created: ${splice_sites}."
 echo ""
