@@ -1,0 +1,45 @@
+---
+layout: post
+title: RNA Isolation - C.gigas Ctenidia from Noah's Heat-Mechanical Stress Project
+date: '2023-07-12 12:27'
+tags: 
+  - RNA isolation
+  - Noah
+  - ctenidia
+  - Crassostrea gigas
+  - Pacific oyster
+categories: 
+  - Miscellaneous
+---
+[Steven asked that I help isolate RNA](https://github.com/RobertsLab/resources/issues/1674) (GitHub Issue) for Noah's summer project involving heat and mechanical stress (tumbling) of adult [_Crassostrea gigas_ (Pacific oyster)](http://en.wikipedia.org/wiki/Pacific_oyster). Here's a brief overview of the process:
+
+- Frozen ctenidia tissue was kept on ice.
+- Piece of tissue was placed in 500uL RNAzol RT in a 1.7mL tube and immediately homogenized using a disposable pestle.
+- An additional 500uL of RNAzol RT was added to the tube, vortexed, and incubated at room temp for ~5mins.
+- Insoluble material was pelleted at 21,000g for 1minute.
+- Supernatant was transferred to 2mL tube containing 1mL 100% ethanol and vortexed.
+
+Used 700uL of each sample for use in the Direct-zol mini RNA Prep Kit (ZymoResearch). Manufacturer's protocol was followed, including DNase step.
+
+Samples were stored in Noah's -80C project box. RNA will be quantified tomorrow.
+
+
+| Sample         |
+|----------------|
+| NTC1_ctenidia  |
+| NTC2_ctenidia  |
+| NTH1_ctenidia  |
+| NTH2_ctenidia  |
+| NTHM1_ctenidia |
+| NTHM2_ctenidia |
+| NTM1_ctenidia  |
+| NTM2_ctendia   |
+| TC1_ctenidia   |
+| TC2_ctendia    |
+| TH1_ctenidia   |
+| TH2_ctenidia   |
+| THM1_ctenidia  |
+| THM2_ctenidia  |
+| TM1_ctendia    |
+| TM2_ctenidia   |
+
