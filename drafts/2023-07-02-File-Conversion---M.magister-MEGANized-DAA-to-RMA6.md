@@ -185,7 +185,202 @@ done
 
 #### RESULTS
 
+This took approximately ~10 days to run. These files will now be able to easily be opened in the MEGAN GUI on almost any computer. The RMA6 files are _significantly_ smaller - biggest is ~10GB.
+
+Next up is to actually examine the data in the MEGAN GUI and see how the reads are distributed across taxa.
+
 Output folder:
 
-- []()
+- [20230702-mmag-daa2rma/](https://gannet.fish.washington.edu/Atumefaciens/20230702-mmag-daa2rma/)
 
+  - [CH01-06.trimmed.R1.blastx.meganized.daa.daa2rma.rma6](https://gannet.fish.washington.edu/Atumefaciens/20230702-mmag-daa2rma/CH01-06.trimmed.R1.blastx.meganized.daa.daa2rma.rma6) (4.0G)
+
+    - MD5: `7bba284c98109b3632adfd60a1ec3296`
+
+  - [CH01-06.trimmed.R2.blastx.meganized.daa.daa2rma.rma6](https://gannet.fish.washington.edu/Atumefaciens/20230702-mmag-daa2rma/CH01-06.trimmed.R2.blastx.meganized.daa.daa2rma.rma6) (4.0G)
+
+    - MD5: `6e4cf6a51397e0e8ff3ce2618bdab7e6`
+
+  - [CH01-14.trimmed.R1.blastx.meganized.daa.daa2rma.rma6](https://gannet.fish.washington.edu/Atumefaciens/20230702-mmag-daa2rma/CH01-14.trimmed.R1.blastx.meganized.daa.daa2rma.rma6) (7.2G)
+
+    - MD5: `4bfc669f7ce379f766c1ab6debefc4b1`
+
+  - [CH01-14.trimmed.R2.blastx.meganized.daa.daa2rma.rma6](https://gannet.fish.washington.edu/Atumefaciens/20230702-mmag-daa2rma/CH01-14.trimmed.R2.blastx.meganized.daa.daa2rma.rma6) (7.2G)
+
+    - MD5: `e2b20344e30212094219e87de8f2874a`
+
+  - [CH01-22.trimmed.R1.blastx.meganized.daa.daa2rma.rma6](https://gannet.fish.washington.edu/Atumefaciens/20230702-mmag-daa2rma/CH01-22.trimmed.R1.blastx.meganized.daa.daa2rma.rma6) (4.3G)
+
+    - MD5: `3cdcd08bdf4015e9474a46abb262eda0`
+
+  - [CH01-22.trimmed.R2.blastx.meganized.daa.daa2rma.rma6](https://gannet.fish.washington.edu/Atumefaciens/20230702-mmag-daa2rma/CH01-22.trimmed.R2.blastx.meganized.daa.daa2rma.rma6) (4.3G)
+
+    - MD5: `6b2f706ab757201eef09af925af1c4f3`
+
+  - [CH01-38.trimmed.R1.blastx.meganized.daa.daa2rma.rma6](https://gannet.fish.washington.edu/Atumefaciens/20230702-mmag-daa2rma/CH01-38.trimmed.R1.blastx.meganized.daa.daa2rma.rma6) (7.2G)
+
+    - MD5: `21bb5906c5b5e80fc901ff85b0090fc0`
+
+  - [CH01-38.trimmed.R2.blastx.meganized.daa.daa2rma.rma6](https://gannet.fish.washington.edu/Atumefaciens/20230702-mmag-daa2rma/CH01-38.trimmed.R2.blastx.meganized.daa.daa2rma.rma6) (7.2G)
+
+    - MD5: `3eb5d04570adc8dc6d7626b6aee24cfc`
+
+  - [CH03-04.trimmed.R1.blastx.meganized.daa.daa2rma.rma6](https://gannet.fish.washington.edu/Atumefaciens/20230702-mmag-daa2rma/CH03-04.trimmed.R1.blastx.meganized.daa.daa2rma.rma6) (3.9G)
+
+    - MD5: `80df6ff60b23f7c5f82c88c799556df1`
+
+  - [CH03-04.trimmed.R2.blastx.meganized.daa.daa2rma.rma6](https://gannet.fish.washington.edu/Atumefaciens/20230702-mmag-daa2rma/CH03-04.trimmed.R2.blastx.meganized.daa.daa2rma.rma6) (3.9G)
+
+    - MD5: `e9fe0868cfb325aabb8a2c4be5f1df9b`
+
+  - [CH03-15.trimmed.R1.blastx.meganized.daa.daa2rma.rma6](https://gannet.fish.washington.edu/Atumefaciens/20230702-mmag-daa2rma/CH03-15.trimmed.R1.blastx.meganized.daa.daa2rma.rma6) (4.2G)
+
+    - MD5: `8c8403784be5b94a0cf5145687db3a4d`
+
+  - [CH03-15.trimmed.R2.blastx.meganized.daa.daa2rma.rma6](https://gannet.fish.washington.edu/Atumefaciens/20230702-mmag-daa2rma/CH03-15.trimmed.R2.blastx.meganized.daa.daa2rma.rma6) (4.2G)
+
+    - MD5: `9339bf1aca7cd8294f9355a0cc378f2b`
+
+  - [CH03-33.trimmed.R1.blastx.meganized.daa.daa2rma.rma6](https://gannet.fish.washington.edu/Atumefaciens/20230702-mmag-daa2rma/CH03-33.trimmed.R1.blastx.meganized.daa.daa2rma.rma6) (4.0G)
+
+    - MD5: `9d048289018d08e401059d5cea56a07b`
+
+  - [CH03-33.trimmed.R2.blastx.meganized.daa.daa2rma.rma6](https://gannet.fish.washington.edu/Atumefaciens/20230702-mmag-daa2rma/CH03-33.trimmed.R2.blastx.meganized.daa.daa2rma.rma6) (4.1G)
+
+    - MD5: `317c2053fc896af29e4321736d78551c`
+
+  - [CH05-01.trimmed.R1.blastx.meganized.daa.daa2rma.rma6](https://gannet.fish.washington.edu/Atumefaciens/20230702-mmag-daa2rma/CH05-01.trimmed.R1.blastx.meganized.daa.daa2rma.rma6) (4.2G)
+
+    - MD5: `76c958424c95657ea3ff9817359c23c7`
+
+  - [CH05-01.trimmed.R2.blastx.meganized.daa.daa2rma.rma6](https://gannet.fish.washington.edu/Atumefaciens/20230702-mmag-daa2rma/CH05-01.trimmed.R2.blastx.meganized.daa.daa2rma.rma6) (4.2G)
+
+    - MD5: `55fb590ef682f409b4fe511f658d614a`
+
+  - [CH05-06.trimmed.R1.blastx.meganized.daa.daa2rma.rma6](https://gannet.fish.washington.edu/Atumefaciens/20230702-mmag-daa2rma/CH05-06.trimmed.R1.blastx.meganized.daa.daa2rma.rma6) (3.9G)
+
+    - MD5: `7c9c0db405f505e8942c3fe5cf1d7518`
+
+  - [CH05-06.trimmed.R2.blastx.meganized.daa.daa2rma.rma6](https://gannet.fish.washington.edu/Atumefaciens/20230702-mmag-daa2rma/CH05-06.trimmed.R2.blastx.meganized.daa.daa2rma.rma6) (3.9G)
+
+    - MD5: `ed81df88431e5b27be14b623bf70b6ae`
+
+  - [CH05-07.trimmed.R1.blastx.meganized.daa.daa2rma.rma6](https://gannet.fish.washington.edu/Atumefaciens/20230702-mmag-daa2rma/CH05-07.trimmed.R1.blastx.meganized.daa.daa2rma.rma6) (3.9G)
+
+    - MD5: `4af81a8236505fe8bbca03396dc878c9`
+
+  - [CH05-07.trimmed.R2.blastx.meganized.daa.daa2rma.rma6](https://gannet.fish.washington.edu/Atumefaciens/20230702-mmag-daa2rma/CH05-07.trimmed.R2.blastx.meganized.daa.daa2rma.rma6) (3.9G)
+
+    - MD5: `b9a0a93dcd173ea6c7801d9444e5d305`
+
+  - [CH05-09.trimmed.R1.blastx.meganized.daa.daa2rma.rma6](https://gannet.fish.washington.edu/Atumefaciens/20230702-mmag-daa2rma/CH05-09.trimmed.R1.blastx.meganized.daa.daa2rma.rma6) (6.0G)
+
+    - MD5: `c37d8599bc9abcffc887088cf18251a7`
+
+  - [CH05-09.trimmed.R2.blastx.meganized.daa.daa2rma.rma6](https://gannet.fish.washington.edu/Atumefaciens/20230702-mmag-daa2rma/CH05-09.trimmed.R2.blastx.meganized.daa.daa2rma.rma6) (6.1G)
+
+    - MD5: `cff135e6c3d3ceee3f05920825486371`
+
+  - [CH05-14.trimmed.R1.blastx.meganized.daa.daa2rma.rma6](https://gannet.fish.washington.edu/Atumefaciens/20230702-mmag-daa2rma/CH05-14.trimmed.R1.blastx.meganized.daa.daa2rma.rma6) (6.5G)
+
+    - MD5: `2518a622f944550f7b99f9e1cf58dfa6`
+
+  - [CH05-14.trimmed.R2.blastx.meganized.daa.daa2rma.rma6](https://gannet.fish.washington.edu/Atumefaciens/20230702-mmag-daa2rma/CH05-14.trimmed.R2.blastx.meganized.daa.daa2rma.rma6) (6.5G)
+
+    - MD5: `3194c9938a0f4a936fc9a8a859764fc0`
+
+  - [CH05-21.trimmed.R1.blastx.meganized.daa.daa2rma.rma6](https://gannet.fish.washington.edu/Atumefaciens/20230702-mmag-daa2rma/CH05-21.trimmed.R1.blastx.meganized.daa.daa2rma.rma6) (5.8G)
+
+    - MD5: `bdf262c2c4d4f5154c2cbbdc110150ce`
+
+  - [CH05-21.trimmed.R2.blastx.meganized.daa.daa2rma.rma6](https://gannet.fish.washington.edu/Atumefaciens/20230702-mmag-daa2rma/CH05-21.trimmed.R2.blastx.meganized.daa.daa2rma.rma6) (5.8G)
+
+    - MD5: `c78f9e964cfa75707c8fc4461cc10870`
+
+  - [CH05-29.trimmed.R1.blastx.meganized.daa.daa2rma.rma6](https://gannet.fish.washington.edu/Atumefaciens/20230702-mmag-daa2rma/CH05-29.trimmed.R1.blastx.meganized.daa.daa2rma.rma6) (8.0G)
+
+    - MD5: `bba4c87eb4e6b1f3d358420c49617b5f`
+
+  - [CH05-29.trimmed.R2.blastx.meganized.daa.daa2rma.rma6](https://gannet.fish.washington.edu/Atumefaciens/20230702-mmag-daa2rma/CH05-29.trimmed.R2.blastx.meganized.daa.daa2rma.rma6) (8.0G)
+
+    - MD5: `93ff85054dc7088470643d9fde69a2a8`
+
+  - [CH07-04.trimmed.R1.blastx.meganized.daa.daa2rma.rma6](https://gannet.fish.washington.edu/Atumefaciens/20230702-mmag-daa2rma/CH07-04.trimmed.R1.blastx.meganized.daa.daa2rma.rma6) (3.6G)
+
+    - MD5: `44288bb00c4632add12e385fbd4e0406`
+
+  - [CH07-04.trimmed.R2.blastx.meganized.daa.daa2rma.rma6](https://gannet.fish.washington.edu/Atumefaciens/20230702-mmag-daa2rma/CH07-04.trimmed.R2.blastx.meganized.daa.daa2rma.rma6) (3.6G)
+
+    - MD5: `a94a4ec435cd84ef4ac7fb666702bad2`
+
+  - [CH07-06.trimmed.R1.blastx.meganized.daa.daa2rma.rma6](https://gannet.fish.washington.edu/Atumefaciens/20230702-mmag-daa2rma/CH07-06.trimmed.R1.blastx.meganized.daa.daa2rma.rma6) (5.1G)
+
+    - MD5: `079e09437b7f560a04be7fa49932a4ad`
+
+  - [CH07-06.trimmed.R2.blastx.meganized.daa.daa2rma.rma6](https://gannet.fish.washington.edu/Atumefaciens/20230702-mmag-daa2rma/CH07-06.trimmed.R2.blastx.meganized.daa.daa2rma.rma6) (5.1G)
+
+    - MD5: `9a243b3178be9a26882849eca0e57527`
+
+  - [CH07-08.trimmed.R1.blastx.meganized.daa.daa2rma.rma6](https://gannet.fish.washington.edu/Atumefaciens/20230702-mmag-daa2rma/CH07-08.trimmed.R1.blastx.meganized.daa.daa2rma.rma6) (9.9G)
+
+    - MD5: `dea7eff2b98dcc2c3651c694e1320ddd`
+
+  - [CH07-08.trimmed.R2.blastx.meganized.daa.daa2rma.rma6](https://gannet.fish.washington.edu/Atumefaciens/20230702-mmag-daa2rma/CH07-08.trimmed.R2.blastx.meganized.daa.daa2rma.rma6) (9.9G)
+
+    - MD5: `615c39654d69b43a79e7faa00285c38b`
+
+  - [CH07-11.trimmed.R1.blastx.meganized.daa.daa2rma.rma6](https://gannet.fish.washington.edu/Atumefaciens/20230702-mmag-daa2rma/CH07-11.trimmed.R1.blastx.meganized.daa.daa2rma.rma6) (5.9G)
+
+    - MD5: `6967ff637a1e2b765554b50ae5981b37`
+
+  - [CH07-11.trimmed.R2.blastx.meganized.daa.daa2rma.rma6](https://gannet.fish.washington.edu/Atumefaciens/20230702-mmag-daa2rma/CH07-11.trimmed.R2.blastx.meganized.daa.daa2rma.rma6) (5.9G)
+
+    - MD5: `db04bcd757e12422ae35bd4da4b83411`
+
+  - [CH07-24.trimmed.R1.blastx.meganized.daa.daa2rma.rma6](https://gannet.fish.washington.edu/Atumefaciens/20230702-mmag-daa2rma/CH07-24.trimmed.R1.blastx.meganized.daa.daa2rma.rma6) (8.4G)
+
+    - MD5: `fecc30b018cac0ca91c1f211df9dedb4`
+
+  - [CH07-24.trimmed.R2.blastx.meganized.daa.daa2rma.rma6](https://gannet.fish.washington.edu/Atumefaciens/20230702-mmag-daa2rma/CH07-24.trimmed.R2.blastx.meganized.daa.daa2rma.rma6) (8.4G)
+
+    - MD5: `d239c194fc6bc9ba17cc758b18c6bce7`
+
+  - [CH09-02.trimmed.R1.blastx.meganized.daa.daa2rma.rma6](https://gannet.fish.washington.edu/Atumefaciens/20230702-mmag-daa2rma/CH09-02.trimmed.R1.blastx.meganized.daa.daa2rma.rma6) (3.5G)
+
+    - MD5: `788683999d98c9fcfea213abaf664a98`
+
+  - [CH09-02.trimmed.R2.blastx.meganized.daa.daa2rma.rma6](https://gannet.fish.washington.edu/Atumefaciens/20230702-mmag-daa2rma/CH09-02.trimmed.R2.blastx.meganized.daa.daa2rma.rma6) (3.5G)
+
+    - MD5: `6a6c13a9e7b70067f18f863e9adbc83f`
+
+  - [CH09-13.trimmed.R1.blastx.meganized.daa.daa2rma.rma6](https://gannet.fish.washington.edu/Atumefaciens/20230702-mmag-daa2rma/CH09-13.trimmed.R1.blastx.meganized.daa.daa2rma.rma6) (4.7G)
+
+    - MD5: `edae85be57d4299556be9f1973503451`
+
+  - [CH09-13.trimmed.R2.blastx.meganized.daa.daa2rma.rma6](https://gannet.fish.washington.edu/Atumefaciens/20230702-mmag-daa2rma/CH09-13.trimmed.R2.blastx.meganized.daa.daa2rma.rma6) (4.7G)
+
+    - MD5: `434c101a29d0f65b03d4fe2308ede278`
+
+  - [CH09-28.trimmed.R1.blastx.meganized.daa.daa2rma.rma6](https://gannet.fish.washington.edu/Atumefaciens/20230702-mmag-daa2rma/CH09-28.trimmed.R1.blastx.meganized.daa.daa2rma.rma6) (3.3G)
+
+    - MD5: `8e00015411cc5e286a7677ccf8cf0307`
+
+  - [CH09-28.trimmed.R2.blastx.meganized.daa.daa2rma.rma6](https://gannet.fish.washington.edu/Atumefaciens/20230702-mmag-daa2rma/CH09-28.trimmed.R2.blastx.meganized.daa.daa2rma.rma6) (3.3G)
+
+    - MD5: `4381da60fc03ca9ff90daba2fce54fb2`
+
+  - [CH10-08.trimmed.R1.blastx.meganized.daa.daa2rma.rma6](https://gannet.fish.washington.edu/Atumefaciens/20230702-mmag-daa2rma/CH10-08.trimmed.R1.blastx.meganized.daa.daa2rma.rma6) (5.4G)
+
+    - MD5: `d18f3645c70d14a670818d8393d86869`
+
+  - [CH10-08.trimmed.R2.blastx.meganized.daa.daa2rma.rma6](https://gannet.fish.washington.edu/Atumefaciens/20230702-mmag-daa2rma/CH10-08.trimmed.R2.blastx.meganized.daa.daa2rma.rma6) (5.4G)
+
+    - MD5: `8a6c2ca6fe1ade21744b79150ee57240`
+
+  - [CH10-11.trimmed.R1.blastx.meganized.daa.daa2rma.rma6](https://gannet.fish.washington.edu/Atumefaciens/20230702-mmag-daa2rma/CH10-11.trimmed.R1.blastx.meganized.daa.daa2rma.rma6) (4.3G)
+
+    - MD5: `da52ff8aca265cc0fc7d382d4deb9f1e`
+
+  - [CH10-11.trimmed.R2.blastx.meganized.daa.daa2rma.rma6](https://gannet.fish.washington.edu/Atumefaciens/20230702-mmag-daa2rma/CH10-11.trimmed.R2.blastx.meganized.daa.daa2rma.rma6) (4.3G)
+
+    - MD5: `4f1ed334d21cb3a2231788d64ba89247`
