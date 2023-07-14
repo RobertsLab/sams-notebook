@@ -1,0 +1,42 @@
+---
+layout: post
+title: RNA Quantification - C.gigas RNA from Noah's Heat-Mechanical Stress Project
+date: '2023-07-13 12:38'
+tags: 
+  - RNA quantification
+  - qubit
+  - Crassostrea gigas
+  - Noah
+  - Pacific oyster
+categories: 
+  - Miscellaneous
+---
+I quantified Noah's [_Crassostrea gigas_ (Pacific oyster)](http://en.wikipedia.org/wiki/Pacific_oyster) ctenidia RNA [from yesterday (20230712)](https://robertslab.github.io/sams-notebook/2023/07/12/RNA-Isolation-C.gigas-Ctenidia-from-Noah's-Heat-Mechanical-Stress-Project.html) using the Roberts Lab Qubit 3 and the RNA High Sensitivity (HS) Assay. 1uL of sample was used for each measurement.
+
+
+---
+
+#### RESULTS
+
+[20230713-qubit-cgig-ctenidia-RNA](https://docs.google.com/spreadsheets/d/1i3OHh1rPBvj9pVOXjeoRbnofW7pdg4iZJXfwkgi_4pg/edit?usp=sharing) (Google Sheet)
+
+Yields were good. Will proceed with reverse transcription.
+
+| Sample         | Original sample conc. | Units |
+|----------------|-----------------------|-------|
+| NTC1_ctenidia  | 76.2                  | ng/µL |
+| NTC2_ctenidia  | 50                    | ng/µL |
+| NTH1_ctenidia  | 57.4                  | ng/µL |
+| NTH2_ctenidia  | 47.8                  | ng/µL |
+| NTHM1_ctenidia | 68.6                  | ng/µL |
+| NTHM2_ctenidia | 32.6                  | ng/µL |
+| NTM1_ctenidia  | 30.6                  | ng/µL |
+| NTM2_ctendia   | 57                    | ng/µL |
+| TC1_ctenidia   | 39.4                  | ng/µL |
+| TC2_ctendia    | 76                    | ng/µL |
+| TH1_ctenidia   | 88.6                  | ng/µL |
+| TH2_ctenidia   | 29.6                  | ng/µL |
+| THM1_ctenidia  | 31.2                  | ng/µL |
+| THM2_ctenidia  | 59.2                  | ng/µL |
+| TM1_ctendia    | 84                    | ng/µL |
+| TM2_ctenidia   | 68.2                  | ng/µL |
