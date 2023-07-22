@@ -1,0 +1,21 @@
+---
+layout: post
+title: Reverse Transcription - C.gigas PolyIC RNA
+date: '2023-07-21 12:05'
+tags: 
+  - reverse transcription
+  - cDNA
+  - RNA
+  - Crassostrea gigas
+  - Pacific oyster
+  - MMLV
+  - oligodT
+categories: 
+  - Miscellaneous
+---
+Quantified RNA [earlier today]() and proceeded to make cDNA. Reverse transcription was performed using oligo dT primers using M-MLV RT (Promega), per the manufacturer's recommendations. Used 400ng of RNA in each reaction. I used 400ng (instead of the usual 100ng) to simplify pipetting for high concentration samples, without the need/time to dilute samples. All reactions were done on ice in 0.5uL PCR tubes.
+
+cDNA was stored in the same -80<sup>o</sup>C box as the original RNA.
+
+- [20230721-cgig-polyIC-cDNA-calcs](https://docs.google.com/spreadsheets/d/1YEChD7YUpG2kS5G9mGkBpmX0tVUVGfzLOWHgmLmROl0/edit?usp=sharing) (Google Sheet)
+
