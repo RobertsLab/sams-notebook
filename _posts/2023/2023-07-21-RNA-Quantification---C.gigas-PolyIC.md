@@ -9,7 +9,7 @@ tags:
 categories: 
   - Miscelleneous
 ---
-Steven [asked me to generate cDNA](https://github.com/RobertsLab/resources/issues/1675) (GitHub Issue) from [_Crassostrea gigas_ (Pacific oyster)](http://en.wikipedia.org/wiki/Pacific_oyster) RNA, as part of Matt George's polyIC project. Before starting reverse transcription, I felt it would be best to quntify the RNA using the Qubit 3.0 using the Broad Range Assay. Steven and I discussed which samples to use earlier this week.
+Steven [asked me to generate cDNA](https://github.com/RobertsLab/resources/issues/1675) (GitHub Issue) from [_Crassostrea gigas_ (Pacific oyster)](http://en.wikipedia.org/wiki/Pacific_oyster) RNA, as part of Matt George's polyIC project. Before starting reverse transcription, I felt it would be best to quantify the RNA using the Qubit 3.0 using the Broad Range Assay. Steven and I discussed which samples to use earlier this week.
 
 Used 1uL of each sample.
 
