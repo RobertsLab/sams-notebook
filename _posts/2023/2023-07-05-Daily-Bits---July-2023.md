@@ -8,6 +8,16 @@ categories:
   - Daily Bits
 ---
 
+20230724
+
+- CEABIGR meeting
+
+  - Reviewed Steven's genetic relatedness matrix results.
+
+  - Reviewed Zach's lncRNA expression analyses.
+
+---
+
 20230721
 
 - In lab.
