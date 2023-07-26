@@ -8,6 +8,22 @@ categories:
   - Daily Bits
 ---
 
+20230725
+
+- Spent time reviewing [CEABIGR](https://github.com/sr320/ceabigr) work/progress.
+
+- Helped [troubleshoot UniProt Python API](https://github.com/RobertsLab/resources/issues/1672) (GitHub Issue).
+
+- Meeting with Steven and Noah to review qPCR results.
+
+- [DuMOAR](https://github.com/laurahspencer/DuMOAR) meeting.
+
+  - Reviewed MEGAN results.
+
+  - Assigned to pull out `Arthropoda` and `Not Assigned` reads.
+
+---
+
 20230724
 
 - CEABIGR meeting
