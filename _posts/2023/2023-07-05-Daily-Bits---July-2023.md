@@ -8,6 +8,14 @@ categories:
   - Daily Bits
 ---
 
+20230726
+
+- In lab.
+
+  - _C.gigas_ polyIC qPCRs.
+
+---
+
 20230725
 
 - Spent time reviewing [CEABIGR](https://github.com/sr320/ceabigr) work/progress.
