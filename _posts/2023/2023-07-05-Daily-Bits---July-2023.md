@@ -8,11 +8,16 @@ categories:
   - Daily Bits
 ---
 
+
+---
+
 20230726
 
 - In lab.
 
-  - _C.gigas_ polyIC qPCRs.
+  - [_C.gigas_ polyIC qPCRs](https://robertslab.github.io/sams-notebook/2023/07/26/qPCR-C.gigas-polyIC.html).
+
+  - Started _M.magister_ (Dungeness crab) read extraction from MEGAN.
 
 ---
 
