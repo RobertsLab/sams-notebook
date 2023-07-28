@@ -416,39 +416,93 @@ Output folder:
 
     - MD5: `b89a4d5f7d1c49fcc8b3c31fdb316837`
 
-readfile	mapping_type	read_length	count
-/gscratch/scrubbed/samwhite/outputs/20230628-E5_coral-ShortStack-sRNAseq/P_meandrina/ShortStack_out/sRNA-POC-47-S1-TP2.flexbar_trim.20230621_1.bam	U	<21	277334
-/gscratch/scrubbed/samwhite/outputs/20230628-E5_coral-ShortStack-sRNAseq/P_meandrina/ShortStack_out/sRNA-POC-47-S1-TP2.flexbar_trim.20230621_1.bam	U	21	114752
-/gscratch/scrubbed/samwhite/outputs/20230628-E5_coral-ShortStack-sRNAseq/P_meandrina/ShortStack_out/sRNA-POC-47-S1-TP2.flexbar_trim.20230621_1.bam	U	22	331234
-/gscratch/scrubbed/samwhite/outputs/20230628-E5_coral-ShortStack-sRNAseq/P_meandrina/ShortStack_out/sRNA-POC-47-S1-TP2.flexbar_trim.20230621_1.bam	U	23	133358
-/gscratch/scrubbed/samwhite/outputs/20230628-E5_coral-ShortStack-sRNAseq/P_meandrina/ShortStack_out/sRNA-POC-47-S1-TP2.flexbar_trim.20230621_1.bam	U	24	46856
-/gscratch/scrubbed/samwhite/outputs/20230628-E5_coral-ShortStack-sRNAseq/P_meandrina/ShortStack_out/sRNA-POC-47-S1-TP2.flexbar_trim.20230621_1.bam	U	>24	1441069
-/gscratch/scrubbed/samwhite/outputs/20230628-E5_coral-ShortStack-sRNAseq/P_meandrina/ShortStack_out/sRNA-POC-47-S1-TP2.flexbar_trim.20230621_1.bam	P	<21	472110
-/gscratch/scrubbed/samwhite/outputs/20230628-E5_coral-ShortStack-sRNAseq/P_meandrina/ShortStack_out/sRNA-POC-47-S1-TP2.flexbar_trim.20230621_1.bam	P	21	109577
-/gscratch/scrubbed/samwhite/outputs/20230628-E5_coral-ShortStack-sRNAseq/P_meandrina/ShortStack_out/sRNA-POC-47-S1-TP2.flexbar_trim.20230621_1.bam	P	22	119506
-/gscratch/scrubbed/samwhite/outputs/20230628-E5_coral-ShortStack-sRNAseq/P_meandrina/ShortStack_out/sRNA-POC-47-S1-TP2.flexbar_trim.20230621_1.bam	P	23	96527
-/gscratch/scrubbed/samwhite/outputs/20230628-E5_coral-ShortStack-sRNAseq/P_meandrina/ShortStack_out/sRNA-POC-47-S1-TP2.flexbar_trim.20230621_1.bam	P	24	73770
-/gscratch/scrubbed/samwhite/outputs/20230628-E5_coral-ShortStack-sRNAseq/P_meandrina/ShortStack_out/sRNA-POC-47-S1-TP2.flexbar_trim.20230621_1.bam	P	>24	3922569
-/gscratch/scrubbed/samwhite/outputs/20230628-E5_coral-ShortStack-sRNAseq/P_meandrina/ShortStack_out/sRNA-POC-47-S1-TP2.flexbar_trim.20230621_1.bam	R	<21	270975
-/gscratch/scrubbed/samwhite/outputs/20230628-E5_coral-ShortStack-sRNAseq/P_meandrina/ShortStack_out/sRNA-POC-47-S1-TP2.flexbar_trim.20230621_1.bam	R	21	95814
-/gscratch/scrubbed/samwhite/outputs/20230628-E5_coral-ShortStack-sRNAseq/P_meandrina/ShortStack_out/sRNA-POC-47-S1-TP2.flexbar_trim.20230621_1.bam	R	22	130073
-/gscratch/scrubbed/samwhite/outputs/20230628-E5_coral-ShortStack-sRNAseq/P_meandrina/ShortStack_out/sRNA-POC-47-S1-TP2.flexbar_trim.20230621_1.bam	R	23	82638
-/gscratch/scrubbed/samwhite/outputs/20230628-E5_coral-ShortStack-sRNAseq/P_meandrina/ShortStack_out/sRNA-POC-47-S1-TP2.flexbar_trim.20230621_1.bam	R	24	190938
-/gscratch/scrubbed/samwhite/outputs/20230628-E5_coral-ShortStack-sRNAseq/P_meandrina/ShortStack_out/sRNA-POC-47-S1-TP2.flexbar_trim.20230621_1.bam	R	>24	1254706
-/gscratch/scrubbed/samwhite/outputs/20230628-E5_coral-ShortStack-sRNAseq/P_meandrina/ShortStack_out/sRNA-POC-47-S1-TP2.flexbar_trim.20230621_1.bam	H	<21	20811
-/gscratch/scrubbed/samwhite/outputs/20230628-E5_coral-ShortStack-sRNAseq/P_meandrina/ShortStack_out/sRNA-POC-47-S1-TP2.flexbar_trim.20230621_1.bam	H	21	5811
-/gscratch/scrubbed/samwhite/outputs/20230628-E5_coral-ShortStack-sRNAseq/P_meandrina/ShortStack_out/sRNA-POC-47-S1-TP2.flexbar_trim.20230621_1.bam	H	22	5117
-/gscratch/scrubbed/samwhite/outputs/20230628-E5_coral-ShortStack-sRNAseq/P_meandrina/ShortStack_out/sRNA-POC-47-S1-TP2.flexbar_trim.20230621_1.bam	H	23	5552
-/gscratch/scrubbed/samwhite/outputs/20230628-E5_coral-ShortStack-sRNAseq/P_meandrina/ShortStack_out/sRNA-POC-47-S1-TP2.flexbar_trim.20230621_1.bam	H	24	5909
-/gscratch/scrubbed/samwhite/outputs/20230628-E5_coral-ShortStack-sRNAseq/P_meandrina/ShortStack_out/sRNA-POC-47-S1-TP2.flexbar_trim.20230621_1.bam	H	>24	47393
-/gscratch/scrubbed/samwhite/outputs/20230628-E5_coral-ShortStack-sRNAseq/P_meandrina/ShortStack_out/sRNA-POC-47-S1-TP2.flexbar_trim.20230621_1.bam	N	<21	122944
-/gscratch/scrubbed/samwhite/outputs/20230628-E5_coral-ShortStack-sRNAseq/P_meandrina/ShortStack_out/sRNA-POC-47-S1-TP2.flexbar_trim.20230621_1.bam	N	21	59503
-/gscratch/scrubbed/samwhite/outputs/20230628-E5_coral-ShortStack-sRNAseq/P_meandrina/ShortStack_out/sRNA-POC-47-S1-TP2.flexbar_trim.20230621_1.bam	N	22	101407
-/gscratch/scrubbed/samwhite/outputs/20230628-E5_coral-ShortStack-sRNAseq/P_meandrina/ShortStack_out/sRNA-POC-47-S1-TP2.flexbar_trim.20230621_1.bam	N	23	92953
-/gscratch/scrubbed/samwhite/outputs/20230628-E5_coral-ShortStack-sRNAseq/P_meandrina/ShortStack_out/sRNA-POC-47-S1-TP2.flexbar_trim.20230621_1.bam	N	24	117111
-/gscratch/scrubbed/samwhite/outputs/20230628-E5_coral-ShortStack-sRNAseq/P_meandrina/ShortStack_out/sRNA-POC-47-S1-TP2.flexbar_trim.20230621_1.bam	N	>24	5315658
+    ```
+    readfile	mapping_type	read_length	count
+    /gscratch/scrubbed/samwhite/outputs/20230628-E5_coral-ShortStack-sRNAseq/P_meandrina/ShortStack_out/sRNA-POC-47-S1-TP2.flexbar_trim.20230621_1.bam	U	<21	277334
+    /gscratch/scrubbed/samwhite/outputs/20230628-E5_coral-ShortStack-sRNAseq/P_meandrina/ShortStack_out/sRNA-POC-47-S1-TP2.flexbar_trim.20230621_1.bam	U	21	114752
+    /gscratch/scrubbed/samwhite/outputs/20230628-E5_coral-ShortStack-sRNAseq/P_meandrina/ShortStack_out/sRNA-POC-47-S1-TP2.flexbar_trim.20230621_1.bam	U	22	331234
+    /gscratch/scrubbed/samwhite/outputs/20230628-E5_coral-ShortStack-sRNAseq/P_meandrina/ShortStack_out/sRNA-POC-47-S1-TP2.flexbar_trim.20230621_1.bam	U	23	133358
+    /gscratch/scrubbed/samwhite/outputs/20230628-E5_coral-ShortStack-sRNAseq/P_meandrina/ShortStack_out/sRNA-POC-47-S1-TP2.flexbar_trim.20230621_1.bam	U	24	46856
+    /gscratch/scrubbed/samwhite/outputs/20230628-E5_coral-ShortStack-sRNAseq/P_meandrina/ShortStack_out/sRNA-POC-47-S1-TP2.flexbar_trim.20230621_1.bam	U	>24	1441069
+    /gscratch/scrubbed/samwhite/outputs/20230628-E5_coral-ShortStack-sRNAseq/P_meandrina/ShortStack_out/sRNA-POC-47-S1-TP2.flexbar_trim.20230621_1.bam	P	<21	472110
+    /gscratch/scrubbed/samwhite/outputs/20230628-E5_coral-ShortStack-sRNAseq/P_meandrina/ShortStack_out/sRNA-POC-47-S1-TP2.flexbar_trim.20230621_1.bam	P	21	109577
+    /gscratch/scrubbed/samwhite/outputs/20230628-E5_coral-ShortStack-sRNAseq/P_meandrina/ShortStack_out/sRNA-POC-47-S1-TP2.flexbar_trim.20230621_1.bam	P	22	119506
+    /gscratch/scrubbed/samwhite/outputs/20230628-E5_coral-ShortStack-sRNAseq/P_meandrina/ShortStack_out/sRNA-POC-47-S1-TP2.flexbar_trim.20230621_1.bam	P	23	96527
+    /gscratch/scrubbed/samwhite/outputs/20230628-E5_coral-ShortStack-sRNAseq/P_meandrina/ShortStack_out/sRNA-POC-47-S1-TP2.flexbar_trim.20230621_1.bam	P	24	73770
+    /gscratch/scrubbed/samwhite/outputs/20230628-E5_coral-ShortStack-sRNAseq/P_meandrina/ShortStack_out/sRNA-POC-47-S1-TP2.flexbar_trim.20230621_1.bam	P	>24	3922569
+    /gscratch/scrubbed/samwhite/outputs/20230628-E5_coral-ShortStack-sRNAseq/P_meandrina/ShortStack_out/sRNA-POC-47-S1-TP2.flexbar_trim.20230621_1.bam	R	<21	270975
+    /gscratch/scrubbed/samwhite/outputs/20230628-E5_coral-ShortStack-sRNAseq/P_meandrina/ShortStack_out/sRNA-POC-47-S1-TP2.flexbar_trim.20230621_1.bam	R	21	95814
+    /gscratch/scrubbed/samwhite/outputs/20230628-E5_coral-ShortStack-sRNAseq/P_meandrina/ShortStack_out/sRNA-POC-47-S1-TP2.flexbar_trim.20230621_1.bam	R	22	130073
+    /gscratch/scrubbed/samwhite/outputs/20230628-E5_coral-ShortStack-sRNAseq/P_meandrina/ShortStack_out/sRNA-POC-47-S1-TP2.flexbar_trim.20230621_1.bam	R	23	82638
+    /gscratch/scrubbed/samwhite/outputs/20230628-E5_coral-ShortStack-sRNAseq/P_meandrina/ShortStack_out/sRNA-POC-47-S1-TP2.flexbar_trim.20230621_1.bam	R	24	190938
+    /gscratch/scrubbed/samwhite/outputs/20230628-E5_coral-ShortStack-sRNAseq/P_meandrina/ShortStack_out/sRNA-POC-47-S1-TP2.flexbar_trim.20230621_1.bam	R	>24	1254706
+    /gscratch/scrubbed/samwhite/outputs/20230628-E5_coral-ShortStack-sRNAseq/P_meandrina/ShortStack_out/sRNA-POC-47-S1-TP2.flexbar_trim.20230621_1.bam	H	<21	20811
+    /gscratch/scrubbed/samwhite/outputs/20230628-E5_coral-ShortStack-sRNAseq/P_meandrina/ShortStack_out/sRNA-POC-47-S1-TP2.flexbar_trim.20230621_1.bam	H	21	5811
+    /gscratch/scrubbed/samwhite/outputs/20230628-E5_coral-ShortStack-sRNAseq/P_meandrina/ShortStack_out/sRNA-POC-47-S1-TP2.flexbar_trim.20230621_1.bam	H	22	5117
+    /gscratch/scrubbed/samwhite/outputs/20230628-E5_coral-ShortStack-sRNAseq/P_meandrina/ShortStack_out/sRNA-POC-47-S1-TP2.flexbar_trim.20230621_1.bam	H	23	5552
+    /gscratch/scrubbed/samwhite/outputs/20230628-E5_coral-ShortStack-sRNAseq/P_meandrina/ShortStack_out/sRNA-POC-47-S1-TP2.flexbar_trim.20230621_1.bam	H	24	5909
+    /gscratch/scrubbed/samwhite/outputs/20230628-E5_coral-ShortStack-sRNAseq/P_meandrina/ShortStack_out/sRNA-POC-47-S1-TP2.flexbar_trim.20230621_1.bam	H	>24	47393
+    /gscratch/scrubbed/samwhite/outputs/20230628-E5_coral-ShortStack-sRNAseq/P_meandrina/ShortStack_out/sRNA-POC-47-S1-TP2.flexbar_trim.20230621_1.bam	N	<21	122944
+    /gscratch/scrubbed/samwhite/outputs/20230628-E5_coral-ShortStack-sRNAseq/P_meandrina/ShortStack_out/sRNA-POC-47-S1-TP2.flexbar_trim.20230621_1.bam	N	21	59503
+    /gscratch/scrubbed/samwhite/outputs/20230628-E5_coral-ShortStack-sRNAseq/P_meandrina/ShortStack_out/sRNA-POC-47-S1-TP2.flexbar_trim.20230621_1.bam	N	22	101407
+    /gscratch/scrubbed/samwhite/outputs/20230628-E5_coral-ShortStack-sRNAseq/P_meandrina/ShortStack_out/sRNA-POC-47-S1-TP2.flexbar_trim.20230621_1.bam	N	23	92953
+    /gscratch/scrubbed/samwhite/outputs/20230628-E5_coral-ShortStack-sRNAseq/P_meandrina/ShortStack_out/sRNA-POC-47-S1-TP2.flexbar_trim.20230621_1.bam	N	24	117111
+    /gscratch/scrubbed/samwhite/outputs/20230628-E5_coral-ShortStack-sRNAseq/P_meandrina/ShortStack_out/sRNA-POC-47-S1-TP2.flexbar_trim.20230621_1.bam	N	>24	5315658
+    ```
 
 
 - #### GFFs:
 
+  - [Results.gff3](https://gannet.fish.washington.edu/Atumefaciens/20230628-E5_coral-ShortStack-sRNAseq/P_meandrina/ShortStack_out/Results.gff3) (860K)
+
+    - MD5: `6dde17bf837ca3ee56534fb638a655cf`
+
+  - [known_miRNAs.gff3](https://gannet.fish.washington.edu/Atumefaciens/20230628-E5_coral-ShortStack-sRNAseq/P_meandrina/ShortStack_out/known_miRNAs.gff3) (160K)
+
+
+
 - #### BAMs:
+
+  - [merged_alignments.bam](https://gannet.fish.washington.edu/Atumefaciens/20230628-E5_coral-ShortStack-sRNAseq/P_meandrina/ShortStack_out/merged_alignments.bam) (2.5G)
+
+    - MD5: `a8fe8903ee2690b925768c205ef88692`
+
+  - [sRNA-POC-47-S1-TP2.flexbar_trim.20230621_1.bam](https://gannet.fish.washington.edu/Atumefaciens/20230628-E5_coral-ShortStack-sRNAseq/P_meandrina/ShortStack_out/sRNA-POC-47-S1-TP2.flexbar_trim.20230621_1.bam) (227M)
+
+    - MD5: `0d411052dc3a4b0ffe05dbe2dc695e27`
+
+  - [sRNA-POC-47-S1-TP2.flexbar_trim.20230621_2.bam](https://gannet.fish.washington.edu/Atumefaciens/20230628-E5_coral-ShortStack-sRNAseq/P_meandrina/ShortStack_out/sRNA-POC-47-S1-TP2.flexbar_trim.20230621_2.bam) (232M)
+
+    - MD5: `b9450ad15e29061565516d079a77e111`
+
+  - [sRNA-POC-48-S1-TP2.flexbar_trim.20230621_1.bam](https://gannet.fish.washington.edu/Atumefaciens/20230628-E5_coral-ShortStack-sRNAseq/P_meandrina/ShortStack_out/sRNA-POC-48-S1-TP2.flexbar_trim.20230621_1.bam) (236M)
+
+    - MD5: `09c05641624ce2f26cec91df6ab2e51d`
+
+  - [sRNA-POC-48-S1-TP2.flexbar_trim.20230621_2.bam](https://gannet.fish.washington.edu/Atumefaciens/20230628-E5_coral-ShortStack-sRNAseq/P_meandrina/ShortStack_out/sRNA-POC-48-S1-TP2.flexbar_trim.20230621_2.bam) (240M)
+
+    - MD5: `a0c4cf038cc37be46c863c2be831b00c`
+
+  - [sRNA-POC-50-S1-TP2.flexbar_trim.20230621_1.bam](https://gannet.fish.washington.edu/Atumefaciens/20230628-E5_coral-ShortStack-sRNAseq/P_meandrina/ShortStack_out/sRNA-POC-50-S1-TP2.flexbar_trim.20230621_1.bam) (220M)
+
+    - MD5: `347284e0c5b0fa8f049a26a075f8b82a`
+
+  - [sRNA-POC-50-S1-TP2.flexbar_trim.20230621_2.bam](https://gannet.fish.washington.edu/Atumefaciens/20230628-E5_coral-ShortStack-sRNAseq/P_meandrina/ShortStack_out/sRNA-POC-50-S1-TP2.flexbar_trim.20230621_2.bam) (222M)
+
+    - MD5: `2c3fb0d9d557c572f4bd10541d56f603`
+
+  - [sRNA-POC-53-S1-TP2.flexbar_trim.20230621_1.bam](https://gannet.fish.washington.edu/Atumefaciens/20230628-E5_coral-ShortStack-sRNAseq/P_meandrina/ShortStack_out/sRNA-POC-53-S1-TP2.flexbar_trim.20230621_1.bam) (282M)
+
+    - MD5: `cd31c3f587e4e6aa13acb00fd2fe67a3`
+
+  - [sRNA-POC-53-S1-TP2.flexbar_trim.20230621_2.bam](https://gannet.fish.washington.edu/Atumefaciens/20230628-E5_coral-ShortStack-sRNAseq/P_meandrina/ShortStack_out/sRNA-POC-53-S1-TP2.flexbar_trim.20230621_2.bam) (278M)
+
+    - MD5: `f09c6a03df26536d90c7f80262911d3a`
+
+  - [sRNA-POC-57-S1-TP2.flexbar_trim.20230621_1.bam](https://gannet.fish.washington.edu/Atumefaciens/20230628-E5_coral-ShortStack-sRNAseq/P_meandrina/ShortStack_out/sRNA-POC-57-S1-TP2.flexbar_trim.20230621_1.bam) (255M)
+
+    - MD5: `b55a29681e8979e09486c2abc16c492f`
+
+  - [sRNA-POC-57-S1-TP2.flexbar_trim.20230621_2.bam](https://gannet.fish.washington.edu/Atumefaciens/20230628-E5_coral-ShortStack-sRNAseq/P_meandrina/ShortStack_out/sRNA-POC-57-S1-TP2.flexbar_trim.20230621_2.bam) (259M)
+
+    - MD5: `26e92bb5edec78b2d613065a52272ea0`
