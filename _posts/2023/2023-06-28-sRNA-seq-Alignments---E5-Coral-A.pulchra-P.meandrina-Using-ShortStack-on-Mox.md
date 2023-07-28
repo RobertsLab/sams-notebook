@@ -267,152 +267,154 @@ Output folder:
 
 ### [_A.pulchra_](https://gannet.fish.washington.edu/Atumefaciens/20230628-E5_coral-ShortStack-sRNAseq/A_pulchra/)
 
-&nbsp;&nbsp;&nbsp;&nbsp;#### Results files:
-- [alignment_details.tsv](https://gannet.fish.washington.edu/Atumefaciens/20230628-E5_coral-ShortStack-sRNAseq/A_pulchra/ShortStack_out/alignment_details.tsv) (48K)
+  - #### Results files:
+    - [alignment_details.tsv](https://gannet.fish.washington.edu/Atumefaciens/20230628-E5_coral-ShortStack-sRNAseq/A_pulchra/ShortStack_out/alignment_details.tsv) (48K)
 
-  - MD5: `d301b898b36c2022f22db538fa28b9eb`
+      - MD5: `d301b898b36c2022f22db538fa28b9eb`
 
-| readfile                                                                                                                                          | mapping_type | read_length | count   |
-|---------------------------------------------------------------------------------------------------------------------------------------------------|--------------|-------------|---------|
-| /gscratch/scrubbed/samwhite/outputs/20230628-E5_coral-ShortStack-sRNAseq/A_pulchra/ShortStack_out/sRNA-ACR-140-S1-TP2.flexbar_trim.20230621_1.bam | U            | <21         | 120030  |
-| /gscratch/scrubbed/samwhite/outputs/20230628-E5_coral-ShortStack-sRNAseq/A_pulchra/ShortStack_out/sRNA-ACR-140-S1-TP2.flexbar_trim.20230621_1.bam | U            | 21          | 43333   |
-| /gscratch/scrubbed/samwhite/outputs/20230628-E5_coral-ShortStack-sRNAseq/A_pulchra/ShortStack_out/sRNA-ACR-140-S1-TP2.flexbar_trim.20230621_1.bam | U            | 22          | 105592  |
-| /gscratch/scrubbed/samwhite/outputs/20230628-E5_coral-ShortStack-sRNAseq/A_pulchra/ShortStack_out/sRNA-ACR-140-S1-TP2.flexbar_trim.20230621_1.bam | U            | 23          | 65039   |
-| /gscratch/scrubbed/samwhite/outputs/20230628-E5_coral-ShortStack-sRNAseq/A_pulchra/ShortStack_out/sRNA-ACR-140-S1-TP2.flexbar_trim.20230621_1.bam | U            | 24          | 84409   |
-| /gscratch/scrubbed/samwhite/outputs/20230628-E5_coral-ShortStack-sRNAseq/A_pulchra/ShortStack_out/sRNA-ACR-140-S1-TP2.flexbar_trim.20230621_1.bam | U            | >24         | 3636233 |
-| /gscratch/scrubbed/samwhite/outputs/20230628-E5_coral-ShortStack-sRNAseq/A_pulchra/ShortStack_out/sRNA-ACR-140-S1-TP2.flexbar_trim.20230621_1.bam | P            | <21         | 196501  |
-| /gscratch/scrubbed/samwhite/outputs/20230628-E5_coral-ShortStack-sRNAseq/A_pulchra/ShortStack_out/sRNA-ACR-140-S1-TP2.flexbar_trim.20230621_1.bam | P            | 21          | 61672   |
-| /gscratch/scrubbed/samwhite/outputs/20230628-E5_coral-ShortStack-sRNAseq/A_pulchra/ShortStack_out/sRNA-ACR-140-S1-TP2.flexbar_trim.20230621_1.bam | P            | 22          | 73193   |
-| /gscratch/scrubbed/samwhite/outputs/20230628-E5_coral-ShortStack-sRNAseq/A_pulchra/ShortStack_out/sRNA-ACR-140-S1-TP2.flexbar_trim.20230621_1.bam | P            | 23          | 69147   |
-| /gscratch/scrubbed/samwhite/outputs/20230628-E5_coral-ShortStack-sRNAseq/A_pulchra/ShortStack_out/sRNA-ACR-140-S1-TP2.flexbar_trim.20230621_1.bam | P            | 24          | 73631   |
-| /gscratch/scrubbed/samwhite/outputs/20230628-E5_coral-ShortStack-sRNAseq/A_pulchra/ShortStack_out/sRNA-ACR-140-S1-TP2.flexbar_trim.20230621_1.bam | P            | >24         | 5674586 |
-| /gscratch/scrubbed/samwhite/outputs/20230628-E5_coral-ShortStack-sRNAseq/A_pulchra/ShortStack_out/sRNA-ACR-140-S1-TP2.flexbar_trim.20230621_1.bam | R            | <21         | 25655   |
-| /gscratch/scrubbed/samwhite/outputs/20230628-E5_coral-ShortStack-sRNAseq/A_pulchra/ShortStack_out/sRNA-ACR-140-S1-TP2.flexbar_trim.20230621_1.bam | R            | 21          | 11222   |
-| /gscratch/scrubbed/samwhite/outputs/20230628-E5_coral-ShortStack-sRNAseq/A_pulchra/ShortStack_out/sRNA-ACR-140-S1-TP2.flexbar_trim.20230621_1.bam | R            | 22          | 12916   |
-| /gscratch/scrubbed/samwhite/outputs/20230628-E5_coral-ShortStack-sRNAseq/A_pulchra/ShortStack_out/sRNA-ACR-140-S1-TP2.flexbar_trim.20230621_1.bam | R            | 23          | 14482   |
-| /gscratch/scrubbed/samwhite/outputs/20230628-E5_coral-ShortStack-sRNAseq/A_pulchra/ShortStack_out/sRNA-ACR-140-S1-TP2.flexbar_trim.20230621_1.bam | R            | 24          | 19433   |
-| /gscratch/scrubbed/samwhite/outputs/20230628-E5_coral-ShortStack-sRNAseq/A_pulchra/ShortStack_out/sRNA-ACR-140-S1-TP2.flexbar_trim.20230621_1.bam | R            | >24         | 1400108 |
-| /gscratch/scrubbed/samwhite/outputs/20230628-E5_coral-ShortStack-sRNAseq/A_pulchra/ShortStack_out/sRNA-ACR-140-S1-TP2.flexbar_trim.20230621_1.bam | H            | <21         | 7685    |
-| /gscratch/scrubbed/samwhite/outputs/20230628-E5_coral-ShortStack-sRNAseq/A_pulchra/ShortStack_out/sRNA-ACR-140-S1-TP2.flexbar_trim.20230621_1.bam | H            | 21          | 2697    |
-| /gscratch/scrubbed/samwhite/outputs/20230628-E5_coral-ShortStack-sRNAseq/A_pulchra/ShortStack_out/sRNA-ACR-140-S1-TP2.flexbar_trim.20230621_1.bam | H            | 22          | 3260    |
-| /gscratch/scrubbed/samwhite/outputs/20230628-E5_coral-ShortStack-sRNAseq/A_pulchra/ShortStack_out/sRNA-ACR-140-S1-TP2.flexbar_trim.20230621_1.bam | H            | 23          | 3166    |
-| /gscratch/scrubbed/samwhite/outputs/20230628-E5_coral-ShortStack-sRNAseq/A_pulchra/ShortStack_out/sRNA-ACR-140-S1-TP2.flexbar_trim.20230621_1.bam | H            | 24          | 4394    |
-| /gscratch/scrubbed/samwhite/outputs/20230628-E5_coral-ShortStack-sRNAseq/A_pulchra/ShortStack_out/sRNA-ACR-140-S1-TP2.flexbar_trim.20230621_1.bam | H            | >24         | 238409  |
-| /gscratch/scrubbed/samwhite/outputs/20230628-E5_coral-ShortStack-sRNAseq/A_pulchra/ShortStack_out/sRNA-ACR-140-S1-TP2.flexbar_trim.20230621_1.bam | N            | <21         | 104184  |
-| /gscratch/scrubbed/samwhite/outputs/20230628-E5_coral-ShortStack-sRNAseq/A_pulchra/ShortStack_out/sRNA-ACR-140-S1-TP2.flexbar_trim.20230621_1.bam | N            | 21          | 60191   |
-| /gscratch/scrubbed/samwhite/outputs/20230628-E5_coral-ShortStack-sRNAseq/A_pulchra/ShortStack_out/sRNA-ACR-140-S1-TP2.flexbar_trim.20230621_1.bam | N            | 22          | 52988   |
-| /gscratch/scrubbed/samwhite/outputs/20230628-E5_coral-ShortStack-sRNAseq/A_pulchra/ShortStack_out/sRNA-ACR-140-S1-TP2.flexbar_trim.20230621_1.bam | N            | 23          | 59083   |
-| /gscratch/scrubbed/samwhite/outputs/20230628-E5_coral-ShortStack-sRNAseq/A_pulchra/ShortStack_out/sRNA-ACR-140-S1-TP2.flexbar_trim.20230621_1.bam | N            | 24          | 76366   |
-| /gscratch/scrubbed/samwhite/outputs/20230628-E5_coral-ShortStack-sRNAseq/A_pulchra/ShortStack_out/sRNA-ACR-140-S1-TP2.flexbar_trim.20230621_1.bam | N            | >24         | 5252357 |
+    | readfile                                                                                                                                          | mapping_type | read_length | count   |
+    |---------------------------------------------------------------------------------------------------------------------------------------------------|--------------|-------------|---------|
+    | /gscratch/scrubbed/samwhite/outputs/20230628-E5_coral-ShortStack-sRNAseq/A_pulchra/ShortStack_out/sRNA-ACR-140-S1-TP2.flexbar_trim.20230621_1.bam | U            | <21         | 120030  |
+    | /gscratch/scrubbed/samwhite/outputs/20230628-E5_coral-ShortStack-sRNAseq/A_pulchra/ShortStack_out/sRNA-ACR-140-S1-TP2.flexbar_trim.20230621_1.bam | U            | 21          | 43333   |
+    | /gscratch/scrubbed/samwhite/outputs/20230628-E5_coral-ShortStack-sRNAseq/A_pulchra/ShortStack_out/sRNA-ACR-140-S1-TP2.flexbar_trim.20230621_1.bam | U            | 22          | 105592  |
+    | /gscratch/scrubbed/samwhite/outputs/20230628-E5_coral-ShortStack-sRNAseq/A_pulchra/ShortStack_out/sRNA-ACR-140-S1-TP2.flexbar_trim.20230621_1.bam | U            | 23          | 65039   |
+    | /gscratch/scrubbed/samwhite/outputs/20230628-E5_coral-ShortStack-sRNAseq/A_pulchra/ShortStack_out/sRNA-ACR-140-S1-TP2.flexbar_trim.20230621_1.bam | U            | 24          | 84409   |
+    | /gscratch/scrubbed/samwhite/outputs/20230628-E5_coral-ShortStack-sRNAseq/A_pulchra/ShortStack_out/sRNA-ACR-140-S1-TP2.flexbar_trim.20230621_1.bam | U            | >24         | 3636233 |
+    | /gscratch/scrubbed/samwhite/outputs/20230628-E5_coral-ShortStack-sRNAseq/A_pulchra/ShortStack_out/sRNA-ACR-140-S1-TP2.flexbar_trim.20230621_1.bam | P            | <21         | 196501  |
+    | /gscratch/scrubbed/samwhite/outputs/20230628-E5_coral-ShortStack-sRNAseq/A_pulchra/ShortStack_out/sRNA-ACR-140-S1-TP2.flexbar_trim.20230621_1.bam | P            | 21          | 61672   |
+    | /gscratch/scrubbed/samwhite/outputs/20230628-E5_coral-ShortStack-sRNAseq/A_pulchra/ShortStack_out/sRNA-ACR-140-S1-TP2.flexbar_trim.20230621_1.bam | P            | 22          | 73193   |
+    | /gscratch/scrubbed/samwhite/outputs/20230628-E5_coral-ShortStack-sRNAseq/A_pulchra/ShortStack_out/sRNA-ACR-140-S1-TP2.flexbar_trim.20230621_1.bam | P            | 23          | 69147   |
+    | /gscratch/scrubbed/samwhite/outputs/20230628-E5_coral-ShortStack-sRNAseq/A_pulchra/ShortStack_out/sRNA-ACR-140-S1-TP2.flexbar_trim.20230621_1.bam | P            | 24          | 73631   |
+    | /gscratch/scrubbed/samwhite/outputs/20230628-E5_coral-ShortStack-sRNAseq/A_pulchra/ShortStack_out/sRNA-ACR-140-S1-TP2.flexbar_trim.20230621_1.bam | P            | >24         | 5674586 |
+    | /gscratch/scrubbed/samwhite/outputs/20230628-E5_coral-ShortStack-sRNAseq/A_pulchra/ShortStack_out/sRNA-ACR-140-S1-TP2.flexbar_trim.20230621_1.bam | R            | <21         | 25655   |
+    | /gscratch/scrubbed/samwhite/outputs/20230628-E5_coral-ShortStack-sRNAseq/A_pulchra/ShortStack_out/sRNA-ACR-140-S1-TP2.flexbar_trim.20230621_1.bam | R            | 21          | 11222   |
+    | /gscratch/scrubbed/samwhite/outputs/20230628-E5_coral-ShortStack-sRNAseq/A_pulchra/ShortStack_out/sRNA-ACR-140-S1-TP2.flexbar_trim.20230621_1.bam | R            | 22          | 12916   |
+    | /gscratch/scrubbed/samwhite/outputs/20230628-E5_coral-ShortStack-sRNAseq/A_pulchra/ShortStack_out/sRNA-ACR-140-S1-TP2.flexbar_trim.20230621_1.bam | R            | 23          | 14482   |
+    | /gscratch/scrubbed/samwhite/outputs/20230628-E5_coral-ShortStack-sRNAseq/A_pulchra/ShortStack_out/sRNA-ACR-140-S1-TP2.flexbar_trim.20230621_1.bam | R            | 24          | 19433   |
+    | /gscratch/scrubbed/samwhite/outputs/20230628-E5_coral-ShortStack-sRNAseq/A_pulchra/ShortStack_out/sRNA-ACR-140-S1-TP2.flexbar_trim.20230621_1.bam | R            | >24         | 1400108 |
+    | /gscratch/scrubbed/samwhite/outputs/20230628-E5_coral-ShortStack-sRNAseq/A_pulchra/ShortStack_out/sRNA-ACR-140-S1-TP2.flexbar_trim.20230621_1.bam | H            | <21         | 7685    |
+    | /gscratch/scrubbed/samwhite/outputs/20230628-E5_coral-ShortStack-sRNAseq/A_pulchra/ShortStack_out/sRNA-ACR-140-S1-TP2.flexbar_trim.20230621_1.bam | H            | 21          | 2697    |
+    | /gscratch/scrubbed/samwhite/outputs/20230628-E5_coral-ShortStack-sRNAseq/A_pulchra/ShortStack_out/sRNA-ACR-140-S1-TP2.flexbar_trim.20230621_1.bam | H            | 22          | 3260    |
+    | /gscratch/scrubbed/samwhite/outputs/20230628-E5_coral-ShortStack-sRNAseq/A_pulchra/ShortStack_out/sRNA-ACR-140-S1-TP2.flexbar_trim.20230621_1.bam | H            | 23          | 3166    |
+    | /gscratch/scrubbed/samwhite/outputs/20230628-E5_coral-ShortStack-sRNAseq/A_pulchra/ShortStack_out/sRNA-ACR-140-S1-TP2.flexbar_trim.20230621_1.bam | H            | 24          | 4394    |
+    | /gscratch/scrubbed/samwhite/outputs/20230628-E5_coral-ShortStack-sRNAseq/A_pulchra/ShortStack_out/sRNA-ACR-140-S1-TP2.flexbar_trim.20230621_1.bam | H            | >24         | 238409  |
+    | /gscratch/scrubbed/samwhite/outputs/20230628-E5_coral-ShortStack-sRNAseq/A_pulchra/ShortStack_out/sRNA-ACR-140-S1-TP2.flexbar_trim.20230621_1.bam | N            | <21         | 104184  |
+    | /gscratch/scrubbed/samwhite/outputs/20230628-E5_coral-ShortStack-sRNAseq/A_pulchra/ShortStack_out/sRNA-ACR-140-S1-TP2.flexbar_trim.20230621_1.bam | N            | 21          | 60191   |
+    | /gscratch/scrubbed/samwhite/outputs/20230628-E5_coral-ShortStack-sRNAseq/A_pulchra/ShortStack_out/sRNA-ACR-140-S1-TP2.flexbar_trim.20230621_1.bam | N            | 22          | 52988   |
+    | /gscratch/scrubbed/samwhite/outputs/20230628-E5_coral-ShortStack-sRNAseq/A_pulchra/ShortStack_out/sRNA-ACR-140-S1-TP2.flexbar_trim.20230621_1.bam | N            | 23          | 59083   |
+    | /gscratch/scrubbed/samwhite/outputs/20230628-E5_coral-ShortStack-sRNAseq/A_pulchra/ShortStack_out/sRNA-ACR-140-S1-TP2.flexbar_trim.20230621_1.bam | N            | 24          | 76366   |
+    | /gscratch/scrubbed/samwhite/outputs/20230628-E5_coral-ShortStack-sRNAseq/A_pulchra/ShortStack_out/sRNA-ACR-140-S1-TP2.flexbar_trim.20230621_1.bam | N            | >24         | 5252357 |
 
-- [Counts.txt](https://gannet.fish.washington.edu/Atumefaciens/20230628-E5_coral-ShortStack-sRNAseq/A_pulchra/ShortStack_out/Counts.txt) (1.3M)
+    - [Counts.txt](https://gannet.fish.washington.edu/Atumefaciens/20230628-E5_coral-ShortStack-sRNAseq/A_pulchra/ShortStack_out/Counts.txt) (1.3M)
 
-  - MD5: `593069a45787e4176c5e17efe3b87d49`
+      - MD5: `593069a45787e4176c5e17efe3b87d49`
 
-| Coords                    | Name      | MIRNA | sRNA-ACR-140-S1-TP2.flexbar_trim.20230621_1 | sRNA-ACR-140-S1-TP2.flexbar_trim.20230621_2 | sRNA-ACR-145-S1-TP2.flexbar_trim.20230621_1 | sRNA-ACR-145-S1-TP2.flexbar_trim.20230621_2 | sRNA-ACR-150-S1-TP2.flexbar_trim.20230621_1 | sRNA-ACR-150-S1-TP2.flexbar_trim.20230621_2 | sRNA-ACR-173-S1-TP2.flexbar_trim.20230621_1 | sRNA-ACR-173-S1-TP2.flexbar_trim.20230621_2 | sRNA-ACR-178-S1-TP2.flexbar_trim.20230621_1 | sRNA-ACR-178-S1-TP2.flexbar_trim.20230621_2 |
-|---------------------------|-----------|-------|---------------------------------------------|---------------------------------------------|---------------------------------------------|---------------------------------------------|---------------------------------------------|---------------------------------------------|---------------------------------------------|---------------------------------------------|---------------------------------------------|---------------------------------------------|
-| NC_058066.1:152483-152906 | Cluster_1 | N     | 1                                           | 3                                           | 126                                         | 137                                         | 1                                           | 2                                           | 2                                           | 2                                           | 2                                           | 3                                           |
-| NC_058066.1:161082-161790 | Cluster_2 | N     | 46                                          | 57                                          | 48                                          | 54                                          | 210                                         | 319                                         | 33                                          | 25                                          | 190                                         | 270                                         |
-| NC_058066.1:203244-203650 | Cluster_3 | N     | 17                                          | 15                                          | 37                                          | 30                                          | 11                                          | 15                                          | 15                                          | 10                                          | 41                                          | 33                                          |
-| NC_058066.1:204535-205150 | Cluster_4 | N     | 6                                           | 6                                           | 270                                         | 254                                         | 18                                          | 16                                          | 12                                          | 6                                           | 56                                          | 59                                          |
-| NC_058066.1:205746-206966 | Cluster_5 | N     | 82                                          | 93                                          | 450                                         | 453                                         | 66                                          | 71                                          | 253                                         | 239                                         | 239                                         | 127                                         |
-| NC_058066.1:210855-211344 | Cluster_6 | N     | 340                                         | 351                                         | 213                                         | 210                                         | 83                                          | 81                                          | 0                                           | 1                                           | 656                                         | 647                                         |
-| NC_058066.1:349656-351297 | Cluster_7 | N     | 497                                         | 510                                         | 1246                                        | 1247                                        | 841                                         | 772                                         | 768                                         | 762                                         | 19                                          | 21                                          |
-| NC_058066.1:351491-353439 | Cluster_8 | N     | 3253                                        | 3186                                        | 2069                                        | 2014                                        | 2158                                        | 2159                                        | 2113                                        | 2084                                        | 169                                         | 174                                         |
-| NC_058066.1:776275-776779 | Cluster_9 | N     | 0                                           | 0                                           | 318                                         | 280                                         | 10                                          | 11                                          | 58                                          | 61                                          | 180                                         | 175                                         |
+    | Coords                    | Name      | MIRNA | sRNA-ACR-140-S1-TP2.flexbar_trim.20230621_1 | sRNA-ACR-140-S1-TP2.flexbar_trim.20230621_2 | sRNA-ACR-145-S1-TP2.flexbar_trim.20230621_1 | sRNA-ACR-145-S1-TP2.flexbar_trim.20230621_2 | sRNA-ACR-150-S1-TP2.flexbar_trim.20230621_1 | sRNA-ACR-150-S1-TP2.flexbar_trim.20230621_2 | sRNA-ACR-173-S1-TP2.flexbar_trim.20230621_1 | sRNA-ACR-173-S1-TP2.flexbar_trim.20230621_2 | sRNA-ACR-178-S1-TP2.flexbar_trim.20230621_1 | sRNA-ACR-178-S1-TP2.flexbar_trim.20230621_2 |
+    |---------------------------|-----------|-------|---------------------------------------------|---------------------------------------------|---------------------------------------------|---------------------------------------------|---------------------------------------------|---------------------------------------------|---------------------------------------------|---------------------------------------------|---------------------------------------------|---------------------------------------------|
+    | NC_058066.1:152483-152906 | Cluster_1 | N     | 1                                           | 3                                           | 126                                         | 137                                         | 1                                           | 2                                           | 2                                           | 2                                           | 2                                           | 3                                           |
+    | NC_058066.1:161082-161790 | Cluster_2 | N     | 46                                          | 57                                          | 48                                          | 54                                          | 210                                         | 319                                         | 33                                          | 25                                          | 190                                         | 270                                         |
+    | NC_058066.1:203244-203650 | Cluster_3 | N     | 17                                          | 15                                          | 37                                          | 30                                          | 11                                          | 15                                          | 15                                          | 10                                          | 41                                          | 33                                          |
+    | NC_058066.1:204535-205150 | Cluster_4 | N     | 6                                           | 6                                           | 270                                         | 254                                         | 18                                          | 16                                          | 12                                          | 6                                           | 56                                          | 59                                          |
+    | NC_058066.1:205746-206966 | Cluster_5 | N     | 82                                          | 93                                          | 450                                         | 453                                         | 66                                          | 71                                          | 253                                         | 239                                         | 239                                         | 127                                         |
+    | NC_058066.1:210855-211344 | Cluster_6 | N     | 340                                         | 351                                         | 213                                         | 210                                         | 83                                          | 81                                          | 0                                           | 1                                           | 656                                         | 647                                         |
+    | NC_058066.1:349656-351297 | Cluster_7 | N     | 497                                         | 510                                         | 1246                                        | 1247                                        | 841                                         | 772                                         | 768                                         | 762                                         | 19                                          | 21                                          |
+    | NC_058066.1:351491-353439 | Cluster_8 | N     | 3253                                        | 3186                                        | 2069                                        | 2014                                        | 2158                                        | 2159                                        | 2113                                        | 2084                                        | 169                                         | 174                                         |
+    | NC_058066.1:776275-776779 | Cluster_9 | N     | 0                                           | 0                                           | 318                                         | 280                                         | 10                                          | 11                                          | 58                                          | 61                                          | 180                                         | 175                                         |
 
-- [Results.txt](https://gannet.fish.washington.edu/Atumefaciens/20230628-E5_coral-ShortStack-sRNAseq/A_pulchra/ShortStack_out/Results.txt) (2.8M)
+    - [Results.txt](https://gannet.fish.washington.edu/Atumefaciens/20230628-E5_coral-ShortStack-sRNAseq/A_pulchra/ShortStack_out/Results.txt) (2.8M)
 
-  - MD5: `0ae9d3267579e8614e57a73a3490430d`
+      - MD5: `0ae9d3267579e8614e57a73a3490430d`
 
-| Locus                     | Name      | Chrom       | Start  | End    | Length | Reads | UniqueReads | FracTop           | Strand | MajorRNA                       | MajorRNAReads | Short | Long  | 21 | 22  | 23  | 24  | DicerCall | MIRNA | known_miRNAs |
-|---------------------------|-----------|-------------|--------|--------|--------|-------|-------------|-------------------|--------|--------------------------------|---------------|-------|-------|----|-----|-----|-----|-----------|-------|--------------|
-| NC_058066.1:152483-152906 | Cluster_1 | NC_058066.1 | 152483 | 152906 | 424    | 279   | 77          | 0.512544802867383 | .      | UAAGUACUUUAUCAACUAACUCUAGGCA   | 77            | 3     | 260   | 0  | 3   | 0   | 13  | N         | N     | NA           |
-| NC_058066.1:161082-161790 | Cluster_2 | NC_058066.1 | 161082 | 161790 | 709    | 1252  | 475         | 0.623801916932907 | .      | AGUCGACGAAUUUGCCAUGAAGCUAGUA   | 71            | 39    | 1129  | 26 | 10  | 5   | 43  | N         | N     | NA           |
-| NC_058066.1:203244-203650 | Cluster_3 | NC_058066.1 | 203244 | 203650 | 407    | 224   | 112         | 0.535714285714286 | .      | UUCUGACUCUAUUAGCAACGAAGACUUU   | 38            | 2     | 217   | 2  | 1   | 0   | 2   | N         | N     | NA           |
-| NC_058066.1:204535-205150 | Cluster_4 | NC_058066.1 | 204535 | 205150 | 616    | 703   | 343         | 0.500711237553343 | .      | UCCCAACACGUCUAGACUGUACAAUUUCU  | 33            | 4     | 682   | 2  | 0   | 7   | 8   | N         | N     | NA           |
-| NC_058066.1:205746-206966 | Cluster_5 | NC_058066.1 | 205746 | 206966 | 1221   | 2073  | 732         | 0.535455861070912 | .      | CAAAAGAGCGGACAAAAUAGUCGACAGAUU | 152           | 15    | 1999  | 8  | 6   | 13  | 32  | N         | N     | NA           |
-| NC_058066.1:210855-211344 | Cluster_6 | NC_058066.1 | 210855 | 211344 | 490    | 2582  | 667         | 0.497676219984508 | .      | UAAUACUUGUAGUGAAGGUUCAAUCUCGA  | 97            | 17    | 2355  | 13 | 18  | 39  | 140 | N         | N     | NA           |
-| NC_058066.1:349656-351297 | Cluster_7 | NC_058066.1 | 349656 | 351297 | 1642   | 6683  | 2375        | 0.501571150680832 | .      | UCAGCUUGGAAAUGACAGCUUUUGACGU   | 294           | 53    | 6417  | 22 | 45  | 44  | 102 | N         | N     | NA           |
-| NC_058066.1:351491-353439 | Cluster_8 | NC_058066.1 | 351491 | 353439 | 1949   | 19379 | 3490        | 0.498632540378761 | .      | UUUCAAAUCAAAGAUCUUCGCAACGAUGA  | 1115          | 135   | 18526 | 59 | 101 | 247 | 311 | N         | N     | NA           |
-| NC_058066.1:776275-776779 | Cluster_9 | NC_058066.1 | 776275 | 776779 | 505    | 1093  | 284         | 0.517840805123513 | .      | UGUUAUUGUCUUUGAGUGCCCAAAUGUGU  | 64            | 3     | 1080  | 2  | 3   | 2   | 3   | N         | N     | NA           |
+    | Locus                     | Name      | Chrom       | Start  | End    | Length | Reads | UniqueReads | FracTop           | Strand | MajorRNA                       | MajorRNAReads | Short | Long  | 21 | 22  | 23  | 24  | DicerCall | MIRNA | known_miRNAs |
+    |---------------------------|-----------|-------------|--------|--------|--------|-------|-------------|-------------------|--------|--------------------------------|---------------|-------|-------|----|-----|-----|-----|-----------|-------|--------------|
+    | NC_058066.1:152483-152906 | Cluster_1 | NC_058066.1 | 152483 | 152906 | 424    | 279   | 77          | 0.512544802867383 | .      | UAAGUACUUUAUCAACUAACUCUAGGCA   | 77            | 3     | 260   | 0  | 3   | 0   | 13  | N         | N     | NA           |
+    | NC_058066.1:161082-161790 | Cluster_2 | NC_058066.1 | 161082 | 161790 | 709    | 1252  | 475         | 0.623801916932907 | .      | AGUCGACGAAUUUGCCAUGAAGCUAGUA   | 71            | 39    | 1129  | 26 | 10  | 5   | 43  | N         | N     | NA           |
+    | NC_058066.1:203244-203650 | Cluster_3 | NC_058066.1 | 203244 | 203650 | 407    | 224   | 112         | 0.535714285714286 | .      | UUCUGACUCUAUUAGCAACGAAGACUUU   | 38            | 2     | 217   | 2  | 1   | 0   | 2   | N         | N     | NA           |
+    | NC_058066.1:204535-205150 | Cluster_4 | NC_058066.1 | 204535 | 205150 | 616    | 703   | 343         | 0.500711237553343 | .      | UCCCAACACGUCUAGACUGUACAAUUUCU  | 33            | 4     | 682   | 2  | 0   | 7   | 8   | N         | N     | NA           |
+    | NC_058066.1:205746-206966 | Cluster_5 | NC_058066.1 | 205746 | 206966 | 1221   | 2073  | 732         | 0.535455861070912 | .      | CAAAAGAGCGGACAAAAUAGUCGACAGAUU | 152           | 15    | 1999  | 8  | 6   | 13  | 32  | N         | N     | NA           |
+    | NC_058066.1:210855-211344 | Cluster_6 | NC_058066.1 | 210855 | 211344 | 490    | 2582  | 667         | 0.497676219984508 | .      | UAAUACUUGUAGUGAAGGUUCAAUCUCGA  | 97            | 17    | 2355  | 13 | 18  | 39  | 140 | N         | N     | NA           |
+    | NC_058066.1:349656-351297 | Cluster_7 | NC_058066.1 | 349656 | 351297 | 1642   | 6683  | 2375        | 0.501571150680832 | .      | UCAGCUUGGAAAUGACAGCUUUUGACGU   | 294           | 53    | 6417  | 22 | 45  | 44  | 102 | N         | N     | NA           |
+    | NC_058066.1:351491-353439 | Cluster_8 | NC_058066.1 | 351491 | 353439 | 1949   | 19379 | 3490        | 0.498632540378761 | .      | UUUCAAAUCAAAGAUCUUCGCAACGAUGA  | 1115          | 135   | 18526 | 59 | 101 | 247 | 311 | N         | N     | NA           |
+    | NC_058066.1:776275-776779 | Cluster_9 | NC_058066.1 | 776275 | 776779 | 505    | 1093  | 284         | 0.517840805123513 | .      | UGUUAUUGUCUUUGAGUGCCCAAAUGUGU  | 64            | 3     | 1080  | 2  | 3   | 2   | 3   | N         | N     | NA           |
 
 
-&nbsp;&nbsp;&nbsp;&nbsp;#### GFFs:
+- #### GFFs:
 
-- [Results.gff3](https://gannet.fish.washington.edu/Atumefaciens/20230628-E5_coral-ShortStack-sRNAseq/A_pulchra/ShortStack_out/Results.gff3) (1.8M)
+  - [Results.gff3](https://gannet.fish.washington.edu/Atumefaciens/20230628-E5_coral-ShortStack-sRNAseq/A_pulchra/ShortStack_out/Results.gff3) (1.8M)
 
-  - MD5: `84be69fd3fc4a02fd64c83ad0cbdaa63`
+    - MD5: `84be69fd3fc4a02fd64c83ad0cbdaa63`
 
-- [known_miRNAs.gff3](https://gannet.fish.washington.edu/Atumefaciens/20230628-E5_coral-ShortStack-sRNAseq/A_pulchra/ShortStack_out/known_miRNAs.gff3) (88K)
+  - [known_miRNAs.gff3](https://gannet.fish.washington.edu/Atumefaciens/20230628-E5_coral-ShortStack-sRNAseq/A_pulchra/ShortStack_out/known_miRNAs.gff3) (88K)
 
-  - MD5: `d9c407fde49dad766805eed720ef56b0`
+    - MD5: `d9c407fde49dad766805eed720ef56b0`
 
-&nbsp;&nbsp;&nbsp;&nbsp;#### BAMs:
+- #### BAMs:
 
-- [merged_alignments.bam](https://gannet.fish.washington.edu/Atumefaciens/20230628-E5_coral-ShortStack-sRNAseq/A_pulchra/ShortStack_out/merged_alignments.bam) (3.2G)
+  - [merged_alignments.bam](https://gannet.fish.washington.edu/Atumefaciens/20230628-E5_coral-ShortStack-sRNAseq/A_pulchra/ShortStack_out/merged_alignments.bam) (3.2G)
 
-  - MD5: `6cdc0a903f5761528518453c5cf735c4`
+    - MD5: `6cdc0a903f5761528518453c5cf735c4`
 
-- [sRNA-ACR-140-S1-TP2.flexbar_trim.20230621_1.bam](https://gannet.fish.washington.edu/Atumefaciens/20230628-E5_coral-ShortStack-sRNAseq/A_pulchra/ShortStack_out/sRNA-ACR-140-S1-TP2.flexbar_trim.20230621_1.bam) (301M)
+  - [sRNA-ACR-140-S1-TP2.flexbar_trim.20230621_1.bam](https://gannet.fish.washington.edu/Atumefaciens/20230628-E5_coral-ShortStack-sRNAseq/A_pulchra/ShortStack_out/sRNA-ACR-140-S1-TP2.flexbar_trim.20230621_1.bam) (301M)
 
-  - MD5: `519cb501a0f5fa32539d3571c9017929`
+    - MD5: `519cb501a0f5fa32539d3571c9017929`
 
-- [sRNA-ACR-140-S1-TP2.flexbar_trim.20230621_2.bam](https://gannet.fish.washington.edu/Atumefaciens/20230628-E5_coral-ShortStack-sRNAseq/A_pulchra/ShortStack_out/sRNA-ACR-140-S1-TP2.flexbar_trim.20230621_2.bam) (307M)
+  - [sRNA-ACR-140-S1-TP2.flexbar_trim.20230621_2.bam](https://gannet.fish.washington.edu/Atumefaciens/20230628-E5_coral-ShortStack-sRNAseq/A_pulchra/ShortStack_out/sRNA-ACR-140-S1-TP2.flexbar_trim.20230621_2.bam) (307M)
 
-  - MD5: `4b01b68a60ae5563c1dbada3eae9cde9`
+    - MD5: `4b01b68a60ae5563c1dbada3eae9cde9`
 
-- [sRNA-ACR-145-S1-TP2.flexbar_trim.20230621_1.bam](https://gannet.fish.washington.edu/Atumefaciens/20230628-E5_coral-ShortStack-sRNAseq/A_pulchra/ShortStack_out/sRNA-ACR-145-S1-TP2.flexbar_trim.20230621_1.bam) (337M)
+  - [sRNA-ACR-145-S1-TP2.flexbar_trim.20230621_1.bam](https://gannet.fish.washington.edu/Atumefaciens/20230628-E5_coral-ShortStack-sRNAseq/A_pulchra/ShortStack_out/sRNA-ACR-145-S1-TP2.flexbar_trim.20230621_1.bam) (337M)
 
-  - MD5: `3347abd91870d380d719281e091571a0`
+    - MD5: `3347abd91870d380d719281e091571a0`
 
-- [sRNA-ACR-145-S1-TP2.flexbar_trim.20230621_2.bam](https://gannet.fish.washington.edu/Atumefaciens/20230628-E5_coral-ShortStack-sRNAseq/A_pulchra/ShortStack_out/sRNA-ACR-145-S1-TP2.flexbar_trim.20230621_2.bam) (340M)
+  - [sRNA-ACR-145-S1-TP2.flexbar_trim.20230621_2.bam](https://gannet.fish.washington.edu/Atumefaciens/20230628-E5_coral-ShortStack-sRNAseq/A_pulchra/ShortStack_out/sRNA-ACR-145-S1-TP2.flexbar_trim.20230621_2.bam) (340M)
 
-  - MD5: `056895a4d142c5c0bc0cd0ea52f866a7`
+    - MD5: `056895a4d142c5c0bc0cd0ea52f866a7`
 
-- [sRNA-ACR-150-S1-TP2.flexbar_trim.20230621_1.bam](https://gannet.fish.washington.edu/Atumefaciens/20230628-E5_coral-ShortStack-sRNAseq/A_pulchra/ShortStack_out/sRNA-ACR-150-S1-TP2.flexbar_trim.20230621_1.bam) (358M)
+  - [sRNA-ACR-150-S1-TP2.flexbar_trim.20230621_1.bam](https://gannet.fish.washington.edu/Atumefaciens/20230628-E5_coral-ShortStack-sRNAseq/A_pulchra/ShortStack_out/sRNA-ACR-150-S1-TP2.flexbar_trim.20230621_1.bam) (358M)
 
-  - MD5: `968fcf9472f4d9da500878a7bc4d4e87`
+    - MD5: `968fcf9472f4d9da500878a7bc4d4e87`
 
 ### [_P.meandrina_](https://gannet.fish.washington.edu/Atumefaciens/20230628-E5_coral-ShortStack-sRNAseq/P_meandrina/)
 
-&nbsp;&nbsp;&nbsp;&nbsp;#### Results files:
+- #### Results files:
 
-- [Counts.txt](https://gannet.fish.washington.edu/Atumefaciens/20230628-E5_coral-ShortStack-sRNAseq/P_meandrina/ShortStack_out/Counts.txt) (684K)
+  - [Counts.txt](https://gannet.fish.washington.edu/Atumefaciens/20230628-E5_coral-ShortStack-sRNAseq/P_meandrina/ShortStack_out/Counts.txt) (684K)
 
-  - MD5: `45c7fa265a74c685ce60848447fa4566`
+    - MD5: `45c7fa265a74c685ce60848447fa4566`
 
-| Coords                                               | Name      | MIRNA | sRNA-POC-47-S1-TP2.flexbar_trim.20230621_1 | sRNA-POC-47-S1-TP2.flexbar_trim.20230621_2 | sRNA-POC-48-S1-TP2.flexbar_trim.20230621_1 | sRNA-POC-48-S1-TP2.flexbar_trim.20230621_2 | sRNA-POC-50-S1-TP2.flexbar_trim.20230621_1 | sRNA-POC-50-S1-TP2.flexbar_trim.20230621_2 | sRNA-POC-53-S1-TP2.flexbar_trim.20230621_1 | sRNA-POC-53-S1-TP2.flexbar_trim.20230621_2 | sRNA-POC-57-S1-TP2.flexbar_trim.20230621_1 | sRNA-POC-57-S1-TP2.flexbar_trim.20230621_2 |
-|------------------------------------------------------|-----------|-------|--------------------------------------------|--------------------------------------------|--------------------------------------------|--------------------------------------------|--------------------------------------------|--------------------------------------------|--------------------------------------------|--------------------------------------------|--------------------------------------------|--------------------------------------------|
-| Pocillopora_meandrina_HIv1___Sc0000000:9091-9526     | Cluster_1 | N     | 1828                                       | 1784                                       | 1393                                       | 1412                                       | 1842                                       | 1812                                       | 3219                                       | 3286                                       | 3565                                       | 3477                                       |
-| Pocillopora_meandrina_HIv1___Sc0000000:53578-53997   | Cluster_2 | N     | 24                                         | 24                                         | 52                                         | 53                                         | 67                                         | 67                                         | 53                                         | 55                                         | 95                                         | 91                                         |
-| Pocillopora_meandrina_HIv1___Sc0000000:146768-147202 | Cluster_3 | N     | 3                                          | 248                                        | 2                                          | 73                                         | 0                                          | 116                                        | 0                                          | 107                                        | 5                                          | 226                                        |
-| Pocillopora_meandrina_HIv1___Sc0000000:150243-150718 | Cluster_4 | N     | 437                                        | 422                                        | 691                                        | 676                                        | 813                                        | 804                                        | 692                                        | 700                                        | 1021                                       | 1007                                       |
-| Pocillopora_meandrina_HIv1___Sc0000000:173728-174150 | Cluster_5 | N     | 171                                        | 167                                        | 169                                        | 167                                        | 269                                        | 271                                        | 317                                        | 318                                        | 336                                        | 334                                        |
-| Pocillopora_meandrina_HIv1___Sc0000000:187648-188072 | Cluster_6 | N     | 8                                          | 7                                          | 16                                         | 13                                         | 28                                         | 27                                         | 59                                         | 72                                         | 76                                         | 76                                         |
-| Pocillopora_meandrina_HIv1___Sc0000000:485727-486254 | Cluster_7 | N     | 114                                        | 112                                        | 98                                         | 96                                         | 49                                         | 50                                         | 165                                        | 168                                        | 270                                        | 259                                        |
-| Pocillopora_meandrina_HIv1___Sc0000000:525310-527341 | Cluster_8 | N     | 3753                                       | 3707                                       | 1260                                       | 1254                                       | 4711                                       | 4627                                       | 2811                                       | 2878                                       | 2607                                       | 2572                                       |
-| Pocillopora_meandrina_HIv1___Sc0000000:541262-541723 | Cluster_9 | N     | 127                                        | 130                                        | 86                                         | 91                                         | 85                                         | 96                                         | 331                                        | 317                                        | 85                                         | 87                                         |
+    | Coords                                               | Name      | MIRNA | sRNA-POC-47-S1-TP2.flexbar_trim.20230621_1 | sRNA-POC-47-S1-TP2.flexbar_trim.20230621_2 | sRNA-POC-48-S1-TP2.flexbar_trim.20230621_1 | sRNA-POC-48-S1-TP2.flexbar_trim.20230621_2 | sRNA-POC-50-S1-TP2.flexbar_trim.20230621_1 | sRNA-POC-50-S1-TP2.flexbar_trim.20230621_2 | sRNA-POC-53-S1-TP2.flexbar_trim.20230621_1 | sRNA-POC-53-S1-TP2.flexbar_trim.20230621_2 | sRNA-POC-57-S1-TP2.flexbar_trim.20230621_1 | sRNA-POC-57-S1-TP2.flexbar_trim.20230621_2 |
+    |------------------------------------------------------|-----------|-------|--------------------------------------------|--------------------------------------------|--------------------------------------------|--------------------------------------------|--------------------------------------------|--------------------------------------------|--------------------------------------------|--------------------------------------------|--------------------------------------------|--------------------------------------------|
+    | Pocillopora_meandrina_HIv1___Sc0000000:9091-9526     | Cluster_1 | N     | 1828                                       | 1784                                       | 1393                                       | 1412                                       | 1842                                       | 1812                                       | 3219                                       | 3286                                       | 3565                                       | 3477                                       |
+    | Pocillopora_meandrina_HIv1___Sc0000000:53578-53997   | Cluster_2 | N     | 24                                         | 24                                         | 52                                         | 53                                         | 67                                         | 67                                         | 53                                         | 55                                         | 95                                         | 91                                         |
+    | Pocillopora_meandrina_HIv1___Sc0000000:146768-147202 | Cluster_3 | N     | 3                                          | 248                                        | 2                                          | 73                                         | 0                                          | 116                                        | 0                                          | 107                                        | 5                                          | 226                                        |
+    | Pocillopora_meandrina_HIv1___Sc0000000:150243-150718 | Cluster_4 | N     | 437                                        | 422                                        | 691                                        | 676                                        | 813                                        | 804                                        | 692                                        | 700                                        | 1021                                       | 1007                                       |
+    | Pocillopora_meandrina_HIv1___Sc0000000:173728-174150 | Cluster_5 | N     | 171                                        | 167                                        | 169                                        | 167                                        | 269                                        | 271                                        | 317                                        | 318                                        | 336                                        | 334                                        |
+    | Pocillopora_meandrina_HIv1___Sc0000000:187648-188072 | Cluster_6 | N     | 8                                          | 7                                          | 16                                         | 13                                         | 28                                         | 27                                         | 59                                         | 72                                         | 76                                         | 76                                         |
+    | Pocillopora_meandrina_HIv1___Sc0000000:485727-486254 | Cluster_7 | N     | 114                                        | 112                                        | 98                                         | 96                                         | 49                                         | 50                                         | 165                                        | 168                                        | 270                                        | 259                                        |
+    | Pocillopora_meandrina_HIv1___Sc0000000:525310-527341 | Cluster_8 | N     | 3753                                       | 3707                                       | 1260                                       | 1254                                       | 4711                                       | 4627                                       | 2811                                       | 2878                                       | 2607                                       | 2572                                       |
+    | Pocillopora_meandrina_HIv1___Sc0000000:541262-541723 | Cluster_9 | N     | 127                                        | 130                                        | 86                                         | 91                                         | 85                                         | 96                                         | 331                                        | 317                                        | 85                                         | 87                                         |
 
-- [Results.txt](https://gannet.fish.washington.edu/Atumefaciens/20230628-E5_coral-ShortStack-sRNAseq/P_meandrina/ShortStack_out/Results.txt) (1.4M)
+  - [Results.txt](https://gannet.fish.washington.edu/Atumefaciens/20230628-E5_coral-ShortStack-sRNAseq/P_meandrina/ShortStack_out/Results.txt) (1.4M)
 
-  - MD5: `7b96db202d049a53f154ee3fc1fcda08`
+    - MD5: `7b96db202d049a53f154ee3fc1fcda08`
 
-Locus	Name	Chrom	Start	End	Length	Reads	UniqueReads	FracTop	Strand	MajorRNA	MajorRNAReads	Short	Long	21	22	23	24	DicerCall	MIRNA	known_miRNAs
-Pocillopora_meandrina_HIv1___Sc0000000:9091-9526	Cluster_1	Pocillopora_meandrina_HIv1___Sc0000000	9091	9526	436	23618	903	0.501566601744432	.	UCUACCACUGAGCUAUACCCCC	3810	2853	9677	1223	8614	359	892	N	N	NA
-Pocillopora_meandrina_HIv1___Sc0000000:53578-53997	Cluster_2	Pocillopora_meandrina_HIv1___Sc0000000	53578	53997	420	581	27	0.500860585197935	.	GCCUAAGUUGCUUGGAACA	142	577	4	0	0	0	0	N	N	NA
-Pocillopora_meandrina_HIv1___Sc0000000:146768-147202	Cluster_3	Pocillopora_meandrina_HIv1___Sc0000000	146768	147202	435	780	108	0.971794871794872	+	AGCAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA	267	2	773	4	0	1	0	N	N	NA
-Pocillopora_meandrina_HIv1___Sc0000000:150243-150718	Cluster_4	Pocillopora_meandrina_HIv1___Sc0000000	150243	150718	476	7263	645	0.496902106567534	.	UUAUGUGAUGAGUAUGUUAAUGUACUCUCUGAGC	566	1692	2932	1272	749	280	338	N	N	NA
-Pocillopora_meandrina_HIv1___Sc0000000:173728-174150	Cluster_5	Pocillopora_meandrina_HIv1___Sc0000000	173728	174150	423	2519	134	0.500992457324335	.	CAACCAGAUCACAGCAAUCAAA	438	212	8	83	1269	887	60	22	N	NA
-Pocillopora_meandrina_HIv1___Sc0000000:187648-188072	Cluster_6	Pocillopora_meandrina_HIv1___Sc0000000	187648	188072	425	382	74	0.523560209424084	.	AUAAAUGUCACUACAAGAAACCUGAAAUCGU	25	1	366	2	2	4	7	N	N	NA
-Pocillopora_meandrina_HIv1___Sc0000000:485727-486254	Cluster_7	Pocillopora_meandrina_HIv1___Sc0000000	485727	486254	528	1381	391	0.503982621288921	.	UUGCACUAGAACAGACUGUGCUUCCAUAUCAGCUG	152	132	1174	14	22	6	33	N	N	NA
-Pocillopora_meandrina_HIv1___Sc0000000:525310-527341	Cluster_8	Pocillopora_meandrina_HIv1___Sc0000000	525310	527341	2032	30180	6208	0.498939695162359	.	UUUUCGUCACUUUCUUCAGCCUCAGAGU	973	277	27960	102	211	625	1005	N	N	NA
-Pocillopora_meandrina_HIv1___Sc0000000:541262-541723	Cluster_9	Pocillopora_meandrina_HIv1___Sc0000000	541262	541723	462	1435	283	0.500348432055749	.	UUGGACGAAAUUUCGAGGUUCACACUCGUU	86	0	1425	0	7	2	1	N	N	NA
+    ```
+    Locus	Name	Chrom	Start	End	Length	Reads	UniqueReads	FracTop	Strand	MajorRNA	MajorRNAReads	Short	Long	21	22	23	24	DicerCall	MIRNA	known_miRNAs
+    Pocillopora_meandrina_HIv1___Sc0000000:9091-9526	Cluster_1	Pocillopora_meandrina_HIv1___Sc0000000	9091	9526	436	23618	903	0.501566601744432	.	UCUACCACUGAGCUAUACCCCC	3810	2853	9677	1223	8614	359	892	N	N	NA
+    Pocillopora_meandrina_HIv1___Sc0000000:53578-53997	Cluster_2	Pocillopora_meandrina_HIv1___Sc0000000	53578	53997	420	581	27	0.500860585197935	.	GCCUAAGUUGCUUGGAACA	142	577	4	0	0	0	0	N	N	NA
+    Pocillopora_meandrina_HIv1___Sc0000000:146768-147202	Cluster_3	Pocillopora_meandrina_HIv1___Sc0000000	146768	147202	435	780	108	0.971794871794872	+	AGCAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA	267	2	773	4	0	1	0	N	N	NA
+    Pocillopora_meandrina_HIv1___Sc0000000:150243-150718	Cluster_4	Pocillopora_meandrina_HIv1___Sc0000000	150243	150718	476	7263	645	0.496902106567534	.	UUAUGUGAUGAGUAUGUUAAUGUACUCUCUGAGC	566	1692	2932	1272	749	280	338	N	N	NA
+    Pocillopora_meandrina_HIv1___Sc0000000:173728-174150	Cluster_5	Pocillopora_meandrina_HIv1___Sc0000000	173728	174150	423	2519	134	0.500992457324335	.	CAACCAGAUCACAGCAAUCAAA	438	212	8	83	1269	887	60	22	N	NA
+    Pocillopora_meandrina_HIv1___Sc0000000:187648-188072	Cluster_6	Pocillopora_meandrina_HIv1___Sc0000000	187648	188072	425	382	74	0.523560209424084	.	AUAAAUGUCACUACAAGAAACCUGAAAUCGU	25	1	366	2	2	4	7	N	N	NA
+    Pocillopora_meandrina_HIv1___Sc0000000:485727-486254	Cluster_7	Pocillopora_meandrina_HIv1___Sc0000000	485727	486254	528	1381	391	0.503982621288921	.	UUGCACUAGAACAGACUGUGCUUCCAUAUCAGCUG	152	132	1174	14	22	6	33	N	N	NA
+    Pocillopora_meandrina_HIv1___Sc0000000:525310-527341	Cluster_8	Pocillopora_meandrina_HIv1___Sc0000000	525310	527341	2032	30180	6208	0.498939695162359	.	UUUUCGUCACUUUCUUCAGCCUCAGAGU	973	277	27960	102	211	625	1005	N	N	NA
+    Pocillopora_meandrina_HIv1___Sc0000000:541262-541723	Cluster_9	Pocillopora_meandrina_HIv1___Sc0000000	541262	541723	462	1435	283	0.500348432055749	.	UUGGACGAAAUUUCGAGGUUCACACUCGUU	86	0	1425	0	7	2	1	N	N	NA
+    ```
 
 
-- [alignment_details.tsv](https://gannet.fish.washington.edu/Atumefaciens/20230628-E5_coral-ShortStack-sRNAseq/P_meandrina/ShortStack_out/alignment_details.tsv) (48K)
+  - [alignment_details.tsv](https://gannet.fish.washington.edu/Atumefaciens/20230628-E5_coral-ShortStack-sRNAseq/P_meandrina/ShortStack_out/alignment_details.tsv) (48K)
 
-  - MD5: `b89a4d5f7d1c49fcc8b3c31fdb316837`
+    - MD5: `b89a4d5f7d1c49fcc8b3c31fdb316837`
 
 readfile	mapping_type	read_length	count
 /gscratch/scrubbed/samwhite/outputs/20230628-E5_coral-ShortStack-sRNAseq/P_meandrina/ShortStack_out/sRNA-POC-47-S1-TP2.flexbar_trim.20230621_1.bam	U	<21	277334
@@ -447,6 +449,6 @@ readfile	mapping_type	read_length	count
 /gscratch/scrubbed/samwhite/outputs/20230628-E5_coral-ShortStack-sRNAseq/P_meandrina/ShortStack_out/sRNA-POC-47-S1-TP2.flexbar_trim.20230621_1.bam	N	>24	5315658
 
 
-&nbsp;&nbsp;&nbsp;&nbsp;#### GFFs:
+- #### GFFs:
 
-&nbsp;&nbsp;&nbsp;&nbsp;#### BAMs:
+- #### BAMs:
