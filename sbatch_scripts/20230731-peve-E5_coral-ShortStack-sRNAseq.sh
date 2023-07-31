@@ -8,7 +8,7 @@
 ## Nodes
 #SBATCH --nodes=1
 ## Walltime (days-hours:minutes:seconds format)
-#SBATCH --time=10-00:00:00
+#SBATCH --time=5-00:00:00
 ## Memory per node
 #SBATCH --mem=500G
 ##turn on e-mail notification
@@ -53,7 +53,7 @@ trimmed_fastq_array=()
 
 
 # Species array (must match directory name usage)
-species_array=("P_meandrina")
+species_array=("P_evermanni")
 
 # Programs associative array
 declare -A programs_array
