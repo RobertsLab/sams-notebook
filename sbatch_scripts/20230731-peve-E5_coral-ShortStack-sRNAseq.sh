@@ -64,7 +64,7 @@ programs_array=(
 # Genomes associative array
 declare -A genomes_array
 genomes_array=(
-    [P_evermanni]="/gscratch/srlab/sam/data/A_millepora/genomes/Porites_evermanni_v1.fa" \
+    [P_evermanni]="/gscratch/srlab/sam/data/P_evermanni/genomes/Porites_evermanni_v1.fa" \
     )
 
 
