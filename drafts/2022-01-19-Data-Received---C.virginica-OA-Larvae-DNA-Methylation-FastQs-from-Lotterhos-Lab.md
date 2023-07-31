@@ -11,7 +11,7 @@ tags:
 categories: 
   - Data Received
 ---
-In [this GitHub Issue](https://github.com/RobertsLab/resources/issues/1362) Steven asked that I download [_Crassostrea virginica_ (Eastern oyster)](https://en.wikipedia.org/wiki/Eastern_oyster) OA larval DNA methylation sequencing data from the Lotterhos Lab. The data is part of this project (_private_ GitHub repo): [epigeneticstoocean/2018_L18_OAExp_Cvirginica_DNAm(https://github.com/epigeneticstoocean/2018_L18_OAExp_Cvirginica_DNAm). Alan Downey-Wall provided me with a [GlobusConnect](https://www.globus.org/globus-connect-personal) link to the data.
+In [this GitHub Issue](https://github.com/RobertsLab/resources/issues/1362) Steven asked that I download [_Crassostrea virginica_ (Eastern oyster)](https://en.wikipedia.org/wiki/Eastern_oyster) OA larval DNA methylation sequencing data from the Lotterhos Lab. The data is part of this project (_private_ GitHub repo): [epigeneticstoocean/2018_L18_OAExp_Cvirginica_DNAm](https://github.com/epigeneticstoocean/2018_L18_OAExp_Cvirginica_DNAm). Alan Downey-Wall provided me with a [GlobusConnect](https://www.globus.org/globus-connect-personal) link to the data.
 
 Here's the README file provided with the data:
 
@@ -178,3 +178,17 @@ Contents:
     ├── file_labels.txt
     └── md5sum_list.txt
 ```
+
+Cursory check revealed we don't have the following files:
+
+```shell
+diff <(ls -1 *.gz) <(cd second_lane/ && ls -1 *.gz)
+1d0
+< CF01-CM01-Zygote_R1_001.fastq.gz
+28d26
+< CF08-CM04-Larvae_R2_001.fastq.gz
+36d33
+< EF03-EM03-Zygote_R2_001.fastq.gz
+```
+
+After [discussions with Alan](https://github.com/RobertsLab/resources/issues/1362#issuecomment-1440480737) (GitHub Issue), it appears that those missing files will not be retrievable.
