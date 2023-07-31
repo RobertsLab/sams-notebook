@@ -1,0 +1,227 @@
+---
+layout: post
+title: Read Extractions - M.magister MEGAN FastA to FastQ Arthropoda and Unassigned Reads
+date: '2023-07-30 15:25'
+tags: 
+  - Metacarcinus magister
+  - Dungeness crab
+  - MEGAN
+categories: 
+  - DuMOAR
+---
+
+
+Jupyter Notebook:
+
+- GitHub:
+
+  - [20230730-mmag-megan-fasta_to_fastq.ipynb](https://github.com/RobertsLab/code/blob/master/notebooks/sam/20230730-mmag-megan-fasta_to_fastq.ipynb)
+
+- NB Viewer:
+
+  - [20230730-mmag-megan-fasta_to_fastq.ipynb](https://nbviewer.org/github/RobertsLab/code/blob/master/notebooks/sam/20230730-mmag-megan-fasta_to_fastq.ipynb)
+
+
+<iframe src="https://nbviewer.org/github/RobertsLab/code/blob/master/notebooks/sam/20230730-mmag-megan-fasta_to_fastq.ipynb" width="100%" height="2000" scrolling="yes"></iframe>
+
+---
+
+#### RESULTS
+
+Output folder:
+
+- [20230730.mmag-megan_reads/](https://gannet.fish.washington.edu/Atumefaciens/20230730.mmag-megan_reads/)
+
+#### FastQ Files
+
+- [20230730.mmag.CH01-06.trimmed.megan_R1.fq.gz](https://gannet.fish.washington.edu/Atumefaciens/20230730.mmag-megan_reads20230730.mmag.CH01-06.trimmed.megan_R1.fq.gz) (218M)
+
+  - MD5: `e6047623dc885392b3ae816f094552b4`
+
+- [20230730.mmag.CH01-06.trimmed.megan_R2.fq.gz](https://gannet.fish.washington.edu/Atumefaciens/20230730.mmag-megan_reads20230730.mmag.CH01-06.trimmed.megan_R2.fq.gz) (224M)
+
+  - MD5: `40b096dc26066a0d715d05e4bde36806`
+
+- [20230730.mmag.CH01-14.trimmed.megan_R1.fq.gz](https://gannet.fish.washington.edu/Atumefaciens/20230730.mmag-megan_reads20230730.mmag.CH01-14.trimmed.megan_R1.fq.gz) (405M)
+
+  - MD5: `401d6206dcd62c8b682536eef19ee4cc`
+
+- [20230730.mmag.CH01-14.trimmed.megan_R2.fq.gz](https://gannet.fish.washington.edu/Atumefaciens/20230730.mmag-megan_reads20230730.mmag.CH01-14.trimmed.megan_R2.fq.gz) (412M)
+
+  - MD5: `dcfe7a42861fa7406e1cc16522584045`
+
+- [20230730.mmag.CH01-22.trimmed.megan_R1.fq.gz](https://gannet.fish.washington.edu/Atumefaciens/20230730.mmag-megan_reads20230730.mmag.CH01-22.trimmed.megan_R1.fq.gz) (238M)
+
+  - MD5: `e9c1b9a7d3afb9bdd4beaff2c6ddb0fa`
+
+- [20230730.mmag.CH01-22.trimmed.megan_R2.fq.gz](https://gannet.fish.washington.edu/Atumefaciens/20230730.mmag-megan_reads20230730.mmag.CH01-22.trimmed.megan_R2.fq.gz) (242M)
+
+  - MD5: `7491813d90b50e08e3cefca8e1a1d7fc`
+
+- [20230730.mmag.CH01-38.trimmed.megan_R1.fq.gz](https://gannet.fish.washington.edu/Atumefaciens/20230730.mmag-megan_reads20230730.mmag.CH01-38.trimmed.megan_R1.fq.gz) (405M)
+
+  - MD5: `99bf9577b46bf2dfca8b8ac042e179ed`
+
+- [20230730.mmag.CH01-38.trimmed.megan_R2.fq.gz](https://gannet.fish.washington.edu/Atumefaciens/20230730.mmag-megan_reads20230730.mmag.CH01-38.trimmed.megan_R2.fq.gz) (410M)
+
+  - MD5: `4be920ddd78862fe25a46e66235faad4`
+
+- [20230730.mmag.CH03-04.trimmed.megan_R1.fq.gz](https://gannet.fish.washington.edu/Atumefaciens/20230730.mmag-megan_reads20230730.mmag.CH03-04.trimmed.megan_R1.fq.gz) (214M)
+
+  - MD5: `2f85cd2b10061b89011123d3bfa58d4f`
+
+- [20230730.mmag.CH03-04.trimmed.megan_R2.fq.gz](https://gannet.fish.washington.edu/Atumefaciens/20230730.mmag-megan_reads20230730.mmag.CH03-04.trimmed.megan_R2.fq.gz) (218M)
+
+  - MD5: `d220a8d18d8a67bfba19410879464f43`
+
+- [20230730.mmag.CH03-15.trimmed.megan_R1.fq.gz](https://gannet.fish.washington.edu/Atumefaciens/20230730.mmag-megan_reads20230730.mmag.CH03-15.trimmed.megan_R1.fq.gz) (260M)
+
+  - MD5: `a20b5ac49bdf3e17f18d0dbc1b60d6d2`
+
+- [20230730.mmag.CH03-15.trimmed.megan_R2.fq.gz](https://gannet.fish.washington.edu/Atumefaciens/20230730.mmag-megan_reads20230730.mmag.CH03-15.trimmed.megan_R2.fq.gz) (265M)
+
+  - MD5: `7cf21ab8f759a50183d31584aac1d1e3`
+
+- [20230730.mmag.CH03-33.trimmed.megan_R1.fq.gz](https://gannet.fish.washington.edu/Atumefaciens/20230730.mmag-megan_reads20230730.mmag.CH03-33.trimmed.megan_R1.fq.gz) (235M)
+
+  - MD5: `be8e50bf2c6747671ab4c2f2c3cbc5fd`
+
+- [20230730.mmag.CH03-33.trimmed.megan_R2.fq.gz](https://gannet.fish.washington.edu/Atumefaciens/20230730.mmag-megan_reads20230730.mmag.CH03-33.trimmed.megan_R2.fq.gz) (235M)
+
+  - MD5: `a5edfe0babb198adb29d1a19784f678b`
+
+- [20230730.mmag.CH05-01.trimmed.megan_R1.fq.gz](https://gannet.fish.washington.edu/Atumefaciens/20230730.mmag-megan_reads20230730.mmag.CH05-01.trimmed.megan_R1.fq.gz) (248M)
+
+  - MD5: `53ef62108920c3957954ac443418ca92`
+
+- [20230730.mmag.CH05-01.trimmed.megan_R2.fq.gz](https://gannet.fish.washington.edu/Atumefaciens/20230730.mmag-megan_reads20230730.mmag.CH05-01.trimmed.megan_R2.fq.gz) (254M)
+
+  - MD5: `0c22a7ca75b5c5adb646794115f112c7`
+
+- [20230730.mmag.CH05-06.trimmed.megan_R1.fq.gz](https://gannet.fish.washington.edu/Atumefaciens/20230730.mmag-megan_reads20230730.mmag.CH05-06.trimmed.megan_R1.fq.gz) (219M)
+
+  - MD5: `f5abf6a6f57473c7a8aed7b37472a4d2`
+
+- [20230730.mmag.CH05-06.trimmed.megan_R2.fq.gz](https://gannet.fish.washington.edu/Atumefaciens/20230730.mmag-megan_reads20230730.mmag.CH05-06.trimmed.megan_R2.fq.gz) (223M)
+
+  - MD5: `3f17e210323b66673b87682e18c65756`
+
+- [20230730.mmag.CH05-07.trimmed.megan_R1.fq.gz](https://gannet.fish.washington.edu/Atumefaciens/20230730.mmag-megan_reads20230730.mmag.CH05-07.trimmed.megan_R1.fq.gz) (241M)
+
+  - MD5: `3e3823bbf19ec39bca8d5544640a4211`
+
+- [20230730.mmag.CH05-07.trimmed.megan_R2.fq.gz](https://gannet.fish.washington.edu/Atumefaciens/20230730.mmag-megan_reads20230730.mmag.CH05-07.trimmed.megan_R2.fq.gz) (243M)
+
+  - MD5: `58189bc49bee52fa10aca82274657ce3`
+
+- [20230730.mmag.CH05-09.trimmed.megan_R1.fq.gz](https://gannet.fish.washington.edu/Atumefaciens/20230730.mmag-megan_reads20230730.mmag.CH05-09.trimmed.megan_R1.fq.gz) (335M)
+
+  - MD5: `c6900bf83ffbf843216fb67fce1c7df2`
+
+- [20230730.mmag.CH05-09.trimmed.megan_R2.fq.gz](https://gannet.fish.washington.edu/Atumefaciens/20230730.mmag-megan_reads20230730.mmag.CH05-09.trimmed.megan_R2.fq.gz) (339M)
+
+  - MD5: `02f9adfa7438fb42b4dca917aa4763fb`
+
+- [20230730.mmag.CH05-14.trimmed.megan_R1.fq.gz](https://gannet.fish.washington.edu/Atumefaciens/20230730.mmag-megan_reads20230730.mmag.CH05-14.trimmed.megan_R1.fq.gz) (336M)
+
+  - MD5: `fa31a570dc375a9fd2764b4723fad235`
+
+- [20230730.mmag.CH05-14.trimmed.megan_R2.fq.gz](https://gannet.fish.washington.edu/Atumefaciens/20230730.mmag-megan_reads20230730.mmag.CH05-14.trimmed.megan_R2.fq.gz) (341M)
+
+  - MD5: `99e636f1a2ebdd870d6f822901ceed61`
+
+- [20230730.mmag.CH05-21.trimmed.megan_R1.fq.gz](https://gannet.fish.washington.edu/Atumefaciens/20230730.mmag-megan_reads20230730.mmag.CH05-21.trimmed.megan_R1.fq.gz) (319M)
+
+  - MD5: `753d18733a2d9c041660d3b8c14c8f6e`
+
+- [20230730.mmag.CH05-21.trimmed.megan_R2.fq.gz](https://gannet.fish.washington.edu/Atumefaciens/20230730.mmag-megan_reads20230730.mmag.CH05-21.trimmed.megan_R2.fq.gz) (324M)
+
+  - MD5: `f5d38ef3d32b2e11a23ca6a46098b8e6`
+
+- [20230730.mmag.CH05-29.trimmed.megan_R1.fq.gz](https://gannet.fish.washington.edu/Atumefaciens/20230730.mmag-megan_reads20230730.mmag.CH05-29.trimmed.megan_R1.fq.gz) (350M)
+
+  - MD5: `383b33f41b1412d9dbf0dcc9457a305c`
+
+- [20230730.mmag.CH05-29.trimmed.megan_R2.fq.gz](https://gannet.fish.washington.edu/Atumefaciens/20230730.mmag-megan_reads20230730.mmag.CH05-29.trimmed.megan_R2.fq.gz) (360M)
+
+  - MD5: `9a910e7748d1aa92c8035df26c1cc42b`
+
+- [20230730.mmag.CH07-04.trimmed.megan_R1.fq.gz](https://gannet.fish.washington.edu/Atumefaciens/20230730.mmag-megan_reads20230730.mmag.CH07-04.trimmed.megan_R1.fq.gz) (193M)
+
+  - MD5: `370c7b651ff1cc7c1406123d831e7d64`
+
+- [20230730.mmag.CH07-04.trimmed.megan_R2.fq.gz](https://gannet.fish.washington.edu/Atumefaciens/20230730.mmag-megan_reads20230730.mmag.CH07-04.trimmed.megan_R2.fq.gz) (196M)
+
+  - MD5: `1574c16f21475c91aa21ae9f81426768`
+
+- [20230730.mmag.CH07-06.trimmed.megan_R1.fq.gz](https://gannet.fish.washington.edu/Atumefaciens/20230730.mmag-megan_reads20230730.mmag.CH07-06.trimmed.megan_R1.fq.gz) (262M)
+
+  - MD5: `9d44fc4c9f7a7c7df0125b6174613627`
+
+- [20230730.mmag.CH07-06.trimmed.megan_R2.fq.gz](https://gannet.fish.washington.edu/Atumefaciens/20230730.mmag-megan_reads20230730.mmag.CH07-06.trimmed.megan_R2.fq.gz) (265M)
+
+  - MD5: `ac41ebdd06208c728e1146839153b29e`
+
+- [20230730.mmag.CH07-08.trimmed.megan_R1.fq.gz](https://gannet.fish.washington.edu/Atumefaciens/20230730.mmag-megan_reads20230730.mmag.CH07-08.trimmed.megan_R1.fq.gz) (503M)
+
+  - MD5: `d8f891faeead968fa5b4fdb6a9c26d21`
+
+- [20230730.mmag.CH07-08.trimmed.megan_R2.fq.gz](https://gannet.fish.washington.edu/Atumefaciens/20230730.mmag-megan_reads20230730.mmag.CH07-08.trimmed.megan_R2.fq.gz) (513M)
+
+  - MD5: `98340e3ca008cf97fe240469b5c0f6f5`
+
+- [20230730.mmag.CH07-11.trimmed.megan_R1.fq.gz](https://gannet.fish.washington.edu/Atumefaciens/20230730.mmag-megan_reads20230730.mmag.CH07-11.trimmed.megan_R1.fq.gz) (349M)
+
+  - MD5: `8ffcad6e64dd7d1b12c1739767425ec1`
+
+- [20230730.mmag.CH07-11.trimmed.megan_R2.fq.gz](https://gannet.fish.washington.edu/Atumefaciens/20230730.mmag-megan_reads20230730.mmag.CH07-11.trimmed.megan_R2.fq.gz) (350M)
+
+  - MD5: `4b2673c0f02e48db0acbb847a4fb6dab`
+
+- [20230730.mmag.CH07-24.trimmed.megan_R1.fq.gz](https://gannet.fish.washington.edu/Atumefaciens/20230730.mmag-megan_reads20230730.mmag.CH07-24.trimmed.megan_R1.fq.gz) (378M)
+
+  - MD5: `cdd6d93b54fd40b135f4545474d9f837`
+
+- [20230730.mmag.CH07-24.trimmed.megan_R2.fq.gz](https://gannet.fish.washington.edu/Atumefaciens/20230730.mmag-megan_reads20230730.mmag.CH07-24.trimmed.megan_R2.fq.gz) (384M)
+
+  - MD5: `3229af42be57da29f13cad72f1f99523`
+
+- [20230730.mmag.CH09-02.trimmed.megan_R1.fq.gz](https://gannet.fish.washington.edu/Atumefaciens/20230730.mmag-megan_reads20230730.mmag.CH09-02.trimmed.megan_R1.fq.gz) (215M)
+
+  - MD5: `4328a6e6194fb6417dcc9cb61d3f0a72`
+
+- [20230730.mmag.CH09-02.trimmed.megan_R2.fq.gz](https://gannet.fish.washington.edu/Atumefaciens/20230730.mmag-megan_reads20230730.mmag.CH09-02.trimmed.megan_R2.fq.gz) (219M)
+
+  - MD5: `74c58ba1072a61ea3e75b83342589830`
+
+- [20230730.mmag.CH09-13.trimmed.megan_R1.fq.gz](https://gannet.fish.washington.edu/Atumefaciens/20230730.mmag-megan_reads20230730.mmag.CH09-13.trimmed.megan_R1.fq.gz) (263M)
+
+  - MD5: `a748a887a31a327d90bb80550c4e2e40`
+
+- [20230730.mmag.CH09-13.trimmed.megan_R2.fq.gz](https://gannet.fish.washington.edu/Atumefaciens/20230730.mmag-megan_reads20230730.mmag.CH09-13.trimmed.megan_R2.fq.gz) (265M)
+
+  - MD5: `7d81df73ba6dc5bbe3457bf973ede371`
+
+- [20230730.mmag.CH09-28.trimmed.megan_R1.fq.gz](https://gannet.fish.washington.edu/Atumefaciens/20230730.mmag-megan_reads20230730.mmag.CH09-28.trimmed.megan_R1.fq.gz) (191M)
+
+  - MD5: `67d2237f163289bc2b962e52c21562cc`
+
+- [20230730.mmag.CH09-28.trimmed.megan_R2.fq.gz](https://gannet.fish.washington.edu/Atumefaciens/20230730.mmag-megan_reads20230730.mmag.CH09-28.trimmed.megan_R2.fq.gz) (190M)
+
+  - MD5: `088a69aaf3371a0a6e16ab63e67146e2`
+
+- [20230730.mmag.CH10-08.trimmed.megan_R1.fq.gz](https://gannet.fish.washington.edu/Atumefaciens/20230730.mmag-megan_reads20230730.mmag.CH10-08.trimmed.megan_R1.fq.gz) (305M)
+
+  - MD5: `e61fb563e027256c0d45144bb3c89b78`
+
+- [20230730.mmag.CH10-08.trimmed.megan_R2.fq.gz](https://gannet.fish.washington.edu/Atumefaciens/20230730.mmag-megan_reads20230730.mmag.CH10-08.trimmed.megan_R2.fq.gz) (312M)
+
+  - MD5: `426403c8c8cb8275c84bdca3635b3186`
+
+- [20230730.mmag.CH10-11.trimmed.megan_R1.fq.gz](https://gannet.fish.washington.edu/Atumefaciens/20230730.mmag-megan_reads20230730.mmag.CH10-11.trimmed.megan_R1.fq.gz) (259M)
+
+  - MD5: `8e5dc9bc9d058b23cefec0e4d03f2cde`
+
+- [20230730.mmag.CH10-11.trimmed.megan_R2.fq.gz](https://gannet.fish.washington.edu/Atumefaciens/20230730.mmag-megan_reads20230730.mmag.CH10-11.trimmed.megan_R2.fq.gz) (260M)
+
+  - MD5: `e894988fd6467f8263f40e5946e3fe88`
