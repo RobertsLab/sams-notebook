@@ -246,6 +246,10 @@ echo "${PATH}" | tr : \\n
 
 #### RESULTS
 
+Job took just under two hours to run:
+
+![Screencap showing Mox job runtime of 1hr 10mins and 54secs](https://github.com/RobertsLab/sams-notebook/blob/master/images/screencaps/20230731-peve-E5_coral-ShortStack-sRNAseq-runtime.png?raw=true)
+
 Output folder:
 
 - [20230731-peve-E5_coral-ShortStack-sRNAseq/](https://gannet.fish.washington.edu/Atumefaciens/20230731-peve-E5_coral-ShortStack-sRNAseq/)
