@@ -8,6 +8,39 @@ categories:
   - Daily Bits
 ---
 
+---
+
+20230817
+
+- In lab
+
+- Helped
+
+- sRNA analysis
+
+  - Concatenate all R1 FastAs
+
+    ```bash
+    cat /home/shared/8TB_HDD_01/sam/data/A_pulchra/sRNAseq/collapsed/sRNA-ACR-140-145-150-173-178-S1-TP2.flexbar_trim.20230621_1.fastq-collapsed.fasta \
+    /home/shared/8TB_HDD_01/sam/data/P_evermanni/sRNAseq/collapsed/sRNA-POR-73-79-82-S1-TP2.flexbar_trim.20230621_1.fastq-collapsed.fasta \
+    /home/shared/8TB_HDD_01/sam/data/P_meandrina/sRNAseq/collapsed/sRNA-POC-47-48-50-53-57-S1-TP2.flexbar_trim.20230621_1.fastq-collapsed.fasta \
+    >> sRNA-apul-peve-pmea-flexbar_trim.20230621_1-concatenated.fasta
+    ```
+
+---
+
+20230816
+
+- In lab
+
+  - _C.gigas_ Poly:IC
+
+    - Reverse transcribed diploid MgCl<sub>2</sub> control RNA to match previous diploid injected samples.
+
+  - Set up Synology RX1217 expansion for Gannet.
+
+---
+
 20230815
 
 - E5 coral sRNA-seq analyses
