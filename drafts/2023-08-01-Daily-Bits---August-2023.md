@@ -14,7 +14,9 @@ categories:
 
 - In lab
 
-- Helped
+  - qPCRs of _C.gigas_ diploid poly:IC MgCl<sub>2</sub> control
+
+- [Helped Shelly get into Raven](https://github.com/RobertsLab/resources/issues/1697#issuecomment-1682380890) (GitHub Issue)
 
 - sRNA analysis
 
@@ -25,6 +27,15 @@ categories:
     /home/shared/8TB_HDD_01/sam/data/P_evermanni/sRNAseq/collapsed/sRNA-POR-73-79-82-S1-TP2.flexbar_trim.20230621_1.fastq-collapsed.fasta \
     /home/shared/8TB_HDD_01/sam/data/P_meandrina/sRNAseq/collapsed/sRNA-POC-47-48-50-53-57-S1-TP2.flexbar_trim.20230621_1.fastq-collapsed.fasta \
     >> sRNA-apul-peve-pmea-flexbar_trim.20230621_1-concatenated.fasta
+    ```
+
+  - Collapse concatenated FastA to keep only unique sequences:
+
+    ```bash
+    /home/shared/fastx_toolkit_0.0.13_binaries_Linux_2.6_amd64/bin/fastx_collapser \
+    -Q 30 \
+    -i sRNA-apul-peve-pmea-flexbar_trim.20230621_1-concatenated.fasta \
+    -o sRNA-apul-peve-pmea-flexbar_trim.20230621_1-concatenated.collapsed.fasta
     ```
 
 ---
