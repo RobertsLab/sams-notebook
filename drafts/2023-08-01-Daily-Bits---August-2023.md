@@ -11,7 +11,9 @@ categories:
 
 20230818
 
+- Caught up on notebook entries
 
+- Science Hour
 
 ---
 
