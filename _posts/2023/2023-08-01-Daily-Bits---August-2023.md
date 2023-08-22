@@ -8,6 +8,18 @@ categories:
   - Daily Bits
 ---
 
+20230821
+
+- CEABIGR meeting
+
+  - Generate gene/transcript matrices.
+  - Use matrices to compute distance matrix between samples.
+
+- Had constant computer issues most of the day (primarily, VMWare Workstation locking up, due to high CPU usage).
+
+- Discovered potential incompatibility between StringTie versions, possibly affecting some downstream operations (namely, running the [`StringTie`](https://ccb.jhu.edu/software/stringtie/) `prepDE.py3` script), so re-ran the CEABIGR [_Crassostrea virginica_ (Eastern oyster)](https://en.wikipedia.org/wiki/Eastern_oyster) StringTie analysis using the current version of StringTie.
+
+---
 
 20230818
 
