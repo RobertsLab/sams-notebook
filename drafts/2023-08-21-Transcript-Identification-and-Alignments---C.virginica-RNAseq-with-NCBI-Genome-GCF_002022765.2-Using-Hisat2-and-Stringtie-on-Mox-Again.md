@@ -411,6 +411,14 @@ Output folder:
 
       - [20230821-cvir-stringtie-GCF_002022765.2-isoforms/20230821_cvir_stringtie_GCF_002022765-sorted-bams-merged.bam.bai](https://gannet.fish.washington.edu/Atumefaciens/20230821-cvir-stringtie-GCF_002022765.2-isoforms/20230821_cvir_stringtie_GCF_002022765-sorted-bams-merged.bam.bai)
 
+  - Gene counts matrix (CSV; 4.5MB)
+
+    - [gene_count_matrix.csv](https://gannet.fish.washington.edu/Atumefaciens/20230821-cvir-stringtie-GCF_002022765.2-isoforms/gene_count_matrix.csv)
+
+  - Transcript counts matrix (CSV; 6.3MB)
+
+    - [transcript_count_matrix.csv](https://gannet.fish.washington.edu/Atumefaciens/20230821-cvir-stringtie-GCF_002022765.2-isoforms/transcript_count_matrix.csv)
+
 Since there are a large number of folders/files, the resulting directory structure for all of the [`StringTie`](https://ccb.jhu.edu/software/stringtie/) output is [shown at the end of this post](#directory-tree). Here's a description of all the file types found in each directory:
 
 - `*.ctab`: See [`ballgown` documentation](https://github.com/alyssafrazee/ballgown) for description of these.
