@@ -265,19 +265,25 @@ ${programs_array[samtools_index]} ${merged_bam}
 -G "${genome_gff}" \
 -o "${genome_index_name}".stringtie.gtf
 
+# Create file list for prepDE.py
+while read -r line
+do
+  echo ${line##*/} ${line}
+done < gtf_list.txt >> prepDE-sample_list.txt
+
 # Create count matrices for genes and transcripts
 # Compatible with import to DESeq2
-python3 "${programs_array[prepDE]}"
+python3 "${programs_array[prepDE]}" --input=prepDE-sample_list.txt
 
 # Delete unneccessary index files
 rm "${genome_index_name}"*.ht2
 
 
 # Generate checksums
-for file in *
-do
-  md5sum "${file}" >> checksums.md5
-done
+# Uses find command to avoid passing
+# directory names to the md5sum command.
+find . -maxdepth 1 -type f -exec md5sum {} + \
+| tee --append checksums.md5
 
 #######################################################################################################
 
