@@ -8,6 +8,42 @@ categories:
   - Daily Bits
 ---
 
+20230825
+
+- Coral E5 Meeting
+
+- Science hour
+
+- Updated CEABIGR data using updated Stringtie/Ballgown analysis.
+
+---
+
+20230824
+
+- Pub-a-thon
+
+- Lab meeting
+
+- Updated CEABIGR data using updated Stringtie/Ballgown analysis.
+
+---
+
+20230823
+
+- In lab:
+
+  - Discovered issue with Bioanalyzer priming station.
+
+  - Submitted mercuric chloride waste pickup request to EH&S for all 250mL bottles in FTR 228.
+
+---
+
+20230822
+
+- [Analysis of initial _C.gigas_ diploids qPCR data for Matt George's poly:IC experiment](https://robertslab.github.io/sams-notebook/2023/08/22/qPCR-Analysis-C.gigas-Matt-George-Poly-IC-Diploids.html)
+
+---
+
 20230821
 
 - CEABIGR meeting
