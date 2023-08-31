@@ -8,6 +8,28 @@ categories:
   - Daily Bits
 ---
 
+20230830
+
+- Finished [CEABIGR](https://github.com/sr320/ceabigr) gene counts and relatedness matrix stuff.
+
+- ProCard transaction verification.
+
+---
+
+20230829
+
+- Worked heavily on [CEABIGR](https://github.com/sr320/ceabigr) gene counts and relatedness matrix.
+
+- Worked on lab safety inspection deficiencies.
+
+---
+
+20230828
+
+- Worked on lab safety inspection deficiencies.
+
+---
+
 20230825
 
 - Coral E5 Meeting
