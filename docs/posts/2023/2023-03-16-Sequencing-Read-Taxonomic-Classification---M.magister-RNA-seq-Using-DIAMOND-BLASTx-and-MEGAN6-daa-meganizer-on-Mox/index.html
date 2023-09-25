@@ -1,0 +1,835 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.3.450">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+<meta name="dcterms.date" content="2023-03-16">
+
+<title>robertslab.info - Sequencing Read Taxonomic Classification - M.magister RNA-seq Using DIAMOND BLASTx and MEGAN6 daa-meganizer on Mox</title>
+<style>
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: min(4vw, 1.5em);}
+div.column{flex: auto; overflow-x: auto;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+  vertical-align: middle;
+}
+</style>
+
+
+<script src="../../../site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="../../../site_libs/quarto-nav/headroom.min.js"></script>
+<script src="../../../site_libs/clipboard/clipboard.min.js"></script>
+<script src="../../../site_libs/quarto-search/autocomplete.umd.js"></script>
+<script src="../../../site_libs/quarto-search/fuse.min.js"></script>
+<script src="../../../site_libs/quarto-search/quarto-search.js"></script>
+<meta name="quarto:offset" content="../../../">
+<link href="../../..//images/favicon.ico" rel="icon">
+<script src="../../../site_libs/quarto-html/quarto.js"></script>
+<script src="../../../site_libs/quarto-html/popper.min.js"></script>
+<script src="../../../site_libs/quarto-html/tippy.umd.min.js"></script>
+<script src="../../../site_libs/quarto-html/anchor.min.js"></script>
+<link href="../../../site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="../../../site_libs/quarto-html/quarto-syntax-highlighting-dark.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="../../../site_libs/bootstrap/bootstrap.min.js"></script>
+<link href="../../../site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="../../../site_libs/bootstrap/bootstrap.min.css" rel="stylesheet" id="quarto-bootstrap" data-mode="dark">
+<script id="quarto-search-options" type="application/json">{
+  "location": "navbar",
+  "copy-button": false,
+  "collapse-after": 3,
+  "panel-placement": "end",
+  "type": "overlay",
+  "limit": 20,
+  "language": {
+    "search-no-results-text": "No results",
+    "search-matching-documents-text": "matching documents",
+    "search-copy-link-title": "Copy link to search",
+    "search-hide-matches-text": "Hide additional matches",
+    "search-more-match-text": "more match in this document",
+    "search-more-matches-text": "more matches in this document",
+    "search-clear-button-title": "Clear",
+    "search-detached-cancel-button-title": "Cancel",
+    "search-submit-button-title": "Submit",
+    "search-label": "Search"
+  }
+}</script>
+
+
+<link rel="stylesheet" href="../../../styles.css">
+</head>
+
+<body class="nav-fixed">
+
+<div id="quarto-search-results"></div>
+  <header id="quarto-header" class="headroom fixed-top">
+    <nav class="navbar navbar-expand-lg navbar-dark ">
+      <div class="navbar-container container-fluid">
+      <div class="navbar-brand-container">
+    <a class="navbar-brand" href="../../../index.html">
+    <span class="navbar-title">robertslab.info</span>
+    </a>
+  </div>
+            <div id="quarto-search" class="" title="Search"></div>
+          <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarCollapse" aria-controls="navbarCollapse" aria-expanded="false" aria-label="Toggle navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+  <span class="navbar-toggler-icon"></span>
+</button>
+          <div class="collapse navbar-collapse" id="navbarCollapse">
+            <ul class="navbar-nav navbar-nav-scroll ms-auto">
+  <li class="nav-item dropdown ">
+    <a class="nav-link dropdown-toggle" href="#" id="nav-menu-bi-hdd-network" role="button" data-bs-toggle="dropdown" aria-expanded="false" rel="" target="">
+      <i class="bi bi-hdd-network" role="img">
+</i> 
+ <span class="menu-text"></span>
+    </a>
+    <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="nav-menu-bi-hdd-network">    
+        <li>
+    <a class="dropdown-item" href="http://raven.fish.washington.edu:8787" rel="" target="_blank">
+ <span class="dropdown-text">raven</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="https://gannet.fish.washington.edu" rel="" target="">
+ <span class="dropdown-text">gannet</span></a>
+  </li>  
+    </ul>
+  </li>
+  <li class="nav-item dropdown ">
+    <a class="nav-link dropdown-toggle" href="#" id="nav-menu-bi-journal-code" role="button" data-bs-toggle="dropdown" aria-expanded="false" rel="" target="">
+      <i class="bi bi-journal-code" role="img">
+</i> 
+ <span class="menu-text"></span>
+    </a>
+    <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="nav-menu-bi-journal-code">    
+        <li>
+    <a class="dropdown-item" href="https://robertslab.github.io/sams-notebook/" rel="" target="">
+ <span class="dropdown-text">sam</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="https://sr320.github.io" rel="" target="">
+ <span class="dropdown-text">steven</span></a>
+  </li>  
+    </ul>
+  </li>
+  <li class="nav-item dropdown ">
+    <a class="nav-link dropdown-toggle" href="#" id="nav-menu-bi-github" role="button" data-bs-toggle="dropdown" aria-expanded="false" rel="" target="">
+      <i class="bi bi-github" role="img">
+</i> 
+ <span class="menu-text"></span>
+    </a>
+    <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="nav-menu-bi-github">    
+        <li>
+    <a class="dropdown-item" href="https://github.com/RobertsLab" rel="" target="">
+ <span class="dropdown-text">Lab Organization</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="https://github.com/RobertsLab/lab-website" rel="" target="">
+ <span class="dropdown-text">Edit Roberts Lab website</span></a>
+  </li>  
+    </ul>
+  </li>
+  <li class="nav-item compact">
+    <a class="nav-link" href="https://calendar.google.com/calendar/embed?src=mrc305@gmail.com&amp;ctz=America/Vancouver" rel="" target=""><i class="bi bi-calendar-week" role="img">
+</i> 
+ <span class="menu-text"></span></a>
+  </li>  
+</ul>
+            <div class="quarto-navbar-tools">
+</div>
+          </div> <!-- /navcollapse -->
+      </div> <!-- /container-fluid -->
+    </nav>
+</header>
+<!-- content -->
+<header id="title-block-header" class="quarto-title-block default page-columns page-full">
+  <div class="quarto-title-banner page-columns page-full">
+    <div class="quarto-title column-body">
+      <h1 class="title">Sequencing Read Taxonomic Classification - M.magister RNA-seq Using DIAMOND BLASTx and MEGAN6 daa-meganizer on Mox</h1>
+                                <div class="quarto-categories">
+                <div class="quarto-category">2023</div>
+                <div class="quarto-category">Miscellaneous</div>
+              </div>
+                  </div>
+  </div>
+    
+  
+  <div class="quarto-title-meta">
+
+      
+      <div>
+      <div class="quarto-title-meta-heading">Published</div>
+      <div class="quarto-title-meta-contents">
+        <p class="date">March 16, 2023</p>
+      </div>
+    </div>
+    
+      
+    </div>
+    
+  
+  </header><div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article page-navbar">
+<!-- sidebar -->
+<!-- margin-sidebar -->
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+        <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">On this page</h2>
+   
+  <ul>
+  <li><a href="#meganized-daa-files-daa" id="toc-meganized-daa-files-daa" class="nav-link active" data-scroll-target="#meganized-daa-files-daa">MEGANized DAA files (DAA)</a></li>
+  </ul>
+</nav>
+    </div>
+<!-- main -->
+<main class="content quarto-banner-title-block" id="quarto-document-content">
+
+
+
+
+<p>Running DIAMOND BLASTx, followed by <a href="https://software-ab.cs.uni-tuebingen.de/download/megan6/welcome.html">MEGAN6</a> <code>daa-meganizer</code> for taxonomic classification of NOAA <em>M.magister</em> trimmed RNA-seq reads (provided by Giles Goetz on <a href="https://robertslab.github.io/sams-notebook/posts/2023/2023-03-01-Data-Received-Trimmed-M.magister-RNA-seq-from-NOAA.html">20230301</a>). This is primarily just for curiosity, per <a href="https://github.com/RobertsLab/resources/issues/1597">Steven’s GitHub Issue</a>. This was run on Mox./</p>
+<p>SBATCH Script (GitHub):</p>
+<ul>
+<li><a href="https://github.com/RobertsLab/sams-notebook/blob/master/sbatch_scripts/20230316-mmag-diamond-meganizer-RNAseq.sh">20230316-mmag-diamond-meganizer-RNAseq.sh</a></li>
+</ul>
+<pre class="shell"><code>#!/bin/bash
+## Job Name
+#SBATCH --job-name=20230316-mmag-diamond-meganizer-RNAseq
+## Allocation Definition
+#SBATCH --account=srlab
+#SBATCH --partition=srlab
+## Resources
+## Nodes
+#SBATCH --nodes=1
+## Walltime (days-hours:minutes:seconds format)
+#SBATCH --time=25-00:00:00
+## Memory per node
+#SBATCH --mem=120G
+##turn on e-mail notification
+#SBATCH --mail-type=ALL
+#SBATCH --mail-user=samwhite@uw.edu
+## Specify the working directory for this job
+#SBATCH --chdir=/gscratch/scrubbed/samwhite/outputs/20230316-mmag-diamond-meganizer-RNAseq
+
+## Perform DIAMOND BLASTx on trimmed M.magister RNA-seq files from 20230301.
+## Will be used to view taxonomic breakdown of sequencing reads.
+
+## Expects input FastQ files to be match this pattern: *.trimmed.R[12].fastq.gz
+
+
+###################################################################################
+# These variables need to be set by user
+
+## Assign Variables
+
+fastq_pattern='*.trimmed.R[12].fastq.gz'
+
+# Program paths
+diamond=/gscratch/srlab/programs/diamond-v2.1.1/diamond
+meganizer=/gscratch/srlab/programs/MEGAN-6.22.0/tools/daa-meganizer
+
+# DIAMOND NCBI nr database
+dmnd_db=/gscratch/srlab/blastdbs/20230215-ncbi-nr/20230215-ncbi-nr.dmnd
+
+# MEGAN mapping files
+megan_mapping_dir=/gscratch/srlab/sam/data/databases/MEGAN
+megan_mapdb="${megan_mapping_dir}/megan-map-Feb2022.db"
+
+# FastQ files directory
+fastq_dir=/gscratch/srlab/sam/data/M_magister/RNAseq/trimmed
+
+# CPU threads
+threads=40
+
+# MEGAN memory limit
+mem_limit=100G
+
+# Programs associative array
+declare -A programs_array
+programs_array=(
+[diamond]="${diamond}" \
+[meganizer]="${meganizer}"
+)
+
+###################################################################################################
+
+# Exit script if any command fails
+set -e
+
+# Load Python Mox module for Python module availability
+module load intel-python3_2017
+
+
+# Loop through FastQ files, log filenames to fastq_list.txt.
+# Run DIAMOND on each FastQ, followed by "MEGANization"
+# DO NOT QUOTE ${fastq_pattern}
+for fastq in "${fastq_dir}"/${fastq_pattern}
+do
+    # Log input FastQs
+    echo ""
+    echo "Generating MD5 checksum for ${fastq}..."
+    md5sum "${fastq}" | tee --append input_fastqs-checksums.md5
+    echo ""
+
+    # Strip leading path ${fastq##*/} by eliminating all text up to and including last slash from the left side.
+    # Strip extensions by eliminating ".fastq.gz" from the right side.
+    no_path=$(echo "${fastq##*/}")
+    no_ext=$(echo "${no_path%%.fastq.gz}")
+
+    # Run DIAMOND with blastx
+    # Output format 100 produces a DAA binary file for use with MEGAN
+    echo "Running DIAMOND BLASTx on ${fastq}."
+    echo ""
+    "${programs_array[diamond]}" blastx \
+    --db ${dmnd_db} \
+    --query "${fastq}" \
+    --out "${no_ext}".blastx.meganized.daa \
+    --outfmt 100 \
+    --top 5 \
+    --block-size 15.0 \
+    --index-chunks 4 \
+    --memory-limit ${mem_limit} \
+    --threads ${threads}
+    echo "DIAMOND BLASTx on ${fastq} complete: ${no_ext}.blastx.meganized.daa"
+    echo ""
+
+    # Meganize DAA files
+    # Used for ability to import into MEGAN6
+    echo "Now MEGANizing ${no_ext}.blastx.meganized.daa"
+    "${programs_array[meganizer]}" \
+    --in "${no_ext}".blastx.meganized.daa \
+    --threads ${threads} \
+    --mapDB ${megan_mapdb}
+    echo "MEGANization of ${no_ext}.blastx.meganized.daa completed."
+    echo ""
+
+done
+
+# Generate MD5 checksums
+for file in *
+do
+  echo ""
+  echo "Generating MD5 checksums for ${file}:"
+  md5sum "${file}" | tee --append checksums.md5
+  echo ""
+done
+
+# Generate checksum for MEGAN database(s)
+{
+    md5sum "${megan_mapdb}"
+    md5sum "${dmnd_db}"
+} &gt;&gt; checksums.md5
+
+#######################################################################################################
+
+# Capture program options
+if [[ "${#programs_array[@]}" -gt 0 ]]; then
+  echo "Logging program options..."
+  for program in "${!programs_array[@]}"
+  do
+    {
+    echo "Program options for ${program}: "
+    echo ""
+    # Handle samtools help menus
+    if [[ "${program}" == "samtools_index" ]] \
+    || [[ "${program}" == "samtools_sort" ]] \
+    || [[ "${program}" == "samtools_view" ]]
+    then
+      ${programs_array[$program]}
+
+    # Handle DIAMOND BLAST menu
+    elif [[ "${program}" == "diamond" ]]; then
+      ${programs_array[$program]} help
+
+    # Handle NCBI BLASTx menu
+    elif [[ "${program}" == "blastx" ]]; then
+      ${programs_array[$program]} -help
+    fi
+    ${programs_array[$program]} -h
+    echo ""
+    echo ""
+    echo "----------------------------------------------"
+    echo ""
+    echo ""
+  } &amp;&gt;&gt; program_options.log || true
+
+    # If MultiQC is in programs_array, copy the config file to this directory.
+    if [[ "${program}" == "multiqc" ]]; then
+      cp --preserve ~/.multiqc_config.yaml multiqc_config.yaml
+    fi
+  done
+  echo "Finished logging programs options."
+  echo ""
+fi
+
+
+# Document programs in PATH (primarily for program version ID)
+echo "Logging system $PATH..."
+{
+date
+echo ""
+echo "System PATH for $SLURM_JOB_ID"
+echo ""
+printf "%0.s-" {1..10}
+echo "${PATH}" | tr : \\n
+} &gt;&gt; system_path.log
+echo "Finished logging system $PATH."</code></pre>
+<hr>
+<section id="results" class="level4">
+<h4 class="anchored" data-anchor-id="results">RESULTS</h4>
+<p>This took an insane amount of time to run: 41 <em>days</em>! This required me to run the remainder of the files in a second Mox job after the initial job exceeded the time limit I specified.</p>
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="https://github.com/RobertsLab/sams-notebook/blob/master/images/screencaps/20230316-mmag-diamond-meganizer-RNAseq-runtime.png?raw=true" class="img-fluid figure-img"></p>
+<figcaption class="figure-caption">Screenshot showing runtimes of the two jobs needed to process all of the M.magister DIAMOND BLASTx MEGANization.</figcaption>
+</figure>
+</div>
+<p>The output files generated from this are absolutely <em>huge</em>! The <em>smallest</em> file size is 68GB! The next step is two open these up in MEGAN6 and get a sense of the taxonomic breakdowns.</p>
+<p>Output folder:</p>
+<ul>
+<li><a href="https://gannet.fish.washington.edu/Atumefaciens/20230316-mmag-diamond-meganizer-RNAseq/">20230316-mmag-diamond-meganizer-RNAseq/</a></li>
+</ul>
+</section>
+<section id="meganized-daa-files-daa" class="level3">
+<h3 class="anchored" data-anchor-id="meganized-daa-files-daa">MEGANized DAA files (DAA)</h3>
+<ul>
+<li><p><a href="https://gannet.fish.washington.edu/Atumefaciens/20230316-mmag-diamond-meganizer-RNAseq/CH01-06.trimmed.R1.blastx.meganized.daa">CH01-06.trimmed.R1.blastx.meganized.daa</a> (170G)</p>
+<ul>
+<li>MD5: <code>40cd0e6b88ebbcc623bcc703c1165767</code></li>
+</ul></li>
+<li><p><a href="https://gannet.fish.washington.edu/Atumefaciens/20230316-mmag-diamond-meganizer-RNAseq/CH01-06.trimmed.R2.blastx.meganized.daa">CH01-06.trimmed.R2.blastx.meganized.daa</a> (172G)</p>
+<ul>
+<li>MD5: <code>f0e49f829efcd8bd2759e77022ef1243</code></li>
+</ul></li>
+<li><p><a href="https://gannet.fish.washington.edu/Atumefaciens/20230316-mmag-diamond-meganizer-RNAseq/CH01-14.trimmed.R1.blastx.meganized.daa">CH01-14.trimmed.R1.blastx.meganized.daa</a> (278G)</p>
+<ul>
+<li>MD5: <code>aa2bd2293618975323e433b1c5b46af1</code></li>
+</ul></li>
+<li><p><a href="https://gannet.fish.washington.edu/Atumefaciens/20230316-mmag-diamond-meganizer-RNAseq/CH01-14.trimmed.R2.blastx.meganized.daa">CH01-14.trimmed.R2.blastx.meganized.daa</a> (280G)</p>
+<ul>
+<li>MD5: <code>9db3adecd8dcbb7bf35c609fe524e28c</code></li>
+</ul></li>
+<li><p><a href="https://gannet.fish.washington.edu/Atumefaciens/20230316-mmag-diamond-meganizer-RNAseq/CH01-22.trimmed.R1.blastx.meganized.daa">CH01-22.trimmed.R1.blastx.meganized.daa</a> (118G)</p>
+<ul>
+<li>MD5: <code>bb83f0f662d2ad048f6ea06fbd16cdd6</code></li>
+</ul></li>
+<li><p><a href="https://gannet.fish.washington.edu/Atumefaciens/20230316-mmag-diamond-meganizer-RNAseq/CH01-22.trimmed.R2.blastx.meganized.daa">CH01-22.trimmed.R2.blastx.meganized.daa</a> (117G)</p>
+<ul>
+<li>MD5: <code>26c9a3d732dc97b42d68fed33580989a</code></li>
+</ul></li>
+<li><p><a href="https://gannet.fish.washington.edu/Atumefaciens/20230316-mmag-diamond-meganizer-RNAseq/CH01-38.trimmed.R1.blastx.meganized.daa">CH01-38.trimmed.R1.blastx.meganized.daa</a> (324G)</p>
+<ul>
+<li>MD5: <code>24f600b7d0dc6625b1abd61abd40ba1a</code></li>
+</ul></li>
+<li><p><a href="https://gannet.fish.washington.edu/Atumefaciens/20230316-mmag-diamond-meganizer-RNAseq/CH01-38.trimmed.R2.blastx.meganized.daa">CH01-38.trimmed.R2.blastx.meganized.daa</a> (327G)</p>
+<ul>
+<li>MD5: <code>2c826f5c4d4cbe7e292c8633eda0045e</code></li>
+</ul></li>
+<li><p><a href="https://gannet.fish.washington.edu/Atumefaciens/20230316-mmag-diamond-meganizer-RNAseq/CH03-04.trimmed.R1.blastx.meganized.daa">CH03-04.trimmed.R1.blastx.meganized.daa</a> (115G)</p>
+<ul>
+<li>MD5: <code>221647010a04a7b90b5f43c09a66d255</code></li>
+</ul></li>
+<li><p><a href="https://gannet.fish.washington.edu/Atumefaciens/20230316-mmag-diamond-meganizer-RNAseq/CH03-04.trimmed.R2.blastx.meganized.daa">CH03-04.trimmed.R2.blastx.meganized.daa</a> (115G)</p>
+<ul>
+<li>MD5: <code>71aadedcb59ec1674aab190ea5e0b074</code></li>
+</ul></li>
+<li><p><a href="https://gannet.fish.washington.edu/Atumefaciens/20230316-mmag-diamond-meganizer-RNAseq/CH03-15.trimmed.R1.blastx.meganized.daa">CH03-15.trimmed.R1.blastx.meganized.daa</a> (144G)</p>
+<ul>
+<li>MD5: <code>d28e53896fb69761525dc3ebe51cd6d9</code></li>
+</ul></li>
+<li><p><a href="https://gannet.fish.washington.edu/Atumefaciens/20230316-mmag-diamond-meganizer-RNAseq/CH03-15.trimmed.R2.blastx.meganized.daa">CH03-15.trimmed.R2.blastx.meganized.daa</a> (146G)</p>
+<ul>
+<li>MD5: <code>f8c7cb85b6fe53fa8f29e35545a611cb</code></li>
+</ul></li>
+<li><p><a href="https://gannet.fish.washington.edu/Atumefaciens/20230316-mmag-diamond-meganizer-RNAseq/CH03-33.trimmed.R1.blastx.meganized.daa">CH03-33.trimmed.R1.blastx.meganized.daa</a> (125G)</p>
+<ul>
+<li>MD5: <code>1a48b209c2a5f378f68f2bd480edb909</code></li>
+</ul></li>
+<li><p><a href="https://gannet.fish.washington.edu/Atumefaciens/20230316-mmag-diamond-meganizer-RNAseq/CH03-33.trimmed.R2.blastx.meganized.daa">CH03-33.trimmed.R2.blastx.meganized.daa</a> (128G)</p>
+<ul>
+<li>MD5: <code>8e945f239f12e21cde91d96c3bfd22b0</code></li>
+</ul></li>
+<li><p><a href="https://gannet.fish.washington.edu/Atumefaciens/20230316-mmag-diamond-meganizer-RNAseq/CH05-01.trimmed.R1.blastx.meganized.daa">CH05-01.trimmed.R1.blastx.meganized.daa</a> (192G)</p>
+<ul>
+<li>MD5: <code>1b0ce1658f4e82702574b087069f44fe</code></li>
+</ul></li>
+<li><p><a href="https://gannet.fish.washington.edu/Atumefaciens/20230316-mmag-diamond-meganizer-RNAseq/CH05-01.trimmed.R2.blastx.meganized.daa">CH05-01.trimmed.R2.blastx.meganized.daa</a> (193G)</p>
+<ul>
+<li>MD5: <code>60a20767d13faa5147ae48182bc2f822</code></li>
+</ul></li>
+<li><p><a href="https://gannet.fish.washington.edu/Atumefaciens/20230316-mmag-diamond-meganizer-RNAseq/CH05-06.trimmed.R1.blastx.meganized.daa">CH05-06.trimmed.R1.blastx.meganized.daa</a> (225G)</p>
+<ul>
+<li>MD5: <code>0cbd183dd93be39311d087a957f336bc</code></li>
+</ul></li>
+<li><p><a href="https://gannet.fish.washington.edu/Atumefaciens/20230316-mmag-diamond-meganizer-RNAseq/CH05-06.trimmed.R2.blastx.meganized.daa">CH05-06.trimmed.R2.blastx.meganized.daa</a> (227G)</p>
+<ul>
+<li>MD5: <code>321269d6616c95bc46e7939ff7c54cf2</code></li>
+</ul></li>
+<li><p><a href="https://gannet.fish.washington.edu/Atumefaciens/20230316-mmag-diamond-meganizer-RNAseq/CH05-07.trimmed.R1.blastx.meganized.daa">CH05-07.trimmed.R1.blastx.meganized.daa</a> (82G)</p>
+<ul>
+<li>MD5: <code>d5d031054bf50b8b57db08970255ce38</code></li>
+</ul></li>
+<li><p><a href="https://gannet.fish.washington.edu/Atumefaciens/20230316-mmag-diamond-meganizer-RNAseq/CH05-07.trimmed.R2.blastx.meganized.daa">CH05-07.trimmed.R2.blastx.meganized.daa</a> (83G)</p>
+<ul>
+<li>MD5: <code>113fa38a7016da670082b1731bc52e3b</code></li>
+</ul></li>
+<li><p><a href="https://gannet.fish.washington.edu/Atumefaciens/20230316-mmag-diamond-meganizer-RNAseq/CH05-09.trimmed.R1.blastx.meganized.daa">CH05-09.trimmed.R1.blastx.meganized.daa</a> (299G)</p>
+<ul>
+<li>MD5: <code>3786ac49865bf0bdf35bb4f568c7b3fc</code></li>
+</ul></li>
+<li><p><a href="https://gannet.fish.washington.edu/Atumefaciens/20230316-mmag-diamond-meganizer-RNAseq/CH05-09.trimmed.R2.blastx.meganized.daa">CH05-09.trimmed.R2.blastx.meganized.daa</a> (305G)</p>
+<ul>
+<li>MD5: <code>b55eba3282c87da57b5d321ac937e96c</code></li>
+</ul></li>
+<li><p><a href="https://gannet.fish.washington.edu/Atumefaciens/20230316-mmag-diamond-meganizer-RNAseq/CH05-14.trimmed.R1.blastx.meganized.daa">CH05-14.trimmed.R1.blastx.meganized.daa</a> (362G)</p>
+<ul>
+<li>MD5: <code>d7212d9be6c2c77ec84f84097d25fca1</code></li>
+</ul></li>
+<li><p><a href="https://gannet.fish.washington.edu/Atumefaciens/20230316-mmag-diamond-meganizer-RNAseq/CH05-14.trimmed.R2.blastx.meganized.daa">CH05-14.trimmed.R2.blastx.meganized.daa</a> (364G)</p>
+<ul>
+<li>MD5: <code>e78be89442559acb8566af51b44b9853</code></li>
+</ul></li>
+<li><p><a href="https://gannet.fish.washington.edu/Atumefaciens/20230316-mmag-diamond-meganizer-RNAseq/CH05-21.trimmed.R1.blastx.meganized.daa">CH05-21.trimmed.R1.blastx.meganized.daa</a> (380G)</p>
+<ul>
+<li>MD5: <code>e263a8bb62cdd6fa6ca79bef6b1cc69c</code></li>
+</ul></li>
+<li><p><a href="https://gannet.fish.washington.edu/Atumefaciens/20230316-mmag-diamond-meganizer-RNAseq/CH05-21.trimmed.R2.blastx.meganized.daa">CH05-21.trimmed.R2.blastx.meganized.daa</a> (385G)</p>
+<ul>
+<li>MD5: <code>36fdfcbf693680e1cd950b21f7231159</code></li>
+</ul></li>
+<li><p><a href="https://gannet.fish.washington.edu/Atumefaciens/20230316-mmag-diamond-meganizer-RNAseq/CH05-29.trimmed.R1.blastx.meganized.daa">CH05-29.trimmed.R1.blastx.meganized.daa</a> (189G)</p>
+<ul>
+<li>MD5: <code>aa9c9a24e11f568cd3edf1ace1b8e0c5</code></li>
+</ul></li>
+<li><p><a href="https://gannet.fish.washington.edu/Atumefaciens/20230316-mmag-diamond-meganizer-RNAseq/CH05-29.trimmed.R2.blastx.meganized.daa">CH05-29.trimmed.R2.blastx.meganized.daa</a> (191G)</p>
+<ul>
+<li>MD5: <code>5893a50b3e354b191f2351696fa546b9</code></li>
+</ul></li>
+<li><p><a href="https://gannet.fish.washington.edu/Atumefaciens/20230316-mmag-diamond-meganizer-RNAseq/CH07-04.trimmed.R1.blastx.meganized.daa">CH07-04.trimmed.R1.blastx.meganized.daa</a> (150G)</p>
+<ul>
+<li>MD5: <code>fbc88fc2d5294b48a6f95e36cd18749a</code></li>
+</ul></li>
+<li><p><a href="https://gannet.fish.washington.edu/Atumefaciens/20230316-mmag-diamond-meganizer-RNAseq/CH07-04.trimmed.R2.blastx.meganized.daa">CH07-04.trimmed.R2.blastx.meganized.daa</a> (151G)</p>
+<ul>
+<li>MD5: <code>7f9b2f4d381a0e2d8c6cf1fed29b111e</code></li>
+</ul></li>
+<li><p><a href="https://gannet.fish.washington.edu/Atumefaciens/20230316-mmag-diamond-meganizer-RNAseq/CH07-06.trimmed.R1.blastx.meganized.daa">CH07-06.trimmed.R1.blastx.meganized.daa</a> (287G)</p>
+<ul>
+<li>MD5: <code>58fb37a4318fa24e11973bbecc738f2c</code></li>
+</ul></li>
+<li><p><a href="https://gannet.fish.washington.edu/Atumefaciens/20230316-mmag-diamond-meganizer-RNAseq/CH07-06.trimmed.R2.blastx.meganized.daa">CH07-06.trimmed.R2.blastx.meganized.daa</a> (292G)</p>
+<ul>
+<li>MD5: <code>f16e101aee88ee4dbb266524bf057b33</code></li>
+</ul></li>
+<li><p><a href="https://gannet.fish.washington.edu/Atumefaciens/20230316-mmag-diamond-meganizer-RNAseq/CH07-08.trimmed.R1.blastx.meganized.daa">CH07-08.trimmed.R1.blastx.meganized.daa</a> (769G)</p>
+<ul>
+<li>MD5: <code>8f1ccc1acf69eb131fcdb2b9a5589cad</code></li>
+</ul></li>
+<li><p><a href="https://gannet.fish.washington.edu/Atumefaciens/20230316-mmag-diamond-meganizer-RNAseq/CH07-08.trimmed.R2.blastx.meganized.daa">CH07-08.trimmed.R2.blastx.meganized.daa</a> (774G)</p>
+<ul>
+<li>MD5: <code>c950134f0975623f99a0c7be6dc80129</code></li>
+</ul></li>
+<li><p><a href="https://gannet.fish.washington.edu/Atumefaciens/20230316-mmag-diamond-meganizer-RNAseq/CH07-11.trimmed.R1.blastx.meganized.daa">CH07-11.trimmed.R1.blastx.meganized.daa</a> (275G)</p>
+<ul>
+<li>MD5: <code>3e546f482ab9c0b754f8b5138b153c30</code></li>
+</ul></li>
+<li><p><a href="https://gannet.fish.washington.edu/Atumefaciens/20230316-mmag-diamond-meganizer-RNAseq/CH07-11.trimmed.R2.blastx.meganized.daa">CH07-11.trimmed.R2.blastx.meganized.daa</a> (280G)</p>
+<ul>
+<li>MD5: <code>0b1ee907aa70051f4868d83a8bedf442</code></li>
+</ul></li>
+<li><p><a href="https://gannet.fish.washington.edu/Atumefaciens/20230316-mmag-diamond-meganizer-RNAseq/CH07-24.trimmed.R1.blastx.meganized.daa">CH07-24.trimmed.R1.blastx.meganized.daa</a> (848G)</p>
+<ul>
+<li>MD5: <code>cce94a417a5f52bc35f747b34c8f38cb</code></li>
+</ul></li>
+<li><p><a href="https://gannet.fish.washington.edu/Atumefaciens/20230316-mmag-diamond-meganizer-RNAseq/CH07-24.trimmed.R2.blastx.meganized.daa">CH07-24.trimmed.R2.blastx.meganized.daa</a> (856G)</p>
+<ul>
+<li>MD5: <code>643b6a4a5338c68f5e7d83882f312e14</code></li>
+</ul></li>
+<li><p><a href="https://gannet.fish.washington.edu/Atumefaciens/20230316-mmag-diamond-meganizer-RNAseq/CH09-02.trimmed.R1.blastx.meganized.daa">CH09-02.trimmed.R1.blastx.meganized.daa</a> (115G)</p>
+<ul>
+<li>MD5: <code>f18701d768fd7b88ee17f34fde6af332</code></li>
+</ul></li>
+<li><p><a href="https://gannet.fish.washington.edu/Atumefaciens/20230316-mmag-diamond-meganizer-RNAseq/CH09-02.trimmed.R2.blastx.meganized.daa">CH09-02.trimmed.R2.blastx.meganized.daa</a> (116G)</p>
+<ul>
+<li>MD5: <code>704d7e770b98a8640b6380a31e87b2d8</code></li>
+</ul></li>
+<li><p><a href="https://gannet.fish.washington.edu/Atumefaciens/20230316-mmag-diamond-meganizer-RNAseq/CH09-13.trimmed.R1.blastx.meganized.daa">CH09-13.trimmed.R1.blastx.meganized.daa</a> (68G)</p>
+<ul>
+<li>MD5: <code>f17ffe982e1cfab2990cdbbd262437f0</code></li>
+</ul></li>
+<li><p><a href="https://gannet.fish.washington.edu/Atumefaciens/20230316-mmag-diamond-meganizer-RNAseq/CH09-13.trimmed.R2.blastx.meganized.daa">CH09-13.trimmed.R2.blastx.meganized.daa</a> (69G)</p>
+<ul>
+<li>MD5: <code>fd3905e5c4b3ef8a4a8de2cee1d7ffea</code></li>
+</ul></li>
+<li><p><a href="https://gannet.fish.washington.edu/Atumefaciens/20230316-mmag-diamond-meganizer-RNAseq/CH09-28.trimmed.R1.blastx.meganized.daa">CH09-28.trimmed.R1.blastx.meganized.daa</a> (72G)</p>
+<ul>
+<li>MD5: <code>9878ae6dc902124f6e20b0047549f100</code></li>
+</ul></li>
+<li><p><a href="https://gannet.fish.washington.edu/Atumefaciens/20230316-mmag-diamond-meganizer-RNAseq/CH09-28.trimmed.R2.blastx.meganized.daa">CH09-28.trimmed.R2.blastx.meganized.daa</a> (73G)</p>
+<ul>
+<li>MD5: <code>bd5079f578dc0b03ef8bdbeb12e013b4</code></li>
+</ul></li>
+<li><p><a href="https://gannet.fish.washington.edu/Atumefaciens/20230316-mmag-diamond-meganizer-RNAseq/CH10-08.trimmed.R1.blastx.meganized.daa">CH10-08.trimmed.R1.blastx.meganized.daa</a> (247G)</p>
+<ul>
+<li>MD5: <code>2591f18e401dc13003b3c6e74f40b726</code></li>
+</ul></li>
+<li><p><a href="https://gannet.fish.washington.edu/Atumefaciens/20230316-mmag-diamond-meganizer-RNAseq/CH10-08.trimmed.R2.blastx.meganized.daa">CH10-08.trimmed.R2.blastx.meganized.daa</a> (248G)</p>
+<ul>
+<li>MD5: <code>171de114cdc7e656004da6fc88ce296e</code></li>
+</ul></li>
+<li><p><a href="https://gannet.fish.washington.edu/Atumefaciens/20230316-mmag-diamond-meganizer-RNAseq/CH10-11.trimmed.R1.blastx.meganized.daa">CH10-11.trimmed.R1.blastx.meganized.daa</a> (97G)</p>
+<ul>
+<li>MD5: <code>771d532b1ff7d71d108aae16cfc0fc0a</code></li>
+</ul></li>
+<li><p><a href="https://gannet.fish.washington.edu/Atumefaciens/20230316-mmag-diamond-meganizer-RNAseq/CH10-11.trimmed.R2.blastx.meganized.daa">CH10-11.trimmed.R2.blastx.meganized.daa</a> (97G)</p>
+<ul>
+<li>MD5: <code>83eefbb73c44b62fce38b6767fdc6a7d</code></li>
+</ul></li>
+</ul>
+
+
+</section>
+
+</main> <!-- /main -->
+<script id="quarto-html-after-body" type="application/javascript">
+window.document.addEventListener("DOMContentLoaded", function (event) {
+  const toggleBodyColorMode = (bsSheetEl) => {
+    const mode = bsSheetEl.getAttribute("data-mode");
+    const bodyEl = window.document.querySelector("body");
+    if (mode === "dark") {
+      bodyEl.classList.add("quarto-dark");
+      bodyEl.classList.remove("quarto-light");
+    } else {
+      bodyEl.classList.add("quarto-light");
+      bodyEl.classList.remove("quarto-dark");
+    }
+  }
+  const toggleBodyColorPrimary = () => {
+    const bsSheetEl = window.document.querySelector("link#quarto-bootstrap");
+    if (bsSheetEl) {
+      toggleBodyColorMode(bsSheetEl);
+    }
+  }
+  toggleBodyColorPrimary();  
+  const icon = "";
+  const anchorJS = new window.AnchorJS();
+  anchorJS.options = {
+    placement: 'right',
+    icon: icon
+  };
+  anchorJS.add('.anchored');
+  const isCodeAnnotation = (el) => {
+    for (const clz of el.classList) {
+      if (clz.startsWith('code-annotation-')) {                     
+        return true;
+      }
+    }
+    return false;
+  }
+  const clipboard = new window.ClipboardJS('.code-copy-button', {
+    text: function(trigger) {
+      const codeEl = trigger.previousElementSibling.cloneNode(true);
+      for (const childEl of codeEl.children) {
+        if (isCodeAnnotation(childEl)) {
+          childEl.remove();
+        }
+      }
+      return codeEl.innerText;
+    }
+  });
+  clipboard.on('success', function(e) {
+    // button target
+    const button = e.trigger;
+    // don't keep focus
+    button.blur();
+    // flash "checked"
+    button.classList.add('code-copy-button-checked');
+    var currentTitle = button.getAttribute("title");
+    button.setAttribute("title", "Copied!");
+    let tooltip;
+    if (window.bootstrap) {
+      button.setAttribute("data-bs-toggle", "tooltip");
+      button.setAttribute("data-bs-placement", "left");
+      button.setAttribute("data-bs-title", "Copied!");
+      tooltip = new bootstrap.Tooltip(button, 
+        { trigger: "manual", 
+          customClass: "code-copy-button-tooltip",
+          offset: [0, -8]});
+      tooltip.show();    
+    }
+    setTimeout(function() {
+      if (tooltip) {
+        tooltip.hide();
+        button.removeAttribute("data-bs-title");
+        button.removeAttribute("data-bs-toggle");
+        button.removeAttribute("data-bs-placement");
+      }
+      button.setAttribute("title", currentTitle);
+      button.classList.remove('code-copy-button-checked');
+    }, 1000);
+    // clear code selection
+    e.clearSelection();
+  });
+  function tippyHover(el, contentFn) {
+    const config = {
+      allowHTML: true,
+      content: contentFn,
+      maxWidth: 500,
+      delay: 100,
+      arrow: false,
+      appendTo: function(el) {
+          return el.parentElement;
+      },
+      interactive: true,
+      interactiveBorder: 10,
+      theme: 'quarto',
+      placement: 'bottom-start'
+    };
+    window.tippy(el, config); 
+  }
+  const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+  for (var i=0; i<noterefs.length; i++) {
+    const ref = noterefs[i];
+    tippyHover(ref, function() {
+      // use id or data attribute instead here
+      let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+      try { href = new URL(href).hash; } catch {}
+      const id = href.replace(/^#\/?/, "");
+      const note = window.document.getElementById(id);
+      return note.innerHTML;
+    });
+  }
+      let selectedAnnoteEl;
+      const selectorForAnnotation = ( cell, annotation) => {
+        let cellAttr = 'data-code-cell="' + cell + '"';
+        let lineAttr = 'data-code-annotation="' +  annotation + '"';
+        const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+        return selector;
+      }
+      const selectCodeLines = (annoteEl) => {
+        const doc = window.document;
+        const targetCell = annoteEl.getAttribute("data-target-cell");
+        const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+        const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+        const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+        const lineIds = lines.map((line) => {
+          return targetCell + "-" + line;
+        })
+        let top = null;
+        let height = null;
+        let parent = null;
+        if (lineIds.length > 0) {
+            //compute the position of the single el (top and bottom and make a div)
+            const el = window.document.getElementById(lineIds[0]);
+            top = el.offsetTop;
+            height = el.offsetHeight;
+            parent = el.parentElement.parentElement;
+          if (lineIds.length > 1) {
+            const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+            const bottom = lastEl.offsetTop + lastEl.offsetHeight;
+            height = bottom - top;
+          }
+          if (top !== null && height !== null && parent !== null) {
+            // cook up a div (if necessary) and position it 
+            let div = window.document.getElementById("code-annotation-line-highlight");
+            if (div === null) {
+              div = window.document.createElement("div");
+              div.setAttribute("id", "code-annotation-line-highlight");
+              div.style.position = 'absolute';
+              parent.appendChild(div);
+            }
+            div.style.top = top - 2 + "px";
+            div.style.height = height + 4 + "px";
+            let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+            if (gutterDiv === null) {
+              gutterDiv = window.document.createElement("div");
+              gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+              gutterDiv.style.position = 'absolute';
+              const codeCell = window.document.getElementById(targetCell);
+              const gutter = codeCell.querySelector('.code-annotation-gutter');
+              gutter.appendChild(gutterDiv);
+            }
+            gutterDiv.style.top = top - 2 + "px";
+            gutterDiv.style.height = height + 4 + "px";
+          }
+          selectedAnnoteEl = annoteEl;
+        }
+      };
+      const unselectCodeLines = () => {
+        const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+        elementsIds.forEach((elId) => {
+          const div = window.document.getElementById(elId);
+          if (div) {
+            div.remove();
+          }
+        });
+        selectedAnnoteEl = undefined;
+      };
+      // Attach click handler to the DT
+      const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
+      for (const annoteDlNode of annoteDls) {
+        annoteDlNode.addEventListener('click', (event) => {
+          const clickedEl = event.target;
+          if (clickedEl !== selectedAnnoteEl) {
+            unselectCodeLines();
+            const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
+            if (activeEl) {
+              activeEl.classList.remove('code-annotation-active');
+            }
+            selectCodeLines(clickedEl);
+            clickedEl.classList.add('code-annotation-active');
+          } else {
+            // Unselect the line
+            unselectCodeLines();
+            clickedEl.classList.remove('code-annotation-active');
+          }
+        });
+      }
+  const findCites = (el) => {
+    const parentEl = el.parentElement;
+    if (parentEl) {
+      const cites = parentEl.dataset.cites;
+      if (cites) {
+        return {
+          el,
+          cites: cites.split(' ')
+        };
+      } else {
+        return findCites(el.parentElement)
+      }
+    } else {
+      return undefined;
+    }
+  };
+  var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+  for (var i=0; i<bibliorefs.length; i++) {
+    const ref = bibliorefs[i];
+    const citeInfo = findCites(ref);
+    if (citeInfo) {
+      tippyHover(citeInfo.el, function() {
+        var popup = window.document.createElement('div');
+        citeInfo.cites.forEach(function(cite) {
+          var citeDiv = window.document.createElement('div');
+          citeDiv.classList.add('hanging-indent');
+          citeDiv.classList.add('csl-entry');
+          var biblioDiv = window.document.getElementById('ref-' + cite);
+          if (biblioDiv) {
+            citeDiv.innerHTML = biblioDiv.innerHTML;
+          }
+          popup.appendChild(citeDiv);
+        });
+        return popup.innerHTML;
+      });
+    }
+  }
+});
+</script>
+</div> <!-- /content -->
+
+
+
+</body></html>

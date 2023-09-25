@@ -1,0 +1,570 @@
+---
+layout: post
+title: FastQ QC and Trimming - E5 Coral RNA-seq Data for A.pulchra P.evermanni and P.meandrina Using FastQC fastp and MultiQC on Mox
+date: '2023-05-19 10:49'
+tags: 
+  - mox
+  - FastQC
+  - fastp
+  - MultiQC
+  - E5
+  - coral
+  - Acropora pulchra
+  - Porites evermanni
+  - Pocillopora meandrina
+categories: 
+  - 2023
+  - E5
+---
+After [downloading](https://robertslab.github.io/sams-notebook/posts/2023/2023-05-16-Data-Received-Coral-RNA-seq-Data-from-Azenta-Project-30-789513166.html) and then [reorganizing the E5 coral RNA-seq data from Azenta project 30-789513166](https://robertslab.github.io/sams-notebook/2023/05/17/Data-Management-E5-Coral-RNA-seq-and-sRNA-seq-Reorganizing-and-Renaming.html), I ran FastQC for initial quality checks, followed by trimming with `fastp`, and then final QC with FastQC/MultiQC. This was performed on all three species in the data sets: _A.pulchra_, _P.evermanni_, and _P.meandrina_. All aspects were run on Mox./
+
+Skip to [RESULTS](#results).
+
+SLURM Script (GitHub):
+
+- [20230519-E5_coral-fastqc-fastp-multiqc-RNAseq.sh](https://github.com/RobertsLab/sams-notebook/blob/master/sbatch_scripts/20230519-E5_coral-fastqc-fastp-multiqc-RNAseq.sh)
+
+```bash
+#!/bin/bash
+## Job Name
+#SBATCH --job-name=20230519-E5_coral-fastqc-fastp-multiqc-RNAseq
+## Allocation Definition
+#SBATCH --account=srlab
+#SBATCH --partition=srlab
+## Resources
+## Nodes
+#SBATCH --nodes=1
+## Walltime (days-hours:minutes:seconds format)
+#SBATCH --time=2-00:00:00
+## Memory per node
+#SBATCH --mem=120G
+##turn on e-mail notification
+#SBATCH --mail-type=ALL
+#SBATCH --mail-user=samwhite@uw.edu
+## Specify the working directory for this job
+#SBATCH --chdir=/gscratch/scrubbed/samwhite/outputs/20230519-E5_coral-fastqc-fastp-multiqc-RNAseq
+
+### FastQC and fastp trimming of E5 coral species RNA-seq data from 202230515.
+
+
+
+### fastp expects input FastQ files to be in format: RNA-ACR-178-S1-TP2_R1_001.fastq.gz
+
+
+###################################################################################
+# These variables need to be set by user
+
+## Assign Variables
+
+# Set FastQ filename patterns
+fastq_pattern='*.fastq.gz'
+R1_fastq_pattern='*_R1_*.fastq.gz'
+R2_fastq_pattern='*_R2_*.fastq.gz'
+
+# Set number of CPUs to use
+threads=40
+
+# Input/output files
+trimmed_checksums=trimmed_fastq_checksums.md5
+fastq_checksums=input_fastq_checksums.md5
+
+
+# Data directories
+reads_dir=/gscratch/srlab/sam/data
+
+# Species array (must match directory name usage)
+species_array=("A_pulchra" "P_evermanni" "P_meandrina")
+
+## Inititalize arrays
+raw_fastqs_array=()
+R1_names_array=()
+R2_names_array=()
+
+# Paths to programs
+fastp=/gscratch/srlab/programs/fastp.0.23.1
+fastqc=/gscratch/srlab/programs/fastqc_v0.11.9/fastqc
+multiqc=/gscratch/srlab/programs/anaconda3/bin/multiqc
+
+# Programs associative array
+declare -A programs_array
+programs_array=(
+[fastqc]="${fastqc}"
+[fastp]="${fastp}" \
+[multiqc]="${multiqc}"
+)
+
+
+###################################################################################
+
+# Exit script if any command fails
+set -e
+
+# Load Python Mox module for Python module availability
+module load intel-python3_2017
+
+# Capture date
+timestamp=$(date +%Y%m%d)
+
+
+# Set working directory
+working_dir=$(pwd)
+
+for species in "${species_array[@]}"
+do
+
+    ## Inititalize arrays
+    raw_fastqs_array=()
+    R1_names_array=()
+    R2_names_array=()
+    fastq_array_R1=()
+    fastq_array_R2=()
+    trimmed_fastq_array=()
+
+
+    echo "Creating ${species} directory and subdirectories..." 
+
+    mkdir --parents "${species}/raw_fastqc" "${species}/trimmed"
+
+    # Change to raw_fastq directory
+    cd "${species}/raw_fastqc"
+
+
+    # FastQC output directory
+    output_dir=$(pwd)
+
+    echo "Now in ${PWD}."
+
+    # Sync raw FastQ files to working directory
+    echo ""
+    echo "Transferring files via rsync..."
+
+    rsync --archive --verbose \
+    ${reads_dir}/${species}/RNAseq/${fastq_pattern} .
+
+    echo ""
+    echo "File transfer complete."
+    echo ""
+
+    ### Run FastQC ###
+
+    ### NOTE: Do NOT quote raw_fastqc_list
+    # Create array of trimmed FastQs
+    raw_fastqs_array=(${fastq_pattern})
+
+    # Pass array contents to new variable as space-delimited list
+    raw_fastqc_list=$(echo "${raw_fastqs_array[*]}")
+
+    echo "Beginning FastQC on raw reads..."
+    echo ""
+
+    # Run FastQC
+    ${programs_array[fastqc]} \
+    --threads ${threads} \
+    --outdir ${output_dir} \
+    ${raw_fastqc_list}
+
+    echo "FastQC on raw reads complete!"
+    echo ""
+
+    ### END FASTQC ###
+
+    ### RUN MULTIQC ###
+    echo "Beginning MultiQC on raw FastQC..."
+    echo ""
+
+    ${multiqc} .
+
+    echo ""
+    echo "MultiQC on raw FastQ complete."
+    echo ""
+
+    ### END MULTIQC ###
+
+    # Create arrays of fastq R1 files and sample names
+    # Do NOT quote R1_fastq_pattern variable
+    for fastq in ${R1_fastq_pattern}
+    do
+    fastq_array_R1+=("${fastq}")
+
+    # Use parameter substitution to remove all text up to and including last "." from
+    # right side of string.
+    R1_names_array+=("${fastq%%.*}")
+    done
+
+    # Create array of fastq R2 files
+    # Do NOT quote R2_fastq_pattern variable
+    for fastq in ${R2_fastq_pattern}
+    do
+    fastq_array_R2+=("${fastq}")
+
+    # Use parameter substitution to remove all text up to and including last "." from
+    # right side of string.
+    R2_names_array+=("${fastq%%.*}")
+    done
+
+
+    # Create MD5 checksums for raw FastQs
+    for fastq in ${fastq_pattern}
+    do
+        echo "Generating checksum for ${fastq}"
+        md5sum "${fastq}" | tee --append ${fastq_checksums}
+        echo ""
+    done
+
+
+    ### RUN FASTP ###
+
+    # Run fastp on files
+    # Adds JSON report output for downstream usage by MultiQC
+    # Trims 20bp from 5' end of all reads
+    # Trims 20bp from 3' end of all reads
+    # Trims poly G, if present
+    # Uses parameter substitution (e.g. ${R1_sample_name%%_*})to rm the _R[12] for report names.
+    echo "Beginning fastp trimming."
+    echo ""
+
+    for index in "${!fastq_array_R1[@]}"
+    do
+        R1_sample_name="${R1_names_array[index]}"
+        R2_sample_name="${R2_names_array[index]}"
+        ${fastp} \
+        --in1 ${fastq_array_R1[index]} \
+        --in2 ${fastq_array_R2[index]} \
+        --detect_adapter_for_pe \
+        --trim_poly_g \
+        --trim_front1 20 \
+        --trim_front2 20 \
+        --thread ${threads} \
+        --html "../trimmed/${R1_sample_name%%_*}".fastp-trim."${timestamp}".report.html \
+        --json "../trimmed/${R1_sample_name%%_*}".fastp-trim."${timestamp}".report.json \
+        --out1 "../trimmed/${R1_sample_name}".fastp-trim."${timestamp}".fastq.gz \
+        --out2 "../trimmed/${R2_sample_name}".fastp-trim."${timestamp}".fastq.gz
+        
+        # Move to trimmed directory
+        # This is done so checksums file doesn't include excess path in
+        cd ../trimmed/
+
+        echo "Moving to ${PWD}."
+        echo ""
+
+        # Generate md5 checksums for newly trimmed files
+        {
+            md5sum "${R1_sample_name}".fastp-trim."${timestamp}".fastq.gz
+            md5sum "${R2_sample_name}".fastp-trim."${timestamp}".fastq.gz
+        } >> "${trimmed_checksums}"
+
+
+        # Go back to raw reads directory
+        cd ../raw_fastqc
+
+        echo "Moving to ${PWD}"
+        echo ""
+        
+        # Remove original FastQ files
+        echo ""
+        echo " Removing ${fastq_array_R1[index]} and ${fastq_array_R2[index]}."
+        
+        rm "${fastq_array_R1[index]}" "${fastq_array_R2[index]}"
+    done
+
+    echo ""
+    echo "fastp trimming complete."
+    echo ""
+
+    ### END FASTP ###
+
+
+    ### RUN FASTQC ON TRIMMED READS ###
+
+    ### NOTE: Do NOT quote ${trimmed_fastqc_list}
+
+    # Moved to trimmed reads directory
+    cd ../trimmed
+
+    echo "Moving to ${PWD}"
+    echo ""
+
+    # FastQC output directory
+    output_dir=$(pwd)
+
+    # Create array of trimmed FastQs
+    trimmed_fastq_array=(*fastp-trim*.fastq.gz)
+
+    # Pass array contents to new variable as space-delimited list
+    trimmed_fastqc_list=$(echo "${trimmed_fastq_array[*]}")
+
+    # Run FastQC
+    echo "Beginning FastQC on trimmed reads..."
+    echo ""
+    ${programs_array[fastqc]} \
+    --threads ${threads} \
+    --outdir ${output_dir} \
+    ${trimmed_fastqc_list}
+
+    echo ""
+    echo "FastQC on trimmed reads complete!"
+    echo ""
+
+    ### END FASTQC ###
+
+    ### RUN MULTIQC ###
+    echo "Beginning MultiQC on trimmed reads data..."
+    echo ""
+
+    ${multiqc} .
+
+    echo ""
+    echo "MultiQC on trimmed reads data complete."
+    echo ""
+
+    ### END MULTIQC ###
+
+    cd "${working_dir}"
+
+done
+
+####################################################################
+
+# Capture program options
+if [[ "${#programs_array[@]}" -gt 0 ]]; then
+  echo "Logging program options..."
+  for program in "${!programs_array[@]}"
+  do
+    {
+    echo "Program options for ${program}: "
+    echo ""
+    # Handle samtools help menus
+    if [[ "${program}" == "samtools_index" ]] \
+    || [[ "${program}" == "samtools_sort" ]] \
+    || [[ "${program}" == "samtools_view" ]]
+    then
+      ${programs_array[$program]}
+
+    # Handle DIAMOND BLAST menu
+    elif [[ "${program}" == "diamond" ]]; then
+      ${programs_array[$program]} help
+
+    # Handle NCBI BLASTx menu
+    elif [[ "${program}" == "blastx" ]]; then
+      ${programs_array[$program]} -help
+    fi
+    ${programs_array[$program]} -h
+    echo ""
+    echo ""
+    echo "----------------------------------------------"
+    echo ""
+    echo ""
+  } &>> program_options.log || true
+
+    # If MultiQC is in programs_array, copy the config file to this directory.
+    if [[ "${program}" == "multiqc" ]]; then
+      cp --preserve ~/.multiqc_config.yaml multiqc_config.yaml
+    fi
+  done
+fi
+
+
+# Document programs in PATH (primarily for program version ID)
+{
+date
+echo ""
+echo "System PATH for $SLURM_JOB_ID"
+echo ""
+printf "%0.s-" {1..10}
+echo "${PATH}" | tr : \\n
+} >> system_path.log
+```
+---
+
+Took approximately 2hrs to run:
+
+![Runtime for Mox job showing 2hrs, 3mins, and 39secs.](https://github.com/RobertsLab/sams-notebook/blob/master/images/screencaps/20230519-E5_coral-fastqc-fastp-multiqc-RNAseq.png?raw=true)
+
+#### RESULTS
+
+Output folders:
+
+### _A.pulchra_
+
+&nbsp;&nbsp;&nbsp;&nbsp;#### Raw FastQs:
+
+  - MultiQC Report (HTML)
+
+    - [A_pulchra/raw_fastqc/multiqc_report.html](https://gannet.fish.washington.edu/Atumefaciens/20230519-E5_coral-fastqc-fastp-multiqc-RNAseq/A_pulchra/raw_fastqc/multiqc_report.html)
+
+  - MD5 checksums (text)
+
+    - [A_pulchra/raw_fastqc/input_fastq_checksums.md5](https://gannet.fish.washington.edu/Atumefaciens/20230519-E5_coral-fastqc-fastp-multiqc-RNAseq/A_pulchra/raw_fastqc/input_fastq_checksums.md5)
+
+&nbsp;&nbsp;&nbsp;&nbsp;#### Trimmed FastQs:
+
+  - MultiQC Report (HTML)
+
+    - [A_pulchra/trimmed/multiqc_report.html](https://gannet.fish.washington.edu/Atumefaciens/20230519-E5_coral-fastqc-fastp-multiqc-RNAseq/A_pulchra/trimmed/multiqc_report.html)
+
+  - FastQ (gzipped)
+
+    - [RNA-ACR-140-S1-TP2_R1_001.fastp-trim.20230519.fastq.gz](https://gannet.fish.washington.edu/Atumefaciens/20230519-E5_coral-fastqc-fastp-multiqc-RNAseq/A_pulchra/trimmed/RNA-ACR-140-S1-TP2_R1_001.fastp-trim.20230519.fastq.gz) (2.9G)
+
+      - MD5: `eef049ee0098417d77990b6dd6a0579e`
+
+    - [RNA-ACR-140-S1-TP2_R2_001.fastp-trim.20230519.fastq.gz](https://gannet.fish.washington.edu/Atumefaciens/20230519-E5_coral-fastqc-fastp-multiqc-RNAseq/A_pulchra/trimmed/RNA-ACR-140-S1-TP2_R2_001.fastp-trim.20230519.fastq.gz) (3.0G)
+
+      - MD5: `e0afac6164512ef22e695f7bfd14329e`
+
+    - [RNA-ACR-145-S1-TP2_R1_001.fastp-trim.20230519.fastq.gz](https://gannet.fish.washington.edu/Atumefaciens/20230519-E5_coral-fastqc-fastp-multiqc-RNAseq/A_pulchra/trimmed/RNA-ACR-145-S1-TP2_R1_001.fastp-trim.20230519.fastq.gz) (2.6G)
+
+      - MD5: `89fd1fbcd090132ee4be4523615c62e7`
+
+    - [RNA-ACR-145-S1-TP2_R2_001.fastp-trim.20230519.fastq.gz](https://gannet.fish.washington.edu/Atumefaciens/20230519-E5_coral-fastqc-fastp-multiqc-RNAseq/A_pulchra/trimmed/RNA-ACR-145-S1-TP2_R2_001.fastp-trim.20230519.fastq.gz) (2.6G)
+
+      - MD5: `1344e89bcb77ec9b2a62a74062410bcc`
+
+    - [RNA-ACR-150-S1-TP2_R1_001.fastp-trim.20230519.fastq.gz](https://gannet.fish.washington.edu/Atumefaciens/20230519-E5_coral-fastqc-fastp-multiqc-RNAseq/A_pulchra/trimmed/RNA-ACR-150-S1-TP2_R1_001.fastp-trim.20230519.fastq.gz) (2.6G)
+
+      - MD5: `6f97d5b6bc43afdb10209147d8079674`
+
+    - [RNA-ACR-150-S1-TP2_R2_001.fastp-trim.20230519.fastq.gz](https://gannet.fish.washington.edu/Atumefaciens/20230519-E5_coral-fastqc-fastp-multiqc-RNAseq/A_pulchra/trimmed/RNA-ACR-150-S1-TP2_R2_001.fastp-trim.20230519.fastq.gz) (2.7G)
+
+      - MD5: `7df99937e219fea0780c4e0445e6bebe`
+
+    - [RNA-ACR-173-S1-TP2_R1_001.fastp-trim.20230519.fastq.gz](https://gannet.fish.washington.edu/Atumefaciens/20230519-E5_coral-fastqc-fastp-multiqc-RNAseq/A_pulchra/trimmed/RNA-ACR-173-S1-TP2_R1_001.fastp-trim.20230519.fastq.gz) (2.9G)
+
+      - MD5: `fa620acd4713931ae91c888579ec8d1c`
+
+    - [RNA-ACR-173-S1-TP2_R2_001.fastp-trim.20230519.fastq.gz](https://gannet.fish.washington.edu/Atumefaciens/20230519-E5_coral-fastqc-fastp-multiqc-RNAseq/A_pulchra/trimmed/RNA-ACR-173-S1-TP2_R2_001.fastp-trim.20230519.fastq.gz) (3.0G)
+
+      - MD5: `5ee3263192a30e3e7d294895211d4499`
+
+    - [RNA-ACR-178-S1-TP2_R1_001.fastp-trim.20230519.fastq.gz](https://gannet.fish.washington.edu/Atumefaciens/20230519-E5_coral-fastqc-fastp-multiqc-RNAseq/A_pulchra/trimmed/RNA-ACR-178-S1-TP2_R1_001.fastp-trim.20230519.fastq.gz) (2.6G)
+
+      - MD5: `9b66f6ee9200dc4c05d16273e0fb6eb4`
+
+    - [RNA-ACR-178-S1-TP2_R2_001.fastp-trim.20230519.fastq.gz](https://gannet.fish.washington.edu/Atumefaciens/20230519-E5_coral-fastqc-fastp-multiqc-RNAseq/A_pulchra/trimmed/RNA-ACR-178-S1-TP2_R2_001.fastp-trim.20230519.fastq.gz) (2.7G)
+
+      - MD5: `284c36d72ead05f11cf7a7524ca7c916`
+
+---
+
+
+### _P.evermanni_
+
+&nbsp;&nbsp;&nbsp;&nbsp;#### Raw FastQs:
+
+  - MultiQC Report (HTML)
+
+    - [P_evermanni/raw_fastqc/multiqc_report.html](https://gannet.fish.washington.edu/Atumefaciens/20230519-E5_coral-fastqc-fastp-multiqc-RNAseq/P_evermanni/raw_fastqc/multiqc_report.html)
+
+  - MD5 checksums (text)
+
+    - [P_evermanni/raw_fastqc/input_fastq_checksums.md5](https://gannet.fish.washington.edu/Atumefaciens/20230519-E5_coral-fastqc-fastp-multiqc-RNAseq/P_evermanni/raw_fastqc/input_fastq_checksums.md5)
+
+&nbsp;&nbsp;&nbsp;&nbsp;#### Trimmed FastQs:
+
+  - MultiQC Report (HTML)
+
+    - [P_evermanni/trimmed/multiqc_report.html](https://gannet.fish.washington.edu/Atumefaciens/20230519-E5_coral-fastqc-fastp-multiqc-RNAseq/P_evermanni/trimmed/multiqc_report.html)
+
+  - FastQs (gzipped)
+
+    - [RNA-POR-71-S1-TP2_R1_001.fastp-trim.20230519.fastq.gz](https://gannet.fish.washington.edu/Atumefaciens/20230519-E5_coral-fastqc-fastp-multiqc-RNAseq/P_evermanni/trimmed/RNA-POR-71-S1-TP2_R1_001.fastp-trim.20230519.fastq.gz) (2.5G)
+
+      - MD5: `a622b00b0553fc35d62896b0b6763331`
+
+    - [RNA-POR-71-S1-TP2_R2_001.fastp-trim.20230519.fastq.gz](https://gannet.fish.washington.edu/Atumefaciens/20230519-E5_coral-fastqc-fastp-multiqc-RNAseq/P_evermanni/trimmed/RNA-POR-71-S1-TP2_R2_001.fastp-trim.20230519.fastq.gz) (2.6G)
+
+      - MD5: `b5f764aa1727d92a8cf74b0995724df6`
+
+    - [RNA-POR-73-S1-TP2_R1_001.fastp-trim.20230519.fastq.gz](https://gannet.fish.washington.edu/Atumefaciens/20230519-E5_coral-fastqc-fastp-multiqc-RNAseq/P_evermanni/trimmed/RNA-POR-73-S1-TP2_R1_001.fastp-trim.20230519.fastq.gz) (2.2G)
+
+      - MD5: `3168aeb2cb7790d7c1e6584a992ab5d7`
+
+    - [RNA-POR-73-S1-TP2_R2_001.fastp-trim.20230519.fastq.gz](https://gannet.fish.washington.edu/Atumefaciens/20230519-E5_coral-fastqc-fastp-multiqc-RNAseq/P_evermanni/trimmed/RNA-POR-73-S1-TP2_R2_001.fastp-trim.20230519.fastq.gz) (2.4G)
+
+      - MD5: `1069960c8446b130f5b3810e1e9870c2`
+
+    - [RNA-POR-76-S1-TP2_R1_001.fastp-trim.20230519.fastq.gz](https://gannet.fish.washington.edu/Atumefaciens/20230519-E5_coral-fastqc-fastp-multiqc-RNAseq/P_evermanni/trimmed/RNA-POR-76-S1-TP2_R1_001.fastp-trim.20230519.fastq.gz) (2.4G)
+
+      - MD5: `c08c9e6385524793a072d4c14721330e`
+
+    - [RNA-POR-76-S1-TP2_R2_001.fastp-trim.20230519.fastq.gz](https://gannet.fish.washington.edu/Atumefaciens/20230519-E5_coral-fastqc-fastp-multiqc-RNAseq/P_evermanni/trimmed/RNA-POR-76-S1-TP2_R2_001.fastp-trim.20230519.fastq.gz) (2.5G)
+
+      - MD5: `8ed83046e639f05d1227b74fe87d9bdc`
+
+    - [RNA-POR-79-S1-TP2_R1_001.fastp-trim.20230519.fastq.gz](https://gannet.fish.washington.edu/Atumefaciens/20230519-E5_coral-fastqc-fastp-multiqc-RNAseq/P_evermanni/trimmed/RNA-POR-79-S1-TP2_R1_001.fastp-trim.20230519.fastq.gz) (2.1G)
+
+      - MD5: `9ecddf149b27f0b18c7505f58d2e9481`
+
+    - [RNA-POR-79-S1-TP2_R2_001.fastp-trim.20230519.fastq.gz](https://gannet.fish.washington.edu/Atumefaciens/20230519-E5_coral-fastqc-fastp-multiqc-RNAseq/P_evermanni/trimmed/RNA-POR-79-S1-TP2_R2_001.fastp-trim.20230519.fastq.gz) (2.3G)
+
+      - MD5: `55ffc991dffd9c9b2f48e8138e499373`
+
+    - [RNA-POR-82-S1-TP2_R1_001.fastp-trim.20230519.fastq.gz](https://gannet.fish.washington.edu/Atumefaciens/20230519-E5_coral-fastqc-fastp-multiqc-RNAseq/P_evermanni/trimmed/RNA-POR-82-S1-TP2_R1_001.fastp-trim.20230519.fastq.gz) (2.6G)
+
+      - MD5: `df6f11bb9e44165889a4984d5a160257`
+
+    - [RNA-POR-82-S1-TP2_R2_001.fastp-trim.20230519.fastq.gz](https://gannet.fish.washington.edu/Atumefaciens/20230519-E5_coral-fastqc-fastp-multiqc-RNAseq/P_evermanni/trimmed/RNA-POR-82-S1-TP2_R2_001.fastp-trim.20230519.fastq.gz) (2.7G)
+
+      - MD5: `b4fbf6e9522ba299e2e8bbd249a9aa0d`
+
+---
+
+### _P.meandrina_
+
+&nbsp;&nbsp;&nbsp;&nbsp;#### Raw FastQs:
+
+  - MultiQC Report (HTML)
+
+    - [P_meandrina/raw_fastqc/multiqc_report.html](https://gannet.fish.washington.edu/Atumefaciens/20230519-E5_coral-fastqc-fastp-multiqc-RNAseq/P_meandrina/raw_fastqc/multiqc_report.html)
+
+  - MD5 checksums (text)
+
+    - [P_meandrina/raw_fastqc/input_fastq_checksums.md5](https://gannet.fish.washington.edu/Atumefaciens/20230519-E5_coral-fastqc-fastp-multiqc-RNAseq/P_meandrina/raw_fastqc/input_fastq_checksums.md5)
+
+&nbsp;&nbsp;&nbsp;&nbsp;#### Trimmed FastQs:
+
+  - MultiQC Report (HTML)
+
+    - [P_meandrina/trimmed/multiqc_report.html](https://gannet.fish.washington.edu/Atumefaciens/20230519-E5_coral-fastqc-fastp-multiqc-RNAseq/P_meandrina/trimmed/multiqc_report.html)
+
+  - FastQs (gzipped)
+
+    - [RNA-POC-47-S1-TP2_R1_001.fastp-trim.20230519.fastq.gz](https://gannet.fish.washington.edu/Atumefaciens/20230519-E5_coral-fastqc-fastp-multiqc-RNAseq/P_meandrina/trimmed/RNA-POC-47-S1-TP2_R1_001.fastp-trim.20230519.fastq.gz) (3.2G)
+
+      - MD5: `dcc32b44272656f7c0390a157f8d5c87`
+
+    - [RNA-POC-47-S1-TP2_R2_001.fastp-trim.20230519.fastq.gz](https://gannet.fish.washington.edu/Atumefaciens/20230519-E5_coral-fastqc-fastp-multiqc-RNAseq/P_meandrina/trimmed/RNA-POC-47-S1-TP2_R2_001.fastp-trim.20230519.fastq.gz) (3.3G)
+
+      - MD5: `71d226bb032554d46c861f61dcb708e5`
+
+    - [RNA-POC-48-S1-TP2_R1_001.fastp-trim.20230519.fastq.gz](https://gannet.fish.washington.edu/Atumefaciens/20230519-E5_coral-fastqc-fastp-multiqc-RNAseq/P_meandrina/trimmed/RNA-POC-48-S1-TP2_R1_001.fastp-trim.20230519.fastq.gz) (3.0G)
+
+      - MD5: `8c8c778d6963789ba3907f42a0749fbe`
+
+    - [RNA-POC-48-S1-TP2_R2_001.fastp-trim.20230519.fastq.gz](https://gannet.fish.washington.edu/Atumefaciens/20230519-E5_coral-fastqc-fastp-multiqc-RNAseq/P_meandrina/trimmed/RNA-POC-48-S1-TP2_R2_001.fastp-trim.20230519.fastq.gz) (3.1G)
+
+      - MD5: `5d0dadb66923b6d8762ce93905f9ee49`
+
+    - [RNA-POC-50-S1-TP2_R1_001.fastp-trim.20230519.fastq.gz](https://gannet.fish.washington.edu/Atumefaciens/20230519-E5_coral-fastqc-fastp-multiqc-RNAseq/P_meandrina/trimmed/RNA-POC-50-S1-TP2_R1_001.fastp-trim.20230519.fastq.gz) (3.3G)
+
+      - MD5: `43dcb5cca9ac2f98c7ad94c7bc634e28`
+
+    - [RNA-POC-50-S1-TP2_R2_001.fastp-trim.20230519.fastq.gz](https://gannet.fish.washington.edu/Atumefaciens/20230519-E5_coral-fastqc-fastp-multiqc-RNAseq/P_meandrina/trimmed/RNA-POC-50-S1-TP2_R2_001.fastp-trim.20230519.fastq.gz) (3.4G)
+
+      - MD5: `577fffdd620cd680ec9ffcfa5a722ae6`
+
+    - [RNA-POC-53-S1-TP2_R1_001.fastp-trim.20230519.fastq.gz](https://gannet.fish.washington.edu/Atumefaciens/20230519-E5_coral-fastqc-fastp-multiqc-RNAseq/P_meandrina/trimmed/RNA-POC-53-S1-TP2_R1_001.fastp-trim.20230519.fastq.gz) (3.2G)
+
+      - MD5: `766e4544396b2c8abe377434212845e6`
+
+    - [RNA-POC-53-S1-TP2_R2_001.fastp-trim.20230519.fastq.gz](https://gannet.fish.washington.edu/Atumefaciens/20230519-E5_coral-fastqc-fastp-multiqc-RNAseq/P_meandrina/trimmed/RNA-POC-53-S1-TP2_R2_001.fastp-trim.20230519.fastq.gz) (3.3G)
+
+      - MD5: `a2411c6d56235dd9aff377039d12672a`
+
+    - [RNA-POC-57-S1-TP2_R1_001.fastp-trim.20230519.fastq.gz](https://gannet.fish.washington.edu/Atumefaciens/20230519-E5_coral-fastqc-fastp-multiqc-RNAseq/P_meandrina/trimmed/RNA-POC-57-S1-TP2_R1_001.fastp-trim.20230519.fastq.gz) (2.5G)
+
+      - MD5: `b3d94288439f57be25f5440a9beccfc0`
+
+    - [RNA-POC-57-S1-TP2_R2_001.fastp-trim.20230519.fastq.gz](https://gannet.fish.washington.edu/Atumefaciens/20230519-E5_coral-fastqc-fastp-multiqc-RNAseq/P_meandrina/trimmed/RNA-POC-57-S1-TP2_R2_001.fastp-trim.20230519.fastq.gz) (2.6G)
+
+      - MD5: `d0f0d1b29bbeebce67ea22d4bb333988`

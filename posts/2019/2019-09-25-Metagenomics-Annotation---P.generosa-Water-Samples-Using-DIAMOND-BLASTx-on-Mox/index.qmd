@@ -1,0 +1,187 @@
+---
+layout: post
+title: Metagenomics Annotation - P.generosa Water Samples Using DIAMOND BLASTx on Mox
+date: '2019-09-25 14:34'
+tags:
+  - Panopea generosa
+  - geoduck
+  - metagenomics
+  - DIAMOND
+  - mox
+  - MEGAN6
+categories:
+  - 2019
+  - Miscellaneous
+---
+We recently had a meeting with Emma and Brook about the progress of this metagenomics project and Brook suggested trying out [MEGAN6](https://ab.inf.uni-tuebingen.de/software/megan6) as user-friendly way to get these samples annotated.
+
+Although [MEGAN6](https://ab.inf.uni-tuebingen.de/software/megan6) will accept BLAST output as input, it has to be formatted in a certain way. Although I've previously BLASTed these data, the outputs of those were not formatted in a way that is readily able to be imported into MEGAN6, so instead I opted to re-BLAST these using [DIAMOND](https://github.com/bbuchfink/diamond) (which is produced by the same group that created MEGAN6), as it is significantly faster than BLASTx and has output formats that are geared towards import to MEGAN6.
+
+I downloaded the NCBI nr BLASTdb in FastA format:
+
+`ftp://ftp.ncbi.nih.gov/blast/db/FASTA/nr.gz`
+
+I prepared the DIAMOND BLASTdb (`nr.dmnd`) with the following command:
+
+```shell
+/gscratch/srlab/programs/diamond-0.9.26/diamond makedb \
+--in nr.faa \
+-d nr \
+--taxonmap prot.accession2taxid \
+--taxonnodes nodes.dmp
+```
+The taxonmap and taxon node files were downloaded from the following NCBI locations:
+
+- `ftp://ftp.ncbi.nlm.nih.gov/pub/taxonomy/accession2taxid/prot.accession2taxid.gz`
+
+- `ftp://ftp.ncbi.nlm.nih.gov/pub/taxonomy/taxdmp.zip`
+
+
+SBATCH script (GitHub):
+
+- [20190923_pgen_fastp_EPI_trimming.sh](https://github.com/RobertsLab/sams-notebook/blob/master/sbatch_scripts/20190923_pgen_fastp_EPI_trimming.sh)
+
+```shell
+#!/bin/bash
+## Job Name
+#SBATCH --job-name=metagenomics_DIAMOND
+## Allocation Definition
+#SBATCH --account=coenv
+#SBATCH --partition=coenv
+## Resources
+## Nodes
+#SBATCH --nodes=1
+## Walltime (days-hours:minutes:seconds format)
+#SBATCH --time=6-00:00:00
+## Memory per node
+#SBATCH --mem=120G
+##turn on e-mail notification
+#SBATCH --mail-type=ALL
+#SBATCH --mail-user=samwhite@uw.edu
+## Specify the working directory for this job
+#SBATCH --chdir=/gscratch/scrubbed/samwhite/outputs/20190925_metagenomics_DIAMOND_blastx
+
+## Perform DIAMOND BLASTx on trimmed geoduck water metagnomics FastQ files,
+## and prepare them for analysis in MEGAN6 by running daa-meganizer on them.
+## Trimmed FastQ files originated here:
+## https://gannet.fish.washington.edu/Atumefaciens/20181211_metagenomics_fastqc_trimgalore/20181211_metagenomics_trimgalore_03/
+
+# Exit script if any command fails
+set -e
+
+# Load Python Mox module for Python module availability
+
+module load intel-python3_2017
+
+# SegFault fix?
+export THREADS_DAEMON_MODEL=1
+
+# Document programs in PATH (primarily for program version ID)
+
+{
+date
+echo ""
+echo "System PATH for $SLURM_JOB_ID"
+echo ""
+printf "%0.s-" {1..10}
+echo "${PATH}" | tr : \\n
+} >> system_path.log
+
+
+# Program paths
+diamond=/gscratch/srlab/programs/diamond-0.9.26/diamond
+meganizer=/gscratch/srlab/programs/MEGAN6/tools/daa-meganizer
+
+# DIAMOND NCBI nr database
+dmnd=/gscratch/srlab/blastdbs/ncbi-nr-20190925/nr.dmnd
+
+# MEGAN mapping files
+prot_acc2tax=/gscratch/srlab/sam/data/databases/MEGAN/prot_acc2tax-Jul2019X1.abin
+acc2interpro=/gscratch/srlab/sam/data/databases/MEGAN/acc2interpro-Jul2019X.abin
+acc2eggnog=/gscratch/srlab/sam/data/databases/MEGAN/acc2eggnog-Jul2019X.abin
+
+# FastQ files directory
+fastq_dir=/gscratch/srlab/sam/data/metagenomics/P_generosa/
+
+
+# Loop through FastQ files, log filenames to fastq_list.txt.
+# Run DIAMOND on each FastQ
+# Run MEGANIZER on each DIAMOND output file
+for fastq in ${fastq_dir}*.fq.gz
+do
+	# Log input FastQs
+	echo "${fastq}" >> fastq_list.txt
+
+	# Strip leading path and extensions
+	no_path=$(echo "${fastq##*/}")
+	no_ext=$(echo "${no_path%%.*}")
+
+	# Run DIAMOND with blastx
+	${diamond} blastx \
+	--db ${dmnd} \
+	--query "${fastq}" \
+	--out "${no_ext}".blastx.daa \
+	--outfmt 100 \
+	--top 5 \
+	--block-size 15.0 \
+	--index-chunks 4
+done
+```
+
+After running DIAMOND, the output files were "MEGANized" to add taxonomy/functional info to them. This will make them ready to open directly in MEGAN6. MEGANization was performed on my computer (swoose) due to the need for the MEGAN6 software to launch an X11 window (I believe this is somehow tied to a graphical user interface), which breaks the Java commands when run on Mox. Frustratingly, even though Java throws an exception, the exception doesn't appear to kill the program, which prevents Mox from knowing that the job has failed - it will just sit until the job times out! So, I didn't realize this wasn't working on Mox for a few days...
+
+Used the following taxonomy mapping files available from the [MEGAN6 Download Page](https://software-ab.informatik.uni-tuebingen.de/download/megan6/welcome.html):
+
+- [Protein accession to NCBI-taxonomy mapping file](http://ab.inf.uni-tuebingen.de/data/software/megan6/download/prot_acc2tax-Jul2019X1.abin.zip)
+
+- [Protein accession to InterPro mapping file](http://ab.inf.uni-tuebingen.de/data/software/megan6/download/acc2interpro-Jul2019X.abin.zip)
+
+- [Protein accession to eggNOG mapping file](http://ab.inf.uni-tuebingen.de/data/software/megan6/download/acc2eggnog-Jul2019X.abin.zip)
+
+MEGANIZER script (GitHub):
+
+- [20191007_metagenomics_meganizer.sh](https://github.com/RobertsLab/sams-notebook/blob/master/bash_scripts/20191007_metagenomics_meganizer.sh)
+
+```shell
+#!/bin/bash
+
+# Script to run MEGAN6 meganizer on DIAMOND DAA files from
+# 20190925_metagenomics_DIAMOND_blastx Mox job.
+
+# Requires MEGAN mapping files from:
+# http://ab.inf.uni-tuebingen.de/data/software/megan6/download/
+
+# Program path
+meganizer=/home/sam/programs/megan/tools/daa-meganizer
+
+# MEGAN mapping files
+prot_acc2tax=/home/sam/data/databases/MEGAN/prot_acc2tax-Jul2019X1.abin
+acc2interpro=/home/sam/data/databases/MEGAN/acc2interpro-Jul2019X.abin
+acc2eggnog=/home/sam/data/databases/MEGAN/acc2eggnog-Jul2019X.abin
+
+# Run MEGANIZER
+for daa in *.daa
+do
+  ${meganizer} \
+  --in "${daa}" \
+  --acc2taxa ${prot_acc2tax} \
+  --acc2interpro2go ${acc2interpro} \
+  --acc2eggnog ${acc2eggnog}
+done
+```
+
+---
+
+#### RESULTS
+
+The initial DIAMOND BLASTx took ~12hrs per sample, for a total run time of ~5 days:
+
+![Screencap of DIAMONDA BLASTx Mox runtime](https://github.com/RobertsLab/sams-notebook/blob/master/images/screencaps/20190925_metagenomics_DIAMOND_blastx_runtime.png?raw=true)
+
+
+
+Output folder:
+
+- [20190925_metagenomics_DIAMOND_blastx/](https://gannet.fish.washington.edu/Atumefaciens/20190925_metagenomics_DIAMOND_blastx/)
+
+All `.daa` files should now be able to be loaded into MEGAN6 for taxonomic analyses.

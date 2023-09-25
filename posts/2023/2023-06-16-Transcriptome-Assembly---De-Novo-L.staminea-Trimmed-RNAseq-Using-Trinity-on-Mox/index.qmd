@@ -1,0 +1,329 @@
+---
+layout: post
+title: Transcriptome Assembly - De Novo L.staminea Trimmed RNAseq Using Trinity on Mox
+date: '2023-06-16 21:03'
+tags: 
+  - transcriptome assembly
+  - RNAseq
+  - mox
+  - de novo
+  - Leukoma staminea
+  - trinity
+categories: 
+  - 2023
+  - Miscellaneous
+---
+As part of [this GitHub Issue to create a _de novo_ transcriptome assembly](https://github.com/RobertsLab/resources/issues/1655) from _L.staminea_ RNA-seq data, I [trimmed the reads earlier today](https://robertslab.github.io/sams-notebook/posts/2023/2023-06-16-Trimming-L.staminea-RNA-seq-Using-FastQC-fastp-and-MultiQC-on-Mox.html). Next up is the actual _do novo_ assembly. I performed this using [`Trinity`](https://github.com/trinityrnaseq/trinityrnaseq/wiki) on Mox./
+
+SLURM script (GitHub):
+
+- [20230616-lsta-trinity-RNAseq.sh](https://github.com/RobertsLab/sams-notebook/blob/master/sbatch_scripts/20230616-lsta-trinity-RNAseq.sh)
+
+```bash
+#!/bin/bash
+## Job Name
+#SBATCH --job-name=20230616-lsta-trinity-RNAseq
+## Allocation Definition
+#SBATCH --account=srlab
+#SBATCH --partition=srlab
+## Resources
+## Nodes
+#SBATCH --nodes=1
+## Walltime (days-hours:minutes:seconds format)
+#SBATCH --time=10-00:00:00
+## Memory per node
+#SBATCH --mem=500G
+##turn on e-mail notification
+#SBATCH --mail-type=ALL
+#SBATCH --mail-user=samwhite@uw.edu
+## Specify the working directory for this job
+#SBATCH --chdir=/gscratch/scrubbed/samwhite/outputs/20230616-lsta-trinity-RNAseq
+
+
+### Expects input FastQs to be in following format: *_R[12]_001.fastp-trim.20230616.fastq.gz 
+
+
+###################################################################################
+# These variables need to be set by user
+
+## Assign Variables
+
+# These variables need to be set by user
+
+# RNAseq FastQs directory
+reads_dir=/gscratch/scrubbed/samwhite/outputs/20230616-lsta-fastqc-fastp-multiqc-RNAseq/trimmed
+
+# Set FastQ filename patterns
+fastq_pattern='*.fastq.gz'
+R1_fastq_pattern='*_R1_*.fastq.gz'
+R2_fastq_pattern='*_R2_*.fastq.gz'
+
+# Inititalize arrays
+# Leave empty!!
+R1_array=()
+R2_array=()
+
+# Variables for R1/R2 lists
+# Leave empty!!!
+R1_list=""
+R2_list=""
+
+
+
+# Create array of fastq R1 files
+# Set filename pattern
+R1_array=("${reads_dir}"/${R1_fastq_pattern})
+
+# Create array of fastq R2 files
+# Set filename pattern
+R2_array=("${reads_dir}"/${R2_fastq_pattern})
+
+# Transcriptomes directory
+transcriptomes_dir=/gscratch/srlab/sam/data/L_staminea/transcriptomes
+
+# CPU threads
+threads=40
+
+# Recommended maximum memory is 100GB, per Trinity developer
+max_mem=100G
+
+# Name output files
+fasta_name="lsta-de_novo-transcriptome_v1.0.fasta"
+assembly_stats="${fasta_name}_assembly_stats.txt"
+
+# Paths to programs
+samtools="/gscratch/srlab/programs/samtools-1.10/samtools"
+trinity_dir="/gscratch/srlab/programs/trinityrnaseq-v2.12.0"
+trinity=${trinity_dir}/Trinity
+
+
+# Programs associative array
+declare -A programs_array
+programs_array=(
+[samtools_faidx]="${samtools} faidx" \
+[samtools_index]="${samtools} index" \
+[samtools_sort]="${samtools} sort" \
+[samtools_view]="${samtools} view" \
+[trinity]="${trinity}"
+)
+
+###################################################################################
+
+# Exit script if a command fails
+set -e
+
+# Load Python Mox module for Python module availability
+module load intel-python3_2017
+
+
+
+# Create list of fastq files used in analysis
+## Uses parameter substitution to strip leading path from filename
+for fastq in "${!R1_array[@]}"
+do
+  {
+    md5sum "${R1_array[${fastq}]}"
+    md5sum "${R2_array[${fastq}]}"
+  } >> input_fastqs.md5
+done
+
+# Create comma-separated lists of FastQ reads
+R1_list=$(echo "${R1_array[@]}" | tr " " ",")
+R2_list=$(echo "${R2_array[@]}" | tr " " ",")
+
+
+# Run Trinity
+## Running as "stranded" (--SS_lib_type)
+${programs_array[trinity]} \
+--seqType fq \
+--SS_lib_type RF \
+--max_memory ${max_mem} \
+--CPU ${threads} \
+--left "${R1_list}" \
+--right "${R2_list}"
+
+# Rename generic assembly FastA
+find . -name "Trinity*.fasta" -exec mv {} trinity_out_dir/"${fasta_name}" \;
+
+# Assembly stats
+${trinity_dir}/util/TrinityStats.pl trinity_out_dir/"${fasta_name}" \
+> ${assembly_stats}
+
+# Create gene map files
+${trinity_dir}/util/support_scripts/get_Trinity_gene_to_trans_map.pl \
+trinity_out_dir/"${fasta_name}" \
+> "${fasta_name}".gene_trans_map
+
+# Create sequence lengths file (used for differential gene expression)
+${trinity_dir}/util/misc/fasta_seq_length.pl \
+trinity_out_dir/"${fasta_name}" \
+> "${fasta_name}".seq_lens
+
+# Move FastA to working directory
+mv trinity_out_dir/"${fasta_name}" .
+
+# Create FastA index
+${programs_array[samtools_faidx]} \
+"${fasta_name}"
+
+# Copy files to transcriptome directory
+mkdir --parents "${transcriptomes_dir}"
+rsync -av \
+"${fasta_name}"* \
+"${transcriptomes_dir}"
+
+# Cleanup
+rm -rf trinity_out_dir/
+
+# Generate MD5 checksums
+for file in *
+do
+  echo ""
+  echo "Generating MD5 checksums for ${file}:"
+  md5sum "${file}" | tee --append checksums.md5
+  echo ""
+done
+
+
+#######################################################################################################
+
+# Disable exit on error
+set +e
+
+# Capture program options
+if [[ "${#programs_array[@]}" -gt 0 ]]; then
+  echo "Logging program options..."
+  for program in "${!programs_array[@]}"
+  do
+    {
+    echo "Program options for ${program}: "
+    echo ""
+    # Handle samtools help menus
+    if [[ "${program}" == "samtools_index" ]] \
+    || [[ "${program}" == "samtools_sort" ]] \
+    || [[ "${program}" == "samtools_view" ]]
+    then
+      ${programs_array[$program]}
+
+    # Handle DIAMOND BLAST menu
+    elif [[ "${program}" == "diamond" ]]; then
+      ${programs_array[$program]} help
+
+    # Handle NCBI BLASTx menu
+    elif [[ "${program}" == "blastx" ]]; then
+      ${programs_array[$program]} -help
+
+    # Handle fastp menu
+    elif [[ "${program}" == "fastp" ]]; then
+      ${programs_array[$program]} --help
+    fi
+    ${programs_array[$program]} -h
+    echo ""
+    echo ""
+    echo "----------------------------------------------"
+    echo ""
+    echo ""
+  } &>> program_options.log || true
+
+    # If MultiQC is in programs_array, copy the config file to this directory.
+    if [[ "${program}" == "multiqc" ]]; then
+      cp --preserve ~/.multiqc_config.yaml multiqc_config.yaml
+    fi
+  done
+fi
+
+
+# Document programs in PATH (primarily for program version ID)
+{
+date
+echo ""
+echo "System PATH for $SLURM_JOB_ID"
+echo ""
+printf "%0.s-" {1..10}
+echo "${PATH}" | tr : \\n
+} >> system_path.log
+```
+
+---
+
+#### RESULTS
+
+Run time was ~20hrs:
+
+![Screencap of Trinity runtime on Mox showing a run time of 20hrs, 12mins, 57secs](https://github.com/RobertsLab/sams-notebook/blob/master/images/screencaps/20230616-lsta-trinity-RNAseq-runtime.png?raw=true)
+
+Output folder:
+
+- [20230616-lsta-trinity-RNAseq/](https://gannet.fish.washington.edu/Atumefaciens/20230616-lsta-trinity-RNAseq/)
+
+  #### Transcriptome FastA
+
+  - [lsta-de_novo-transcriptome_v1.0.fasta](https://gannet.fish.washington.edu/Atumefaciens/20230616-lsta-trinity-RNAseq/lsta-de_novo-transcriptome_v1.0.fasta) (360M)
+
+    - MD5: `1b5029cd4dbd5ff55bcf81c8dd62f236`
+
+  #### FastA Index (text)
+  - [lsta-de_novo-transcriptome_v1.0.fasta.fai](https://gannet.fish.washington.edu/Atumefaciens/20230616-lsta-trinity-RNAseq/lsta-de_novo-transcriptome_v1.0.fasta.fai) (30M)
+
+    - MD5: `72a57424bd9f93fbca20abca48cdc4fb`
+
+  #### Trinity gene-to-transcript map (text)
+  - [lsta-de_novo-transcriptome_v1.0.fasta.gene_trans_map](https://gannet.fish.washington.edu/Atumefaciens/20230616-lsta-trinity-RNAseq/lsta-de_novo-transcriptome_v1.0.fasta.gene_trans_map) (30M)
+
+    - MD5: `0ee5004626d3b7f4cb8baabf859b6208`
+
+  #### Trinity sequence lengths file (text)
+
+  This is useful for other Trinity-related downstream tools (e.g. Transdecoder and Trinotate
+  )
+  - [lsta-de_novo-transcriptome_v1.0.fasta.seq_lens](https://gannet.fish.washington.edu/Atumefaciens/20230616-lsta-trinity-RNAseq/lsta-de_novo-transcriptome_v1.0.fasta.seq_lens) (19M)
+
+    - MD5: `703959bd01bd2b948d800c51a2bc684c`
+
+  #### Trinity assembly stats (text)
+  - [lsta-de_novo-transcriptome_v1.0.fasta_assembly_stats.txt](https://gannet.fish.washington.edu/Atumefaciens/20230616-lsta-trinity-RNAseq/lsta-de_novo-transcriptome_v1.0.fasta_assembly_stats.txt) (4.0K)
+
+    - MD5: `bf44012682dee5edf5c27ca5cb738960`
+
+```
+################################
+## Counts of transcripts, etc.
+################################
+Total trinity 'genes':	502826
+Total trinity transcripts:	645444
+Percent GC: 36.80
+
+########################################
+Stats based on ALL transcript contigs:
+########################################
+
+	Contig N10: 3398
+	Contig N20: 2073
+	Contig N30: 1301
+	Contig N40: 862
+	Contig N50: 609
+
+	Median contig length: 319
+	Average contig: 516.94
+	Total assembled bases: 333658646
+
+
+#####################################################
+## Stats based on ONLY LONGEST ISOFORM per 'GENE':
+#####################################################
+
+	Contig N10: 2495
+	Contig N20: 1337
+	Contig N30: 829
+	Contig N40: 588
+	Contig N50: 455
+
+	Median contig length: 300
+	Average contig: 439.38
+	Total assembled bases: 220929754
+```
+
+Well, there are very large numbers of "genes" and transcripts! I'm not sure I've seen such high numbers in a transcriptome assembly before. I expect the numbers to be large (100,000 - 300,000 is somewhat normal), but no this large. I'm wondering if this is due to the limited data set used for assembly. The assembly was generated with just one set of paired-end reads. This could lead to a _lot_ of reads that don't end up aligning with anything. It also increases the likelihood of picking up lots of lowly expressed transcripts which normally are missed when there's an overwhelming amount of data present for assembly.
+
+I'll go ahead and run this assembly through [Transdecoder](https://github.com/TransDecoder/TransDecoder/wiki) to identify open reading frames and try to get a better idea of which contigs are potentially "functional." Could provide a more "realistic" set of genes for use (in whatever this project is; I haven't been given much background info on this).
+

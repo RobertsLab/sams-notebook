@@ -1,0 +1,1361 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.3.450">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+<meta name="dcterms.date" content="2022-09-14">
+
+<title>robertslab.info - RNAseq Alignments - P.generosa Alignments and Alternative Transcript Identification Using Hisat2 and StringTie on Mox</title>
+<style>
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: min(4vw, 1.5em);}
+div.column{flex: auto; overflow-x: auto;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+  vertical-align: middle;
+}
+</style>
+
+
+<script src="../../../site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="../../../site_libs/quarto-nav/headroom.min.js"></script>
+<script src="../../../site_libs/clipboard/clipboard.min.js"></script>
+<script src="../../../site_libs/quarto-search/autocomplete.umd.js"></script>
+<script src="../../../site_libs/quarto-search/fuse.min.js"></script>
+<script src="../../../site_libs/quarto-search/quarto-search.js"></script>
+<meta name="quarto:offset" content="../../../">
+<link href="../../..//images/favicon.ico" rel="icon">
+<script src="../../../site_libs/quarto-html/quarto.js"></script>
+<script src="../../../site_libs/quarto-html/popper.min.js"></script>
+<script src="../../../site_libs/quarto-html/tippy.umd.min.js"></script>
+<script src="../../../site_libs/quarto-html/anchor.min.js"></script>
+<link href="../../../site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="../../../site_libs/quarto-html/quarto-syntax-highlighting-dark.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="../../../site_libs/bootstrap/bootstrap.min.js"></script>
+<link href="../../../site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="../../../site_libs/bootstrap/bootstrap.min.css" rel="stylesheet" id="quarto-bootstrap" data-mode="dark">
+<script id="quarto-search-options" type="application/json">{
+  "location": "navbar",
+  "copy-button": false,
+  "collapse-after": 3,
+  "panel-placement": "end",
+  "type": "overlay",
+  "limit": 20,
+  "language": {
+    "search-no-results-text": "No results",
+    "search-matching-documents-text": "matching documents",
+    "search-copy-link-title": "Copy link to search",
+    "search-hide-matches-text": "Hide additional matches",
+    "search-more-match-text": "more match in this document",
+    "search-more-matches-text": "more matches in this document",
+    "search-clear-button-title": "Clear",
+    "search-detached-cancel-button-title": "Cancel",
+    "search-submit-button-title": "Submit",
+    "search-label": "Search"
+  }
+}</script>
+
+
+<link rel="stylesheet" href="../../../styles.css">
+</head>
+
+<body class="nav-fixed">
+
+<div id="quarto-search-results"></div>
+  <header id="quarto-header" class="headroom fixed-top">
+    <nav class="navbar navbar-expand-lg navbar-dark ">
+      <div class="navbar-container container-fluid">
+      <div class="navbar-brand-container">
+    <a class="navbar-brand" href="../../../index.html">
+    <span class="navbar-title">robertslab.info</span>
+    </a>
+  </div>
+            <div id="quarto-search" class="" title="Search"></div>
+          <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarCollapse" aria-controls="navbarCollapse" aria-expanded="false" aria-label="Toggle navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+  <span class="navbar-toggler-icon"></span>
+</button>
+          <div class="collapse navbar-collapse" id="navbarCollapse">
+            <ul class="navbar-nav navbar-nav-scroll ms-auto">
+  <li class="nav-item dropdown ">
+    <a class="nav-link dropdown-toggle" href="#" id="nav-menu-bi-hdd-network" role="button" data-bs-toggle="dropdown" aria-expanded="false" rel="" target="">
+      <i class="bi bi-hdd-network" role="img">
+</i> 
+ <span class="menu-text"></span>
+    </a>
+    <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="nav-menu-bi-hdd-network">    
+        <li>
+    <a class="dropdown-item" href="http://raven.fish.washington.edu:8787" rel="" target="_blank">
+ <span class="dropdown-text">raven</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="https://gannet.fish.washington.edu" rel="" target="">
+ <span class="dropdown-text">gannet</span></a>
+  </li>  
+    </ul>
+  </li>
+  <li class="nav-item dropdown ">
+    <a class="nav-link dropdown-toggle" href="#" id="nav-menu-bi-journal-code" role="button" data-bs-toggle="dropdown" aria-expanded="false" rel="" target="">
+      <i class="bi bi-journal-code" role="img">
+</i> 
+ <span class="menu-text"></span>
+    </a>
+    <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="nav-menu-bi-journal-code">    
+        <li>
+    <a class="dropdown-item" href="https://robertslab.github.io/sams-notebook/" rel="" target="">
+ <span class="dropdown-text">sam</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="https://sr320.github.io" rel="" target="">
+ <span class="dropdown-text">steven</span></a>
+  </li>  
+    </ul>
+  </li>
+  <li class="nav-item dropdown ">
+    <a class="nav-link dropdown-toggle" href="#" id="nav-menu-bi-github" role="button" data-bs-toggle="dropdown" aria-expanded="false" rel="" target="">
+      <i class="bi bi-github" role="img">
+</i> 
+ <span class="menu-text"></span>
+    </a>
+    <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="nav-menu-bi-github">    
+        <li>
+    <a class="dropdown-item" href="https://github.com/RobertsLab" rel="" target="">
+ <span class="dropdown-text">Lab Organization</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="https://github.com/RobertsLab/lab-website" rel="" target="">
+ <span class="dropdown-text">Edit Roberts Lab website</span></a>
+  </li>  
+    </ul>
+  </li>
+  <li class="nav-item compact">
+    <a class="nav-link" href="https://calendar.google.com/calendar/embed?src=mrc305@gmail.com&amp;ctz=America/Vancouver" rel="" target=""><i class="bi bi-calendar-week" role="img">
+</i> 
+ <span class="menu-text"></span></a>
+  </li>  
+</ul>
+            <div class="quarto-navbar-tools">
+</div>
+          </div> <!-- /navcollapse -->
+      </div> <!-- /container-fluid -->
+    </nav>
+</header>
+<!-- content -->
+<header id="title-block-header" class="quarto-title-block default page-columns page-full">
+  <div class="quarto-title-banner page-columns page-full">
+    <div class="quarto-title column-body">
+      <h1 class="title">RNAseq Alignments - P.generosa Alignments and Alternative Transcript Identification Using Hisat2 and StringTie on Mox</h1>
+                                <div class="quarto-categories">
+                <div class="quarto-category">2022</div>
+                <div class="quarto-category">Miscellaneous</div>
+              </div>
+                  </div>
+  </div>
+    
+  
+  <div class="quarto-title-meta">
+
+      
+      <div>
+      <div class="quarto-title-meta-heading">Published</div>
+      <div class="quarto-title-meta-contents">
+        <p class="date">September 14, 2022</p>
+      </div>
+    </div>
+    
+      
+    </div>
+    
+  
+  </header><div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article page-navbar">
+<!-- sidebar -->
+<!-- margin-sidebar -->
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+        
+    </div>
+<!-- main -->
+<main class="content quarto-banner-title-block" id="quarto-document-content">
+
+
+
+
+<p>As part of <a href="https://github.com/RobertsLab/resources/issues/1434">identifying long non-coding RNA (lncRNA) in Pacific geoduck</a>(GitHub Issue), one of the first things that I wanted to do was to gather all of our geoduck RNAseq data and align it to our geoduck genome. In addition to the alignments, some of the examples I’ve been following have also utilized expression levels as one aspect of the lncRNA selection criteria, so I figured I’d get this info as well.</p>
+<p><a href="https://robertslab.github.io/sams-notebook/posts/2022/2022-09-08-FastQ-Trimming-Geoduck-RNAseq-Data-Using-fastp-on-Mox.html">Trimmed RNAseq data from 20220908</a> was aligned to our <a href="http://en.wikipedia.org/wiki/Geoduck"><em>Panopea generosa</em> (Pacific geoduck)</a> genome assembly, <a href="https://gannet.fish.washington.edu/Atumefaciens/20191105_swoose_pgen_v074_renaming/Panopea-generosa-v1.0.fa">Panopea-generosa-v1.0.fa</a> (FastA; 914MB), using <a href="https://daehwankimlab.github.io/hisat2/"><code>HISAT2</code></a>. Alternative transcripts and expression values were determined using <a href="https://ccb.jhu.edu/software/stringtie/"><code>StringTie</code></a>. These were run on Mox./</p>
+<p>Here’s a summary of the process:</p>
+<ol type="1">
+<li><p>Generate necessary <a href="https://daehwankimlab.github.io/hisat2/"><code>HISAT2</code></a> reference files (e.g.&nbsp;splic sites, exons, genome indexes).</p></li>
+<li><p>Concatenate FastQ files based on tissue/age and/or OA treatment.</p></li>
+<li><p>Run <a href="https://daehwankimlab.github.io/hisat2/"><code>HISAT2</code></a> on concatenated FastQs.</p></li>
+<li><p>Run <a href="https://ccb.jhu.edu/software/stringtie/"><code>StringTie</code></a> on grouped samples, with output formatted for import into Ballgown.</p></li>
+</ol>
+<p>The SBATCH script below is very long. Skip to <a href="#results">RESULTS section</a> if you want.</p>
+<p>SBATCH script (GitHub):</p>
+<ul>
+<li><a href="https://github.com/RobertsLab/sams-notebook/blob/master/sbatch_scripts/20220914-pgen-hisat2-Panopea-generosa-v1.0-index-align-stringtie_isoforms.sh">20220914-pgen-hisat2-Panopea-generosa-v1.0-index-align-stringtie_isoforms.sh</a></li>
+</ul>
+<pre class="shell"><code>#!/bin/bash
+## Job Name
+#SBATCH --job-name=20220914-pgen-hisat2-Panopea-generosa-v1.0-index-align-stringtie_isoforms
+## Allocation Definition
+#SBATCH --account=coenv
+#SBATCH --partition=coenv
+## Resources
+## Nodes
+#SBATCH --nodes=1
+## Walltime (days-hours:minutes:seconds format)
+#SBATCH --time=21-00:00:00
+## Memory per node
+#SBATCH --mem=200G
+##turn on e-mail notification
+#SBATCH --mail-type=ALL
+#SBATCH --mail-user=samwhite@uw.edu
+## Specify the working directory for this job
+#SBATCH --chdir=/gscratch/scrubbed/samwhite/outputs/20220914-pgen-hisat2-Panopea-generosa-v1.0-index-align-stringtie_isoforms
+
+## Script for HiSat2 indexing of P.generosa genome assembly Panopea-generosa-v1.0,
+## HiSat2 alignments, running Stringtie to identify splice sites and calculate gene/transcript expression values (FPKM),
+## formatted for import into Ballgown (R/Bioconductor).
+
+## Process part of identification of long non-coding RNAs (lnRNA) in geoduck.
+
+###################################################################################
+# These variables need to be set by user
+
+## Assign Variables
+
+# Set number of CPUs to use
+threads=40
+
+# Index name for Hisat2 use
+# Needs to match index naem used in previous Hisat2 indexing step
+genome_index_name="Panopea-generosa-v1.0"
+
+# Location of Hisat2 index files
+# Must keep variable name formatting, as it's used by HiSat2
+HISAT2_INDEXES=$(pwd)
+export HISAT2_INDEXES
+
+# Paths to programs
+hisat2_dir="/gscratch/srlab/programs/hisat2-2.1.0"
+hisat2="${hisat2_dir}/hisat2"
+hisat2_build="${hisat2_dir}/hisat2-build"
+hisat2_exons="${hisat2_dir}/hisat2_extract_exons.py"
+hisat2_splice_sites="${hisat2_dir}/hisat2_extract_splice_sites.py"
+samtools="/gscratch/srlab/programs/samtools-1.10/samtools"
+stringtie="/gscratch/srlab/programs/stringtie-1.3.6.Linux_x86_64/stringtie"
+
+# Input/output files
+exons="Panopea-generosa-v1.0_hisat2_exons.tab"
+fastq_dir="/gscratch/scrubbed/samwhite/outputs/20220909-pgen-fastqc-fastp-mutliqc-rnaseq/"
+genome_dir="/gscratch/srlab/sam/data/P_generosa/genomes"
+genome_index_dir="/gscratch/srlab/sam/data/P_generosa/genomes"
+genome_fasta="${genome_dir}/Panopea-generosa-v1.0.fasta"
+genome_gff="${genome_index_dir}/Panopea-generosa-v1.0.a4_biotype-trna_strand_converted-no_RNAmmer.gff"
+gtf_list="gtf_list.txt"
+merged_bam="20220914-pgen-stringtie-Panopea-generosa-v1.0-sorted_bams-merged.bam"
+splice_sites="Panopea-generosa-v1.0_hisat2_splice_sites.tab"
+transcripts_gtf="${genome_dir}/Panopea-generosa-v1.0.a4_biotype-trna_strand_converted-no_RNAmmer.gtf"
+
+
+# Set FastQ filename patterns
+fastq_pattern="fastp-trim.20220908.fq.gz"
+R1_fastq_pattern='*R1*.fastp-trim.20220908.fq.gz'
+R2_fastq_pattern='*R2*.fastp-trim.20220908.fq.gz'
+R1_fastq_naming_pattern="R1.${fastq_pattern}"
+R2_fastq_naming_pattern="R2.${fastq_pattern}"
+
+# Declare associative array of sample names and metadata
+declare -A samples_associative_array=()
+
+# Set total number of samples/treatments (NOT number of FastQ files)
+# Used for confirming proper array population of samples_associative_array
+total_samples=8
+
+# Set total of original FastQ files
+# Used for confirming all FastQs are processed.
+total_fastqs=150
+
+# Inititalize arrays
+fastq_array_R1=()
+fastq_array_R2=()
+
+# Programs associative array
+declare -A programs_array
+
+programs_array=(
+[hisat2]="${hisat2}" \
+[hisat2_build]="${hisat2_build}" \
+[hisat2_exons]="${hisat2_exons}" \
+[hisat2_splice_sites]="${hisat2_splice_sites}"
+[samtools_index]="${samtools} index" \
+[samtools_merge]="${samtools} merge" \
+[samtools_sort]="${samtools} sort" \
+[samtools_view]="${samtools} view" \
+[stringtie]="${stringtie}"
+)
+
+
+###################################################################################################
+
+# Exit script if any command fails
+set -e
+
+# Load Python Mox module for Python module availability
+
+module load intel-python3_2017
+
+
+
+# Create Hisat2 exons tab file
+echo "Generating Hisat2 exons file..."
+"${programs_array[hisat2_exons]}" \
+"${transcripts_gtf}" \
+&gt; "${exons}"
+echo "Exons file created: ${exons}."
+echo ""
+
+# Create Hisat2 splice sites tab file
+echo "Generating Hisat2 splice sites file..."
+"${programs_array[hisat2_splice_sites]}" \
+"${transcripts_gtf}" \
+&gt; "${splice_sites}"
+echo "Splice sites file created: ${splice_sites}."
+echo ""
+
+# Build Hisat2 reference index using splice sites and exons
+echo "Beginning HiSat2 genome indexing..."
+"${programs_array[hisat2_build]}" \
+"${genome_fasta}" \
+"${genome_index_name}" \
+--exon "${exons}" \
+--ss "${splice_sites}" \
+-p "${threads}" \
+2&gt; hisat2_build.err
+echo "HiSat2 genome index files completed."
+echo ""
+
+# Generate checksums for all files
+echo "Generating checksums..."
+md5sum ./* | tee --append checksums.md5
+echo ""
+echo "Finished generating checksums. See file: checksums.md5"
+echo ""
+
+# Copy Hisat2 index files to my data directory for later use with StringTie
+echo "Rsyncing HiSat2 genome index files to ${genome_dir}."
+rsync -av "${genome_index_name}"*.ht2 "${genome_dir}"
+echo "Rsync completed."
+echo ""
+
+# Create arrays of fastq R1 files and sample names
+# Do NOT quote R1_fastq_pattern variable
+echo "Creating array of R1 FastQ files..."
+
+for fastq in "${fastq_dir}"${R1_fastq_pattern}
+do
+  fastq_array_R1+=("${fastq}")
+
+  # Use parameter substitution to remove all text up to and including last "." from
+  # right side of string.
+  R1_names_array+=("${fastq%%.*}")
+done
+
+echo ""
+
+# Create array of fastq R2 files
+# Do NOT quote R2_fastq_pattern variable
+echo "Creating array of R2 FastQ files..."
+
+for fastq in "${fastq_dir}"${R2_fastq_pattern}
+do
+  fastq_array_R2+=("${fastq}")
+
+  # Use parameter substitution to remove all text up to and including last "." from
+  # right side of string.
+  R2_names_array+=("${fastq%%.*}")
+done
+echo ""
+
+# Set sample counters for array verification
+R1_fastq_counter=0
+R2_fastq_counter=0
+
+# Concatenate R1 FastQ files
+echo "Beginning concatenation of R1 FastQ files..."
+echo ""
+for fastq in "${fastq_array_R1[@]}"
+do
+
+  # Generate MD5 checksums for original set of FastQs
+  echo "Generating MD5 checksum for ${fastq}..."
+  md5sum "${fastq}" | tee --append original-fastq-checksums.md5
+  echo ""
+
+  # Increment counter
+  ((R1_fastq_counter+=1))
+
+  # Remove path
+  sample_name="${fastq##*/}"
+
+  # Get sample name from first "."-delimited field
+  sample_type=$(echo "${sample_name}" | awk -F "." '{print $1}')
+
+  # Parse out tissue/sample types
+  juvenile_treatment=$(echo "${sample_type}" | awk -F [-_] '{print $3}')
+  tissue=$(echo "${sample_type}" | awk -F "-" '{print $2}')
+  trueseq_tissue=$(echo "${sample_type}" | awk -F [-_] '{print $7}')
+
+
+  # Concatenate reads from multiple runs
+  if
+    [[ "${tissue}" == "ctenidia" ]] \
+    || [[ "${trueseq_tissue}" == "NR012" ]]
+  then
+    cat "${fastq}" &gt;&gt; concatenated-ctenidia-"${R1_fastq_naming_pattern}"
+
+    echo "Concatenated ${fastq} to concatenated-ctenidia-${R1_fastq_naming_pattern}"
+    echo ""
+
+  elif
+    [[ "${tissue}" == "gonad" ]] \
+    || [[ "${trueseq_tissue}" == "NR006" ]]
+  then
+    cat "${fastq}" &gt;&gt; concatenated-gonad-"${R1_fastq_naming_pattern}"
+    echo "Concatenated ${fastq} to concatenated-gonad-${R1_fastq_naming_pattern}"
+    echo ""
+  elif
+    [[ "${tissue}" == "heart" ]]
+  then
+    cat "${fastq}" &gt;&gt; concatenated-heart-"${R1_fastq_naming_pattern}"
+    echo "Concatenated ${fastq} to concatenated-heart-${R1_fastq_naming_pattern}"
+    echo ""
+  elif
+    [[ "${tissue}" == "juvenile" ]] \
+    &amp;&amp; [[ "${juvenile_treatment}" == "ambient" ]]
+  then
+    cat "${fastq}" &gt;&gt; concatenated-juvenile_ambient-"${R1_fastq_naming_pattern}"
+    echo "Concatenated ${fastq} to concatenated-juvenile_ambient-${R1_fastq_naming_pattern}"
+    echo ""
+  elif
+    [[ "${trueseq_tissue}" == "NR019" ]]
+  then
+    cat "${fastq}" &gt;&gt; concatenated-juvenile_ambient-"${R1_fastq_naming_pattern}"
+    echo "Concatenated ${fastq} to concatenated-juvenile_ambient-${R1_fastq_naming_pattern}"
+    echo ""
+  elif
+    [[ "${tissue}" == "juvenile" ]] \
+    &amp;&amp; [[ "${juvenile_treatment}" == "OA" ]]
+  then
+    cat "${fastq}" &gt;&gt; concatenated-juvenile_OA-"${R1_fastq_naming_pattern}"
+    echo "Concatenated ${fastq} to concatenated-juvenile_OA-${R1_fastq_naming_pattern}"
+    echo ""
+  elif
+    [[ "${trueseq_tissue}" == "NR005" ]]
+  then
+    cat "${fastq}" &gt;&gt; concatenated-juvenile_OA-"${R1_fastq_naming_pattern}"
+    echo "Concatenated ${fastq} to concatenated-juvenile_OA-${R1_fastq_naming_pattern}"
+    echo ""
+  elif
+    [[ "${tissue}" == "larvae" ]] \
+    || [[ "${trueseq_tissue}" == "NR021" ]]
+  then
+    cat "${fastq}" &gt;&gt; concatenated-larvae-"${R1_fastq_naming_pattern}"
+    echo "Concatenated ${fastq} to concatenated-larvae-${R1_fastq_naming_pattern}"
+    echo ""
+  # Handles Geo_Pool samples
+  else
+    echo "Rsyincing ${fastq} to current directory"
+    echo "because it does not need concatenation."
+    echo ""
+    rsync -av "${fastq}" .
+    echo ""
+  fi
+
+done
+
+echo "Finshed R1 FastQ concatenation."
+echo ""
+echo ""
+echo ""
+
+# Concatenate R2 FastQ files
+echo "Beginning concatenation of R2 FastQ files..."
+echo ""
+
+for fastq in "${fastq_array_R2[@]}"
+do
+
+  # Generate MD5 checksums for original set of FastQs
+  echo "Generating MD5 checksum for ${fastq}..."
+  md5sum "${fastq}" | tee --append original-fastq-checksums.md5
+  echo ""
+
+  # Increment counter
+  ((R2_fastq_counter+=1))
+
+  # Remove path
+  sample_name="${fastq##*/}"
+
+  # Get sample name from first "."-delimited field
+  sample_type=$(echo "${sample_name}" | awk -F "." '{print $1}')
+
+  # Parse out tissue/sample types
+  juvenile_treatment=$(echo "${sample_type}" | awk -F [-_] '{print $3}')
+  tissue=$(echo "${sample_type}" | awk -F "-" '{print $2}')
+  trueseq_tissue=$(echo "${sample_type}" | awk -F [-_] '{print $7}')
+
+
+  # Concatenate reads from multiple runs
+  if
+    [[ "${tissue}" == "ctenidia" ]] \
+    || [[ "${trueseq_tissue}" == "NR012" ]]
+  then
+    cat "${fastq}" &gt;&gt; concatenated-ctenidia-"${R2_fastq_naming_pattern}"
+
+    echo "Concatenated ${fastq} to concatenated-ctenidia-${R2_fastq_naming_pattern}"
+    echo ""
+
+  elif
+    [[ "${tissue}" == "gonad" ]] \
+    || [[ "${trueseq_tissue}" == "NR006" ]]
+  then
+    cat "${fastq}" &gt;&gt; concatenated-gonad-"${R2_fastq_naming_pattern}"
+    echo "Concatenated ${fastq} to concatenated-gonad-${R2_fastq_naming_pattern}"
+    echo ""
+  elif
+    [[ "${tissue}" == "heart" ]]
+  then
+    cat "${fastq}" &gt;&gt; concatenated-heart-"${R2_fastq_naming_pattern}"
+    echo "Concatenated ${fastq} to concatenated-heart-${R2_fastq_naming_pattern}"
+    echo ""
+  elif
+    [[ "${tissue}" == "juvenile" ]] \
+    &amp;&amp; [[ "${juvenile_treatment}" == "ambient" ]]
+  then
+    cat "${fastq}" &gt;&gt; concatenated-juvenile_ambient-"${R2_fastq_naming_pattern}"
+    echo "Concatenated ${fastq} to concatenated-juvenile_ambient-${R2_fastq_naming_pattern}"
+    echo ""
+  elif
+    [[ "${trueseq_tissue}" == "NR019" ]]
+  then
+    cat "${fastq}" &gt;&gt; concatenated-juvenile_ambient-"${R2_fastq_naming_pattern}"
+    echo "Concatenated ${fastq} to concatenated-juvenile_ambient-${R2_fastq_naming_pattern}"
+    echo ""
+  elif
+    [[ "${tissue}" == "juvenile" ]] \
+    &amp;&amp; [[ "${juvenile_treatment}" == "OA" ]]
+  then
+    cat "${fastq}" &gt;&gt; concatenated-juvenile_OA-"${R2_fastq_naming_pattern}"
+    echo "Concatenated ${fastq} to concatenated-juvenile_OA-${R2_fastq_naming_pattern}"
+    echo ""
+  elif
+    [[ "${trueseq_tissue}" == "NR005" ]]
+  then
+    cat "${fastq}" &gt;&gt; concatenated-juvenile_OA-"${R2_fastq_naming_pattern}"
+    echo "Concatenated ${fastq} to concatenated-juvenile_OA-${R2_fastq_naming_pattern}"
+    echo ""
+  elif
+    [[ "${tissue}" == "larvae" ]] \
+    || [[ "${trueseq_tissue}" == "NR021" ]]
+  then
+    cat "${fastq}" &gt;&gt; concatenated-larvae-"${R2_fastq_naming_pattern}"
+    echo "Concatenated ${fastq} to concatenated-larvae-${R2_fastq_naming_pattern}"
+    echo ""
+  # Handles Geo_Pool samples
+  else
+    rsync -av "${fastq}" .
+  fi
+
+done
+
+# Check FastQ array sizes to confirm they have all expected samples
+# Exit if mismatch
+
+echo "Confirming expected number of FastQs processed..."
+sum_fastqs=$((${R1_fastq_counter} + ${R2_fastq_counter}))
+if [[ "${sum_fastqs}" != "${total_fastqs}" ]]
+then
+  echo "Expected ${total_fastqs} FastQs, but only found ${sum_fastqs}!"
+  echo ""
+  echo "Check original-fastq-checksums.md5 file for list of FastQs processed."
+  echo ""
+  exit 1
+else
+  echo "Great!"
+  printf "%-20s %s\n" "Expected:" "${total_fastqs}"
+  printf "%-20s %s\n" "Processed:" "${sum_fastqs}"
+  echo ""
+fi
+
+
+
+###### Load associative array ######
+
+for fastq in *"${fastq_pattern}"
+do
+  # Generate MD5 checksums for original set of FastQs
+  echo "Generating MD5 checksums for ${fastq}..."
+  md5sum "${fastq}" | tee --append concatenated-fastq-checksums.md5
+  echo ""
+
+  echo ""
+  echo "Processing $fastq for associative array..."
+
+  # Remove path
+  sample_name="${fastq##*/}"
+
+  # Get sample name from second "-"-delimited field
+  sample_type=$(echo "${sample_name}" | awk -F "-" '{print $2}')
+  echo "Sample type before eval: ${sample_type}"
+
+  # Get sample name from second "-"-delimited field
+  # Redundant command, but used to delineate juvenile OA treatment conditions
+  # in if statements below.
+  juvenile_treatment="${sample_type}"
+  echo "Juvenile treatment before eval: ${juvenile_treatment}"
+
+  # Get sample name from the deoduck pool samples
+  gonad_pool=$(echo "${sample_name}" | awk 'BEGIN {OFS="_"; FS="_"} {print $1, $2, $3}')
+  echo "Gonad pool before eval: ${gonad_pool}."
+
+
+  # Set treatment condition for each sample
+  # Primarily used for setting read group (RG) during BAM creation
+  if
+    [[ "${sample_type}" == "gonad" ]] \
+    || [[ "${gonad_pool}" == "Geo_Pool_F" ]] \
+    || [[ "${gonad_pool}" == "Geo_Pool_M" ]]
+  then
+    echo "Sample type is: $sample_type"
+    treatment="gonad"
+    echo "Treatment is: $treatment"
+    echo ""
+    if
+      [[ "${sample_type}" == "gonad" ]]
+    then
+        if [[ ! -n ${samples_associative_array[${sample_type}]} ]]
+        then
+            # Append to associative array
+            samples_associative_array+=(["${sample_type}"]="${treatment}")
+            echo "Checking array:"
+            echo ${samples_associative_array[@]}
+        fi
+    elif
+        [[ "${gonad_pool}" == "Geo_Pool_F" ]] \
+        || [[ "${gonad_pool}" == "Geo_Pool_M" ]]
+    then
+        if [[ ! -n ${samples_associative_array[${gonad_pool}]} ]]
+        then
+            # Append to associative array
+            samples_associative_array+=(["${gonad_pool}"]="${treatment}")
+            echo "Checking array:"
+            echo ${samples_associative_array[@]}
+        fi
+    fi
+  elif
+    [[ "${sample_type}" == "juvenile_ambient" ]] \
+    || [[ "${sample_type}" == "juvenile_OA" ]]
+  then
+    echo "Sample type is: $sample_type"
+    treatment="juvenile"
+    echo "Treatment is: $treatment"
+    echo ""
+        if [[ ! -n ${samples_associative_array[${sample_type}]} ]]
+        then
+            # Append to associative array
+            samples_associative_array+=(["${sample_type}"]="${treatment}")
+            echo "Checking array:"
+            echo ${samples_associative_array[@]}
+        fi
+  elif
+    [[ "${sample_type}" == "ctenidia" ]] \
+    || [[ "${sample_type}" == "heart" ]] \
+    || [[ "${sample_type}" == "larvae" ]]
+  then
+    echo "Sample type is: $sample_type"
+    treatment="${sample_type}"
+    echo "Treatment is: $treatment"
+    echo ""
+        if [[ ! -n ${samples_associative_array[${sample_type}]} ]]
+        then
+            # Append to associative array
+            samples_associative_array+=(["${sample_type}"]="${treatment}")
+            echo "Checking array:"
+            echo ${samples_associative_array[@]}
+        fi
+  fi
+done
+
+# Check array size to confirm it has all expected samples
+# Exit if mismatch
+echo ""
+echo "Checking samples_associative_array to confirm expected number of samples..."
+echo ""
+if [[ "${#samples_associative_array[@]}" != "${total_samples}" ]]
+  then
+    echo "samples_associative_array doesn't have all ${total_samples} samples."
+    echo "Array has ${#samples_associative_array[@]} samples."
+    echo "Please review array contents to begin troubleshooting."
+    echo ""
+    echo "samples_associative_array contents:"
+    echo ""
+    for item in "${!samples_associative_array[@]}"
+    do
+      printf "%s\t%s\n" "${item}" "${samples_associative_array[${item}]}"
+    done
+    echo ""
+
+    exit 1
+  else
+    echo ""
+    echo "Associative array has expected number of samples: ${#samples_associative_array[@]}/${total_samples}."
+    echo ""
+
+fi
+
+
+############# BEGIN HISAT2 ALIGNMENTS ###############
+
+# Run Hisat2 on each FastQ file
+echo ""
+echo "Beginning Hisat2 alignments..."
+echo ""
+
+for sample in "${!samples_associative_array[@]}"
+do
+
+  ## Inititalize arrays
+  fastq_array_R1=()
+  fastq_array_R2=()
+
+  # Create and switch to dedicated sample directory
+  echo "Creating and moving into ${sample} directory."
+  mkdir "${sample}" &amp;&amp; cd "$_"
+  echo ""
+
+  # Create array of fastq R1 files
+  # and generate MD5 checksums file.
+
+  # Identify corresponding FastQ file
+  # Pipe to sed replace leading "./" with "../" to manage relative FastQ path
+  fastq=$(find .. -name "*${sample}*R1*.gz")
+
+  fastq_array_R1+=("${fastq}")
+  echo "Generating checksum for ${fastq}..."
+  md5sum "${fastq}" | tee --append input_fastqs_checksums.md5
+  echo "Checksum for ${fastq} completed."
+  echo ""
+
+
+  # Create array of fastq R2 files
+  # and generate MD5 checksums
+
+  # Identify corresponding FastQ file
+  # Pipe to sed replace leading "./" with "../" to manage relative FastQ path
+  fastq=$(find .. -name "*${sample}*R2*.gz")
+
+  fastq_array_R2+=("${fastq}")
+  echo "Generating checksum for ${fastq}..."
+  md5sum "${fastq}" | tee --append input_fastqs_checksums.md5
+  echo "Checksum for ${fastq} completed."
+  echo ""
+
+
+  # Create comma-separated lists of FastQs for Hisat2
+  printf -v joined_R1 '%s,' "${fastq_array_R1[@]}"
+  fastq_list_R1=$(echo "${joined_R1%,}")
+
+  printf -v joined_R2 '%s,' "${fastq_array_R2[@]}"
+  fastq_list_R2=$(echo "${joined_R2%,}")
+
+
+  # Hisat2 alignments
+  # Sets read group info (RG) using samples array
+
+  echo "Beginning Hisat2 alignment of ${sample}."
+  "${programs_array[hisat2]}" \
+  -x "${genome_index_name}" \
+  -1 "${fastq_list_R1}" \
+  -2 "${fastq_list_R2}" \
+  -S "${sample}".sam \
+  --rg-id "${sample}" \
+  --rg "SM:""${samples_associative_array[$sample]}" \
+  2&gt; "${sample}"_hisat2.err
+  echo ""
+  echo "Hisat2 alignment of ${sample} completed."
+  echo ""
+
+  # Sort SAM files, convert to BAM, and index
+  echo "Sorting ${sample}.sam and converting to ${sample}.sorted.bam..."
+  ${programs_array[samtools_view]} \
+  -@ "${threads}" \
+  -Su "${sample}".sam \
+  | ${programs_array[samtools_sort]} - \
+  -@ "${threads}" \
+  -o "${sample}".sorted.bam
+  echo "Sorting and conversion completed."
+  echo ""
+
+  # Index BAM
+  echo "Creating index of ${sample}.sorted.bam..."
+  ${programs_array[samtools_index]} "${sample}".sorted.bam
+  echo "Indexing completed."
+  echo ""
+
+
+  # Run stringtie on alignments
+  # Uses "-B" option to output tables intended for use in Ballgown
+  # Uses "-e" option; recommended when using "-B" option.
+  # Limits analysis to only reads alignments matching reference.
+  echo "Beginning StingTie on ${sample}.sorted.bam..."
+  "${programs_array[stringtie]}" "${sample}".sorted.bam \
+  -p "${threads}" \
+  -o "${sample}".gtf \
+  -G "${genome_gff}" \
+  -C "${sample}.cov_refs.gtf" \
+  -B \
+  -e
+  echo "StingTie completed for ${sample}.sorted.bam."
+  echo ""
+
+# Add GTFs to list file, only if non-empty
+# Identifies GTF files that only have header
+  gtf_lines=$(wc -l &lt; "${sample}".gtf )
+  if [ "${gtf_lines}" -gt 2 ]; then
+    echo "Adding ${sample}.gtf to ${gtf_list}."
+    echo "$(pwd)/${sample}.gtf" &gt;&gt; ../"${gtf_list}"
+    echo "Added ${sample}.gtf to ${gtf_list}."
+    echo ""
+  fi
+
+  # Delete unneeded SAM files
+  echo "Removing unneeded SAM files..."
+  rm ./*.sam
+  echo ""
+
+  # Generate checksums
+  for file in *
+  do
+    echo "Generating MD5 checksums..."
+    md5sum "${file}" | tee --append "${sample}"-checksums.md5
+    echo ""
+  done
+  echo "Finished generating checksums."
+  echo ""
+
+  # Move up to orig. working directory
+  echo "Returning to previous directory..."
+  cd ../
+  echo "Now in $(pwd)."
+  echo ""
+
+done
+
+# Merge all BAMs to singular BAM for use in transcriptome assembly later
+## Create list of sorted BAMs for merging
+echo "Looking for sorted BAMs..."
+find . -name "*sorted.bam" &gt; sorted_bams.list
+echo "All BAMs added to sorted_bams.list."
+echo ""
+
+## Merge sorted BAMs
+echo "Merging all BAMs..."
+${programs_array[samtools_merge]} \
+-b sorted_bams.list \
+${merged_bam} \
+--threads ${threads}
+echo "Finished merging BAMs."
+echo "Merged into ${merged_bam}."
+echo ""
+
+## Index merged BAM
+echo "Indexing ${merged_bam}..."
+${programs_array[samtools_index]} ${merged_bam}
+echo "Indexing completed."
+echo ""
+
+
+
+# Create singular transcript file, using GTF list file
+echo "Merging StringTie GTF files..."
+"${programs_array[stringtie]}" --merge \
+"${gtf_list}" \
+-p "${threads}" \
+-G "${genome_gff}" \
+-o "${genome_index_name}".stringtie.gtf
+echo "Merge completed."
+echo "Merged into ${genome_index_name}.stringtie.gtf."
+
+
+# Generate checksums
+echo "Generating MD5 checksums."
+find . -type f -maxdepth 1 -exec md5sum {} + &gt;&gt; checksums.md5
+echo "MD5 checksums completed."
+
+
+#######################################################################################################
+
+# Capture program options
+if [[ "${#programs_array[@]}" -gt 0 ]]; then
+  echo "Logging program options..."
+  for program in "${!programs_array[@]}"
+  do
+    {
+    echo "Program options for ${program}: "
+    echo ""
+    # Handle samtools help menus
+    if [[ "${program}" == "samtools_index" ]] \
+    || [[ "${program}" == "samtools_sort" ]] \
+    || [[ "${program}" == "samtools_view" ]]
+    then
+      ${programs_array[$program]}
+
+    # Handle DIAMOND BLAST menu
+    elif [[ "${program}" == "diamond" ]]; then
+      ${programs_array[$program]} help
+
+    # Handle NCBI BLASTx menu
+    elif [[ "${program}" == "blastx" ]]; then
+      ${programs_array[$program]} -help
+    fi
+    ${programs_array[$program]} -h
+    echo ""
+    echo ""
+    echo "----------------------------------------------"
+    echo ""
+    echo ""
+  } &amp;&gt;&gt; program_options.log || true
+
+    # If MultiQC is in programs_array, copy the config file to this directory.
+    if [[ "${program}" == "multiqc" ]]; then
+      cp --preserve ~/.multiqc_config.yaml multiqc_config.yaml
+    fi
+  done
+  echo "Finished logging programs options."
+  echo ""
+fi
+
+
+# Document programs in PATH (primarily for program version ID)
+echo "Logging system $PATH..."
+{
+date
+echo ""
+echo "System PATH for $SLURM_JOB_ID"
+echo ""
+printf "%0.s-" {1..10}
+echo "${PATH}" | tr : \\n
+} &gt;&gt; system_path.log
+echo "Finished logging system $PATH."</code></pre>
+<hr>
+<section id="results" class="level4">
+<h4 class="anchored" data-anchor-id="results">RESULTS</h4>
+<p>Runtime was 1 day and 17.5hrs:</p>
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="https://github.com/RobertsLab/sams-notebook/blob/master/images/screencaps/20220914-pgen-hisat2-Panopea-generosa-v1.0-index-align-stringtie_isoforms-runtime.png?raw=true" class="img-fluid figure-img"></p>
+<figcaption class="figure-caption">Screencap of Mox job runtime emails, showing successful completion after 1 day and 17.5 hrs</figcaption>
+</figure>
+</div>
+<p>Output folder:</p>
+<ul>
+<li><a href="https://gannet.fish.washington.edu/Atumefaciens/20220914-pgen-hisat2-Panopea-generosa-v1.0-index-align-stringtie_isoforms/">20220914-pgen-hisat2-Panopea-generosa-v1.0-index-align-stringtie_isoforms/</a></li>
+</ul>
+<p>Due to the large number of files, please just browse the directory linked above. A <a href="#output-directory-tree">directory tree</a> is posted below for guidance. Sub-directories have been created, and subsequent tables, for direct import into Ballgown, if desired/needed.</p>
+<p>See the various MD5 checksum files to see which files were utilized for each step.</p>
+</section>
+<section id="output-directory-tree" class="level4">
+<h4 class="anchored" data-anchor-id="output-directory-tree">OUTPUT DIRECTORY TREE</h4>
+<pre class="shell"><code>
+├── 20220914-pgen-hisat2-Panopea-generosa-v1.0-index-align-stringtie_isoforms.sh
+├── 20220914-pgen-stringtie-Panopea-generosa-v1.0-sorted_bams-merged.bam
+├── 20220914-pgen-stringtie-Panopea-generosa-v1.0-sorted_bams-merged.bam.bai
+├── checksums.md5
+├── concatenated-ctenidia-R1.fastp-trim.20220908.fq.gz
+├── concatenated-ctenidia-R2.fastp-trim.20220908.fq.gz
+├── concatenated-fastq-checksums.md5
+├── concatenated-gonad-R1.fastp-trim.20220908.fq.gz
+├── concatenated-gonad-R2.fastp-trim.20220908.fq.gz
+├── concatenated-heart-R1.fastp-trim.20220908.fq.gz
+├── concatenated-heart-R2.fastp-trim.20220908.fq.gz
+├── concatenated-juvenile_ambient-R1.fastp-trim.20220908.fq.gz
+├── concatenated-juvenile_ambient-R2.fastp-trim.20220908.fq.gz
+├── concatenated-juvenile_OA-R1.fastp-trim.20220908.fq.gz
+├── concatenated-juvenile_OA-R2.fastp-trim.20220908.fq.gz
+├── concatenated-larvae-R1.fastp-trim.20220908.fq.gz
+├── concatenated-larvae-R2.fastp-trim.20220908.fq.gz
+├── ctenidia
+│&nbsp;&nbsp; ├── ctenidia-checksums.md5
+│&nbsp;&nbsp; ├── ctenidia.cov_refs.gtf
+│&nbsp;&nbsp; ├── ctenidia.gtf
+│&nbsp;&nbsp; ├── ctenidia_hisat2.err
+│&nbsp;&nbsp; ├── ctenidia.sorted.bam
+│&nbsp;&nbsp; ├── ctenidia.sorted.bam.bai
+│&nbsp;&nbsp; ├── e2t.ctab
+│&nbsp;&nbsp; ├── e_data.ctab
+│&nbsp;&nbsp; ├── i2t.ctab
+│&nbsp;&nbsp; ├── i_data.ctab
+│&nbsp;&nbsp; ├── input_fastqs_checksums.md5
+│&nbsp;&nbsp; └── t_data.ctab
+├── Geo_Pool_F
+│&nbsp;&nbsp; ├── e2t.ctab
+│&nbsp;&nbsp; ├── e_data.ctab
+│&nbsp;&nbsp; ├── Geo_Pool_F-checksums.md5
+│&nbsp;&nbsp; ├── Geo_Pool_F.cov_refs.gtf
+│&nbsp;&nbsp; ├── Geo_Pool_F.gtf
+│&nbsp;&nbsp; ├── Geo_Pool_F_hisat2.err
+│&nbsp;&nbsp; ├── Geo_Pool_F.sorted.bam
+│&nbsp;&nbsp; ├── Geo_Pool_F.sorted.bam.bai
+│&nbsp;&nbsp; ├── i2t.ctab
+│&nbsp;&nbsp; ├── i_data.ctab
+│&nbsp;&nbsp; ├── input_fastqs_checksums.md5
+│&nbsp;&nbsp; └── t_data.ctab
+├── Geo_Pool_F_GGCTAC_L006_R1_001.fastp-trim.20220908.fq.gz
+├── Geo_Pool_F_GGCTAC_L006_R2_001.fastp-trim.20220908.fq.gz
+├── Geo_Pool_M
+│&nbsp;&nbsp; ├── e2t.ctab
+│&nbsp;&nbsp; ├── e_data.ctab
+│&nbsp;&nbsp; ├── Geo_Pool_M-checksums.md5
+│&nbsp;&nbsp; ├── Geo_Pool_M.cov_refs.gtf
+│&nbsp;&nbsp; ├── Geo_Pool_M.gtf
+│&nbsp;&nbsp; ├── Geo_Pool_M_hisat2.err
+│&nbsp;&nbsp; ├── Geo_Pool_M.sorted.bam
+│&nbsp;&nbsp; ├── Geo_Pool_M.sorted.bam.bai
+│&nbsp;&nbsp; ├── i2t.ctab
+│&nbsp;&nbsp; ├── i_data.ctab
+│&nbsp;&nbsp; ├── input_fastqs_checksums.md5
+│&nbsp;&nbsp; └── t_data.ctab
+├── Geo_Pool_M_CTTGTA_L006_R1_001.fastp-trim.20220908.fq.gz
+├── Geo_Pool_M_CTTGTA_L006_R2_001.fastp-trim.20220908.fq.gz
+├── gonad
+│&nbsp;&nbsp; ├── e2t.ctab
+│&nbsp;&nbsp; ├── e_data.ctab
+│&nbsp;&nbsp; ├── gonad-checksums.md5
+│&nbsp;&nbsp; ├── gonad.cov_refs.gtf
+│&nbsp;&nbsp; ├── gonad.gtf
+│&nbsp;&nbsp; ├── gonad_hisat2.err
+│&nbsp;&nbsp; ├── gonad.sorted.bam
+│&nbsp;&nbsp; ├── gonad.sorted.bam.bai
+│&nbsp;&nbsp; ├── i2t.ctab
+│&nbsp;&nbsp; ├── i_data.ctab
+│&nbsp;&nbsp; ├── input_fastqs_checksums.md5
+│&nbsp;&nbsp; └── t_data.ctab
+├── gtf_list.txt
+├── heart
+│&nbsp;&nbsp; ├── e2t.ctab
+│&nbsp;&nbsp; ├── e_data.ctab
+│&nbsp;&nbsp; ├── heart-checksums.md5
+│&nbsp;&nbsp; ├── heart.cov_refs.gtf
+│&nbsp;&nbsp; ├── heart.gtf
+│&nbsp;&nbsp; ├── heart_hisat2.err
+│&nbsp;&nbsp; ├── heart.sorted.bam
+│&nbsp;&nbsp; ├── heart.sorted.bam.bai
+│&nbsp;&nbsp; ├── i2t.ctab
+│&nbsp;&nbsp; ├── i_data.ctab
+│&nbsp;&nbsp; ├── input_fastqs_checksums.md5
+│&nbsp;&nbsp; └── t_data.ctab
+├── hisat2_build.err
+├── juvenile_ambient
+│&nbsp;&nbsp; ├── e2t.ctab
+│&nbsp;&nbsp; ├── e_data.ctab
+│&nbsp;&nbsp; ├── i2t.ctab
+│&nbsp;&nbsp; ├── i_data.ctab
+│&nbsp;&nbsp; ├── input_fastqs_checksums.md5
+│&nbsp;&nbsp; ├── juvenile_ambient-checksums.md5
+│&nbsp;&nbsp; ├── juvenile_ambient.cov_refs.gtf
+│&nbsp;&nbsp; ├── juvenile_ambient.gtf
+│&nbsp;&nbsp; ├── juvenile_ambient_hisat2.err
+│&nbsp;&nbsp; ├── juvenile_ambient.sorted.bam
+│&nbsp;&nbsp; ├── juvenile_ambient.sorted.bam.bai
+│&nbsp;&nbsp; └── t_data.ctab
+├── juvenile_OA
+│&nbsp;&nbsp; ├── e2t.ctab
+│&nbsp;&nbsp; ├── e_data.ctab
+│&nbsp;&nbsp; ├── i2t.ctab
+│&nbsp;&nbsp; ├── i_data.ctab
+│&nbsp;&nbsp; ├── input_fastqs_checksums.md5
+│&nbsp;&nbsp; ├── juvenile_OA-checksums.md5
+│&nbsp;&nbsp; ├── juvenile_OA.cov_refs.gtf
+│&nbsp;&nbsp; ├── juvenile_OA.gtf
+│&nbsp;&nbsp; ├── juvenile_OA_hisat2.err
+│&nbsp;&nbsp; ├── juvenile_OA.sorted.bam
+│&nbsp;&nbsp; ├── juvenile_OA.sorted.bam.bai
+│&nbsp;&nbsp; └── t_data.ctab
+├── larvae
+│&nbsp;&nbsp; ├── e2t.ctab
+│&nbsp;&nbsp; ├── e_data.ctab
+│&nbsp;&nbsp; ├── i2t.ctab
+│&nbsp;&nbsp; ├── i_data.ctab
+│&nbsp;&nbsp; ├── input_fastqs_checksums.md5
+│&nbsp;&nbsp; ├── larvae-checksums.md5
+│&nbsp;&nbsp; ├── larvae.cov_refs.gtf
+│&nbsp;&nbsp; ├── larvae.gtf
+│&nbsp;&nbsp; ├── larvae_hisat2.err
+│&nbsp;&nbsp; ├── larvae.sorted.bam
+│&nbsp;&nbsp; ├── larvae.sorted.bam.bai
+│&nbsp;&nbsp; └── t_data.ctab
+├── original-fastq-checksums.md5
+├── Panopea-generosa-v1.0.1.ht2
+├── Panopea-generosa-v1.0.2.ht2
+├── Panopea-generosa-v1.0.3.ht2
+├── Panopea-generosa-v1.0.4.ht2
+├── Panopea-generosa-v1.0.5.ht2
+├── Panopea-generosa-v1.0.6.ht2
+├── Panopea-generosa-v1.0.7.ht2
+├── Panopea-generosa-v1.0.8.ht2
+├── Panopea-generosa-v1.0_hisat2_exons.tab
+├── Panopea-generosa-v1.0_hisat2_splice_sites.tab
+├── Panopea-generosa-v1.0.stringtie.gtf
+├── program_options.log
+├── slurm-3898886.out
+├── sorted_bams.list
+└── system_path.log</code></pre>
+
+
+</section>
+
+</main> <!-- /main -->
+<script id="quarto-html-after-body" type="application/javascript">
+window.document.addEventListener("DOMContentLoaded", function (event) {
+  const toggleBodyColorMode = (bsSheetEl) => {
+    const mode = bsSheetEl.getAttribute("data-mode");
+    const bodyEl = window.document.querySelector("body");
+    if (mode === "dark") {
+      bodyEl.classList.add("quarto-dark");
+      bodyEl.classList.remove("quarto-light");
+    } else {
+      bodyEl.classList.add("quarto-light");
+      bodyEl.classList.remove("quarto-dark");
+    }
+  }
+  const toggleBodyColorPrimary = () => {
+    const bsSheetEl = window.document.querySelector("link#quarto-bootstrap");
+    if (bsSheetEl) {
+      toggleBodyColorMode(bsSheetEl);
+    }
+  }
+  toggleBodyColorPrimary();  
+  const icon = "";
+  const anchorJS = new window.AnchorJS();
+  anchorJS.options = {
+    placement: 'right',
+    icon: icon
+  };
+  anchorJS.add('.anchored');
+  const isCodeAnnotation = (el) => {
+    for (const clz of el.classList) {
+      if (clz.startsWith('code-annotation-')) {                     
+        return true;
+      }
+    }
+    return false;
+  }
+  const clipboard = new window.ClipboardJS('.code-copy-button', {
+    text: function(trigger) {
+      const codeEl = trigger.previousElementSibling.cloneNode(true);
+      for (const childEl of codeEl.children) {
+        if (isCodeAnnotation(childEl)) {
+          childEl.remove();
+        }
+      }
+      return codeEl.innerText;
+    }
+  });
+  clipboard.on('success', function(e) {
+    // button target
+    const button = e.trigger;
+    // don't keep focus
+    button.blur();
+    // flash "checked"
+    button.classList.add('code-copy-button-checked');
+    var currentTitle = button.getAttribute("title");
+    button.setAttribute("title", "Copied!");
+    let tooltip;
+    if (window.bootstrap) {
+      button.setAttribute("data-bs-toggle", "tooltip");
+      button.setAttribute("data-bs-placement", "left");
+      button.setAttribute("data-bs-title", "Copied!");
+      tooltip = new bootstrap.Tooltip(button, 
+        { trigger: "manual", 
+          customClass: "code-copy-button-tooltip",
+          offset: [0, -8]});
+      tooltip.show();    
+    }
+    setTimeout(function() {
+      if (tooltip) {
+        tooltip.hide();
+        button.removeAttribute("data-bs-title");
+        button.removeAttribute("data-bs-toggle");
+        button.removeAttribute("data-bs-placement");
+      }
+      button.setAttribute("title", currentTitle);
+      button.classList.remove('code-copy-button-checked');
+    }, 1000);
+    // clear code selection
+    e.clearSelection();
+  });
+  function tippyHover(el, contentFn) {
+    const config = {
+      allowHTML: true,
+      content: contentFn,
+      maxWidth: 500,
+      delay: 100,
+      arrow: false,
+      appendTo: function(el) {
+          return el.parentElement;
+      },
+      interactive: true,
+      interactiveBorder: 10,
+      theme: 'quarto',
+      placement: 'bottom-start'
+    };
+    window.tippy(el, config); 
+  }
+  const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+  for (var i=0; i<noterefs.length; i++) {
+    const ref = noterefs[i];
+    tippyHover(ref, function() {
+      // use id or data attribute instead here
+      let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+      try { href = new URL(href).hash; } catch {}
+      const id = href.replace(/^#\/?/, "");
+      const note = window.document.getElementById(id);
+      return note.innerHTML;
+    });
+  }
+      let selectedAnnoteEl;
+      const selectorForAnnotation = ( cell, annotation) => {
+        let cellAttr = 'data-code-cell="' + cell + '"';
+        let lineAttr = 'data-code-annotation="' +  annotation + '"';
+        const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+        return selector;
+      }
+      const selectCodeLines = (annoteEl) => {
+        const doc = window.document;
+        const targetCell = annoteEl.getAttribute("data-target-cell");
+        const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+        const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+        const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+        const lineIds = lines.map((line) => {
+          return targetCell + "-" + line;
+        })
+        let top = null;
+        let height = null;
+        let parent = null;
+        if (lineIds.length > 0) {
+            //compute the position of the single el (top and bottom and make a div)
+            const el = window.document.getElementById(lineIds[0]);
+            top = el.offsetTop;
+            height = el.offsetHeight;
+            parent = el.parentElement.parentElement;
+          if (lineIds.length > 1) {
+            const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+            const bottom = lastEl.offsetTop + lastEl.offsetHeight;
+            height = bottom - top;
+          }
+          if (top !== null && height !== null && parent !== null) {
+            // cook up a div (if necessary) and position it 
+            let div = window.document.getElementById("code-annotation-line-highlight");
+            if (div === null) {
+              div = window.document.createElement("div");
+              div.setAttribute("id", "code-annotation-line-highlight");
+              div.style.position = 'absolute';
+              parent.appendChild(div);
+            }
+            div.style.top = top - 2 + "px";
+            div.style.height = height + 4 + "px";
+            let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+            if (gutterDiv === null) {
+              gutterDiv = window.document.createElement("div");
+              gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+              gutterDiv.style.position = 'absolute';
+              const codeCell = window.document.getElementById(targetCell);
+              const gutter = codeCell.querySelector('.code-annotation-gutter');
+              gutter.appendChild(gutterDiv);
+            }
+            gutterDiv.style.top = top - 2 + "px";
+            gutterDiv.style.height = height + 4 + "px";
+          }
+          selectedAnnoteEl = annoteEl;
+        }
+      };
+      const unselectCodeLines = () => {
+        const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+        elementsIds.forEach((elId) => {
+          const div = window.document.getElementById(elId);
+          if (div) {
+            div.remove();
+          }
+        });
+        selectedAnnoteEl = undefined;
+      };
+      // Attach click handler to the DT
+      const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
+      for (const annoteDlNode of annoteDls) {
+        annoteDlNode.addEventListener('click', (event) => {
+          const clickedEl = event.target;
+          if (clickedEl !== selectedAnnoteEl) {
+            unselectCodeLines();
+            const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
+            if (activeEl) {
+              activeEl.classList.remove('code-annotation-active');
+            }
+            selectCodeLines(clickedEl);
+            clickedEl.classList.add('code-annotation-active');
+          } else {
+            // Unselect the line
+            unselectCodeLines();
+            clickedEl.classList.remove('code-annotation-active');
+          }
+        });
+      }
+  const findCites = (el) => {
+    const parentEl = el.parentElement;
+    if (parentEl) {
+      const cites = parentEl.dataset.cites;
+      if (cites) {
+        return {
+          el,
+          cites: cites.split(' ')
+        };
+      } else {
+        return findCites(el.parentElement)
+      }
+    } else {
+      return undefined;
+    }
+  };
+  var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+  for (var i=0; i<bibliorefs.length; i++) {
+    const ref = bibliorefs[i];
+    const citeInfo = findCites(ref);
+    if (citeInfo) {
+      tippyHover(citeInfo.el, function() {
+        var popup = window.document.createElement('div');
+        citeInfo.cites.forEach(function(cite) {
+          var citeDiv = window.document.createElement('div');
+          citeDiv.classList.add('hanging-indent');
+          citeDiv.classList.add('csl-entry');
+          var biblioDiv = window.document.getElementById('ref-' + cite);
+          if (biblioDiv) {
+            citeDiv.innerHTML = biblioDiv.innerHTML;
+          }
+          popup.appendChild(citeDiv);
+        });
+        return popup.innerHTML;
+      });
+    }
+  }
+});
+</script>
+</div> <!-- /content -->
+
+
+
+</body></html>

@@ -48,7 +48,7 @@ genome_dir="/gscratch/srlab/sam/data/P_meandrina/genomes"
 genome_fasta="${genome_dir}/Pocillopora_meandrina_HIv1.assembly.fasta"
 genome_gff="${genome_index_dir}/Pocillopora_meandrina_HIv1.genes-valid.gff3"
 splice_sites="Pocillopora_meandrina_HIv1_hisat2_splice_sites.tab"
-transcripts_gtf="${genome_dir}/Pocillopora_meandrina_HIv1-valid.genes.gtf"
+transcripts_gtf="${genome_dir}/Pocillopora_meandrina_HIv1.genes-valid.gtf"
 
 
 # Programs associative array

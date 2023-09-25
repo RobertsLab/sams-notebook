@@ -1,0 +1,223 @@
+---
+layout: post
+title: Transcriptome Assembly - C.bairdi All Pooled RNAseq Data Without Taxonomic Filters with Trinity on Mox
+date: '2020-05-18 05:28'
+tags:
+  - Chionoecetes bairdi
+  - Tanner crab
+  - mox
+  - trinity
+  - assembly
+  - transcriptome
+categories:
+  - 2020
+  - Miscellaneous
+---
+[Steven asked that I assemble a transcriptome](https://github.com/RobertsLab/resources/issues/936) with just  our pooled _C.bairdi_ RNAseq data (_not_ taxonomically filtered; see the FastQ list file linked in the Results section below). This constitutes samples we have designated: 2018, 2019, 2020-UW. A _de novo_ assembly was run using Trinity on Mox. Since all pooled RNAseq libraries were stranded, I added this option to Trinity command.
+
+
+SBATCH script (GitHub):
+
+- [20200518_cbai_trinity_pooled_RNAseq.sh](https://github.com/RobertsLab/sams-notebook/blob/master/sbatch_scripts/20200518_cbai_trinity_pooled_RNAseq.sh)
+
+```shell
+#!/bin/bash
+## Job Name
+#SBATCH --job-name=trinity_cbai
+## Allocation Definition
+#SBATCH --account=srlab
+#SBATCH --partition=srlab
+## Resources
+## Nodes
+#SBATCH --nodes=1
+## Walltime (days-hours:minutes:seconds format)
+#SBATCH --time=9-00:00:00
+## Memory per node
+#SBATCH --mem=500G
+##turn on e-mail notification
+#SBATCH --mail-type=ALL
+#SBATCH --mail-user=samwhite@uw.edu
+## Specify the working directory for this job
+#SBATCH --chdir=/gscratch/scrubbed/samwhite/outputs/20200518_cbai_trinity_pooled_RNAseq
+
+
+### Trinity de novo assembly of all pooled C.bairdi RNAseq data.
+### Includes "descriptor_1" short-hand of: 2020-UW, 2019, 2018.
+### See fastq.list.txt file for list of input files used for assembly.
+
+# Exit script if a command fails
+set -e
+
+# Load Python Mox module for Python module availability
+module load intel-python3_2017
+
+# Document programs in PATH (primarily for program version ID)
+{
+date
+echo ""
+echo "System PATH for $SLURM_JOB_ID"
+echo ""
+printf "%0.s-" {1..10}
+echo "${PATH}" | tr : \\n
+} >> system_path.log
+
+# User-defined variables
+reads_dir=/gscratch/srlab/sam/data/C_bairdi/RNAseq
+transcriptome_dir=/gscratch/srlab/sam/data/C_bairdi/transcriptomes
+threads=28
+assembly_stats=assembly_stats.txt
+timestamp=$(date +%Y%m%d)
+fasta_name="${timestamp}.C_bairdi.Trinity.fasta"
+
+# Paths to programs
+trinity_dir="/gscratch/srlab/programs/trinityrnaseq-v2.9.0"
+samtools="/gscratch/srlab/programs/samtools-1.10/samtools"
+
+
+## Inititalize arrays
+R1_array=()
+R2_array=()
+
+# Variables for R1/R2 lists
+R1_list=""
+R2_list=""
+
+# Create array of fastq R1 files
+R1_array=("${reads_dir}"/3*_S[0-9]*R1*-trim*.gz)
+
+# Create array of fastq R2 files
+R2_array=("${reads_dir}"/3*_S[0-9]*R2*-trim*.gz)
+
+# Create list of fastq files used in analysis
+## Uses parameter substitution to strip leading path from filename
+for fastq in "${reads_dir}"/3*_S[0-9]*-trim*.gz
+do
+  echo "${fastq##*/}" >> fastq.list.txt
+done
+
+# Create comma-separated lists of FastQ reads
+R1_list=$(echo "${R1_array[@]}" | tr " " ",")
+R2_list=$(echo "${R2_array[@]}" | tr " " ",")
+
+
+# Run Trinity
+## Not running as "stranded", due to mix of library types
+${trinity_dir}/Trinity \
+--seqType fq \
+--max_memory 500G \
+--CPU ${threads} \
+--SS_lib_type RF \
+--left "${R1_list}" \
+--right "${R2_list}"
+
+# Rename generic assembly FastA
+mv trinity_out_dir/Trinity.fasta trinity_out_dir/"${fasta_name}"
+
+# Assembly stats
+${trinity_dir}/util/TrinityStats.pl trinity_out_dir/"${fasta_name}" \
+> ${assembly_stats}
+
+# Create gene map files
+${trinity_dir}/util/support_scripts/get_Trinity_gene_to_trans_map.pl \
+trinity_out_dir/"${fasta_name}" \
+> trinity_out_dir/"${fasta_name}".gene_trans_map
+
+# Create sequence lengths file (used for differential gene expression)
+${trinity_dir}/util/misc/fasta_seq_length.pl \
+trinity_out_dir/"${fasta_name}" \
+> trinity_out_dir/"${fasta_name}".seq_lens
+
+# Create FastA index
+${samtools} faidx \
+trinity_out_dir/"${fasta_name}"
+
+# Copy files to transcriptome directory
+rsync -av \
+trinity_out_dir/"${fasta_name}"* \
+${transcriptome_dir}
+
+# Generate FastA MD5 checksum
+# See last line of SLURM output file
+md5sum trinity_out_dir/"${fasta_name}"
+```
+
+---
+
+#### RESULTS
+
+Pretty quick; only ~18hrs:
+
+![Trinity pooled RNAseq runtime](https://github.com/RobertsLab/sams-notebook/blob/master/images/screencaps/20200518_cbai_trinity_pooled_RNAseq_runtime.png?raw=true)
+
+NOTE: The resulting FastA will be referred to as `cbai_transcriptome_v3.0.fasta` in future references.
+
+Output folder:
+
+- [20200518_cbai_trinity_pooled_RNAseq](https://gannet.fish.washington.edu/Atumefaciens/20200518_cbai_trinity_pooled_RNAseq/)
+
+Input FastQ list (text):
+
+- [fastq.list.txt](https://gannet.fish.washington.edu/Atumefaciens/20200518_cbai_trinity_pooled_RNAseq/fastq.list.txt)
+
+FastA (412MB):
+
+- [20200518.C_bairdi.Trinity.fasta](https://gannet.fish.washington.edu/Atumefaciens/20200518_cbai_trinity_pooled_RNAseq/trinity_out_dir/20200518.C_bairdi.Trinity.fasta)
+
+  - MD5 = `5516789cbad5fa9009c3566003557875`
+
+FastA Index (text):
+
+- [20200518.C_bairdi.Trinity.fasta.fai](https://gannet.fish.washington.edu/Atumefaciens/20200518_cbai_trinity_pooled_RNAseq/trinity_out_dir/20200518.C_bairdi.Trinity.fasta.fai)
+
+The following sets of files are useful for downstream gene expression and annotation using Trinity.
+
+Trinity FastA Gene Trans Map (text):
+
+- [20200518.C_bairdi.Trinity.fasta.gene_trans_map](https://gannet.fish.washington.edu/Atumefaciens/20200518_cbai_trinity_pooled_RNAseq/trinity_out_dir/20200518.C_bairdi.Trinity.fasta.gene_trans_map)
+
+Trinity FastA Sequence Lengths (text):
+
+- [20200518.C_bairdi.Trinity.fasta.seq_lens](https://gannet.fish.washington.edu/Atumefaciens/20200518_cbai_trinity_pooled_RNAseq/trinity_out_dir/20200518.C_bairdi.Trinity.fasta.seq_lens)
+
+
+Assembly stats (text):
+
+- [assembly_stats.txt](https://gannet.fish.washington.edu/Atumefaciens/20200518_cbai_trinity_pooled_RNAseq/assembly_stats.txt)
+
+```
+################################
+## Counts of transcripts, etc.
+################################
+Total trinity 'genes':	127738
+Total trinity transcripts:	344944
+Percent GC: 46.21
+
+########################################
+Stats based on ALL transcript contigs:
+########################################
+
+	Contig N10: 4597
+	Contig N20: 3479
+	Contig N30: 2835
+	Contig N40: 2375
+	Contig N50: 1985
+
+	Median contig length: 650
+	Average contig: 1132.95
+	Total assembled bases: 390805991
+
+
+#####################################################
+## Stats based on ONLY LONGEST ISOFORM per 'GENE':
+#####################################################
+
+	Contig N10: 4680
+	Contig N20: 3487
+	Contig N30: 2791
+	Contig N40: 2266
+	Contig N50: 1791
+
+	Median contig length: 381
+	Average contig: 845.46
+	Total assembled bases: 107996989
+  ```

@@ -1,0 +1,1 @@
+while read -r line; do fields=$(echo "${line}" | awk '{print NF}'); if [[ "${fields}" == "12" ]]; then gene_id=$(echo "${line}" | awk -F ";" '{print $2}'); printf "%s\n" "${line}"; else printf "%s\n" "${line} ${gene_id};"; fi; done < Pocillopora_meandrina_HIv1.genes-valid.gtf > fixed-gtf-geneID.gtf
