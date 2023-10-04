@@ -74,7 +74,7 @@ printf "%s\n" \
 "${date_line}'${post_date}'" \
 "draft: true" \
 "${engine}" \
-"%s\n" "${categories}" \
+"${categories}" \
 >> index.qmd
 
 printf "  - %s\n" "${categories_array[@]}" >> index.qmd
