@@ -44,6 +44,10 @@ title="title: "
 date_line="date: "
 categories="categories: "
 
+# Sets engine to use knitr so first code chunk
+# can be rendered if not R
+engine="engine: knitr"
+
 # Ask user for input
 echo "Enter post title (use no punctuation):"
 read post_title
@@ -66,17 +70,16 @@ printf "%s\n" \
 "toc-title: Contents" \
 "toc-depth: 5" \
 "toc-location: left" \
-"${title}${post_title}"
+"${title}${post_title}" \
 "${date_line}'${post_date}'" \
+"draft: true" \
+"${engine}" \
+"%s\n" "${categories}" \
 >> index.qmd
-
-printf "%s\n" "${categories}" >> index.qmd
 
 printf "  - %s\n" "${categories_array[@]}" >> index.qmd
 
-printf "%s\n" "draft: true"
-
 printf "%s\n" "${md_line}" >> index.qmd
 
-# Open file with Atom text editor.
-atom index.qmd
+# Open file with code text editor.
+code index.qmd
