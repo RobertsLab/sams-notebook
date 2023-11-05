@@ -52,8 +52,12 @@ engine="engine: knitr"
 echo "Enter post title (use no punctuation):"
 read post_title
 
-echo "Enter categories (space separated)"
-read -a categories_array
+echo "Enter categories (semi-colon separated)"
+OLDIFS="{$IFS}"
+
+IFS=';' read -ra categories_array
+
+IFS="${OLDIFS}"
 
 # remove spaces from post-title and replace with hyphens
 formatted_title=$(echo -ne "${post_title}" | tr [:space:] '-')
@@ -77,6 +81,7 @@ printf "%s\n" \
 "${categories}" \
 >> index.qmd
 
+# Adds categories
 printf "  - %s\n" "${categories_array[@]}" >> index.qmd
 
 printf "%s\n" "${md_line}" >> index.qmd
