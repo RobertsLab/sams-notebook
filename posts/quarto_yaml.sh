@@ -48,6 +48,10 @@ categories="categories: "
 # can be rendered if not R
 engine="engine: knitr"
 
+# Capture year
+# Used for folder structure and categories
+year=$(echo "${post_date} | awk -F"-" '{print $1})
+
 # Ask user for input
 echo "Enter post title (use no punctuation):"
 read post_title
@@ -63,7 +67,7 @@ IFS="${OLDIFS}"
 formatted_title=$(echo -ne "${post_title}" | tr [:space:] '-')
 
 # save new filename using post_date and formatted_title variables.
-mkdir --parents "${post_date}-${formatted_title}" && cd $_
+mkdir --parents "${year}/${post_date}-${formatted_title}" && cd $_
 
 
 # prints formatted Quarto YAML header utilizing post_date and user-entered post title and categories.
