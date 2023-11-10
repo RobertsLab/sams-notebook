@@ -115,8 +115,9 @@ ${tmhmm} \
 cd "${rnammer_out_dir}" || exit
 ${trinotate_rnammer} \
 --transcriptome ${trinity_fasta} \
---path_to_rnammer ${rnammer} \
-|| cd "${wd}" || exit
+--path_to_rnammer ${rnammer}
+
+cd "${wd}" || exit
 
 # Run Trinotate
 ## Load transcripts and coding regions into database
