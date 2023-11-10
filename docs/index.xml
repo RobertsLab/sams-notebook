@@ -10,7 +10,2544 @@
 <atom:link href="https://robertslab.github.io/sams-notebook/index.xml" rel="self" type="application/rss+xml"/>
 <description></description>
 <generator>quarto-1.3.450</generator>
-<lastBuildDate>Sun, 05 Nov 2023 07:00:00 GMT</lastBuildDate>
+<lastBuildDate>Thu, 09 Nov 2023 08:00:00 GMT</lastBuildDate>
+<item>
+  <title>Transcriptome Annotation - M.magister De Novo Transcriptome Assembly Using Trinotate on Mox</title>
+  <dc:creator>Sam White</dc:creator>
+  <link>https://robertslab.github.io/sams-notebook/posts/2023/2023-11-09-Transcriptome-Annotation---M.magister-De-Novo-Transcriptome-Assembly-Using-Trinotate-on-Mox/index.html</link>
+  <description><![CDATA[ 
+
+
+
+
+<section id="intro" class="level1">
+<h1>Intro</h1>
+<p>As part of <a href="https://github.com/laurahspencer/DuMOAR/issues/44">transcriptome annotation</a> (GitHub issue) for <a href="https://github.com/laurahspencer/DuMOAR">DuMOAR</a> (GitHub repo), I’ve already run <a href="https://https://github.com/TransDecoder/TransDecoder/wiki.com/Trinotate/Trinotate/wiki"><code>TransDecoder</code></a> ( run on <a href="../../../posts/2023/2023-11-07-Transcriptome-Annotation---M.magister-De-Novo-Transcriptome-Assembly-for-DuMOAR-Project-Using-TransDecoder-on-Mox/index.html">20231107</a>), as well as <a href="https://github.com/bbuchfink/diamond"><code>DIAMOND</code></a> BLASTx (run <a href="../../../posts/2023/2023-11-09-Transcriptome-Annotation---M.magister-De-Novo-Transcriptome-Assembly-for-DuMOAR-Project-Using-DIAMOND-BLASTx-on-Mox/index.html">earlier today</a>). The final part of getting the transcriptome annotated was to run <a href="https://github.com/Trinotate/Trinotate/wiki"><code>Trinotate</code></a>. <a href="https://github.com/Trinotate/Trinotate/wiki"><code>Trinotate</code></a> uses a combination of tools to generate a pretty thorough annotation of transcriptomes. This was run on Mox.</p>
+<section id="slurm-script" class="level2">
+<h2 class="anchored" data-anchor-id="slurm-script">SLURM script</h2>
+<ul>
+<li><a href="https://github.com/RobertsLab/sams-notebook/blob/master/sbatch_scripts/20231109-mmag-trinotate-transcriptome.sh">20231109-mmag-trinotate-transcriptome.sh</a> (GitHub)</li>
+</ul>
+<div class="sourceCode" id="cb1" style="background: #f1f3f5;"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb1-1"><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">#!/bin/bash</span></span>
+<span id="cb1-2"><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">## Job Name</span></span>
+<span id="cb1-3"><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">#SBATCH --job-name=20231109-mmag-trinotate-transcriptome</span></span>
+<span id="cb1-4"><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">## Allocation Definition</span></span>
+<span id="cb1-5"><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">#SBATCH --account=srlab</span></span>
+<span id="cb1-6"><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">#SBATCH --partition=srlab</span></span>
+<span id="cb1-7"><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">## Resources</span></span>
+<span id="cb1-8"><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">## Nodes</span></span>
+<span id="cb1-9"><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">#SBATCH --nodes=1</span></span>
+<span id="cb1-10"><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">## Walltime (days-hours:minutes:seconds format)</span></span>
+<span id="cb1-11"><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">#SBATCH --time=4-00:00:00</span></span>
+<span id="cb1-12"><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">## Memory per node</span></span>
+<span id="cb1-13"><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">#SBATCH --mem=120G</span></span>
+<span id="cb1-14"><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">##turn on e-mail notification</span></span>
+<span id="cb1-15"><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">#SBATCH --mail-type=ALL</span></span>
+<span id="cb1-16"><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">#SBATCH --mail-user=samwhite@uw.edu</span></span>
+<span id="cb1-17"><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">## Specify the working directory for this job</span></span>
+<span id="cb1-18"><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">#SBATCH --chdir=/gscratch/scrubbed/samwhite/outputs/20231109-mmag-trinotate-transcriptome</span></span>
+<span id="cb1-19"></span>
+<span id="cb1-20"></span>
+<span id="cb1-21"><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># Script to run Trinotate on M.magister transcriptome.</span></span>
+<span id="cb1-22"></span>
+<span id="cb1-23"></span>
+<span id="cb1-24"><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">###################################################################################</span></span>
+<span id="cb1-25"><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># These variables need to be set by user</span></span>
+<span id="cb1-26"></span>
+<span id="cb1-27"><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># Input files</span></span>
+<span id="cb1-28"><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">## BLASTx</span></span>
+<span id="cb1-29"><span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">blastx_out</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"/gscratch/scrubbed/samwhite/outputs/20231109-mmag-transcriptome-diamond-blastx/trinity_denovo.Trinity.blastx.outfmt6"</span></span>
+<span id="cb1-30"></span>
+<span id="cb1-31"><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">## TransDecoder</span></span>
+<span id="cb1-32"><span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">transdecoder_dir</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"/gscratch/scrubbed/samwhite/outputs/20231107-mmag-transdecoder-transcriptome"</span></span>
+<span id="cb1-33"><span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">blastp_out</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"</span><span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">${transdecoder_dir}</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">/blastp_out/blastp.outfmt6"</span></span>
+<span id="cb1-34"><span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">pfam_out</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"</span><span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">${transdecoder_dir}</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">/pfam_out/pfam.domtblout"</span></span>
+<span id="cb1-35"><span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">lORFs_pep</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"</span><span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">${transdecoder_dir}</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">/trinity_denovo.Trinity.fasta.transdecoder_dir/longest_orfs.pep"</span></span>
+<span id="cb1-36"></span>
+<span id="cb1-37"><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">## Transcriptomics</span></span>
+<span id="cb1-38"><span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">transcriptomes_dir</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"/gscratch/srlab/sam/data/M_magister/transcriptomes"</span></span>
+<span id="cb1-39"><span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">trinity_fasta</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"</span><span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">${transcriptomes_dir}</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">/trinity_denovo.Trinity.fasta"</span></span>
+<span id="cb1-40"><span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">trinity_gene_map</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"</span><span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">${transcriptomes_dir}</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">/trinity_denovo.Trinity.fasta.gene_trans_map"</span></span>
+<span id="cb1-41"></span>
+<span id="cb1-42"><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">###################################################################################</span></span>
+<span id="cb1-43"></span>
+<span id="cb1-44"><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># Exit script if any command fails</span></span>
+<span id="cb1-45"><span class="bu" style="color: null;
+background-color: null;
+font-style: inherit;">set</span> <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">-e</span></span>
+<span id="cb1-46"></span>
+<span id="cb1-47"><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># Load Python Mox module for Python module availability</span></span>
+<span id="cb1-48"></span>
+<span id="cb1-49"><span class="ex" style="color: null;
+background-color: null;
+font-style: inherit;">module</span> load intel-python3_2017</span>
+<span id="cb1-50"></span>
+<span id="cb1-51"><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># SegFault fix?</span></span>
+<span id="cb1-52"><span class="bu" style="color: null;
+background-color: null;
+font-style: inherit;">export</span> <span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">THREADS_DAEMON_MODEL</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span>1</span>
+<span id="cb1-53"></span>
+<span id="cb1-54"></span>
+<span id="cb1-55"><span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">wd</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"</span><span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">$(</span><span class="bu" style="color: null;
+background-color: null;
+font-style: inherit;">pwd</span><span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">)</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"</span></span>
+<span id="cb1-56"><span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">timestamp</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span><span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">$(</span><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">date</span> +%Y%m%d<span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">)</span></span>
+<span id="cb1-57"></span>
+<span id="cb1-58"></span>
+<span id="cb1-59"><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">## Paths to input/output files</span></span>
+<span id="cb1-60"></span>
+<span id="cb1-61"><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">## New folders for working directory</span></span>
+<span id="cb1-62"><span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">rnammer_out_dir</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"</span><span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">${wd}</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">/RNAmmer_out"</span></span>
+<span id="cb1-63"><span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">signalp_out_dir</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"</span><span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">${wd}</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">/signalp_out"</span></span>
+<span id="cb1-64"><span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">tmhmm_out_dir</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"</span><span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">${wd}</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">/tmhmm_out"</span></span>
+<span id="cb1-65"></span>
+<span id="cb1-66"></span>
+<span id="cb1-67"><span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">rnammer_prefix</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span><span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">${trinity_fasta</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">##</span><span class="pp" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">*</span>/<span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">}</span></span>
+<span id="cb1-68"><span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">prefix</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"</span><span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">${timestamp}</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">.</span><span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">${rnammer_prefix}</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">.trinotate"</span></span>
+<span id="cb1-69"></span>
+<span id="cb1-70"><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># Output files</span></span>
+<span id="cb1-71"><span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">rnammer_out</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"</span><span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">${rnammer_out_dir}</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">/</span><span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">${rnammer_prefix}</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">.rnammer.gff"</span></span>
+<span id="cb1-72"><span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">signalp_out</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"</span><span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">${signalp_out_dir}</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">/</span><span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">${prefix}</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">.signalp.out"</span></span>
+<span id="cb1-73"><span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">tmhmm_out</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"</span><span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">${tmhmm_out_dir}</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">/</span><span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">${prefix}</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">.tmhmm.out"</span></span>
+<span id="cb1-74"><span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">trinotate_report</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"</span><span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">${wd}</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">/</span><span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">${prefix}</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">_annotation_report.txt"</span></span>
+<span id="cb1-75"></span>
+<span id="cb1-76"><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># Paths to programs</span></span>
+<span id="cb1-77"><span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">rnammer_dir</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"/gscratch/srlab/programs/RNAMMER-1.2"</span></span>
+<span id="cb1-78"><span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">rnammer</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"</span><span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">${rnammer_dir}</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">/rnammer"</span></span>
+<span id="cb1-79"><span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">signalp_dir</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"/gscratch/srlab/programs/signalp-4.1"</span></span>
+<span id="cb1-80"><span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">signalp</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"</span><span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">${signalp_dir}</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">/signalp"</span></span>
+<span id="cb1-81"><span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">tmhmm_dir</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"/gscratch/srlab/programs/tmhmm-2.0c/bin"</span></span>
+<span id="cb1-82"><span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">tmhmm</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"</span><span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">${tmhmm_dir}</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">/tmhmm"</span></span>
+<span id="cb1-83"><span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">trinotate_dir</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"/gscratch/srlab/programs/Trinotate-v3.1.1"</span></span>
+<span id="cb1-84"><span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">trinotate</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"</span><span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">${trinotate_dir}</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">/Trinotate"</span></span>
+<span id="cb1-85"><span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">trinotate_rnammer</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"</span><span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">${trinotate_dir}</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">/util/rnammer_support/RnammerTranscriptome.pl"</span></span>
+<span id="cb1-86"><span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">trinotate_GO</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"</span><span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">${trinotate_dir}</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">/util/extract_GO_assignments_from_Trinotate_xls.pl"</span></span>
+<span id="cb1-87"><span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">trinotate_features</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"</span><span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">${trinotate_dir}</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">/util/Trinotate_get_feature_name_encoding_attributes.pl"</span></span>
+<span id="cb1-88"><span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">trinotate_sqlite_db</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"Trinotate.sqlite"</span></span>
+<span id="cb1-89"></span>
+<span id="cb1-90"><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># Generate FastA checksum, for reference if needed.</span></span>
+<span id="cb1-91"><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">md5sum</span> <span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">${trinity_fasta}</span> <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">&gt;</span> fasta.checksum.md5</span>
+<span id="cb1-92"></span>
+<span id="cb1-93"><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># Make output directories</span></span>
+<span id="cb1-94"><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">mkdir</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"</span><span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">${rnammer_out_dir}</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"</span><span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">${signalp_out_dir}</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"</span><span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">${tmhmm_out_dir}</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"</span></span>
+<span id="cb1-95"></span>
+<span id="cb1-96"><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># Copy sqlite database template</span></span>
+<span id="cb1-97"></span>
+<span id="cb1-98"><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">cp</span> <span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">${trinotate_dir}</span>/admin/Trinotate.sqlite .</span>
+<span id="cb1-99"></span>
+<span id="cb1-100"><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># Run signalp</span></span>
+<span id="cb1-101"><span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">${signalp}</span> <span class="dt" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">\</span></span>
+<span id="cb1-102">-f short <span class="dt" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">\</span></span>
+<span id="cb1-103">-n <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"</span><span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">${signalp_out}</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"</span> <span class="dt" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">\</span></span>
+<span id="cb1-104"><span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">${lORFs_pep}</span></span>
+<span id="cb1-105"></span>
+<span id="cb1-106"><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># Run tmHMM</span></span>
+<span id="cb1-107"><span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">${tmhmm}</span> <span class="dt" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">\</span></span>
+<span id="cb1-108">--short <span class="dt" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">\</span></span>
+<span id="cb1-109"><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">&lt;</span> <span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">${lORFs_pep}</span> <span class="dt" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">\</span></span>
+<span id="cb1-110"><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">&gt;</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"</span><span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">${tmhmm_out}</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"</span></span>
+<span id="cb1-111"></span>
+<span id="cb1-112"><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># Run RNAmmer</span></span>
+<span id="cb1-113"><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># Has "||" operator due to previous lack of matches</span></span>
+<span id="cb1-114"><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># Need "||" to continue with annotation.</span></span>
+<span id="cb1-115"><span class="bu" style="color: null;
+background-color: null;
+font-style: inherit;">cd</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"</span><span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">${rnammer_out_dir}</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"</span> <span class="kw" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">||</span> <span class="bu" style="color: null;
+background-color: null;
+font-style: inherit;">exit</span></span>
+<span id="cb1-116"><span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">${trinotate_rnammer}</span> <span class="dt" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">\</span></span>
+<span id="cb1-117">--transcriptome <span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">${trinity_fasta}</span> <span class="dt" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">\</span></span>
+<span id="cb1-118">--path_to_rnammer <span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">${rnammer}</span></span>
+<span id="cb1-119"></span>
+<span id="cb1-120"><span class="bu" style="color: null;
+background-color: null;
+font-style: inherit;">cd</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"</span><span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">${wd}</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"</span> <span class="kw" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">||</span> <span class="bu" style="color: null;
+background-color: null;
+font-style: inherit;">exit</span></span>
+<span id="cb1-121"></span>
+<span id="cb1-122"><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># Run Trinotate</span></span>
+<span id="cb1-123"><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">## Load transcripts and coding regions into database</span></span>
+<span id="cb1-124"><span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">${trinotate}</span> <span class="dt" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">\</span></span>
+<span id="cb1-125"><span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">${trinotate_sqlite_db}</span> <span class="dt" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">\</span></span>
+<span id="cb1-126">init <span class="dt" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">\</span></span>
+<span id="cb1-127">--gene_trans_map <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"</span><span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">${trinity_gene_map}</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"</span> <span class="dt" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">\</span></span>
+<span id="cb1-128">--transcript_fasta <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"</span><span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">${trinity_fasta}</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"</span> <span class="dt" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">\</span></span>
+<span id="cb1-129">--transdecoder_pep <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"</span><span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">${lORFs_pep}</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"</span></span>
+<span id="cb1-130"></span>
+<span id="cb1-131"><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">## Load BLAST homologies</span></span>
+<span id="cb1-132"><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"</span><span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">${trinotate}</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"</span> <span class="dt" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">\</span></span>
+<span id="cb1-133"><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"</span><span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">${trinotate_sqlite_db}</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"</span> <span class="dt" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">\</span></span>
+<span id="cb1-134">LOAD_swissprot_blastp <span class="dt" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">\</span></span>
+<span id="cb1-135"><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"</span><span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">${blastp_out}</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"</span></span>
+<span id="cb1-136"></span>
+<span id="cb1-137"><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"</span><span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">${trinotate}</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"</span> <span class="dt" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">\</span></span>
+<span id="cb1-138"><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"</span><span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">${trinotate_sqlite_db}</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"</span> <span class="dt" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">\</span></span>
+<span id="cb1-139">LOAD_swissprot_blastx <span class="dt" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">\</span></span>
+<span id="cb1-140"><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"</span><span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">${blastx_out}</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"</span></span>
+<span id="cb1-141"></span>
+<span id="cb1-142"><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">## Load Pfam</span></span>
+<span id="cb1-143"><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"</span><span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">${trinotate}</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"</span> <span class="dt" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">\</span></span>
+<span id="cb1-144"><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"</span><span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">${trinotate_sqlite_db}</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"</span> <span class="dt" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">\</span></span>
+<span id="cb1-145">LOAD_pfam <span class="dt" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">\</span></span>
+<span id="cb1-146"><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"</span><span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">${pfam_out}</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"</span></span>
+<span id="cb1-147"></span>
+<span id="cb1-148"><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">## Load transmembrane domains</span></span>
+<span id="cb1-149"><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"</span><span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">${trinotate}</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"</span> <span class="dt" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">\</span></span>
+<span id="cb1-150"><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"</span><span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">${trinotate_sqlite_db}</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"</span> <span class="dt" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">\</span></span>
+<span id="cb1-151">LOAD_tmhmm <span class="dt" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">\</span></span>
+<span id="cb1-152"><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"</span><span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">${tmhmm_out}</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"</span></span>
+<span id="cb1-153"></span>
+<span id="cb1-154"><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">## Load signal peptides</span></span>
+<span id="cb1-155"><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"</span><span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">${trinotate}</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"</span> <span class="dt" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">\</span></span>
+<span id="cb1-156"><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"</span><span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">${trinotate_sqlite_db}</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"</span> <span class="dt" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">\</span></span>
+<span id="cb1-157">LOAD_signalp <span class="dt" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">\</span></span>
+<span id="cb1-158"><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"</span><span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">${signalp_out}</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"</span></span>
+<span id="cb1-159"></span>
+<span id="cb1-160"><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">## Load RNAmmer</span></span>
+<span id="cb1-161"><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"</span><span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">${trinotate}</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"</span> <span class="dt" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">\</span></span>
+<span id="cb1-162"><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"</span><span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">${trinotate_sqlite_db}</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"</span> <span class="dt" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">\</span></span>
+<span id="cb1-163">LOAD_rnammer <span class="dt" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">\</span></span>
+<span id="cb1-164"><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"</span><span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">${rnammer_out}</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"</span></span>
+<span id="cb1-165"></span>
+<span id="cb1-166"><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">## Creat annotation report</span></span>
+<span id="cb1-167"><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"</span><span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">${trinotate}</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"</span> <span class="dt" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">\</span></span>
+<span id="cb1-168"><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"</span><span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">${trinotate_sqlite_db}</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"</span> <span class="dt" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">\</span></span>
+<span id="cb1-169">report <span class="dt" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">\</span></span>
+<span id="cb1-170"><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">&gt;</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"</span><span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">${trinotate_report}</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"</span></span>
+<span id="cb1-171"></span>
+<span id="cb1-172"><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># Extract GO terms from annotation report</span></span>
+<span id="cb1-173"><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"</span><span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">${trinotate_GO}</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"</span> <span class="dt" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">\</span></span>
+<span id="cb1-174">--Trinotate_xls <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"</span><span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">${trinotate_report}</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"</span> <span class="dt" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">\</span></span>
+<span id="cb1-175">-G <span class="dt" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">\</span></span>
+<span id="cb1-176">--include_ancestral_terms <span class="dt" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">\</span></span>
+<span id="cb1-177"><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">&gt;</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"</span><span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">${prefix}</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"</span>.go_annotations.txt</span>
+<span id="cb1-178"></span>
+<span id="cb1-179"><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># Make transcript features annotation map</span></span>
+<span id="cb1-180"><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"</span><span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">${trinotate_features}</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"</span> <span class="dt" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">\</span></span>
+<span id="cb1-181"><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"</span><span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">${trinotate_report}</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"</span> <span class="dt" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">\</span></span>
+<span id="cb1-182"><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">&gt;</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"</span><span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">${prefix}</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"</span>.annotation_feature_map.txt</span>
+<span id="cb1-183"></span>
+<span id="cb1-184"><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">####################################################################</span></span>
+<span id="cb1-185"></span>
+<span id="cb1-186"><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># Capture program options</span></span>
+<span id="cb1-187"><span class="cf" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">if</span> <span class="kw" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">[[</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"</span><span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">${</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">#</span><span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">programs_array</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">[@]</span><span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">}</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"</span> <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">-gt</span> 0 <span class="kw" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">]];</span> <span class="cf" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">then</span></span>
+<span id="cb1-188">  <span class="bu" style="color: null;
+background-color: null;
+font-style: inherit;">echo</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"Logging program options..."</span></span>
+<span id="cb1-189">  <span class="cf" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">for</span> program <span class="kw" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">in</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"</span><span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">${</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">!</span><span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">programs_array</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">[@]</span><span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">}</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"</span></span>
+<span id="cb1-190">  <span class="cf" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">do</span></span>
+<span id="cb1-191">    <span class="kw" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">{</span></span>
+<span id="cb1-192">    <span class="bu" style="color: null;
+background-color: null;
+font-style: inherit;">echo</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"Program options for </span><span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">${program}</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">: "</span></span>
+<span id="cb1-193">    <span class="bu" style="color: null;
+background-color: null;
+font-style: inherit;">echo</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">""</span></span>
+<span id="cb1-194">    <span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># Handle samtools help menus</span></span>
+<span id="cb1-195">    <span class="cf" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">if</span> <span class="kw" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">[[</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"</span><span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">${program}</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"</span> <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">==</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"samtools_index"</span> <span class="kw" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">]]</span> <span class="dt" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">\</span></span>
+<span id="cb1-196">    <span class="kw" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">||</span> <span class="kw" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">[[</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"</span><span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">${program}</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"</span> <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">==</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"samtools_sort"</span> <span class="kw" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">]]</span> <span class="dt" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">\</span></span>
+<span id="cb1-197">    <span class="kw" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">||</span> <span class="kw" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">[[</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"</span><span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">${program}</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"</span> <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">==</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"samtools_view"</span> <span class="kw" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">]]</span></span>
+<span id="cb1-198">    <span class="cf" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">then</span></span>
+<span id="cb1-199">      <span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">${programs_array</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">[</span><span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">$program</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">]</span><span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">}</span></span>
+<span id="cb1-200"></span>
+<span id="cb1-201">    <span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># Handle DIAMOND BLAST menu</span></span>
+<span id="cb1-202">    <span class="cf" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">elif</span> <span class="kw" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">[[</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"</span><span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">${program}</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"</span> <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">==</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"diamond"</span> <span class="kw" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">]];</span> <span class="cf" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">then</span></span>
+<span id="cb1-203">      <span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">${programs_array</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">[</span><span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">$program</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">]</span><span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">}</span> help</span>
+<span id="cb1-204"></span>
+<span id="cb1-205">    <span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># Handle NCBI BLASTx menu</span></span>
+<span id="cb1-206">    <span class="cf" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">elif</span> <span class="kw" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">[[</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"</span><span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">${program}</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"</span> <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">==</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"blastx"</span> <span class="kw" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">]];</span> <span class="cf" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">then</span></span>
+<span id="cb1-207">      <span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">${programs_array</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">[</span><span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">$program</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">]</span><span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">}</span> <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">-help</span></span>
+<span id="cb1-208"></span>
+<span id="cb1-209">    <span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># Handle StringTie prepDE script</span></span>
+<span id="cb1-210">    <span class="cf" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">elif</span> <span class="kw" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">[[</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"</span><span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">${program}</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"</span> <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">==</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"prepDE"</span> <span class="kw" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">]];</span> <span class="cf" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">then</span></span>
+<span id="cb1-211">      <span class="ex" style="color: null;
+background-color: null;
+font-style: inherit;">python3</span> <span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">${programs_array</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">[</span><span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">$program</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">]</span><span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">}</span> <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">-h</span></span>
+<span id="cb1-212">    <span class="cf" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">fi</span></span>
+<span id="cb1-213">    <span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">${programs_array</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">[</span><span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">$program</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">]</span><span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">}</span> <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">-h</span></span>
+<span id="cb1-214">    <span class="bu" style="color: null;
+background-color: null;
+font-style: inherit;">echo</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">""</span></span>
+<span id="cb1-215">    <span class="bu" style="color: null;
+background-color: null;
+font-style: inherit;">echo</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">""</span></span>
+<span id="cb1-216">    <span class="bu" style="color: null;
+background-color: null;
+font-style: inherit;">echo</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"----------------------------------------------"</span></span>
+<span id="cb1-217">    <span class="bu" style="color: null;
+background-color: null;
+font-style: inherit;">echo</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">""</span></span>
+<span id="cb1-218">    <span class="bu" style="color: null;
+background-color: null;
+font-style: inherit;">echo</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">""</span></span>
+<span id="cb1-219">  <span class="kw" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">}</span> <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">&amp;&gt;&gt;</span> program_options.log <span class="kw" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">||</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">true</span></span>
+<span id="cb1-220"></span>
+<span id="cb1-221">    <span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># If MultiQC is in programs_array, copy the config file to this directory.</span></span>
+<span id="cb1-222">    <span class="cf" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">if</span> <span class="kw" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">[[</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"</span><span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">${program}</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"</span> <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">==</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"multiqc"</span> <span class="kw" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">]];</span> <span class="cf" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">then</span></span>
+<span id="cb1-223">      <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">cp</span> <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">--preserve</span> ~/.multiqc_config.yaml multiqc_config.yaml</span>
+<span id="cb1-224">    <span class="cf" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">fi</span></span>
+<span id="cb1-225">  <span class="cf" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">done</span></span>
+<span id="cb1-226">  <span class="bu" style="color: null;
+background-color: null;
+font-style: inherit;">echo</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"Finished logging programs options."</span></span>
+<span id="cb1-227">  <span class="bu" style="color: null;
+background-color: null;
+font-style: inherit;">echo</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">""</span></span>
+<span id="cb1-228"><span class="cf" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">fi</span></span>
+<span id="cb1-229"></span>
+<span id="cb1-230"></span>
+<span id="cb1-231"><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># Document programs in PATH (primarily for program version ID)</span></span>
+<span id="cb1-232"><span class="bu" style="color: null;
+background-color: null;
+font-style: inherit;">echo</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"Logging system </span><span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">$PATH</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">..."</span></span>
+<span id="cb1-233"><span class="kw" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">{</span></span>
+<span id="cb1-234"><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">date</span></span>
+<span id="cb1-235"><span class="bu" style="color: null;
+background-color: null;
+font-style: inherit;">echo</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">""</span></span>
+<span id="cb1-236"><span class="bu" style="color: null;
+background-color: null;
+font-style: inherit;">echo</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"System PATH for </span><span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">$SLURM_JOB_ID</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"</span></span>
+<span id="cb1-237"><span class="bu" style="color: null;
+background-color: null;
+font-style: inherit;">echo</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">""</span></span>
+<span id="cb1-238"><span class="bu" style="color: null;
+background-color: null;
+font-style: inherit;">printf</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"%0.s-"</span> <span class="dt" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">{</span><span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">1</span><span class="dt" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">..</span><span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">10</span><span class="dt" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">}</span></span>
+<span id="cb1-239"><span class="bu" style="color: null;
+background-color: null;
+font-style: inherit;">echo</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"</span><span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">${PATH}</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"</span> <span class="kw" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">|</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">tr</span> : <span class="dt" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">\\</span>n</span>
+<span id="cb1-240"><span class="kw" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">}</span> <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">&gt;&gt;</span> system_path.log</span>
+<span id="cb1-241"><span class="bu" style="color: null;
+background-color: null;
+font-style: inherit;">echo</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"Finished logging system </span><span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">$PATH</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">."</span></span></code></pre></div>
+<p>/———-</p>
+</section>
+</section>
+<section id="results" class="level1">
+<h1>RESULTS</h1>
+<section id="runtime" class="level2">
+<h2 class="anchored" data-anchor-id="runtime">Runtime</h2>
+<p>Runtime was just under 3.5hrs:</p>
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="https://robertslab.github.io/sams-notebook/posts/2023/2023-11-09-Transcriptome-Annotation---M.magister-De-Novo-Transcriptome-Assembly-Using-Trinotate-on-Mox/20231109-mmag-trinotate-transcriptome-runtime.png" class="img-fluid figure-img"></p>
+<figcaption class="figure-caption">Screencap showing Trinotate runtime on Mox of 3hrs, 21mins, 10secs</figcaption>
+</figure>
+</div>
+</section>
+<section id="files" class="level2">
+<h2 class="anchored" data-anchor-id="files">Files</h2>
+<p>Outpur directory:</p>
+<ul>
+<li><a href="https://gannet.fish.washington.edu/Atumefaciens/20231109-mmag-trinotate-transcriptome/">20231109-mmag-trinotate-transcriptome/</a></li>
+</ul>
+<section id="annotation-feature-map" class="level3">
+<h3 class="anchored" data-anchor-id="annotation-feature-map">Annotation Feature Map</h3>
+<p>Annotation feature map (10MB; TXT):</p>
+<ul>
+<li><p><a href="https://gannet.fish.washington.edu/Atumefaciens/20231109-mmag-trinotate-transcriptome/20231109.trinity_denovo.Trinity.fasta.trinotate.annotation_feature_map.txt">20231109.trinity_denovo.Trinity.fasta.trinotate.annotation_feature_map.txt</a></p>
+<ul>
+<li><p><a href="https://github.com/trinityrnaseq/trinityrnaseq/wiki/Functional-Annotation-of-Transcripts">This can be used to update Trinity-based gene expression matrices like so</a>:</p>
+<ul>
+<li><code>${TRINITY_HOME}/Analysis/DifferentialExpression/rename_matrix_feature_identifiers.pl Trinity_trans.counts.matrix annot_feature_map.txt &gt; Trinity_trans.counts.wAnnot.matrix</code></li>
+</ul></li>
+</ul></li>
+</ul>
+</section>
+<section id="gene-ontology-go-annotations" class="level3">
+<h3 class="anchored" data-anchor-id="gene-ontology-go-annotations">Gene Ontology (GO) Annotations</h3>
+<p>Gene ontology (GO) annotations (26MB; TXT):</p>
+<ul>
+<li><a href="https://gannet.fish.washington.edu/Atumefaciens/20231109-mmag-trinotate-transcriptome/20231109.trinity_denovo.Trinity.fasta.trinotate.go_annotations.txt">20231109.trinity_denovo.Trinity.fasta.trinotate.go_annotations.txt</a></li>
+</ul>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb2" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb2-1"><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">library</span>(kableExtra)</span>
+<span id="cb2-2"></span>
+<span id="cb2-3">go.annotations.df <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">read.csv</span>(<span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"https://gannet.fish.washington.edu/Atumefaciens/20231109-mmag-trinotate-transcriptome/20231109.trinity_denovo.Trinity.fasta.trinotate.go_annotations.txt"</span>,</span>
+<span id="cb2-4"><span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">header =</span> <span class="cn" style="color: #8f5902;
+background-color: null;
+font-style: inherit;">FALSE</span>,</span>
+<span id="cb2-5"><span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">sep =</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"</span><span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">\t</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"</span>)</span>
+<span id="cb2-6"></span>
+<span id="cb2-7">knitr<span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">::</span><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">kable</span>(<span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">head</span>(go.annotations.df))</span></code></pre></div>
+<div class="cell-output-display">
+<div id="tbl-GO-annotations" class="anchored">
+<table data-quarto-postprocess="true" data-tbl-colwidths="[60,40]" class="table table-sm table-striped small">
+<caption>Table&nbsp;1: Gene Ontology annotations</caption>
+<thead>
+<tr class="header">
+<th style="text-align: left;" data-quarto-table-cell-role="th">V1</th>
+<th style="text-align: left;" data-quarto-table-cell-role="th">V2</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">TRINITY_DN0_c7_g1</td>
+<td style="text-align: left;">GO:0000166,GO:0001678,GO:0001882,GO:0001883,GO:0003674,GO:0003824,GO:0004611,GO:0004613,GO:0005488,GO:0005525,GO:0005575,GO:0005739,GO:0005759,GO:0005829,GO:0005975,GO:0005996,GO:0006006,GO:0006066,GO:0006071,GO:0006082,GO:0006090,GO:0006094,GO:0006114,GO:0006629,GO:0006631,GO:0006950,GO:0008150,GO:0008152,GO:0009056,GO:0009058,GO:0009062,GO:0009605,GO:0009719,GO:0009725,GO:0009743,GO:0009746,GO:0009749,GO:0009987,GO:0009991,GO:0010033,GO:0010243,GO:0014070,GO:0016042,GO:0016051,GO:0016054,GO:0016829,GO:0016830,GO:0016831,GO:0017076,GO:0019001,GO:0019318,GO:0019319,GO:0019400,GO:0019401,GO:0019541,GO:0019543,GO:0019626,GO:0019725,GO:0019751,GO:0019752,GO:0030145,GO:0030154,GO:0030855,GO:0031667,GO:0031960,GO:0031974,GO:0032502,GO:0032549,GO:0032550,GO:0032553,GO:0032555,GO:0032561,GO:0032787,GO:0032868,GO:0032869,GO:0032870,GO:0033500,GO:0033993,GO:0034284,GO:0034637,GO:0035639,GO:0036094,GO:0042221,GO:0042592,GO:0042593,GO:0042594,GO:0043167,GO:0043168,GO:0043169,GO:0043226,GO:0043227,GO:0043229,GO:0043231,GO:0043233,GO:0043434,GO:0043436,GO:0044237,GO:0044238,GO:0044242,GO:0044248,GO:0044249,GO:0044255,GO:0044262,GO:0044281,GO:0044282,GO:0044283,GO:0044422,GO:0044424,GO:0044429,GO:0044444,GO:0044446,GO:0044464,GO:0044699,GO:0044710,GO:0044711,GO:0044712,GO:0044723,GO:0044763,GO:0044767,GO:0046165,GO:0046173,GO:0046327,GO:0046364,GO:0046395,GO:0046459,GO:0046872,GO:0046914,GO:0048545,GO:0048869,GO:0048878,GO:0050896,GO:0051384,GO:0051716,GO:0055082,GO:0065007,GO:0065008,GO:0070013,GO:0070365,GO:0070887,GO:0071310,GO:0071322,GO:0071326,GO:0071331,GO:0071333,GO:0071375,GO:0071383,GO:0071384,GO:0071385,GO:0071396,GO:0071407,GO:0071417,GO:0071495,GO:0071548,GO:0071549,GO:0071704,GO:0072329,GO:0097159,GO:0097367,GO:1901265,GO:1901363,GO:1901575,GO:1901576,GO:1901615,GO:1901617,GO:1901652,GO:1901653,GO:1901654,GO:1901655,GO:1901698,GO:1901699,GO:1901700,GO:1901701</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">TRINITY_DN100001_c0_g1</td>
+<td style="text-align: left;">GO:0003674,GO:0003824,GO:0005575,GO:0005634,GO:0006629,GO:0007165,GO:0008081,GO:0008150,GO:0008152,GO:0009056,GO:0009987,GO:0016042,GO:0016787,GO:0016788,GO:0042578,GO:0043226,GO:0043227,GO:0043229,GO:0043231,GO:0044238,GO:0044424,GO:0044464,GO:0044699,GO:0044710,GO:0044712,GO:0050789,GO:0050794,GO:0065007,GO:0071704,GO:1901575</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">TRINITY_DN100003_c0_g1</td>
+<td style="text-align: left;">GO:0000166,GO:0000932,GO:0000975,GO:0000976,GO:0000977,GO:0000978,GO:0000987,GO:0001012,GO:0001067,GO:0001159,GO:0001650,GO:0003674,GO:0003676,GO:0003677,GO:0003682,GO:0003690,GO:0003697,GO:0003723,GO:0003824,GO:0003916,GO:0003917,GO:0004672,GO:0004674,GO:0005488,GO:0005515,GO:0005524,GO:0005575,GO:0005634,GO:0005654,GO:0005730,GO:0006139,GO:0006259,GO:0006260,GO:0006265,GO:0006325,GO:0006338,GO:0006464,GO:0006468,GO:0006725,GO:0006793,GO:0006796,GO:0006807,GO:0006996,GO:0007059,GO:0007623,GO:0008150,GO:0008152,GO:0008219,GO:0009058,GO:0009059,GO:0009330,GO:0009987,GO:0010468,GO:0012501,GO:0016032,GO:0016043,GO:0016301,GO:0016310,GO:0016740,GO:0016772,GO:0016773,GO:0016853,GO:0017076,GO:0018105,GO:0018193,GO:0018209,GO:0019222,GO:0019538,GO:0019904,GO:0030529,GO:0030554,GO:0031298,GO:0032501,GO:0032553,GO:0032555,GO:0032559,GO:0032922,GO:0032991,GO:0032993,GO:0034641,GO:0034645,GO:0035639,GO:0035770,GO:0036094,GO:0036211,GO:0036464,GO:0040016,GO:0042221,GO:0042493,GO:0043167,GO:0043168,GO:0043170,GO:0043204,GO:0043226,GO:0043227,GO:0043228,GO:0043229,GO:0043231,GO:0043232,GO:0043234,GO:0043412,GO:0043565,GO:0044212,GO:0044237,GO:0044238,GO:0044249,GO:0044260,GO:0044267,GO:0044403,GO:0044419,GO:0044422,GO:0044424,GO:0044427,GO:0044428,GO:0044444,GO:0044446,GO:0044452,GO:0044454,GO:0044464,GO:0044699,GO:0044707,GO:0044763,GO:0044764,GO:0046483,GO:0048511,GO:0050789,GO:0050896,GO:0051276,GO:0051301,GO:0051704,GO:0060255,GO:0065007,GO:0071103,GO:0071704,GO:0071840,GO:0090304,GO:0097100,GO:0097159,GO:0097367,GO:0097458,GO:1901265,GO:1901360,GO:1901363,GO:1901564,GO:1901576,GO:1990837,GO:1990904</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">TRINITY_DN100006_c0_g1</td>
+<td style="text-align: left;">GO:0003674,GO:0003824,GO:0008150,GO:0008152,GO:0016491,GO:0044699,GO:0044710,GO:0055114</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">TRINITY_DN100007_c0_g1</td>
+<td style="text-align: left;">GO:0000166,GO:0003674,GO:0003824,GO:0004854,GO:0004855,GO:0005488,GO:0005506,GO:0005575,GO:0005777,GO:0005829,GO:0006082,GO:0006139,GO:0006144,GO:0006145,GO:0006725,GO:0006807,GO:0008150,GO:0008152,GO:0009055,GO:0009056,GO:0009058,GO:0009112,GO:0009115,GO:0009987,GO:0016491,GO:0016725,GO:0016726,GO:0016727,GO:0018130,GO:0019438,GO:0019439,GO:0030151,GO:0034418,GO:0034641,GO:0036094,GO:0042579,GO:0043167,GO:0043168,GO:0043169,GO:0043226,GO:0043227,GO:0043229,GO:0043231,GO:0043546,GO:0044237,GO:0044238,GO:0044248,GO:0044249,GO:0044270,GO:0044271,GO:0044281,GO:0044283,GO:0044424,GO:0044444,GO:0044464,GO:0044699,GO:0044710,GO:0044711,GO:0044712,GO:0044763,GO:0046110,GO:0046113,GO:0046415,GO:0046483,GO:0046700,GO:0046872,GO:0046914,GO:0048037,GO:0050660,GO:0050662,GO:0051536,GO:0051537,GO:0051540,GO:0055086,GO:0055114,GO:0070674,GO:0071704,GO:0071949,GO:0072521,GO:0072522,GO:0072523,GO:0097159,GO:1901265,GO:1901360,GO:1901361,GO:1901362,GO:1901363,GO:1901564,GO:1901565,GO:1901566,GO:1901575,GO:1901576</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">TRINITY_DN10000_c0_g1</td>
+<td style="text-align: left;">GO:0000149,GO:0000281,GO:0000910,GO:0001505,GO:0001671,GO:0001745,GO:0003674,GO:0005483,GO:0005488,GO:0005515,GO:0005575,GO:0005737,GO:0005774,GO:0005886,GO:0006461,GO:0006810,GO:0006836,GO:0006886,GO:0006891,GO:0006906,GO:0006996,GO:0007154,GO:0007267,GO:0007268,GO:0007269,GO:0007270,GO:0007274,GO:0007420,GO:0008047,GO:0008104,GO:0008105,GO:0008150,GO:0009653,GO:0009887,GO:0009987,GO:0010646,GO:0010807,GO:0015031,GO:0015833,GO:0016020,GO:0016043,GO:0016050,GO:0016082,GO:0016192,GO:0017157,GO:0017158,GO:0019905,GO:0022402,GO:0022411,GO:0022607,GO:0023051,GO:0023052,GO:0023061,GO:0030154,GO:0030182,GO:0030234,GO:0031090,GO:0031201,GO:0031410,GO:0031629,GO:0031982,GO:0032386,GO:0032502,GO:0032781,GO:0032879,GO:0032940,GO:0032984,GO:0032991,GO:0033036,GO:0033267,GO:0034214,GO:0034622,GO:0035249,GO:0035494,GO:0040007,GO:0042886,GO:0043085,GO:0043195,GO:0043226,GO:0043227,GO:0043229,GO:0043234,GO:0043241,GO:0043254,GO:0043462,GO:0043623,GO:0043624,GO:0043679,GO:0043933,GO:0044087,GO:0044093,GO:0044306,GO:0044422,GO:0044424,GO:0044425,GO:0044437,GO:0044444,GO:0044446,GO:0044456,GO:0044463,GO:0044464,GO:0044699,GO:0044700,GO:0044763,GO:0044765,GO:0044767,GO:0044801,GO:0044802,GO:0044877,GO:0045026,GO:0045176,GO:0045184,GO:0045202,GO:0046903,GO:0046907,GO:0046928,GO:0048193,GO:0048284,GO:0048513,GO:0048526,GO:0048589,GO:0048592,GO:0048856,GO:0048869,GO:0050789,GO:0050790,GO:0050794,GO:0050804,GO:0051046,GO:0051049,GO:0051128,GO:0051179,GO:0051234,GO:0051259,GO:0051260,GO:0051336,GO:0051345,GO:0051588,GO:0051641,GO:0051649,GO:0060341,GO:0060560,GO:0060589,GO:0060590,GO:0060627,GO:0061024,GO:0061025,GO:0061640,GO:0065003,GO:0065007,GO:0065008,GO:0065009,GO:0070044,GO:0071702,GO:0071705,GO:0071822,GO:0071840,GO:0090174,GO:0090596,GO:0097458,GO:0097708,GO:0098588,GO:0098693,GO:0098772,GO:0098793,GO:0098794,GO:0098796,GO:0098805,GO:0098916,GO:0098978,GO:0099500,GO:0099531,GO:0099536,GO:0099537,GO:0099643,GO:1902578,GO:1902589,GO:1902803,GO:1903047,GO:1903305,GO:1903530,GO:2000300</td>
+</tr>
+</tbody>
+</table>
+</div>
+
+
+</div>
+</div>
+</section>
+<section id="full-annotations" class="level3">
+<h3 class="anchored" data-anchor-id="full-annotations">Full Annotations</h3>
+<p>Annotation report (107MB; CSV):</p>
+<ul>
+<li><a href="https://gannet.fish.washington.edu/Atumefaciens/20231109-mmag-trinotate-transcriptome/20231109.trinity_denovo.Trinity.fasta.trinotate_annotation_report.txt">20231109.trinity_denovo.Trinity.fasta.trinotate_annotation_report.txt</a></li>
+</ul>
+<div class="cell" data-hash="index_cache/html/tbl-annotation-report_c7037e429e58ec83c7c6c701f1b7953a">
+<div class="sourceCode cell-code" id="cb3" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb3-1"><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">library</span>(kableExtra)</span>
+<span id="cb3-2"></span>
+<span id="cb3-3">annotations.df <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">read.csv</span>(<span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"https://gannet.fish.washington.edu/Atumefaciens/20231109-mmag-trinotate-transcriptome/20231109.trinity_denovo.Trinity.fasta.trinotate_annotation_report.txt"</span>,</span>
+<span id="cb3-4"><span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">header =</span> <span class="cn" style="color: #8f5902;
+background-color: null;
+font-style: inherit;">TRUE</span>,</span>
+<span id="cb3-5"><span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">sep =</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"</span><span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">\t</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"</span>)</span>
+<span id="cb3-6"></span>
+<span id="cb3-7">knitr<span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">::</span><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">kable</span>(<span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">head</span>(annotations.df))</span></code></pre></div>
+<div class="cell-output-display">
+<div id="tbl-annotation-report" class="anchored">
+<table data-quarto-postprocess="true" data-tbl-colwidths="[60,40]" class="table table-sm table-striped small">
+<caption>Table&nbsp;2: Full annotations</caption>
+<thead>
+<tr class="header">
+<th style="text-align: left;" data-quarto-table-cell-role="th">X.gene_id</th>
+<th style="text-align: left;" data-quarto-table-cell-role="th">transcript_id</th>
+<th style="text-align: left;" data-quarto-table-cell-role="th">sprot_Top_BLASTX_hit</th>
+<th style="text-align: left;" data-quarto-table-cell-role="th">RNAMMER</th>
+<th style="text-align: left;" data-quarto-table-cell-role="th">prot_id</th>
+<th style="text-align: left;" data-quarto-table-cell-role="th">prot_coords</th>
+<th style="text-align: left;" data-quarto-table-cell-role="th">sprot_Top_BLASTP_hit</th>
+<th style="text-align: left;" data-quarto-table-cell-role="th">Pfam</th>
+<th style="text-align: left;" data-quarto-table-cell-role="th">SignalP</th>
+<th style="text-align: left;" data-quarto-table-cell-role="th">TmHMM</th>
+<th style="text-align: left;" data-quarto-table-cell-role="th">eggnog</th>
+<th style="text-align: left;" data-quarto-table-cell-role="th">Kegg</th>
+<th style="text-align: left;" data-quarto-table-cell-role="th">gene_ontology_blast</th>
+<th style="text-align: left;" data-quarto-table-cell-role="th">gene_ontology_pfam</th>
+<th style="text-align: left;" data-quarto-table-cell-role="th">transcript</th>
+<th style="text-align: left;" data-quarto-table-cell-role="th">peptide</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">TRINITY_DN8_c0_g1</td>
+<td style="text-align: left;">TRINITY_DN8_c0_g1_i1</td>
+<td style="text-align: left;">sp|Q63089|S22A1_RAT^sp|Q63089|S22A1_RAT^Q:905-18,H:87-381^36.2%ID^E:1.09e-38^.^.</td>
+<td style="text-align: left;">.</td>
+<td style="text-align: left;">TRINITY_DN8_c0_g1_i1.p1</td>
+<td style="text-align: left;">908-3[-]</td>
+<td style="text-align: left;">S22A1_RAT^S22A1_RAT^Q:2-297,H:87-381^36.156%ID^E:5.87e-43^RecName: Full=Solute carrier family 22 member 1;^Eukaryota; Metazoa; Chordata; Craniata; Vertebrata; Euteleostomi; Mammalia; Eutheria; Euarchontoglires; Glires; Rodentia; Myomorpha; Muroidea; Muridae; Murinae; Rattus</td>
+<td style="text-align: left;">PF00083.24^Sugar_tr^Sugar (and other) transporter^57-276^E:4.5e-21`PF07690.16^MFS_1^Major Facilitator Superfamily^61-278^E:7e-18</td>
+<td style="text-align: left;">.</td>
+<td style="text-align: left;">ExpAA=119.03^PredHel=5^Topology=i59-81o91-109i116-138o148-170i177-196o</td>
+<td style="text-align: left;">ENOG410XR5P^Major facilitator superfamily MFS_1</td>
+<td style="text-align: left;">KEGG:rno:24904`KO:K08198</td>
+<td style="text-align: left;">GO:0016323^cellular_component^basolateral plasma membrane`GO:0005887^cellular_component^integral component of plasma membrane`GO:0005277^molecular_function^acetylcholine transmembrane transporter activity`GO:0005330^molecular_function^dopamine:sodium symporter activity`GO:0042802^molecular_function^identical protein binding`GO:0008504^molecular_function^monoamine transmembrane transporter activity`GO:0005334^molecular_function^norepinephrine:sodium symporter activity`GO:0015101^molecular_function^organic cation transmembrane transporter activity`GO:0042803^molecular_function^protein homodimerization activity`GO:0015651^molecular_function^quaternary ammonium group transmembrane transporter activity`GO:0008513^molecular_function^secondary active organic cation transmembrane transporter activity`GO:0015872^biological_process^dopamine transport`GO:0006855^biological_process^drug transmembrane transport`GO:0048241^biological_process^epinephrine transport`GO:0010248^biological_process^establishment or maintenance of transmembrane electrochemical gradient`GO:0015844^biological_process^monoamine transport`GO:0015874^biological_process^norepinephrine transport`GO:0015695^biological_process^organic cation transport`GO:0051260^biological_process^protein homooligomerization`GO:0015697^biological_process^quaternary ammonium group transport</td>
+<td style="text-align: left;">GO:0022857^molecular_function^transmembrane transporter activity`GO:0055085^biological_process^transmembrane transport`GO:0016021^cellular_component^integral component of membrane</td>
+<td style="text-align: left;">.</td>
+<td style="text-align: left;">.</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">TRINITY_DN8_c0_g1</td>
+<td style="text-align: left;">TRINITY_DN8_c0_g1_i1</td>
+<td style="text-align: left;">sp|Q63089|S22A1_RAT^sp|Q63089|S22A1_RAT^Q:905-18,H:87-381^36.2%ID^E:1.09e-38^.^.</td>
+<td style="text-align: left;">.</td>
+<td style="text-align: left;">TRINITY_DN8_c0_g1_i1.p2</td>
+<td style="text-align: left;">810-1[-]</td>
+<td style="text-align: left;">.</td>
+<td style="text-align: left;">.</td>
+<td style="text-align: left;">.</td>
+<td style="text-align: left;">.</td>
+<td style="text-align: left;">.</td>
+<td style="text-align: left;">.</td>
+<td style="text-align: left;">.</td>
+<td style="text-align: left;">.</td>
+<td style="text-align: left;">.</td>
+<td style="text-align: left;">.</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">TRINITY_DN8_c0_g1</td>
+<td style="text-align: left;">TRINITY_DN8_c0_g1_i4</td>
+<td style="text-align: left;">sp|Q9VIK2|CART_DROME^sp|Q9VIK2|CART_DROME^Q:1209-529,H:114-344^33.8%ID^E:2.21e-27^.^.</td>
+<td style="text-align: left;">.</td>
+<td style="text-align: left;">TRINITY_DN8_c0_g1_i4.p1</td>
+<td style="text-align: left;">1212-475[-]</td>
+<td style="text-align: left;">CART_DROME^CART_DROME^Q:2-242,H:114-358^32.661%ID^E:6.98e-33^RecName: Full=Carcinine transporter {ECO:0000303|PubMed:26653853, ECO:0000303|PubMed:26713872};^Eukaryota; Metazoa; Ecdysozoa; Arthropoda; Hexapoda; Insecta; Pterygota; Neoptera; Holometabola; Diptera; Brachycera; Muscomorpha; Ephydroidea; Drosophilidae; Drosophila; Sophophora</td>
+<td style="text-align: left;">PF00083.24^Sugar_tr^Sugar (and other) transporter^56-219^E:7.4e-19`PF07690.16^MFS_1^Major Facilitator Superfamily^61-209^E:1e-15</td>
+<td style="text-align: left;">.</td>
+<td style="text-align: left;">ExpAA=106.03^PredHel=5^Topology=i59-81o91-109i116-138o148-170i177-196o</td>
+<td style="text-align: left;">ENOG410XSRI^solute carrier family 22</td>
+<td style="text-align: left;">KEGG:dme:Dmel_CG9317</td>
+<td style="text-align: left;">GO:0043679^cellular_component^axon terminus`GO:0016021^cellular_component^integral component of membrane`GO:0005886^cellular_component^plasma membrane`GO:1905131^molecular_function^carcinine transmembrane transporter activity`GO:0005326^molecular_function^neurotransmitter transporter activity`GO:1905130^biological_process^carcinine import across plasma membrane`GO:0050908^biological_process^detection of light stimulus involved in visual perception`GO:0001504^biological_process^neurotransmitter uptake`GO:0046956^biological_process^positive phototaxis`GO:0007601^biological_process^visual perception</td>
+<td style="text-align: left;">GO:0022857^molecular_function^transmembrane transporter activity`GO:0055085^biological_process^transmembrane transport`GO:0016021^cellular_component^integral component of membrane</td>
+<td style="text-align: left;">.</td>
+<td style="text-align: left;">.</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">TRINITY_DN8_c0_g1</td>
+<td style="text-align: left;">TRINITY_DN8_c0_g1_i4</td>
+<td style="text-align: left;">sp|Q9VIK2|CART_DROME^sp|Q9VIK2|CART_DROME^Q:1209-529,H:114-344^33.8%ID^E:2.21e-27^.^.</td>
+<td style="text-align: left;">.</td>
+<td style="text-align: left;">TRINITY_DN8_c0_g1_i4.p2</td>
+<td style="text-align: left;">1114-494[-]</td>
+<td style="text-align: left;">.</td>
+<td style="text-align: left;">.</td>
+<td style="text-align: left;">.</td>
+<td style="text-align: left;">.</td>
+<td style="text-align: left;">.</td>
+<td style="text-align: left;">.</td>
+<td style="text-align: left;">.</td>
+<td style="text-align: left;">.</td>
+<td style="text-align: left;">.</td>
+<td style="text-align: left;">.</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">TRINITY_DN8_c0_g1</td>
+<td style="text-align: left;">TRINITY_DN8_c0_g1_i4</td>
+<td style="text-align: left;">sp|Q9VIK2|CART_DROME^sp|Q9VIK2|CART_DROME^Q:1209-529,H:114-344^33.8%ID^E:2.21e-27^.^.</td>
+<td style="text-align: left;">.</td>
+<td style="text-align: left;">TRINITY_DN8_c0_g1_i4.p3</td>
+<td style="text-align: left;">497-126[-]</td>
+<td style="text-align: left;">.</td>
+<td style="text-align: left;">.</td>
+<td style="text-align: left;">.</td>
+<td style="text-align: left;">ExpAA=41.12^PredHel=2^Topology=i13-35o104-122i</td>
+<td style="text-align: left;">.</td>
+<td style="text-align: left;">.</td>
+<td style="text-align: left;">.</td>
+<td style="text-align: left;">.</td>
+<td style="text-align: left;">.</td>
+<td style="text-align: left;">.</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">TRINITY_DN8_c0_g2</td>
+<td style="text-align: left;">TRINITY_DN8_c0_g2_i1</td>
+<td style="text-align: left;">sp|Q6NY98|MCE1_DANRE^sp|Q6NY98|MCE1_DANRE^Q:665-84,H:7-198^57.7%ID^E:2.12e-77^.^.</td>
+<td style="text-align: left;">.</td>
+<td style="text-align: left;">TRINITY_DN8_c0_g2_i1.p1</td>
+<td style="text-align: left;">707-3[-]</td>
+<td style="text-align: left;">MCE1_MOUSE^MCE1_MOUSE^Q:14-203,H:6-193^56.842%ID^E:4.77e-75^RecName: Full=mRNA-capping enzyme;^Eukaryota; Metazoa; Chordata; Craniata; Vertebrata; Euteleostomi; Mammalia; Eutheria; Euarchontoglires; Glires; Rodentia; Myomorpha; Muroidea; Muridae; Murinae; Mus; Mus</td>
+<td style="text-align: left;">PF00782.20^DSPc^Dual specificity phosphatase, catalytic domain^65-182^E:5.3e-10</td>
+<td style="text-align: left;">.</td>
+<td style="text-align: left;">.</td>
+<td style="text-align: left;">COG5226^Second step of mRNA capping. Transfer of the GMP moiety of GTP to the 5'-end of RNA via an enzyme-GMP covalent reaction intermediate (By similarity)</td>
+<td style="text-align: left;">KEGG:mmu:24018`KO:K13917</td>
+<td style="text-align: left;">GO:0005634^cellular_component^nucleus`GO:0005525^molecular_function^GTP binding`GO:0004484^molecular_function^mRNA guanylyltransferase activity`GO:0004651^molecular_function^polynucleotide 5'-phosphatase activity`GO:0004725^molecular_function^protein tyrosine phosphatase activity`GO:0008138^molecular_function^protein tyrosine/serine/threonine phosphatase activity`GO:0008192^molecular_function^RNA guanylyltransferase activity`GO:0050355^molecular_function^triphosphatase activity`GO:0006370^biological_process^7-methylguanosine mRNA capping`GO:0006396^biological_process^RNA processing</td>
+<td style="text-align: left;">GO:0008138^molecular_function^protein tyrosine/serine/threonine phosphatase activity`GO:0016311^biological_process^dephosphorylation</td>
+<td style="text-align: left;">.</td>
+<td style="text-align: left;">.</td>
+</tr>
+</tbody>
+</table>
+</div>
+
+
+</div>
+</div>
+<div class="cell" data-hash="index_cache/html/annotation-counts_10e67ddfc1f8526752d24a0a1314f2af">
+<div class="sourceCode cell-code" id="cb4" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb4-1">number_of_annotations <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">nrow</span>(annotations.df)</span>
+<span id="cb4-2"></span>
+<span id="cb4-3"><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">print</span>(<span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">paste0</span>(<span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"Number of Trinity genes annotated: "</span>, number_of_annotations))</span></code></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] "Number of Trinity genes annotated: 295507"</code></pre>
+</div>
+</div>
+</section>
+<section id="sqlite-database" class="level3">
+<h3 class="anchored" data-anchor-id="sqlite-database">SQlite Database</h3>
+<p>SQlite database (797MB; SQLITE):</p>
+<ul>
+<li><a href="https://gannet.fish.washington.edu/Atumefaciens/20231109-mmag-trinotate-transcriptome/Trinotate.sqlite">Trinotate.sqlite</a></li>
+</ul>
+
+
+</section>
+</section>
+</section>
+
+ ]]></description>
+  <category>mox</category>
+  <category>2023</category>
+  <category>Metacarcinus magister</category>
+  <category>Dungenss crab</category>
+  <category>Trinotate</category>
+  <category>transcriptome</category>
+  <category>annotation</category>
+  <guid>https://robertslab.github.io/sams-notebook/posts/2023/2023-11-09-Transcriptome-Annotation---M.magister-De-Novo-Transcriptome-Assembly-Using-Trinotate-on-Mox/index.html</guid>
+  <pubDate>Thu, 09 Nov 2023 08:00:00 GMT</pubDate>
+</item>
+<item>
+  <title>Transcriptome Annotation - M.magister De Novo Transcriptome Assembly for DuMOAR Project Using DIAMOND BLASTx on Mox</title>
+  <dc:creator>Sam White</dc:creator>
+  <link>https://robertslab.github.io/sams-notebook/posts/2023/2023-11-09-Transcriptome-Annotation---M.magister-De-Novo-Transcriptome-Assembly-for-DuMOAR-Project-Using-DIAMOND-BLASTx-on-Mox/index.html</link>
+  <description><![CDATA[ 
+
+
+
+
+<section id="intro" class="level1">
+<h1>Intro</h1>
+<p>As part of the process for using <a href="https://github.com/Trinotate/Trinotate/wiki"><code>Trinotate</code></a> for <a href="https://github.com/laurahspencer/DuMOAR/issues/44">transcriptome annotation</a> (GitHub Issue), I previously ran <a href="../../../posts/2023/2023-11-07-Transcriptome-Annotation---M.magister-De-Novo-Transcriptome-Assembly-for-DuMOAR-Project-Using-TransDecoder-on-Mox/index.html">TransDecoder on 20231107</a>. Next, I needed to run BLASTx. As usual, I opted for <a href="https://github.com/bbuchfink/diamond"><code>DIAMOND</code></a> BLASTx, as it is insanely faster than <a href="https://www.ncbi.nlm.nih.gov/books/NBK279690/">NCBI <code>BLASTx</code></a>. This was run on Mox.</p>
+<section id="slurm-script" class="level2">
+<h2 class="anchored" data-anchor-id="slurm-script">SLURM script</h2>
+<ul>
+<li><a href="https://github.com/RobertsLab/sams-notebook/blob/master/sbatch_scripts/20231109-mmag-transcriptome-diamond-blastx.sh">20231109-mmag-transcriptome-diamond-blastx.sh</a> (GitHub)</li>
+</ul>
+<div class="sourceCode" id="cb1" style="background: #f1f3f5;"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb1-1"><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">#!/bin/bash</span></span>
+<span id="cb1-2"><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">## Job Name</span></span>
+<span id="cb1-3"><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">#SBATCH --job-name=20231109-mmag-transcriptome-diamond-blastx</span></span>
+<span id="cb1-4"><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">## Allocation Definition</span></span>
+<span id="cb1-5"><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">#SBATCH --account=srlab</span></span>
+<span id="cb1-6"><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">#SBATCH --partition=srlab</span></span>
+<span id="cb1-7"><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">## Resources</span></span>
+<span id="cb1-8"><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">## Nodes</span></span>
+<span id="cb1-9"><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">#SBATCH --nodes=1</span></span>
+<span id="cb1-10"><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">## Walltime (days-hours:minutes:seconds format)</span></span>
+<span id="cb1-11"><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">#SBATCH --time=3-00:00:00</span></span>
+<span id="cb1-12"><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">## Memory per node</span></span>
+<span id="cb1-13"><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">#SBATCH --mem=500G</span></span>
+<span id="cb1-14"><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">##turn on e-mail notification</span></span>
+<span id="cb1-15"><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">#SBATCH --mail-type=ALL</span></span>
+<span id="cb1-16"><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">#SBATCH --mail-user=samwhite@uw.edu</span></span>
+<span id="cb1-17"><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">## Specify the working directory for this job</span></span>
+<span id="cb1-18"><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">#SBATCH --chdir=/gscratch/scrubbed/samwhite/outputs/20231109-mmag-transcriptome-diamond-blastx</span></span>
+<span id="cb1-19"></span>
+<span id="cb1-20"><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">### DIAMOND BLASTx of M.magister de novo transcriptome.</span></span>
+<span id="cb1-21"><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">### For use in DuMOAR transcript annotation.</span></span>
+<span id="cb1-22"></span>
+<span id="cb1-23"></span>
+<span id="cb1-24"><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">###################################################################################</span></span>
+<span id="cb1-25"><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># These variables need to be set by user</span></span>
+<span id="cb1-26"></span>
+<span id="cb1-27"><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># Exit script if any command fails</span></span>
+<span id="cb1-28"><span class="bu" style="color: null;
+background-color: null;
+font-style: inherit;">set</span> <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">-e</span></span>
+<span id="cb1-29"></span>
+<span id="cb1-30"><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># Load Python Mox module for Python module availability</span></span>
+<span id="cb1-31"></span>
+<span id="cb1-32"><span class="ex" style="color: null;
+background-color: null;
+font-style: inherit;">module</span> load intel-python3_2017</span>
+<span id="cb1-33"></span>
+<span id="cb1-34"><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># SegFault fix?</span></span>
+<span id="cb1-35"><span class="bu" style="color: null;
+background-color: null;
+font-style: inherit;">export</span> <span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">THREADS_DAEMON_MODEL</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span>1</span>
+<span id="cb1-36"></span>
+<span id="cb1-37"></span>
+<span id="cb1-38"><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># Programs array</span></span>
+<span id="cb1-39"><span class="bu" style="color: null;
+background-color: null;
+font-style: inherit;">declare</span> <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">-A</span> <span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">programs_array</span></span>
+<span id="cb1-40"><span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">programs_array</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span><span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">(</span></span>
+<span id="cb1-41"><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">[</span>diamond<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">]</span><span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">=</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"/gscratch/srlab/programs/diamond-v2.1.1/diamond"</span></span>
+<span id="cb1-42"><span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">)</span></span>
+<span id="cb1-43"></span>
+<span id="cb1-44"><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># DIAMOND UniProt database</span></span>
+<span id="cb1-45"><span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">dmnd_db</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"/gscratch/srlab/blastdbs/20230727-uniprot-swissprot-reviewed/uniprot_sprot.dmnd"</span></span>
+<span id="cb1-46"></span>
+<span id="cb1-47"></span>
+<span id="cb1-48"><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># Genome (FastA)</span></span>
+<span id="cb1-49"><span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">fasta</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"/gscratch/srlab/sam/data/M_magister/transcriptomes/trinity_denovo.Trinity.fasta"</span></span>
+<span id="cb1-50"></span>
+<span id="cb1-51"><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">###################################################################################</span></span>
+<span id="cb1-52"></span>
+<span id="cb1-53"><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># Strip leading pat and extensions</span></span>
+<span id="cb1-54"><span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">no_path</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span><span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">$(</span><span class="bu" style="color: null;
+background-color: null;
+font-style: inherit;">echo</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"</span><span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">${fasta</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">##</span><span class="pp" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">*</span>/<span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">}</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"</span><span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">)</span></span>
+<span id="cb1-55"></span>
+<span id="cb1-56"><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># Strip extension</span></span>
+<span id="cb1-57"><span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">no_ext</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span><span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">$(</span><span class="bu" style="color: null;
+background-color: null;
+font-style: inherit;">echo</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"</span><span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">${no_path</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">%</span>.<span class="pp" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">*</span><span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">}</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"</span><span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">)</span></span>
+<span id="cb1-58"></span>
+<span id="cb1-59"><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># Run DIAMOND with blastx</span></span>
+<span id="cb1-60"><span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">${programs_array</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">[</span>diamond<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">]</span><span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">}</span> blastx <span class="dt" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">\</span></span>
+<span id="cb1-61">--db <span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">${dmnd_db}</span> <span class="dt" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">\</span></span>
+<span id="cb1-62">--query <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"</span><span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">${fasta}</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"</span> <span class="dt" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">\</span></span>
+<span id="cb1-63">--out <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"</span><span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">${no_ext}</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"</span>.blastx.outfmt6 <span class="dt" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">\</span></span>
+<span id="cb1-64">--outfmt 6 <span class="dt" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">\</span></span>
+<span id="cb1-65">--sensitive <span class="dt" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">\</span></span>
+<span id="cb1-66">--evalue 1e-25 <span class="dt" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">\</span></span>
+<span id="cb1-67">--max-target-seqs 1 <span class="dt" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">\</span></span>
+<span id="cb1-68">--block-size 15.0 <span class="dt" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">\</span></span>
+<span id="cb1-69">--index-chunks 4</span>
+<span id="cb1-70"></span>
+<span id="cb1-71"><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># Generate checksums for future reference</span></span>
+<span id="cb1-72"><span class="cf" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">for</span> file <span class="kw" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">in</span> <span class="pp" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">*</span></span>
+<span id="cb1-73"><span class="cf" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">do</span></span>
+<span id="cb1-74">  <span class="bu" style="color: null;
+background-color: null;
+font-style: inherit;">echo</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">""</span></span>
+<span id="cb1-75">  <span class="bu" style="color: null;
+background-color: null;
+font-style: inherit;">echo</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"Generating checksum for </span><span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">${file}</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">."</span></span>
+<span id="cb1-76">  <span class="bu" style="color: null;
+background-color: null;
+font-style: inherit;">echo</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">""</span></span>
+<span id="cb1-77"></span>
+<span id="cb1-78">  <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">md5sum</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"</span><span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">${file}</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"</span> <span class="kw" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">|</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">tee</span> <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">--append</span> checksums.md5</span>
+<span id="cb1-79">  </span>
+<span id="cb1-80">  <span class="bu" style="color: null;
+background-color: null;
+font-style: inherit;">echo</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">""</span></span>
+<span id="cb1-81"><span class="cf" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">done</span></span>
+<span id="cb1-82"></span>
+<span id="cb1-83"><span class="bu" style="color: null;
+background-color: null;
+font-style: inherit;">echo</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"Generating checksum for </span><span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">${fasta}</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">."</span></span>
+<span id="cb1-84"><span class="bu" style="color: null;
+background-color: null;
+font-style: inherit;">echo</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">""</span></span>
+<span id="cb1-85"></span>
+<span id="cb1-86"><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">md5sum</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"</span><span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">${fasta}</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"</span> <span class="kw" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">|</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">tee</span> <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">--append</span> checksums.md5</span>
+<span id="cb1-87"></span>
+<span id="cb1-88"></span>
+<span id="cb1-89"><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">###################################################################################</span></span>
+<span id="cb1-90"></span>
+<span id="cb1-91"><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># Disable exit on error</span></span>
+<span id="cb1-92"><span class="bu" style="color: null;
+background-color: null;
+font-style: inherit;">set</span> +e</span>
+<span id="cb1-93"></span>
+<span id="cb1-94"><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># Capture program options</span></span>
+<span id="cb1-95"><span class="cf" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">if</span> <span class="kw" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">[[</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"</span><span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">${</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">#</span><span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">programs_array</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">[@]</span><span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">}</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"</span> <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">-gt</span> 0 <span class="kw" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">]];</span> <span class="cf" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">then</span></span>
+<span id="cb1-96">  <span class="bu" style="color: null;
+background-color: null;
+font-style: inherit;">echo</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"Logging program options..."</span></span>
+<span id="cb1-97">  <span class="cf" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">for</span> program <span class="kw" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">in</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"</span><span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">${</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">!</span><span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">programs_array</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">[@]</span><span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">}</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"</span></span>
+<span id="cb1-98">  <span class="cf" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">do</span></span>
+<span id="cb1-99">    <span class="kw" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">{</span></span>
+<span id="cb1-100">    <span class="bu" style="color: null;
+background-color: null;
+font-style: inherit;">echo</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"Program options for </span><span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">${program}</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">: "</span></span>
+<span id="cb1-101">    <span class="bu" style="color: null;
+background-color: null;
+font-style: inherit;">echo</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">""</span></span>
+<span id="cb1-102">    <span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># Handle samtools help menus</span></span>
+<span id="cb1-103">    <span class="cf" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">if</span> <span class="kw" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">[[</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"</span><span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">${program}</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"</span> <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">==</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"samtools_index"</span> <span class="kw" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">]]</span> <span class="dt" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">\</span></span>
+<span id="cb1-104">    <span class="kw" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">||</span> <span class="kw" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">[[</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"</span><span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">${program}</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"</span> <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">==</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"samtools_sort"</span> <span class="kw" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">]]</span> <span class="dt" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">\</span></span>
+<span id="cb1-105">    <span class="kw" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">||</span> <span class="kw" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">[[</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"</span><span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">${program}</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"</span> <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">==</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"samtools_view"</span> <span class="kw" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">]]</span></span>
+<span id="cb1-106">    <span class="cf" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">then</span></span>
+<span id="cb1-107">      <span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">${programs_array</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">[</span><span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">$program</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">]</span><span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">}</span></span>
+<span id="cb1-108"></span>
+<span id="cb1-109">    <span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># Handle DIAMOND BLAST menu</span></span>
+<span id="cb1-110">    <span class="cf" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">elif</span> <span class="kw" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">[[</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"</span><span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">${program}</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"</span> <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">==</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"diamond"</span> <span class="kw" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">]];</span> <span class="cf" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">then</span></span>
+<span id="cb1-111">      <span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">${programs_array</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">[</span><span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">$program</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">]</span><span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">}</span> help</span>
+<span id="cb1-112"></span>
+<span id="cb1-113">    <span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># Handle NCBI BLASTx menu</span></span>
+<span id="cb1-114">    <span class="cf" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">elif</span> <span class="kw" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">[[</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"</span><span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">${program}</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"</span> <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">==</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"blastx"</span> <span class="kw" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">]];</span> <span class="cf" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">then</span></span>
+<span id="cb1-115">      <span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">${programs_array</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">[</span><span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">$program</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">]</span><span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">}</span> <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">-help</span></span>
+<span id="cb1-116">    <span class="cf" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">fi</span></span>
+<span id="cb1-117">    <span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">${programs_array</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">[</span><span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">$program</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">]</span><span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">}</span> <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">-h</span></span>
+<span id="cb1-118">    <span class="bu" style="color: null;
+background-color: null;
+font-style: inherit;">echo</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">""</span></span>
+<span id="cb1-119">    <span class="bu" style="color: null;
+background-color: null;
+font-style: inherit;">echo</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">""</span></span>
+<span id="cb1-120">    <span class="bu" style="color: null;
+background-color: null;
+font-style: inherit;">echo</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"----------------------------------------------"</span></span>
+<span id="cb1-121">    <span class="bu" style="color: null;
+background-color: null;
+font-style: inherit;">echo</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">""</span></span>
+<span id="cb1-122">    <span class="bu" style="color: null;
+background-color: null;
+font-style: inherit;">echo</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">""</span></span>
+<span id="cb1-123">  <span class="kw" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">}</span> <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">&amp;&gt;&gt;</span> program_options.log <span class="kw" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">||</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">true</span></span>
+<span id="cb1-124"></span>
+<span id="cb1-125">    <span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># If MultiQC is in programs_array, copy the config file to this directory.</span></span>
+<span id="cb1-126">    <span class="cf" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">if</span> <span class="kw" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">[[</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"</span><span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">${program}</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"</span> <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">==</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"multiqc"</span> <span class="kw" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">]];</span> <span class="cf" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">then</span></span>
+<span id="cb1-127">      <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">cp</span> <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">--preserve</span> ~/.multiqc_config.yaml multiqc_config.yaml</span>
+<span id="cb1-128">    <span class="cf" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">fi</span></span>
+<span id="cb1-129">  <span class="cf" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">done</span></span>
+<span id="cb1-130"><span class="cf" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">fi</span></span>
+<span id="cb1-131"></span>
+<span id="cb1-132"></span>
+<span id="cb1-133"><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># Document programs in PATH (primarily for program version ID)</span></span>
+<span id="cb1-134"><span class="kw" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">{</span></span>
+<span id="cb1-135"><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">date</span></span>
+<span id="cb1-136"><span class="bu" style="color: null;
+background-color: null;
+font-style: inherit;">echo</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">""</span></span>
+<span id="cb1-137"><span class="bu" style="color: null;
+background-color: null;
+font-style: inherit;">echo</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"System PATH for </span><span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">$SLURM_JOB_ID</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"</span></span>
+<span id="cb1-138"><span class="bu" style="color: null;
+background-color: null;
+font-style: inherit;">echo</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">""</span></span>
+<span id="cb1-139"><span class="bu" style="color: null;
+background-color: null;
+font-style: inherit;">printf</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"%0.s-"</span> <span class="dt" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">{</span><span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">1</span><span class="dt" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">..</span><span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">10</span><span class="dt" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">}</span></span>
+<span id="cb1-140"><span class="bu" style="color: null;
+background-color: null;
+font-style: inherit;">echo</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"</span><span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">${PATH}</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"</span> <span class="kw" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">|</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">tr</span> : <span class="dt" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">\\</span>n</span>
+<span id="cb1-141"><span class="kw" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">}</span> <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">&gt;&gt;</span> system_path.log</span></code></pre></div>
+<p>/———-</p>
+</section>
+</section>
+<section id="results" class="level1">
+<h1>RESULTS</h1>
+<section id="runtime" class="level2">
+<h2 class="anchored" data-anchor-id="runtime">Runtime</h2>
+<p>As usual, <a href="https://github.com/bbuchfink/diamond"><code>DIAMOND</code></a> BLASTx was ridiculously fast; 1m and 17secs!</p>
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="https://robertslab.github.io/sams-notebook/posts/2023/2023-11-09-Transcriptome-Annotation---M.magister-De-Novo-Transcriptome-Assembly-for-DuMOAR-Project-Using-DIAMOND-BLASTx-on-Mox/20231109-mmag-transcriptome-diamond-blastx-runtime.png" class="img-fluid figure-img"></p>
+<figcaption class="figure-caption">Screencap showing Mox DIAMOND BLASTx run time of 1min and 17secs</figcaption>
+</figure>
+</div>
+</section>
+<section id="files" class="level2">
+<h2 class="anchored" data-anchor-id="files">FILES</h2>
+<p>Output directory:</p>
+<ul>
+<li><p><a href="https://gannet.fish.washington.edu/Atumefaciens/20231109-mmag-transcriptome-diamond-blastx/">20231109-mmag-transcriptome-diamond-blastx/</a></p>
+<h3 id="blastx-txt-output-format-6" class="anchored">BLASTx (txt; output format 6)</h3>
+<ul>
+<li><a href="https://gannet.fish.washington.edu/Atumefaciens/20231109-mmag-transcriptome-diamond-blastx/trinity_denovo.Trinity.blastx.outfmt6">trinity_denovo.Trinity.blastx.outfmt6</a></li>
+</ul></li>
+</ul>
+
+
+</section>
+</section>
+
+ ]]></description>
+  <category>mox</category>
+  <category>DIAMOND</category>
+  <category>BLASTx</category>
+  <category>transcriptome</category>
+  <category>2023</category>
+  <category>DuMOAR</category>
+  <category>Dungeness crab</category>
+  <category>Metacarcinus magister</category>
+  <guid>https://robertslab.github.io/sams-notebook/posts/2023/2023-11-09-Transcriptome-Annotation---M.magister-De-Novo-Transcriptome-Assembly-for-DuMOAR-Project-Using-DIAMOND-BLASTx-on-Mox/index.html</guid>
+  <pubDate>Thu, 09 Nov 2023 08:00:00 GMT</pubDate>
+</item>
 <item>
   <title>Daily Bits - November 2023</title>
   <dc:creator>Sam White</dc:creator>
@@ -7598,145 +10135,6 @@ font-style: inherit;">&gt;&gt;</span> system_path.log</span></code></pre></div>
   <category>Miscellaneous</category>
   <guid>https://robertslab.github.io/sams-notebook/posts/2023/2023-07-13-qPCR---C.gigas-cDNA-Primer-Tests-for-Noahs-Heat-Mechanical-Stress-Project/index.html</guid>
   <pubDate>Thu, 13 Jul 2023 19:55:00 GMT</pubDate>
-</item>
-<item>
-  <title>Reverse Transcription - C.gigas RNA from Noah’s Heat-Mechanical Stress Project</title>
-  <dc:creator>Sam White</dc:creator>
-  <link>https://robertslab.github.io/sams-notebook/posts/2023/2023-07-13-Reverse-Transcription---C.gigas-RNA-from-Noahs-Heat-Mechanical-Stress-Project/index.html</link>
-  <description><![CDATA[ 
-
-
-
-
-<p>After <a href="https://robertslab.github.io/sams-notebook/posts/2023/2023-07-12-RNA-Isolation-C.gigas-Ctenidia-from-Noah's-Heat-Mechanical-Stress-Project/">isolating ctenidia RNA on 20230712</a> and then quantifying the RNA <a href="https://robertslab.github.io/sams-notebook/2023/07/13/RNA-Quantification-C.gigas-RNA-from-Noah's-Heat-Mechanical-Stress-Project/">earlier today</a>, I needed to perform reverse transcription to have cDNA for subsequent qPCRs. Reverse transcription was performed using oligo dT primers using M-MLV RT (Promega), per the manufacturer’s recommendations. Used 100ng of RNA in each reaction. All reactions were done on ice in 0.5uL PCR tubes.</p>
-<ul>
-<li><a href="https://docs.google.com/spreadsheets/d/1tVS6JLsSJlU-NCJvhhyeHfpW4eTchfSgX-mlOEnHda4/edit?usp=sharing">20230713-cgig-ctenidia-Noah-cDNA-calcs</a> (Google Sheet)</li>
-</ul>
-<p>In preparation for qPCR and primer testing, 2uL from each sample was pooled together in a separate 0.5uL tube. All cDNA was stored in Noah’s -80<sup>o</sup>C project box.</p>
-
-
-
- ]]></description>
-  <category>2023</category>
-  <category>Miscellaneous</category>
-  <guid>https://robertslab.github.io/sams-notebook/posts/2023/2023-07-13-Reverse-Transcription---C.gigas-RNA-from-Noahs-Heat-Mechanical-Stress-Project/index.html</guid>
-  <pubDate>Thu, 13 Jul 2023 19:48:00 GMT</pubDate>
-</item>
-<item>
-  <title>RNA Quantification - C.gigas RNA from Noah’s Heat-Mechanical Stress Project</title>
-  <dc:creator>Sam White</dc:creator>
-  <link>https://robertslab.github.io/sams-notebook/posts/2023/2023-07-13-RNA-Quantification---C.gigas-RNA-from-Noahs-Heat-Mechanical-Stress-Project/index.html</link>
-  <description><![CDATA[ 
-
-
-
-
-<p>I quantified Noah’s <a href="http://en.wikipedia.org/wiki/Pacific_oyster"><em>Crassostrea gigas</em> (Pacific oyster)</a> ctenidia RNA <a href="https://robertslab.github.io/sams-notebook/posts/2023/2023-07-12-RNA-Isolation---C.gigas-Ctenidia-from-Noahs-Heat-Mechanical-Stress-Project/">from yesterday (20230712)</a> using the Roberts Lab Qubit 3 and the RNA High Sensitivity (HS) Assay. 1uL of sample was used for each measurement.</p>
-<hr>
-<section id="results" class="level1">
-<h1>RESULTS</h1>
-<p><a href="https://docs.google.com/spreadsheets/d/1i3OHh1rPBvj9pVOXjeoRbnofW7pdg4iZJXfwkgi_4pg/edit?usp=sharing">20230713-qubit-cgig-ctenidia-RNA</a> (Google Sheet)</p>
-<p>Yields were good. Will proceed with reverse transcription.</p>
-<table class="table">
-<thead>
-<tr class="header">
-<th>Sample</th>
-<th>Original sample conc.</th>
-<th>Units</th>
-</tr>
-</thead>
-<tbody>
-<tr class="odd">
-<td>NTC1_ctenidia</td>
-<td>76.2</td>
-<td>ng/µL</td>
-</tr>
-<tr class="even">
-<td>NTC2_ctenidia</td>
-<td>50</td>
-<td>ng/µL</td>
-</tr>
-<tr class="odd">
-<td>NTH1_ctenidia</td>
-<td>57.4</td>
-<td>ng/µL</td>
-</tr>
-<tr class="even">
-<td>NTH2_ctenidia</td>
-<td>47.8</td>
-<td>ng/µL</td>
-</tr>
-<tr class="odd">
-<td>NTHM1_ctenidia</td>
-<td>68.6</td>
-<td>ng/µL</td>
-</tr>
-<tr class="even">
-<td>NTHM2_ctenidia</td>
-<td>32.6</td>
-<td>ng/µL</td>
-</tr>
-<tr class="odd">
-<td>NTM1_ctenidia</td>
-<td>30.6</td>
-<td>ng/µL</td>
-</tr>
-<tr class="even">
-<td>NTM2_ctendia</td>
-<td>57</td>
-<td>ng/µL</td>
-</tr>
-<tr class="odd">
-<td>TC1_ctenidia</td>
-<td>39.4</td>
-<td>ng/µL</td>
-</tr>
-<tr class="even">
-<td>TC2_ctendia</td>
-<td>76</td>
-<td>ng/µL</td>
-</tr>
-<tr class="odd">
-<td>TH1_ctenidia</td>
-<td>88.6</td>
-<td>ng/µL</td>
-</tr>
-<tr class="even">
-<td>TH2_ctenidia</td>
-<td>29.6</td>
-<td>ng/µL</td>
-</tr>
-<tr class="odd">
-<td>THM1_ctenidia</td>
-<td>31.2</td>
-<td>ng/µL</td>
-</tr>
-<tr class="even">
-<td>THM2_ctenidia</td>
-<td>59.2</td>
-<td>ng/µL</td>
-</tr>
-<tr class="odd">
-<td>TM1_ctendia</td>
-<td>84</td>
-<td>ng/µL</td>
-</tr>
-<tr class="even">
-<td>TM2_ctenidia</td>
-<td>68.2</td>
-<td>ng/µL</td>
-</tr>
-</tbody>
-</table>
-
-
-</section>
-
- ]]></description>
-  <category>2023</category>
-  <category>Miscellaneous</category>
-  <guid>https://robertslab.github.io/sams-notebook/posts/2023/2023-07-13-RNA-Quantification---C.gigas-RNA-from-Noahs-Heat-Mechanical-Stress-Project/index.html</guid>
-  <pubDate>Thu, 13 Jul 2023 19:38:00 GMT</pubDate>
 </item>
 </channel>
 </rss>
