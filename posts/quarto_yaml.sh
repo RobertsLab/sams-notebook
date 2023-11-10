@@ -67,7 +67,7 @@ IFS="${OLDIFS}"
 formatted_title=$(echo -ne "${post_title}" | tr "[:space:]" '-')
 
 # save new filename using post_date and formatted_title variables.
-mkdir --parents "${year}/${post_date}-${formatted_title}" && cd "$_ || exit"
+mkdir --parents "${year}/${post_date}-${formatted_title}" && cd "$_" || exit
 
 
 # prints formatted Quarto YAML header utilizing post_date and user-entered post title and categories.
