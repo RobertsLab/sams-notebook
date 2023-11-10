@@ -7,6 +7,8 @@ title: Transcriptome Annotation - M.magister De Novo Transcriptome Assembly Usin
 date: '2023-11-09'
 draft: true
 engine: knitr
+execute:
+  freeze: auto
 categories: 
   - mox
   - 2023
@@ -273,4 +275,74 @@ echo "Finished logging system $PATH."
 
 ## Runtime
 
+Runtime was just under 3.5hrs:
+
+![Screencap showing Trinotate runtime on Mox of 3hrs, 21mins, 10secs](20231109-mmag-trinotate-transcriptome-runtime.png)
+
 ## Files
+
+Outpur directory:
+
+- [20231109-mmag-trinotate-transcriptome/](https://gannet.fish.washington.edu/Atumefaciens/20231109-mmag-trinotate-transcriptome/)
+
+### Annotation Feature Map
+Annotation feature map (10MB; TXT):
+
+- [20231109.trinity_denovo.Trinity.fasta.trinotate.annotation_feature_map.txt](https://gannet.fish.washington.edu/Atumefaciens/20231109-mmag-trinotate-transcriptome/20231109.trinity_denovo.Trinity.fasta.trinotate.annotation_feature_map.txt)
+
+  - [This can be used to update Trinity-based gene expression matrices like so](https://github.com/trinityrnaseq/trinityrnaseq/wiki/Functional-Annotation-of-Transcripts):
+
+    - ```${TRINITY_HOME}/Analysis/DifferentialExpression/rename_matrix_feature_identifiers.pl Trinity_trans.counts.matrix annot_feature_map.txt > Trinity_trans.counts.wAnnot.matrix```
+
+### Gene Ontology (GO) Annotations
+Gene ontology (GO) annotations (26MB; TXT):
+
+- [20231109.trinity_denovo.Trinity.fasta.trinotate.go_annotations.txt](https://gannet.fish.washington.edu/Atumefaciens/20231109-mmag-trinotate-transcriptome/20231109.trinity_denovo.Trinity.fasta.trinotate.go_annotations.txt)
+
+```{r GO-annotations, eval=TRUE}
+#| label: tbl-GO-annotations
+#| tbl-cap: "Gene Ontology annotations"
+#| tbl-colwidths: [60,40]
+library(kableExtra)
+
+go.annotations.df <- read.csv("https://gannet.fish.washington.edu/Atumefaciens/20231109-mmag-trinotate-transcriptome/20231109.trinity_denovo.Trinity.fasta.trinotate.go_annotations.txt",
+header = FALSE,
+sep = "\t")
+
+knitr::kable(head(go.annotations.df))
+
+```
+### Full Annotations
+Annotation report (107MB; CSV):
+
+- [20231109.trinity_denovo.Trinity.fasta.trinotate_annotation_report.txt](https://gannet.fish.washington.edu/Atumefaciens/20231109-mmag-trinotate-transcriptome/20231109.trinity_denovo.Trinity.fasta.trinotate_annotation_report.txt)
+
+
+```{r annotation-report, cache=TRUE}
+#| label: tbl-annotation-report
+#| tbl-cap: "Full annotations"
+#| tbl-colwidths: [60,40]
+library(kableExtra)
+
+annotations.df <- read.csv("https://gannet.fish.washington.edu/Atumefaciens/20231109-mmag-trinotate-transcriptome/20231109.trinity_denovo.Trinity.fasta.trinotate_annotation_report.txt",
+header = TRUE,
+sep = "\t")
+
+knitr::kable(head(annotations.df))
+
+```
+
+
+
+```{r annotation-counts}
+#| cache: true
+#| dependson: "annotation-report"
+number_of_annotations <- nrow(annotations.df)
+
+print(paste0("Number of Trinity genes annotated: ", number_of_annotations))
+```
+
+### SQlite Database
+SQlite database (797MB; SQLITE):
+
+- [Trinotate.sqlite](https://gannet.fish.washington.edu/Atumefaciens/20231109-mmag-trinotate-transcriptome/Trinotate.sqlite)
