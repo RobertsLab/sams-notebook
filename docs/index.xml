@@ -10,7 +10,633 @@
 <atom:link href="https://robertslab.github.io/sams-notebook/index.xml" rel="self" type="application/rss+xml"/>
 <description></description>
 <generator>quarto-1.3.450</generator>
-<lastBuildDate>Thu, 09 Nov 2023 08:00:00 GMT</lastBuildDate>
+<lastBuildDate>Thu, 30 Nov 2023 08:00:00 GMT</lastBuildDate>
+<item>
+  <title>Plotting Fun - Lab Meeting Task</title>
+  <dc:creator>Sam White</dc:creator>
+  <link>https://robertslab.github.io/sams-notebook/posts/2023/2023-11-30-Plotting-Fun---Lab-Meeting-Task/index.html</link>
+  <description><![CDATA[ 
+
+
+
+
+<p>For today’s lab meeting, Steven tasked us with the following on Wednesday:</p>
+<blockquote class="blockquote">
+<p>For lab meeting Thursday the topic is “Plots”. Before the meeting make sure to create a notebook post where you show-off a plot of something you did in November, including showing the code used to generate the plot. :bar_chart: - Drop the url to the notebook post below.</p>
+</blockquote>
+<p>So, drawing a blank on what to plot, I opted to visualize commit history for the <a href="https://github.com/urol-e5/deep-dive">Coral E5 deep dive repo</a> (GitHub repo).</p>
+<p>Let’s start with just trying to plot commits per day.</p>
+<section id="initial-setup" class="level1">
+<h1>Initial setup</h1>
+<section id="load-libraries" class="level2">
+<h2 class="anchored" data-anchor-id="load-libraries">Load libraries</h2>
+<div class="cell">
+<div class="cell-output cell-output-stderr">
+<pre><code>
+Attaching package: 'dplyr'</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>The following objects are masked from 'package:stats':
+
+    filter, lag</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>The following objects are masked from 'package:base':
+
+    intersect, setdiff, setequal, union</code></pre>
+</div>
+</div>
+</section>
+<section id="set-git-repo-path" class="level2">
+<h2 class="anchored" data-anchor-id="set-git-repo-path">Set Git Repo Path</h2>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb4" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb4-1">repo_path <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"/home/sam/gitrepos/deep-dive/"</span></span></code></pre></div>
+</div>
+</section>
+<section id="set-date-range" class="level2">
+<h2 class="anchored" data-anchor-id="set-date-range">Set date range</h2>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb5" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb5-1"><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># Set date range</span></span>
+<span id="cb5-2">start_date <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">as.Date</span>(<span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"2023-11-01"</span>)</span>
+<span id="cb5-3">end_date <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">as.Date</span>(<span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"2023-11-30"</span>)</span>
+<span id="cb5-4"></span>
+<span id="cb5-5"><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># Catpures all days in range</span></span>
+<span id="cb5-6">all_days <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">data.frame</span>(<span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">Date =</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">seq</span>(start_date, end_date, <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">by =</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"day"</span>))</span>
+<span id="cb5-7"></span>
+<span id="cb5-8"><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">head</span>(all_days)</span></code></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>        Date
+1 2023-11-01
+2 2023-11-02
+3 2023-11-03
+4 2023-11-04
+5 2023-11-05
+6 2023-11-06</code></pre>
+</div>
+</div>
+</section>
+<section id="define-the-git-command-to-get-commit-dates-using-system" class="level2">
+<h2 class="anchored" data-anchor-id="define-the-git-command-to-get-commit-dates-using-system">Define the Git command to get commit dates using <code>system()</code></h2>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb7" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb7-1">git_command <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">paste</span>(<span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"git --git-dir="</span>,</span>
+<span id="cb7-2">                     repo_path, <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">".git log --pretty=format:%ad --date=short --after="</span>,</span>
+<span id="cb7-3">                     start_date,</span>
+<span id="cb7-4">                     <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">" --before="</span>,</span>
+<span id="cb7-5">                     end_date,</span>
+<span id="cb7-6">                     <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">" --all"</span>,</span>
+<span id="cb7-7">                     <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">sep=</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">""</span>)</span>
+<span id="cb7-8"></span>
+<span id="cb7-9"><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">print</span>(git_command)</span></code></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] "git --git-dir=/home/sam/gitrepos/deep-dive/.git log --pretty=format:%ad --date=short --after=2023-11-01 --before=2023-11-30 --all"</code></pre>
+</div>
+</div>
+</section>
+</section>
+<section id="data-manipulation" class="level1">
+<h1>Data manipulation</h1>
+<section id="excecute-git-command" class="level2">
+<h2 class="anchored" data-anchor-id="excecute-git-command">Excecute git command</h2>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb9" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb9-1">commit_info <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">system</span>(git_command, <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">intern =</span> <span class="cn" style="color: #8f5902;
+background-color: null;
+font-style: inherit;">TRUE</span>)</span>
+<span id="cb9-2"></span>
+<span id="cb9-3"><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">str</span>(commit_info)</span></code></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code> chr [1:228] "2023-11-30" "2023-11-30" "2023-11-30" "2023-11-30" ...</code></pre>
+</div>
+</div>
+</section>
+<section id="convert-to-dates-structure" class="level2">
+<h2 class="anchored" data-anchor-id="convert-to-dates-structure">Convert to Dates structure</h2>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb11" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb11-1">commit_dates <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">as.Date</span>(<span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">gsub</span>(<span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"'"</span>, <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">""</span>, commit_info))</span>
+<span id="cb11-2"></span>
+<span id="cb11-3"><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">str</span>(commit_dates)</span></code></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code> Date[1:228], format: "2023-11-30" "2023-11-30" "2023-11-30" "2023-11-30" "2023-11-30" ...</code></pre>
+</div>
+</div>
+</section>
+<section id="count-number-of-commits" class="level2">
+<h2 class="anchored" data-anchor-id="count-number-of-commits">Count number of commits</h2>
+<p>This will create a two-column dataframe (Date, Commits) and replace dates with 0 commits (NAs) with <code>0</code>.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb13" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb13-1"><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># This counts number of commits on each date.</span></span>
+<span id="cb13-2">commit_table <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">table</span>(commit_dates)</span>
+<span id="cb13-3"><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">str</span>(commit_table)</span></code></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code> 'table' int [1:14(1d)] 8 17 19 6 7 21 13 5 4 16 ...
+ - attr(*, "dimnames")=List of 1
+  ..$ commit_dates: chr [1:14] "2023-11-01" "2023-11-02" "2023-11-03" "2023-11-04" ...</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb15" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb15-1">all_days <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">merge</span>(</span>
+<span id="cb15-2">  all_days,</span>
+<span id="cb15-3">  <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">data.frame</span>(</span>
+<span id="cb15-4">    <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">Date =</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">as.Date</span>(</span>
+<span id="cb15-5">      <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">names</span>(commit_table)</span>
+<span id="cb15-6">      ),</span>
+<span id="cb15-7">    <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">Commits =</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">as.numeric</span>(</span>
+<span id="cb15-8">      commit_table)</span>
+<span id="cb15-9">    ),</span>
+<span id="cb15-10">  <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">all.x =</span> <span class="cn" style="color: #8f5902;
+background-color: null;
+font-style: inherit;">TRUE</span>,</span>
+<span id="cb15-11">  <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">by =</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"Date"</span>)</span>
+<span id="cb15-12"></span>
+<span id="cb15-13"><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># Assigns value of `0` to all NAs</span></span>
+<span id="cb15-14">all_days<span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">$</span>Commits[<span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">is.na</span>(all_days<span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">$</span>Commits)] <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">0</span></span>
+<span id="cb15-15"></span>
+<span id="cb15-16"><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">head</span>(all_days)</span></code></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>        Date Commits
+1 2023-11-01       8
+2 2023-11-02      17
+3 2023-11-03      19
+4 2023-11-04       6
+5 2023-11-05       7
+6 2023-11-06      21</code></pre>
+</div>
+</div>
+</section>
+</section>
+<section id="plot-all-commits-per-day" class="level1">
+<h1>Plot all commits per day</h1>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb17" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb17-1"><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">ggplot</span>(all_days, <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">aes</span>(<span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">x =</span> Date, <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">y =</span> Commits)) <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">+</span></span>
+<span id="cb17-2">  <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">geom_bar</span>(<span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">stat =</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"identity"</span>, <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">fill =</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"steelblue"</span>) <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">+</span></span>
+<span id="cb17-3">  <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">labs</span>(<span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">title =</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"Commits per Day in Nov 2023"</span>, <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">x =</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"Date"</span>, <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">y =</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"Number of Commits"</span>) <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">+</span></span>
+<span id="cb17-4">  <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">theme_minimal</span>()</span></code></pre></div>
+<div class="cell-output-display">
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="https://robertslab.github.io/sams-notebook/posts/2023/2023-11-30-Plotting-Fun---Lab-Meeting-Task/index_files/figure-html/bar-plot-all-commits-1.png" class="img-fluid figure-img" width="672"></p>
+<figcaption class="figure-caption">Bar plot of all November 2023 commits</figcaption>
+</figure>
+</div>
+</div>
+</div>
+<p>Now, let’s try to look at commits per day by author…</p>
+</section>
+<section id="commits-per-day-per-author" class="level1">
+<h1>Commits per day per author</h1>
+<section id="create-a-data-frame-with-all-days-in-november" class="level2">
+<h2 class="anchored" data-anchor-id="create-a-data-frame-with-all-days-in-november">Create a data frame with all days in November</h2>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb18" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb18-1">all_days <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">data.frame</span>(<span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">Date =</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">seq</span>(start_date, end_date, <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">by =</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"day"</span>))</span></code></pre></div>
+</div>
+</section>
+<section id="new-git-command" class="level2">
+<h2 class="anchored" data-anchor-id="new-git-command">New git command</h2>
+<p>This adds author to format output</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb19" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb19-1">git_command <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">paste</span>(<span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"git --git-dir="</span>,repo_path, <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">".git log --date=short --all --format='%ad %an'"</span>, <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">sep=</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">""</span>)</span>
+<span id="cb19-2"></span>
+<span id="cb19-3">commit_info <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">system</span>(git_command, <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">intern =</span> <span class="cn" style="color: #8f5902;
+background-color: null;
+font-style: inherit;">TRUE</span>)</span></code></pre></div>
+</div>
+</section>
+<section id="split-the-commit-information-into-date-and-author" class="level2">
+<h2 class="anchored" data-anchor-id="split-the-commit-information-into-date-and-author">Split the commit information into date and author</h2>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb20" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb20-1">commit_info_split <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">strsplit</span>(commit_info, <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">" "</span>)</span>
+<span id="cb20-2">commit_dates <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">as.Date</span>(<span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">sapply</span>(commit_info_split, <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"[["</span>, <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">1</span>))</span>
+<span id="cb20-3">commit_authors <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">sapply</span>(commit_info_split, <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"[["</span>, <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">2</span>)</span>
+<span id="cb20-4"></span>
+<span id="cb20-5"><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">str</span>(commit_dates)</span></code></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code> Date[1:407], format: "2023-11-30" "2023-11-30" "2023-11-30" "2023-11-30" "2023-11-30" ...</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb22" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb22-1"><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">str</span>(commit_authors)</span></code></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code> chr [1:407] "shedurkin" "shedurkin" "shedurkin" "shedurkin" "shedurkin" ...</code></pre>
+</div>
+</div>
+</section>
+<section id="create-data-frame-with-commits-and-authors" class="level2">
+<h2 class="anchored" data-anchor-id="create-data-frame-with-commits-and-authors">Create data frame with commits and authors</h2>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb24" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb24-1"><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># Create a data frame with commit information</span></span>
+<span id="cb24-2">commit_data <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">data.frame</span>(<span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">Date =</span> commit_dates, <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">Author =</span> commit_authors)</span>
+<span id="cb24-3"><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">head</span>(commit_data)</span></code></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>        Date    Author
+1 2023-11-30 shedurkin
+2 2023-11-30 shedurkin
+3 2023-11-30 shedurkin
+4 2023-11-30 shedurkin
+5 2023-11-30 shedurkin
+6 2023-11-17 shedurkin</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb26" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb26-1"><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">str</span>(commit_data)</span></code></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>'data.frame':   407 obs. of  2 variables:
+ $ Date  : Date, format: "2023-11-30" "2023-11-30" ...
+ $ Author: chr  "shedurkin" "shedurkin" "shedurkin" "shedurkin" ...</code></pre>
+</div>
+</div>
+<section id="update-dataframe-to-include-all-days-in-november" class="level3">
+<h3 class="anchored" data-anchor-id="update-dataframe-to-include-all-days-in-november">Update dataframe to include all days in November</h3>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb28" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb28-1">all_days <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">merge</span>(all_days, commit_data, <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">all.x =</span> <span class="cn" style="color: #8f5902;
+background-color: null;
+font-style: inherit;">TRUE</span>, <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">by =</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"Date"</span>)</span>
+<span id="cb28-2"></span>
+<span id="cb28-3"><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">str</span>(all_days)</span></code></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>'data.frame':   249 obs. of  2 variables:
+ $ Date  : Date, format: "2023-11-01" "2023-11-01" ...
+ $ Author: chr  "kubu4" "kubu4" "kubu4" "kubu4" ...</code></pre>
+</div>
+</div>
+</section>
+<section id="update-dataframe-with-commit-counts-per-author" class="level3">
+<h3 class="anchored" data-anchor-id="update-dataframe-with-commit-counts-per-author">Update dataframe with commit counts per author</h3>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb30" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb30-1">all_days <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> all_days <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">%&gt;%</span></span>
+<span id="cb30-2">  <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">group_by</span>(Date, Author) <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">%&gt;%</span></span>
+<span id="cb30-3">  <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">summarise</span>(<span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">Commits =</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">n</span>())</span></code></pre></div>
+<div class="cell-output cell-output-stderr">
+<pre><code>`summarise()` has grouped output by 'Date'. You can override using the
+`.groups` argument.</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb32" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb32-1"><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">str</span>(all_days)</span></code></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>gropd_df [45 × 3] (S3: grouped_df/tbl_df/tbl/data.frame)
+ $ Date   : Date[1:45], format: "2023-11-01" "2023-11-01" ...
+ $ Author : chr [1:45] "Steven" "kubu4" "Steven" "kubu4" ...
+ $ Commits: int [1:45] 1 12 4 10 3 5 14 2 4 4 ...
+ - attr(*, "groups")= tibble [30 × 2] (S3: tbl_df/tbl/data.frame)
+  ..$ Date : Date[1:30], format: "2023-11-01" "2023-11-02" ...
+  ..$ .rows: list&lt;int&gt; [1:30] 
+  .. ..$ : int [1:2] 1 2
+  .. ..$ : int [1:3] 3 4 5
+  .. ..$ : int [1:2] 6 7
+  .. ..$ : int [1:2] 8 9
+  .. ..$ : int [1:2] 10 11
+  .. ..$ : int [1:2] 12 13
+  .. ..$ : int [1:2] 14 15
+  .. ..$ : int 16
+  .. ..$ : int 17
+  .. ..$ : int 18
+  .. ..$ : int 19
+  .. ..$ : int 20
+  .. ..$ : int 21
+  .. ..$ : int [1:2] 22 23
+  .. ..$ : int [1:3] 24 25 26
+  .. ..$ : int [1:3] 27 28 29
+  .. ..$ : int [1:3] 30 31 32
+  .. ..$ : int 33
+  .. ..$ : int 34
+  .. ..$ : int 35
+  .. ..$ : int 36
+  .. ..$ : int 37
+  .. ..$ : int 38
+  .. ..$ : int 39
+  .. ..$ : int 40
+  .. ..$ : int 41
+  .. ..$ : int 42
+  .. ..$ : int 43
+  .. ..$ : int 44
+  .. ..$ : int 45
+  .. ..@ ptype: int(0) 
+  ..- attr(*, ".drop")= logi TRUE</code></pre>
+</div>
+</div>
+</section>
+</section>
+</section>
+<section id="plot-commits-per-day-per-author" class="level1">
+<h1>Plot commits per day per author</h1>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb34" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb34-1"><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">ggplot</span>(all_days, <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">aes</span>(<span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">x =</span> Date, <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">y =</span> Commits, <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">fill =</span> Author)) <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">+</span></span>
+<span id="cb34-2">  <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">geom_bar</span>(<span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">stat =</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"identity"</span>) <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">+</span></span>
+<span id="cb34-3">  <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">labs</span>(<span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">title =</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"Commits by Author per Day in Nov 2023"</span>, <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">x =</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"Date"</span>, <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">y =</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"Number of Commits"</span>) <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">+</span></span>
+<span id="cb34-4">  <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">theme_minimal</span>() <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">+</span></span>
+<span id="cb34-5">  <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">scale_fill_brewer</span>(<span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">palette =</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"Set2"</span>)</span></code></pre></div>
+<div class="cell-output-display">
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="https://robertslab.github.io/sams-notebook/posts/2023/2023-11-30-Plotting-Fun---Lab-Meeting-Task/index_files/figure-html/stacked-bar-plot-commits-by-author-1.png" class="img-fluid figure-img" width="672"></p>
+<figcaption class="figure-caption">Stacked bar plot of November 2023 commits per day per author</figcaption>
+</figure>
+</div>
+</div>
+</div>
+
+
+</section>
+
+ ]]></description>
+  <category>plotting</category>
+  <category>R</category>
+  <guid>https://robertslab.github.io/sams-notebook/posts/2023/2023-11-30-Plotting-Fun---Lab-Meeting-Task/index.html</guid>
+  <pubDate>Thu, 30 Nov 2023 08:00:00 GMT</pubDate>
+</item>
 <item>
   <title>Transcriptome Annotation - M.magister De Novo Transcriptome Assembly Using Trinotate on Mox</title>
   <dc:creator>Sam White</dc:creator>
@@ -10121,120 +10747,6 @@ font-style: inherit;">&gt;&gt;</span> system_path.log</span></code></pre></div>
   <category>Miscellaneous</category>
   <guid>https://robertslab.github.io/sams-notebook/posts/2023/2023-07-19-qPCR---C.gigas-Ctenidia-cDNA-for-Noahs-Heat-Mechanical-Stress-Project/index.html</guid>
   <pubDate>Wed, 19 Jul 2023 22:40:00 GMT</pubDate>
-</item>
-<item>
-  <title>qPCR - C.gigas cDNA Primer Tests for Noah’s Heat-Mechanical Stress Project</title>
-  <dc:creator>Sam White</dc:creator>
-  <link>https://robertslab.github.io/sams-notebook/posts/2023/2023-07-13-qPCR---C.gigas-cDNA-Primer-Tests-for-Noahs-Heat-Mechanical-Stress-Project/index.html</link>
-  <description><![CDATA[ 
-
-
-
-
-<p>After <a href="https://robertslab.github.io/sams-notebook/posts/2023/2023-07-13-Reverse-Transcription-C.gigas-RNA-from-Noah's-Heat-Mechanical-Stress-Project/">generating cDNA earlier today</a> from Noah’s <a href="http://en.wikipedia.org/wiki/Pacific_oyster"><em>Crassostrea gigas</em> (Pacific oyster)</a> RNA (<a href="https://robertslab.github.io/sams-notebook/2023/07/12/RNA-Isolation-C.gigas-Ctenidia-from-Noah's-Heat-Mechanical-Stress-Project/">isolated 20230712</a>), I ran qPCRs using the pooled cDNA sample to test out some primers that Steven pulled from the freezer.</p>
-<table class="table">
-<thead>
-<tr class="header">
-<th>SRID</th>
-<th>PrimerName</th>
-<th>Organism</th>
-</tr>
-</thead>
-<tbody>
-<tr class="odd">
-<td>1614</td>
-<td>Defensin_FWD</td>
-<td>C.gigas</td>
-</tr>
-<tr class="even">
-<td>1613</td>
-<td>Defensin_REV</td>
-<td>C.gigas</td>
-</tr>
-<tr class="odd">
-<td>1626</td>
-<td>HSP70c_FWD</td>
-<td>O.lurida</td>
-</tr>
-<tr class="even">
-<td>1625</td>
-<td>HSP70c_REV</td>
-<td>O.lurida</td>
-</tr>
-<tr class="odd">
-<td>256</td>
-<td>IL-17 internal RV</td>
-<td>C.gigas</td>
-</tr>
-<tr class="even">
-<td>255</td>
-<td>IL-17 internal FW</td>
-<td>C.gigas</td>
-</tr>
-<tr class="odd">
-<td>1630</td>
-<td>TLR2.1_FWD</td>
-<td>O.lurida</td>
-</tr>
-<tr class="even">
-<td>1629</td>
-<td>TLR2.1_REV</td>
-<td>O.lurida</td>
-</tr>
-</tbody>
-</table>
-<p>NOTE: We did not have the above info prior to running. Only discovered after qPCR completed that two primer sets were for a different species!</p>
-<p>All reactions were run with 2x SsoFast EvaGreen Master Mix (BioRad), using 1uL of cDNA. See qPCR Report in the RESULTS section below for cycling params, etc.</p>
-<p>qPCR calcs:</p>
-<ul>
-<li><a href="https://docs.google.com/spreadsheets/d/1ie8IrIDFY-KTxb2Iwwyyi-e03WaNRGPxSrYbYsC0kG0/edit?usp=sharing">20230713 - qPCR Calcs Noah gigas ctenidia pooled cDNA</a> (Google Sheet)</li>
-</ul>
-<hr>
-<section id="results" class="level1">
-<h1>RESULTS</h1>
-<p>qPCR Data file (QPCRD - CFX Maestro required)</p>
-<ul>
-<li><a href="https://owl.fish.washington.edu/Athaliana/qPCR_data/sam_2023-07-13_13-15-17_Connect.pcrd">sam_2023-07-13_13-15-17_Connect.pcrd</a></li>
-</ul>
-<p>qPCR Report (PDF)</p>
-<ul>
-<li><a href="https://owl.fish.washington.edu/Athaliana/qPCR_data/qPCR_reports/sam_2023-07-13_13-15-17_Connect.pdf">sam_2023-07-13_13-15-17_Connect.pdf</a></li>
-</ul>
-<p>Unsurprisingly, the two primer sets designed for <a href="http://en.wikipedia.org/wiki/Pacific_oyster"><em>Ostrea lurida</em> (Olympia oyster)</a> do not amplify.</p>
-<p>Defensin comes up very late (~39 Cq), while IL-17 comes up earlier (~32Cq). The melt curves look good, although there might be a slight hump present in the IL-17 reactions… See plots below.</p>
-<hr>
-<p>Amplification Plots</p>
-<ul>
-<li>Defensin in GREEN</li>
-<li>IL-17 in BLACK</li>
-</ul>
-<div class="quarto-figure quarto-figure-center">
-<figure class="figure">
-<p><img src="https://robertslab.github.io/sams-notebook/posts/2023/2023-07-13-qPCR---C.gigas-cDNA-Primer-Tests-for-Noahs-Heat-Mechanical-Stress-Project/https:/owl.fish.washington.edu/Athaliana/qPCR_data/sam_2023-07-13_13-15-17_Connect-amp_plots.png" class="img-fluid figure-img"></p>
-<figcaption class="figure-caption">qPCR amplification plots for defensin (green) and Il-17 (black). Defensin comes up late, at ~39Cq. IL-17 comes up earlier at ~32Cq</figcaption>
-</figure>
-</div>
-<hr>
-<p>Melt Curves</p>
-<ul>
-<li>Defensin in GREEN</li>
-<li>IL-17 in BLACK</li>
-</ul>
-<div class="quarto-figure quarto-figure-center">
-<figure class="figure">
-<p><img src="https://robertslab.github.io/sams-notebook/posts/2023/2023-07-13-qPCR---C.gigas-cDNA-Primer-Tests-for-Noahs-Heat-Mechanical-Stress-Project/https:/owl.fish.washington.edu/Athaliana/qPCR_data/sam_2023-07-13_13-15-17_Connect-melt_plots.png" class="img-fluid figure-img"></p>
-<figcaption class="figure-caption">qPCR melt plots for defensin (green) and Il-17 (black).</figcaption>
-</figure>
-</div>
-
-
-</section>
-
- ]]></description>
-  <category>2023</category>
-  <category>Miscellaneous</category>
-  <guid>https://robertslab.github.io/sams-notebook/posts/2023/2023-07-13-qPCR---C.gigas-cDNA-Primer-Tests-for-Noahs-Heat-Mechanical-Stress-Project/index.html</guid>
-  <pubDate>Thu, 13 Jul 2023 19:55:00 GMT</pubDate>
 </item>
 </channel>
 </rss>

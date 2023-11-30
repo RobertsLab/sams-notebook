@@ -5,7 +5,7 @@ toc-depth: 5
 toc-location: left
 title: Plotting Fun - Lab Meeting Task
 date: '2023-11-30'
-draft: true
+draft: false
 engine: knitr
 categories: 
   - plotting
@@ -24,8 +24,9 @@ Let's start with just trying to plot commits per day.
 ## Load libraries
 ```{r load-libraries}
 #| code-fold: false
+#| echo: false
 library(ggplot2)
-
+library(dplyr)
 ```
 
 ## Set Git Repo Path
@@ -67,15 +68,15 @@ print(git_command)
 ## Excecute git command
 ```{r run-git-command}
 #| code-fold: false
-commit_dates <- system(git_command, intern = TRUE)
+commit_info <- system(git_command, intern = TRUE)
 
-str(commit_dates)
+str(commit_info)
 ```
 
 ## Convert to Dates structure
 ```{r convert-commit-dates}
 #| code-fold: false
-commit_dates <- as.Date(gsub("'", "", commit_dates))
+commit_dates <- as.Date(gsub("'", "", commit_info))
 
 str(commit_dates)
 ```
@@ -121,4 +122,79 @@ ggplot(all_days, aes(x = Date, y = Commits)) +
   geom_bar(stat = "identity", fill = "steelblue") +
   labs(title = "Commits per Day in Nov 2023", x = "Date", y = "Number of Commits") +
   theme_minimal()
+```
+
+Now, let's try to look at commits per day by author...
+
+# Commits per day per author
+
+## Create a data frame with all days in November
+```{r df-all-days-november}
+#| code-fold: false
+
+all_days <- data.frame(Date = seq(start_date, end_date, by = "day"))
+```
+
+## New git command
+This adds author to format output
+```{r update-git-command}
+#| code-fold: false
+
+git_command <- paste("git --git-dir=",repo_path, ".git log --date=short --all --format='%ad %an'", sep="")
+
+commit_info <- system(git_command, intern = TRUE)
+```
+
+## Split the commit information into date and author
+```{r split-commit-info}
+#| code-fold: false
+
+commit_info_split <- strsplit(commit_info, " ")
+commit_dates <- as.Date(sapply(commit_info_split, "[[", 1))
+commit_authors <- sapply(commit_info_split, "[[", 2)
+
+str(commit_dates)
+str(commit_authors)
+```
+
+## Create data frame with commits and authors
+```{r df-with-authors-dates}
+#| code-fold: false
+
+# Create a data frame with commit information
+commit_data <- data.frame(Date = commit_dates, Author = commit_authors)
+head(commit_data)
+str(commit_data)
+```
+
+### Update dataframe to include all days in November
+
+```{r df-include-all-days-in-Nov}
+#| code-fold: false
+all_days <- merge(all_days, commit_data, all.x = TRUE, by = "Date")
+
+str(all_days)
+```
+
+
+### Update dataframe with commit counts per author
+```{r count-commits-by-author-per-day}
+#| code-fold: false
+all_days <- all_days %>%
+  group_by(Date, Author) %>%
+  summarise(Commits = n())
+
+str(all_days)
+```
+
+# Plot commits per day per author
+```{r plot-commits-per-day-per-author}
+#| code-fold: false
+#| label: stacked-bar-plot-commits-by-author
+#| fig-cap: "Stacked bar plot of November 2023 commits per day per author"
+ggplot(all_days, aes(x = Date, y = Commits, fill = Author)) +
+  geom_bar(stat = "identity") +
+  labs(title = "Commits by Author per Day in Nov 2023", x = "Date", y = "Number of Commits") +
+  theme_minimal() +
+  scale_fill_brewer(palette = "Set2")
 ```
