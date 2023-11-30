@@ -1,0 +1,124 @@
+---
+author: Sam White
+toc-title: Contents
+toc-depth: 5
+toc-location: left
+title: Plotting Fun - Lab Meeting Task
+date: '2023-11-30'
+draft: true
+engine: knitr
+categories: 
+  - plotting
+  - R
+---
+For today's lab meeting, Steven tasked us with the following on Wednesday:
+
+> For lab meeting Thursday the topic is "Plots". Before the meeting make sure to create a notebook post where you show-off a plot of something you did in November, including showing the code used to generate the plot. :bar_chart: - Drop the url to the notebook post below.
+
+So, drawing a blank on what to plot, I opted to visualize commit history for the [Coral E5 deep dive repo](https://github.com/urol-e5/deep-dive) (GitHub repo).
+
+Let's start with just trying to plot commits per day.
+
+# Initial setup
+
+## Load libraries
+```{r load-libraries}
+#| code-fold: false
+library(ggplot2)
+
+```
+
+## Set Git Repo Path
+```{r set-git-repo-path}
+#| code-fold: false
+repo_path <- "/home/sam/gitrepos/deep-dive/"
+```
+
+## Set date range
+```{r set-date-range}
+#| code-fold: false
+
+# Set date range
+start_date <- as.Date("2023-11-01")
+end_date <- as.Date("2023-11-30")
+
+# Catpures all days in range
+all_days <- data.frame(Date = seq(start_date, end_date, by = "day"))
+
+head(all_days)
+```
+
+## Define the Git command to get commit dates using `system()`
+```{r set-git-command}
+#| code-fold: false
+git_command <- paste("git --git-dir=",
+                     repo_path, ".git log --pretty=format:%ad --date=short --after=",
+                     start_date,
+                     " --before=",
+                     end_date,
+                     " --all",
+                     sep="")
+
+print(git_command)
+```
+
+# Data manipulation
+
+## Excecute git command
+```{r run-git-command}
+#| code-fold: false
+commit_dates <- system(git_command, intern = TRUE)
+
+str(commit_dates)
+```
+
+## Convert to Dates structure
+```{r convert-commit-dates}
+#| code-fold: false
+commit_dates <- as.Date(gsub("'", "", commit_dates))
+
+str(commit_dates)
+```
+
+## Count number of commits
+
+This will create a two-column dataframe (Date, Commits)
+and replace dates with 0 commits (NAs) with `0`.
+
+```{r count-commits}
+#| code-fold: false
+
+# This counts number of commits on each date.
+commit_table <- table(commit_dates)
+str(commit_table)
+
+all_days <- merge(
+  all_days,
+  data.frame(
+    Date = as.Date(
+      names(commit_table)
+      ),
+    Commits = as.numeric(
+      commit_table)
+    ),
+  all.x = TRUE,
+  by = "Date")
+
+# Assigns value of `0` to all NAs
+all_days$Commits[is.na(all_days$Commits)] <- 0
+
+head(all_days)
+```
+
+
+
+# Plot all commits per day
+```{r plot-all-commits-per-day}
+#| code-fold: false
+#| label: bar-plot-all-commits
+#| fig-cap: "Bar plot of all November 2023 commits"
+ggplot(all_days, aes(x = Date, y = Commits)) +
+  geom_bar(stat = "identity", fill = "steelblue") +
+  labs(title = "Commits per Day in Nov 2023", x = "Date", y = "Number of Commits") +
+  theme_minimal()
+```
