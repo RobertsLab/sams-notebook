@@ -5,7 +5,7 @@ toc-depth: 5
 toc-location: left
 title: Data Investigation - Mysterious Case of Excessive Exons in CEABIGR
 date: '2023-12-06'
-draft: true
+draft: false
 engine: knitr
 categories: 
   - CEABIGR
@@ -13,3 +13,127 @@ categories:
   - Eastern oyster
   - 2023
 ---
+
+After Steven [ran through some prelimiary exon expression analyses](https://github.com/sr320/ceabigr/issues/86#issuecomment-1816557386) (GitHub Isse), he noticed that there were some genes with a seemingly excessive number of exons (like over 800!). Seeing that, I've decided to do some investigation to see if these gene feature annotations stem from the source (i.e. from NCBI GFF) or were introduced accidentally through some subsequent data analysis/manipulations.
+
+First, let's look at a file which appears to provide mappings of GeneIDs and exons:
+
+# Investigate `genome-features/C_virginica-3.0_Gnomon_exon-geneID.bed`
+
+## Inspect exon-geneID mapping file
+
+This might be a poor place to start, as this file exists in a directory with no README. As such, I'm not certain of the source of this file...
+
+```{bash head-C_virginica-3.0_Gnomon_exon-geneID.bed}
+head /home/shared/8TB_HDD_01/sam/gitrepos/ceabigr/genome-features/C_virginica-3.0_Gnomon_exon-geneID.bed
+```
+
+This appears to have all exons start/stop locations for each gene. At least, that's my assumption, based off of the filename.
+
+## Count exons per gene in `C_virginica-3.0_Gnomon_exon-geneID.bed`
+
+```{bash count-exons-per-gene-C_virginica-3.0_Gnomon_exon-geneID.bed}
+awk '{print $4}' /home/shared/8TB_HDD_01/sam/gitrepos/ceabigr/genome-features/C_virginica-3.0_Gnomon_exon-geneID.bed \
+| uniq --count \
+| sort --numeric-sort --reverse  -k1,1 \
+| head
+```
+
+Well, this shows us that this file indeed has many, many genes with *thousands* of exons! This is highly dubious, so let's glance at the NCBI GFF to see if this is "real" or not.
+
+# Inspect NCBI GFF
+
+## Decompress NCBI GFF
+
+```{bash gunzip-NCBI-gff}
+#| eval: FALSE
+gunzip --keep /home/shared/8TB_HDD_01/sam/gitrepos/ceabigr/genome-features/GCF_002022765.2_C_virginica-3.0_genomic.gff.gz
+```
+
+## Search for gene(s) with high number of exons
+
+::: {.callout-note}
+Exons in the GFF do _not_ refer to the full parent gene ID!
+
+Need to use truncated version. E.g. `LOC111108212`
+:::
+
+```{bash grep-genes-NCBI-gff}
+awk -F "\t" '$3 == "exon"' /home/shared/8TB_HDD_01/sam/gitrepos/ceabigr/genome-features/GCF_002022765.2_C_virginica-3.0_genomic.gff \
+| grep "gene=LOC111110729" \
+| wc -l
+```
+
+So, the exon counts in `genome-features/C_virginica-3.0_Gnomon_exon-geneID.bed` are indeed artificial!
+
+Now that I've investigated that, I probably should've just started with the input files that Steven was using in the first place. However, this certainly identifies a problematic file that should likely be removed from the repo...
+
+So, let's look at the data Steven was working with and see what we can figure out.
+
+# Inspect `output/19-exon-expression/S12M-exon_expression.tab`
+
+## Colums in `output/19-exon-expression/S12M-exon_expression.tab`
+
+Due to the layout of this file (a column for each possible number of exons across *all* genes), the head command will produce an unwieldy output. Instead, we'll just count the number of columns (fields) to get an idea of what we're dealing with.
+
+::: {.callout-note}
+We subtract `1` to account for the first column
+:::
+
+```{r head-output/19-exon-expression/S12M-exon_expression.tab}
+S12M.columns <- system("awk '{print NF-1}' /home/shared/8TB_HDD_01/sam/gitrepos/ceabigr/output/19-exon-expression/S12M-exon_expression.tab | sort --unique",
+                       intern = TRUE)
+```
+
+Well, we're seeing that there is a *maximum* number of exons across _all_ genes: `r S12M.columns`
+
+Next let's see if we can ID the gene with `r S12M.columns` exons.
+
+```{r id-gene-with-462-exons}
+#| warning: false
+library(dplyr)
+
+S12M.df <- read.csv("/home/shared/8TB_HDD_01/sam/gitrepos/ceabigr/output/19-exon-expression/S12M-exon_expression.tab",
+                    sep = "\t")
+
+str(S12M.df)
+
+result <- S12M.df %>%
+  filter(!is.na(exon_462) & grepl("[0-9]", exon_462))
+
+print(result$gene_name)
+
+selected_gene_names <- result$gene_name
+```
+
+Okay, we've identified `r selected_gene_names` as the gene which contains `r S12M.columns`. Let's see if this matches the original NCBI GFF.
+
+## Compare number of exons in `r selected_gene_names` between `S12M-exon_expression.tab` and `GCF_002022765.2_C_virginica-3.0_genomic.gff`
+
+```{bash compare-gene-LOC111119012-in-GFF-S12M-exon_expression.tab}
+awk -F "\t" '$3 == "exon"' /home/shared/8TB_HDD_01/sam/gitrepos/ceabigr/genome-features/GCF_002022765.2_C_virginica-3.0_genomic.gff \
+| grep "gene=LOC111119012" \
+| wc -l
+```
+
+
+Okay, they do _not_ match, which points to an issue with `S12M-exon_expression.tab`! I generated that file in [`19-exon-expression.Rmd`](https://github.com/sr320/ceabigr/blob/main/code/19-exon-expression.Rmd) using the Ballgown exon file (`e_data.ctab`) file as a source. Let's check that first before I re-examine [`19-exon-expression.Rmd`](https://github.com/sr320/ceabigr/blob/main/code/19-exon-expression.Rmd).
+
+# Compare `e_data.ctab` and `GCF_002022765.2_C_virginica-3.0_genomic.gff`
+
+```{r check-e_data.ctab}
+S12M.edata.df <- read.csv("/home/shared/8TB_HDD_01/sam/gitrepos/ceabigr/data/ballgown/S12M/e_data.ctab",
+                          sep = "\t")
+
+str(S12M.edata.df)
+
+exon.count.S12M.edata <- nrow(S12M.edata.df)
+```
+
+```{r count-exons-ncbi-gff}
+exon.count.ncbi.gff <- system("awk -F \"\t\" '$3 == \"exon\"' /home/shared/8TB_HDD_01/sam/gitrepos/ceabigr/genome-features/GCF_002022765.2_C_virginica-3.0_genomic.gff | wc -l")
+```
+
+Number of exons in `e_data.ctab`: `r exon.count.S12M.edata`
+
+Number of exons in NCBI GFF:       `r exon.count.ncbi.gff`
