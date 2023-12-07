@@ -10,7 +10,499 @@
 <atom:link href="https://robertslab.github.io/sams-notebook/index.xml" rel="self" type="application/rss+xml"/>
 <description></description>
 <generator>quarto-1.3.450</generator>
-<lastBuildDate>Fri, 01 Dec 2023 08:00:00 GMT</lastBuildDate>
+<lastBuildDate>Wed, 06 Dec 2023 08:00:00 GMT</lastBuildDate>
+<item>
+  <title>Data Investigation - Mysterious Case of Excessive Exons in CEABIGR</title>
+  <dc:creator>Sam White</dc:creator>
+  <link>https://robertslab.github.io/sams-notebook/posts/2023/2023-12-06-Data-Investigation---Mysterious-Case-of-Excessive-Exons-in-CEABIGR/index.html</link>
+  <description><![CDATA[ 
+
+
+
+
+<p>After Steven <a href="https://github.com/sr320/ceabigr/issues/86#issuecomment-1816557386">ran through some prelimiary exon expression analyses</a> (GitHub Isse), he noticed that there were some genes with a seemingly excessive number of exons (like over 800!). Seeing that, I’ve decided to do some investigation to see if these gene feature annotations stem from the source (i.e.&nbsp;from NCBI GFF) or were introduced accidentally through some subsequent data analysis/manipulations.</p>
+<p>First, let’s look at a file which appears to provide mappings of GeneIDs and exons:</p>
+<section id="investigate-genome-featuresc_virginica-3.0_gnomon_exon-geneid.bed" class="level1">
+<h1>Investigate <code>genome-features/C_virginica-3.0_Gnomon_exon-geneID.bed</code></h1>
+<section id="inspect-exon-geneid-mapping-file" class="level2">
+<h2 class="anchored" data-anchor-id="inspect-exon-geneid-mapping-file">Inspect exon-geneID mapping file</h2>
+<p>This might be a poor place to start, as this file exists in a directory with no README. As such, I’m not certain of the source of this file…</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb1" style="background: #f1f3f5;"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb1-1"><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">head</span> /home/sam/gitrepos/ceabigr/genome-features/C_virginica-3.0_Gnomon_exon-geneID.bed</span></code></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>NC_035780.1 13578   13603   gene-LOC111116054
+NC_035780.1 14237   14290   gene-LOC111116054
+NC_035780.1 14557   14594   gene-LOC111116054
+NC_035780.1 28961   29073   gene-LOC111126949
+NC_035780.1 30524   31557   gene-LOC111126949
+NC_035780.1 31736   31887   gene-LOC111126949
+NC_035780.1 31977   32565   gene-LOC111126949
+NC_035780.1 32959   33324   gene-LOC111126949
+NC_035780.1 66869   66897   gene-LOC111110729
+NC_035780.1 64123   64334   gene-LOC111110729</code></pre>
+</div>
+</div>
+<p>This appears to have all exons start/stop locations for each gene. At least, that’s my assumption, based off of the filename.</p>
+</section>
+<section id="count-exons-per-gene-in-c_virginica-3.0_gnomon_exon-geneid.bed" class="level2">
+<h2 class="anchored" data-anchor-id="count-exons-per-gene-in-c_virginica-3.0_gnomon_exon-geneid.bed">Count exons per gene in <code>C_virginica-3.0_Gnomon_exon-geneID.bed</code></h2>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb3" style="background: #f1f3f5;"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb3-1"><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">awk</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">'{print $4}'</span> /home/sam/gitrepos/ceabigr/genome-features/C_virginica-3.0_Gnomon_exon-geneID.bed <span class="dt" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">\</span></span>
+<span id="cb3-2"><span class="kw" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">|</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">uniq</span> <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">--count</span> <span class="dt" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">\</span></span>
+<span id="cb3-3"><span class="kw" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">|</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">sort</span> <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">--numeric-sort</span> <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">--reverse</span>  <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">-k1,1</span> <span class="dt" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">\</span></span>
+<span id="cb3-4"><span class="kw" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">|</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">head</span></span></code></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>   2889 gene-LOC111108212
+   2600 gene-LOC111125463
+   2237 gene-LOC111125330
+   1559 gene-LOC111130297
+   1557 gene-LOC111112605
+   1555 gene-LOC111128998
+   1540 gene-LOC111122636
+   1506 gene-LOC111107250
+   1384 gene-LOC111125942
+   1383 gene-LOC111133666</code></pre>
+</div>
+</div>
+<p>Well, this shows us that this file indeed has many, many genes with <em>thousands</em> of exons! This is highly dubious, so let’s glance at the NCBI GFF to see if this is “real” or not.</p>
+</section>
+</section>
+<section id="inspect-ncbi-gff" class="level1">
+<h1>Inspect NCBI GFF</h1>
+<section id="decompress-ncbi-gff" class="level2">
+<h2 class="anchored" data-anchor-id="decompress-ncbi-gff">Decompress NCBI GFF</h2>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb5" style="background: #f1f3f5;"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb5-1"><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">gunzip</span> <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">--keep</span> /home/sam/gitrepos/ceabigr/genome-features/GCF_002022765.2_C_virginica-3.0_genomic.gff.gz</span></code></pre></div>
+</div>
+</section>
+<section id="search-for-genes-with-high-number-of-exons" class="level2">
+<h2 class="anchored" data-anchor-id="search-for-genes-with-high-number-of-exons">Search for gene(s) with high number of exons</h2>
+<div class="callout callout-style-default callout-note callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Note
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>Exons in the GFF do <em>not</em> refer to the full parent gene ID!</p>
+<p>Need to use truncated version. E.g. <code>LOC111108212</code></p>
+</div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb6" style="background: #f1f3f5;"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb6-1"><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">awk</span> <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">-F</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"\t"</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">'$3 == "exon"'</span> /home/sam/gitrepos/ceabigr/genome-features/GCF_002022765.2_C_virginica-3.0_genomic.gff <span class="dt" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">\</span></span>
+<span id="cb6-2"><span class="kw" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">|</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">grep</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"gene=LOC111110729"</span> <span class="dt" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">\</span></span>
+<span id="cb6-3"><span class="kw" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">|</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">wc</span> <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">-l</span></span></code></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>5</code></pre>
+</div>
+</div>
+<p>So, the exon counts in <code>genome-features/C_virginica-3.0_Gnomon_exon-geneID.bed</code> are indeed artificial!</p>
+<p>Now that I’ve investigated that, I probably should’ve just started with the input files that Steven was using in the first place. However, this certainly identifies a problematic file that should likely be removed from the repo…</p>
+<p>Let’s look at the data Steven was working with and see what we can figure out.</p>
+</section>
+</section>
+<section id="inspect-output19-exon-expressions12m-exon_expression.tab" class="level1">
+<h1>Inspect <code>output/19-exon-expression/S12M-exon_expression.tab</code></h1>
+<section id="count-colums-in-output19-exon-expressions12m-exon_expression.tab" class="level2">
+<h2 class="anchored" data-anchor-id="count-colums-in-output19-exon-expressions12m-exon_expression.tab">Count colums in <code>output/19-exon-expression/S12M-exon_expression.tab</code></h2>
+<p>Due to the layout of this file (a column for each possible number of exons across <em>all</em> genes), the head command will produce an unwieldy output. Instead, we’ll just count the number of columns (fields) to get an idea of what we’re dealing with.</p>
+<div class="callout callout-style-default callout-note callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Note
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>We subtract <code>1</code> to account for the first column</p>
+</div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb8" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb8-1">S12M.columns <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">system</span>(<span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"awk '{print NF-1}' /home/sam/gitrepos/ceabigr/output/19-exon-expression/S12M-exon_expression.tab | sort --unique"</span>,</span>
+<span id="cb8-2">                       <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">intern =</span> <span class="cn" style="color: #8f5902;
+background-color: null;
+font-style: inherit;">TRUE</span>)</span></code></pre></div>
+</div>
+<p>Well, we’re seeing that there is a <em>maximum</em> number of exons across <em>all</em> genes: 462</p>
+<p>Next let’s see if we can ID the gene with 462 exons.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb9" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb9-1"><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">library</span>(dplyr)</span>
+<span id="cb9-2"></span>
+<span id="cb9-3">S12M.df <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">read.csv</span>(<span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"/home/sam/gitrepos/ceabigr/output/19-exon-expression/S12M-exon_expression.tab"</span>,</span>
+<span id="cb9-4">                    <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">sep =</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"</span><span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">\t</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"</span>)</span>
+<span id="cb9-5"></span>
+<span id="cb9-6"><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">str</span>(S12M.df)</span></code></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>'data.frame':   38838 obs. of  463 variables:
+ $ gene_name: chr  "gene-LOC111116054" "gene-LOC111126949" "gene-LOC111110729" "gene-LOC111112434" ...
+ $ exon_1   : int  130 22 282 24 69 416 193 23 23 3 ...
+ $ exon_2   : int  103 180 63 40 39 NA 106 173 173 1 ...
+ $ exon_3   : int  9 35 55 123 86 NA NA 3 NA 2 ...
+ $ exon_4   : int  NA 110 11 NA 21 NA NA 1 NA 2 ...
+ $ exon_5   : int  NA 47 NA NA 85 NA NA 2 NA NA ...
+ $ exon_6   : int  NA NA NA NA NA NA NA 2 NA NA ...
+ $ exon_7   : int  NA NA NA NA NA NA NA 75 NA NA ...
+ $ exon_8   : int  NA NA NA NA NA NA NA 214 NA NA ...
+ $ exon_9   : int  NA NA NA NA NA NA NA NA NA NA ...
+ $ exon_10  : int  NA NA NA NA NA NA NA NA NA NA ...
+ $ exon_11  : int  NA NA NA NA NA NA NA NA NA NA ...
+ $ exon_12  : int  NA NA NA NA NA NA NA NA NA NA ...
+ $ exon_13  : int  NA NA NA NA NA NA NA NA NA NA ...
+ $ exon_14  : int  NA NA NA NA NA NA NA NA NA NA ...
+ $ exon_15  : int  NA NA NA NA NA NA NA NA NA NA ...
+ $ exon_16  : int  NA NA NA NA NA NA NA NA NA NA ...
+ $ exon_17  : int  NA NA NA NA NA NA NA NA NA NA ...
+ $ exon_18  : int  NA NA NA NA NA NA NA NA NA NA ...
+ $ exon_19  : int  NA NA NA NA NA NA NA NA NA NA ...
+ $ exon_20  : int  NA NA NA NA NA NA NA NA NA NA ...
+ $ exon_21  : int  NA NA NA NA NA NA NA NA NA NA ...
+ $ exon_22  : int  NA NA NA NA NA NA NA NA NA NA ...
+ $ exon_23  : int  NA NA NA NA NA NA NA NA NA NA ...
+ $ exon_24  : int  NA NA NA NA NA NA NA NA NA NA ...
+ $ exon_25  : int  NA NA NA NA NA NA NA NA NA NA ...
+ $ exon_26  : int  NA NA NA NA NA NA NA NA NA NA ...
+ $ exon_27  : int  NA NA NA NA NA NA NA NA NA NA ...
+ $ exon_28  : int  NA NA NA NA NA NA NA NA NA NA ...
+ $ exon_29  : int  NA NA NA NA NA NA NA NA NA NA ...
+ $ exon_30  : int  NA NA NA NA NA NA NA NA NA NA ...
+ $ exon_31  : int  NA NA NA NA NA NA NA NA NA NA ...
+ $ exon_32  : int  NA NA NA NA NA NA NA NA NA NA ...
+ $ exon_33  : int  NA NA NA NA NA NA NA NA NA NA ...
+ $ exon_34  : int  NA NA NA NA NA NA NA NA NA NA ...
+ $ exon_35  : int  NA NA NA NA NA NA NA NA NA NA ...
+ $ exon_36  : int  NA NA NA NA NA NA NA NA NA NA ...
+ $ exon_37  : int  NA NA NA NA NA NA NA NA NA NA ...
+ $ exon_38  : int  NA NA NA NA NA NA NA NA NA NA ...
+ $ exon_39  : int  NA NA NA NA NA NA NA NA NA NA ...
+ $ exon_40  : int  NA NA NA NA NA NA NA NA NA NA ...
+ $ exon_41  : int  NA NA NA NA NA NA NA NA NA NA ...
+ $ exon_42  : int  NA NA NA NA NA NA NA NA NA NA ...
+ $ exon_43  : int  NA NA NA NA NA NA NA NA NA NA ...
+ $ exon_44  : int  NA NA NA NA NA NA NA NA NA NA ...
+ $ exon_45  : int  NA NA NA NA NA NA NA NA NA NA ...
+ $ exon_46  : int  NA NA NA NA NA NA NA NA NA NA ...
+ $ exon_47  : int  NA NA NA NA NA NA NA NA NA NA ...
+ $ exon_48  : int  NA NA NA NA NA NA NA NA NA NA ...
+ $ exon_49  : int  NA NA NA NA NA NA NA NA NA NA ...
+ $ exon_50  : int  NA NA NA NA NA NA NA NA NA NA ...
+ $ exon_51  : int  NA NA NA NA NA NA NA NA NA NA ...
+ $ exon_52  : int  NA NA NA NA NA NA NA NA NA NA ...
+ $ exon_53  : int  NA NA NA NA NA NA NA NA NA NA ...
+ $ exon_54  : int  NA NA NA NA NA NA NA NA NA NA ...
+ $ exon_55  : int  NA NA NA NA NA NA NA NA NA NA ...
+ $ exon_56  : int  NA NA NA NA NA NA NA NA NA NA ...
+ $ exon_57  : int  NA NA NA NA NA NA NA NA NA NA ...
+ $ exon_58  : int  NA NA NA NA NA NA NA NA NA NA ...
+ $ exon_59  : int  NA NA NA NA NA NA NA NA NA NA ...
+ $ exon_60  : int  NA NA NA NA NA NA NA NA NA NA ...
+ $ exon_61  : int  NA NA NA NA NA NA NA NA NA NA ...
+ $ exon_62  : int  NA NA NA NA NA NA NA NA NA NA ...
+ $ exon_63  : int  NA NA NA NA NA NA NA NA NA NA ...
+ $ exon_64  : int  NA NA NA NA NA NA NA NA NA NA ...
+ $ exon_65  : int  NA NA NA NA NA NA NA NA NA NA ...
+ $ exon_66  : int  NA NA NA NA NA NA NA NA NA NA ...
+ $ exon_67  : int  NA NA NA NA NA NA NA NA NA NA ...
+ $ exon_68  : int  NA NA NA NA NA NA NA NA NA NA ...
+ $ exon_69  : int  NA NA NA NA NA NA NA NA NA NA ...
+ $ exon_70  : int  NA NA NA NA NA NA NA NA NA NA ...
+ $ exon_71  : int  NA NA NA NA NA NA NA NA NA NA ...
+ $ exon_72  : int  NA NA NA NA NA NA NA NA NA NA ...
+ $ exon_73  : int  NA NA NA NA NA NA NA NA NA NA ...
+ $ exon_74  : int  NA NA NA NA NA NA NA NA NA NA ...
+ $ exon_75  : int  NA NA NA NA NA NA NA NA NA NA ...
+ $ exon_76  : int  NA NA NA NA NA NA NA NA NA NA ...
+ $ exon_77  : int  NA NA NA NA NA NA NA NA NA NA ...
+ $ exon_78  : int  NA NA NA NA NA NA NA NA NA NA ...
+ $ exon_79  : int  NA NA NA NA NA NA NA NA NA NA ...
+ $ exon_80  : int  NA NA NA NA NA NA NA NA NA NA ...
+ $ exon_81  : int  NA NA NA NA NA NA NA NA NA NA ...
+ $ exon_82  : int  NA NA NA NA NA NA NA NA NA NA ...
+ $ exon_83  : int  NA NA NA NA NA NA NA NA NA NA ...
+ $ exon_84  : int  NA NA NA NA NA NA NA NA NA NA ...
+ $ exon_85  : int  NA NA NA NA NA NA NA NA NA NA ...
+ $ exon_86  : int  NA NA NA NA NA NA NA NA NA NA ...
+ $ exon_87  : int  NA NA NA NA NA NA NA NA NA NA ...
+ $ exon_88  : int  NA NA NA NA NA NA NA NA NA NA ...
+ $ exon_89  : int  NA NA NA NA NA NA NA NA NA NA ...
+ $ exon_90  : int  NA NA NA NA NA NA NA NA NA NA ...
+ $ exon_91  : int  NA NA NA NA NA NA NA NA NA NA ...
+ $ exon_92  : int  NA NA NA NA NA NA NA NA NA NA ...
+ $ exon_93  : int  NA NA NA NA NA NA NA NA NA NA ...
+ $ exon_94  : int  NA NA NA NA NA NA NA NA NA NA ...
+ $ exon_95  : int  NA NA NA NA NA NA NA NA NA NA ...
+ $ exon_96  : int  NA NA NA NA NA NA NA NA NA NA ...
+ $ exon_97  : int  NA NA NA NA NA NA NA NA NA NA ...
+ $ exon_98  : int  NA NA NA NA NA NA NA NA NA NA ...
+  [list output truncated]</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb11" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb11-1">result <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> S12M.df <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">%&gt;%</span></span>
+<span id="cb11-2">  <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">filter</span>(<span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">!</span><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">is.na</span>(exon_462) <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">&amp;</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">grepl</span>(<span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"[0-9]"</span>, exon_462))</span>
+<span id="cb11-3"></span>
+<span id="cb11-4"><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">print</span>(result<span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">$</span>gene_name)</span></code></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] "gene-LOC111119012"</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb13" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb13-1">selected_gene_names <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> result<span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">$</span>gene_name</span></code></pre></div>
+</div>
+<p>Okay, we’ve identified gene-LOC111119012 as the gene which contains 462. Let’s see if this matches the original NCBI GFF.</p>
+</section>
+<section id="compare-number-of-exons-in-gene-loc111119012-between-s12m-exon_expression.tab-and-gcf_002022765.2_c_virginica-3.0_genomic.gff" class="level2">
+<h2 class="anchored" data-anchor-id="compare-number-of-exons-in-gene-loc111119012-between-s12m-exon_expression.tab-and-gcf_002022765.2_c_virginica-3.0_genomic.gff">Compare number of exons in gene-LOC111119012 between <code>S12M-exon_expression.tab</code> and <code>GCF_002022765.2_C_virginica-3.0_genomic.gff</code></h2>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb14" style="background: #f1f3f5;"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb14-1"><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">awk</span> <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">-F</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"\t"</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">'$3 == "exon"'</span> /home/sam/gitrepos/ceabigr/genome-features/GCF_002022765.2_C_virginica-3.0_genomic.gff <span class="dt" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">\</span></span>
+<span id="cb14-2"><span class="kw" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">|</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">grep</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"gene=LOC111119012"</span> <span class="dt" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">\</span></span>
+<span id="cb14-3"><span class="kw" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">|</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">wc</span> <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">-l</span></span></code></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>268</code></pre>
+</div>
+</div>
+<p>Okay, they do <em>not</em> match, which points to an issue with <code>S12M-exon_expression.tab</code>! I generated that file in <a href="https://github.com/sr320/ceabigr/blob/main/code/19-exon-expression.Rmd"><code>19-exon-expression.Rmd</code></a> using the Ballgown exon file (<code>e_data.ctab</code>) file as a source. Let’s check that first before I re-examine <a href="https://github.com/sr320/ceabigr/blob/main/code/19-exon-expression.Rmd"><code>19-exon-expression.Rmd</code></a>.</p>
+</section>
+</section>
+<section id="compare-total-exons-in-e_data.ctab-and-gcf_002022765.2_c_virginica-3.0_genomic.gff" class="level1">
+<h1>Compare total exons in <code>e_data.ctab</code> and <code>GCF_002022765.2_C_virginica-3.0_genomic.gff</code></h1>
+<section id="count-exons-in-s12m-e_data.ctab." class="level2">
+<h2 class="anchored" data-anchor-id="count-exons-in-s12m-e_data.ctab.">Count exons in S12M <code>e_data.ctab</code>.</h2>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb16" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb16-1">S12M.edata.df <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">read.csv</span>(<span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"/home/sam/gitrepos/ceabigr/data/ballgown/S12M/e_data.ctab"</span>,</span>
+<span id="cb16-2">                          <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">sep =</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"</span><span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">\t</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"</span>)</span>
+<span id="cb16-3"></span>
+<span id="cb16-4"><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">str</span>(S12M.edata.df)</span></code></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>'data.frame':   352757 obs. of  12 variables:
+ $ e_id   : int  1 2 3 4 5 6 7 8 9 10 ...
+ $ chr    : chr  "NC_007175.2" "NC_007175.2" "NC_007175.2" "NC_007175.2" ...
+ $ strand : chr  "+" "+" "+" "+" ...
+ $ start  : int  1 1710 8250 2645 3430 3499 3578 3647 4897 5673 ...
+ $ end    : int  1623 2430 8997 3429 3495 3567 3646 4859 5589 5743 ...
+ $ rcount : int  3406 26400 15868 1336 52 53 41 2586 1190 38 ...
+ $ ucount : int  3406 26400 15868 1336 52 53 41 2585 1190 38 ...
+ $ mrcount: num  3406 26400 15868 1336 52 ...
+ $ cov    : num  232.4 4148.4 2338.9 181.2 68.7 ...
+ $ cov_sd : num  159.7 3089.9 2148.5 67.5 3.4 ...
+ $ mcov   : num  232.4 4148.4 2338.9 181.2 68.7 ...
+ $ mcov_sd: num  159.7 3089.9 2148.5 67.5 3.4 ...</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb18" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb18-1">exon.count.S12M.edata <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">nrow</span>(S12M.edata.df)</span>
+<span id="cb18-2"></span>
+<span id="cb18-3"><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">print</span>(exon.count.S12M.edata)</span></code></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] 352757</code></pre>
+</div>
+</div>
+</section>
+<section id="count-exons-in-gcf_002022765.2_c_virginica-3.0_genomic.gff" class="level2">
+<h2 class="anchored" data-anchor-id="count-exons-in-gcf_002022765.2_c_virginica-3.0_genomic.gff">Count exons in <code>GCF_002022765.2_C_virginica-3.0_genomic.gff</code></h2>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb20" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb20-1">exon.count.ncbi.gff <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">system</span>(<span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"awk -F '</span><span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">\t</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">' '$3 == </span><span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">\"</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">exon</span><span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">\"</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">' /home/sam/gitrepos/ceabigr/genome-features/GCF_002022765.2_C_virginica-3.0_genomic.gff | wc -l"</span>, <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">intern =</span> <span class="cn" style="color: #8f5902;
+background-color: null;
+font-style: inherit;">TRUE</span>)</span>
+<span id="cb20-2"></span>
+<span id="cb20-3"><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">print</span>(exon.count.ncbi.gff)</span></code></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] "731916"</code></pre>
+</div>
+</div>
+<p>Number of exons in <code>e_data.ctab</code>: 352757</p>
+<p>Number of exons in NCBI GFF: 731916</p>
+<p>So, we’re seeing that S12M <code>e_data.ctab</code> has ~50% of the total number of exons in the <a href="https://en.wikipedia.org/wiki/Eastern_oyster"><em>Crassostrea virginica</em> (Eastern oyster)</a> genome (as annotated by NCBI). This makes sense to me, as the data we’re using is RNAseq. So, not all genes are going to be expressed and, thus, we won’t have data for each gene/exon in the genome.</p>
+<p>Regardless, based off of the difference in exon counts of gene-LOC111119012 in <code>GCF_002022765.2_C_virginica-3.0_genomic.gff</code> and <code>S12M-exon_expression.tab</code>, I will revisit <a href="https://github.com/sr320/ceabigr/blob/main/code/19-exon-expression.Rmd"><code>19-exon-expression.Rmd</code></a> to see where things might have gone wrong.</p>
+
+
+</section>
+</section>
+
+ ]]></description>
+  <category>CEABIGR</category>
+  <category>Crassostrea viriginica</category>
+  <category>Eastern oyster</category>
+  <category>2023</category>
+  <guid>https://robertslab.github.io/sams-notebook/posts/2023/2023-12-06-Data-Investigation---Mysterious-Case-of-Excessive-Exons-in-CEABIGR/index.html</guid>
+  <pubDate>Wed, 06 Dec 2023 08:00:00 GMT</pubDate>
+</item>
 <item>
   <title>Daily Bits - December 2023</title>
   <dc:creator>Sam White</dc:creator>
@@ -10498,145 +10990,6 @@ font-style: inherit;">&gt;&gt;</span> system_path.log</span></code></pre></div>
   <category>Miscellaneous</category>
   <guid>https://robertslab.github.io/sams-notebook/posts/2023/2023-07-21-Reverse-Transcription---C.gigas-PolyIC-RNA/index.html</guid>
   <pubDate>Fri, 21 Jul 2023 19:05:00 GMT</pubDate>
-</item>
-<item>
-  <title>qPCR - C.gigas Ctenidia cDNA for Noah’s Heat-Mechanical Stress Project</title>
-  <dc:creator>Sam White</dc:creator>
-  <link>https://robertslab.github.io/sams-notebook/posts/2023/2023-07-21-qPCR---C.gigas-Ctenidia-cDNA-for-Noahs-Heat-Mechanical-Stress-Project/index.html</link>
-  <description><![CDATA[ 
-
-
-
-
-<p>Using <a href="https://robertslab.github.io/sams-notebook/posts/2023/2023-07-13-Reverse-Transcription---C.gigas-RNA-from-Noahs-Heat-Mechanical-Stress-Project/">cDNA from 20230713</a>, performed qPCR on the following primer sets selected by Steven:</p>
-<table class="table">
-<thead>
-<tr class="header">
-<th>SRID</th>
-<th>Primer_name</th>
-</tr>
-</thead>
-<tbody>
-<tr class="odd">
-<td>1409</td>
-<td>Cg_18s_R</td>
-</tr>
-<tr class="even">
-<td>1408</td>
-<td>Cg_18s_F</td>
-</tr>
-<tr class="odd">
-<td>1171</td>
-<td>Cg_Actin_408_R</td>
-</tr>
-<tr class="even">
-<td>1170</td>
-<td>Cg_Actin_306_F</td>
-</tr>
-<tr class="odd">
-<td>1161</td>
-<td>Cg_Def_R</td>
-</tr>
-<tr class="even">
-<td>1160</td>
-<td>Cg_Def_F</td>
-</tr>
-<tr class="odd">
-<td>256</td>
-<td>IL-17 internal RV</td>
-</tr>
-<tr class="even">
-<td>255</td>
-<td>IL-17 internal FW</td>
-</tr>
-</tbody>
-</table>
-<p>qPCR calcs:</p>
-<ul>
-<li><p><a href="https://docs.google.com/spreadsheets/d/1DXVSlQtKJsmwNEUbx-IOEdoOFy8FwFqmw8n7LW3pqgw/edit#gid=0">20230719 - qPCR Calcs Noah gigas ctenidia cDNA</a> (Google Sheet)</p>
-<ul>
-<li>Used same calculations from 20230719.</li>
-</ul></li>
-</ul>
-<p>Reactions were run on white, low-profile, 96-well qPCR plates (USA Scientific). A total of two plates were run. One was run on a CFC Connect (BioRad) and the other on a CFX96 (BioRad). See the qPCR Report in the RESULTS section below for cycling params, plate layouts, etc.</p>
-<p>All samples were run in <em>singular</em>. Normally duplicates/triplicates are run. However, due to time and sample constraints for Noah’s project/poster, samples were just run in <em>singular</em>. No template controls were run in duplicate.</p>
-<hr>
-<section id="results" class="level1">
-<h1>RESULTS</h1>
-<p>qPCR Results file (CSV)</p>
-<ul>
-<li><a href="https://owl.fish.washington.edu/Athaliana/qPCR_data/sam_2023-07-21_10-31-19_Connect-Quantification-Cq-Results.csv">sam_2023-07-21_10-31-19_Connect-Quantification-Cq-Results.csv</a></li>
-</ul>
-<p>qPCR Data file (QPCRD - CFX Maestro required)</p>
-<ul>
-<li><a href="https://owl.fish.washington.edu/scaphapoda/qPCR_data/cfx_connect_data/sam_2023-07-21_10-31-19_Connect.pcrd">cfx_connect_data/sam_2023-07-21_10-31-19_Connect.pcrd</a></li>
-</ul>
-<p>qPCR Report (PDF)</p>
-<ul>
-<li><a href="https://owl.fish.washington.edu/Athaliana/qPCR_data/qPCR_reports/sam_2023-07-21_10-31-19_Connect.pdf">sam_2023-07-21_10-31-19_Connect.pdf</a></li>
-</ul>
-<hr>
-<p>Here’s a brief summary of the qPCR data, based on looking at the amplification and melt curve plots below.</p>
-<p><code>18s</code>: No Template Controls (NTCs) show contamination in melt curve. Since this has <a href="https://robertslab.github.io/sams-notebook/posts/2023/2023-07-19-qPCR---C.gigas-Ctenidia-cDNA-for-Noahs-Heat-Mechanical-Stress-Project/">shown up previously</a> (notebook), I suspect my primer working stocks have become contaminated. Might not redo, if <code>actin</code> is acceptable for normalization.</p>
-<p><code>actin</code>: Melt curve looks okay - not ideal. Amplification looks good.</p>
-<p><code>defensin</code>: Melt curve looks good. Amplification comes up late, but looks good.</p>
-<p><code>IL-17</code>: Melt curve looks good. Amplification looks good. Sample <code>THM1</code> might be iffy, as it is an outlier in the <code>18s</code> primer set as well.</p>
-<hr>
-<section id="plots" class="level4">
-<h4 class="anchored" data-anchor-id="plots">PLOTS</h4>
-<p>NOTE: NTCs are denoted by <span style="color: red;">red</span> lines in all plots.</p>
-<table class="table">
-<colgroup>
-<col style="width: 2%">
-<col style="width: 3%">
-<col style="width: 46%">
-<col style="width: 47%">
-</colgroup>
-<thead>
-<tr class="header">
-<th>SRID</th>
-<th>Primer name</th>
-<th>Amplifcation Plot</th>
-<th>Melt Curve</th>
-</tr>
-</thead>
-<tbody>
-<tr class="odd">
-<td>1408/9</td>
-<td>Cg_18s</td>
-<td><img src="https://robertslab.github.io/sams-notebook/posts/2023/2023-07-21-qPCR---C.gigas-Ctenidia-cDNA-for-Noahs-Heat-Mechanical-Stress-Project/https:/owl.fish.washington.edu/Athaliana/qPCR_data/sam_2023-07-21_10-31-19_Connect-Cg_18s-amp-plots.png" class="img-fluid" alt="Cg_18s amplification plot"></td>
-<td><img src="https://robertslab.github.io/sams-notebook/posts/2023/2023-07-21-qPCR---C.gigas-Ctenidia-cDNA-for-Noahs-Heat-Mechanical-Stress-Project/https:/owl.fish.washington.edu/Athaliana/qPCR_data/sam_2023-07-21_10-31-19_Connect-Cg_18s-melt-plots.png" class="img-fluid" alt="Cg_18s amplification plot"></td>
-</tr>
-<tr class="even">
-<td>255/6</td>
-<td>Cg_IL17</td>
-<td><img src="https://robertslab.github.io/sams-notebook/posts/2023/2023-07-21-qPCR---C.gigas-Ctenidia-cDNA-for-Noahs-Heat-Mechanical-Stress-Project/https:/owl.fish.washington.edu/Athaliana/qPCR_data/sam_2023-07-21_10-31-19_Connect-Cg_IL17_internal-amp-plots.png" class="img-fluid" alt="Cg_IL17_internal amplification plot"></td>
-<td><img src="https://robertslab.github.io/sams-notebook/posts/2023/2023-07-21-qPCR---C.gigas-Ctenidia-cDNA-for-Noahs-Heat-Mechanical-Stress-Project/https:/owl.fish.washington.edu/Athaliana/qPCR_data/sam_2023-07-21_10-31-19_Connect-Cg_IL17_internal-melt-plots.png" class="img-fluid" alt="Cg_IL17_internal amplification plot"></td>
-</tr>
-<tr class="odd">
-<td>1170/1</td>
-<td>Cg_actin</td>
-<td><img src="https://robertslab.github.io/sams-notebook/posts/2023/2023-07-21-qPCR---C.gigas-Ctenidia-cDNA-for-Noahs-Heat-Mechanical-Stress-Project/https:/owl.fish.washington.edu/Athaliana/qPCR_data/sam_2023-07-21_10-31-19_Connect-Cg_actin-amp-plots.png" class="img-fluid" alt="Cg_actin amplification plot"></td>
-<td><img src="https://robertslab.github.io/sams-notebook/posts/2023/2023-07-21-qPCR---C.gigas-Ctenidia-cDNA-for-Noahs-Heat-Mechanical-Stress-Project/https:/owl.fish.washington.edu/Athaliana/qPCR_data/sam_2023-07-21_10-31-19_Connect-Cg_actin-melt-plots.png" class="img-fluid" alt="Cg_actin amplification plot"></td>
-</tr>
-<tr class="even">
-<td>1160/1</td>
-<td>Cg_defensin</td>
-<td><img src="https://robertslab.github.io/sams-notebook/posts/2023/2023-07-21-qPCR---C.gigas-Ctenidia-cDNA-for-Noahs-Heat-Mechanical-Stress-Project/https:/owl.fish.washington.edu/Athaliana/qPCR_data/sam_2023-07-21_10-31-19_Connect-Cg_defensin-amp-plots.png" class="img-fluid" alt="Cg_defensin amplification plot"></td>
-<td><img src="https://robertslab.github.io/sams-notebook/posts/2023/2023-07-21-qPCR---C.gigas-Ctenidia-cDNA-for-Noahs-Heat-Mechanical-Stress-Project/https:/owl.fish.washington.edu/Athaliana/qPCR_data/sam_2023-07-21_10-31-19_Connect-Cg_defensin-melt-plots.png" class="img-fluid" alt="Cg_defensin amplification plot"></td>
-</tr>
-</tbody>
-</table>
-
-
-</section>
-</section>
-
- ]]></description>
-  <category>2023</category>
-  <category>Miscellaneous</category>
-  <guid>https://robertslab.github.io/sams-notebook/posts/2023/2023-07-21-qPCR---C.gigas-Ctenidia-cDNA-for-Noahs-Heat-Mechanical-Stress-Project/index.html</guid>
-  <pubDate>Fri, 21 Jul 2023 18:04:00 GMT</pubDate>
 </item>
 </channel>
 </rss>
