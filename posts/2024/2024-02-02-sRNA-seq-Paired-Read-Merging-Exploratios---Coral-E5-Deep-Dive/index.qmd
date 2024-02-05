@@ -48,6 +48,7 @@ echo "## Data URL"
 echo 'export raw_reads_url="https://owl.fish.washington.edu/nightingales/P_evermanni/30-852430235/"'
 
 echo "# Data directories"
+echo 'export fastqc_out_dir="./fastqc"'
 echo 'export raw_reads_dir="./raw"'
 echo 'export trimmed_fastqs_dir="./trimmed-reads"'
 echo ""
@@ -65,6 +66,7 @@ echo "# Paths to programs"
 echo 'export programs_dir="/home/shared"'
 echo 'export bbmerge="${programs_dir}/bbmap-39.06/bbmerge.sh"'
 echo 'export fastp="${programs_dir}/fastp"'
+echo 'export fastqc="${programs_dir}/FastQC-0.12.1/fastqc"'
 echo ""
 
 echo "# Set number of CPUs to use"
@@ -151,7 +153,9 @@ echo ""
 
 [`fastp`](https://github.com/OpenGene/fastp) has many built-in functionality, including before/after trimming plots, and read 1 and read 2 merging.
 
-### PolyG Trimming Only
+### Paired-end Trimming
+
+#### PolyG Trimming Only
 ```{bash fastp-polyG-only, engine='bash', eval=TRUE}
 # Load bash variables into memory
 source .bashvars
@@ -171,7 +175,7 @@ source .bashvars
 
 ```
 
-### Adapters & PolyG Trimming
+#### Adapters & PolyG Trimming
 ```{bash fastp-adapters-and-polyg, engine='bash', eval=TRUE}
 # Load bash variables into memory
 source .bashvars
@@ -190,11 +194,11 @@ source .bashvars
 --report_title "fastp-adapters-polyG-only"
 ```
 
-### PolyG Trimming Max Length 31
+#### PolyG Trimming Max Length 31
 
 This can't be run because we know from the polyG only trimming, that most read lengths are >89bp. As such, it would end up discarding all the reads...
 
-### Adapters & PolyG Trimming Max Length 31
+#### Adapters & PolyG Trimming Max Length 31
 ```{bash fastp-adapters-and-polyg, engine='bash', eval=TRUE}
 # Load bash variables into memory
 source .bashvars
@@ -202,8 +206,8 @@ source .bashvars
 "${fastp}" \
 --in1 ./raw/sRNA-POR-79-S1-TP2_R1_001.fastq.gz \
 --in2 ./raw/sRNA-POR-79-S1-TP2_R2_001.fastq.gz \
---out1 ./trimmed-reads/fastp-adapters-polyG.R1.fq.gz \
---out2 ./trimmed-reads/fastp-adapters-polyG.R2.fq.gz \
+--out1 ./trimmed-reads/fastp-31bp-adapters-polyG.R1.fq.gz \
+--out2 ./trimmed-reads/fastp-31bp-adapters-polyG.R2.fq.gz \
 --adapter_fasta NEB-adapters.fasta \
 --trim_poly_g \
 --overlap_len_require 17 \
@@ -214,7 +218,7 @@ source .bashvars
 --report_title "fastp-31bp-adapters-polyG-only"
 ```
 
-### Adapters & PolyG Trimming Max Length 31 With Merge
+#### Adapters & PolyG Trimming Max Length 31 With Merge
 ```{bash fastp-adapters-and-polyg, engine='bash', eval=TRUE}
 # Load bash variables into memory
 source .bashvars
@@ -229,26 +233,103 @@ source .bashvars
 --merge \
 --merged_out ./trimmed-reads/fastp-31bp-merged-adapters-polyG.fq.gz \
 --thread ${threads} \
---html "fastp-31bp-merge-adapters-polyG.html" \
---json "fastp-31bp-merge-adapters-polyG.json" \
---report_title "fastp-31bp-adapters-polyG-only"
+--html "fastp-31bp-merged-adapters-polyG.html" \
+--json "fastp-31bp-merged-adapters-polyG.json" \
+--report_title "fastp-31bp-merged-adapters-polyG"
 ```
 
-### Adapters & PolyG Trimming
-```{bash fastp-adapters-and-polyg, engine='bash', eval=TRUE}
+### Single-end Trimming
+
+#### Auto-adapters & PolyG Trimming
+```{bash fastp-R1-auto_adapters-and-polyg, engine='bash', eval=TRUE}
 # Load bash variables into memory
 source .bashvars
 
 "${fastp}" \
 --in1 ./raw/sRNA-POR-79-S1-TP2_R1_001.fastq.gz \
---in2 ./raw/sRNA-POR-79-S1-TP2_R2_001.fastq.gz \
---adapter_fasta NEB-adapters.fasta \
+--out1 ./trimmed-reads/fastp-R1-auto_adapters-polyG.fq.gz \
 --trim_poly_g \
---overlap_len_require 17 \
---merge \
---merged_out ./trimmed-reads/fastp-merged-adapters-polyG.fq.gz \
 --thread ${threads} \
---html "fastp-merge-adapters-polyG.html" \
---json "fastp-merge-adapters-polyG.json" \
---report_title "fastp-adapters-polyG-only"
+--html "fastp-R1-auto_adapters-polyG.html" \
+--json "fastp-R1-auto_adapters-polyG.json" \
+--report_title "fastp-R1-auto_adapters-polyG"
+```
+#### Auto-adapters & PolyG Trimming Max Length 31
+```{bash fastp-R1-31bp-auto_adapters-and-polyg, engine='bash', eval=TRUE}
+# Load bash variables into memory
+source .bashvars
+
+"${fastp}" \
+--in1 ./raw/sRNA-POR-79-S1-TP2_R1_001.fastq.gz \
+--out1 ./trimmed-reads/fastp-R1-31bp-auto_adapters-polyG.fq.gz \
+--trim_poly_g \
+--length_limit 31 \
+--thread ${threads} \
+--html "fastp-R1-31bp-auto_adapters-polyG.html" \
+--json "fastp-R1-31bbp-auto_adapters-polyG.json" \
+--report_title "fastp-31bp-R1-auto_adapters-polyG"
+```
+
+## FastQC
+```{r , engine='bash', eval=TRUE}
+# Load bash variables into memory
+source .bashvars
+
+mkdir --parents "./fastqc"
+
+# Populate array with FastQ files
+fastq_array=(./trimmed-reads/*.fq.gz)
+
+# Pass array contents to new variable
+fastqc_list=$(echo "${fastq_array[*]}")
+
+# Run FastQC
+# NOTE: Do NOT quote ${fastqc_list}
+${fastqc} \
+--threads ${threads} \
+--outdir ${fastqc_out_dir} \
+${fastqc_list}
+```
+
+## FastQC
+```{r , engine='bash', eval=TRUE}
+# Load bash variables into memory
+source .bashvars
+
+mkdir --parents "./fastqc"
+
+# Populate array with FastQ files
+fastq_array=(./trimmed-reads/*.fq.gz)
+
+# Pass array contents to new variable
+fastqc_list=$(echo "${fastq_array[*]}")
+
+# Run FastQC
+# NOTE: Do NOT quote ${fastqc_list}
+${fastqc} \
+--threads ${threads} \
+--outdir ${fastqc_out_dir} \
+${fastqc_list}
+```
+
+## MultiQC
+
+```{r , engine='bash', eval=TRUE}
+# Load bash variables into memory
+source .bashvars
+
+mkdir --parents "./fastqc"
+
+# Populate array with FastQ files
+fastq_array=(./trimmed-reads/*.fq.gz)
+
+# Pass array contents to new variable
+fastqc_list=$(echo "${fastq_array[*]}")
+
+# Run FastQC
+# NOTE: Do NOT quote ${fastqc_list}
+${fastqc} \
+--threads ${threads} \
+--outdir ${fastqc_out_dir} \
+${fastqc_list}
 ```
