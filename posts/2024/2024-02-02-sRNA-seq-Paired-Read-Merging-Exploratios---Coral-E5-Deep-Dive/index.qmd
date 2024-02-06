@@ -14,10 +14,26 @@ categories:
   - merge
   - bbmerge
   - fastp
+bibliography: references.bib
 ---
 
 # INTRO
 
+Our previous sRNA-seq data analysis for this project revealed that the R2 reads didn't seem to match with anything (specifically, no clade assignments when using [miRTrace](https://github.com/friedlanderlab/mirtrace)), which seemed odd. Since the insert sizes should be small for these libraries and the read lengths kind of long (150bp PE), we'd expect the resulting reads to overlap. And, in turn, R2 reads should be reverse complements of R1 reads (and vice versa). After discussing things with Azenta (company which performed library construction and sequencing), they indicated that their in-house pipeline discards the R2 reads because they come from the opposite strand and most miRNAs are found on the R1 strand.
+
+It seemed like a bit of waste to discard all the data that exists in the R2 reads, so I wanted to explore merging the reads to see if we could preserve the R2 data. Additionally, I came across [XICRA](https://github.com/HCGB-IGTP/XICRA) (GitHub repo) [@sanchezherrero2021] which describes using paired-end sequence data to identify miRNA isoforms (isomiRs), suggesting that we should try to retain the R2 reads to improve our miRNA analyses.
+
+I decided to explore merging/trimming using two different sets of software:
+
+-   [BBMerge](https://jgi.doe.gov/data-and-tools/software-tools/bbtools/bb-tools-user-guide/bbmerge-guide/) [@bushnell2017]
+
+-   [`fastp`](https://github.com/OpenGene/fastp)[@chen2023; @chen2018]
+
+[BBMerge](https://jgi.doe.gov/data-and-tools/software-tools/bbtools/bb-tools-user-guide/bbmerge-guide/) seemed like a good tool, as it's specifically designed to handle merging of Illumina PE sequencing reads. Plus, it's part of the [BBTols suite](https://sourceforge.net/projects/bbmap/), which has a number of other tools, and packages like this usually have nice cross-compatibility between the different tools.
+
+[`fastp`](https://github.com/OpenGene/fastp) has both trimming _and_ merging built into the tools itself, which I hadn't previously realized (but, had never explored, since this isn't how we usually work with PE sequencing data). I was simply going to use [`fastp`](https://github.com/OpenGene/fastp) for trimming, as it's the trimmer thta I'm most familiar with. I honestly thought I'd trim with [`fastp`](https://github.com/OpenGene/fastp), and then merge with [BBMerge](https://jgi.doe.gov/data-and-tools/software-tools/bbtools/bb-tools-user-guide/bbmerge-guide/), but the fact that [`fastp`](https://github.com/OpenGene/fastp) had it built-in could make my life easier.
+
+So, with all of that out of the way, let's start the analysis!
 
 # SETUP
 
@@ -32,8 +48,6 @@ knitr::opts_chunk$set(
   width = 1000         # adds scroll bar
 )
 ```
-
-
 
 ## Create a Bash variables file
 
@@ -157,6 +171,7 @@ echo ""
 ### Paired-end Trimming
 
 #### PolyG Trimming Only
+
 ```{bash fastp-polyG-only, engine='bash', eval=TRUE}
 # Load bash variables into memory
 source .bashvars
@@ -177,6 +192,7 @@ source .bashvars
 ```
 
 #### Adapters & PolyG Trimming
+
 ```{bash fastp-adapters-and-polyg, engine='bash', eval=TRUE}
 # Load bash variables into memory
 source .bashvars
@@ -197,30 +213,32 @@ source .bashvars
 
 #### PolyG Trimming Max Length 31
 
-This can't be run because we know from the polyG only trimming, that most read lengths are >89bp. As such, it would end up discarding all the reads...
+This can't be run because we know from the polyG only trimming, that most read lengths are \>89bp. As such, it would end up discarding all the reads...
 
 #### Adapters & PolyG Trimming Max Length 31
-```{bash fastp-adapters-and-polyg, engine='bash', eval=TRUE}
+
+```{bash fastp-adapters-polyG-31bp, engine='bash', eval=TRUE}
 # Load bash variables into memory
 source .bashvars
 
 "${fastp}" \
 --in1 ./raw/sRNA-POR-79-S1-TP2_R1_001.fastq.gz \
 --in2 ./raw/sRNA-POR-79-S1-TP2_R2_001.fastq.gz \
---out1 ./trimmed-reads/fastp-31bp-adapters-polyG.R1.fq.gz \
---out2 ./trimmed-reads/fastp-31bp-adapters-polyG.R2.fq.gz \
+--out1 ./trimmed-reads/fastp-adapters-polyG-31bp.R1.fq.gz \
+--out2 ./trimmed-reads/fastp-adapters-polyG-31bp.R2.fq.gz \
 --adapter_fasta NEB-adapters.fasta \
 --trim_poly_g \
 --overlap_len_require 17 \
 --length_limit 31 \
 --thread ${threads} \
---html "fastp-31bp-adapters-polyG.html" \
---json "fastp-31bp-adapters-polyG.json" \
---report_title "fastp-31bp-adapters-polyG-only"
+--html "fastp-adapters-polyG-31bp.html" \
+--json "fastp-adapters-polyG-31bp.json" \
+--report_title "fastp-adapters-polyG-31bp"
 ```
 
 #### Adapters & PolyG Trimming Max Length 31 With Merge
-```{bash fastp-adapters-and-polyg, engine='bash', eval=TRUE}
+
+```{bash fastp-adapters-polyG-31bp-merged, engine='bash', eval=TRUE}
 # Load bash variables into memory
 source .bashvars
 
@@ -232,16 +250,17 @@ source .bashvars
 --overlap_len_require 17 \
 --length_limit 31 \
 --merge \
---merged_out ./trimmed-reads/fastp-31bp-merged-adapters-polyG.fq.gz \
+--merged_out ./trimmed-reads/fastp-adapters-polyG-31bp-merged.fq.gz \
 --thread ${threads} \
---html "fastp-31bp-merged-adapters-polyG.html" \
---json "fastp-31bp-merged-adapters-polyG.json" \
---report_title "fastp-31bp-merged-adapters-polyG"
+--html "fastp-adapters-polyG-31bp-merged.html" \
+--json "fastp-adapters-polyG-31bp-merged.json" \
+--report_title "fastp-adapters-polyG-31bp-merged"
 ```
 
-### Single-end Trimming
+### Single-end Trimming - R1 Reads Only
 
 #### Auto-adapters & PolyG Trimming
+
 ```{bash fastp-R1-auto_adapters-and-polyg, engine='bash', eval=TRUE}
 # Load bash variables into memory
 source .bashvars
@@ -256,9 +275,9 @@ source .bashvars
 --report_title "fastp-R1-auto_adapters-polyG"
 ```
 
-
 #### Auto-adapters & PolyG Trimming Max Length 31
-```{bash fastp-R1-31bp-auto_adapters-and-polyg, engine='bash', eval=TRUE}
+
+```{bash fastp-R1-auto_adapters-polyG-31bp, engine='bash', eval=TRUE}
 # Load bash variables into memory
 source .bashvars
 
@@ -268,15 +287,16 @@ source .bashvars
 --trim_poly_g \
 --length_limit 31 \
 --thread ${threads} \
---html "fastp-R1-31bp-auto_adapters-polyG.html" \
---json "fastp-R1-31bbp-auto_adapters-polyG.json" \
---report_title "fastp-31bp-R1-auto_adapters-polyG"
+--html "fastp-R1-auto_adapters-polyG-31bp.html" \
+--json "fastp-R1-auto_adapters-polyG-31bp.json" \
+--report_title "fastp-R1-auto_adapters-polyG-31bp"
 ```
 
 ## BBMerge
 
 ### Raw reads
-```{r multiqc, engine='bash', eval=TRUE}
+
+```{r bbmerge-raw-reads, engine='bash', eval=TRUE}
 # Load bash variables into memory
 source .bashvars
 ${bbmerge} \
@@ -288,7 +308,8 @@ out=./trimmed-reads/sRNA-POR-79-S1-TP2-raw-bbmerge.fq.gz
 ```
 
 ### Trimmed PolyG Only
-```{r multiqc, engine='bash', eval=TRUE}
+
+```{r bbmerge-trimmed-polyg-only, engine='bash', eval=TRUE}
 # Load bash variables into memory
 source .bashvars
 
@@ -300,7 +321,36 @@ mininsert=17 \
 out=./trimmed-reads/sRNA-POR-79-S1-TP2-fastp-polyG_only-bbmerge.fq.gz
 ```
 
+### Trimmed Adapters & PolyG
+
+```{r bbmerge-trimmed-adapters-and-polyG, engine='bash', eval=TRUE}
+# Load bash variables into memory
+source .bashvars
+
+${bbmerge} \
+in1=./trimmed-reads/fastp-adapters-polyG.R1.fq.gz \
+in2=./trimmed-reads/fastp-adapters-polyG.R2.fq.gz \
+adapters=./NEB-adapters.fasta \
+mininsert=17 \
+out=./trimmed-reads/sRNA-POR-79-S1-TP2-fastp-adapters-polyG-bbmerge.fq.gz
+```
+
+### Trimmed Adapters & PolyG Max Length 31bp
+
+```{r bbmerge-trimmed-adapters-polyG-31bp, engine='bash', eval=TRUE}
+# Load bash variables into memory
+source .bashvars
+
+${bbmerge} \
+in1=./trimmed-reads/fastp-adapters-polyG-31bp.R1.fq.gz \
+in2=./trimmed-reads/fastp-adapters-polyG-31bp.R2.fq.gz \
+adapters=./NEB-adapters.fasta \
+mininsert=17 \
+out=./trimmed-reads/sRNA-POR-79-S1-TP2-fastp-adapters-polyG-31bp-bbmerge.fq.gz
+```
+
 ## FastQC
+
 ```{r fastqc, engine='bash', eval=TRUE}
 # Load bash variables into memory
 source .bashvars
@@ -315,10 +365,10 @@ fastqc_list=$(echo "${fastq_array[*]}")
 # NOTE: Do NOT quote ${fastqc_list}
 ${fastqc} \
 --threads ${threads} \
+--quiet \
 --outdir ./ \
 ${fastqc_list}
 ```
-
 
 ## MultiQC
 
@@ -328,5 +378,3 @@ source .bashvars
 
 ${multiqc} .
 ```
-
-
