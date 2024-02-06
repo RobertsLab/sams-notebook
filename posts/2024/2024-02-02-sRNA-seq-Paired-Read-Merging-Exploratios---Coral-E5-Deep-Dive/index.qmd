@@ -67,6 +67,7 @@ echo 'export programs_dir="/home/shared"'
 echo 'export bbmerge="${programs_dir}/bbmap-39.06/bbmerge.sh"'
 echo 'export fastp="${programs_dir}/fastp"'
 echo 'export fastqc="${programs_dir}/FastQC-0.12.1/fastqc"'
+echo 'export multiqc=/home/sam/programs/mambaforge/bin/multiqc'
 echo ""
 
 echo "# Set number of CPUs to use"
@@ -254,6 +255,8 @@ source .bashvars
 --json "fastp-R1-auto_adapters-polyG.json" \
 --report_title "fastp-R1-auto_adapters-polyG"
 ```
+
+
 #### Auto-adapters & PolyG Trimming Max Length 31
 ```{bash fastp-R1-31bp-auto_adapters-and-polyg, engine='bash', eval=TRUE}
 # Load bash variables into memory
@@ -271,11 +274,9 @@ source .bashvars
 ```
 
 ## FastQC
-```{r , engine='bash', eval=TRUE}
+```{r fastqc, engine='bash', eval=TRUE}
 # Load bash variables into memory
 source .bashvars
-
-mkdir --parents "./fastqc"
 
 # Populate array with FastQ files
 fastq_array=(./trimmed-reads/*.fq.gz)
@@ -287,49 +288,32 @@ fastqc_list=$(echo "${fastq_array[*]}")
 # NOTE: Do NOT quote ${fastqc_list}
 ${fastqc} \
 --threads ${threads} \
---outdir ${fastqc_out_dir} \
+--outdir ./ \
 ${fastqc_list}
 ```
 
-## FastQC
-```{r , engine='bash', eval=TRUE}
-# Load bash variables into memory
-source .bashvars
-
-mkdir --parents "./fastqc"
-
-# Populate array with FastQ files
-fastq_array=(./trimmed-reads/*.fq.gz)
-
-# Pass array contents to new variable
-fastqc_list=$(echo "${fastq_array[*]}")
-
-# Run FastQC
-# NOTE: Do NOT quote ${fastqc_list}
-${fastqc} \
---threads ${threads} \
---outdir ${fastqc_out_dir} \
-${fastqc_list}
-```
 
 ## MultiQC
 
-```{r , engine='bash', eval=TRUE}
+```{r multiqc, engine='bash', eval=TRUE}
 # Load bash variables into memory
 source .bashvars
 
-mkdir --parents "./fastqc"
+${multiqc} .
+```
 
-# Populate array with FastQ files
-fastq_array=(./trimmed-reads/*.fq.gz)
 
-# Pass array contents to new variable
-fastqc_list=$(echo "${fastq_array[*]}")
+## BBMerge
 
-# Run FastQC
-# NOTE: Do NOT quote ${fastqc_list}
-${fastqc} \
---threads ${threads} \
---outdir ${fastqc_out_dir} \
-${fastqc_list}
+### Raw reads
+```{r multiqc, engine='bash', eval=TRUE}
+# Load bash variables into memory
+source .bashvars
+${bbmerge} \
+in1=./raw/sRNA-POR-79-S1-TP2_R1_001.fastq.gz \
+in2=./raw/sRNA-POR-79-S1-TP2_R2_001.fastq.gz \
+adapters=./NEB-adapters.fasta \
+mininsert=17 \
+out=sRNA-POR-79-S1-TP2-raw-bbmerge.fq.gz \
+ihist=ihst.txt
 ```
