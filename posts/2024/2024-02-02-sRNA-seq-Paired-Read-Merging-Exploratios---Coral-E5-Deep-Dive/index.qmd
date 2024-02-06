@@ -33,7 +33,7 @@ I decided to explore merging/trimming using two different sets of software:
 
 [`fastp`](https://github.com/OpenGene/fastp) has both trimming _and_ merging built into the tools itself, which I hadn't previously realized (but, had never explored, since this isn't how we usually work with PE sequencing data). I was simply going to use [`fastp`](https://github.com/OpenGene/fastp) for trimming, as it's the trimmer thta I'm most familiar with. I honestly thought I'd trim with [`fastp`](https://github.com/OpenGene/fastp), and then merge with [BBMerge](https://jgi.doe.gov/data-and-tools/software-tools/bbtools/bb-tools-user-guide/bbmerge-guide/), but the fact that [`fastp`](https://github.com/OpenGene/fastp) had it built-in could make my life easier.
 
-So, with all of that out of the way, let's start the analysis!
+So, with all of that out of the way, let's start the analysis. This will only use a single set of PE sequencing reads, as an initial exploration. We'll decide on the best approach and then use that approach to run all the sequencing data through the chosen "pipeline."
 
 # SETUP
 
@@ -166,11 +166,18 @@ echo ""
 
 ## [`fastp`](https://github.com/OpenGene/fastp)
 
-[`fastp`](https://github.com/OpenGene/fastp) has many built-in functionality, including before/after trimming plots, and read 1 and read 2 merging.
+[`fastp`](https://github.com/OpenGene/fastp) has many built-in functions, including before/after trimming plots, and read 1 and read 2 merging.
+
+::: callout-note
+Setting `--overlap_len_require 17` forces [`fastp`](https://github.com/OpenGene/fastp) to look at reads starting at base 17, instead of the default 30 and results in more accurate analyses, since these are sRNA-seq libraries where the expected/desired read lengths will be 17 - 30bp in length.
+:::
 
 ### Paired-end Trimming
 
+The paired end trimming will examine how some of the trimming options impact sequencing read lengths, quality, and subsequent merging.
+
 #### PolyG Trimming Only
+
 
 ```{bash fastp-polyG-only, engine='bash', eval=TRUE}
 # Load bash variables into memory
@@ -213,9 +220,13 @@ source .bashvars
 
 #### PolyG Trimming Max Length 31
 
-This can't be run because we know from the polyG only trimming, that most read lengths are \>89bp. As such, it would end up discarding all the reads...
+This can't be run because we know from the polyG only trimming, that most read lengths are \>89bp. As such, it will end up discarding all the reads...
 
 #### Adapters & PolyG Trimming Max Length 31
+
+::: callout-note
+The max length is based on the `fastp` insert peak size from the adapter and polyG trimming results, and previous evaluation of mean read lengths via [`FastQC`](https://www.bioinformatics.babraham.ac.uk/projects/fastqc/) and [`MultiQC`](https://multiqc.info/).
+:::
 
 ```{bash fastp-adapters-polyG-31bp, engine='bash', eval=TRUE}
 # Load bash variables into memory
@@ -238,6 +249,8 @@ source .bashvars
 
 #### Adapters & PolyG Trimming Max Length 31 With Merge
 
+This will attempt to merge the R1 and R2 reads.
+
 ```{bash fastp-adapters-polyG-31bp-merged, engine='bash', eval=TRUE}
 # Load bash variables into memory
 source .bashvars
@@ -259,6 +272,8 @@ source .bashvars
 
 ### Single-end Trimming - R1 Reads Only
 
+Using just the R1 reads, per Azenta's recommendation.
+
 #### Auto-adapters & PolyG Trimming
 
 ```{bash fastp-R1-auto_adapters-and-polyg, engine='bash', eval=TRUE}
@@ -276,6 +291,10 @@ source .bashvars
 ```
 
 #### Auto-adapters & PolyG Trimming Max Length 31
+
+::: callout-note
+The max length is based on the `fastp` insert peak size from the adapter and polyG trimming results, and previous evaluation of mean read lengths via [`FastQC`](https://www.bioinformatics.babraham.ac.uk/projects/fastqc/) and [`MultiQC`](https://multiqc.info/).
+:::
 
 ```{bash fastp-R1-auto_adapters-polyG-31bp, engine='bash', eval=TRUE}
 # Load bash variables into memory
@@ -296,6 +315,8 @@ source .bashvars
 
 ### Raw reads
 
+[BBMerge](https://jgi.doe.gov/data-and-tools/software-tools/bbtools/bb-tools-user-guide/bbmerge-guide/) documentations actually indicates that merging performs best using _raw_, untrimmed reads, so we'll try that out first...
+
 ```{r bbmerge-raw-reads, engine='bash', eval=TRUE}
 # Load bash variables into memory
 source .bashvars
@@ -309,6 +330,10 @@ out=./trimmed-reads/sRNA-POR-79-S1-TP2-raw-bbmerge.fq.gz
 
 ### Trimmed PolyG Only
 
+Running [BBMerge](https://jgi.doe.gov/data-and-tools/software-tools/bbtools/bb-tools-user-guide/bbmerge-guide/) on just raw reads yielded poor results (>99% of reads could _not_ be merged). Additionally, the average insert size was determined to be 131.5bp, which is not going to be useful for sRNA-seq.
+
+I know that there's a very large stretch of polyG sequence in the reads (likely due to the small insert size and "long" read length - Gs get added as a "placeholder" base each cycle that exceeds the insert size), so let's try merging reads _after_ polyG sequence has been trimmed.
+
 ```{r bbmerge-trimmed-polyg-only, engine='bash', eval=TRUE}
 # Load bash variables into memory
 source .bashvars
@@ -320,6 +345,9 @@ adapters=./NEB-adapters.fasta \
 mininsert=17 \
 out=./trimmed-reads/sRNA-POR-79-S1-TP2-fastp-polyG_only-bbmerge.fq.gz
 ```
+
+The results from using polyG-trimmed reads are certainly much better than just merging raw reads (12,649,853 reads could be joined this time). Mean insert size is now determined to be 30bp, which is what we might expect. However, the insert range (17 - 289) is still concerning, as reads >30bp likely aren't usable. Adapter sequences are still present, which are certainly contributing to some of the inability to merge, as well as the large read lengths. So, let's try merging reads that have been trimmed of both polyG and adapter sequences.
+
 
 ### Trimmed Adapters & PolyG
 
@@ -335,6 +363,10 @@ mininsert=17 \
 out=./trimmed-reads/sRNA-POR-79-S1-TP2-fastp-adapters-polyG-bbmerge.fq.gz
 ```
 
+Well, trimming adapters certainly made a difference, as well! Now, 15,533,284 reads get joined (as opposed to 12,649,853 when using just polyG-trimmed reads). The average insert size changes very little, but, oddly, the insert range remains the same (17 - 289).
+
+For kicks, let's throw the reads that have been trimmed to 31bp into [BBMerge](https://jgi.doe.gov/data-and-tools/software-tools/bbtools/bb-tools-user-guide/bbmerge-guide/) and see what happens.
+
 ### Trimmed Adapters & PolyG Max Length 31bp
 
 ```{r bbmerge-trimmed-adapters-polyG-31bp, engine='bash', eval=TRUE}
@@ -348,6 +380,10 @@ adapters=./NEB-adapters.fasta \
 mininsert=17 \
 out=./trimmed-reads/sRNA-POR-79-S1-TP2-fastp-adapters-polyG-31bp-bbmerge.fq.gz
 ```
+
+This resulted in 12,346,728 reads being joined. This is on par with the 12,649,853 reads joined when using just polyG-trimmed reads. Additionally, we see the average insert size is 26.3bp, which is even more inline with what we'd expect for miRNAs (22-24bp), and the insert range is also inline with what we'd expect for these libraries (17 - 35bp). However, this is about 20% fewer reads than the 15,533,284 reads when using polyG- and adapter-trimmed reads.
+
+Maybe I'll test out the subsequent downstream analyses using these different merging results...
 
 ## FastQC
 
@@ -378,3 +414,8 @@ source .bashvars
 
 ${multiqc} .
 ```
+
+
+Check out the [`MultiQC`](https://multiqc.info/) results here (HTML):
+
+- [MultiQC Report](./multiqc_report.html)
