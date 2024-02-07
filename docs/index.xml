@@ -10,7 +10,1572 @@
 <atom:link href="https://robertslab.github.io/sams-notebook/index.xml" rel="self" type="application/rss+xml"/>
 <description></description>
 <generator>quarto-1.3.450</generator>
-<lastBuildDate>Wed, 24 Jan 2024 08:00:00 GMT</lastBuildDate>
+<lastBuildDate>Fri, 02 Feb 2024 08:00:00 GMT</lastBuildDate>
+<item>
+  <title>sRNA-seq Paired Read Merging Exploratios - Coral E5 Deep Dive</title>
+  <dc:creator>Sam White</dc:creator>
+  <link>https://robertslab.github.io/sams-notebook/posts/2024/2024-02-02-sRNA-seq-Paired-Read-Merging-Exploratios---Coral-E5-Deep-Dive/index.html</link>
+  <description><![CDATA[ 
+
+
+
+
+<section id="intro" class="level1">
+<h1>INTRO</h1>
+<p>Our previous sRNA-seq data analysis for this project revealed that the R2 reads didn’t seem to match with anything (specifically, no clade assignments when using <a href="https://github.com/friedlanderlab/mirtrace">miRTrace</a>), which seemed odd. Since the insert sizes should be small for these libraries and the read lengths kind of long (150bp PE), we’d expect the resulting reads to overlap. And, in turn, R2 reads should be reverse complements of R1 reads (and vice versa). After discussing things with Azenta (company which performed library construction and sequencing), they indicated that their in-house pipeline discards the R2 reads because they come from the opposite strand and most miRNAs are found on the R1 strand.</p>
+<p>It seemed like a bit of waste to discard all the data that exists in the R2 reads, so I wanted to explore merging the reads to see if we could preserve the R2 data. Additionally, I came across <a href="https://github.com/HCGB-IGTP/XICRA">XICRA</a> (GitHub repo) <span class="citation" data-cites="sanchezherrero2021">(Sanchez Herrero et al. 2021)</span> which describes using paired-end sequence data to identify miRNA isoforms (isomiRs), suggesting that we should try to retain the R2 reads to improve our miRNA analyses.</p>
+<p>I decided to explore merging/trimming using two different sets of software:</p>
+<ul>
+<li><p><a href="https://jgi.doe.gov/data-and-tools/software-tools/bbtools/bb-tools-user-guide/bbmerge-guide/">BBMerge</a> <span class="citation" data-cites="bushnell2017">(Bushnell, Rood, and Singer 2017)</span></p></li>
+<li><p><a href="https://github.com/OpenGene/fastp"><code>fastp</code></a><span class="citation" data-cites="chen2023 chen2018">(Chen 2023; Chen et al. 2018)</span></p></li>
+</ul>
+<p><a href="https://jgi.doe.gov/data-and-tools/software-tools/bbtools/bb-tools-user-guide/bbmerge-guide/">BBMerge</a> seemed like a good tool, as it’s specifically designed to handle merging of Illumina PE sequencing reads. Plus, it’s part of the <a href="https://sourceforge.net/projects/bbmap/">BBTols suite</a>, which has a number of other tools, and packages like this usually have nice cross-compatibility between the different tools.</p>
+<p><a href="https://github.com/OpenGene/fastp"><code>fastp</code></a> has both trimming <em>and</em> merging built into the tools itself, which I hadn’t previously realized (but, had never explored, since this isn’t how we usually work with PE sequencing data). I was simply going to use <a href="https://github.com/OpenGene/fastp"><code>fastp</code></a> for trimming, as it’s the trimmer thta I’m most familiar with. I honestly thought I’d trim with <a href="https://github.com/OpenGene/fastp"><code>fastp</code></a>, and then merge with <a href="https://jgi.doe.gov/data-and-tools/software-tools/bbtools/bb-tools-user-guide/bbmerge-guide/">BBMerge</a>, but the fact that <a href="https://github.com/OpenGene/fastp"><code>fastp</code></a> had it built-in could make my life easier.</p>
+<p>So, with all of that out of the way, let’s start the analysis. This will only use a single set of PE sequencing reads, as an initial exploration. We’ll decide on the best approach and then use that approach to run all the sequencing data through the chosen “pipeline.”</p>
+</section>
+<section id="setup" class="level1">
+<h1>SETUP</h1>
+<section id="create-a-bash-variables-file" class="level2">
+<h2 class="anchored" data-anchor-id="create-a-bash-variables-file">Create a Bash variables file</h2>
+<p>This allows usage of Bash variables across R Markdown chunks.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb1" style="background: #f1f3f5;"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb1-1"><span class="kw" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">{</span></span>
+<span id="cb1-2"><span class="bu" style="color: null;
+background-color: null;
+font-style: inherit;">echo</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"#### Assign Variables ####"</span></span>
+<span id="cb1-3"><span class="bu" style="color: null;
+background-color: null;
+font-style: inherit;">echo</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">""</span></span>
+<span id="cb1-4"></span>
+<span id="cb1-5"><span class="bu" style="color: null;
+background-color: null;
+font-style: inherit;">echo</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"## Data URL"</span></span>
+<span id="cb1-6"><span class="bu" style="color: null;
+background-color: null;
+font-style: inherit;">echo</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">'export raw_reads_url="https://owl.fish.washington.edu/nightingales/P_evermanni/30-852430235/"'</span></span>
+<span id="cb1-7"></span>
+<span id="cb1-8"><span class="bu" style="color: null;
+background-color: null;
+font-style: inherit;">echo</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"# Data directories"</span></span>
+<span id="cb1-9"><span class="bu" style="color: null;
+background-color: null;
+font-style: inherit;">echo</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">'export fastqc_out_dir="./fastqc"'</span></span>
+<span id="cb1-10"><span class="bu" style="color: null;
+background-color: null;
+font-style: inherit;">echo</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">'export raw_reads_dir="./raw"'</span></span>
+<span id="cb1-11"><span class="bu" style="color: null;
+background-color: null;
+font-style: inherit;">echo</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">'export trimmed_fastqs_dir="./trimmed-reads"'</span></span>
+<span id="cb1-12"><span class="bu" style="color: null;
+background-color: null;
+font-style: inherit;">echo</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">""</span></span>
+<span id="cb1-13"></span>
+<span id="cb1-14"><span class="bu" style="color: null;
+background-color: null;
+font-style: inherit;">echo</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"## NEB nebnext-small-rna-library-prep-set-for-illumina adapters"</span></span>
+<span id="cb1-15"><span class="bu" style="color: null;
+background-color: null;
+font-style: inherit;">echo</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">'export first_adapter="AGATCGGAAGAGCACACGTCTGAACTCCAGTCAC"'</span></span>
+<span id="cb1-16"><span class="bu" style="color: null;
+background-color: null;
+font-style: inherit;">echo</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">'export second_adapter="GATCGTCGGACTGTAGAACTCTGAACGTGTAGATCTCGGTGGTCGCCGTATCATT"'</span></span>
+<span id="cb1-17"><span class="bu" style="color: null;
+background-color: null;
+font-style: inherit;">echo</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">""</span></span>
+<span id="cb1-18"></span>
+<span id="cb1-19"><span class="bu" style="color: null;
+background-color: null;
+font-style: inherit;">echo</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"# Input/output files"</span></span>
+<span id="cb1-20"><span class="bu" style="color: null;
+background-color: null;
+font-style: inherit;">echo</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">'export NEB_adapters_fasta=NEB-adapters.fasta'</span></span>
+<span id="cb1-21"><span class="bu" style="color: null;
+background-color: null;
+font-style: inherit;">echo</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">""</span></span>
+<span id="cb1-22"></span>
+<span id="cb1-23"><span class="bu" style="color: null;
+background-color: null;
+font-style: inherit;">echo</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"# Paths to programs"</span></span>
+<span id="cb1-24"><span class="bu" style="color: null;
+background-color: null;
+font-style: inherit;">echo</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">'export programs_dir="/home/shared"'</span></span>
+<span id="cb1-25"><span class="bu" style="color: null;
+background-color: null;
+font-style: inherit;">echo</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">'export bbmerge="${programs_dir}/bbmap-39.06/bbmerge.sh"'</span></span>
+<span id="cb1-26"><span class="bu" style="color: null;
+background-color: null;
+font-style: inherit;">echo</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">'export fastp="${programs_dir}/fastp"'</span></span>
+<span id="cb1-27"><span class="bu" style="color: null;
+background-color: null;
+font-style: inherit;">echo</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">'export fastqc="${programs_dir}/FastQC-0.12.1/fastqc"'</span></span>
+<span id="cb1-28"><span class="bu" style="color: null;
+background-color: null;
+font-style: inherit;">echo</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">'export multiqc=/home/sam/programs/mambaforge/bin/multiqc'</span></span>
+<span id="cb1-29"><span class="bu" style="color: null;
+background-color: null;
+font-style: inherit;">echo</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">""</span></span>
+<span id="cb1-30"></span>
+<span id="cb1-31"><span class="bu" style="color: null;
+background-color: null;
+font-style: inherit;">echo</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"# Set number of CPUs to use"</span></span>
+<span id="cb1-32"><span class="bu" style="color: null;
+background-color: null;
+font-style: inherit;">echo</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">'export threads=46'</span></span>
+<span id="cb1-33"><span class="bu" style="color: null;
+background-color: null;
+font-style: inherit;">echo</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">""</span></span>
+<span id="cb1-34"></span>
+<span id="cb1-35"><span class="bu" style="color: null;
+background-color: null;
+font-style: inherit;">echo</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"# Initialize arrays"</span></span>
+<span id="cb1-36"><span class="bu" style="color: null;
+background-color: null;
+font-style: inherit;">echo</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">'export trimmed_fastqs_array=()'</span></span>
+<span id="cb1-37"></span>
+<span id="cb1-38"></span>
+<span id="cb1-39"><span class="kw" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">}</span> <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">&gt;</span> .bashvars</span>
+<span id="cb1-40"></span>
+<span id="cb1-41"><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">cat</span> .bashvars</span></code></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>#### Assign Variables ####
+
+## Data URL
+export raw_reads_url="https://owl.fish.washington.edu/nightingales/P_evermanni/30-852430235/"
+# Data directories
+export fastqc_out_dir="./fastqc"
+export raw_reads_dir="./raw"
+export trimmed_fastqs_dir="./trimmed-reads"
+
+## NEB nebnext-small-rna-library-prep-set-for-illumina adapters
+export first_adapter="AGATCGGAAGAGCACACGTCTGAACTCCAGTCAC"
+export second_adapter="GATCGTCGGACTGTAGAACTCTGAACGTGTAGATCTCGGTGGTCGCCGTATCATT"
+
+# Input/output files
+export NEB_adapters_fasta=NEB-adapters.fasta
+
+# Paths to programs
+export programs_dir="/home/shared"
+export bbmerge="${programs_dir}/bbmap-39.06/bbmerge.sh"
+export fastp="${programs_dir}/fastp"
+export fastqc="${programs_dir}/FastQC-0.12.1/fastqc"
+export multiqc=/home/sam/programs/mambaforge/bin/multiqc
+
+# Set number of CPUs to use
+export threads=46
+
+# Initialize arrays
+export trimmed_fastqs_array=()</code></pre>
+</div>
+</div>
+</section>
+<section id="download-raw-srnaseq-reads" class="level2">
+<h2 class="anchored" data-anchor-id="download-raw-srnaseq-reads">Download raw sRNAseq reads</h2>
+<p>Reads are downloaded from <a href="https://owl.fish.washington.edu/nightingales/P_evermanni/30-852430235/" class="uri">https://owl.fish.washington.edu/nightingales/P_evermanni/30-852430235/</a></p>
+<p>The <code>--cut-dirs 3</code> command cuts the preceding directory structure (i.e.&nbsp;<code>nightingales/P_evermanni/30-852430235/</code>) so that we just end up with the reads.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb3" style="background: #f1f3f5;"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb3-1"><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># Load bash variables into memory</span></span>
+<span id="cb3-2"><span class="bu" style="color: null;
+background-color: null;
+font-style: inherit;">source</span> .bashvars</span>
+<span id="cb3-3"></span>
+<span id="cb3-4"><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">mkdir</span> <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">--parents</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"</span><span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">${raw_reads_dir}</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"</span><span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">${trimmed_fastqs_dir}</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"</span></span>
+<span id="cb3-5"></span>
+<span id="cb3-6"><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">wget</span> <span class="dt" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">\</span></span>
+<span id="cb3-7">--directory-prefix <span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">${raw_reads_dir}</span> <span class="dt" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">\</span></span>
+<span id="cb3-8">--recursive <span class="dt" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">\</span></span>
+<span id="cb3-9">--no-check-certificate <span class="dt" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">\</span></span>
+<span id="cb3-10">--continue <span class="dt" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">\</span></span>
+<span id="cb3-11">--cut-dirs 3 <span class="dt" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">\</span></span>
+<span id="cb3-12">--no-host-directories <span class="dt" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">\</span></span>
+<span id="cb3-13">--no-parent <span class="dt" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">\</span></span>
+<span id="cb3-14">--quiet <span class="dt" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">\</span></span>
+<span id="cb3-15">--accept <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"sRNA-POR-79*,checksums.md5"</span> <span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">${raw_reads_url}</span></span>
+<span id="cb3-16"></span>
+<span id="cb3-17"><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">ls</span> <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">-lh</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"</span><span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">${raw_reads_dir}</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"</span></span></code></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>total 1.8G
+-rw-r--r-- 1 sam sam  798 May 17  2023 checksums.md5
+-rw-r--r-- 1 sam sam 899M May 17  2023 sRNA-POR-79-S1-TP2_R1_001.fastq.gz
+-rw-r--r-- 1 sam sam 916M May 17  2023 sRNA-POR-79-S1-TP2_R2_001.fastq.gz</code></pre>
+</div>
+</div>
+<section id="verify-raw-read-checksums" class="level3">
+<h3 class="anchored" data-anchor-id="verify-raw-read-checksums">Verify raw read checksums</h3>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb5" style="background: #f1f3f5;"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb5-1"><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># Load bash variables into memory</span></span>
+<span id="cb5-2"><span class="bu" style="color: null;
+background-color: null;
+font-style: inherit;">source</span> .bashvars</span>
+<span id="cb5-3"></span>
+<span id="cb5-4"><span class="bu" style="color: null;
+background-color: null;
+font-style: inherit;">cd</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"</span><span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">${raw_reads_dir}</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"</span></span>
+<span id="cb5-5"></span>
+<span id="cb5-6"><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># Checksums file contains other files, so this just looks for the sRNAseq files.</span></span>
+<span id="cb5-7"><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">grep</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"sRNA-POR-79"</span> checksums.md5 <span class="kw" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">|</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">md5sum</span> <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">--check</span></span></code></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>sRNA-POR-79-S1-TP2_R1_001.fastq.gz: OK
+sRNA-POR-79-S1-TP2_R2_001.fastq.gz: OK</code></pre>
+</div>
+</div>
+</section>
+</section>
+<section id="create-adapters-fasta" class="level2">
+<h2 class="anchored" data-anchor-id="create-adapters-fasta">Create adapters FastA</h2>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb7" style="background: #f1f3f5;"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb7-1"><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># Load bash variables into memory</span></span>
+<span id="cb7-2"><span class="bu" style="color: null;
+background-color: null;
+font-style: inherit;">source</span> .bashvars</span>
+<span id="cb7-3"></span>
+<span id="cb7-4"><span class="bu" style="color: null;
+background-color: null;
+font-style: inherit;">echo</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"Creating adapters FastA."</span></span>
+<span id="cb7-5"><span class="bu" style="color: null;
+background-color: null;
+font-style: inherit;">echo</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">""</span></span>
+<span id="cb7-6"><span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">adapter_count</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span>0</span>
+<span id="cb7-7"></span>
+<span id="cb7-8"><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># Check for adapters file first</span></span>
+<span id="cb7-9"><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># Then create adapters file if doesn't exist</span></span>
+<span id="cb7-10"><span class="cf" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">if</span> <span class="bu" style="color: null;
+background-color: null;
+font-style: inherit;">[</span> <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">-f</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"</span><span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">${NEB_adapters_fasta}</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"</span> <span class="bu" style="color: null;
+background-color: null;
+font-style: inherit;">]</span><span class="kw" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">;</span> <span class="cf" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">then</span></span>
+<span id="cb7-11">  <span class="bu" style="color: null;
+background-color: null;
+font-style: inherit;">echo</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"</span><span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">${NEB_adapters_fasta}</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;"> already exists. Nothing to do."</span></span>
+<span id="cb7-12"><span class="cf" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">else</span></span>
+<span id="cb7-13">  <span class="cf" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">for</span> adapter <span class="kw" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">in</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"</span><span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">${first_adapter}</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"</span><span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">${second_adapter}</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"</span></span>
+<span id="cb7-14">  <span class="cf" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">do</span></span>
+<span id="cb7-15">    <span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">adapter_count</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span><span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">$((adapter_count</span> <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">+</span> <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">1</span><span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">))</span></span>
+<span id="cb7-16">    <span class="bu" style="color: null;
+background-color: null;
+font-style: inherit;">printf</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"&gt;%s\n%s\n"</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"adapter_</span><span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">${adapter_count}</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"</span><span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">${adapter}</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"</span></span>
+<span id="cb7-17">  <span class="cf" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">done</span> <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">&gt;&gt;</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"</span><span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">${NEB_adapters_fasta}</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"</span></span>
+<span id="cb7-18"><span class="cf" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">fi</span></span>
+<span id="cb7-19"></span>
+<span id="cb7-20"><span class="bu" style="color: null;
+background-color: null;
+font-style: inherit;">echo</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">""</span></span>
+<span id="cb7-21"><span class="bu" style="color: null;
+background-color: null;
+font-style: inherit;">echo</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"Adapters FastA:"</span></span>
+<span id="cb7-22"><span class="bu" style="color: null;
+background-color: null;
+font-style: inherit;">echo</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">""</span></span>
+<span id="cb7-23"><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">cat</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"</span><span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">${NEB_adapters_fasta}</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"</span></span>
+<span id="cb7-24"><span class="bu" style="color: null;
+background-color: null;
+font-style: inherit;">echo</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">""</span></span></code></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Creating adapters FastA.
+
+NEB-adapters.fasta already exists. Nothing to do.
+
+Adapters FastA:
+
+&gt;adapter_1
+AGATCGGAAGAGCACACGTCTGAACTCCAGTCAC
+&gt;adapter_2
+GATCGTCGGACTGTAGAACTCTGAACGTGTAGATCTCGGTGGTCGCCGTATCATT</code></pre>
+</div>
+</div>
+</section>
+<section id="fastp" class="level2">
+<h2 class="anchored" data-anchor-id="fastp"><a href="https://github.com/OpenGene/fastp"><code>fastp</code></a></h2>
+<p><a href="https://github.com/OpenGene/fastp"><code>fastp</code></a> has many built-in functions, including before/after trimming plots, and read 1 and read 2 merging.</p>
+<div class="callout callout-style-default callout-note callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Note
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>Setting <code>--overlap_len_require 17</code> forces <a href="https://github.com/OpenGene/fastp"><code>fastp</code></a> to look at reads starting at base 17, instead of the default 30 and results in more accurate analyses, since these are sRNA-seq libraries where the expected/desired read lengths will be 17 - 30bp in length.</p>
+</div>
+</div>
+<section id="paired-end-trimming" class="level3">
+<h3 class="anchored" data-anchor-id="paired-end-trimming">Paired-end Trimming</h3>
+<p>The paired end trimming will examine how some of the trimming options impact sequencing read lengths, quality, and subsequent merging.</p>
+<section id="polyg-trimming-only" class="level4">
+<h4 class="anchored" data-anchor-id="polyg-trimming-only">PolyG Trimming Only</h4>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb9" style="background: #f1f3f5;"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb9-1"><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># Load bash variables into memory</span></span>
+<span id="cb9-2"><span class="bu" style="color: null;
+background-color: null;
+font-style: inherit;">source</span> .bashvars</span>
+<span id="cb9-3"></span>
+<span id="cb9-4"><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"</span><span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">${fastp}</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"</span> <span class="dt" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">\</span></span>
+<span id="cb9-5">--in1 ./raw/sRNA-POR-79-S1-TP2_R1_001.fastq.gz <span class="dt" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">\</span></span>
+<span id="cb9-6">--in2 ./raw/sRNA-POR-79-S1-TP2_R2_001.fastq.gz <span class="dt" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">\</span></span>
+<span id="cb9-7">--out1 ./trimmed-reads/fastp-polyG_only.R1.fq.gz <span class="dt" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">\</span></span>
+<span id="cb9-8">--out2 ./trimmed-reads/fastp-polyG_only.R2.fq.gz <span class="dt" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">\</span></span>
+<span id="cb9-9">--disable_adapter_trimming <span class="dt" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">\</span></span>
+<span id="cb9-10">--trim_poly_g <span class="dt" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">\</span></span>
+<span id="cb9-11">--overlap_len_require 17 <span class="dt" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">\</span></span>
+<span id="cb9-12">--thread <span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">${threads}</span> <span class="dt" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">\</span></span>
+<span id="cb9-13">--html <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"fastp-polyG-only.html"</span> <span class="dt" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">\</span></span>
+<span id="cb9-14">--json <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"fastp-polyG-only.json"</span> <span class="dt" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">\</span></span>
+<span id="cb9-15">--report_title <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"fastp-polyG-only"</span></span></code></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>WARNING: fastp uses up to 16 threads although you specified 46
+Read1 before filtering:
+total reads: 19762559
+total bases: 2964383850
+Q20 bases: 2604771220(87.8689%)
+Q30 bases: 2427856243(81.9009%)
+
+Read2 before filtering:
+total reads: 19762559
+total bases: 2964383850
+Q20 bases: 2619314070(88.3595%)
+Q30 bases: 2408732242(81.2557%)
+
+Read1 after filtering:
+total reads: 19450041
+total bases: 1698288792
+Q20 bases: 1478970498(87.0859%)
+Q30 bases: 1370182460(80.6802%)
+
+Read2 after filtering:
+total reads: 19450041
+total bases: 1849068926
+Q20 bases: 1690862447(91.444%)
+Q30 bases: 1596965342(86.3659%)
+
+Filtering result:
+reads passed filter: 38900082
+reads failed due to low quality: 595592
+reads failed due to too many N: 40
+reads failed due to too short: 29404
+
+Duplication rate: 10.4184%
+
+Insert size peak (evaluated by paired-end reads): 29
+
+JSON report: fastp-polyG-only.json
+HTML report: fastp-polyG-only.html
+
+/home/shared/fastp --in1 ./raw/sRNA-POR-79-S1-TP2_R1_001.fastq.gz --in2 ./raw/sRNA-POR-79-S1-TP2_R2_001.fastq.gz --out1 ./trimmed-reads/fastp-polyG_only.R1.fq.gz --out2 ./trimmed-reads/fastp-polyG_only.R2.fq.gz --disable_adapter_trimming --trim_poly_g --overlap_len_require 17 --thread 46 --html fastp-polyG-only.html --json fastp-polyG-only.json --report_title fastp-polyG-only 
+fastp v0.23.2, time used: 45 seconds</code></pre>
+</div>
+</div>
+</section>
+<section id="adapters-polyg-trimming" class="level4">
+<h4 class="anchored" data-anchor-id="adapters-polyg-trimming">Adapters &amp; PolyG Trimming</h4>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb11" style="background: #f1f3f5;"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb11-1"><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># Load bash variables into memory</span></span>
+<span id="cb11-2"><span class="bu" style="color: null;
+background-color: null;
+font-style: inherit;">source</span> .bashvars</span>
+<span id="cb11-3"></span>
+<span id="cb11-4"><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"</span><span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">${fastp}</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"</span> <span class="dt" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">\</span></span>
+<span id="cb11-5">--in1 ./raw/sRNA-POR-79-S1-TP2_R1_001.fastq.gz <span class="dt" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">\</span></span>
+<span id="cb11-6">--in2 ./raw/sRNA-POR-79-S1-TP2_R2_001.fastq.gz <span class="dt" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">\</span></span>
+<span id="cb11-7">--out1 ./trimmed-reads/fastp-adapters-polyG.R1.fq.gz <span class="dt" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">\</span></span>
+<span id="cb11-8">--out2 ./trimmed-reads/fastp-adapters-polyG.R2.fq.gz <span class="dt" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">\</span></span>
+<span id="cb11-9">--adapter_fasta NEB-adapters.fasta <span class="dt" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">\</span></span>
+<span id="cb11-10">--trim_poly_g <span class="dt" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">\</span></span>
+<span id="cb11-11">--overlap_len_require 17 <span class="dt" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">\</span></span>
+<span id="cb11-12">--thread <span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">${threads}</span> <span class="dt" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">\</span></span>
+<span id="cb11-13">--html <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"fastp-adapters-polyG.html"</span> <span class="dt" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">\</span></span>
+<span id="cb11-14">--json <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"fastp-adapters-polyG.json"</span> <span class="dt" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">\</span></span>
+<span id="cb11-15">--report_title <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"fastp-adapters-polyG-only"</span></span></code></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>WARNING: fastp uses up to 16 threads although you specified 46
+Read1 before filtering:
+total reads: 19762559
+total bases: 2964383850
+Q20 bases: 2604771220(87.8689%)
+Q30 bases: 2427856243(81.9009%)
+
+Read2 before filtering:
+total reads: 19762559
+total bases: 2964383850
+Q20 bases: 2619314070(88.3595%)
+Q30 bases: 2408732242(81.2557%)
+
+Read1 after filtering:
+total reads: 16734573
+total bases: 489646406
+Q20 bases: 480139354(98.0584%)
+Q30 bases: 466862298(95.3468%)
+
+Read2 after filtering:
+total reads: 16734573
+total bases: 492483642
+Q20 bases: 484765577(98.4328%)
+Q30 bases: 469308001(95.2941%)
+
+Filtering result:
+reads passed filter: 33469146
+reads failed due to low quality: 232788
+reads failed due to too many N: 0
+reads failed due to too short: 5823184
+reads with adapter trimmed: 30461598
+bases trimmed due to adapters: 2013836548
+
+Duplication rate: 10.4184%
+
+Insert size peak (evaluated by paired-end reads): 29
+
+JSON report: fastp-adapters-polyG.json
+HTML report: fastp-adapters-polyG.html
+
+/home/shared/fastp --in1 ./raw/sRNA-POR-79-S1-TP2_R1_001.fastq.gz --in2 ./raw/sRNA-POR-79-S1-TP2_R2_001.fastq.gz --out1 ./trimmed-reads/fastp-adapters-polyG.R1.fq.gz --out2 ./trimmed-reads/fastp-adapters-polyG.R2.fq.gz --adapter_fasta NEB-adapters.fasta --trim_poly_g --overlap_len_require 17 --thread 46 --html fastp-adapters-polyG.html --json fastp-adapters-polyG.json --report_title fastp-adapters-polyG-only 
+fastp v0.23.2, time used: 36 seconds</code></pre>
+</div>
+</div>
+</section>
+<section id="polyg-trimming-max-length-31" class="level4">
+<h4 class="anchored" data-anchor-id="polyg-trimming-max-length-31">PolyG Trimming Max Length 31</h4>
+<p>This can’t be run because we know from the polyG only trimming, that most read lengths are &gt;89bp. As such, it will end up discarding all the reads…</p>
+</section>
+<section id="adapters-polyg-trimming-max-length-31" class="level4">
+<h4 class="anchored" data-anchor-id="adapters-polyg-trimming-max-length-31">Adapters &amp; PolyG Trimming Max Length 31</h4>
+<div class="callout callout-style-default callout-note callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Note
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>The max length is based on the <code>fastp</code> insert peak size from the adapter and polyG trimming results, and previous evaluation of mean read lengths via <a href="https://www.bioinformatics.babraham.ac.uk/projects/fastqc/"><code>FastQC</code></a> and <a href="https://multiqc.info/"><code>MultiQC</code></a>.</p>
+</div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb13" style="background: #f1f3f5;"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb13-1"><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># Load bash variables into memory</span></span>
+<span id="cb13-2"><span class="bu" style="color: null;
+background-color: null;
+font-style: inherit;">source</span> .bashvars</span>
+<span id="cb13-3"></span>
+<span id="cb13-4"><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"</span><span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">${fastp}</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"</span> <span class="dt" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">\</span></span>
+<span id="cb13-5">--in1 ./raw/sRNA-POR-79-S1-TP2_R1_001.fastq.gz <span class="dt" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">\</span></span>
+<span id="cb13-6">--in2 ./raw/sRNA-POR-79-S1-TP2_R2_001.fastq.gz <span class="dt" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">\</span></span>
+<span id="cb13-7">--out1 ./trimmed-reads/fastp-adapters-polyG-31bp.R1.fq.gz <span class="dt" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">\</span></span>
+<span id="cb13-8">--out2 ./trimmed-reads/fastp-adapters-polyG-31bp.R2.fq.gz <span class="dt" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">\</span></span>
+<span id="cb13-9">--adapter_fasta NEB-adapters.fasta <span class="dt" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">\</span></span>
+<span id="cb13-10">--trim_poly_g <span class="dt" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">\</span></span>
+<span id="cb13-11">--overlap_len_require 17 <span class="dt" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">\</span></span>
+<span id="cb13-12">--length_limit 31 <span class="dt" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">\</span></span>
+<span id="cb13-13">--thread <span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">${threads}</span> <span class="dt" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">\</span></span>
+<span id="cb13-14">--html <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"fastp-adapters-polyG-31bp.html"</span> <span class="dt" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">\</span></span>
+<span id="cb13-15">--json <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"fastp-adapters-polyG-31bp.json"</span> <span class="dt" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">\</span></span>
+<span id="cb13-16">--report_title <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"fastp-adapters-polyG-31bp"</span></span></code></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>WARNING: fastp uses up to 16 threads although you specified 46
+Read1 before filtering:
+total reads: 19762559
+total bases: 2964383850
+Q20 bases: 2604771220(87.8689%)
+Q30 bases: 2427856243(81.9009%)
+
+Read2 before filtering:
+total reads: 19762559
+total bases: 2964383850
+Q20 bases: 2619314070(88.3595%)
+Q30 bases: 2408732242(81.2557%)
+
+Read1 after filtering:
+total reads: 13190855
+total bases: 339210880
+Q20 bases: 335529961(98.9149%)
+Q30 bases: 327446980(96.532%)
+
+Read2 after filtering:
+total reads: 13190855
+total bases: 338558013
+Q20 bases: 335504115(99.098%)
+Q30 bases: 325352134(96.0994%)
+
+Filtering result:
+reads passed filter: 26381710
+reads failed due to low quality: 232788
+reads failed due to too many N: 0
+reads failed due to too short: 5354066
+reads failed due to too long: 7556554
+reads with adapter trimmed: 30461598
+bases trimmed due to adapters: 2013836548
+
+Duplication rate: 10.4184%
+
+Insert size peak (evaluated by paired-end reads): 29
+
+JSON report: fastp-adapters-polyG-31bp.json
+HTML report: fastp-adapters-polyG-31bp.html
+
+/home/shared/fastp --in1 ./raw/sRNA-POR-79-S1-TP2_R1_001.fastq.gz --in2 ./raw/sRNA-POR-79-S1-TP2_R2_001.fastq.gz --out1 ./trimmed-reads/fastp-adapters-polyG-31bp.R1.fq.gz --out2 ./trimmed-reads/fastp-adapters-polyG-31bp.R2.fq.gz --adapter_fasta NEB-adapters.fasta --trim_poly_g --overlap_len_require 17 --length_limit 31 --thread 46 --html fastp-adapters-polyG-31bp.html --json fastp-adapters-polyG-31bp.json --report_title fastp-adapters-polyG-31bp 
+fastp v0.23.2, time used: 36 seconds</code></pre>
+</div>
+</div>
+</section>
+<section id="adapters-polyg-trimming-max-length-31-with-merge" class="level4">
+<h4 class="anchored" data-anchor-id="adapters-polyg-trimming-max-length-31-with-merge">Adapters &amp; PolyG Trimming Max Length 31 With Merge</h4>
+<p>This will attempt to merge the R1 and R2 reads.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb15" style="background: #f1f3f5;"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb15-1"><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># Load bash variables into memory</span></span>
+<span id="cb15-2"><span class="bu" style="color: null;
+background-color: null;
+font-style: inherit;">source</span> .bashvars</span>
+<span id="cb15-3"></span>
+<span id="cb15-4"><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"</span><span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">${fastp}</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"</span> <span class="dt" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">\</span></span>
+<span id="cb15-5">--in1 ./raw/sRNA-POR-79-S1-TP2_R1_001.fastq.gz <span class="dt" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">\</span></span>
+<span id="cb15-6">--in2 ./raw/sRNA-POR-79-S1-TP2_R2_001.fastq.gz <span class="dt" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">\</span></span>
+<span id="cb15-7">--adapter_fasta NEB-adapters.fasta <span class="dt" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">\</span></span>
+<span id="cb15-8">--trim_poly_g <span class="dt" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">\</span></span>
+<span id="cb15-9">--overlap_len_require 17 <span class="dt" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">\</span></span>
+<span id="cb15-10">--length_limit 31 <span class="dt" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">\</span></span>
+<span id="cb15-11">--merge <span class="dt" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">\</span></span>
+<span id="cb15-12">--merged_out ./trimmed-reads/fastp-adapters-polyG-31bp-merged.fq.gz <span class="dt" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">\</span></span>
+<span id="cb15-13">--thread <span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">${threads}</span> <span class="dt" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">\</span></span>
+<span id="cb15-14">--html <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"fastp-adapters-polyG-31bp-merged.html"</span> <span class="dt" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">\</span></span>
+<span id="cb15-15">--json <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"fastp-adapters-polyG-31bp-merged.json"</span> <span class="dt" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">\</span></span>
+<span id="cb15-16">--report_title <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"fastp-adapters-polyG-31bp-merged"</span></span></code></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>WARNING: fastp uses up to 16 threads although you specified 46
+Read1 before filtering:
+total reads: 19762559
+total bases: 2964383850
+Q20 bases: 2604771220(87.8689%)
+Q30 bases: 2427856243(81.9009%)
+
+Read2 before filtering:
+total reads: 19762559
+total bases: 2964383850
+Q20 bases: 2619314070(88.3595%)
+Q30 bases: 2408732242(81.2557%)
+
+Merged and filtered:
+total reads: 12259576
+total bases: 324356716
+Q20 bases: 320917135(98.9396%)
+Q30 bases: 313148708(96.5445%)
+
+Filtering result:
+reads passed filter: 26506174
+reads failed due to low quality: 179320
+reads failed due to too many N: 0
+reads failed due to too short: 5774946
+reads failed due to too long: 7064678
+reads with adapter trimmed: 30461598
+bases trimmed due to adapters: 2013836548
+reads corrected by overlap analysis: 484376
+bases corrected by overlap analysis: 766038
+
+Duplication rate: 10.4184%
+
+Insert size peak (evaluated by paired-end reads): 29
+
+Read pairs merged: 12259576
+% of original read pairs: 62.0344%
+% in reads after filtering: 100%
+
+
+JSON report: fastp-adapters-polyG-31bp-merged.json
+HTML report: fastp-adapters-polyG-31bp-merged.html
+
+/home/shared/fastp --in1 ./raw/sRNA-POR-79-S1-TP2_R1_001.fastq.gz --in2 ./raw/sRNA-POR-79-S1-TP2_R2_001.fastq.gz --adapter_fasta NEB-adapters.fasta --trim_poly_g --overlap_len_require 17 --length_limit 31 --merge --merged_out ./trimmed-reads/fastp-adapters-polyG-31bp-merged.fq.gz --thread 46 --html fastp-adapters-polyG-31bp-merged.html --json fastp-adapters-polyG-31bp-merged.json --report_title fastp-adapters-polyG-31bp-merged 
+fastp v0.23.2, time used: 45 seconds</code></pre>
+</div>
+</div>
+</section>
+</section>
+<section id="single-end-trimming---r1-reads-only" class="level3">
+<h3 class="anchored" data-anchor-id="single-end-trimming---r1-reads-only">Single-end Trimming - R1 Reads Only</h3>
+<p>Using just the R1 reads, per Azenta’s recommendation.</p>
+<section id="auto-adapters-polyg-trimming" class="level4">
+<h4 class="anchored" data-anchor-id="auto-adapters-polyg-trimming">Auto-adapters &amp; PolyG Trimming</h4>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb17" style="background: #f1f3f5;"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb17-1"><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># Load bash variables into memory</span></span>
+<span id="cb17-2"><span class="bu" style="color: null;
+background-color: null;
+font-style: inherit;">source</span> .bashvars</span>
+<span id="cb17-3"></span>
+<span id="cb17-4"><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"</span><span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">${fastp}</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"</span> <span class="dt" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">\</span></span>
+<span id="cb17-5">--in1 ./raw/sRNA-POR-79-S1-TP2_R1_001.fastq.gz <span class="dt" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">\</span></span>
+<span id="cb17-6">--out1 ./trimmed-reads/fastp-R1-auto_adapters-polyG.fq.gz <span class="dt" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">\</span></span>
+<span id="cb17-7">--trim_poly_g <span class="dt" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">\</span></span>
+<span id="cb17-8">--thread <span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">${threads}</span> <span class="dt" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">\</span></span>
+<span id="cb17-9">--html <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"fastp-R1-auto_adapters-polyG.html"</span> <span class="dt" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">\</span></span>
+<span id="cb17-10">--json <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"fastp-R1-auto_adapters-polyG.json"</span> <span class="dt" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">\</span></span>
+<span id="cb17-11">--report_title <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"fastp-R1-auto_adapters-polyG"</span></span></code></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Detecting adapter sequence for read1...
+&gt;Illumina TruSeq Adapter Read 1
+AGATCGGAAGAGCACACGTCTGAACTCCAGTCA
+
+WARNING: fastp uses up to 16 threads although you specified 46
+Read1 before filtering:
+total reads: 19762559
+total bases: 2964383850
+Q20 bases: 2604771220(87.8689%)
+Q30 bases: 2427856243(81.9009%)
+
+Read1 after filtering:
+total reads: 16984592
+total bases: 540469705
+Q20 bases: 522006375(96.5838%)
+Q30 bases: 504657126(93.3738%)
+
+Filtering result:
+reads passed filter: 16984592
+reads failed due to low quality: 30923
+reads failed due to too many N: 1
+reads failed due to too short: 2747043
+reads with adapter trimmed: 18545632
+bases trimmed due to adapters: 1166285709
+
+Duplication rate (may be overestimated since this is SE data): 29.621%
+
+JSON report: fastp-R1-auto_adapters-polyG.json
+HTML report: fastp-R1-auto_adapters-polyG.html
+
+/home/shared/fastp --in1 ./raw/sRNA-POR-79-S1-TP2_R1_001.fastq.gz --out1 ./trimmed-reads/fastp-R1-auto_adapters-polyG.fq.gz --trim_poly_g --thread 46 --html fastp-R1-auto_adapters-polyG.html --json fastp-R1-auto_adapters-polyG.json --report_title fastp-R1-auto_adapters-polyG 
+fastp v0.23.2, time used: 32 seconds</code></pre>
+</div>
+</div>
+</section>
+<section id="auto-adapters-polyg-trimming-max-length-31" class="level4">
+<h4 class="anchored" data-anchor-id="auto-adapters-polyg-trimming-max-length-31">Auto-adapters &amp; PolyG Trimming Max Length 31</h4>
+<div class="callout callout-style-default callout-note callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Note
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>The max length is based on the <code>fastp</code> insert peak size from the adapter and polyG trimming results, and previous evaluation of mean read lengths via <a href="https://www.bioinformatics.babraham.ac.uk/projects/fastqc/"><code>FastQC</code></a> and <a href="https://multiqc.info/"><code>MultiQC</code></a>.</p>
+</div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb19" style="background: #f1f3f5;"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb19-1"><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># Load bash variables into memory</span></span>
+<span id="cb19-2"><span class="bu" style="color: null;
+background-color: null;
+font-style: inherit;">source</span> .bashvars</span>
+<span id="cb19-3"></span>
+<span id="cb19-4"><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"</span><span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">${fastp}</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"</span> <span class="dt" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">\</span></span>
+<span id="cb19-5">--in1 ./raw/sRNA-POR-79-S1-TP2_R1_001.fastq.gz <span class="dt" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">\</span></span>
+<span id="cb19-6">--out1 ./trimmed-reads/fastp-R1-31bp-auto_adapters-polyG.fq.gz <span class="dt" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">\</span></span>
+<span id="cb19-7">--trim_poly_g <span class="dt" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">\</span></span>
+<span id="cb19-8">--length_limit 31 <span class="dt" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">\</span></span>
+<span id="cb19-9">--thread <span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">${threads}</span> <span class="dt" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">\</span></span>
+<span id="cb19-10">--html <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"fastp-R1-auto_adapters-polyG-31bp.html"</span> <span class="dt" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">\</span></span>
+<span id="cb19-11">--json <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"fastp-R1-auto_adapters-polyG-31bp.json"</span> <span class="dt" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">\</span></span>
+<span id="cb19-12">--report_title <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"fastp-R1-auto_adapters-polyG-31bp"</span></span></code></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Detecting adapter sequence for read1...
+&gt;Illumina TruSeq Adapter Read 1
+AGATCGGAAGAGCACACGTCTGAACTCCAGTCA
+
+WARNING: fastp uses up to 16 threads although you specified 46
+Read1 before filtering:
+total reads: 19762559
+total bases: 2964383850
+Q20 bases: 2604771220(87.8689%)
+Q30 bases: 2427856243(81.9009%)
+
+Read1 after filtering:
+total reads: 12801426
+total bases: 328647991
+Q20 bases: 325069951(98.9113%)
+Q30 bases: 317201339(96.517%)
+
+Filtering result:
+reads passed filter: 12801426
+reads failed due to low quality: 30923
+reads failed due to too many N: 1
+reads failed due to too short: 2747043
+reads failed due to too long: 4183166
+reads with adapter trimmed: 18545632
+bases trimmed due to adapters: 1166285709
+
+Duplication rate (may be overestimated since this is SE data): 29.621%
+
+JSON report: fastp-R1-auto_adapters-polyG-31bp.json
+HTML report: fastp-R1-auto_adapters-polyG-31bp.html
+
+/home/shared/fastp --in1 ./raw/sRNA-POR-79-S1-TP2_R1_001.fastq.gz --out1 ./trimmed-reads/fastp-R1-31bp-auto_adapters-polyG.fq.gz --trim_poly_g --length_limit 31 --thread 46 --html fastp-R1-auto_adapters-polyG-31bp.html --json fastp-R1-auto_adapters-polyG-31bp.json --report_title fastp-R1-auto_adapters-polyG-31bp 
+fastp v0.23.2, time used: 32 seconds</code></pre>
+</div>
+</div>
+</section>
+</section>
+</section>
+<section id="bbmerge" class="level2">
+<h2 class="anchored" data-anchor-id="bbmerge">BBMerge</h2>
+<section id="raw-reads" class="level3">
+<h3 class="anchored" data-anchor-id="raw-reads">Raw reads</h3>
+<p><a href="https://jgi.doe.gov/data-and-tools/software-tools/bbtools/bb-tools-user-guide/bbmerge-guide/">BBMerge</a> documentations actually indicates that merging performs best using <em>raw</em>, untrimmed reads, so we’ll try that out first…</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb21" style="background: #f1f3f5;"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb21-1"><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># Load bash variables into memory</span></span>
+<span id="cb21-2"><span class="bu" style="color: null;
+background-color: null;
+font-style: inherit;">source</span> .bashvars</span>
+<span id="cb21-3"><span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">${bbmerge}</span> <span class="dt" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">\</span></span>
+<span id="cb21-4">in1=./raw/sRNA-POR-79-S1-TP2_R1_001.fastq.gz <span class="dt" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">\</span></span>
+<span id="cb21-5">in2=./raw/sRNA-POR-79-S1-TP2_R2_001.fastq.gz <span class="dt" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">\</span></span>
+<span id="cb21-6">adapters=./NEB-adapters.fasta <span class="dt" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">\</span></span>
+<span id="cb21-7">mininsert=17 <span class="dt" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">\</span></span>
+<span id="cb21-8">out=./trimmed-reads/sRNA-POR-79-S1-TP2-raw-bbmerge.fq.gz</span></code></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>java -ea -Xmx1000m -Xms1000m -Djava.library.path=/home/shared/bbmap-39.06/jni/ -cp /home/shared/bbmap-39.06/current/ jgi.BBMerge in1=./raw/sRNA-POR-79-S1-TP2_R1_001.fastq.gz in2=./raw/sRNA-POR-79-S1-TP2_R2_001.fastq.gz adapters=./NEB-adapters.fasta mininsert=17 out=./trimmed-reads/sRNA-POR-79-S1-TP2-raw-bbmerge.fq.gz
+Executing jgi.BBMerge [in1=./raw/sRNA-POR-79-S1-TP2_R1_001.fastq.gz, in2=./raw/sRNA-POR-79-S1-TP2_R2_001.fastq.gz, adapters=./NEB-adapters.fasta, mininsert=17, out=./trimmed-reads/sRNA-POR-79-S1-TP2-raw-bbmerge.fq.gz]
+Version 39.06
+
+Writing mergable reads merged.
+Started output threads.
+Total time: 61.730 seconds.
+
+Pairs:                  19762559
+Joined:                 151908      0.769%
+Ambiguous:              0           0.000%
+No Solution:            19610645    99.231%
+Too Short:              6           0.000%
+Adapters Expected:      60129       0.152%
+Adapters Found:         58428       0.148%
+
+Avg Insert:             131.5
+Standard Deviation:     62.2
+Mode:                   156
+
+Insert range:           17 - 289
+90th percentile:        203
+75th percentile:        156
+50th percentile:        156
+25th percentile:        72
+10th percentile:        32</code></pre>
+</div>
+</div>
+</section>
+<section id="trimmed-polyg-only" class="level3">
+<h3 class="anchored" data-anchor-id="trimmed-polyg-only">Trimmed PolyG Only</h3>
+<p>Running <a href="https://jgi.doe.gov/data-and-tools/software-tools/bbtools/bb-tools-user-guide/bbmerge-guide/">BBMerge</a> on just raw reads yielded poor results (&gt;99% of reads could <em>not</em> be merged). Additionally, the average insert size was determined to be 131.5bp, which is not going to be useful for sRNA-seq.</p>
+<p>I know that there’s a very large stretch of polyG sequence in the reads (likely due to the small insert size and “long” read length - Gs get added as a “placeholder” base each cycle that exceeds the insert size), so let’s try merging reads <em>after</em> polyG sequence has been trimmed.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb23" style="background: #f1f3f5;"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb23-1"><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># Load bash variables into memory</span></span>
+<span id="cb23-2"><span class="bu" style="color: null;
+background-color: null;
+font-style: inherit;">source</span> .bashvars</span>
+<span id="cb23-3"></span>
+<span id="cb23-4"><span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">${bbmerge}</span> <span class="dt" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">\</span></span>
+<span id="cb23-5">in1=./trimmed-reads/fastp-polyG_only.R1.fq.gz <span class="dt" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">\</span></span>
+<span id="cb23-6">in2=./trimmed-reads/fastp-polyG_only.R2.fq.gz <span class="dt" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">\</span></span>
+<span id="cb23-7">adapters=./NEB-adapters.fasta <span class="dt" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">\</span></span>
+<span id="cb23-8">mininsert=17 <span class="dt" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">\</span></span>
+<span id="cb23-9">out=./trimmed-reads/sRNA-POR-79-S1-TP2-fastp-polyG_only-bbmerge.fq.gz</span></code></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>java -ea -Xmx1000m -Xms1000m -Djava.library.path=/home/shared/bbmap-39.06/jni/ -cp /home/shared/bbmap-39.06/current/ jgi.BBMerge in1=./trimmed-reads/fastp-polyG_only.R1.fq.gz in2=./trimmed-reads/fastp-polyG_only.R2.fq.gz adapters=./NEB-adapters.fasta mininsert=17 out=./trimmed-reads/sRNA-POR-79-S1-TP2-fastp-polyG_only-bbmerge.fq.gz
+Executing jgi.BBMerge [in1=./trimmed-reads/fastp-polyG_only.R1.fq.gz, in2=./trimmed-reads/fastp-polyG_only.R2.fq.gz, adapters=./NEB-adapters.fasta, mininsert=17, out=./trimmed-reads/sRNA-POR-79-S1-TP2-fastp-polyG_only-bbmerge.fq.gz]
+Version 39.06
+
+Writing mergable reads merged.
+Started output threads.
+Total time: 62.003 seconds.
+
+Pairs:                  19450041
+Joined:                 12649853    65.038%
+Ambiguous:              0           0.000%
+No Solution:            5981377     30.753%
+Too Short:              818811      4.210%
+Adapters Expected:      12781441    32.857%
+Adapters Found:         12553911    32.272%
+
+Avg Insert:             30.0
+Standard Deviation:     14.6
+Mode:                   29
+
+Insert range:           17 - 289
+90th percentile:        37
+75th percentile:        31
+50th percentile:        29
+25th percentile:        25
+10th percentile:        21</code></pre>
+</div>
+</div>
+<p>The results from using polyG-trimmed reads are certainly much better than just merging raw reads (12,649,853 reads could be joined this time). Mean insert size is now determined to be 30bp, which is what we might expect. However, the insert range (17 - 289) is still concerning, as reads &gt;30bp likely aren’t usable. Adapter sequences are still present, which are certainly contributing to some of the inability to merge, as well as the large read lengths. So, let’s try merging reads that have been trimmed of both polyG and adapter sequences.</p>
+</section>
+<section id="trimmed-adapters-polyg" class="level3">
+<h3 class="anchored" data-anchor-id="trimmed-adapters-polyg">Trimmed Adapters &amp; PolyG</h3>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb25" style="background: #f1f3f5;"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb25-1"><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># Load bash variables into memory</span></span>
+<span id="cb25-2"><span class="bu" style="color: null;
+background-color: null;
+font-style: inherit;">source</span> .bashvars</span>
+<span id="cb25-3"></span>
+<span id="cb25-4"><span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">${bbmerge}</span> <span class="dt" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">\</span></span>
+<span id="cb25-5">in1=./trimmed-reads/fastp-adapters-polyG.R1.fq.gz <span class="dt" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">\</span></span>
+<span id="cb25-6">in2=./trimmed-reads/fastp-adapters-polyG.R2.fq.gz <span class="dt" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">\</span></span>
+<span id="cb25-7">adapters=./NEB-adapters.fasta <span class="dt" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">\</span></span>
+<span id="cb25-8">mininsert=17 <span class="dt" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">\</span></span>
+<span id="cb25-9">out=./trimmed-reads/sRNA-POR-79-S1-TP2-fastp-adapters-polyG-bbmerge.fq.gz</span></code></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>java -ea -Xmx1000m -Xms1000m -Djava.library.path=/home/shared/bbmap-39.06/jni/ -cp /home/shared/bbmap-39.06/current/ jgi.BBMerge in1=./trimmed-reads/fastp-adapters-polyG.R1.fq.gz in2=./trimmed-reads/fastp-adapters-polyG.R2.fq.gz adapters=./NEB-adapters.fasta mininsert=17 out=./trimmed-reads/sRNA-POR-79-S1-TP2-fastp-adapters-polyG-bbmerge.fq.gz
+Executing jgi.BBMerge [in1=./trimmed-reads/fastp-adapters-polyG.R1.fq.gz, in2=./trimmed-reads/fastp-adapters-polyG.R2.fq.gz, adapters=./NEB-adapters.fasta, mininsert=17, out=./trimmed-reads/sRNA-POR-79-S1-TP2-fastp-adapters-polyG-bbmerge.fq.gz]
+Version 39.06
+
+Writing mergable reads merged.
+Started output threads.
+Total time: 31.592 seconds.
+
+Pairs:                  16734573
+Joined:                 15533284    92.822%
+Ambiguous:              0           0.000%
+No Solution:            603776      3.608%
+Too Short:              597513      3.571%
+Adapters Expected:      28222       0.084%
+Adapters Found:         18307       0.055%
+
+Avg Insert:             29.4
+Standard Deviation:     13.2
+Mode:                   29
+
+Insert range:           17 - 289
+90th percentile:        36
+75th percentile:        31
+50th percentile:        29
+25th percentile:        25
+10th percentile:        21</code></pre>
+</div>
+</div>
+<p>Well, trimming adapters certainly made a difference, as well! Now, 15,533,284 reads get joined (as opposed to 12,649,853 when using just polyG-trimmed reads). The average insert size changes very little, but, oddly, the insert range remains the same (17 - 289).</p>
+<p>For kicks, let’s throw the reads that have been trimmed to 31bp into <a href="https://jgi.doe.gov/data-and-tools/software-tools/bbtools/bb-tools-user-guide/bbmerge-guide/">BBMerge</a> and see what happens.</p>
+</section>
+<section id="trimmed-adapters-polyg-max-length-31bp" class="level3">
+<h3 class="anchored" data-anchor-id="trimmed-adapters-polyg-max-length-31bp">Trimmed Adapters &amp; PolyG Max Length 31bp</h3>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb27" style="background: #f1f3f5;"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb27-1"><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># Load bash variables into memory</span></span>
+<span id="cb27-2"><span class="bu" style="color: null;
+background-color: null;
+font-style: inherit;">source</span> .bashvars</span>
+<span id="cb27-3"></span>
+<span id="cb27-4"><span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">${bbmerge}</span> <span class="dt" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">\</span></span>
+<span id="cb27-5">in1=./trimmed-reads/fastp-adapters-polyG-31bp.R1.fq.gz <span class="dt" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">\</span></span>
+<span id="cb27-6">in2=./trimmed-reads/fastp-adapters-polyG-31bp.R2.fq.gz <span class="dt" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">\</span></span>
+<span id="cb27-7">adapters=./NEB-adapters.fasta <span class="dt" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">\</span></span>
+<span id="cb27-8">mininsert=17 <span class="dt" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">\</span></span>
+<span id="cb27-9">out=./trimmed-reads/sRNA-POR-79-S1-TP2-fastp-adapters-polyG-31bp-bbmerge.fq.gz</span></code></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>java -ea -Xmx1000m -Xms1000m -Djava.library.path=/home/shared/bbmap-39.06/jni/ -cp /home/shared/bbmap-39.06/current/ jgi.BBMerge in1=./trimmed-reads/fastp-adapters-polyG-31bp.R1.fq.gz in2=./trimmed-reads/fastp-adapters-polyG-31bp.R2.fq.gz adapters=./NEB-adapters.fasta mininsert=17 out=./trimmed-reads/sRNA-POR-79-S1-TP2-fastp-adapters-polyG-31bp-bbmerge.fq.gz
+Executing jgi.BBMerge [in1=./trimmed-reads/fastp-adapters-polyG-31bp.R1.fq.gz, in2=./trimmed-reads/fastp-adapters-polyG-31bp.R2.fq.gz, adapters=./NEB-adapters.fasta, mininsert=17, out=./trimmed-reads/sRNA-POR-79-S1-TP2-fastp-adapters-polyG-31bp-bbmerge.fq.gz]
+Version 39.06
+
+Writing mergable reads merged.
+Started output threads.
+Total time: 24.184 seconds.
+
+Pairs:                  13190855
+Joined:                 12346728    93.601%
+Ambiguous:              0           0.000%
+No Solution:            281891      2.137%
+Too Short:              562236      4.262%
+Adapters Expected:      4           0.000%
+Adapters Found:         4           0.000%
+
+Avg Insert:             26.3
+Standard Deviation:     4.0
+Mode:                   29
+
+Insert range:           17 - 35
+90th percentile:        31
+75th percentile:        29
+50th percentile:        28
+25th percentile:        24
+10th percentile:        20</code></pre>
+</div>
+</div>
+<p>This resulted in 12,346,728 reads being joined. This is on par with the 12,649,853 reads joined when using just polyG-trimmed reads. Additionally, we see the average insert size is 26.3bp, which is even more inline with what we’d expect for miRNAs (22-24bp), and the insert range is also inline with what we’d expect for these libraries (17 - 35bp). However, this is about 20% fewer reads than the 15,533,284 reads when using polyG- and adapter-trimmed reads.</p>
+<p>Maybe I’ll test out the subsequent downstream analyses using these different merging results…</p>
+</section>
+</section>
+<section id="fastqc" class="level2">
+<h2 class="anchored" data-anchor-id="fastqc">FastQC</h2>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb29" style="background: #f1f3f5;"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb29-1"><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># Load bash variables into memory</span></span>
+<span id="cb29-2"><span class="bu" style="color: null;
+background-color: null;
+font-style: inherit;">source</span> .bashvars</span>
+<span id="cb29-3"></span>
+<span id="cb29-4"><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># Populate array with FastQ files</span></span>
+<span id="cb29-5"><span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">fastq_array</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span><span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">(</span>./trimmed-reads/<span class="pp" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">*</span>.fq.gz<span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">)</span></span>
+<span id="cb29-6"></span>
+<span id="cb29-7"><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># Pass array contents to new variable</span></span>
+<span id="cb29-8"><span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">fastqc_list</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span><span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">$(</span><span class="bu" style="color: null;
+background-color: null;
+font-style: inherit;">echo</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"</span><span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">${fastq_array</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">[*]</span><span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">}</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"</span><span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">)</span></span>
+<span id="cb29-9"></span>
+<span id="cb29-10"><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># Run FastQC</span></span>
+<span id="cb29-11"><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># </span><span class="al" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">NOTE</span><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">: Do NOT quote ${fastqc_list}</span></span>
+<span id="cb29-12"><span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">${fastqc}</span> <span class="dt" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">\</span></span>
+<span id="cb29-13">--threads <span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">${threads}</span> <span class="dt" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">\</span></span>
+<span id="cb29-14">--quiet <span class="dt" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">\</span></span>
+<span id="cb29-15">--outdir ./ <span class="dt" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">\</span></span>
+<span id="cb29-16"><span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">${fastqc_list}</span></span></code></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>application/gzip
+application/gzip
+application/gzip
+application/gzip
+application/gzip
+application/gzip
+application/gzip
+application/gzip
+application/gzip
+application/gzip
+application/gzip
+application/gzip
+application/gzip</code></pre>
+</div>
+</div>
+</section>
+<section id="multiqc" class="level2">
+<h2 class="anchored" data-anchor-id="multiqc">MultiQC</h2>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb31" style="background: #f1f3f5;"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb31-1"><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># Load bash variables into memory</span></span>
+<span id="cb31-2"><span class="bu" style="color: null;
+background-color: null;
+font-style: inherit;">source</span> .bashvars</span>
+<span id="cb31-3"></span>
+<span id="cb31-4"><span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">${multiqc}</span> .</span></code></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>
+  /// MultiQC 🔍 | v1.14
+
+|           multiqc | MultiQC Version v1.19 now available!
+|           multiqc | Search path : /home/shared/8TB_HDD_01/sam/gitrepos/RobertsLab/sams-notebook/posts/2024/2024-02-02-sRNA-seq-Paired-Read-Merging-Exploratios---Coral-E5-Deep-Dive
+|         searching | ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 100% 60/60  
+|            fastqc | Found 13 reports
+|           multiqc | Compressing plot data
+|           multiqc | Previous MultiQC output found! Adjusting filenames..
+|           multiqc | Use -f or --force to overwrite existing reports instead
+|           multiqc | Report      : multiqc_report_1.html
+|           multiqc | Data        : multiqc_data_1
+|           multiqc | MultiQC complete</code></pre>
+</div>
+</div>
+<p>Check out the <a href="https://multiqc.info/"><code>MultiQC</code></a> results here (HTML):</p>
+<ul>
+<li><a href="./multiqc_report.html">MultiQC Report</a></li>
+</ul>
+
+
+
+</section>
+</section>
+
+<div id="quarto-appendix" class="default"><section class="quarto-appendix-contents"><h2 class="anchored quarto-appendix-heading">References</h2><div id="refs" class="references csl-bib-body hanging-indent">
+<div id="ref-bushnell2017" class="csl-entry">
+Bushnell, Brian, Jonathan Rood, and Esther Singer. 2017. <span>“BBMerge <span></span> Accurate Paired Shotgun Read Merging via Overlap.”</span> Edited by Patrick Jon Biggs. <em>PLOS ONE</em> 12 (10): e0185056. <a href="https://doi.org/10.1371/journal.pone.0185056">https://doi.org/10.1371/journal.pone.0185056</a>.
+</div>
+<div id="ref-chen2023" class="csl-entry">
+Chen, Shifu. 2023. <span>“Ultrafast One<span>-</span>Pass FASTQ Data Preprocessing, Quality Control, and Deduplication Using Fastp.”</span> <em>iMeta</em> 2 (2). <a href="https://doi.org/10.1002/imt2.107">https://doi.org/10.1002/imt2.107</a>.
+</div>
+<div id="ref-chen2018" class="csl-entry">
+Chen, Shifu, Yanqing Zhou, Yaru Chen, and Jia Gu. 2018. <span>“Fastp: An Ultra-Fast All-in-One FASTQ Preprocessor.”</span> <em>Bioinformatics</em> 34 (17): i884–90. <a href="https://doi.org/10.1093/bioinformatics/bty560">https://doi.org/10.1093/bioinformatics/bty560</a>.
+</div>
+<div id="ref-sanchezherrero2021" class="csl-entry">
+Sanchez Herrero, Jose Francisco, Raquel Pluvinet, Antonio Luna de Haro, and Lauro Sumoy. 2021. <span>“Paired-End Small RNA Sequencing Reveals a Possible Overestimation in the isomiR Sequence Repertoire Previously Reported from Conventional Single Read Data Analysis.”</span> <em>BMC Bioinformatics</em> 22 (1). <a href="https://doi.org/10.1186/s12859-021-04128-1">https://doi.org/10.1186/s12859-021-04128-1</a>.
+</div>
+</div></section></div> ]]></description>
+  <category>2024</category>
+  <category>E5</category>
+  <category>sRNA-seq</category>
+  <category>merge</category>
+  <category>bbmerge</category>
+  <category>fastp</category>
+  <guid>https://robertslab.github.io/sams-notebook/posts/2024/2024-02-02-sRNA-seq-Paired-Read-Merging-Exploratios---Coral-E5-Deep-Dive/index.html</guid>
+  <pubDate>Fri, 02 Feb 2024 08:00:00 GMT</pubDate>
+</item>
 <item>
   <title>Figure Updates - CEABIGR Spurious Transcription Calcs and Plotting Using Exon Sum Threshold</title>
   <dc:creator>Sam White</dc:creator>
@@ -11299,243 +12864,6 @@ Porites_evermani_scaffold_1:729097-729587  Cluster_9  Porites_evermani_scaffold_
   <category>E5</category>
   <guid>https://robertslab.github.io/sams-notebook/posts/2023/2023-07-31-sRNA-seq-Alignments---E5-Coral-P.evermanni-Using-ShortStack-on-Mox/index.html</guid>
   <pubDate>Mon, 31 Jul 2023 13:02:00 GMT</pubDate>
-</item>
-<item>
-  <title>Read Extractions - M.magister MEGAN FastA to FastQ Arthropoda and Unassigned Reads</title>
-  <dc:creator>Sam White</dc:creator>
-  <link>https://robertslab.github.io/sams-notebook/posts/2023/2023-07-30-Read-Extractions---M.magister-MEGAN-FastA-to-FastQ-Arthropoda-and-Unassigned-Reads/index.html</link>
-  <description><![CDATA[ 
-
-
-
-
-<p>After <a href="https://robertslab.github.io/sams-notebook/posts/2023/2023-07-26-Read-Extractions-M.magister-MEGAN-Arthropoda-and-Unassigned-Reads-to-FastA/">getting <code>Arthropoda</code> and <code>Unassigned</code> reads extracted to FastA format</a> (notebook entry) using <a href="https://software-ab.cs.uni-tuebingen.de/download/megan6/welcome/">MEGAN6 Community Edition</a>, the next step was to use the FastA files to extract reads in FastQ format. I used <a href="https://github.com/lh3/seqtk"><code>seqtk</code></a> to do this. The process is documented in the Jupyter Notebook below.</p>
-<p>Jupyter Notebook:</p>
-<ul>
-<li><p>GitHub:</p>
-<ul>
-<li><a href="https://github.com/RobertsLab/code/blob/master/notebooks/sam/20230730-mmag-megan-fasta_to_fastq.ipynb">20230730-mmag-megan-fasta_to_fastq.ipynb</a></li>
-</ul></li>
-<li><p>NB Viewer:</p>
-<ul>
-<li><a href="https://nbviewer.org/github/RobertsLab/code/blob/master/notebooks/sam/20230730-mmag-megan-fasta_to_fastq.ipynb">20230730-mmag-megan-fasta_to_fastq.ipynb</a></li>
-</ul></li>
-</ul>
-<iframe src="https://nbviewer.org/github/RobertsLab/code/blob/master/notebooks/sam/20230730-mmag-megan-fasta_to_fastq.ipynb" width="100%" height="2000" scrolling="yes">
-</iframe>
-<hr>
-<section id="results" class="level1">
-<h1>RESULTS</h1>
-<p>Output folder:</p>
-<ul>
-<li><a href="https://gannet.fish.washington.edu/Atumefaciens/20230730.mmag-megan_reads/">20230730.mmag-megan_reads/</a></li>
-</ul>
-<section id="fastq-files" class="level4">
-<h4 class="anchored" data-anchor-id="fastq-files">FastQ Files</h4>
-<ul>
-<li><p><a href="https://gannet.fish.washington.edu/Atumefaciens/20230730.mmag-megan_reads20230730.mmag.CH01-06.trimmed.megan_R1.fq.gz">20230730.mmag.CH01-06.trimmed.megan_R1.fq.gz</a> (218M)</p>
-<ul>
-<li>MD5: <code>e6047623dc885392b3ae816f094552b4</code></li>
-</ul></li>
-<li><p><a href="https://gannet.fish.washington.edu/Atumefaciens/20230730.mmag-megan_reads20230730.mmag.CH01-06.trimmed.megan_R2.fq.gz">20230730.mmag.CH01-06.trimmed.megan_R2.fq.gz</a> (224M)</p>
-<ul>
-<li>MD5: <code>40b096dc26066a0d715d05e4bde36806</code></li>
-</ul></li>
-<li><p><a href="https://gannet.fish.washington.edu/Atumefaciens/20230730.mmag-megan_reads20230730.mmag.CH01-14.trimmed.megan_R1.fq.gz">20230730.mmag.CH01-14.trimmed.megan_R1.fq.gz</a> (405M)</p>
-<ul>
-<li>MD5: <code>401d6206dcd62c8b682536eef19ee4cc</code></li>
-</ul></li>
-<li><p><a href="https://gannet.fish.washington.edu/Atumefaciens/20230730.mmag-megan_reads20230730.mmag.CH01-14.trimmed.megan_R2.fq.gz">20230730.mmag.CH01-14.trimmed.megan_R2.fq.gz</a> (412M)</p>
-<ul>
-<li>MD5: <code>dcfe7a42861fa7406e1cc16522584045</code></li>
-</ul></li>
-<li><p><a href="https://gannet.fish.washington.edu/Atumefaciens/20230730.mmag-megan_reads20230730.mmag.CH01-22.trimmed.megan_R1.fq.gz">20230730.mmag.CH01-22.trimmed.megan_R1.fq.gz</a> (238M)</p>
-<ul>
-<li>MD5: <code>e9c1b9a7d3afb9bdd4beaff2c6ddb0fa</code></li>
-</ul></li>
-<li><p><a href="https://gannet.fish.washington.edu/Atumefaciens/20230730.mmag-megan_reads20230730.mmag.CH01-22.trimmed.megan_R2.fq.gz">20230730.mmag.CH01-22.trimmed.megan_R2.fq.gz</a> (242M)</p>
-<ul>
-<li>MD5: <code>7491813d90b50e08e3cefca8e1a1d7fc</code></li>
-</ul></li>
-<li><p><a href="https://gannet.fish.washington.edu/Atumefaciens/20230730.mmag-megan_reads20230730.mmag.CH01-38.trimmed.megan_R1.fq.gz">20230730.mmag.CH01-38.trimmed.megan_R1.fq.gz</a> (405M)</p>
-<ul>
-<li>MD5: <code>99bf9577b46bf2dfca8b8ac042e179ed</code></li>
-</ul></li>
-<li><p><a href="https://gannet.fish.washington.edu/Atumefaciens/20230730.mmag-megan_reads20230730.mmag.CH01-38.trimmed.megan_R2.fq.gz">20230730.mmag.CH01-38.trimmed.megan_R2.fq.gz</a> (410M)</p>
-<ul>
-<li>MD5: <code>4be920ddd78862fe25a46e66235faad4</code></li>
-</ul></li>
-<li><p><a href="https://gannet.fish.washington.edu/Atumefaciens/20230730.mmag-megan_reads20230730.mmag.CH03-04.trimmed.megan_R1.fq.gz">20230730.mmag.CH03-04.trimmed.megan_R1.fq.gz</a> (214M)</p>
-<ul>
-<li>MD5: <code>2f85cd2b10061b89011123d3bfa58d4f</code></li>
-</ul></li>
-<li><p><a href="https://gannet.fish.washington.edu/Atumefaciens/20230730.mmag-megan_reads20230730.mmag.CH03-04.trimmed.megan_R2.fq.gz">20230730.mmag.CH03-04.trimmed.megan_R2.fq.gz</a> (218M)</p>
-<ul>
-<li>MD5: <code>d220a8d18d8a67bfba19410879464f43</code></li>
-</ul></li>
-<li><p><a href="https://gannet.fish.washington.edu/Atumefaciens/20230730.mmag-megan_reads20230730.mmag.CH03-15.trimmed.megan_R1.fq.gz">20230730.mmag.CH03-15.trimmed.megan_R1.fq.gz</a> (260M)</p>
-<ul>
-<li>MD5: <code>a20b5ac49bdf3e17f18d0dbc1b60d6d2</code></li>
-</ul></li>
-<li><p><a href="https://gannet.fish.washington.edu/Atumefaciens/20230730.mmag-megan_reads20230730.mmag.CH03-15.trimmed.megan_R2.fq.gz">20230730.mmag.CH03-15.trimmed.megan_R2.fq.gz</a> (265M)</p>
-<ul>
-<li>MD5: <code>7cf21ab8f759a50183d31584aac1d1e3</code></li>
-</ul></li>
-<li><p><a href="https://gannet.fish.washington.edu/Atumefaciens/20230730.mmag-megan_reads20230730.mmag.CH03-33.trimmed.megan_R1.fq.gz">20230730.mmag.CH03-33.trimmed.megan_R1.fq.gz</a> (235M)</p>
-<ul>
-<li>MD5: <code>be8e50bf2c6747671ab4c2f2c3cbc5fd</code></li>
-</ul></li>
-<li><p><a href="https://gannet.fish.washington.edu/Atumefaciens/20230730.mmag-megan_reads20230730.mmag.CH03-33.trimmed.megan_R2.fq.gz">20230730.mmag.CH03-33.trimmed.megan_R2.fq.gz</a> (235M)</p>
-<ul>
-<li>MD5: <code>a5edfe0babb198adb29d1a19784f678b</code></li>
-</ul></li>
-<li><p><a href="https://gannet.fish.washington.edu/Atumefaciens/20230730.mmag-megan_reads20230730.mmag.CH05-01.trimmed.megan_R1.fq.gz">20230730.mmag.CH05-01.trimmed.megan_R1.fq.gz</a> (248M)</p>
-<ul>
-<li>MD5: <code>53ef62108920c3957954ac443418ca92</code></li>
-</ul></li>
-<li><p><a href="https://gannet.fish.washington.edu/Atumefaciens/20230730.mmag-megan_reads20230730.mmag.CH05-01.trimmed.megan_R2.fq.gz">20230730.mmag.CH05-01.trimmed.megan_R2.fq.gz</a> (254M)</p>
-<ul>
-<li>MD5: <code>0c22a7ca75b5c5adb646794115f112c7</code></li>
-</ul></li>
-<li><p><a href="https://gannet.fish.washington.edu/Atumefaciens/20230730.mmag-megan_reads20230730.mmag.CH05-06.trimmed.megan_R1.fq.gz">20230730.mmag.CH05-06.trimmed.megan_R1.fq.gz</a> (219M)</p>
-<ul>
-<li>MD5: <code>f5abf6a6f57473c7a8aed7b37472a4d2</code></li>
-</ul></li>
-<li><p><a href="https://gannet.fish.washington.edu/Atumefaciens/20230730.mmag-megan_reads20230730.mmag.CH05-06.trimmed.megan_R2.fq.gz">20230730.mmag.CH05-06.trimmed.megan_R2.fq.gz</a> (223M)</p>
-<ul>
-<li>MD5: <code>3f17e210323b66673b87682e18c65756</code></li>
-</ul></li>
-<li><p><a href="https://gannet.fish.washington.edu/Atumefaciens/20230730.mmag-megan_reads20230730.mmag.CH05-07.trimmed.megan_R1.fq.gz">20230730.mmag.CH05-07.trimmed.megan_R1.fq.gz</a> (241M)</p>
-<ul>
-<li>MD5: <code>3e3823bbf19ec39bca8d5544640a4211</code></li>
-</ul></li>
-<li><p><a href="https://gannet.fish.washington.edu/Atumefaciens/20230730.mmag-megan_reads20230730.mmag.CH05-07.trimmed.megan_R2.fq.gz">20230730.mmag.CH05-07.trimmed.megan_R2.fq.gz</a> (243M)</p>
-<ul>
-<li>MD5: <code>58189bc49bee52fa10aca82274657ce3</code></li>
-</ul></li>
-<li><p><a href="https://gannet.fish.washington.edu/Atumefaciens/20230730.mmag-megan_reads20230730.mmag.CH05-09.trimmed.megan_R1.fq.gz">20230730.mmag.CH05-09.trimmed.megan_R1.fq.gz</a> (335M)</p>
-<ul>
-<li>MD5: <code>c6900bf83ffbf843216fb67fce1c7df2</code></li>
-</ul></li>
-<li><p><a href="https://gannet.fish.washington.edu/Atumefaciens/20230730.mmag-megan_reads20230730.mmag.CH05-09.trimmed.megan_R2.fq.gz">20230730.mmag.CH05-09.trimmed.megan_R2.fq.gz</a> (339M)</p>
-<ul>
-<li>MD5: <code>02f9adfa7438fb42b4dca917aa4763fb</code></li>
-</ul></li>
-<li><p><a href="https://gannet.fish.washington.edu/Atumefaciens/20230730.mmag-megan_reads20230730.mmag.CH05-14.trimmed.megan_R1.fq.gz">20230730.mmag.CH05-14.trimmed.megan_R1.fq.gz</a> (336M)</p>
-<ul>
-<li>MD5: <code>fa31a570dc375a9fd2764b4723fad235</code></li>
-</ul></li>
-<li><p><a href="https://gannet.fish.washington.edu/Atumefaciens/20230730.mmag-megan_reads20230730.mmag.CH05-14.trimmed.megan_R2.fq.gz">20230730.mmag.CH05-14.trimmed.megan_R2.fq.gz</a> (341M)</p>
-<ul>
-<li>MD5: <code>99e636f1a2ebdd870d6f822901ceed61</code></li>
-</ul></li>
-<li><p><a href="https://gannet.fish.washington.edu/Atumefaciens/20230730.mmag-megan_reads20230730.mmag.CH05-21.trimmed.megan_R1.fq.gz">20230730.mmag.CH05-21.trimmed.megan_R1.fq.gz</a> (319M)</p>
-<ul>
-<li>MD5: <code>753d18733a2d9c041660d3b8c14c8f6e</code></li>
-</ul></li>
-<li><p><a href="https://gannet.fish.washington.edu/Atumefaciens/20230730.mmag-megan_reads20230730.mmag.CH05-21.trimmed.megan_R2.fq.gz">20230730.mmag.CH05-21.trimmed.megan_R2.fq.gz</a> (324M)</p>
-<ul>
-<li>MD5: <code>f5d38ef3d32b2e11a23ca6a46098b8e6</code></li>
-</ul></li>
-<li><p><a href="https://gannet.fish.washington.edu/Atumefaciens/20230730.mmag-megan_reads20230730.mmag.CH05-29.trimmed.megan_R1.fq.gz">20230730.mmag.CH05-29.trimmed.megan_R1.fq.gz</a> (350M)</p>
-<ul>
-<li>MD5: <code>383b33f41b1412d9dbf0dcc9457a305c</code></li>
-</ul></li>
-<li><p><a href="https://gannet.fish.washington.edu/Atumefaciens/20230730.mmag-megan_reads20230730.mmag.CH05-29.trimmed.megan_R2.fq.gz">20230730.mmag.CH05-29.trimmed.megan_R2.fq.gz</a> (360M)</p>
-<ul>
-<li>MD5: <code>9a910e7748d1aa92c8035df26c1cc42b</code></li>
-</ul></li>
-<li><p><a href="https://gannet.fish.washington.edu/Atumefaciens/20230730.mmag-megan_reads20230730.mmag.CH07-04.trimmed.megan_R1.fq.gz">20230730.mmag.CH07-04.trimmed.megan_R1.fq.gz</a> (193M)</p>
-<ul>
-<li>MD5: <code>370c7b651ff1cc7c1406123d831e7d64</code></li>
-</ul></li>
-<li><p><a href="https://gannet.fish.washington.edu/Atumefaciens/20230730.mmag-megan_reads20230730.mmag.CH07-04.trimmed.megan_R2.fq.gz">20230730.mmag.CH07-04.trimmed.megan_R2.fq.gz</a> (196M)</p>
-<ul>
-<li>MD5: <code>1574c16f21475c91aa21ae9f81426768</code></li>
-</ul></li>
-<li><p><a href="https://gannet.fish.washington.edu/Atumefaciens/20230730.mmag-megan_reads20230730.mmag.CH07-06.trimmed.megan_R1.fq.gz">20230730.mmag.CH07-06.trimmed.megan_R1.fq.gz</a> (262M)</p>
-<ul>
-<li>MD5: <code>9d44fc4c9f7a7c7df0125b6174613627</code></li>
-</ul></li>
-<li><p><a href="https://gannet.fish.washington.edu/Atumefaciens/20230730.mmag-megan_reads20230730.mmag.CH07-06.trimmed.megan_R2.fq.gz">20230730.mmag.CH07-06.trimmed.megan_R2.fq.gz</a> (265M)</p>
-<ul>
-<li>MD5: <code>ac41ebdd06208c728e1146839153b29e</code></li>
-</ul></li>
-<li><p><a href="https://gannet.fish.washington.edu/Atumefaciens/20230730.mmag-megan_reads20230730.mmag.CH07-08.trimmed.megan_R1.fq.gz">20230730.mmag.CH07-08.trimmed.megan_R1.fq.gz</a> (503M)</p>
-<ul>
-<li>MD5: <code>d8f891faeead968fa5b4fdb6a9c26d21</code></li>
-</ul></li>
-<li><p><a href="https://gannet.fish.washington.edu/Atumefaciens/20230730.mmag-megan_reads20230730.mmag.CH07-08.trimmed.megan_R2.fq.gz">20230730.mmag.CH07-08.trimmed.megan_R2.fq.gz</a> (513M)</p>
-<ul>
-<li>MD5: <code>98340e3ca008cf97fe240469b5c0f6f5</code></li>
-</ul></li>
-<li><p><a href="https://gannet.fish.washington.edu/Atumefaciens/20230730.mmag-megan_reads20230730.mmag.CH07-11.trimmed.megan_R1.fq.gz">20230730.mmag.CH07-11.trimmed.megan_R1.fq.gz</a> (349M)</p>
-<ul>
-<li>MD5: <code>8ffcad6e64dd7d1b12c1739767425ec1</code></li>
-</ul></li>
-<li><p><a href="https://gannet.fish.washington.edu/Atumefaciens/20230730.mmag-megan_reads20230730.mmag.CH07-11.trimmed.megan_R2.fq.gz">20230730.mmag.CH07-11.trimmed.megan_R2.fq.gz</a> (350M)</p>
-<ul>
-<li>MD5: <code>4b2673c0f02e48db0acbb847a4fb6dab</code></li>
-</ul></li>
-<li><p><a href="https://gannet.fish.washington.edu/Atumefaciens/20230730.mmag-megan_reads20230730.mmag.CH07-24.trimmed.megan_R1.fq.gz">20230730.mmag.CH07-24.trimmed.megan_R1.fq.gz</a> (378M)</p>
-<ul>
-<li>MD5: <code>cdd6d93b54fd40b135f4545474d9f837</code></li>
-</ul></li>
-<li><p><a href="https://gannet.fish.washington.edu/Atumefaciens/20230730.mmag-megan_reads20230730.mmag.CH07-24.trimmed.megan_R2.fq.gz">20230730.mmag.CH07-24.trimmed.megan_R2.fq.gz</a> (384M)</p>
-<ul>
-<li>MD5: <code>3229af42be57da29f13cad72f1f99523</code></li>
-</ul></li>
-<li><p><a href="https://gannet.fish.washington.edu/Atumefaciens/20230730.mmag-megan_reads20230730.mmag.CH09-02.trimmed.megan_R1.fq.gz">20230730.mmag.CH09-02.trimmed.megan_R1.fq.gz</a> (215M)</p>
-<ul>
-<li>MD5: <code>4328a6e6194fb6417dcc9cb61d3f0a72</code></li>
-</ul></li>
-<li><p><a href="https://gannet.fish.washington.edu/Atumefaciens/20230730.mmag-megan_reads20230730.mmag.CH09-02.trimmed.megan_R2.fq.gz">20230730.mmag.CH09-02.trimmed.megan_R2.fq.gz</a> (219M)</p>
-<ul>
-<li>MD5: <code>74c58ba1072a61ea3e75b83342589830</code></li>
-</ul></li>
-<li><p><a href="https://gannet.fish.washington.edu/Atumefaciens/20230730.mmag-megan_reads20230730.mmag.CH09-13.trimmed.megan_R1.fq.gz">20230730.mmag.CH09-13.trimmed.megan_R1.fq.gz</a> (263M)</p>
-<ul>
-<li>MD5: <code>a748a887a31a327d90bb80550c4e2e40</code></li>
-</ul></li>
-<li><p><a href="https://gannet.fish.washington.edu/Atumefaciens/20230730.mmag-megan_reads20230730.mmag.CH09-13.trimmed.megan_R2.fq.gz">20230730.mmag.CH09-13.trimmed.megan_R2.fq.gz</a> (265M)</p>
-<ul>
-<li>MD5: <code>7d81df73ba6dc5bbe3457bf973ede371</code></li>
-</ul></li>
-<li><p><a href="https://gannet.fish.washington.edu/Atumefaciens/20230730.mmag-megan_reads20230730.mmag.CH09-28.trimmed.megan_R1.fq.gz">20230730.mmag.CH09-28.trimmed.megan_R1.fq.gz</a> (191M)</p>
-<ul>
-<li>MD5: <code>67d2237f163289bc2b962e52c21562cc</code></li>
-</ul></li>
-<li><p><a href="https://gannet.fish.washington.edu/Atumefaciens/20230730.mmag-megan_reads20230730.mmag.CH09-28.trimmed.megan_R2.fq.gz">20230730.mmag.CH09-28.trimmed.megan_R2.fq.gz</a> (190M)</p>
-<ul>
-<li>MD5: <code>088a69aaf3371a0a6e16ab63e67146e2</code></li>
-</ul></li>
-<li><p><a href="https://gannet.fish.washington.edu/Atumefaciens/20230730.mmag-megan_reads20230730.mmag.CH10-08.trimmed.megan_R1.fq.gz">20230730.mmag.CH10-08.trimmed.megan_R1.fq.gz</a> (305M)</p>
-<ul>
-<li>MD5: <code>e61fb563e027256c0d45144bb3c89b78</code></li>
-</ul></li>
-<li><p><a href="https://gannet.fish.washington.edu/Atumefaciens/20230730.mmag-megan_reads20230730.mmag.CH10-08.trimmed.megan_R2.fq.gz">20230730.mmag.CH10-08.trimmed.megan_R2.fq.gz</a> (312M)</p>
-<ul>
-<li>MD5: <code>426403c8c8cb8275c84bdca3635b3186</code></li>
-</ul></li>
-<li><p><a href="https://gannet.fish.washington.edu/Atumefaciens/20230730.mmag-megan_reads20230730.mmag.CH10-11.trimmed.megan_R1.fq.gz">20230730.mmag.CH10-11.trimmed.megan_R1.fq.gz</a> (259M)</p>
-<ul>
-<li>MD5: <code>8e5dc9bc9d058b23cefec0e4d03f2cde</code></li>
-</ul></li>
-<li><p><a href="https://gannet.fish.washington.edu/Atumefaciens/20230730.mmag-megan_reads20230730.mmag.CH10-11.trimmed.megan_R2.fq.gz">20230730.mmag.CH10-11.trimmed.megan_R2.fq.gz</a> (260M)</p>
-<ul>
-<li>MD5: <code>e894988fd6467f8263f40e5946e3fe88</code></li>
-</ul></li>
-</ul>
-
-
-</section>
-</section>
-
- ]]></description>
-  <category>2023</category>
-  <category>DuMOAR</category>
-  <guid>https://robertslab.github.io/sams-notebook/posts/2023/2023-07-30-Read-Extractions---M.magister-MEGAN-FastA-to-FastQ-Arthropoda-and-Unassigned-Reads/index.html</guid>
-  <pubDate>Sun, 30 Jul 2023 22:25:00 GMT</pubDate>
 </item>
 </channel>
 </rss>
