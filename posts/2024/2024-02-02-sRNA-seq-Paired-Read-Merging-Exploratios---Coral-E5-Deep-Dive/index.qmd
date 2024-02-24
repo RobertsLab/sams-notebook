@@ -8,6 +8,8 @@ date: '2024-02-02'
 draft: false
 engine: knitr
 code-fold: false
+execute: 
+  cache: true
 categories: 
   - 2024
   - E5
@@ -32,7 +34,7 @@ I decided to explore merging/trimming using two different sets of software:
 
 [BBMerge](https://jgi.doe.gov/data-and-tools/software-tools/bbtools/bb-tools-user-guide/bbmerge-guide/) seemed like a good tool, as it's specifically designed to handle merging of Illumina PE sequencing reads. Plus, it's part of the [BBTols suite](https://sourceforge.net/projects/bbmap/), which has a number of other tools, and packages like this usually have nice cross-compatibility between the different tools.
 
-[`fastp`](https://github.com/OpenGene/fastp) has both trimming _and_ merging built into the tools itself, which I hadn't previously realized (but, had never explored, since this isn't how we usually work with PE sequencing data). I was simply going to use [`fastp`](https://github.com/OpenGene/fastp) for trimming, as it's the trimmer thta I'm most familiar with. I honestly thought I'd trim with [`fastp`](https://github.com/OpenGene/fastp), and then merge with [BBMerge](https://jgi.doe.gov/data-and-tools/software-tools/bbtools/bb-tools-user-guide/bbmerge-guide/), but the fact that [`fastp`](https://github.com/OpenGene/fastp) had it built-in could make my life easier.
+[`fastp`](https://github.com/OpenGene/fastp) has both trimming *and* merging built into the tools itself, which I hadn't previously realized (but, had never explored, since this isn't how we usually work with PE sequencing data). I was simply going to use [`fastp`](https://github.com/OpenGene/fastp) for trimming, as it's the trimmer thta I'm most familiar with. I honestly thought I'd trim with [`fastp`](https://github.com/OpenGene/fastp), and then merge with [BBMerge](https://jgi.doe.gov/data-and-tools/software-tools/bbtools/bb-tools-user-guide/bbmerge-guide/), but the fact that [`fastp`](https://github.com/OpenGene/fastp) had it built-in could make my life easier.
 
 So, with all of that out of the way, let's start the analysis. This will only use a single set of PE sequencing reads, as an initial exploration. We'll decide on the best approach and then use that approach to run all the sequencing data through the chosen "pipeline."
 
@@ -179,7 +181,6 @@ The paired end trimming will examine how some of the trimming options impact seq
 
 #### PolyG Trimming Only
 
-
 ```{bash fastp-polyG-only, engine='bash', eval=TRUE}
 # Load bash variables into memory
 source .bashvars
@@ -316,7 +317,7 @@ source .bashvars
 
 ### Raw reads
 
-[BBMerge](https://jgi.doe.gov/data-and-tools/software-tools/bbtools/bb-tools-user-guide/bbmerge-guide/) documentations actually indicates that merging performs best using _raw_, untrimmed reads, so we'll try that out first...
+[BBMerge](https://jgi.doe.gov/data-and-tools/software-tools/bbtools/bb-tools-user-guide/bbmerge-guide/) documentations actually indicates that merging performs best using *raw*, untrimmed reads, so we'll try that out first...
 
 ```{r bbmerge-raw-reads, engine='bash', eval=TRUE}
 # Load bash variables into memory
@@ -331,9 +332,9 @@ out=./trimmed-reads/sRNA-POR-79-S1-TP2-raw-bbmerge.fq.gz
 
 ### Trimmed PolyG Only
 
-Running [BBMerge](https://jgi.doe.gov/data-and-tools/software-tools/bbtools/bb-tools-user-guide/bbmerge-guide/) on just raw reads yielded poor results (>99% of reads could _not_ be merged). Additionally, the average insert size was determined to be 131.5bp, which is not going to be useful for sRNA-seq.
+Running [BBMerge](https://jgi.doe.gov/data-and-tools/software-tools/bbtools/bb-tools-user-guide/bbmerge-guide/) on just raw reads yielded poor results (\>99% of reads could *not* be merged). Additionally, the average insert size was determined to be 131.5bp, which is not going to be useful for sRNA-seq.
 
-I know that there's a very large stretch of polyG sequence in the reads (likely due to the small insert size and "long" read length - Gs get added as a "placeholder" base each cycle that exceeds the insert size), so let's try merging reads _after_ polyG sequence has been trimmed.
+I know that there's a very large stretch of polyG sequence in the reads (likely due to the small insert size and "long" read length - Gs get added as a "placeholder" base each cycle that exceeds the insert size), so let's try merging reads *after* polyG sequence has been trimmed.
 
 ```{r bbmerge-trimmed-polyg-only, engine='bash', eval=TRUE}
 # Load bash variables into memory
@@ -347,8 +348,7 @@ mininsert=17 \
 out=./trimmed-reads/sRNA-POR-79-S1-TP2-fastp-polyG_only-bbmerge.fq.gz
 ```
 
-The results from using polyG-trimmed reads are certainly much better than just merging raw reads (12,649,853 reads could be joined this time). Mean insert size is now determined to be 30bp, which is what we might expect. However, the insert range (17 - 289) is still concerning, as reads >30bp likely aren't usable. Adapter sequences are still present, which are certainly contributing to some of the inability to merge, as well as the large read lengths. So, let's try merging reads that have been trimmed of both polyG and adapter sequences.
-
+The results from using polyG-trimmed reads are certainly much better than just merging raw reads (12,649,853 reads could be joined this time). Mean insert size is now determined to be 30bp, which is what we might expect. However, the insert range (17 - 289) is still concerning, as reads \>30bp likely aren't usable. Adapter sequences are still present, which are certainly contributing to some of the inability to merge, as well as the large read lengths. So, let's try merging reads that have been trimmed of both polyG and adapter sequences.
 
 ### Trimmed Adapters & PolyG
 
@@ -416,7 +416,6 @@ source .bashvars
 ${multiqc} .
 ```
 
-
 Check out the [`MultiQC`](https://multiqc.info/) results here (HTML):
 
-- [MultiQC Report](./multiqc_report.html)
+-   [MultiQC Report](./multiqc_report.html)
