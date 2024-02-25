@@ -1,0 +1,924 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.3.450">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+<meta name="author" content="Sam White">
+<meta name="dcterms.date" content="2022-03-23">
+
+<title>Sam’s Notebook - Differential Gene Expression - P.generosa DGE Between Tissues Using Nextlow NF-Core RNAseq Pipeline on Mox</title>
+<style>
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: min(4vw, 1.5em);}
+div.column{flex: auto; overflow-x: auto;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+  vertical-align: middle;
+}
+</style>
+
+
+<script src="../../../site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="../../../site_libs/quarto-nav/headroom.min.js"></script>
+<script src="../../../site_libs/clipboard/clipboard.min.js"></script>
+<script src="../../../site_libs/quarto-search/autocomplete.umd.js"></script>
+<script src="../../../site_libs/quarto-search/fuse.min.js"></script>
+<script src="../../../site_libs/quarto-search/quarto-search.js"></script>
+<meta name="quarto:offset" content="../../../">
+<link href="../../..//images/favicon.ico" rel="icon">
+<script src="../../../site_libs/quarto-html/quarto.js"></script>
+<script src="../../../site_libs/quarto-html/popper.min.js"></script>
+<script src="../../../site_libs/quarto-html/tippy.umd.min.js"></script>
+<script src="../../../site_libs/quarto-html/anchor.min.js"></script>
+<link href="../../../site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="../../../site_libs/quarto-html/quarto-syntax-highlighting-dark.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="../../../site_libs/bootstrap/bootstrap.min.js"></script>
+<link href="../../../site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="../../../site_libs/bootstrap/bootstrap.min.css" rel="stylesheet" id="quarto-bootstrap" data-mode="dark">
+<script id="quarto-search-options" type="application/json">{
+  "location": "navbar",
+  "copy-button": false,
+  "collapse-after": 3,
+  "panel-placement": "end",
+  "type": "overlay",
+  "limit": 20,
+  "language": {
+    "search-no-results-text": "No results",
+    "search-matching-documents-text": "matching documents",
+    "search-copy-link-title": "Copy link to search",
+    "search-hide-matches-text": "Hide additional matches",
+    "search-more-match-text": "more match in this document",
+    "search-more-matches-text": "more matches in this document",
+    "search-clear-button-title": "Clear",
+    "search-detached-cancel-button-title": "Cancel",
+    "search-submit-button-title": "Submit",
+    "search-label": "Search"
+  }
+}</script>
+<script async="" src="https://www.googletagmanager.com/gtag/js?id=G-7483T61T11"></script>
+
+<script type="text/javascript">
+
+window.dataLayer = window.dataLayer || [];
+function gtag(){dataLayer.push(arguments);}
+gtag('js', new Date());
+gtag('config', 'G-7483T61T11', { 'anonymize_ip': true});
+</script>
+
+
+<link rel="stylesheet" href="../../../styles.css">
+</head>
+
+<body class="floating nav-fixed">
+
+<div id="quarto-search-results"></div>
+  <header id="quarto-header" class="headroom fixed-top">
+    <nav class="navbar navbar-expand-lg navbar-dark ">
+      <div class="navbar-container container-fluid">
+      <div class="navbar-brand-container">
+    <a class="navbar-brand" href="../../../index.html">
+    <span class="navbar-title">Sam’s Notebook</span>
+    </a>
+  </div>
+            <div id="quarto-search" class="" title="Search"></div>
+          <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarCollapse" aria-controls="navbarCollapse" aria-expanded="false" aria-label="Toggle navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+  <span class="navbar-toggler-icon"></span>
+</button>
+          <div class="collapse navbar-collapse" id="navbarCollapse">
+            <ul class="navbar-nav navbar-nav-scroll ms-auto">
+  <li class="nav-item dropdown ">
+    <a class="nav-link dropdown-toggle" href="#" id="nav-menu-bi-hdd-network" role="button" data-bs-toggle="dropdown" aria-expanded="false" rel="" target="">
+      <i class="bi bi-hdd-network" role="img">
+</i> 
+ <span class="menu-text"></span>
+    </a>
+    <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="nav-menu-bi-hdd-network">    
+        <li>
+    <a class="dropdown-item" href="http://raven.fish.washington.edu:8787" rel="" target="_blank">
+ <span class="dropdown-text">Rstudio Server - Raven</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="https://gannet.fish.washington.edu/Atumefaciens/" rel="" target="_blank">
+ <span class="dropdown-text">My Gannet Directory</span></a>
+  </li>  
+    </ul>
+  </li>
+  <li class="nav-item dropdown ">
+    <a class="nav-link dropdown-toggle" href="#" id="nav-menu-bi-journal-code" role="button" data-bs-toggle="dropdown" aria-expanded="false" rel="" target="">
+      <i class="bi bi-journal-code" role="img">
+</i> 
+ <span class="menu-text"></span>
+    </a>
+    <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="nav-menu-bi-journal-code">    
+        <li>
+    <a class="dropdown-item" href="https://sr320.github.io" rel="" target="_blank">
+ <span class="dropdown-text">Steven’s Notebook</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="https://shedurkin.github.io/Roberts-LabNotebook/" rel="" target="_blank">
+ <span class="dropdown-text">Kathleen’s Notebook</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="https://meganewing.github.io/mewing-notebook/" rel="" target="_blank">
+ <span class="dropdown-text">Megan’s Notebook</span></a>
+  </li>  
+    </ul>
+  </li>
+  <li class="nav-item dropdown ">
+    <a class="nav-link dropdown-toggle" href="#" id="nav-menu-bi-github" role="button" data-bs-toggle="dropdown" aria-expanded="false" rel="" target="">
+      <i class="bi bi-github" role="img">
+</i> 
+ <span class="menu-text"></span>
+    </a>
+    <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="nav-menu-bi-github">    
+        <li>
+    <a class="dropdown-item" href="https://github.com/RobertsLab/sams-notebook" rel="" target="_blank">
+ <span class="dropdown-text">Notebook repo</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="https://github.com/RobertsLab" rel="" target="_blank">
+ <span class="dropdown-text">Lab Organization (GitHub)</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="https://github.com/RobertsLab/lab-website" rel="" target="_blank">
+ <span class="dropdown-text">Edit Roberts Lab website</span></a>
+  </li>  
+    </ul>
+  </li>
+  <li class="nav-item compact">
+    <a class="nav-link" href="https://calendar.google.com/calendar/embed?src=mrc305@gmail.com&amp;ctz=America/Vancouver" rel="" target="_blank"><i class="bi bi-calendar-week" role="img">
+</i> 
+ <span class="menu-text"></span></a>
+  </li>  
+  <li class="nav-item compact">
+    <a class="nav-link" href="../../../index.xml" rel="" target=""><i class="bi bi-rss" role="img">
+</i> 
+ <span class="menu-text"></span></a>
+  </li>  
+</ul>
+            <div class="quarto-navbar-tools">
+</div>
+          </div> <!-- /navcollapse -->
+      </div> <!-- /container-fluid -->
+    </nav>
+</header>
+<!-- content -->
+<header id="title-block-header" class="quarto-title-block default toc-left page-columns page-full">
+  <div class="quarto-title-banner page-columns page-full">
+    <div class="quarto-title column-page-right">
+      <h1 class="title">Differential Gene Expression - P.generosa DGE Between Tissues Using Nextlow NF-Core RNAseq Pipeline on Mox</h1>
+                                <div class="quarto-categories">
+                <div class="quarto-category">2022</div>
+                <div class="quarto-category">Miscellaneous</div>
+              </div>
+                  </div>
+  </div>
+    
+  
+  <div class="quarto-title-meta">
+
+      <div>
+      <div class="quarto-title-meta-heading">Author</div>
+      <div class="quarto-title-meta-contents">
+               <p>Sam White </p>
+            </div>
+    </div>
+      
+      <div>
+      <div class="quarto-title-meta-heading">Published</div>
+      <div class="quarto-title-meta-contents">
+        <p class="date">March 23, 2022</p>
+      </div>
+    </div>
+    
+      
+    </div>
+    
+  
+  </header><div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-full page-navbar">
+<!-- sidebar -->
+  <nav id="quarto-sidebar" class="sidebar collapse collapse-horizontal sidebar-navigation floating overflow-auto">
+    <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">Contents</h2>
+   
+  <ul>
+  <li><a href="#results" id="toc-results" class="nav-link active" data-scroll-target="#results">RESULTS</a></li>
+  </ul>
+</nav>
+</nav>
+<div id="quarto-sidebar-glass" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar,#quarto-sidebar-glass"></div>
+<!-- margin-sidebar -->
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar zindex-bottom">
+    </div>
+<!-- main -->
+<main class="content quarto-banner-title-block column-page-right" id="quarto-document-content">
+
+
+
+
+<p>Steven <a href="https://github.com/RobertsLab/resources/issues/1423">asked that I obtain relative expression values for various geoduck tissues</a> (GitHub Issue). So, I decided to use this as an opportunity to try to use a <a href="https://www.nextflow.io/">Nextflow</a> pipeline. There’s an RNAseq pipeline, <a href="https://nf-co.re/rnaseq">NF-Core RNAseq</a> which I decided to use. The pipeline appears to be ridiculously thorough (e.g.&nbsp;trims, removes gDNA/rRNA contamination, allows for multiple aligners to be used, quantifies/visualizes feature assignments by reads, performs differential gene expression analysis and visualization), all in one package. Sounds great, but I did have <a href="https://robertslab.github.io/sams-notebook/posts/2022/2022-03-25-Nextflow---Trials-and-Tribulations-of-Installing-and-Using-NF-Core-RNAseq/">some initial problems getting things up and running</a>. Overall, getting things set up to actually run took longer than the actual pipeline run! Oh well, it’s a learning process, so that’s not totally unexpected.</p>
+<p>For this pipeline run, I made some modifications to the genome GFF input file used. First, I attempted to create a “<code>gene_biotype</code>” description for the pipeline to use to get some visualizations of read assignments to different components of the genome. I did that in the following fashion:</p>
+<pre class="shell"><code># Copies header to new GFF
+awk 'NR &lt; 4 {print $0}' Panopea-generosa-v1.0.gff &gt; Panopea-generosa-v1.0_biotype.gff
+# Adds "gene_biotype" to end of line that matches feature field ($3)
+awk 'NR &gt; 3 {print $0";gene_biotype="$3}' Panopea-generosa-v1.0.gff &gt;&gt; Panopea-generosa-v1.0_biotype.gff</code></pre>
+<p>Then, modified it further to convert tRNA strand to <code>+</code> instead of <code>.</code> in order to avoid RSEM errors regarding strand info <em>and</em> removed RNAmmer features to also avoid RSEM strand errors.</p>
+<pre class="shell"><code># Converts strand field ($7) to `+` instead of `.`.
+# Works just on tRNA entries
+awk '$2 == "GenSAS_5d82b316cd298-trnascan" {$7="+"}1' Panopea-generosa-v1.0.a4_biotype.gff &gt; Panopea-generosa-v1.0.a4_biotype-trna_strand_converted.gff
+# Prints all lines which are not rRNA
+awk '$2 != "RNAmmer-1.2"' Panopea-generosa-v1.0.a4_biotype-trna_strand_converted.gff &gt; Panopea-generosa-v1.0.a4_biotype-trna_strand_converted-no_RNAmmer.gff</code></pre>
+<p>Then, this was all run on Mox.</p>
+<p>SBATCH script (GitHub):</p>
+<ul>
+<li><a href="https://github.com/RobertsLab/sams-notebook/blob/master/sbatch_scripts/20220323-pgen-nextflow_rnaseq-tissues.sh">20220323-pgen-nextflow_rnaseq-tissues.sh</a></li>
+</ul>
+<pre class="shell"><code>#!/bin/bash
+## Job Name
+#SBATCH --job-name=20220323-pgen-nextflow_rnaseq-tissues
+## Allocation Definition
+#SBATCH --account=srlab
+#SBATCH --partition=srlab
+## Resources
+## Nodes
+#SBATCH --nodes=1
+## Walltime (days-hours:minutes:seconds format)
+#SBATCH --time=17-00:00:00
+## Memory per node
+#SBATCH --mem=500G
+##turn on e-mail notification
+#SBATCH --mail-type=ALL
+#SBATCH --mail-user=samwhite@uw.edu
+## Specify the working directory for this job
+#SBATCH --chdir=/gscratch/scrubbed/samwhite/outputs/20220323-pgen-nextflow_rnaseq-tissues
+
+# Script to run Nextflow NF Core RNAseq pipeline for RNAseq analysis of P.generosa, per this GitHub Issue:
+# https://github.com/RobertsLab/resources/issues/1423
+
+# See variable assignments below for input files used: genome, GFF, transcriptome
+# List of input FastQs will be generated during run in: sample_sheet-"${SLURM_JOB_ID}".csv
+# Custom config file for maximum memory and CPU thread setttings
+
+# Outputs explanations are here: https://nf-co.re/rnaseq/3.6/output
+# Input paramaeter explanations are here: https://nf-co.re/rnaseq/3.6/parameters
+
+###################################################################################
+
+# These variables need to be set by user
+
+## Assign Variables
+
+## PROGRAMS ##
+# NF Core RNAseq workflow directory
+nf_core_rnaseq="/gscratch/srlab/programs/nf-core-rnaseq-3.6/workflow"
+
+# NF Core RNAseq custom config file
+nf_core_rnaseq_config=/gscratch/srlab/programs/nf-core-rnaseq-3.6/configs/conf/base-srlab_500GB_node.config
+
+## FILES AND DIRECTORIES ##
+# Wordking directory
+wd=$(pwd)
+
+# RNAseq FastQs directory
+reads_dir=/gscratch/srlab/sam/data/P_generosa/RNAseq
+
+# Genome FastA
+genome_fasta=/gscratch/srlab/sam/data/P_generosa/genomes/Panopea-generosa-v1.0.fa
+
+# Genome GFF3
+# This was manually modified by me to add gene_biotype to end of each entry.
+# Improves NF-Core RNAseq pipeline analysis/visualiztion to have this info present.
+genome_gff=/gscratch/srlab/sam/data/P_generosa/genomes/Panopea-generosa-v1.0.a4_biotype-trna_strand_converted-no_RNAmmer.gff
+
+## INITIALIZE ARRAYS ##
+# Leave empty!!
+R1_array=()
+R2_array=()
+R1_uncompressed_array=()
+R2_uncompressed_array=()
+
+###################################################################################
+
+# Exit script if a command fails
+set -e
+
+# Load Anaconda
+# Uknown why this is needed, but Anaconda will not run if this line is not included.
+. "/gscratch/srlab/programs/anaconda3/etc/profile.d/conda.sh"
+
+# Activate NF-core conda environment
+conda activate nf-core_env
+
+# Load Singularity Mox module for NF Core/Nextflow
+module load singularity
+
+
+# NF Core RNAseq sample sheet header
+sample_sheet_header="sample,fastq_1,fastq_2,strandedness"
+printf "%s\n" "${sample_sheet_header}" &gt;&gt; sample_sheet-"${SLURM_JOB_ID}".csv
+
+# Create array of original uncompressed fastq R1 files
+# Set filename pattern
+R1_uncompressed_array=("${reads_dir}"/*_1.fastq)
+
+# Create array of original uncompressed fastq R2 files
+# Set filename pattern
+R2_uncompressed_array=("${reads_dir}"/*_2.fastq)
+
+# Check array size to confirm it has all expected samples
+# Exit if mismatch
+if [[ "${#R1_uncompressed_array[@]}" != "${#R2_uncompressed_array[@]}" ]]
+then
+  echo ""
+  echo "Uncompressed array sizes don't match."
+  echo "Confirm all expected FastQs are present in ${reads_dir}"
+  echo ""
+
+  exit
+fi
+
+# Create list of original uncompressed fastq files
+## Uses parameter substitution to strip leading path from filename
+for fastq in "${!R1_uncompressed_array[@]}"
+do
+  # Strip leading path
+    no_path=$(echo "${R1_uncompressed_array[${fastq}]##*/}")
+
+  # Grab SRA name
+  sra=$(echo "${no_path}" | awk -F "_" '{print $1}')
+
+  # Only gzip matching FastQs
+  # Only generate MD5 checksums for matching FastQs
+  if [[ "${sra}" == "SRR12218868" ]] \
+    || [[ "${sra}" == "SRR12218869" ]] \
+    || [[ "${sra}" == "SRR12226692" ]] \
+    || [[ "${sra}" == "SRR12218870" ]] \
+    || [[ "${sra}" == "SRR12226693" ]] \
+    || [[ "${sra}" == "SRR12207404" ]] \
+    || [[ "${sra}" == "SRR12207405" ]] \
+    || [[ "${sra}" == "SRR12227930" ]] \
+    || [[ "${sra}" == "SRR12207406" ]] \
+    || [[ "${sra}" == "SRR12207407" ]] \
+    || [[ "${sra}" == "SRR12227931" ]] \
+    || [[ "${sra}" == "SRR12212519" ]] \
+    || [[ "${sra}" == "SRR12227929" ]] \
+    || [[ "${sra}" == "SRR8788211" ]]
+  then
+    echo ""
+    echo "Generating MD5 checksums for ${R1_uncompressed_array[${fastq}]} and ${R2_uncompressed_array[${fastq}]}."
+    echo ""
+    # Generate MD5 checksums of uncompressed FastQs
+    {
+      md5sum "${R1_uncompressed_array[${fastq}]}"
+      md5sum "${R2_uncompressed_array[${fastq}]}"
+    } &gt;&gt; uncompressed_fastqs-"${SLURM_JOB_ID}".md5
+
+    # Gzip FastQs; NF Core RNAseq requires gzipped FastQs as inputs
+    echo "Compressing FastQ files."
+    if [ ! -f "${R1_uncompressed_array[${fastq}]}.gz" ]
+    then 
+      gzip --keep "${R1_uncompressed_array[${fastq}]}"
+      gzip --keep "${R2_uncompressed_array[${fastq}]}"
+    else 
+      echo "${R1_uncompressed_array[${fastq}]}.gz already exists. Skipping."
+    fi
+    echo ""
+
+
+
+  fi
+done
+
+
+# Create array of fastq R1 files
+# Set filename pattern
+R1_array=("${reads_dir}"/*_1.fastq.gz)
+
+# Create array of fastq R2 files
+# Set filename pattern
+R2_array=("${reads_dir}"/*_2.fastq.gz)
+
+# Check array sizes to confirm they are same size
+# Exit if mismatch
+if [[ "${#R1_array[@]}" != "${#R2_array[@]}" ]]
+  then
+    echo ""
+    echo "Read1 and Read2 compressed FastQ array sizes don't match."
+    echo "Confirm all expected compressed FastQs are present in ${reads_dir}"
+    echo ""
+
+    exit
+fi
+
+# Create list of fastq files used in analysis
+## Uses parameter substitution to strip leading path from filename
+for fastq in "${!R1_array[@]}"
+do
+  echo ""
+  echo "Generating MD5 checksums for ${R1_array[${fastq}]} and ${R2_array[${fastq}]}."
+  echo ""
+  # Generate MD5 checksums for compressed FastQs used in NF Core RNAseq analysis
+  {
+    md5sum "${R1_array[${fastq}]}"
+    md5sum "${R2_array[${fastq}]}"
+  } &gt;&gt; input_fastqs-"${SLURM_JOB_ID}".md5
+
+  # Strip leading path
+    no_path=$(echo "${R1_array[${fastq}]##*/}")
+
+  # Grab SRA name
+  sra=$(echo "${no_path}" | awk -F "_" '{print $1}')
+
+  # Set tissue type
+  if [[ "${sra}" == "SRR12218868" ]]
+  then
+    tissue="heart"
+
+    # Add to NF Core RNAseq sample sheet
+    printf "%s,%s,%s,%s\n" "${tissue}" "${R1_array[${fastq}]}" "${R2_array[${fastq}]}" "reverse" \
+    &gt;&gt; sample_sheet-"${SLURM_JOB_ID}".csv
+
+  elif [[ "${sra}" == "SRR12218869" ]] \
+    || [[ "${sra}" == "SRR12226692" ]]
+
+  then
+    tissue="gonad"
+
+    # Add to NF Core RNAseq sample sheet
+    printf "%s,%s,%s,%s\n" "${tissue}" "${R1_array[${fastq}]}" "${R2_array[${fastq}]}" "reverse" \
+    &gt;&gt; sample_sheet-"${SLURM_JOB_ID}".csv
+
+  elif [[ "${sra}" == "SRR12218870" ]] \
+    || [[ "${sra}" == "SRR12226693" ]]
+  then
+    tissue="ctenidia"
+
+    # Add to NF Core RNAseq sample sheet
+    printf "%s,%s,%s,%s\n" "${tissue}" "${R1_array[${fastq}]}" "${R2_array[${fastq}]}" "reverse" \
+    &gt;&gt; sample_sheet-"${SLURM_JOB_ID}".csv
+
+  elif [[ "${sra}" == "SRR12207404" ]] \
+    || [[ "${sra}" == "SRR12207405" ]] \
+    || [[ "${sra}" == "SRR12227930" ]] \
+    || [[ "${sra}" == "SRR12207406" ]] \
+    || [[ "${sra}" == "SRR12207407" ]] \
+    || [[ "${sra}" == "SRR12227931" ]]
+  then
+    tissue="juvenile"
+
+    # Add to NF Core RNAseq sample sheet
+    printf "%s,%s,%s,%s\n" "${tissue}" "${R1_array[${fastq}]}" "${R2_array[${fastq}]}" "reverse" \
+    &gt;&gt; sample_sheet-"${SLURM_JOB_ID}".csv
+
+  elif [[ "${sra}" == "SRR12212519" ]] \
+    || [[ "${sra}" == "SRR12227929" ]] \
+    || [[ "${sra}" == "SRR8788211" ]]
+  then
+    tissue="larvae"
+
+    # Add to NF Core RNAseq sample sheet
+    printf "%s,%s,%s,%s\n" "${tissue}" "${R1_array[${fastq}]}" "${R2_array[${fastq}]}" "reverse" \
+    &gt;&gt; sample_sheet-"${SLURM_JOB_ID}".csv
+  fi
+
+done
+
+echo "Beginning NF-Core RNAseq pipeline..."
+echo ""
+# Run NF Core RNAseq workflow
+nextflow run ${nf_core_rnaseq} \
+-profile singularity \
+-c ${nf_core_rnaseq_config} \
+--input sample_sheet-"${SLURM_JOB_ID}".csv \
+--outdir ${wd} \
+--multiqc_title "20220321-pgen-nextflow_rnaseq-tissues-${SLURM_JOB_ID}" \
+--fasta ${genome_fasta} \
+--gff ${genome_gff} \
+--save_reference \
+--gtf_extra_attributes gene_name \
+--gtf_group_features gene_id \
+--featurecounts_group_type gene_biotype \
+--featurecounts_feature_type exon \
+--trim_nextseq 20 \
+--save_trimmed \
+--aligner star_salmon \
+--pseudo_aligner salmon \
+--min_mapped_reads 5 \
+--save_align_intermeds \
+--rseqc_modules bam_stat,\
+inner_distance,\
+infer_experiment,\
+junction_annotation,\
+junction_saturation,\
+read_distribution,\
+read_duplication
+
+##############################################################
+# Copy config file for later reference, if needed
+cp "${nf_core_rnaseq_config}" .
+
+# Document programs in PATH (primarily for program version ID)
+{
+  date
+  echo ""
+  echo "System PATH for $SLURM_JOB_ID"
+  echo ""
+  printf "%0.s-" {1..10}
+  echo "${PATH}" | tr : \\n
+} &gt;&gt; system_path.log
+
+echo "Finished logging system PATH"</code></pre>
+<hr>
+<section id="results" class="level1">
+<h1>RESULTS</h1>
+<p>Runtime was surprisingly fast, at just a bit over 2.3 days…</p>
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="https://github.com/RobertsLab/sams-notebook/blob/master/images/screencaps/20220323-pgen-nextflow_rnaseq-tissues_runtime.png?raw=true" class="img-fluid figure-img"></p>
+<figcaption class="figure-caption">Screencap of NF-Core RNAseq runtime on Mox showing runtime of 2 days, 9hrs and some change</figcaption>
+</figure>
+</div>
+<p>There is a ton of data here to unpack, so I’ll just link to some of the most useful files.</p>
+<p>Refer to the NF-Core/RNAseq “Output docs” for all the things generated, as well as a thorough explanation of the MultiQC Report:</p>
+<ul>
+<li><a href="https://nf-co.re/rnaseq/3.6/output">https://nf-co.re/rnaseq/3.6/output</a></li>
+</ul>
+<p>Also, the NF-Core/RNAseq pipeline provides a nice progress report to show you which options are running/completed. This screenshot is from after the pipeline finished successfully:</p>
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="https://github.com/RobertsLab/sams-notebook/blob/master/images/screencaps/20220323-pgen-nextflow_rnaseq-tissues_nf-core-rnaseq_progress.png?raw=true" class="img-fluid figure-img"></p>
+<figcaption class="figure-caption">Screencap of NF-Core/RNAseq pipeline upon completion. Shows percentages and checkboxes to indicate each process completion. Also provides a list of samples passing STAR mapping threshold and pipeline runtime.</figcaption>
+</figure>
+</div>
+<p>Output folder:</p>
+<ul>
+<li><p><a href="https://gannet.fish.washington.edu/Atumefaciens/20220323-pgen-nextflow_rnaseq-tissues/">20220323-pgen-nextflow_rnaseq-tissues/</a></p>
+<ul>
+<li><p>Pipeline MultiQC Report (HTML - opens interactive report in browser):</p>
+<ul>
+<li><a href="https://gannet.fish.washington.edu/Atumefaciens/20220323-pgen-nextflow_rnaseq-tissues/multiqc/star_salmon/20220321-pgen-nextflow_rnaseq-tissues-2666621_multiqc_report.html">20220321-pgen-nextflow_rnaseq-tissues-2666621_multiqc_report.html</a></li>
+</ul>
+<p>One interesting thing I noticed in this report is the disproportionate number of reads in gonad samples mapping to Scaffold_08 in the genome. This suggests that there is a cluster of genes invovled in reproduction on Scaffold_08.</p>
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="https://github.com/RobertsLab/sams-notebook/blob/master/images/screencaps/20220323-pgen-nextflow_rnaseq-tissues_multiqc_mapped-reads-gonad.png?raw=true" class="img-fluid figure-img"></p>
+<figcaption class="figure-caption">Histogram showing normalized read counts of samples mapping to each of the 18 P.generosa genome scaffolds. A noticable spike in the black line (gonad) occurs in Scaffold 08.</figcaption>
+</figure>
+</div>
+<ul>
+<li><p>List of compressed FastQ files and MD5 checksums used (text):</p>
+<ul>
+<li><a href="https://gannet.fish.washington.edu/Atumefaciens/20220323-pgen-nextflow_rnaseq-tissues/input_fastqs-2666621.md5">input_fastqs-2666621.md5</a></li>
+</ul></li>
+<li><p>List of original, uncompressed FastQ files and MD5 checksums (text):</p>
+<ul>
+<li><a href="https://gannet.fish.washington.edu/Atumefaciens/20220323-pgen-nextflow_rnaseq-tissues/uncompressed_fastqs-2666621.md5">uncompressed_fastqs-2666621.md5</a></li>
+</ul></li>
+<li><p>Sample sheet used as input to NF-Core RNAseq pipeline (CSV):</p>
+<ul>
+<li><a href="https://gannet.fish.washington.edu/Atumefaciens/20220323-pgen-nextflow_rnaseq-tissues/sample_sheet-2666621.csv">sample_sheet-2666621.csv</a></li>
+</ul></li>
+<li><p>Config file used as input to NF-Core RNAseq pipeline (text). Mostly used to specify CPUs, RAM, and runtimes:</p>
+<ul>
+<li><a href="https://gannet.fish.washington.edu/Atumefaciens/20220323-pgen-nextflow_rnaseq-tissues/base-srlab_500GB_node.config">base-srlab_500GB_node.config</a></li>
+</ul></li>
+<li><p>STAR alignments (BAM):</p>
+<ul>
+<li><p><a href="https://gannet.fish.washington.edu/Atumefaciens/20220323-pgen-nextflow_rnaseq-tissues/star_salmon/ctenidia.markdup.sorted.bam">20220323-pgen-nextflow_rnaseq-tissues/star_salmon/ctenidia.markdup.sorted.bam</a> (4.2G)</p>
+<ul>
+<li>MD5: <code>b5a8d02851184dbbf1155cfb2a7b4800</code></li>
+</ul></li>
+<li><p><a href="https://gannet.fish.washington.edu/Atumefaciens/20220323-pgen-nextflow_rnaseq-tissues/star_salmon/gonad.markdup.sorted.bam">20220323-pgen-nextflow_rnaseq-tissues/star_salmon/gonad.markdup.sorted.bam</a> (3.8G)</p>
+<ul>
+<li>MD5: <code>fe2e49e4e81de935eb23c5f095e167f1</code></li>
+</ul></li>
+<li><p><a href="https://gannet.fish.washington.edu/Atumefaciens/20220323-pgen-nextflow_rnaseq-tissues/star_salmon/heart.markdup.sorted.bam">20220323-pgen-nextflow_rnaseq-tissues/star_salmon/heart.markdup.sorted.bam</a> (7.9G)</p>
+<ul>
+<li>MD5: <code>3b621ed144399b27a5880416a9d9e98b</code></li>
+</ul></li>
+<li><p><a href="https://gannet.fish.washington.edu/Atumefaciens/20220323-pgen-nextflow_rnaseq-tissues/star_salmon/juvenile.markdup.sorted.bam">20220323-pgen-nextflow_rnaseq-tissues/star_salmon/juvenile.markdup.sorted.bam</a> (26G)</p>
+<ul>
+<li>MD5: <code>f191d39dee3ea29964ee69861c48e01a</code></li>
+</ul></li>
+<li><p><a href="https://gannet.fish.washington.edu/Atumefaciens/20220323-pgen-nextflow_rnaseq-tissues/star_salmon/larvae.markdup.sorted.bam">20220323-pgen-nextflow_rnaseq-tissues/star_salmon/larvae.markdup.sorted.bam</a> (5.0G)</p>
+<ul>
+<li>MD5: <code>15a215edcde2ae73c46940a4680e9bd4</code></li>
+</ul></li>
+</ul></li>
+<li><p>Ballgown table folders:</p>
+<ul>
+<li><p><a href="https://gannet.fish.washington.edu/Atumefaciens/20220323-pgen-nextflow_rnaseq-tissues/star_salmon/stringtie/ctenidia.ballgown">20220323-pgen-nextflow_rnaseq-tissues/star_salmon/stringtie/ctenidia.ballgown/</a> (31M)</p></li>
+<li><p><a href="https://gannet.fish.washington.edu/Atumefaciens/20220323-pgen-nextflow_rnaseq-tissues/star_salmon/stringtie/gonad.ballgown">20220323-pgen-nextflow_rnaseq-tissues/star_salmon/stringtie/gonad.ballgown/</a> (31M)</p></li>
+<li><p><a href="https://gannet.fish.washington.edu/Atumefaciens/20220323-pgen-nextflow_rnaseq-tissues/star_salmon/stringtie/heart.ballgown">20220323-pgen-nextflow_rnaseq-tissues/star_salmon/stringtie/heart.ballgown/</a> (31M)</p></li>
+<li><p><a href="https://gannet.fish.washington.edu/Atumefaciens/20220323-pgen-nextflow_rnaseq-tissues/star_salmon/stringtie/juvenile.ballgown">20220323-pgen-nextflow_rnaseq-tissues/star_salmon/stringtie/juvenile.ballgown/</a> (32M)</p></li>
+<li><p><a href="https://gannet.fish.washington.edu/Atumefaciens/20220323-pgen-nextflow_rnaseq-tissues/star_salmon/stringtie/larvae.ballgown">20220323-pgen-nextflow_rnaseq-tissues/star_salmon/stringtie/larvae.ballgown/</a> (31M)</p></li>
+</ul></li>
+<li><p>STAR/Salmon TPM (text):</p>
+<ul>
+<li><p><a href="https://gannet.fish.washington.edu/Atumefaciens/20220323-pgen-nextflow_rnaseq-tissues/star_salmon/salmon.merged.gene_tpm.tsv">20220323-pgen-nextflow_rnaseq-tissues/star_salmon/star_salmon/salmon.merged.gene_tpm.tsv</a> (2.1M)</p></li>
+<li><p><a href="https://gannet.fish.washington.edu/Atumefaciens/20220323-pgen-nextflow_rnaseq-tissues/star_salmon/salmon.merged.transcript_tpm.tsv">20220323-pgen-nextflow_rnaseq-tissues/star_salmon/star_salmon/salmon.merged.transcript_tpm.tsv</a> (3.1M)</p></li>
+</ul></li>
+<li><p>Salmon <em>ONLY</em> <code>quant.sf</code> files (text) can be found in tissue subdirectories:</p>
+<ul>
+<li><a href="https://gannet.fish.washington.edu/Atumefaciens/20220323-pgen-nextflow_rnaseq-tissues/salmon/">20220323-pgen-nextflow_rnaseq-tissues/salmon</a></li>
+</ul></li>
+<li><p>STAR and Salmon genome index files in respective subdirectories:</p>
+<ul>
+<li><a href="https://gannet.fish.washington.edu/Atumefaciens/20220323-pgen-nextflow_rnaseq-tissues/genome/index/">20220323-pgen-nextflow_rnaseq-tissues/genome/index/</a></li>
+</ul></li>
+<li><p>Trimmed FastQs:</p>
+<ul>
+<li><p><a href="https://gannet.fish.washington.edu/Atumefaciens/20220323-pgen-nextflow_rnaseq-tissues/trimgalore/ctenidia_1_val_1.fq.gz">20220323-pgen-nextflow_rnaseq-tissues/trimgalore/ctenidia_1_val_1.fq.gz</a> (4.3G)</p>
+<ul>
+<li>MD5: <code>fb5683c9734fd90e95f8b09292626f74</code></li>
+</ul></li>
+<li><p><a href="https://gannet.fish.washington.edu/Atumefaciens/20220323-pgen-nextflow_rnaseq-tissues/trimgalore/ctenidia_2_val_2.fq.gz">20220323-pgen-nextflow_rnaseq-tissues/trimgalore/ctenidia_2_val_2.fq.gz</a> (4.4G)</p>
+<ul>
+<li>MD5: <code>a124c1ce517cd106979a32d0a9957742</code></li>
+</ul></li>
+<li><p><a href="https://gannet.fish.washington.edu/Atumefaciens/20220323-pgen-nextflow_rnaseq-tissues/trimgalore/gonad_1_val_1.fq.gz">20220323-pgen-nextflow_rnaseq-tissues/trimgalore/gonad_1_val_1.fq.gz</a> (4.7G)</p>
+<ul>
+<li>MD5: <code>e999349a51d70f6f21384126b42bbe5e</code></li>
+</ul></li>
+<li><p><a href="https://gannet.fish.washington.edu/Atumefaciens/20220323-pgen-nextflow_rnaseq-tissues/trimgalore/gonad_2_val_2.fq.gz">20220323-pgen-nextflow_rnaseq-tissues/trimgalore/gonad_2_val_2.fq.gz</a> (4.9G)</p>
+<ul>
+<li>MD5: <code>f70ac9c1170120f67e54cd523e8284eb</code></li>
+</ul></li>
+<li><p><a href="https://gannet.fish.washington.edu/Atumefaciens/20220323-pgen-nextflow_rnaseq-tissues/trimgalore/heart_1_val_1.fq.gz">20220323-pgen-nextflow_rnaseq-tissues/trimgalore/heart_1_val_1.fq.gz</a> (8.0G)</p>
+<ul>
+<li>MD5: <code>d5d930b6f92005f3acdb8105736d2219</code></li>
+</ul></li>
+<li><p><a href="https://gannet.fish.washington.edu/Atumefaciens/20220323-pgen-nextflow_rnaseq-tissues/trimgalore/heart_2_val_2.fq.gz">20220323-pgen-nextflow_rnaseq-tissues/trimgalore/heart_2_val_2.fq.gz</a> (7.8G)</p>
+<ul>
+<li>MD5: <code>0068df5bf32d18c9a940a4558645021e</code></li>
+</ul></li>
+<li><p><a href="https://gannet.fish.washington.edu/Atumefaciens/20220323-pgen-nextflow_rnaseq-tissues/trimgalore/juvenile_1_val_1.fq.gz">20220323-pgen-nextflow_rnaseq-tissues/trimgalore/juvenile_1_val_1.fq.gz</a> (26G)</p>
+<ul>
+<li>MD5: <code>9f74db3f73fc140e009c470010c5b5b2</code></li>
+</ul></li>
+<li><p><a href="https://gannet.fish.washington.edu/Atumefaciens/20220323-pgen-nextflow_rnaseq-tissues/trimgalore/juvenile_2_val_2.fq.gz">20220323-pgen-nextflow_rnaseq-tissues/trimgalore/juvenile_2_val_2.fq.gz</a> (26G)</p>
+<ul>
+<li>MD5: <code>453b846f816e227f386481b8613aee86</code></li>
+</ul></li>
+<li><p><a href="https://gannet.fish.washington.edu/Atumefaciens/20220323-pgen-nextflow_rnaseq-tissues/trimgalore/larvae_1_val_1.fq.gz">20220323-pgen-nextflow_rnaseq-tissues/trimgalore/larvae_1_val_1.fq.gz</a> (5.3G)</p>
+<ul>
+<li>MD5: <code>70ff0f167449b7952362eba1c6b8ef18</code></li>
+</ul></li>
+<li><p><a href="https://gannet.fish.washington.edu/Atumefaciens/20220323-pgen-nextflow_rnaseq-tissues/trimgalore/larvae_2_val_2.fq.gz">20220323-pgen-nextflow_rnaseq-tissues/trimgalore/larvae_2_val_2.fq.gz</a> (5.5G)</p>
+<ul>
+<li>MD5: <code>9f4b1080d956cfab03b94bba403ee81d</code></li>
+</ul></li>
+</ul></li>
+</ul></li>
+</ul></li>
+</ul>
+
+
+</section>
+
+</main> <!-- /main -->
+<script id="quarto-html-after-body" type="application/javascript">
+window.document.addEventListener("DOMContentLoaded", function (event) {
+  const toggleBodyColorMode = (bsSheetEl) => {
+    const mode = bsSheetEl.getAttribute("data-mode");
+    const bodyEl = window.document.querySelector("body");
+    if (mode === "dark") {
+      bodyEl.classList.add("quarto-dark");
+      bodyEl.classList.remove("quarto-light");
+    } else {
+      bodyEl.classList.add("quarto-light");
+      bodyEl.classList.remove("quarto-dark");
+    }
+  }
+  const toggleBodyColorPrimary = () => {
+    const bsSheetEl = window.document.querySelector("link#quarto-bootstrap");
+    if (bsSheetEl) {
+      toggleBodyColorMode(bsSheetEl);
+    }
+  }
+  toggleBodyColorPrimary();  
+  const icon = "";
+  const anchorJS = new window.AnchorJS();
+  anchorJS.options = {
+    placement: 'right',
+    icon: icon
+  };
+  anchorJS.add('.anchored');
+  const isCodeAnnotation = (el) => {
+    for (const clz of el.classList) {
+      if (clz.startsWith('code-annotation-')) {                     
+        return true;
+      }
+    }
+    return false;
+  }
+  const clipboard = new window.ClipboardJS('.code-copy-button', {
+    text: function(trigger) {
+      const codeEl = trigger.previousElementSibling.cloneNode(true);
+      for (const childEl of codeEl.children) {
+        if (isCodeAnnotation(childEl)) {
+          childEl.remove();
+        }
+      }
+      return codeEl.innerText;
+    }
+  });
+  clipboard.on('success', function(e) {
+    // button target
+    const button = e.trigger;
+    // don't keep focus
+    button.blur();
+    // flash "checked"
+    button.classList.add('code-copy-button-checked');
+    var currentTitle = button.getAttribute("title");
+    button.setAttribute("title", "Copied!");
+    let tooltip;
+    if (window.bootstrap) {
+      button.setAttribute("data-bs-toggle", "tooltip");
+      button.setAttribute("data-bs-placement", "left");
+      button.setAttribute("data-bs-title", "Copied!");
+      tooltip = new bootstrap.Tooltip(button, 
+        { trigger: "manual", 
+          customClass: "code-copy-button-tooltip",
+          offset: [0, -8]});
+      tooltip.show();    
+    }
+    setTimeout(function() {
+      if (tooltip) {
+        tooltip.hide();
+        button.removeAttribute("data-bs-title");
+        button.removeAttribute("data-bs-toggle");
+        button.removeAttribute("data-bs-placement");
+      }
+      button.setAttribute("title", currentTitle);
+      button.classList.remove('code-copy-button-checked');
+    }, 1000);
+    // clear code selection
+    e.clearSelection();
+  });
+  function tippyHover(el, contentFn) {
+    const config = {
+      allowHTML: true,
+      content: contentFn,
+      maxWidth: 500,
+      delay: 100,
+      arrow: false,
+      appendTo: function(el) {
+          return el.parentElement;
+      },
+      interactive: true,
+      interactiveBorder: 10,
+      theme: 'quarto',
+      placement: 'bottom-start'
+    };
+    window.tippy(el, config); 
+  }
+  const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+  for (var i=0; i<noterefs.length; i++) {
+    const ref = noterefs[i];
+    tippyHover(ref, function() {
+      // use id or data attribute instead here
+      let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+      try { href = new URL(href).hash; } catch {}
+      const id = href.replace(/^#\/?/, "");
+      const note = window.document.getElementById(id);
+      return note.innerHTML;
+    });
+  }
+      let selectedAnnoteEl;
+      const selectorForAnnotation = ( cell, annotation) => {
+        let cellAttr = 'data-code-cell="' + cell + '"';
+        let lineAttr = 'data-code-annotation="' +  annotation + '"';
+        const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+        return selector;
+      }
+      const selectCodeLines = (annoteEl) => {
+        const doc = window.document;
+        const targetCell = annoteEl.getAttribute("data-target-cell");
+        const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+        const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+        const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+        const lineIds = lines.map((line) => {
+          return targetCell + "-" + line;
+        })
+        let top = null;
+        let height = null;
+        let parent = null;
+        if (lineIds.length > 0) {
+            //compute the position of the single el (top and bottom and make a div)
+            const el = window.document.getElementById(lineIds[0]);
+            top = el.offsetTop;
+            height = el.offsetHeight;
+            parent = el.parentElement.parentElement;
+          if (lineIds.length > 1) {
+            const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+            const bottom = lastEl.offsetTop + lastEl.offsetHeight;
+            height = bottom - top;
+          }
+          if (top !== null && height !== null && parent !== null) {
+            // cook up a div (if necessary) and position it 
+            let div = window.document.getElementById("code-annotation-line-highlight");
+            if (div === null) {
+              div = window.document.createElement("div");
+              div.setAttribute("id", "code-annotation-line-highlight");
+              div.style.position = 'absolute';
+              parent.appendChild(div);
+            }
+            div.style.top = top - 2 + "px";
+            div.style.height = height + 4 + "px";
+            let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+            if (gutterDiv === null) {
+              gutterDiv = window.document.createElement("div");
+              gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+              gutterDiv.style.position = 'absolute';
+              const codeCell = window.document.getElementById(targetCell);
+              const gutter = codeCell.querySelector('.code-annotation-gutter');
+              gutter.appendChild(gutterDiv);
+            }
+            gutterDiv.style.top = top - 2 + "px";
+            gutterDiv.style.height = height + 4 + "px";
+          }
+          selectedAnnoteEl = annoteEl;
+        }
+      };
+      const unselectCodeLines = () => {
+        const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+        elementsIds.forEach((elId) => {
+          const div = window.document.getElementById(elId);
+          if (div) {
+            div.remove();
+          }
+        });
+        selectedAnnoteEl = undefined;
+      };
+      // Attach click handler to the DT
+      const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
+      for (const annoteDlNode of annoteDls) {
+        annoteDlNode.addEventListener('click', (event) => {
+          const clickedEl = event.target;
+          if (clickedEl !== selectedAnnoteEl) {
+            unselectCodeLines();
+            const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
+            if (activeEl) {
+              activeEl.classList.remove('code-annotation-active');
+            }
+            selectCodeLines(clickedEl);
+            clickedEl.classList.add('code-annotation-active');
+          } else {
+            // Unselect the line
+            unselectCodeLines();
+            clickedEl.classList.remove('code-annotation-active');
+          }
+        });
+      }
+  const findCites = (el) => {
+    const parentEl = el.parentElement;
+    if (parentEl) {
+      const cites = parentEl.dataset.cites;
+      if (cites) {
+        return {
+          el,
+          cites: cites.split(' ')
+        };
+      } else {
+        return findCites(el.parentElement)
+      }
+    } else {
+      return undefined;
+    }
+  };
+  var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+  for (var i=0; i<bibliorefs.length; i++) {
+    const ref = bibliorefs[i];
+    const citeInfo = findCites(ref);
+    if (citeInfo) {
+      tippyHover(citeInfo.el, function() {
+        var popup = window.document.createElement('div');
+        citeInfo.cites.forEach(function(cite) {
+          var citeDiv = window.document.createElement('div');
+          citeDiv.classList.add('hanging-indent');
+          citeDiv.classList.add('csl-entry');
+          var biblioDiv = window.document.getElementById('ref-' + cite);
+          if (biblioDiv) {
+            citeDiv.innerHTML = biblioDiv.innerHTML;
+          }
+          popup.appendChild(citeDiv);
+        });
+        return popup.innerHTML;
+      });
+    }
+  }
+});
+</script>
+</div> <!-- /content -->
+
+
+
+</body></html>

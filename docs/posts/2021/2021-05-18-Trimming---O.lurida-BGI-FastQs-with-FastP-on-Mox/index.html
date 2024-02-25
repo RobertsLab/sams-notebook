@@ -1,0 +1,768 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.3.450">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+<meta name="author" content="Sam White">
+<meta name="dcterms.date" content="2021-05-18">
+
+<title>Sam’s Notebook - Trimming - O.lurida BGI FastQs with FastP on Mox</title>
+<style>
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: min(4vw, 1.5em);}
+div.column{flex: auto; overflow-x: auto;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+  vertical-align: middle;
+}
+</style>
+
+
+<script src="../../../site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="../../../site_libs/quarto-nav/headroom.min.js"></script>
+<script src="../../../site_libs/clipboard/clipboard.min.js"></script>
+<script src="../../../site_libs/quarto-search/autocomplete.umd.js"></script>
+<script src="../../../site_libs/quarto-search/fuse.min.js"></script>
+<script src="../../../site_libs/quarto-search/quarto-search.js"></script>
+<meta name="quarto:offset" content="../../../">
+<link href="../../..//images/favicon.ico" rel="icon">
+<script src="../../../site_libs/quarto-html/quarto.js"></script>
+<script src="../../../site_libs/quarto-html/popper.min.js"></script>
+<script src="../../../site_libs/quarto-html/tippy.umd.min.js"></script>
+<script src="../../../site_libs/quarto-html/anchor.min.js"></script>
+<link href="../../../site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="../../../site_libs/quarto-html/quarto-syntax-highlighting-dark.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="../../../site_libs/bootstrap/bootstrap.min.js"></script>
+<link href="../../../site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="../../../site_libs/bootstrap/bootstrap.min.css" rel="stylesheet" id="quarto-bootstrap" data-mode="dark">
+<script id="quarto-search-options" type="application/json">{
+  "location": "navbar",
+  "copy-button": false,
+  "collapse-after": 3,
+  "panel-placement": "end",
+  "type": "overlay",
+  "limit": 20,
+  "language": {
+    "search-no-results-text": "No results",
+    "search-matching-documents-text": "matching documents",
+    "search-copy-link-title": "Copy link to search",
+    "search-hide-matches-text": "Hide additional matches",
+    "search-more-match-text": "more match in this document",
+    "search-more-matches-text": "more matches in this document",
+    "search-clear-button-title": "Clear",
+    "search-detached-cancel-button-title": "Cancel",
+    "search-submit-button-title": "Submit",
+    "search-label": "Search"
+  }
+}</script>
+<script async="" src="https://www.googletagmanager.com/gtag/js?id=G-7483T61T11"></script>
+
+<script type="text/javascript">
+
+window.dataLayer = window.dataLayer || [];
+function gtag(){dataLayer.push(arguments);}
+gtag('js', new Date());
+gtag('config', 'G-7483T61T11', { 'anonymize_ip': true});
+</script>
+
+
+<link rel="stylesheet" href="../../../styles.css">
+</head>
+
+<body class="floating nav-fixed">
+
+<div id="quarto-search-results"></div>
+  <header id="quarto-header" class="headroom fixed-top">
+    <nav class="navbar navbar-expand-lg navbar-dark ">
+      <div class="navbar-container container-fluid">
+      <div class="navbar-brand-container">
+    <a class="navbar-brand" href="../../../index.html">
+    <span class="navbar-title">Sam’s Notebook</span>
+    </a>
+  </div>
+            <div id="quarto-search" class="" title="Search"></div>
+          <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarCollapse" aria-controls="navbarCollapse" aria-expanded="false" aria-label="Toggle navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+  <span class="navbar-toggler-icon"></span>
+</button>
+          <div class="collapse navbar-collapse" id="navbarCollapse">
+            <ul class="navbar-nav navbar-nav-scroll ms-auto">
+  <li class="nav-item dropdown ">
+    <a class="nav-link dropdown-toggle" href="#" id="nav-menu-bi-hdd-network" role="button" data-bs-toggle="dropdown" aria-expanded="false" rel="" target="">
+      <i class="bi bi-hdd-network" role="img">
+</i> 
+ <span class="menu-text"></span>
+    </a>
+    <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="nav-menu-bi-hdd-network">    
+        <li>
+    <a class="dropdown-item" href="http://raven.fish.washington.edu:8787" rel="" target="_blank">
+ <span class="dropdown-text">Rstudio Server - Raven</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="https://gannet.fish.washington.edu/Atumefaciens/" rel="" target="_blank">
+ <span class="dropdown-text">My Gannet Directory</span></a>
+  </li>  
+    </ul>
+  </li>
+  <li class="nav-item dropdown ">
+    <a class="nav-link dropdown-toggle" href="#" id="nav-menu-bi-journal-code" role="button" data-bs-toggle="dropdown" aria-expanded="false" rel="" target="">
+      <i class="bi bi-journal-code" role="img">
+</i> 
+ <span class="menu-text"></span>
+    </a>
+    <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="nav-menu-bi-journal-code">    
+        <li>
+    <a class="dropdown-item" href="https://sr320.github.io" rel="" target="_blank">
+ <span class="dropdown-text">Steven’s Notebook</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="https://shedurkin.github.io/Roberts-LabNotebook/" rel="" target="_blank">
+ <span class="dropdown-text">Kathleen’s Notebook</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="https://meganewing.github.io/mewing-notebook/" rel="" target="_blank">
+ <span class="dropdown-text">Megan’s Notebook</span></a>
+  </li>  
+    </ul>
+  </li>
+  <li class="nav-item dropdown ">
+    <a class="nav-link dropdown-toggle" href="#" id="nav-menu-bi-github" role="button" data-bs-toggle="dropdown" aria-expanded="false" rel="" target="">
+      <i class="bi bi-github" role="img">
+</i> 
+ <span class="menu-text"></span>
+    </a>
+    <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="nav-menu-bi-github">    
+        <li>
+    <a class="dropdown-item" href="https://github.com/RobertsLab/sams-notebook" rel="" target="_blank">
+ <span class="dropdown-text">Notebook repo</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="https://github.com/RobertsLab" rel="" target="_blank">
+ <span class="dropdown-text">Lab Organization (GitHub)</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="https://github.com/RobertsLab/lab-website" rel="" target="_blank">
+ <span class="dropdown-text">Edit Roberts Lab website</span></a>
+  </li>  
+    </ul>
+  </li>
+  <li class="nav-item compact">
+    <a class="nav-link" href="https://calendar.google.com/calendar/embed?src=mrc305@gmail.com&amp;ctz=America/Vancouver" rel="" target="_blank"><i class="bi bi-calendar-week" role="img">
+</i> 
+ <span class="menu-text"></span></a>
+  </li>  
+  <li class="nav-item compact">
+    <a class="nav-link" href="../../../index.xml" rel="" target=""><i class="bi bi-rss" role="img">
+</i> 
+ <span class="menu-text"></span></a>
+  </li>  
+</ul>
+            <div class="quarto-navbar-tools">
+</div>
+          </div> <!-- /navcollapse -->
+      </div> <!-- /container-fluid -->
+    </nav>
+</header>
+<!-- content -->
+<header id="title-block-header" class="quarto-title-block default toc-left page-columns page-full">
+  <div class="quarto-title-banner page-columns page-full">
+    <div class="quarto-title column-page-right">
+      <h1 class="title">Trimming - O.lurida BGI FastQs with FastP on Mox</h1>
+                                <div class="quarto-categories">
+                <div class="quarto-category">2021</div>
+                <div class="quarto-category">Olympia Oyster Genome Sequencing</div>
+              </div>
+                  </div>
+  </div>
+    
+  
+  <div class="quarto-title-meta">
+
+      <div>
+      <div class="quarto-title-meta-heading">Author</div>
+      <div class="quarto-title-meta-contents">
+               <p>Sam White </p>
+            </div>
+    </div>
+      
+      <div>
+      <div class="quarto-title-meta-heading">Published</div>
+      <div class="quarto-title-meta-contents">
+        <p class="date">May 18, 2021</p>
+      </div>
+    </div>
+    
+      
+    </div>
+    
+  
+  </header><div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-full page-navbar">
+<!-- sidebar -->
+  <nav id="quarto-sidebar" class="sidebar collapse collapse-horizontal sidebar-navigation floating overflow-auto">
+    <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">Contents</h2>
+   
+  <ul>
+  <li><a href="#results" id="toc-results" class="nav-link active" data-scroll-target="#results">RESULTS</a>
+  <ul>
+  <li><a href="#html-reports" id="toc-html-reports" class="nav-link" data-scroll-target="#html-reports">HTML Reports</a></li>
+  <li><a href="#trimmed-fastqs" id="toc-trimmed-fastqs" class="nav-link" data-scroll-target="#trimmed-fastqs">Trimmed FastQs</a></li>
+  </ul></li>
+  </ul>
+</nav>
+</nav>
+<div id="quarto-sidebar-glass" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar,#quarto-sidebar-glass"></div>
+<!-- margin-sidebar -->
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar zindex-bottom">
+    </div>
+<!-- main -->
+<main class="content quarto-banner-title-block column-page-right" id="quarto-document-content">
+
+
+
+
+<p><a href="https://robertslab.github.io/sams-notebook/posts/2021/2021-05-13-Genome-Submission-Validation-of-Olurida_v081.fa-and-Annotated-GFFs-Prior-to-Submission-to-NCBI/">After attempting to submit our <em>Ostrea lurida</em> (Olympia oyster) genome assembly annotations (via GFF) to NCBI</a>, the submission process also highlighted some short comings of the <code>Olurida_v081</code> assembly. When getting ready to submit the genome annotations to NCBI, I was required to calculate the genome coverage we had. NCBI suggested to calculate this simply by counting the number of bases sequenced and divide it by the genome size. Doing this resulted in an estimated coverage of ~55X coverage, yet we have significant stretches of Ns throughout the assembly. I understand why this is still technically possible, but it’s just sticking in my craw. So, I’ve decided to set up a quick assembly to see what I can come up with. Of note, the <a href="https://robertslab.github.io/sams-notebook/2017/11/30/genome-assembly-olympia-oyster-illumina-pacbio-using-pb-jelly-wbgi-scaffold-assembly-2/">canonical assembly we’ve been using relied on the scaffolded assembly provided by BGI</a>; we never attempted our own assembly from the raw data.</p>
+<p>To start, I needed to trim the data. I ran the BGI Illumina sequencing data through <a href="https://github.com/OpenGene/fastp"><code>fastp</code></a> on Mox.</p>
+<p>SBATCH script (GitHub):</p>
+<ul>
+<li><a href="https://github.com/RobertsLab/sams-notebook/blob/master/sbatch_scripts/20210518_olur_fastp_bgi.sh">0210518_olur_fastp_bgi.sh</a></li>
+</ul>
+<pre class="shell"><code>#!/bin/bash
+## Job Name
+#SBATCH --job-name=20210518_olur_fastp_bgi
+## Allocation Definition
+#SBATCH --account=coenv
+#SBATCH --partition=coenv
+## Resources
+## Nodes
+#SBATCH --nodes=1
+## Walltime (days-hours:minutes:seconds format)
+#SBATCH --time=10-00:00:00
+## Memory per node
+#SBATCH --mem=120G
+##turn on e-mail notification
+#SBATCH --mail-type=ALL
+#SBATCH --mail-user=samwhite@uw.edu
+## Specify the working directory for this job
+#SBATCH --chdir=/gscratch/scrubbed/samwhite/outputs/20210518_olur_fastp_bgi
+
+
+### Fastp 10x Genomics data used for P.generosa genome assembly by Phase Genomics.
+### In preparation for use in BlobToolKit
+
+### Expects input filenames to be in format: *.fastq.gz
+
+
+###################################################################################
+# These variables need to be set by user
+
+## Assign Variables
+
+# Set number of CPUs to use
+threads=40
+
+# Input/output files
+trimmed_checksums=trimmed_fastq_checksums.md5
+raw_reads_dir=/gscratch/srlab/sam/data/O_lurida/DNAseq
+fastq_checksums=raw_fastq_checksums.md5
+
+# Paths to programs
+fastp=/gscratch/srlab/programs/fastp-0.20.0/fastp
+multiqc=/gscratch/srlab/programs/anaconda3/bin/multiqc
+
+## Inititalize arrays
+fastq_array_R1=()
+fastq_array_R2=()
+
+
+# Programs associative array
+declare -A programs_array
+programs_array=(
+[fastp]="${fastp}" \
+[multiqc]="${multiqc}"
+)
+
+
+###################################################################################
+
+# Exit script if any command fails
+set -e
+
+# Load Python Mox module for Python module availability
+module load intel-python3_2017
+
+# Capture date
+timestamp=$(date +%Y%m%d)
+
+# Sync raw FastQ files to working directory
+rsync --archive --verbose \
+"${raw_reads_dir}"/1*.fq.gz .
+
+# Create arrays of fastq R1 files and sample names
+for fastq in 1*_1*.fq.gz
+do
+  fastq_array_R1+=("${fastq}")
+done
+
+# Create array of fastq R2 files
+for fastq in 1*_2*.fq.gz
+do
+  fastq_array_R2+=("${fastq}")
+done
+
+
+# Run fastp on files
+# Trim 10bp from 5' from each read
+# Adds JSON report output for downstream usage by MultiQC
+for index in "${!fastq_array_R1[@]}"
+do
+  # Remove .fastq.gz from end of file names
+  R1_sample_name=$(echo "${fastq_array_R1[index]}" | sed 's/.fq.gz//')
+  R2_sample_name=$(echo "${fastq_array_R2[index]}" | sed 's/.fq.gz//')
+
+  # Get sample name without R1/R2 labels
+  sample_name=$(echo "${fastq_array_R1[index]}" | sed 's/_[12].*//')
+
+  echo ""
+  echo "fastp started on ${sample_name} FastQs."
+
+  # Run fastp
+  # Specifies reports in HTML and JSON formats
+  ${fastp} \
+  --in1 ${fastq_array_R1[index]} \
+  --in2 ${fastq_array_R2[index]} \
+  --detect_adapter_for_pe \
+  --thread ${threads} \
+  --html "${sample_name}".fastp-trim."${timestamp}".report.html \
+  --json "${sample_name}".fastp-trim."${timestamp}".report.json \
+  --out1 "${R1_sample_name}".fastp-trim."${timestamp}".fq.gz \
+  --out2 "${R2_sample_name}".fastp-trim."${timestamp}".fq.gz
+
+  echo "fastp completed on ${sample_name} FastQs"
+  echo ""
+
+  # Generate md5 checksums for newly trimmed files
+  {
+  md5sum "${R1_sample_name}".fastp-trim."${timestamp}".fq.gz
+  md5sum "${R2_sample_name}".fastp-trim."${timestamp}".fq.gz
+  } &gt;&gt; "${trimmed_checksums}"
+
+
+  # Create MD5 checksum for reference
+  {
+    md5sum "${fastq_array_R1[index]}"
+    md5sum "${fastq_array_R2[index]}"
+  }  &gt;&gt; ${fastq_checksums}
+
+  # Remove original FastQ files
+  rm "${fastq_array_R1[index]}" "${fastq_array_R2[index]}"
+done
+
+# Run MultiQC
+${programs_array[multiqc]} .
+
+###################################################################################
+
+# Capture program options
+echo "Logging program options..."
+for program in "${!programs_array[@]}"
+do
+    {
+  echo "Program options for ${program}: "
+    echo ""
+  # Handle samtools help menus
+  if [[ "${program}" == "samtools_index" ]] \
+  || [[ "${program}" == "samtools_sort" ]] \
+  || [[ "${program}" == "samtools_view" ]]
+  then
+    ${programs_array[$program]}
+
+  # Handle DIAMOND BLAST menu
+  elif [[ "${program}" == "diamond" ]]; then
+    ${programs_array[$program]} help
+
+  # Handle NCBI BLASTx menu
+  elif [[ "${program}" == "blastx" ]]; then
+    ${programs_array[$program]} -help
+  fi
+    ${programs_array[$program]} -h
+    echo ""
+    echo ""
+    echo "----------------------------------------------"
+    echo ""
+    echo ""
+} &amp;&gt;&gt; program_options.log || true
+
+  # If MultiQC is in programs_array, copy the config file to this directory.
+  if [[ "${program}" == "multiqc" ]]; then
+    cp --preserve ~/.multiqc_config.yaml multiqc_config.yaml
+  fi
+done
+
+# Document programs in PATH (primarily for program version ID)
+{
+  date
+  echo ""
+  echo "System PATH for $SLURM_JOB_ID"
+  echo ""
+  printf "%0.s-" {1..10}
+  echo "${PATH}" | tr : \\n
+} &gt;&gt; system_path.log
+
+echo "Finished logging system PATH"</code></pre>
+<hr>
+<section id="results" class="level1">
+<h1>RESULTS</h1>
+<p>No runtime for this, as UW email system was down.</p>
+<p>Next up, use the hybrid assembler <a href="https://github.com/adigenova/wengan">wengan</a> to generate a new assembly!</p>
+<p>Output folder:</p>
+<ul>
+<li><a href="https://gannet.fish.washington.edu/Atumefaciens/20210518_olur_fastp_bgi/">20210518_olur_fastp_bgi/</a></li>
+</ul>
+<section id="html-reports" class="level4">
+<h4 class="anchored" data-anchor-id="html-reports">HTML Reports</h4>
+<ul>
+<li><p><a href="https://multiqc.info/"><code>MultiQC</code></a> Report:</p>
+<ul>
+<li><a href="https://gannet.fish.washington.edu/Atumefaciens/20210518_olur_fastp_bgi/multiqc_report.html">multiqc_report.html</a></li>
+</ul></li>
+<li><p><a href="https://github.com/OpenGene/fastp"><code>fastp</code></a> Reports:</p>
+<ul>
+<li><p><a href="https://gannet.fish.washington.edu/Atumefaciens/20210518_olur_fastp_bgi/151114_I191_FCH3Y35BCXX_L1_wHAIPI023992-37.fastp-trim.20210518.report.html">151114_I191_FCH3Y35BCXX_L1_wHAIPI023992-37.fastp-trim.20210518.report.html</a></p></li>
+<li><p><a href="https://gannet.fish.washington.edu/Atumefaciens/20210518_olur_fastp_bgi/151114_I191_FCH3Y35BCXX_L2_wHAMPI023991-66.fastp-trim.20210518.report.html">151114_I191_FCH3Y35BCXX_L2_wHAMPI023991-66.fastp-trim.20210518.report.html</a></p></li>
+<li><p><a href="https://gannet.fish.washington.edu/Atumefaciens/20210518_olur_fastp_bgi/151118_I137_FCH3KNJBBXX_L5_wHAXPI023905-96.fastp-trim.20210518.report.html">151118_I137_FCH3KNJBBXX_L5_wHAXPI023905-96.fastp-trim.20210518.report.html</a></p></li>
+<li><p><a href="https://gannet.fish.washington.edu/Atumefaciens/20210518_olur_fastp_bgi/160103_I137_FCH3V5YBBXX_L3_WHOSTibkDCABDLAAPEI-62.fastp-trim.20210518.report.html">160103_I137_FCH3V5YBBXX_L3_WHOSTibkDCABDLAAPEI-62.fastp-trim.20210518.report.html</a></p></li>
+<li><p><a href="https://gannet.fish.washington.edu/Atumefaciens/20210518_olur_fastp_bgi/160103_I137_FCH3V5YBBXX_L3_WHOSTibkDCACDTAAPEI-75.fastp-trim.20210518.report.html">160103_I137_FCH3V5YBBXX_L3_WHOSTibkDCACDTAAPEI-75.fastp-trim.20210518.report.html</a></p></li>
+<li><p><a href="https://gannet.fish.washington.edu/Atumefaciens/20210518_olur_fastp_bgi/160103_I137_FCH3V5YBBXX_L4_WHOSTibkDCABDLAAPEI-62.fastp-trim.20210518.report.html">160103_I137_FCH3V5YBBXX_L4_WHOSTibkDCABDLAAPEI-62.fastp-trim.20210518.report.html</a></p></li>
+<li><p><a href="https://gannet.fish.washington.edu/Atumefaciens/20210518_olur_fastp_bgi/160103_I137_FCH3V5YBBXX_L4_WHOSTibkDCACDTAAPEI-75.fastp-trim.20210518.report.html">160103_I137_FCH3V5YBBXX_L4_WHOSTibkDCACDTAAPEI-75.fastp-trim.20210518.report.html</a></p></li>
+<li><p><a href="https://gannet.fish.washington.edu/Atumefaciens/20210518_olur_fastp_bgi/160103_I137_FCH3V5YBBXX_L5_WHOSTibkDCAADWAAPEI-74.fastp-trim.20210518.report.html">160103_I137_FCH3V5YBBXX_L5_WHOSTibkDCAADWAAPEI-74.fastp-trim.20210518.report.html</a></p></li>
+<li><p><a href="https://gannet.fish.washington.edu/Atumefaciens/20210518_olur_fastp_bgi/160103_I137_FCH3V5YBBXX_L6_WHOSTibkDCAADWAAPEI-74.fastp-trim.20210518.report.html">160103_I137_FCH3V5YBBXX_L6_WHOSTibkDCAADWAAPEI-74.fastp-trim.20210518.report.html</a></p></li>
+</ul></li>
+</ul>
+</section>
+<section id="trimmed-fastqs" class="level4">
+<h4 class="anchored" data-anchor-id="trimmed-fastqs">Trimmed FastQs</h4>
+<ul>
+<li><p><a href="https://gannet.fish.washington.edu/Atumefaciens/20210518_olur_fastp_bgi/151114_I191_FCH3Y35BCXX_L1_wHAIPI023992-37_1.fastp-trim.20210518.fq.gz">151114_I191_FCH3Y35BCXX_L1_wHAIPI023992-37_1.fastp-trim.20210518.fq.gz</a> (6.9G)</p>
+<ul>
+<li>MD5: <code>b59cfc6267f1ab18d46363de4c8478ca</code></li>
+</ul></li>
+<li><p><a href="https://gannet.fish.washington.edu/Atumefaciens/20210518_olur_fastp_bgi/151114_I191_FCH3Y35BCXX_L1_wHAIPI023992-37_2.fastp-trim.20210518.fq.gz">151114_I191_FCH3Y35BCXX_L1_wHAIPI023992-37_2.fastp-trim.20210518.fq.gz</a> (7.2G)</p>
+<ul>
+<li>MD5: <code>5622f0ba614b2fd243b9fb3361c632ff</code></li>
+</ul></li>
+<li><p><a href="https://gannet.fish.washington.edu/Atumefaciens/20210518_olur_fastp_bgi/151114_I191_FCH3Y35BCXX_L2_wHAMPI023991-66_1.fastp-trim.20210518.fq.gz">151114_I191_FCH3Y35BCXX_L2_wHAMPI023991-66_1.fastp-trim.20210518.fq.gz</a> (6.8G)</p>
+<ul>
+<li>MD5: <code>b5ca846f985d4371320fb880cdb2aefe</code></li>
+</ul></li>
+<li><p><a href="https://gannet.fish.washington.edu/Atumefaciens/20210518_olur_fastp_bgi/151114_I191_FCH3Y35BCXX_L2_wHAMPI023991-66_2.fastp-trim.20210518.fq.gz">151114_I191_FCH3Y35BCXX_L2_wHAMPI023991-66_2.fastp-trim.20210518.fq.gz</a> (7.1G)</p>
+<ul>
+<li>MD5: <code>21bd1320eaa436849b3ba8d2bde1a91f</code></li>
+</ul></li>
+<li><p><a href="https://gannet.fish.washington.edu/Atumefaciens/20210518_olur_fastp_bgi/151118_I137_FCH3KNJBBXX_L5_wHAXPI023905-96_1.fastp-trim.20210518.fq.gz">151118_I137_FCH3KNJBBXX_L5_wHAXPI023905-96_1.fastp-trim.20210518.fq.gz</a> (4.0G)</p>
+<ul>
+<li>MD5: <code>3e7e27d331c6cb7a131f07e0190a9906</code></li>
+</ul></li>
+<li><p><a href="https://gannet.fish.washington.edu/Atumefaciens/20210518_olur_fastp_bgi/151118_I137_FCH3KNJBBXX_L5_wHAXPI023905-96_2.fastp-trim.20210518.fq.gz">151118_I137_FCH3KNJBBXX_L5_wHAXPI023905-96_2.fastp-trim.20210518.fq.gz</a> (4.2G)</p>
+<ul>
+<li>MD5: <code>7a0b51fb7cc94948fe65f0e9779fde9f</code></li>
+</ul></li>
+<li><p><a href="https://gannet.fish.washington.edu/Atumefaciens/20210518_olur_fastp_bgi/160103_I137_FCH3V5YBBXX_L3_WHOSTibkDCABDLAAPEI-62_1.fastp-trim.20210518.fq.gz">160103_I137_FCH3V5YBBXX_L3_WHOSTibkDCABDLAAPEI-62_1.fastp-trim.20210518.fq.gz</a> (2.7G)</p>
+<ul>
+<li>MD5: <code>9041d909cc4650677273fe313d923e9f</code></li>
+</ul></li>
+<li><p><a href="https://gannet.fish.washington.edu/Atumefaciens/20210518_olur_fastp_bgi/160103_I137_FCH3V5YBBXX_L3_WHOSTibkDCABDLAAPEI-62_2.fastp-trim.20210518.fq.gz">160103_I137_FCH3V5YBBXX_L3_WHOSTibkDCABDLAAPEI-62_2.fastp-trim.20210518.fq.gz</a> (3.0G)</p>
+<ul>
+<li>MD5: <code>c44165a404f9d2eab99d352d34918ebb</code></li>
+</ul></li>
+<li><p><a href="https://gannet.fish.washington.edu/Atumefaciens/20210518_olur_fastp_bgi/160103_I137_FCH3V5YBBXX_L3_WHOSTibkDCACDTAAPEI-75_1.fastp-trim.20210518.fq.gz">160103_I137_FCH3V5YBBXX_L3_WHOSTibkDCACDTAAPEI-75_1.fastp-trim.20210518.fq.gz</a> (1.4G)</p>
+<ul>
+<li>MD5: <code>6e2070b91d3872817ffe1600f8098cc7</code></li>
+</ul></li>
+<li><p><a href="https://gannet.fish.washington.edu/Atumefaciens/20210518_olur_fastp_bgi/160103_I137_FCH3V5YBBXX_L3_WHOSTibkDCACDTAAPEI-75_2.fastp-trim.20210518.fq.gz">160103_I137_FCH3V5YBBXX_L3_WHOSTibkDCACDTAAPEI-75_2.fastp-trim.20210518.fq.gz</a> (1.6G)</p>
+<ul>
+<li>MD5: <code>8acc523663ceebb40c793c21a29554f9</code></li>
+</ul></li>
+<li><p><a href="https://gannet.fish.washington.edu/Atumefaciens/20210518_olur_fastp_bgi/160103_I137_FCH3V5YBBXX_L4_WHOSTibkDCABDLAAPEI-62_1.fastp-trim.20210518.fq.gz">160103_I137_FCH3V5YBBXX_L4_WHOSTibkDCABDLAAPEI-62_1.fastp-trim.20210518.fq.gz</a> (2.7G)</p>
+<ul>
+<li>MD5: <code>65c924c07b3a67fcf73cf2dfbfb5385c</code></li>
+</ul></li>
+<li><p><a href="https://gannet.fish.washington.edu/Atumefaciens/20210518_olur_fastp_bgi/160103_I137_FCH3V5YBBXX_L4_WHOSTibkDCABDLAAPEI-62_2.fastp-trim.20210518.fq.gz">160103_I137_FCH3V5YBBXX_L4_WHOSTibkDCABDLAAPEI-62_2.fastp-trim.20210518.fq.gz</a> (3.0G)</p>
+<ul>
+<li>MD5: <code>83a8d688bb2ed8b1f2b20a409894f291</code></li>
+</ul></li>
+<li><p><a href="https://gannet.fish.washington.edu/Atumefaciens/20210518_olur_fastp_bgi/160103_I137_FCH3V5YBBXX_L4_WHOSTibkDCACDTAAPEI-75_1.fastp-trim.20210518.fq.gz">160103_I137_FCH3V5YBBXX_L4_WHOSTibkDCACDTAAPEI-75_1.fastp-trim.20210518.fq.gz</a> (1.4G)</p>
+<ul>
+<li>MD5: <code>aa21c7a4661f9a609d48f0c1838a4227</code></li>
+</ul></li>
+<li><p><a href="https://gannet.fish.washington.edu/Atumefaciens/20210518_olur_fastp_bgi/160103_I137_FCH3V5YBBXX_L4_WHOSTibkDCACDTAAPEI-75_2.fastp-trim.20210518.fq.gz">160103_I137_FCH3V5YBBXX_L4_WHOSTibkDCACDTAAPEI-75_2.fastp-trim.20210518.fq.gz</a> (1.6G)</p>
+<ul>
+<li>MD5: <code>7378a4889fe9387731a4763fef89dcbd</code></li>
+</ul></li>
+<li><p><a href="https://gannet.fish.washington.edu/Atumefaciens/20210518_olur_fastp_bgi/160103_I137_FCH3V5YBBXX_L5_WHOSTibkDCAADWAAPEI-74_1.fastp-trim.20210518.fq.gz">160103_I137_FCH3V5YBBXX_L5_WHOSTibkDCAADWAAPEI-74_1.fastp-trim.20210518.fq.gz</a> (3.0G)</p>
+<ul>
+<li>MD5: <code>cac2ae3705c0ee9050803eb33b7c2c2f</code></li>
+</ul></li>
+<li><p><a href="https://gannet.fish.washington.edu/Atumefaciens/20210518_olur_fastp_bgi/160103_I137_FCH3V5YBBXX_L5_WHOSTibkDCAADWAAPEI-74_2.fastp-trim.20210518.fq.gz">160103_I137_FCH3V5YBBXX_L5_WHOSTibkDCAADWAAPEI-74_2.fastp-trim.20210518.fq.gz</a> (3.3G)</p>
+<ul>
+<li>MD5: <code>4604149dad5455d2700a5026ea53e275</code></li>
+</ul></li>
+<li><p><a href="https://gannet.fish.washington.edu/Atumefaciens/20210518_olur_fastp_bgi/160103_I137_FCH3V5YBBXX_L6_WHOSTibkDCAADWAAPEI-74_1.fastp-trim.20210518.fq.gz">160103_I137_FCH3V5YBBXX_L6_WHOSTibkDCAADWAAPEI-74_1.fastp-trim.20210518.fq.gz</a> (2.8G)</p>
+<ul>
+<li>MD5: <code>544761c0318393021b1f45eb00bfcf3b</code></li>
+</ul></li>
+<li><p><a href="https://gannet.fish.washington.edu/Atumefaciens/20210518_olur_fastp_bgi/160103_I137_FCH3V5YBBXX_L6_WHOSTibkDCAADWAAPEI-74_2.fastp-trim.20210518.fq.gz">160103_I137_FCH3V5YBBXX_L6_WHOSTibkDCAADWAAPEI-74_2.fastp-trim.20210518.fq.gz</a> (3.2G)</p>
+<ul>
+<li>MD5: <code>349d7a9d5e250ddbd89f159485b5c904</code></li>
+</ul></li>
+</ul>
+
+
+</section>
+</section>
+
+</main> <!-- /main -->
+<script id="quarto-html-after-body" type="application/javascript">
+window.document.addEventListener("DOMContentLoaded", function (event) {
+  const toggleBodyColorMode = (bsSheetEl) => {
+    const mode = bsSheetEl.getAttribute("data-mode");
+    const bodyEl = window.document.querySelector("body");
+    if (mode === "dark") {
+      bodyEl.classList.add("quarto-dark");
+      bodyEl.classList.remove("quarto-light");
+    } else {
+      bodyEl.classList.add("quarto-light");
+      bodyEl.classList.remove("quarto-dark");
+    }
+  }
+  const toggleBodyColorPrimary = () => {
+    const bsSheetEl = window.document.querySelector("link#quarto-bootstrap");
+    if (bsSheetEl) {
+      toggleBodyColorMode(bsSheetEl);
+    }
+  }
+  toggleBodyColorPrimary();  
+  const icon = "";
+  const anchorJS = new window.AnchorJS();
+  anchorJS.options = {
+    placement: 'right',
+    icon: icon
+  };
+  anchorJS.add('.anchored');
+  const isCodeAnnotation = (el) => {
+    for (const clz of el.classList) {
+      if (clz.startsWith('code-annotation-')) {                     
+        return true;
+      }
+    }
+    return false;
+  }
+  const clipboard = new window.ClipboardJS('.code-copy-button', {
+    text: function(trigger) {
+      const codeEl = trigger.previousElementSibling.cloneNode(true);
+      for (const childEl of codeEl.children) {
+        if (isCodeAnnotation(childEl)) {
+          childEl.remove();
+        }
+      }
+      return codeEl.innerText;
+    }
+  });
+  clipboard.on('success', function(e) {
+    // button target
+    const button = e.trigger;
+    // don't keep focus
+    button.blur();
+    // flash "checked"
+    button.classList.add('code-copy-button-checked');
+    var currentTitle = button.getAttribute("title");
+    button.setAttribute("title", "Copied!");
+    let tooltip;
+    if (window.bootstrap) {
+      button.setAttribute("data-bs-toggle", "tooltip");
+      button.setAttribute("data-bs-placement", "left");
+      button.setAttribute("data-bs-title", "Copied!");
+      tooltip = new bootstrap.Tooltip(button, 
+        { trigger: "manual", 
+          customClass: "code-copy-button-tooltip",
+          offset: [0, -8]});
+      tooltip.show();    
+    }
+    setTimeout(function() {
+      if (tooltip) {
+        tooltip.hide();
+        button.removeAttribute("data-bs-title");
+        button.removeAttribute("data-bs-toggle");
+        button.removeAttribute("data-bs-placement");
+      }
+      button.setAttribute("title", currentTitle);
+      button.classList.remove('code-copy-button-checked');
+    }, 1000);
+    // clear code selection
+    e.clearSelection();
+  });
+  function tippyHover(el, contentFn) {
+    const config = {
+      allowHTML: true,
+      content: contentFn,
+      maxWidth: 500,
+      delay: 100,
+      arrow: false,
+      appendTo: function(el) {
+          return el.parentElement;
+      },
+      interactive: true,
+      interactiveBorder: 10,
+      theme: 'quarto',
+      placement: 'bottom-start'
+    };
+    window.tippy(el, config); 
+  }
+  const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+  for (var i=0; i<noterefs.length; i++) {
+    const ref = noterefs[i];
+    tippyHover(ref, function() {
+      // use id or data attribute instead here
+      let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+      try { href = new URL(href).hash; } catch {}
+      const id = href.replace(/^#\/?/, "");
+      const note = window.document.getElementById(id);
+      return note.innerHTML;
+    });
+  }
+      let selectedAnnoteEl;
+      const selectorForAnnotation = ( cell, annotation) => {
+        let cellAttr = 'data-code-cell="' + cell + '"';
+        let lineAttr = 'data-code-annotation="' +  annotation + '"';
+        const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+        return selector;
+      }
+      const selectCodeLines = (annoteEl) => {
+        const doc = window.document;
+        const targetCell = annoteEl.getAttribute("data-target-cell");
+        const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+        const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+        const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+        const lineIds = lines.map((line) => {
+          return targetCell + "-" + line;
+        })
+        let top = null;
+        let height = null;
+        let parent = null;
+        if (lineIds.length > 0) {
+            //compute the position of the single el (top and bottom and make a div)
+            const el = window.document.getElementById(lineIds[0]);
+            top = el.offsetTop;
+            height = el.offsetHeight;
+            parent = el.parentElement.parentElement;
+          if (lineIds.length > 1) {
+            const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+            const bottom = lastEl.offsetTop + lastEl.offsetHeight;
+            height = bottom - top;
+          }
+          if (top !== null && height !== null && parent !== null) {
+            // cook up a div (if necessary) and position it 
+            let div = window.document.getElementById("code-annotation-line-highlight");
+            if (div === null) {
+              div = window.document.createElement("div");
+              div.setAttribute("id", "code-annotation-line-highlight");
+              div.style.position = 'absolute';
+              parent.appendChild(div);
+            }
+            div.style.top = top - 2 + "px";
+            div.style.height = height + 4 + "px";
+            let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+            if (gutterDiv === null) {
+              gutterDiv = window.document.createElement("div");
+              gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+              gutterDiv.style.position = 'absolute';
+              const codeCell = window.document.getElementById(targetCell);
+              const gutter = codeCell.querySelector('.code-annotation-gutter');
+              gutter.appendChild(gutterDiv);
+            }
+            gutterDiv.style.top = top - 2 + "px";
+            gutterDiv.style.height = height + 4 + "px";
+          }
+          selectedAnnoteEl = annoteEl;
+        }
+      };
+      const unselectCodeLines = () => {
+        const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+        elementsIds.forEach((elId) => {
+          const div = window.document.getElementById(elId);
+          if (div) {
+            div.remove();
+          }
+        });
+        selectedAnnoteEl = undefined;
+      };
+      // Attach click handler to the DT
+      const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
+      for (const annoteDlNode of annoteDls) {
+        annoteDlNode.addEventListener('click', (event) => {
+          const clickedEl = event.target;
+          if (clickedEl !== selectedAnnoteEl) {
+            unselectCodeLines();
+            const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
+            if (activeEl) {
+              activeEl.classList.remove('code-annotation-active');
+            }
+            selectCodeLines(clickedEl);
+            clickedEl.classList.add('code-annotation-active');
+          } else {
+            // Unselect the line
+            unselectCodeLines();
+            clickedEl.classList.remove('code-annotation-active');
+          }
+        });
+      }
+  const findCites = (el) => {
+    const parentEl = el.parentElement;
+    if (parentEl) {
+      const cites = parentEl.dataset.cites;
+      if (cites) {
+        return {
+          el,
+          cites: cites.split(' ')
+        };
+      } else {
+        return findCites(el.parentElement)
+      }
+    } else {
+      return undefined;
+    }
+  };
+  var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+  for (var i=0; i<bibliorefs.length; i++) {
+    const ref = bibliorefs[i];
+    const citeInfo = findCites(ref);
+    if (citeInfo) {
+      tippyHover(citeInfo.el, function() {
+        var popup = window.document.createElement('div');
+        citeInfo.cites.forEach(function(cite) {
+          var citeDiv = window.document.createElement('div');
+          citeDiv.classList.add('hanging-indent');
+          citeDiv.classList.add('csl-entry');
+          var biblioDiv = window.document.getElementById('ref-' + cite);
+          if (biblioDiv) {
+            citeDiv.innerHTML = biblioDiv.innerHTML;
+          }
+          popup.appendChild(citeDiv);
+        });
+        return popup.innerHTML;
+      });
+    }
+  }
+});
+</script>
+</div> <!-- /content -->
+
+
+
+</body></html>

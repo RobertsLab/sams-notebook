@@ -1,0 +1,749 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.3.450">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+<meta name="author" content="Sam White">
+<meta name="dcterms.date" content="2019-03-13">
+
+<title>Sam’s Notebook - Methylation Analysis - C.virginica Gonad MBD with Varying Read Subsets with Bismark on Mox</title>
+<style>
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: min(4vw, 1.5em);}
+div.column{flex: auto; overflow-x: auto;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+  vertical-align: middle;
+}
+</style>
+
+
+<script src="../../../site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="../../../site_libs/quarto-nav/headroom.min.js"></script>
+<script src="../../../site_libs/clipboard/clipboard.min.js"></script>
+<script src="../../../site_libs/quarto-search/autocomplete.umd.js"></script>
+<script src="../../../site_libs/quarto-search/fuse.min.js"></script>
+<script src="../../../site_libs/quarto-search/quarto-search.js"></script>
+<meta name="quarto:offset" content="../../../">
+<link href="../../..//images/favicon.ico" rel="icon">
+<script src="../../../site_libs/quarto-html/quarto.js"></script>
+<script src="../../../site_libs/quarto-html/popper.min.js"></script>
+<script src="../../../site_libs/quarto-html/tippy.umd.min.js"></script>
+<script src="../../../site_libs/quarto-html/anchor.min.js"></script>
+<link href="../../../site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="../../../site_libs/quarto-html/quarto-syntax-highlighting-dark.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="../../../site_libs/bootstrap/bootstrap.min.js"></script>
+<link href="../../../site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="../../../site_libs/bootstrap/bootstrap.min.css" rel="stylesheet" id="quarto-bootstrap" data-mode="dark">
+<script id="quarto-search-options" type="application/json">{
+  "location": "navbar",
+  "copy-button": false,
+  "collapse-after": 3,
+  "panel-placement": "end",
+  "type": "overlay",
+  "limit": 20,
+  "language": {
+    "search-no-results-text": "No results",
+    "search-matching-documents-text": "matching documents",
+    "search-copy-link-title": "Copy link to search",
+    "search-hide-matches-text": "Hide additional matches",
+    "search-more-match-text": "more match in this document",
+    "search-more-matches-text": "more matches in this document",
+    "search-clear-button-title": "Clear",
+    "search-detached-cancel-button-title": "Cancel",
+    "search-submit-button-title": "Submit",
+    "search-label": "Search"
+  }
+}</script>
+<script async="" src="https://www.googletagmanager.com/gtag/js?id=G-7483T61T11"></script>
+
+<script type="text/javascript">
+
+window.dataLayer = window.dataLayer || [];
+function gtag(){dataLayer.push(arguments);}
+gtag('js', new Date());
+gtag('config', 'G-7483T61T11', { 'anonymize_ip': true});
+</script>
+
+
+<link rel="stylesheet" href="../../../styles.css">
+</head>
+
+<body class="floating nav-fixed">
+
+<div id="quarto-search-results"></div>
+  <header id="quarto-header" class="headroom fixed-top">
+    <nav class="navbar navbar-expand-lg navbar-dark ">
+      <div class="navbar-container container-fluid">
+      <div class="navbar-brand-container">
+    <a class="navbar-brand" href="../../../index.html">
+    <span class="navbar-title">Sam’s Notebook</span>
+    </a>
+  </div>
+            <div id="quarto-search" class="" title="Search"></div>
+          <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarCollapse" aria-controls="navbarCollapse" aria-expanded="false" aria-label="Toggle navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+  <span class="navbar-toggler-icon"></span>
+</button>
+          <div class="collapse navbar-collapse" id="navbarCollapse">
+            <ul class="navbar-nav navbar-nav-scroll ms-auto">
+  <li class="nav-item dropdown ">
+    <a class="nav-link dropdown-toggle" href="#" id="nav-menu-bi-hdd-network" role="button" data-bs-toggle="dropdown" aria-expanded="false" rel="" target="">
+      <i class="bi bi-hdd-network" role="img">
+</i> 
+ <span class="menu-text"></span>
+    </a>
+    <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="nav-menu-bi-hdd-network">    
+        <li>
+    <a class="dropdown-item" href="http://raven.fish.washington.edu:8787" rel="" target="_blank">
+ <span class="dropdown-text">Rstudio Server - Raven</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="https://gannet.fish.washington.edu/Atumefaciens/" rel="" target="_blank">
+ <span class="dropdown-text">My Gannet Directory</span></a>
+  </li>  
+    </ul>
+  </li>
+  <li class="nav-item dropdown ">
+    <a class="nav-link dropdown-toggle" href="#" id="nav-menu-bi-journal-code" role="button" data-bs-toggle="dropdown" aria-expanded="false" rel="" target="">
+      <i class="bi bi-journal-code" role="img">
+</i> 
+ <span class="menu-text"></span>
+    </a>
+    <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="nav-menu-bi-journal-code">    
+        <li>
+    <a class="dropdown-item" href="https://sr320.github.io" rel="" target="_blank">
+ <span class="dropdown-text">Steven’s Notebook</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="https://shedurkin.github.io/Roberts-LabNotebook/" rel="" target="_blank">
+ <span class="dropdown-text">Kathleen’s Notebook</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="https://meganewing.github.io/mewing-notebook/" rel="" target="_blank">
+ <span class="dropdown-text">Megan’s Notebook</span></a>
+  </li>  
+    </ul>
+  </li>
+  <li class="nav-item dropdown ">
+    <a class="nav-link dropdown-toggle" href="#" id="nav-menu-bi-github" role="button" data-bs-toggle="dropdown" aria-expanded="false" rel="" target="">
+      <i class="bi bi-github" role="img">
+</i> 
+ <span class="menu-text"></span>
+    </a>
+    <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="nav-menu-bi-github">    
+        <li>
+    <a class="dropdown-item" href="https://github.com/RobertsLab/sams-notebook" rel="" target="_blank">
+ <span class="dropdown-text">Notebook repo</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="https://github.com/RobertsLab" rel="" target="_blank">
+ <span class="dropdown-text">Lab Organization (GitHub)</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="https://github.com/RobertsLab/lab-website" rel="" target="_blank">
+ <span class="dropdown-text">Edit Roberts Lab website</span></a>
+  </li>  
+    </ul>
+  </li>
+  <li class="nav-item compact">
+    <a class="nav-link" href="https://calendar.google.com/calendar/embed?src=mrc305@gmail.com&amp;ctz=America/Vancouver" rel="" target="_blank"><i class="bi bi-calendar-week" role="img">
+</i> 
+ <span class="menu-text"></span></a>
+  </li>  
+  <li class="nav-item compact">
+    <a class="nav-link" href="../../../index.xml" rel="" target=""><i class="bi bi-rss" role="img">
+</i> 
+ <span class="menu-text"></span></a>
+  </li>  
+</ul>
+            <div class="quarto-navbar-tools">
+</div>
+          </div> <!-- /navcollapse -->
+      </div> <!-- /container-fluid -->
+    </nav>
+</header>
+<!-- content -->
+<header id="title-block-header" class="quarto-title-block default toc-left page-columns page-full">
+  <div class="quarto-title-banner page-columns page-full">
+    <div class="quarto-title column-page-right">
+      <h1 class="title">Methylation Analysis - C.virginica Gonad MBD with Varying Read Subsets with Bismark on Mox</h1>
+                                <div class="quarto-categories">
+                <div class="quarto-category">2019</div>
+                <div class="quarto-category">Miscellaneous</div>
+              </div>
+                  </div>
+  </div>
+    
+  
+  <div class="quarto-title-meta">
+
+      <div>
+      <div class="quarto-title-meta-heading">Author</div>
+      <div class="quarto-title-meta-contents">
+               <p>Sam White </p>
+            </div>
+    </div>
+      
+      <div>
+      <div class="quarto-title-meta-heading">Published</div>
+      <div class="quarto-title-meta-contents">
+        <p class="date">March 13, 2019</p>
+      </div>
+    </div>
+    
+      
+    </div>
+    
+  
+  </header><div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-full page-navbar">
+<!-- sidebar -->
+  <nav id="quarto-sidebar" class="sidebar collapse collapse-horizontal sidebar-navigation floating overflow-auto">
+    <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">Contents</h2>
+   
+  <ul>
+  <li><a href="#results" id="toc-results" class="nav-link active" data-scroll-target="#results">RESULTS</a></li>
+  </ul>
+</nav>
+</nav>
+<div id="quarto-sidebar-glass" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar,#quarto-sidebar-glass"></div>
+<!-- margin-sidebar -->
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar zindex-bottom">
+    </div>
+<!-- main -->
+<main class="content quarto-banner-title-block column-page-right" id="quarto-document-content">
+
+
+
+
+<p>Steven asked for the following analysis in <a href="https://github.com/RobertsLab/resources/issues/609">this GitHub Issue</a> using Yaamini’s <em>C.virginica</em> MBD samples:</p>
+<blockquote class="blockquote">
+<ul>
+<li>Average read count for a single library</li>
+<li>50% of average read count for a single library</li>
+<li>All data</li>
+<li>50% of all data</li>
+</ul>
+</blockquote>
+<blockquote class="blockquote">
+<p>Questions to addressed Mean CpG Coverage % CpG Coverage at 5x % CpG Coverage at 10x Any “Report” information automatically calculated by Bismark.</p>
+</blockquote>
+<p><a href="https://robertslab.github.io/sams-notebook/posts/2019/2019-03-12-Data-Management---Create-C.virginica-Bisulfite-Genome-with-Bismark-on-Mox/">I made a bisulfite converted genome</a> using the NCBI GCF_002022765.2_C_virginica-3.0 version.</p>
+<p>Set up the following SBATCH script to run on Mox:</p>
+<ul>
+<li><a href="https://github.com/RobertsLab/sams-notebook/blob/master/sbatch_scripts/20190312_cvir_gonad_bismark.sh">20190312_cvir_gonad_bismark.sh</a> (GitHub)</li>
+</ul>
+<p><em>NOTE</em>: It seems as though the if/else statement didn’t work properly and resulted in a duplicated analysis of the “half total reads”. The “total reads” will be run independently.</p>
+<p><em>2nd NOTE</em>: Actually, the “problem” was that I was calculating read counts based on combining R1 and R2 reads. However, Bismark uses the subsetting option to run on read pairs (i.e.&nbsp;-u 1000 would run 1000 read pairs which is 2000 reads). So, my usage was incorrect. Fixed and re-ran.</p>
+<p><em>3rd NOTE</em>: I generated cytosine coverage files after the fact on a Mox build node and it is not part of the SBATCH script. I ran the following command in each of the Bismark output folders:</p>
+<pre><code>/gscratch/srlab/programs/Bismark-0.21.0_dev/coverage2cytosine \
+cvir_bsseq_all_pe_R1_bismark_bt2_pe.bismark.cov.gz  \
+--output bismark_cytosine_coverage.txt \
+--genome_folder /gscratch/srlab/sam/data/C_virginica/genomes/GCF_002022765.2_C_virginica-3.0</code></pre>
+<pre><code>
+#!/bin/bash
+## Job Name
+#SBATCH --job-name=bismark
+## Allocation Definition
+#SBATCH --account=coenv
+#SBATCH --partition=coenv
+## Resources
+## Nodes
+#SBATCH --nodes=1
+## Walltime (days-hours:minutes:seconds format)
+#SBATCH --time=10-00:00:00
+## Memory per node
+#SBATCH --mem=120G
+##turn on e-mail notification
+#SBATCH --mail-type=ALL
+#SBATCH --mail-user=samwhite@uw.edu
+## Specify the working directory for this job
+#SBATCH --workdir=/gscratch/scrubbed/samwhite/outputs/20190312_cvir_gonad_bismark
+
+# Load Python Mox module for Python module availability
+
+module load intel-python3_2017
+
+# Document programs in PATH (primarily for program version ID)
+
+date &gt;&gt; system_path.log
+echo "" &gt;&gt; system_path.log
+echo "System PATH for $SLURM_JOB_ID" &gt;&gt; system_path.log
+echo "" &gt;&gt; system_path.log
+printf "%0.s-" {1..10} &gt;&gt; system_path.log
+echo ${PATH} | tr : \\n &gt;&gt; system_path.log
+
+
+# Directories and programs
+wd=$(pwd)
+bismark_dir="/gscratch/srlab/programs/Bismark-0.19.0"
+bowtie2_dir="/gscratch/srlab/programs/bowtie2-2.3.4.1-linux-x86_64/"
+samtools="/gscratch/srlab/programs/samtools-1.9/samtools"
+reads_dir="/gscratch/srlab/sam/data/C_virginica/bsseq"
+
+## genomes
+
+genome="/gscratch/srlab/sam/data/C_virginica/genomes/GCF_002022765.2_C_virginica-3.0/"
+
+## Concatenated FastQ Files
+R1="${wd}/cvir_bsseq_all_pe_R1.fastq.gz"
+R2="${wd}/cvir_bsseq_all_pe_R2.fastq.gz"
+
+## FastQ files lists
+### FastQ files were previously trimmed in preparation for use with Bismark:
+### https://robertslab.github.io/sams-notebook/posts/2018/2018-04-11-trimgalorefastqcmultiqc-trim-10bp-53-ends-c-virginica-mbd-bs-seq-fastq-data/
+R1_list="${wd}/cvir_bsseq_pe_all_R1.list"
+R2_list="${wd}/cvir_bsseq_pe_all_R2.list"
+
+# Initialize variables
+total_reads=0
+avg_reads=0
+half_avg_reads=0
+half_total_reads=0
+reads_set_array=()
+R1_array=()
+R2_array=()
+
+
+## Save FastQ files to arrays
+R1_array=(${reads_dir}/*_R1_*.fq.gz)
+R2_array=(${reads_dir}/*_R2_*.fq.gz)
+
+# Number of libraries by counting elements in array
+num_libs=$(echo ${#R1_array[@]})
+
+# Add names to array
+## Two IMPORTANT notes:
+## 1. The "total reads" must be the last element of the array.
+## 2. The order of this array must match the "reads_set_array" below!
+reads_set_names_array=("avg_reads" "half_avg_reads" "half_total_reads" "total_reads")
+
+# Check for existence of previous concatenation
+# If they exist, delete them
+
+for file in ${R1} ${R1_list} ${R2} ${R2_list} library_counts.txt
+do
+  if [ -e ${file} ]; then
+    rm ${file}
+  fi
+done
+
+
+printf "%s\t%s\n\n" "LIBRARY" "COUNT" &gt;&gt; library_counts.txt
+
+# Determine total reads counts from all libraries
+## Iterates through arrays and determines read counts
+## by counting lines in FastQ and dividing by 4.
+## Each loop adds the read1 read counts to the total
+## Only uses R1 because Bismark interprets subsetting value as read pairs
+for fastq in "${!R1_array[@]}"
+do
+  lib_count=0
+  R1_fastq=${R1_array[fastq]}
+  lib_name=$(echo ${R1_fastq} | awk -F'_' '{ print $3 }')
+  R1_count=$(echo $(zcat ${R1_fastq} | wc -l)/4 | bc)
+  lib_count=$(echo ${R1_count})
+  printf "%s%s\t%s\n" "library_" "${lib_name}" "${lib_count}" &gt;&gt; library_counts.txt
+  total_reads=$(echo ${R1_count} + ${total_reads}| bc)
+done
+
+# Calcuations for different read amounts desired for analysis.
+avg_reads=$(echo ${total_reads}/${num_libs} | bc)
+half_avg_reads=$(echo "${avg_reads} / 2" | bc)
+half_total_reads=$(echo "${total_reads} / 2" | bc)
+
+
+# Store calculated values in array
+## IMPORTANT note:
+## The order of this array must match "reads_set_names_array" above!
+reads_set_array=(${avg_reads} ${half_avg_reads} ${half_total_reads} ${total_reads})
+
+# Loop to record counts/calculations
+for name in ${!reads_set_names_array[@]}
+do
+  count_name=${reads_set_names_array[name]}
+  counts=${reads_set_array[name]}
+  printf "%s\t%s\n" "${count_name}" "${counts}" &gt;&gt; library_counts.txt
+done
+
+# Concatenate R1 reads and generate lists of FastQs
+for fastq in ${reads_dir}/*R1*.gz
+do
+  echo ${fastq} &gt;&gt; ${R1_list}
+  cat ${fastq} &gt;&gt; ${R1}
+done
+
+# Concatenate R2 reads and generate lists of FastQs
+for fastq in ${reads_dir}/*R2*.gz
+do
+  echo ${fastq} &gt;&gt; ${R2_list}
+  cat ${fastq} &gt;&gt; ${R2}
+done
+
+# Run bismark using bisulftie-converted genome
+# Converted genome from 20190222 by me:
+# https://robertslab.github.io/sams-notebook/posts/2019/2019-02-21-Data-Management---Create-C.virginica-Bisulfite-Genome-wit-Bismark-on-Mox/
+## Loops through the various read sets
+## performs each analysis in respective subdirectory
+## When loop encounters last element of the array, then Bismark is run without the
+## -u subsetting option.
+for set in "${!reads_set_names_array[@]}"
+do
+  set_name=${reads_set_names_array[set]}
+  reads_set=${reads_set_array[set]}
+  mkdir ${set_name}_bismark
+  cd ${set_name}_bismark
+  if [ ${set} -eq $(( ${#reads_set_names_array[@]} - 1 )) ]; then
+    ${bismark_dir}/bismark \
+    --path_to_bowtie ${bowtie2_dir} \
+    --genome ${genome} \
+    --non_directional \
+    --score_min L,0,-0.6 \
+    -p 28 \
+    -1 ${R1} \
+    -2 ${R2} \
+    2&gt; ${set_name}_summary.txt
+  else
+    ${bismark_dir}/bismark \
+    --path_to_bowtie ${bowtie2_dir} \
+    --genome ${genome} \
+    --non_directional \
+    --score_min L,0,-0.6 \
+    -u ${reads_set} \
+    -p 28 \
+    -1 ${R1} \
+    -2 ${R2} \
+    2&gt; ${set_name}_summary.txt
+  fi
+  # Methylation extraction
+
+  ${bismark_dir}/bismark_methylation_extractor \
+  --bedgraph \
+  --counts \
+  --scaffolds \
+  --remove_spaces \
+  --multicore 28 \
+  --buffer_size 75% \
+  *.bam
+
+  # Bismark processing report
+
+  ${bismark_dir}/bismark2report
+
+  #Bismark summary report
+
+  ${bismark_dir}/bismark2summary
+
+  # Sort files for methylkit and IGV
+
+  find *.bam \
+  | xargs basename -s .bam \
+  | xargs -I{} ${samtools} \
+  sort \
+  --threads 28 \
+  {}.bam \
+  -o {}.sorted.bam
+
+  # Index sorted files for IGV
+  # The "-@ 28" below specifies number of CPU threads to use.
+
+  find *.sorted.bam \
+  | xargs basename -s .sorted.bam \
+  | xargs -I{} ${samtools} \
+  index -@ 28 \
+  {}.sorted.bam
+  cd ${wd}
+done
+</code></pre>
+<hr>
+<section id="results" class="level3">
+<h3 class="anchored" data-anchor-id="results">RESULTS</h3>
+<p>This took a pretty long time to run (6days 16hrs):</p>
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="https://raw.githubusercontent.com/RobertsLab/sams-notebook/master/images/screencaps/20190320_bismark_complete.png" class="img-fluid figure-img"></p>
+<figcaption class="figure-caption">6 days, 16hrs runtime</figcaption>
+</figure>
+</div>
+<p>Additionally, I don’t have the time at the moment to actually finish the analysis to evaluate differences in coverage. I’m posting notebook entry to make data available (belatedly) and will get some sort of comparison analysis done in the near future…</p>
+<p>Output folder:</p>
+<ul>
+<li><a href="http://gannet.fish.washington.edu/Atumefaciens/20190312_cvir_gonad_bismark/">20190312_cvir_gonad_bismark/</a></li>
+</ul>
+<p>Summary reports for each of the configurations (HTML):</p>
+<ul>
+<li><p><a href="http://gannet.fish.washington.edu/Atumefaciens/20190312_cvir_gonad_bismark/avg_reads_bismark/bismark_summary_report.html">avg_reads_bismark/bismark_summary_report.html</a></p>
+<ul>
+<li><p>27,591,427 reads</p></li>
+<li><p>28.9% unique alignments</p></li>
+<li><p>73.6% methylated CpG</p></li>
+</ul></li>
+<li><p><a href="http://gannet.fish.washington.edu/Atumefaciens/20190312_cvir_gonad_bismark/half_avg_reads_bismark/bismark_summary_report.html">half_avg_reads_bismark/bismark_summary_report.html</a></p>
+<ul>
+<li><p>55,182,854 reads</p></li>
+<li><p>36.8% unique alignments</p></li>
+<li><p>73.4% methylated CpG</p></li>
+</ul></li>
+<li><p><a href="http://gannet.fish.washington.edu/Atumefaciens/20190312_cvir_gonad_bismark/half_total_reads_bismark/bismark_summary_report.html">half_total_reads_bismark/bismark_summary_report.html</a></p>
+<ul>
+<li><p>137,957,136 reads</p></li>
+<li><p>31.3% unique alignments</p></li>
+<li><p>75.2% methylated CpG</p></li>
+</ul></li>
+<li><p><a href="http://gannet.fish.washington.edu/Atumefaciens/20190312_cvir_gonad_bismark/total_reads_bismark/">http://gannet.fish.washington.edu/Atumefaciens/20190312_cvir_gonad_bismark/total_reads_bismark/bismark_summary_report.html</a></p>
+<ul>
+<li><p>275,914,272 reads</p></li>
+<li><p>32.8% unique alignments</p></li>
+<li><p>75.5% methylated CpG</p></li>
+</ul></li>
+</ul>
+
+
+</section>
+
+</main> <!-- /main -->
+<script id="quarto-html-after-body" type="application/javascript">
+window.document.addEventListener("DOMContentLoaded", function (event) {
+  const toggleBodyColorMode = (bsSheetEl) => {
+    const mode = bsSheetEl.getAttribute("data-mode");
+    const bodyEl = window.document.querySelector("body");
+    if (mode === "dark") {
+      bodyEl.classList.add("quarto-dark");
+      bodyEl.classList.remove("quarto-light");
+    } else {
+      bodyEl.classList.add("quarto-light");
+      bodyEl.classList.remove("quarto-dark");
+    }
+  }
+  const toggleBodyColorPrimary = () => {
+    const bsSheetEl = window.document.querySelector("link#quarto-bootstrap");
+    if (bsSheetEl) {
+      toggleBodyColorMode(bsSheetEl);
+    }
+  }
+  toggleBodyColorPrimary();  
+  const icon = "";
+  const anchorJS = new window.AnchorJS();
+  anchorJS.options = {
+    placement: 'right',
+    icon: icon
+  };
+  anchorJS.add('.anchored');
+  const isCodeAnnotation = (el) => {
+    for (const clz of el.classList) {
+      if (clz.startsWith('code-annotation-')) {                     
+        return true;
+      }
+    }
+    return false;
+  }
+  const clipboard = new window.ClipboardJS('.code-copy-button', {
+    text: function(trigger) {
+      const codeEl = trigger.previousElementSibling.cloneNode(true);
+      for (const childEl of codeEl.children) {
+        if (isCodeAnnotation(childEl)) {
+          childEl.remove();
+        }
+      }
+      return codeEl.innerText;
+    }
+  });
+  clipboard.on('success', function(e) {
+    // button target
+    const button = e.trigger;
+    // don't keep focus
+    button.blur();
+    // flash "checked"
+    button.classList.add('code-copy-button-checked');
+    var currentTitle = button.getAttribute("title");
+    button.setAttribute("title", "Copied!");
+    let tooltip;
+    if (window.bootstrap) {
+      button.setAttribute("data-bs-toggle", "tooltip");
+      button.setAttribute("data-bs-placement", "left");
+      button.setAttribute("data-bs-title", "Copied!");
+      tooltip = new bootstrap.Tooltip(button, 
+        { trigger: "manual", 
+          customClass: "code-copy-button-tooltip",
+          offset: [0, -8]});
+      tooltip.show();    
+    }
+    setTimeout(function() {
+      if (tooltip) {
+        tooltip.hide();
+        button.removeAttribute("data-bs-title");
+        button.removeAttribute("data-bs-toggle");
+        button.removeAttribute("data-bs-placement");
+      }
+      button.setAttribute("title", currentTitle);
+      button.classList.remove('code-copy-button-checked');
+    }, 1000);
+    // clear code selection
+    e.clearSelection();
+  });
+  function tippyHover(el, contentFn) {
+    const config = {
+      allowHTML: true,
+      content: contentFn,
+      maxWidth: 500,
+      delay: 100,
+      arrow: false,
+      appendTo: function(el) {
+          return el.parentElement;
+      },
+      interactive: true,
+      interactiveBorder: 10,
+      theme: 'quarto',
+      placement: 'bottom-start'
+    };
+    window.tippy(el, config); 
+  }
+  const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+  for (var i=0; i<noterefs.length; i++) {
+    const ref = noterefs[i];
+    tippyHover(ref, function() {
+      // use id or data attribute instead here
+      let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+      try { href = new URL(href).hash; } catch {}
+      const id = href.replace(/^#\/?/, "");
+      const note = window.document.getElementById(id);
+      return note.innerHTML;
+    });
+  }
+      let selectedAnnoteEl;
+      const selectorForAnnotation = ( cell, annotation) => {
+        let cellAttr = 'data-code-cell="' + cell + '"';
+        let lineAttr = 'data-code-annotation="' +  annotation + '"';
+        const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+        return selector;
+      }
+      const selectCodeLines = (annoteEl) => {
+        const doc = window.document;
+        const targetCell = annoteEl.getAttribute("data-target-cell");
+        const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+        const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+        const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+        const lineIds = lines.map((line) => {
+          return targetCell + "-" + line;
+        })
+        let top = null;
+        let height = null;
+        let parent = null;
+        if (lineIds.length > 0) {
+            //compute the position of the single el (top and bottom and make a div)
+            const el = window.document.getElementById(lineIds[0]);
+            top = el.offsetTop;
+            height = el.offsetHeight;
+            parent = el.parentElement.parentElement;
+          if (lineIds.length > 1) {
+            const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+            const bottom = lastEl.offsetTop + lastEl.offsetHeight;
+            height = bottom - top;
+          }
+          if (top !== null && height !== null && parent !== null) {
+            // cook up a div (if necessary) and position it 
+            let div = window.document.getElementById("code-annotation-line-highlight");
+            if (div === null) {
+              div = window.document.createElement("div");
+              div.setAttribute("id", "code-annotation-line-highlight");
+              div.style.position = 'absolute';
+              parent.appendChild(div);
+            }
+            div.style.top = top - 2 + "px";
+            div.style.height = height + 4 + "px";
+            let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+            if (gutterDiv === null) {
+              gutterDiv = window.document.createElement("div");
+              gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+              gutterDiv.style.position = 'absolute';
+              const codeCell = window.document.getElementById(targetCell);
+              const gutter = codeCell.querySelector('.code-annotation-gutter');
+              gutter.appendChild(gutterDiv);
+            }
+            gutterDiv.style.top = top - 2 + "px";
+            gutterDiv.style.height = height + 4 + "px";
+          }
+          selectedAnnoteEl = annoteEl;
+        }
+      };
+      const unselectCodeLines = () => {
+        const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+        elementsIds.forEach((elId) => {
+          const div = window.document.getElementById(elId);
+          if (div) {
+            div.remove();
+          }
+        });
+        selectedAnnoteEl = undefined;
+      };
+      // Attach click handler to the DT
+      const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
+      for (const annoteDlNode of annoteDls) {
+        annoteDlNode.addEventListener('click', (event) => {
+          const clickedEl = event.target;
+          if (clickedEl !== selectedAnnoteEl) {
+            unselectCodeLines();
+            const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
+            if (activeEl) {
+              activeEl.classList.remove('code-annotation-active');
+            }
+            selectCodeLines(clickedEl);
+            clickedEl.classList.add('code-annotation-active');
+          } else {
+            // Unselect the line
+            unselectCodeLines();
+            clickedEl.classList.remove('code-annotation-active');
+          }
+        });
+      }
+  const findCites = (el) => {
+    const parentEl = el.parentElement;
+    if (parentEl) {
+      const cites = parentEl.dataset.cites;
+      if (cites) {
+        return {
+          el,
+          cites: cites.split(' ')
+        };
+      } else {
+        return findCites(el.parentElement)
+      }
+    } else {
+      return undefined;
+    }
+  };
+  var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+  for (var i=0; i<bibliorefs.length; i++) {
+    const ref = bibliorefs[i];
+    const citeInfo = findCites(ref);
+    if (citeInfo) {
+      tippyHover(citeInfo.el, function() {
+        var popup = window.document.createElement('div');
+        citeInfo.cites.forEach(function(cite) {
+          var citeDiv = window.document.createElement('div');
+          citeDiv.classList.add('hanging-indent');
+          citeDiv.classList.add('csl-entry');
+          var biblioDiv = window.document.getElementById('ref-' + cite);
+          if (biblioDiv) {
+            citeDiv.innerHTML = biblioDiv.innerHTML;
+          }
+          popup.appendChild(citeDiv);
+        });
+        return popup.innerHTML;
+      });
+    }
+  }
+});
+</script>
+</div> <!-- /content -->
+
+
+
+</body></html>
