@@ -116,3 +116,32 @@ ggplot(resazurin.df_long, aes(x = time_point, y = A590_prestress_value, group = 
 
 ### Plot pre-stress control-subtracted fluorescence
 
+```{r control-adjusted-fluorescence, eval=TRUE}
+# Load required libraries
+library(dplyr)
+library(ggplot2)
+library(tidyr)
+
+# Step 1: Calculate the mean value of neg control samples
+# Step 1: Calculate the mean value of neg control samples
+neg_control_mean <- resazurin.df %>%
+  filter(sample %in% c("neg-control-01", "neg-control-02")) %>%
+  select(starts_with("A590.prestress")) %>%
+  summarise_all(mean)
+
+# Step 2: Subtract the mean value from other samples
+resazurin_subtracted.df <- resazurin.df %>%
+  mutate_at(vars(starts_with("A590.prestress")), ~ . - neg_control_mean[[1]])
+
+# Pivot the data frame to longer format and filter out 'empty' sample
+resazurin_long <- resazurin_subtracted.df %>%
+  filter(!startsWith(sample, "neg-control") & sample != "empty") %>%
+  pivot_longer(cols = starts_with("A590.prestress"), names_to = "Time_Point", values_to = "Mean_Subtracted_Value")
+
+# Create dot plot with lines connecting values for each sample
+ggplot(resazurin_long, aes(x = Time_Point, y = Mean_Subtracted_Value, group = sample, color = sample)) +
+  geom_point() +
+  geom_line() +
+  labs(x = "Time Point", y = "Control-adjusted A590 (RFUs)") +
+  theme(legend.position = "right")
+```
