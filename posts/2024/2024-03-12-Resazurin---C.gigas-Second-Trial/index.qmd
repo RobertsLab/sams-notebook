@@ -46,3 +46,73 @@ Oysters were transferred from the pre-stress plate/dishes to the pre-warmed plat
 ## Output files
 
 All files have been deposited in the [`project-gigas-carryover` repo](https://github.com/RobertsLab/project-gigas-carryover/tree/main/lifestage_carryover/data/resazurin_trial_02). Please visit that link to obtain files, as well as view the [`REAMDE.md` file](https://github.com/RobertsLab/project-gigas-carryover/tree/main/lifestage_carryover/data/resazurin_trial_02/REAMDE.md) for descriptions of each file.
+
+All measurements were compiled in the following file:
+
+- [`20240312-cgig-resazurin-trial-02.csv`](https://github.com/RobertsLab/project-gigas-carryover/blob/04a64e3bd45487b5cd631f5817937d3cd4318e70/lifestage_carryover/data/resazurin_trial_02/20240312-cgig-resazurin-trial-02.csv) (CSV; commit `04a64e3`)
+
+## Analysis
+
+::: callout-note
+Data frame links to commit `04a64e3`.
+:::
+
+```{r setup, include=FALSE}
+library(knitr)
+library(dplyr)
+knitr::opts_chunk$set(
+  echo = TRUE,         # Display code chunks
+  eval = FALSE,        # Evaluate code chunks
+  warning = FALSE,     # Hide warnings
+  message = FALSE,     # Hide messages
+  comment = "",        # Prevents appending '##' to beginning of lines in code output
+  width = 1000         # adds scroll bar
+)
+```
+
+
+### Read in `20240312-cgig-resazurin-trial-02.csv`
+```{r read-in-csv, eval=TRUE}
+resazurin.df <- read.csv("https://raw.githubusercontent.com/RobertsLab/project-gigas-carryover/04a64e3bd45487b5cd631f5817937d3cd4318e70/lifestage_carryover/data/resazurin_trial_02/20240312-cgig-resazurin-trial-02.csv",
+header = TRUE,
+sep = ",")
+
+str(resazurin.df)
+```
+
+### Plot pre-stress raw flourescence
+
+```{r plot-pre-stress-raw-fluorescence, eval=TRUE}
+# Load the ggplot2 library
+library(ggplot2)
+
+# Reshape the data frame from wide to long format using tidyr
+library(tidyr)
+
+resazurin.df_long <- pivot_longer(resazurin.df, 
+                                  cols = starts_with("A590.prestress"), 
+                                  names_to = "time_point", 
+                                  values_to = "A590_prestress_value")
+
+# Create a new column to specify the color
+resazurin.df_long$color <- ifelse(grepl("^neg-control", resazurin.df_long$sample), "neg-control", resazurin.df_long$sample)
+
+# Get unique non-"neg-control" samples
+non_neg_control_samples <- setdiff(unique(resazurin.df_long$sample), "neg-control")
+
+# Define color palette
+sample_colors <- c("neg-control" = "black", 
+                   setNames(rainbow(length(non_neg_control_samples)), 
+                            non_neg_control_samples))
+
+# Plot the dot plot with lines
+ggplot(resazurin.df_long, aes(x = time_point, y = A590_prestress_value, group = sample, color = color)) +
+  geom_point(size = 3) +  # Larger dot size
+  geom_line() +  # Connect dots with lines
+  scale_color_manual(values = sample_colors) +  # Assigning colors to samples
+  labs(x = "Time Point", y = "Raw A590 (RFUs)", title = "Raw A590 Pre-stress Values", color = "Sample") +
+  theme_minimal()
+```
+
+### Plot pre-stress control-subtracted fluorescence
+
