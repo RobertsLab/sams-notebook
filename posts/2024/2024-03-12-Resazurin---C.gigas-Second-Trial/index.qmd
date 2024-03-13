@@ -80,7 +80,9 @@ sep = ",")
 str(resazurin.df)
 ```
 
-### Plot pre-stress raw flourescence
+#### Pre-stress
+
+##### Plot pre-stress raw flourescence
 
 ```{r plot-pre-stress-raw-fluorescence, eval=TRUE}
 # Load the ggplot2 library
@@ -114,7 +116,7 @@ ggplot(resazurin.df_long, aes(x = time_point, y = A590_prestress_value, group = 
   theme_minimal()
 ```
 
-### Plot pre-stress control-subtracted fluorescence
+##### Plot pre-stress control-subtracted fluorescence
 
 ```{r control-adjusted-fluorescence, eval=TRUE}
 # Load required libraries
@@ -146,7 +148,7 @@ ggplot(resazurin_long, aes(x = Time_Point, y = Mean_Subtracted_Value, group = sa
   theme(legend.position = "right")
 ```
 
-### Plot pre-stress change in fluorescence per weight
+##### Plot pre-stress change in fluorescence per weight
 ```{r pre-stress-weight-adjusted}
 library(tidyr)
 library(dplyr)
@@ -154,6 +156,112 @@ library(dplyr)
 # Step 1: Calculate the difference between A590.prestress.t.1.0 and A590.prestress.t.0
 resazurin_df <- resazurin.df %>%
   mutate(diff = A590.prestress.t.1.0 - A590.prestress.t.0)
+
+# Step 2: Calculate the mean of the difference for the neg-control samples
+neg_control_mean_diff <- resazurin_df %>%
+  filter(grepl("^neg-control", sample)) %>%
+  summarise(mean_diff = mean(diff))
+
+# Step 3: Subtract the mean difference from the differences of all other samples
+resazurin_subtracted_df <- resazurin_df %>%
+  mutate(diff_adj = diff - neg_control_mean_diff$mean_diff)
+
+# Step 4: Divide the result by the corresponding weight.mg for each sample
+resazurin_divided_df <- resazurin_subtracted_df %>%
+  filter(!startsWith(sample, "neg-control") & sample != "empty") %>%
+  mutate(change_per_mg = diff_adj / weight.mg)
+
+# Reorder the levels of sample factor by weight.mg
+resazurin_divided_df$sample <- factor(resazurin_divided_df$sample, levels = resazurin_divided_df$sample[order(resazurin_divided_df$weight.mg)])
+
+
+ggplot(resazurin_divided_df, aes(x = sample, y = change_per_mg)) +
+  geom_bar(stat = "identity", fill = "skyblue") +
+  geom_text(aes(label = weight.mg), vjust = -0.5, size = 3, color = "black") +  # Add text labels for weight.mg
+  labs(x = "Sample", y = "Change in Fluorescence per mg", title = "Change in Fluorescence per mg for Each Sample") +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1)) +  # Rotate x-axis labels for better readability
+  scale_x_discrete(drop = FALSE) +  # Retain all levels of sample factor
+  annotate("text", x = -0.1, y = -2.5, label = "Small", size = 6, color = "black", hjust = 0) +  # Annotation for small
+  annotate("text", x = nrow(resazurin_divided_df) + 0.5, y = -2.5, label = "Large", size = 6, color = "black", hjust = 1) +  # Annotation for large
+  geom_segment(aes(x = -0.1, xend = nrow(resazurin_divided_df) + 0.5, y = -0.6, yend = -0.6), arrow = arrow(type = "open", length = unit(0.2, "inches")), size = 2.0)  # Arrow indicating scale
+
+```
+
+### Heat stress @ 35<sup>o</sup>C
+
+##### Plot heat stress raw flourescence
+
+```{r plot-heat stress-raw-fluorescence, eval=TRUE}
+# Load the libraries
+library(ggplot2)
+library(tidyr)
+
+# Reshape the data frame from wide to long format using tidyr
+resazurin.df_long <- pivot_longer(resazurin.df, 
+                                  cols = starts_with("A590.hs"), 
+                                  names_to = "time_point", 
+                                  values_to = "A590_heat_stress_value")
+
+# Create a new column to specify the color
+resazurin.df_long$color <- ifelse(grepl("^neg-control", resazurin.df_long$sample), "neg-control", resazurin.df_long$sample)
+
+# Get unique non-"neg-control" samples
+non_neg_control_samples <- setdiff(unique(resazurin.df_long$sample), "neg-control")
+
+# Define color palette
+sample_colors <- c("neg-control" = "black", 
+                   setNames(rainbow(length(non_neg_control_samples)), 
+                            non_neg_control_samples))
+
+# Plot the dot plot with lines
+ggplot(resazurin.df_long, aes(x = time_point, y = A590_heat_stress_value, group = sample, color = color)) +
+  geom_point(size = 3) +  # Larger dot size
+  geom_line() +  # Connect dots with lines
+  scale_color_manual(values = sample_colors) +  # Assigning colors to samples
+  labs(x = "Time Point", y = "Raw A590 (RFUs)", title = "Raw A590 heat stress Values", color = "Sample") +
+  theme_minimal()
+```
+
+##### Plot heat stress control-subtracted fluorescence
+
+```{r control-adjusted-fluorescence, eval=TRUE}
+# Load required libraries
+library(dplyr)
+library(ggplot2)
+library(tidyr)
+
+# Step 1: Calculate the mean value of neg control samples
+# Step 1: Calculate the mean value of neg control samples
+neg_control_mean <- resazurin.df %>%
+  filter(sample %in% c("neg-control-01", "neg-control-02")) %>%
+  select(starts_with("A590.hs")) %>%
+  summarise_all(mean)
+
+# Step 2: Subtract the mean value from other samples
+resazurin_subtracted.df <- resazurin.df %>%
+  mutate_at(vars(starts_with("A590.hs")), ~ . - neg_control_mean[[1]])
+
+# Pivot the data frame to longer format and filter out 'empty' sample
+resazurin_long <- resazurin_subtracted.df %>%
+  filter(!startsWith(sample, "neg-control") & sample != "empty") %>%
+  pivot_longer(cols = starts_with("A590.hs"), names_to = "Time_Point", values_to = "Mean_Subtracted_Value")
+
+# Create dot plot with lines connecting values for each sample
+ggplot(resazurin_long, aes(x = Time_Point, y = Mean_Subtracted_Value, group = sample, color = sample)) +
+  geom_point() +
+  geom_line() +
+  labs(x = "Time Point", y = "Control-adjusted A590 (RFUs)") +
+  theme(legend.position = "right")
+```
+
+##### Plot heat stress change in fluorescence per weight
+```{r heat stress-weight-adjusted}
+library(tidyr)
+library(dplyr)
+
+# Step 1: Calculate the difference between A590.hs.t.1.0 and A590.hs.t.0
+resazurin_df <- resazurin.df %>%
+  mutate(diff = A590.hs.t.1.0 - A590.hs.t.0)
 
 # Step 2: Calculate the mean of the difference for the neg-control samples
 neg_control_mean_diff <- resazurin_df %>%
