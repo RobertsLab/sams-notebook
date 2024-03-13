@@ -145,3 +145,42 @@ ggplot(resazurin_long, aes(x = Time_Point, y = Mean_Subtracted_Value, group = sa
   labs(x = "Time Point", y = "Control-adjusted A590 (RFUs)") +
   theme(legend.position = "right")
 ```
+
+### Plot pre-stress change in fluorescence per weight
+```{r pre-stress-weight-adjusted}
+library(tidyr)
+library(dplyr)
+
+# Step 1: Calculate the difference between A590.prestress.t.1.0 and A590.prestress.t.0
+resazurin_df <- resazurin.df %>%
+  mutate(diff = A590.prestress.t.1.0 - A590.prestress.t.0)
+
+# Step 2: Calculate the mean of the difference for the neg-control samples
+neg_control_mean_diff <- resazurin_df %>%
+  filter(grepl("^neg-control", sample)) %>%
+  summarise(mean_diff = mean(diff))
+
+# Step 3: Subtract the mean difference from the differences of all other samples
+resazurin_subtracted_df <- resazurin_df %>%
+  mutate(diff_adj = diff - neg_control_mean_diff$mean_diff)
+
+# Step 4: Divide the result by the corresponding weight.mg for each sample
+resazurin_divided_df <- resazurin_subtracted_df %>%
+  filter(!startsWith(sample, "neg-control") & sample != "empty") %>%
+  mutate(change_per_mg = diff_adj / weight.mg)
+
+# Reorder the levels of sample factor by weight.mg
+resazurin_divided_df$sample <- factor(resazurin_divided_df$sample, levels = resazurin_divided_df$sample[order(resazurin_divided_df$weight.mg)])
+
+
+ggplot(resazurin_divided_df, aes(x = sample, y = change_per_mg)) +
+  geom_bar(stat = "identity", fill = "skyblue") +
+  geom_text(aes(label = weight.mg), vjust = -0.5, size = 3, color = "black") +  # Add text labels for weight.mg
+  labs(x = "Sample", y = "Change in Fluorescence per mg", title = "Change in Fluorescence per mg for Each Sample") +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1)) +  # Rotate x-axis labels for better readability
+  scale_x_discrete(drop = FALSE) +  # Retain all levels of sample factor
+  annotate("text", x = -0.1, y = -2.5, label = "Small", size = 6, color = "black", hjust = 0) +  # Annotation for small
+  annotate("text", x = nrow(resazurin_divided_df) + 0.5, y = -2.5, label = "Large", size = 6, color = "black", hjust = 1) +  # Annotation for large
+  geom_segment(aes(x = -0.1, xend = nrow(resazurin_divided_df) + 0.5, y = -0.6, yend = -0.6), arrow = arrow(type = "open", length = unit(0.2, "inches")), size = 2.0)  # Arrow indicating scale
+
+```
