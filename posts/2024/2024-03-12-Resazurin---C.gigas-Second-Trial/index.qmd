@@ -84,7 +84,7 @@ str(resazurin.df)
 
 
 ### Reshape the data from wide to long format
-```{r reshape-data}
+```{r reshape-data, eval=TRUE}
 resazurin_data_long <- resazurin.df %>%
   pivot_longer(cols = c(t0, t0.5, t1.0), names_to = "time_point", values_to = "A590")
 ```
@@ -117,7 +117,7 @@ ggplot(pre_stress_data, aes(x = time_point, y = A590, color = sample)) +
 
 ##### Plot pre-stress control-subtracted fluorescence
 
-```{r control-adjusted-fluorescence, eval=TRUE}
+```{r prestress-control-adjusted-fluorescence, eval=TRUE}
 # Step 1: Calculate the mean of A590 for each time point for "pre-stress" samples beginning with "neg-control"
 neg_control_means <- pre_stress_data %>%
   filter(grepl("^neg-control", sample)) %>%
@@ -146,57 +146,52 @@ ggplot(adjusted_data, aes(x = time_point, y = adjusted_A590, color = sample)) +
 
 ##### Plot heat stress raw flourescence
 
-```{r plot-heat stress-raw-fluorescence, eval=TRUE}
-# Reshape the data frame from wide to long format using tidyr
-resazurin.df_long <- pivot_longer(resazurin.df, 
-                                  cols = starts_with("A590.hs"), 
-                                  names_to = "time_point", 
-                                  values_to = "A590_heat_stress_value")
+```{r plot-heat-stress-raw-fluorescence, eval=TRUE}
+# Filter the data for treatment == "pre-stress"
+heat_stress_data <- subset(resazurin_data_long, treatment == "heat_stress")
 
-# Create a new column to specify the color
-resazurin.df_long$color <- ifelse(grepl("^neg-control", resazurin.df_long$sample), "neg-control", resazurin.df_long$sample)
+# Get unique sample names
+unique_samples <- unique(heat_stress_data$sample)
 
-# Get unique non-"neg-control" samples
-non_neg_control_samples <- setdiff(unique(resazurin.df_long$sample), "neg-control")
+# Define colors for unique samples
+sample_colors <- ifelse(grepl("^neg-control", unique_samples), "black", rainbow(length(unique_samples)))
 
-# Define color palette
-sample_colors <- c("neg-control" = "black", 
-                   setNames(rainbow(length(non_neg_control_samples)), 
-                            non_neg_control_samples))
+# Create a named vector for color mapping
+sample_color_mapping <- setNames(sample_colors, unique_samples)
 
-# Plot the dot plot with lines
-ggplot(resazurin.df_long, aes(x = time_point, y = A590_heat_stress_value, group = sample, color = color)) +
-  geom_point(size = 3) +  # Larger dot size
-  geom_line() +  # Connect dots with lines
-  scale_color_manual(values = sample_colors) +  # Assigning colors to samples
-  labs(x = "Time Point", y = "Raw A590 (RFUs)", title = "Raw A590 heat stress Values", color = "Sample") +
+# Create the dot plot
+ggplot(heat_stress_data, aes(x = time_point, y = A590, color = sample)) +
+  geom_line(aes(group = sample), linetype = "solid", size = 1) + # Set linetype to solid
+  geom_point() +
+  scale_color_manual(values = sample_color_mapping) +
+  labs(x = "Time Point", y = "A590", color = "Sample", linetype = "Sample") +
   theme_minimal()
 ```
 
 ##### Plot heat stress control-subtracted fluorescence
 
-```{r control-adjusted-fluorescence, eval=TRUE}
-# Step 1: Calculate the mean value of neg control samples
-neg_control_mean <- resazurin.df %>%
-  filter(sample %in% c("neg-control-01", "neg-control-02")) %>%
-  select(starts_with("A590.hs")) %>%
-  summarise_all(mean)
+```{r plot-heat-stress-control-adjusted-fluorescence, eval=TRUE}
+# Step 1: Calculate the mean of A590 for each time point for "pre-stress" samples beginning with "neg-control"
+neg_control_means <- heat_stress_data %>%
+  filter(grepl("^neg-control", sample)) %>%
+  group_by(time_point) %>%
+  summarise(mean_A590 = mean(A590))
 
-# Step 2: Subtract the mean value from other samples
-resazurin_subtracted.df <- resazurin.df %>%
-  mutate_at(vars(starts_with("A590.hs")), ~ . - neg_control_mean[[1]])
+# Step 2: Subtract the mean calculated in step 1 from each corresponding time point for other samples
+adjusted_data <- heat_stress_data %>%
+  left_join(neg_control_means, by = "time_point") %>%
+  mutate(adjusted_A590 = ifelse(!is.na(mean_A590), A590 - mean_A590, A590))
 
-# Pivot the data frame to longer format and filter out 'empty' sample
-resazurin_long <- resazurin_subtracted.df %>%
-  filter(!startsWith(sample, "neg-control") & sample != "empty") %>%
-  pivot_longer(cols = starts_with("A590.hs"), names_to = "Time_Point", values_to = "Mean_Subtracted_Value")
+# Step 3: Filter out values from samples "empty" and samples beginning with "neg-control"
+adjusted_data_filtered <- adjusted_data %>%
+  filter(!grepl("^empty|^neg-control", sample))
 
-# Create dot plot with lines connecting values for each sample
-ggplot(resazurin_long, aes(x = Time_Point, y = Mean_Subtracted_Value, group = sample, color = sample)) +
+# Step 4: Create a dot plot using the adjusted values
+ggplot(adjusted_data_filtered, aes(x = time_point, y = adjusted_A590, color = sample)) +
+  geom_line(aes(group = sample), linetype = "solid", size = 1) +
   geom_point() +
-  geom_line() +
-  labs(x = "Time Point", y = "Control-adjusted A590 (RFUs)") +
-  theme(legend.position = "right")
+  labs(x = "Time Point", y = "Adjusted A590", color = "Sample") +
+  theme_minimal()
 ```
 
 
