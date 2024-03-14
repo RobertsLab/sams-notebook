@@ -5,7 +5,7 @@ toc-depth: 5
 toc-location: left
 title: Resazurin - C.gigas Second Trial
 date: '2024-03-12'
-draft: true
+draft: false
 engine: knitr
 categories: 
   - Crassostrea gigas
@@ -49,17 +49,19 @@ All files have been deposited in the [`project-gigas-carryover` repo](https://gi
 
 All measurements were compiled in the following file:
 
-- [`20240312-cgig-resazurin-trial-02.csv`](https://github.com/RobertsLab/project-gigas-carryover/blob/04a64e3bd45487b5cd631f5817937d3cd4318e70/lifestage_carryover/data/resazurin_trial_02/20240312-cgig-resazurin-trial-02.csv) (CSV; commit `04a64e3`)
+- [`20240312-cgig-resazurin-trial-02.csv`](https://github.com/RobertsLab/project-gigas-carryover/blob/04a64e3bd45487b5cd631f5817937d3cd4318e70/lifestage_carryover/data/resazurin_trial_02/20240312-cgig-resazurin-trial-02.csv) (CSV; commit `a2398b0`)
 
 ## Analysis
 
 ::: callout-note
-Data frame links to commit `04a64e3`.
+Data frame links to commit `a2398b0`.
 :::
 
 ```{r setup, include=FALSE}
 library(knitr)
 library(dplyr)
+library(ggplot2)
+library(tidyr)
 knitr::opts_chunk$set(
   echo = TRUE,         # Display code chunks
   eval = FALSE,        # Evaluate code chunks
@@ -73,11 +75,18 @@ knitr::opts_chunk$set(
 
 ### Read in `20240312-cgig-resazurin-trial-02.csv`
 ```{r read-in-csv, eval=TRUE}
-resazurin.df <- read.csv("https://raw.githubusercontent.com/RobertsLab/project-gigas-carryover/04a64e3bd45487b5cd631f5817937d3cd4318e70/lifestage_carryover/data/resazurin_trial_02/20240312-cgig-resazurin-trial-02.csv",
+resazurin.df <- read.csv("https://raw.githubusercontent.com/RobertsLab/project-gigas-carryover/a2398b08c839035df3c8924b12de55e2d91d8824/lifestage_carryover/data/resazurin_trial_02/20240312-cgig-resazurin-trial-02.csv",
 header = TRUE,
 sep = ",")
 
 str(resazurin.df)
+```
+
+
+### Reshape the data from wide to long format
+```{r reshape-data}
+resazurin_data_long <- resazurin.df %>%
+  pivot_longer(cols = c(t0, t0.5, t1.0), names_to = "time_point", values_to = "A590")
 ```
 
 #### Pre-stress
@@ -85,117 +94,59 @@ str(resazurin.df)
 ##### Plot pre-stress raw flourescence
 
 ```{r plot-pre-stress-raw-fluorescence, eval=TRUE}
-# Load the ggplot2 library
-library(ggplot2)
+# Filter the data for treatment == "pre-stress"
+pre_stress_data <- subset(resazurin_data_long, treatment == "pre-stress")
 
-# Reshape the data frame from wide to long format using tidyr
-library(tidyr)
+# Get unique sample names
+unique_samples <- unique(pre_stress_data$sample)
 
-resazurin.df_long <- pivot_longer(resazurin.df, 
-                                  cols = starts_with("A590.prestress"), 
-                                  names_to = "time_point", 
-                                  values_to = "A590_prestress_value")
+# Define colors for unique samples
+sample_colors <- ifelse(grepl("^neg-control", unique_samples), "black", rainbow(length(unique_samples)))
 
-# Create a new column to specify the color
-resazurin.df_long$color <- ifelse(grepl("^neg-control", resazurin.df_long$sample), "neg-control", resazurin.df_long$sample)
+# Create a named vector for color mapping
+sample_color_mapping <- setNames(sample_colors, unique_samples)
 
-# Get unique non-"neg-control" samples
-non_neg_control_samples <- setdiff(unique(resazurin.df_long$sample), "neg-control")
-
-# Define color palette
-sample_colors <- c("neg-control" = "black", 
-                   setNames(rainbow(length(non_neg_control_samples)), 
-                            non_neg_control_samples))
-
-# Plot the dot plot with lines
-ggplot(resazurin.df_long, aes(x = time_point, y = A590_prestress_value, group = sample, color = color)) +
-  geom_point(size = 3) +  # Larger dot size
-  geom_line() +  # Connect dots with lines
-  scale_color_manual(values = sample_colors) +  # Assigning colors to samples
-  labs(x = "Time Point", y = "Raw A590 (RFUs)", title = "Raw A590 Pre-stress Values", color = "Sample") +
+# Create the dot plot
+ggplot(pre_stress_data, aes(x = time_point, y = A590, color = sample)) +
+  geom_line(aes(group = sample), linetype = "solid", size = 1) + # Set linetype to solid
+  geom_point() +
+  scale_color_manual(values = sample_color_mapping) +
+  labs(x = "Time Point", y = "A590", color = "Sample", linetype = "Sample") +
   theme_minimal()
 ```
 
 ##### Plot pre-stress control-subtracted fluorescence
 
 ```{r control-adjusted-fluorescence, eval=TRUE}
-# Load required libraries
-library(dplyr)
-library(ggplot2)
-library(tidyr)
-
-# Step 1: Calculate the mean value of neg control samples
-# Step 1: Calculate the mean value of neg control samples
-neg_control_mean <- resazurin.df %>%
-  filter(sample %in% c("neg-control-01", "neg-control-02")) %>%
-  select(starts_with("A590.prestress")) %>%
-  summarise_all(mean)
-
-# Step 2: Subtract the mean value from other samples
-resazurin_subtracted.df <- resazurin.df %>%
-  mutate_at(vars(starts_with("A590.prestress")), ~ . - neg_control_mean[[1]])
-
-# Pivot the data frame to longer format and filter out 'empty' sample
-resazurin_long <- resazurin_subtracted.df %>%
-  filter(!startsWith(sample, "neg-control") & sample != "empty") %>%
-  pivot_longer(cols = starts_with("A590.prestress"), names_to = "Time_Point", values_to = "Mean_Subtracted_Value")
-
-# Create dot plot with lines connecting values for each sample
-ggplot(resazurin_long, aes(x = Time_Point, y = Mean_Subtracted_Value, group = sample, color = sample)) +
-  geom_point() +
-  geom_line() +
-  labs(x = "Time Point", y = "Control-adjusted A590 (RFUs)") +
-  theme(legend.position = "right")
-```
-
-##### Plot pre-stress change in fluorescence per weight
-```{r pre-stress-weight-adjusted}
-library(tidyr)
-library(dplyr)
-
-# Step 1: Calculate the difference between A590.prestress.t.1.0 and A590.prestress.t.0
-resazurin_df <- resazurin.df %>%
-  mutate(diff = A590.prestress.t.1.0 - A590.prestress.t.0)
-
-# Step 2: Calculate the mean of the difference for the neg-control samples
-neg_control_mean_diff <- resazurin_df %>%
+# Step 1: Calculate the mean of A590 for each time point for "pre-stress" samples beginning with "neg-control"
+neg_control_means <- pre_stress_data %>%
   filter(grepl("^neg-control", sample)) %>%
-  summarise(mean_diff = mean(diff))
+  group_by(time_point) %>%
+  summarise(mean_A590 = mean(A590))
 
-# Step 3: Subtract the mean difference from the differences of all other samples
-resazurin_subtracted_df <- resazurin_df %>%
-  mutate(diff_adj = diff - neg_control_mean_diff$mean_diff)
+# Step 2: Subtract the mean calculated in step 1 from each corresponding time point for other samples
+adjusted_data <- pre_stress_data %>%
+  left_join(neg_control_means, by = "time_point") %>%
+  mutate(adjusted_A590 = ifelse(!is.na(mean_A590), A590 - mean_A590, A590))
 
-# Step 4: Divide the result by the corresponding weight.mg for each sample
-resazurin_divided_df <- resazurin_subtracted_df %>%
-  filter(!startsWith(sample, "neg-control") & sample != "empty") %>%
-  mutate(change_per_mg = diff_adj / weight.mg)
+# Step 3: Filter out values from samples "empty" and samples beginning with "neg-control"
+adjusted_data <- adjusted_data %>%
+  filter(!grepl("^empty|^neg-control", sample))
 
-# Reorder the levels of sample factor by weight.mg
-resazurin_divided_df$sample <- factor(resazurin_divided_df$sample, levels = resazurin_divided_df$sample[order(resazurin_divided_df$weight.mg)])
-
-
-ggplot(resazurin_divided_df, aes(x = sample, y = change_per_mg)) +
-  geom_bar(stat = "identity", fill = "skyblue") +
-  geom_text(aes(label = weight.mg), vjust = -0.5, size = 3, color = "black") +  # Add text labels for weight.mg
-  labs(x = "Sample", y = "Change in Fluorescence per mg", title = "Change in Fluorescence per mg for Each Sample") +
-  theme(axis.text.x = element_text(angle = 45, hjust = 1)) +  # Rotate x-axis labels for better readability
-  scale_x_discrete(drop = FALSE) +  # Retain all levels of sample factor
-  annotate("text", x = -0.1, y = -2.5, label = "Small", size = 6, color = "black", hjust = 0) +  # Annotation for small
-  annotate("text", x = nrow(resazurin_divided_df) + 0.5, y = -2.5, label = "Large", size = 6, color = "black", hjust = 1) +  # Annotation for large
-  geom_segment(aes(x = -0.1, xend = nrow(resazurin_divided_df) + 0.5, y = -0.6, yend = -0.6), arrow = arrow(type = "open", length = unit(0.2, "inches")), size = 2.0)  # Arrow indicating scale
-
+# Step 4: Create a dot plot using the adjusted values
+ggplot(adjusted_data, aes(x = time_point, y = adjusted_A590, color = sample)) +
+  geom_line(aes(group = sample), linetype = "solid", size = 1) +
+  geom_point() +
+  labs(x = "Time Point", y = "Adjusted A590", color = "Sample") +
+  theme_minimal()
 ```
+
 
 ### Heat stress @ 35<sup>o</sup>C
 
 ##### Plot heat stress raw flourescence
 
 ```{r plot-heat stress-raw-fluorescence, eval=TRUE}
-# Load the libraries
-library(ggplot2)
-library(tidyr)
-
 # Reshape the data frame from wide to long format using tidyr
 resazurin.df_long <- pivot_longer(resazurin.df, 
                                   cols = starts_with("A590.hs"), 
@@ -225,12 +176,6 @@ ggplot(resazurin.df_long, aes(x = time_point, y = A590_heat_stress_value, group 
 ##### Plot heat stress control-subtracted fluorescence
 
 ```{r control-adjusted-fluorescence, eval=TRUE}
-# Load required libraries
-library(dplyr)
-library(ggplot2)
-library(tidyr)
-
-# Step 1: Calculate the mean value of neg control samples
 # Step 1: Calculate the mean value of neg control samples
 neg_control_mean <- resazurin.df %>%
   filter(sample %in% c("neg-control-01", "neg-control-02")) %>%
@@ -254,41 +199,97 @@ ggplot(resazurin_long, aes(x = Time_Point, y = Mean_Subtracted_Value, group = sa
   theme(legend.position = "right")
 ```
 
-##### Plot heat stress change in fluorescence per weight
-```{r heat stress-weight-adjusted}
-library(tidyr)
-library(dplyr)
 
-# Step 1: Calculate the difference between A590.hs.t.1.0 and A590.hs.t.0
-resazurin_df <- resazurin.df %>%
-  mutate(diff = A590.hs.t.1.0 - A590.hs.t.0)
 
-# Step 2: Calculate the mean of the difference for the neg-control samples
-neg_control_mean_diff <- resazurin_df %>%
+### Combined bar plot
+
+#### Calculate the mean of A590 for each time point for "pre-stress" samples beginning with "neg-control"
+```{r calc-neg-control-mean, eval=TRUE}
+# Step 1: Calculate the mean of A590 for each time point for "pre-stress" samples beginning with "neg-control"
+neg_control_means <- resazurin_data_long %>%
   filter(grepl("^neg-control", sample)) %>%
-  summarise(mean_diff = mean(diff))
+  group_by(time_point) %>%
+  summarise(mean_A590 = mean(A590))
 
-# Step 3: Subtract the mean difference from the differences of all other samples
-resazurin_subtracted_df <- resazurin_df %>%
-  mutate(diff_adj = diff - neg_control_mean_diff$mean_diff)
+str(neg_control_means)
+```
 
-# Step 4: Divide the result by the corresponding weight.mg for each sample
-resazurin_divided_df <- resazurin_subtracted_df %>%
-  filter(!startsWith(sample, "neg-control") & sample != "empty") %>%
-  mutate(change_per_mg = diff_adj / weight.mg)
+#### Subtract negative controls
+```{r subtract-neg-control, eval=TRUE}
 
-# Reorder the levels of sample factor by weight.mg
-resazurin_divided_df$sample <- factor(resazurin_divided_df$sample, levels = resazurin_divided_df$sample[order(resazurin_divided_df$weight.mg)])
+# Subtract the mean calculated in step 1 from each corresponding time point for other samples
+adjusted_data <- resazurin_data_long %>%
+  left_join(neg_control_means, by = "time_point") %>%
+  mutate(adjusted_A590 = ifelse(!is.na(mean_A590), A590 - mean_A590, A590))
+
+str(adjusted_data)
+```
+
+#### Filter for desired data
+```{r filter-data, eval=TRUE}
+# Filter out values from samples "empty" and samples beginning with "neg-control"
+adjusted_data_filtered <- adjusted_data %>%
+  filter(!grepl("^empty|^neg-control", sample))
 
 
-ggplot(resazurin_divided_df, aes(x = sample, y = change_per_mg)) +
-  geom_bar(stat = "identity", fill = "skyblue") +
-  geom_text(aes(label = weight.mg), vjust = -0.5, size = 3, color = "black") +  # Add text labels for weight.mg
-  labs(x = "Sample", y = "Change in Fluorescence per mg", title = "Change in Fluorescence per mg for Each Sample") +
-  theme(axis.text.x = element_text(angle = 45, hjust = 1)) +  # Rotate x-axis labels for better readability
-  scale_x_discrete(drop = FALSE) +  # Retain all levels of sample factor
-  annotate("text", x = -0.1, y = -2.5, label = "Small", size = 6, color = "black", hjust = 0) +  # Annotation for small
-  annotate("text", x = nrow(resazurin_divided_df) + 0.5, y = -2.5, label = "Large", size = 6, color = "black", hjust = 1) +  # Annotation for large
-  geom_segment(aes(x = -0.1, xend = nrow(resazurin_divided_df) + 0.5, y = -0.6, yend = -0.6), arrow = arrow(type = "open", length = unit(0.2, "inches")), size = 2.0)  # Arrow indicating scale
+# Filter data for "pre-stress" and "heat_stress" treatments
+filtered_data <- adjusted_data_filtered %>%
+  filter(treatment %in% c("pre-stress", "heat_stress"))
+
+str(filtered_data)
+```
+
+
+#### Pivot the data to have separate columns for "t0" and "t1.0"
+```{r pivot-data, eval=TRUE}
+pivoted_data <- filtered_data %>%
+  filter(time_point %in% c("t0", "t1.0")) %>%
+  group_by(sample, time_point, treatment) %>%
+  summarize(adjusted_A590 = first(adjusted_A590)) %>%
+  pivot_wider(names_from = time_point, values_from = adjusted_A590)
+
+str(pivoted_data)
+```
+
+
+
+#### Calculate the difference in A590 between "t0" and "t1.0" normalized by weight
+```{r calc-delta-A590-div-weight, eval=TRUE}
+difference_data <- pivoted_data %>%
+  left_join(filtered_data %>%
+  select(sample, weight.mg, treatment), by = c("sample", "treatment")) %>%
+  mutate(difference = (`t1.0` - `t0`) / weight.mg)
+
+str(difference_data)
+```
+
+#### Grouped bar plot
+```{r grouped-bar-plot, eval=TRUE}
+# Reorder treatment levels
+# Makes pre-stress on left and heat-stress on right
+difference_data$treatment <- factor(difference_data$treatment, levels = c("pre-stress", "heat_stress"))
+
+# Get default ggplot2 colors
+default_colors <- scales::hue_pal()(2)
+
+# Define custom fill colors with swapped treatments
+custom_colors <- c("pre-stress" = default_colors[2], "heat_stress" = default_colors[1])
+
+# Plot grouped bar plot with swapped treatments and default colors
+ggplot(difference_data, aes(x = reorder(sample, weight.mg), y = difference, fill = treatment)) +
+  geom_bar(stat = "identity", position = position_dodge(width = 0.9)) +
+  labs(x = "Sample", y = "\u0394 A590 per mg") + # Unicode for capital delta is \u0394
+  scale_fill_manual(values = custom_colors) +  # Assign default ggplot2 colors to custom treatments
+  theme_minimal() +
+  theme(axis.text.x = element_text(angle = 45, vjust = 0.5, hjust = 1)) +
+  geom_segment(aes(x = 0, xend = max(as.numeric(as.factor(difference_data$sample))) + 1.0, y = -3.5, yend = -3.5), arrow = arrow(type = "open", length = unit(0.2, "inches")), color = "black") + # adds arrow along X-axis
+  geom_text(aes(x = 0, y = -8.0, label = "Smaller"), hjust = 0, vjust = 0, color = "black") +
+  geom_text(aes(x = max(as.numeric(as.factor(difference_data$sample))) + 0.5, y = -8.0, label = "Larger"), hjust = 1, vjust = 0, color = "black")
 
 ```
+
+## DISCUSSION
+
+Glancing at the grouped bar plots, it appears that the smaller oysters have a greater change in respiration during heat stress. Additionally, the two largest oysters, possibly unintutively, exhibit the lowest changes in respiration. However, my guess is that these larger oysters have the ability to remain closed for longer durations than the smaller oysters. As such, they remained closed after being handled and placed in the resazurin assay media. This would explain low respiration rates _and_ minimal response to heat stress.
+
+This idea is further supported by the fact that we see that as oysters get larger, their respiration rates are _lower_ than when unstressed. It's possible that the heat stress triggered a response for them to keep closed and, in turn, reducing respiration. While the smallest oysters are unable to keep their shells closed for lengthy periods of time, requiring them to open and respire at higher rates during heat stress.
