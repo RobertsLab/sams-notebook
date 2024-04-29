@@ -11,6 +11,62 @@ categories:
   - daily bits
   - 2024
 ---
+## 20240429
+
+### [DuMOAR](https://github.com/laurahspencer/DuMOAR) (GitHub repo)
+
+- Continued to look into [`Trinotate`](https://github.com/Trinotate/Trinotate/wiki) annotation [issue where BLASTp results do _not_ have SwissProt IDs(https://github.com/laurahspencer/DuMOAR/issues/44#issuecomment-1977588065)].
+
+  - Issue is related to built-in BLASTp database. FastA headers do _not_ contain SwissProt IDs, Thus, they don't end up in the final annotation report file.
+
+  - Considering "custom" BLASTp database created from the full UniProt protein FastA, since I belive the [`Trinotate`](https://github.com/Trinotate/Trinotate/wiki) parsing is based on column numbers in the BLASTp output format 6 (which would contain the SwisProt IDs), as opposed to specifically parsing specifically formatted strings within that output format.
+
+### Singularity Containers
+
+- Related to above, started to explore the use of containers - specifically the [`Trinotate`](https://github.com/Trinotate/Trinotate/wiki) Singularity image.
+
+  - Most confusing aspect is the fact that there are two programs which cannot be included with [`Trinotate`](https://github.com/Trinotate/Trinotate/wiki), due to licensing issues:
+
+    - `signalp6`
+    - `tmhmmv2`
+
+    The main question: How do I access/run these programs if they're not in the container? To do so, I downloaded/installed them on Raven and then I added them to the container's system `$PATH` when starting the container, like so:
+
+    ```bash
+    singularity shell -e \
+    --env PREPEND_PATH="/home/sam/programs/mambaforge/envs/singalp6_env/bin:/home/shared/tmhmm-2.0c/bin:/home/shared/infernal-1.1.5-linux-intel-gcc/binaries:/home/shared/hmmer-3.4/src" \
+    /home/shared/containers/trinotate.v4.0.2.simg
+    ```
+
+    This appended the programs on my computer to the beginning of the container's system `$PATH`, thus allowing these programs to be called.
+
+  - Another confusing aspect was how to access locations on my local computer once I was in the container. For example, the user's `$HOME` directory is mounted/bound (i.e. accessible) by default. However, I also needed access to `/home/shared`, but I didn't want to bind this to a directory within the container because then it would superseded the contents of the specified directory in the container. Since I wasn't terribly familiar with the container's structure, nor how to add a directory when starting the container image, I managed to figure out that the current directory from which the user starts the container image is automatically bound. So, I navigated to `/home/shared` first, then started the container with the command shown above. This permitted me to access `/home/shared` and all its subdirectories.
+
+## 20240426
+
+### [DuMOAR](https://github.com/laurahspencer/DuMOAR) (GitHub repo)
+
+- Continued to look into [`Trinotate`](https://github.com/Trinotate/Trinotate/wiki) annotation [issue where BLASTp results do _not_ have SwissProt IDs(https://github.com/laurahspencer/DuMOAR/issues/44#issuecomment-1977588065)].
+
+  - Started to explore newer version of [`Trinotate`](https://github.com/Trinotate/Trinotate/wiki) to see if the issue could be resolved.
+
+## 20240425
+
+### [DuMOAR](https://github.com/laurahspencer/DuMOAR) (GitHub repo)
+
+- Started to look into [`Trinotate`](https://github.com/Trinotate/Trinotate/wiki) annotation [issue where BLASTp results do _not_ have SwissProt IDs(https://github.com/laurahspencer/DuMOAR/issues/44#issuecomment-1977588065)].
+
+## 20240424
+
+### [Coral E5](https://github.com/urol-e5/deep-dive) (GitHub repo)
+
+- Finished up _P.meandrina_ [`miRDeep2`](https://github.com/rajewsky-lab/mirdeep2) with cnidarian miRBase.
+
+## 20240423
+
+### Miscellaneous
+
+- [Resolved degarded storage pool issue with Gannet](../2024-04-23-Computer-Troubleshooting---Gannet-Missing-Storage-Pool/index.qmd).
 
 ## 20240422
 
