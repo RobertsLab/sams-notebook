@@ -1,0 +1,1438 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.4.552">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+<meta name="author" content="Sam White">
+<meta name="dcterms.date" content="2024-06-11">
+
+<title>Sam’s Notebook - Differential Gene Expression - G.macrocephalus RNA-seq 9C vs 16C Using edgeR</title>
+<style>
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: min(4vw, 1.5em);}
+div.column{flex: auto; overflow-x: auto;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+  vertical-align: middle;
+}
+/* CSS for syntax highlighting */
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+/* CSS for citations */
+div.csl-bib-body { }
+div.csl-entry {
+  clear: both;
+}
+.hanging-indent div.csl-entry {
+  margin-left:2em;
+  text-indent:-2em;
+}
+div.csl-left-margin {
+  min-width:2em;
+  float:left;
+}
+div.csl-right-inline {
+  margin-left:2em;
+  padding-left:1em;
+}
+div.csl-indent {
+  margin-left: 2em;
+}</style>
+
+
+<script src="../../../site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="../../../site_libs/quarto-nav/headroom.min.js"></script>
+<script src="../../../site_libs/clipboard/clipboard.min.js"></script>
+<script src="../../../site_libs/quarto-search/autocomplete.umd.js"></script>
+<script src="../../../site_libs/quarto-search/fuse.min.js"></script>
+<script src="../../../site_libs/quarto-search/quarto-search.js"></script>
+<meta name="quarto:offset" content="../../../">
+<link href="../../..//images/favicon.ico" rel="icon">
+<script src="../../../site_libs/quarto-html/quarto.js"></script>
+<script src="../../../site_libs/quarto-html/popper.min.js"></script>
+<script src="../../../site_libs/quarto-html/tippy.umd.min.js"></script>
+<script src="../../../site_libs/quarto-html/anchor.min.js"></script>
+<link href="../../../site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="../../../site_libs/quarto-html/quarto-syntax-highlighting-dark.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="../../../site_libs/bootstrap/bootstrap.min.js"></script>
+<link href="../../../site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="../../../site_libs/bootstrap/bootstrap.min.css" rel="stylesheet" id="quarto-bootstrap" data-mode="dark">
+<script id="quarto-search-options" type="application/json">{
+  "location": "navbar",
+  "copy-button": false,
+  "collapse-after": 3,
+  "panel-placement": "end",
+  "type": "overlay",
+  "limit": 50,
+  "keyboard-shortcut": [
+    "f",
+    "/",
+    "s"
+  ],
+  "show-item-context": false,
+  "language": {
+    "search-no-results-text": "No results",
+    "search-matching-documents-text": "matching documents",
+    "search-copy-link-title": "Copy link to search",
+    "search-hide-matches-text": "Hide additional matches",
+    "search-more-match-text": "more match in this document",
+    "search-more-matches-text": "more matches in this document",
+    "search-clear-button-title": "Clear",
+    "search-text-placeholder": "",
+    "search-detached-cancel-button-title": "Cancel",
+    "search-submit-button-title": "Submit",
+    "search-label": "Search"
+  }
+}</script>
+<script async="" src="https://www.googletagmanager.com/gtag/js?id=G-7483T61T11"></script>
+
+<script type="text/javascript">
+
+window.dataLayer = window.dataLayer || [];
+function gtag(){dataLayer.push(arguments);}
+gtag('js', new Date());
+gtag('config', 'G-7483T61T11', { 'anonymize_ip': true});
+</script>
+
+
+<link rel="stylesheet" href="../../../styles.css">
+</head>
+
+<body class="floating nav-fixed">
+
+<div id="quarto-search-results"></div>
+  <header id="quarto-header" class="headroom fixed-top quarto-banner">
+    <nav class="navbar navbar-expand-lg " data-bs-theme="dark">
+      <div class="navbar-container container-fluid">
+      <div class="navbar-brand-container mx-auto">
+    <a class="navbar-brand" href="../../../index.html">
+    <span class="navbar-title">Sam’s Notebook</span>
+    </a>
+  </div>
+            <div id="quarto-search" class="" title="Search"></div>
+          <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarCollapse" aria-controls="navbarCollapse" aria-expanded="false" aria-label="Toggle navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+  <span class="navbar-toggler-icon"></span>
+</button>
+          <div class="collapse navbar-collapse" id="navbarCollapse">
+            <ul class="navbar-nav navbar-nav-scroll ms-auto">
+  <li class="nav-item dropdown ">
+    <a class="nav-link dropdown-toggle" href="#" id="nav-menu-bi-hdd-network" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+      <i class="bi bi-hdd-network" role="img">
+</i> 
+ <span class="menu-text"></span>
+    </a>
+    <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="nav-menu-bi-hdd-network">    
+        <li>
+    <a class="dropdown-item" href="http://raven.fish.washington.edu:8787" target="_blank">
+ <span class="dropdown-text">Rstudio Server - Raven</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="https://gannet.fish.washington.edu/Atumefaciens/" target="_blank">
+ <span class="dropdown-text">My Gannet Directory</span></a>
+  </li>  
+    </ul>
+  </li>
+  <li class="nav-item dropdown ">
+    <a class="nav-link dropdown-toggle" href="#" id="nav-menu-bi-journal-code" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+      <i class="bi bi-journal-code" role="img">
+</i> 
+ <span class="menu-text"></span>
+    </a>
+    <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="nav-menu-bi-journal-code">    
+        <li>
+    <a class="dropdown-item" href="https://sr320.github.io" target="_blank">
+ <span class="dropdown-text">Steven’s Notebook</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="https://shedurkin.github.io/Roberts-LabNotebook/" target="_blank">
+ <span class="dropdown-text">Kathleen’s Notebook</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="https://meganewing.github.io/mewing-notebook/" target="_blank">
+ <span class="dropdown-text">Megan’s Notebook</span></a>
+  </li>  
+    </ul>
+  </li>
+  <li class="nav-item dropdown ">
+    <a class="nav-link dropdown-toggle" href="#" id="nav-menu-bi-github" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+      <i class="bi bi-github" role="img">
+</i> 
+ <span class="menu-text"></span>
+    </a>
+    <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="nav-menu-bi-github">    
+        <li>
+    <a class="dropdown-item" href="https://github.com/RobertsLab/sams-notebook" target="_blank">
+ <span class="dropdown-text">Notebook repo</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="https://github.com/RobertsLab" target="_blank">
+ <span class="dropdown-text">Lab Organization (GitHub)</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="https://github.com/RobertsLab/lab-website" target="_blank">
+ <span class="dropdown-text">Edit Roberts Lab website</span></a>
+  </li>  
+    </ul>
+  </li>
+  <li class="nav-item compact">
+    <a class="nav-link" href="https://calendar.google.com/calendar/embed?src=mrc305@gmail.com&amp;ctz=America/Vancouver" target="_blank"> <i class="bi bi-calendar-week" role="img">
+</i> 
+<span class="menu-text"></span></a>
+  </li>  
+  <li class="nav-item compact">
+    <a class="nav-link" href="../../../index.xml"> <i class="bi bi-rss" role="img">
+</i> 
+<span class="menu-text"></span></a>
+  </li>  
+</ul>
+          </div> <!-- /navcollapse -->
+          <div class="quarto-navbar-tools">
+</div>
+      </div> <!-- /container-fluid -->
+    </nav>
+</header>
+<!-- content -->
+<header id="title-block-header" class="quarto-title-block default toc-left page-columns page-full">
+  <div class="quarto-title-banner page-columns page-full">
+    <div class="quarto-title column-page-right">
+      <h1 class="title">Differential Gene Expression - G.macrocephalus RNA-seq 9C vs 16C Using edgeR</h1>
+                                <div class="quarto-categories">
+                <div class="quarto-category">edgeR</div>
+                <div class="quarto-category">Pacific cod</div>
+                <div class="quarto-category">RNA-seq</div>
+                <div class="quarto-category">differential gene expression</div>
+                <div class="quarto-category">2024</div>
+                <div class="quarto-category">Gadus macrocephalus</div>
+              </div>
+                  </div>
+  </div>
+    
+  
+  <div class="quarto-title-meta column-page-right">
+
+      <div>
+      <div class="quarto-title-meta-heading">Author</div>
+      <div class="quarto-title-meta-contents">
+               <p>Sam White </p>
+            </div>
+    </div>
+      
+      <div>
+      <div class="quarto-title-meta-heading">Published</div>
+      <div class="quarto-title-meta-contents">
+        <p class="date">June 11, 2024</p>
+      </div>
+    </div>
+    
+      
+    </div>
+    
+  
+  </header><div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-full page-navbar">
+<!-- sidebar -->
+  <nav id="quarto-sidebar" class="sidebar collapse collapse-horizontal quarto-sidebar-collapse-item sidebar-navigation floating overflow-auto">
+    <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">Contents</h2>
+   
+  <ul>
+  <li><a href="#rnaseq-edger" id="toc-rnaseq-edger" class="nav-link active" data-scroll-target="#rnaseq-edger">13.0.0-RNAseq-edgeR</a></li>
+  <li><a href="#create-output-directory" id="toc-create-output-directory" class="nav-link" data-scroll-target="#create-output-directory">1 CREATE OUTPUT DIRECTORY</a></li>
+  <li><a href="#edger-grouping-vector" id="toc-edger-grouping-vector" class="nav-link" data-scroll-target="#edger-grouping-vector">2 edgeR GROUPING VECTOR</a>
+  <ul>
+  <li><a href="#check-sample-info" id="toc-check-sample-info" class="nav-link" data-scroll-target="#check-sample-info">2.1 Check sample info</a></li>
+  <li><a href="#create-edger-grouping-vector" id="toc-create-edger-grouping-vector" class="nav-link" data-scroll-target="#create-edger-grouping-vector">2.2 Create edgeR grouping vector</a></li>
+  </ul></li>
+  <li><a href="#degs" id="toc-degs" class="nav-link" data-scroll-target="#degs">3 DEGs</a>
+  <ul>
+  <li><a href="#load-count-matrix" id="toc-load-count-matrix" class="nav-link" data-scroll-target="#load-count-matrix">3.1 Load count matrix</a>
+  <ul>
+  <li><a href="#reformat-header" id="toc-reformat-header" class="nav-link" data-scroll-target="#reformat-header">3.1.1 Reformat header</a></li>
+  <li><a href="#convert-to-matrix" id="toc-convert-to-matrix" class="nav-link" data-scroll-target="#convert-to-matrix">3.1.2 Convert to matrix</a></li>
+  <li><a href="#load-matrix-into-edger" id="toc-load-matrix-into-edger" class="nav-link" data-scroll-target="#load-matrix-into-edger">3.1.3 Load matrix into edgeR</a></li>
+  <li><a href="#filter-low-counts" id="toc-filter-low-counts" class="nav-link" data-scroll-target="#filter-low-counts">3.1.4 Filter low counts</a></li>
+  <li><a href="#normalization" id="toc-normalization" class="nav-link" data-scroll-target="#normalization">3.1.5 Normalization</a></li>
+  <li><a href="#model-fitting-and-estimating-dispersions" id="toc-model-fitting-and-estimating-dispersions" class="nav-link" data-scroll-target="#model-fitting-and-estimating-dispersions">3.1.6 Model fitting and estimating dispersions</a></li>
+  <li><a href="#exact-test-gene-expression" id="toc-exact-test-gene-expression" class="nav-link" data-scroll-target="#exact-test-gene-expression">3.1.7 Exact test (Gene expression)</a></li>
+  <li><a href="#differential-gene-expression-summary" id="toc-differential-gene-expression-summary" class="nav-link" data-scroll-target="#differential-gene-expression-summary">3.1.8 Differential gene expression summary</a></li>
+  <li><a href="#peek-at-degs" id="toc-peek-at-degs" class="nav-link" data-scroll-target="#peek-at-degs">3.1.9 Peek at DEGs</a></li>
+  <li><a href="#convert-gene-id-rownames-to-column" id="toc-convert-gene-id-rownames-to-column" class="nav-link" data-scroll-target="#convert-gene-id-rownames-to-column">3.1.10 Convert gene ID rownames to column</a></li>
+  <li><a href="#write-degs-to-file" id="toc-write-degs-to-file" class="nav-link" data-scroll-target="#write-degs-to-file">3.1.11 Write DEGs to file</a></li>
+  <li><a href="#volcano-plot" id="toc-volcano-plot" class="nav-link" data-scroll-target="#volcano-plot">3.1.12 Volcano plot</a></li>
+  </ul></li>
+  </ul></li>
+  <li><a href="#citations" id="toc-citations" class="nav-link" data-scroll-target="#citations">4 CITATIONS</a></li>
+  </ul>
+</nav>
+</nav>
+<div id="quarto-sidebar-glass" class="quarto-sidebar-collapse-item" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item"></div>
+<!-- margin-sidebar -->
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar zindex-bottom">
+    </div>
+<!-- main -->
+<main class="content quarto-banner-title-block column-page-right" id="quarto-document-content">
+
+
+
+
+
+<section id="rnaseq-edger" class="level1">
+<h1>13.0.0-RNAseq-edgeR</h1>
+<p>Sam White 2024-05-29</p>
+<ul>
+<li><a href="#1-create-output-directory" id="toc-1-create-output-directory">1 CREATE OUTPUT DIRECTORY</a></li>
+<li><a href="#2-edger-grouping-vector" id="toc-2-edger-grouping-vector">2 edgeR GROUPING VECTOR</a>
+<ul>
+<li><a href="#21-check-sample-info" id="toc-21-check-sample-info">2.1 Check sample info</a></li>
+<li><a href="#22-create-edger-grouping-vector" id="toc-22-create-edger-grouping-vector">2.2 Create edgeR grouping vector</a></li>
+</ul></li>
+<li><a href="#3-degs" id="toc-3-degs">3 DEGs</a>
+<ul>
+<li><a href="#31-load-count-matrix" id="toc-31-load-count-matrix">3.1 Load count matrix</a>
+<ul>
+<li><a href="#311-reformat-header" id="toc-311-reformat-header">3.1.1 Reformat header</a></li>
+<li><a href="#312-convert-to-matrix" id="toc-312-convert-to-matrix">3.1.2 Convert to matrix</a></li>
+<li><a href="#313-load-matrix-into-edger" id="toc-313-load-matrix-into-edger">3.1.3 Load matrix into edgeR</a></li>
+<li><a href="#314-filter-low-counts" id="toc-314-filter-low-counts">3.1.4 Filter low counts</a></li>
+<li><a href="#315-normalization" id="toc-315-normalization">3.1.5 Normalization</a></li>
+<li><a href="#316-model-fitting-and-estimating-dispersions" id="toc-316-model-fitting-and-estimating-dispersions">3.1.6 Model fitting and estimating dispersions</a></li>
+<li><a href="#317-exact-test-gene-expression" id="toc-317-exact-test-gene-expression">3.1.7 Exact test (Gene expression)</a></li>
+<li><a href="#318-differential-gene-expression-summary" id="toc-318-differential-gene-expression-summary">3.1.8 Differential gene expression summary</a></li>
+<li><a href="#319-peek-at-degs" id="toc-319-peek-at-degs">3.1.9 Peek at DEGs</a></li>
+<li><a href="#3110-convert-gene-id-rownames-to-column" id="toc-3110-convert-gene-id-rownames-to-column">3.1.10 Convert gene ID rownames to column</a></li>
+<li><a href="#3111-write-degs-to-file" id="toc-3111-write-degs-to-file">3.1.11 Write DEGs to file</a></li>
+<li><a href="#3112-volcano-plot" id="toc-3112-volcano-plot">3.1.12 Volcano plot</a></li>
+</ul></li>
+</ul></li>
+<li><a href="#4-citations" id="toc-4-citations">4 CITATIONS</a></li>
+</ul>
+<p>Differential gene expression of 9<sup>o</sup>C vs 16<sup>o</sup>C liver RNA-seq using <a href="https://bioconductor.org/packages/release/bioc/vignettes/edgeR/inst/doc/edgeRUsersGuide.pdf">edgeR</a> (<a href="#ref-chen2024">Chen et al.&nbsp;2024</a>; <a href="#ref-mccarthy2012">McCarthy, Chen, and Smyth 2012</a>; <a href="#ref-chen2016">Chen, Lun, and Smyth 2016</a>; <a href="#ref-robinson2009">Robinson, McCarthy, and Smyth 2009</a>)</p>
+<div class="callout callout-style-default callout-note callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Note
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>Copied from <a href="https://github.com/RobertsLab/project-cod-temperature/blob/d5f8a5c4a89613928ef57431e9454464ca0a6826/code/13.0.0-RNAseq-edgeR.md">13.0.0-RNAseq-edgeR.md</a>, commit <code>d5f8a5c</code>.</p>
+</div>
+</div>
+</section>
+<section id="create-output-directory" class="level1">
+<h1>1 CREATE OUTPUT DIRECTORY</h1>
+<div class="sourceCode" id="cb1"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Make output directory, if it doesn't exist</span></span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="fu">mkdir</span> <span class="at">--parents</span> ../output/13.0.0-RNAseq-edgeR</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</section>
+<section id="edger-grouping-vector" class="level1">
+<h1>2 edgeR GROUPING VECTOR</h1>
+<section id="check-sample-info" class="level2">
+<h2 class="anchored" data-anchor-id="check-sample-info">2.1 Check sample info</h2>
+<p>Only looking at 9<sup>o</sup>C and 16<sup>o</sup>C</p>
+<div class="sourceCode" id="cb2"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="bu">echo</span> <span class="st">"Header for ../data/DESeq2_Sample_Information.csv:"</span></span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a><span class="bu">echo</span> <span class="st">""</span></span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a><span class="fu">head</span> <span class="at">-n</span> 1 ../data/DESeq2_Sample_Information.csv</span>
+<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a><span class="bu">echo</span> <span class="st">""</span></span>
+<span id="cb2-7"><a href="#cb2-7" aria-hidden="true" tabindex="-1"></a><span class="bu">echo</span> <span class="st">"---------------------------------------------"</span></span>
+<span id="cb2-8"><a href="#cb2-8" aria-hidden="true" tabindex="-1"></a><span class="bu">echo</span> <span class="st">""</span></span>
+<span id="cb2-9"><a href="#cb2-9" aria-hidden="true" tabindex="-1"></a><span class="fu">awk</span> <span class="at">-F</span><span class="st">","</span> <span class="st">'NR==1 {header=$2 " " $4; print header; next} $4 == 16 || $4 == 9 {print $2, $4}'</span> ../data/DESeq2_Sample_Information.csv <span class="dt">\</span></span>
+<span id="cb2-10"><a href="#cb2-10" aria-hidden="true" tabindex="-1"></a><span class="kw">|</span> <span class="fu">sort</span> <span class="at">-k1,1</span> <span class="at">-n</span> <span class="dt">\</span></span>
+<span id="cb2-11"><a href="#cb2-11" aria-hidden="true" tabindex="-1"></a><span class="kw">|</span> <span class="ex">column</span> <span class="at">-t</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<pre><code>Header for ../data/DESeq2_Sample_Information.csv:
+
+sample_name,sample_number,tank,temp_treatment,tissue_type
+
+---------------------------------------------
+
+sample_number  temp_treatment
+1              16
+2              16
+3              16
+4              16
+5              16
+10             16
+11             16
+12             16
+13             16
+18             16
+19             16
+19             16
+19             16
+20             16
+20             16
+20             16
+21             16
+28             16
+29             16
+30             16
+31             16
+36             16
+78             9
+79             9
+80             9
+83             9
+88             9
+90             9
+91             9
+92             9
+94             9
+97             9
+98             9
+99             9
+100            9
+107            9
+108            9
+109            9
+110            9
+116            9</code></pre>
+</section>
+<section id="create-edger-grouping-vector" class="level2">
+<h2 class="anchored" data-anchor-id="create-edger-grouping-vector">2.2 Create edgeR grouping vector</h2>
+<p>Since all sample IDs <code>&lt;=</code> to <code>36</code> are part of the 16<sup>o</sup>C treatment, we can use this to create vector which matches sample ordering in <code>../output/10.1-hisat-deseq2/gene_count_matrix.csv</code></p>
+<div class="sourceCode" id="cb4"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Read the first line of the CSV file</span></span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a>header <span class="ot">&lt;-</span> <span class="fu">readLines</span>(<span class="st">"../output/10.1-hisat-deseq2/gene_count_matrix.csv"</span>, <span class="at">n =</span> <span class="dv">1</span>)</span>
+<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a><span class="co"># Split the header to extract the values</span></span>
+<span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a>values <span class="ot">&lt;-</span> <span class="fu">as.numeric</span>(<span class="fu">unlist</span>(<span class="fu">strsplit</span>(header, <span class="st">","</span>))[<span class="sc">-</span><span class="dv">1</span>]) <span class="co"># Remove the first element which is "gene_id"</span></span>
+<span id="cb4-6"><a href="#cb4-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-7"><a href="#cb4-7" aria-hidden="true" tabindex="-1"></a><span class="co"># Apply the conditional logic to generate the temperatures vector</span></span>
+<span id="cb4-8"><a href="#cb4-8" aria-hidden="true" tabindex="-1"></a>temperatures <span class="ot">&lt;-</span> <span class="fu">ifelse</span>(values <span class="sc">&lt;=</span> <span class="dv">36</span>, <span class="st">"16C"</span>, <span class="st">"9C"</span>)</span>
+<span id="cb4-9"><a href="#cb4-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-10"><a href="#cb4-10" aria-hidden="true" tabindex="-1"></a><span class="co"># Print the resulting vector</span></span>
+<span id="cb4-11"><a href="#cb4-11" aria-hidden="true" tabindex="-1"></a><span class="fu">print</span>(temperatures)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<pre><code> [1] "16C" "16C" "9C"  "9C"  "9C"  "9C"  "16C" "9C"  "9C"  "16C" "16C" "16C"
+[13] "16C" "16C" "16C" "16C" "16C" "16C" "16C" "16C" "16C" "16C" "16C" "16C"
+[25] "9C"  "9C"  "9C"  "9C"  "9C"  "9C"  "9C"  "9C"  "9C"  "9C"  "9C"  "9C" </code></pre>
+</section>
+</section>
+<section id="degs" class="level1">
+<h1>3 DEGs</h1>
+<section id="load-count-matrix" class="level2">
+<h2 class="anchored" data-anchor-id="load-count-matrix">3.1 Load count matrix</h2>
+<section id="reformat-header" class="level3">
+<h3 class="anchored" data-anchor-id="reformat-header">3.1.1 Reformat header</h3>
+<div class="sourceCode" id="cb6"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Read the entire CSV file</span></span>
+<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a>csv_file <span class="ot">&lt;-</span> <span class="fu">readLines</span>(<span class="st">"../output/10.1-hisat-deseq2/gene_count_matrix.csv"</span>)</span>
+<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-4"><a href="#cb6-4" aria-hidden="true" tabindex="-1"></a><span class="co"># Extract the header line</span></span>
+<span id="cb6-5"><a href="#cb6-5" aria-hidden="true" tabindex="-1"></a>header <span class="ot">&lt;-</span> csv_file[<span class="dv">1</span>]</span>
+<span id="cb6-6"><a href="#cb6-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-7"><a href="#cb6-7" aria-hidden="true" tabindex="-1"></a><span class="co"># Split the header to extract the values</span></span>
+<span id="cb6-8"><a href="#cb6-8" aria-hidden="true" tabindex="-1"></a>header_values <span class="ot">&lt;-</span> <span class="fu">unlist</span>(<span class="fu">strsplit</span>(header, <span class="st">","</span>))</span>
+<span id="cb6-9"><a href="#cb6-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-10"><a href="#cb6-10" aria-hidden="true" tabindex="-1"></a><span class="co"># Prepend 'sample_' to each value (excluding 'gene_id')</span></span>
+<span id="cb6-11"><a href="#cb6-11" aria-hidden="true" tabindex="-1"></a>header_values[<span class="sc">-</span><span class="dv">1</span>] <span class="ot">&lt;-</span> <span class="fu">paste0</span>(<span class="st">"sample_"</span>, header_values[<span class="sc">-</span><span class="dv">1</span>])</span>
+<span id="cb6-12"><a href="#cb6-12" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-13"><a href="#cb6-13" aria-hidden="true" tabindex="-1"></a><span class="co"># Combine the modified header back into a single string</span></span>
+<span id="cb6-14"><a href="#cb6-14" aria-hidden="true" tabindex="-1"></a>modified_header <span class="ot">&lt;-</span> <span class="fu">paste</span>(header_values, <span class="at">collapse =</span> <span class="st">","</span>)</span>
+<span id="cb6-15"><a href="#cb6-15" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-16"><a href="#cb6-16" aria-hidden="true" tabindex="-1"></a><span class="co"># Replace the old header with the new modified header in the CSV content</span></span>
+<span id="cb6-17"><a href="#cb6-17" aria-hidden="true" tabindex="-1"></a>csv_file[<span class="dv">1</span>] <span class="ot">&lt;-</span> modified_header</span>
+<span id="cb6-18"><a href="#cb6-18" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-19"><a href="#cb6-19" aria-hidden="true" tabindex="-1"></a><span class="co"># Convert the modified CSV content to a data frame</span></span>
+<span id="cb6-20"><a href="#cb6-20" aria-hidden="true" tabindex="-1"></a>csv_content <span class="ot">&lt;-</span> <span class="fu">read.csv</span>(<span class="fu">textConnection</span>(csv_file), <span class="at">row.names =</span> <span class="dv">1</span>)</span>
+<span id="cb6-21"><a href="#cb6-21" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-22"><a href="#cb6-22" aria-hidden="true" tabindex="-1"></a><span class="fu">str</span>(csv_content)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<pre><code>'data.frame':   30575 obs. of  36 variables:
+ $ sample_1  : int  360 694 0 10 0 0 0 402 3696 335 ...
+ $ sample_10 : int  464 325 10 22 9 40 3 550 2492 171 ...
+ $ sample_100: int  391 276 13 15 0 40 0 293 2615 149 ...
+ $ sample_107: int  346 77 11 19 0 29 0 182 2184 99 ...
+ $ sample_108: int  691 409 49 74 18 8 41 1082 2702 241 ...
+ $ sample_109: int  408 196 42 28 0 0 7 213 2579 149 ...
+ $ sample_11 : int  436 281 14 63 0 38 4 234 3631 286 ...
+ $ sample_110: int  509 284 36 35 0 0 0 149 3158 139 ...
+ $ sample_116: int  366 327 0 30 0 16 3 444 2121 100 ...
+ $ sample_12 : int  373 310 14 31 27 15 0 360 2673 168 ...
+ $ sample_13 : int  432 393 9 25 0 0 0 531 2893 267 ...
+ $ sample_18 : int  385 386 0 42 0 0 0 242 2210 205 ...
+ $ sample_19 : int  330 106 0 17 0 0 27 269 2324 139 ...
+ $ sample_2  : int  288 290 14 14 0 0 0 194 2384 201 ...
+ $ sample_20 : int  307 252 3 21 0 22 0 359 2561 123 ...
+ $ sample_21 : int  346 326 21 60 0 22 0 383 2654 215 ...
+ $ sample_28 : int  293 345 26 61 0 69 0 395 2887 157 ...
+ $ sample_29 : int  347 254 9 14 0 22 4 392 2250 101 ...
+ $ sample_3  : int  452 363 39 29 4 0 0 408 3143 222 ...
+ $ sample_30 : int  452 353 20 37 35 15 10 489 2830 183 ...
+ $ sample_31 : int  984 922 10 68 0 0 0 310 1297 270 ...
+ $ sample_36 : int  230 160 0 37 0 34 23 352 1981 93 ...
+ $ sample_4  : int  469 588 0 0 0 55 0 168 2971 290 ...
+ $ sample_5  : int  400 285 10 30 4 51 0 403 2651 225 ...
+ $ sample_78 : int  472 178 48 10 0 0 0 462 2669 195 ...
+ $ sample_79 : int  311 119 41 13 0 30 0 287 2671 182 ...
+ $ sample_80 : int  368 197 60 56 0 19 4 310 1790 123 ...
+ $ sample_83 : int  312 134 39 32 0 31 4 113 2173 162 ...
+ $ sample_88 : int  551 128 49 45 8 0 0 457 2603 179 ...
+ $ sample_90 : int  631 103 54 55 32 0 0 321 3260 177 ...
+ $ sample_91 : int  605 315 20 27 0 42 4 396 2186 130 ...
+ $ sample_92 : int  366 204 27 38 0 34 0 234 2451 134 ...
+ $ sample_94 : int  339 301 7 60 14 0 0 455 2464 153 ...
+ $ sample_97 : int  517 56 22 25 0 0 22 279 2768 189 ...
+ $ sample_98 : int  577 49 63 18 0 26 101 229 1935 282 ...
+ $ sample_99 : int  235 260 12 50 0 56 0 208 1991 138 ...</code></pre>
+</section>
+<section id="convert-to-matrix" class="level3">
+<h3 class="anchored" data-anchor-id="convert-to-matrix">3.1.2 Convert to matrix</h3>
+<div class="sourceCode" id="cb8"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Convert the data frame to a matrix</span></span>
+<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a>gene_count_matrix <span class="ot">&lt;-</span> <span class="fu">as.matrix</span>(csv_content)</span>
+<span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb8-4"><a href="#cb8-4" aria-hidden="true" tabindex="-1"></a><span class="co"># Print the matrix</span></span>
+<span id="cb8-5"><a href="#cb8-5" aria-hidden="true" tabindex="-1"></a><span class="fu">print</span>(<span class="fu">head</span>(gene_count_matrix))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<pre><code>                                   sample_1 sample_10 sample_100 sample_107
+gene-LOC132462341|LOC132462341          360       464        391        346
+gene-abce1|abce1                        694       325        276         77
+gene-si:dkey-6i22.5|si:dkey-6i22.5        0        10         13         11
+gene-ube2v1|ube2v1                       10        22         15         19
+gene-cldn15la|cldn15la                    0         9          0          0
+gene-muc15|muc15                          0        40         40         29
+                                   sample_108 sample_109 sample_11 sample_110
+gene-LOC132462341|LOC132462341            691        408       436        509
+gene-abce1|abce1                          409        196       281        284
+gene-si:dkey-6i22.5|si:dkey-6i22.5         49         42        14         36
+gene-ube2v1|ube2v1                         74         28        63         35
+gene-cldn15la|cldn15la                     18          0         0          0
+gene-muc15|muc15                            8          0        38          0
+                                   sample_116 sample_12 sample_13 sample_18
+gene-LOC132462341|LOC132462341            366       373       432       385
+gene-abce1|abce1                          327       310       393       386
+gene-si:dkey-6i22.5|si:dkey-6i22.5          0        14         9         0
+gene-ube2v1|ube2v1                         30        31        25        42
+gene-cldn15la|cldn15la                      0        27         0         0
+gene-muc15|muc15                           16        15         0         0
+                                   sample_19 sample_2 sample_20 sample_21
+gene-LOC132462341|LOC132462341           330      288       307       346
+gene-abce1|abce1                         106      290       252       326
+gene-si:dkey-6i22.5|si:dkey-6i22.5         0       14         3        21
+gene-ube2v1|ube2v1                        17       14        21        60
+gene-cldn15la|cldn15la                     0        0         0         0
+gene-muc15|muc15                           0        0        22        22
+                                   sample_28 sample_29 sample_3 sample_30
+gene-LOC132462341|LOC132462341           293       347      452       452
+gene-abce1|abce1                         345       254      363       353
+gene-si:dkey-6i22.5|si:dkey-6i22.5        26         9       39        20
+gene-ube2v1|ube2v1                        61        14       29        37
+gene-cldn15la|cldn15la                     0         0        4        35
+gene-muc15|muc15                          69        22        0        15
+                                   sample_31 sample_36 sample_4 sample_5
+gene-LOC132462341|LOC132462341           984       230      469      400
+gene-abce1|abce1                         922       160      588      285
+gene-si:dkey-6i22.5|si:dkey-6i22.5        10         0        0       10
+gene-ube2v1|ube2v1                        68        37        0       30
+gene-cldn15la|cldn15la                     0         0        0        4
+gene-muc15|muc15                           0        34       55       51
+                                   sample_78 sample_79 sample_80 sample_83
+gene-LOC132462341|LOC132462341           472       311       368       312
+gene-abce1|abce1                         178       119       197       134
+gene-si:dkey-6i22.5|si:dkey-6i22.5        48        41        60        39
+gene-ube2v1|ube2v1                        10        13        56        32
+gene-cldn15la|cldn15la                     0         0         0         0
+gene-muc15|muc15                           0        30        19        31
+                                   sample_88 sample_90 sample_91 sample_92
+gene-LOC132462341|LOC132462341           551       631       605       366
+gene-abce1|abce1                         128       103       315       204
+gene-si:dkey-6i22.5|si:dkey-6i22.5        49        54        20        27
+gene-ube2v1|ube2v1                        45        55        27        38
+gene-cldn15la|cldn15la                     8        32         0         0
+gene-muc15|muc15                           0         0        42        34
+                                   sample_94 sample_97 sample_98 sample_99
+gene-LOC132462341|LOC132462341           339       517       577       235
+gene-abce1|abce1                         301        56        49       260
+gene-si:dkey-6i22.5|si:dkey-6i22.5         7        22        63        12
+gene-ube2v1|ube2v1                        60        25        18        50
+gene-cldn15la|cldn15la                    14         0         0         0
+gene-muc15|muc15                           0         0        26        56</code></pre>
+</section>
+<section id="load-matrix-into-edger" class="level3">
+<h3 class="anchored" data-anchor-id="load-matrix-into-edger">3.1.3 Load matrix into edgeR</h3>
+<div class="sourceCode" id="cb10"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a>dge <span class="ot">&lt;-</span> <span class="fu">DGEList</span>(<span class="at">counts =</span> gene_count_matrix, <span class="at">group =</span> <span class="fu">factor</span>(temperatures))</span>
+<span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb10-3"><a href="#cb10-3" aria-hidden="true" tabindex="-1"></a>dge</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<pre><code>An object of class "DGEList"
+$counts
+                                   sample_1 sample_10 sample_100 sample_107
+gene-LOC132462341|LOC132462341          360       464        391        346
+gene-abce1|abce1                        694       325        276         77
+gene-si:dkey-6i22.5|si:dkey-6i22.5        0        10         13         11
+gene-ube2v1|ube2v1                       10        22         15         19
+gene-cldn15la|cldn15la                    0         9          0          0
+                                   sample_108 sample_109 sample_11 sample_110
+gene-LOC132462341|LOC132462341            691        408       436        509
+gene-abce1|abce1                          409        196       281        284
+gene-si:dkey-6i22.5|si:dkey-6i22.5         49         42        14         36
+gene-ube2v1|ube2v1                         74         28        63         35
+gene-cldn15la|cldn15la                     18          0         0          0
+                                   sample_116 sample_12 sample_13 sample_18
+gene-LOC132462341|LOC132462341            366       373       432       385
+gene-abce1|abce1                          327       310       393       386
+gene-si:dkey-6i22.5|si:dkey-6i22.5          0        14         9         0
+gene-ube2v1|ube2v1                         30        31        25        42
+gene-cldn15la|cldn15la                      0        27         0         0
+                                   sample_19 sample_2 sample_20 sample_21
+gene-LOC132462341|LOC132462341           330      288       307       346
+gene-abce1|abce1                         106      290       252       326
+gene-si:dkey-6i22.5|si:dkey-6i22.5         0       14         3        21
+gene-ube2v1|ube2v1                        17       14        21        60
+gene-cldn15la|cldn15la                     0        0         0         0
+                                   sample_28 sample_29 sample_3 sample_30
+gene-LOC132462341|LOC132462341           293       347      452       452
+gene-abce1|abce1                         345       254      363       353
+gene-si:dkey-6i22.5|si:dkey-6i22.5        26         9       39        20
+gene-ube2v1|ube2v1                        61        14       29        37
+gene-cldn15la|cldn15la                     0         0        4        35
+                                   sample_31 sample_36 sample_4 sample_5
+gene-LOC132462341|LOC132462341           984       230      469      400
+gene-abce1|abce1                         922       160      588      285
+gene-si:dkey-6i22.5|si:dkey-6i22.5        10         0        0       10
+gene-ube2v1|ube2v1                        68        37        0       30
+gene-cldn15la|cldn15la                     0         0        0        4
+                                   sample_78 sample_79 sample_80 sample_83
+gene-LOC132462341|LOC132462341           472       311       368       312
+gene-abce1|abce1                         178       119       197       134
+gene-si:dkey-6i22.5|si:dkey-6i22.5        48        41        60        39
+gene-ube2v1|ube2v1                        10        13        56        32
+gene-cldn15la|cldn15la                     0         0         0         0
+                                   sample_88 sample_90 sample_91 sample_92
+gene-LOC132462341|LOC132462341           551       631       605       366
+gene-abce1|abce1                         128       103       315       204
+gene-si:dkey-6i22.5|si:dkey-6i22.5        49        54        20        27
+gene-ube2v1|ube2v1                        45        55        27        38
+gene-cldn15la|cldn15la                     8        32         0         0
+                                   sample_94 sample_97 sample_98 sample_99
+gene-LOC132462341|LOC132462341           339       517       577       235
+gene-abce1|abce1                         301        56        49       260
+gene-si:dkey-6i22.5|si:dkey-6i22.5         7        22        63        12
+gene-ube2v1|ube2v1                        60        25        18        50
+gene-cldn15la|cldn15la                    14         0         0         0
+30570 more rows ...
+
+$samples
+           group lib.size norm.factors
+sample_1     16C 49994893            1
+sample_10    16C 43506227            1
+sample_100    9C 44600544            1
+sample_107    9C 41991971            1
+sample_108    9C 47412580            1
+31 more rows ...</code></pre>
+</section>
+<section id="filter-low-counts" class="level3">
+<h3 class="anchored" data-anchor-id="filter-low-counts">3.1.4 Filter low counts</h3>
+<p>Filters for genes with at &gt;= <code>10</code> reads across at least 3 samples.</p>
+<div class="sourceCode" id="cb12"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a>keep <span class="ot">&lt;-</span> <span class="fu">filterByExpr</span>(dge)</span>
+<span id="cb12-2"><a href="#cb12-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb12-3"><a href="#cb12-3" aria-hidden="true" tabindex="-1"></a>dge <span class="ot">&lt;-</span> dge[keep, , keep.lib.sizes<span class="ot">=</span><span class="cn">FALSE</span>]</span>
+<span id="cb12-4"><a href="#cb12-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb12-5"><a href="#cb12-5" aria-hidden="true" tabindex="-1"></a>dge</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<pre><code>An object of class "DGEList"
+$counts
+                                   sample_1 sample_10 sample_100 sample_107
+gene-LOC132462341|LOC132462341          360       464        391        346
+gene-abce1|abce1                        694       325        276         77
+gene-si:dkey-6i22.5|si:dkey-6i22.5        0        10         13         11
+gene-ube2v1|ube2v1                       10        22         15         19
+gene-muc15|muc15                          0        40         40         29
+                                   sample_108 sample_109 sample_11 sample_110
+gene-LOC132462341|LOC132462341            691        408       436        509
+gene-abce1|abce1                          409        196       281        284
+gene-si:dkey-6i22.5|si:dkey-6i22.5         49         42        14         36
+gene-ube2v1|ube2v1                         74         28        63         35
+gene-muc15|muc15                            8          0        38          0
+                                   sample_116 sample_12 sample_13 sample_18
+gene-LOC132462341|LOC132462341            366       373       432       385
+gene-abce1|abce1                          327       310       393       386
+gene-si:dkey-6i22.5|si:dkey-6i22.5          0        14         9         0
+gene-ube2v1|ube2v1                         30        31        25        42
+gene-muc15|muc15                           16        15         0         0
+                                   sample_19 sample_2 sample_20 sample_21
+gene-LOC132462341|LOC132462341           330      288       307       346
+gene-abce1|abce1                         106      290       252       326
+gene-si:dkey-6i22.5|si:dkey-6i22.5         0       14         3        21
+gene-ube2v1|ube2v1                        17       14        21        60
+gene-muc15|muc15                           0        0        22        22
+                                   sample_28 sample_29 sample_3 sample_30
+gene-LOC132462341|LOC132462341           293       347      452       452
+gene-abce1|abce1                         345       254      363       353
+gene-si:dkey-6i22.5|si:dkey-6i22.5        26         9       39        20
+gene-ube2v1|ube2v1                        61        14       29        37
+gene-muc15|muc15                          69        22        0        15
+                                   sample_31 sample_36 sample_4 sample_5
+gene-LOC132462341|LOC132462341           984       230      469      400
+gene-abce1|abce1                         922       160      588      285
+gene-si:dkey-6i22.5|si:dkey-6i22.5        10         0        0       10
+gene-ube2v1|ube2v1                        68        37        0       30
+gene-muc15|muc15                           0        34       55       51
+                                   sample_78 sample_79 sample_80 sample_83
+gene-LOC132462341|LOC132462341           472       311       368       312
+gene-abce1|abce1                         178       119       197       134
+gene-si:dkey-6i22.5|si:dkey-6i22.5        48        41        60        39
+gene-ube2v1|ube2v1                        10        13        56        32
+gene-muc15|muc15                           0        30        19        31
+                                   sample_88 sample_90 sample_91 sample_92
+gene-LOC132462341|LOC132462341           551       631       605       366
+gene-abce1|abce1                         128       103       315       204
+gene-si:dkey-6i22.5|si:dkey-6i22.5        49        54        20        27
+gene-ube2v1|ube2v1                        45        55        27        38
+gene-muc15|muc15                           0         0        42        34
+                                   sample_94 sample_97 sample_98 sample_99
+gene-LOC132462341|LOC132462341           339       517       577       235
+gene-abce1|abce1                         301        56        49       260
+gene-si:dkey-6i22.5|si:dkey-6i22.5         7        22        63        12
+gene-ube2v1|ube2v1                        60        25        18        50
+gene-muc15|muc15                           0         0        26        56
+16688 more rows ...
+
+$samples
+           group lib.size norm.factors
+sample_1     16C 49973355            1
+sample_10    16C 43459343            1
+sample_100    9C 44577844            1
+sample_107    9C 41972179            1
+sample_108    9C 47313070            1
+31 more rows ...</code></pre>
+</section>
+<section id="normalization" class="level3">
+<h3 class="anchored" data-anchor-id="normalization">3.1.5 Normalization</h3>
+<div class="sourceCode" id="cb14"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a>dge <span class="ot">&lt;-</span> <span class="fu">calcNormFactors</span>(<span class="at">object =</span> dge)</span>
+<span id="cb14-2"><a href="#cb14-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb14-3"><a href="#cb14-3" aria-hidden="true" tabindex="-1"></a>dge</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<pre><code>An object of class "DGEList"
+$counts
+                                   sample_1 sample_10 sample_100 sample_107
+gene-LOC132462341|LOC132462341          360       464        391        346
+gene-abce1|abce1                        694       325        276         77
+gene-si:dkey-6i22.5|si:dkey-6i22.5        0        10         13         11
+gene-ube2v1|ube2v1                       10        22         15         19
+gene-muc15|muc15                          0        40         40         29
+                                   sample_108 sample_109 sample_11 sample_110
+gene-LOC132462341|LOC132462341            691        408       436        509
+gene-abce1|abce1                          409        196       281        284
+gene-si:dkey-6i22.5|si:dkey-6i22.5         49         42        14         36
+gene-ube2v1|ube2v1                         74         28        63         35
+gene-muc15|muc15                            8          0        38          0
+                                   sample_116 sample_12 sample_13 sample_18
+gene-LOC132462341|LOC132462341            366       373       432       385
+gene-abce1|abce1                          327       310       393       386
+gene-si:dkey-6i22.5|si:dkey-6i22.5          0        14         9         0
+gene-ube2v1|ube2v1                         30        31        25        42
+gene-muc15|muc15                           16        15         0         0
+                                   sample_19 sample_2 sample_20 sample_21
+gene-LOC132462341|LOC132462341           330      288       307       346
+gene-abce1|abce1                         106      290       252       326
+gene-si:dkey-6i22.5|si:dkey-6i22.5         0       14         3        21
+gene-ube2v1|ube2v1                        17       14        21        60
+gene-muc15|muc15                           0        0        22        22
+                                   sample_28 sample_29 sample_3 sample_30
+gene-LOC132462341|LOC132462341           293       347      452       452
+gene-abce1|abce1                         345       254      363       353
+gene-si:dkey-6i22.5|si:dkey-6i22.5        26         9       39        20
+gene-ube2v1|ube2v1                        61        14       29        37
+gene-muc15|muc15                          69        22        0        15
+                                   sample_31 sample_36 sample_4 sample_5
+gene-LOC132462341|LOC132462341           984       230      469      400
+gene-abce1|abce1                         922       160      588      285
+gene-si:dkey-6i22.5|si:dkey-6i22.5        10         0        0       10
+gene-ube2v1|ube2v1                        68        37        0       30
+gene-muc15|muc15                           0        34       55       51
+                                   sample_78 sample_79 sample_80 sample_83
+gene-LOC132462341|LOC132462341           472       311       368       312
+gene-abce1|abce1                         178       119       197       134
+gene-si:dkey-6i22.5|si:dkey-6i22.5        48        41        60        39
+gene-ube2v1|ube2v1                        10        13        56        32
+gene-muc15|muc15                           0        30        19        31
+                                   sample_88 sample_90 sample_91 sample_92
+gene-LOC132462341|LOC132462341           551       631       605       366
+gene-abce1|abce1                         128       103       315       204
+gene-si:dkey-6i22.5|si:dkey-6i22.5        49        54        20        27
+gene-ube2v1|ube2v1                        45        55        27        38
+gene-muc15|muc15                           0         0        42        34
+                                   sample_94 sample_97 sample_98 sample_99
+gene-LOC132462341|LOC132462341           339       517       577       235
+gene-abce1|abce1                         301        56        49       260
+gene-si:dkey-6i22.5|si:dkey-6i22.5         7        22        63        12
+gene-ube2v1|ube2v1                        60        25        18        50
+gene-muc15|muc15                           0         0        26        56
+16688 more rows ...
+
+$samples
+           group lib.size norm.factors
+sample_1     16C 49973355    1.0828322
+sample_10    16C 43459343    1.3481915
+sample_100    9C 44577844    0.9792758
+sample_107    9C 41972179    0.7062689
+sample_108    9C 47313070    1.5247621
+31 more rows ...</code></pre>
+</section>
+<section id="model-fitting-and-estimating-dispersions" class="level3">
+<h3 class="anchored" data-anchor-id="model-fitting-and-estimating-dispersions">3.1.6 Model fitting and estimating dispersions</h3>
+<div class="sourceCode" id="cb16"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true" tabindex="-1"></a>dge <span class="ot">&lt;-</span> <span class="fu">estimateDisp</span>(dge)</span>
+<span id="cb16-2"><a href="#cb16-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb16-3"><a href="#cb16-3" aria-hidden="true" tabindex="-1"></a>dge</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<pre><code>An object of class "DGEList"
+$counts
+                                   sample_1 sample_10 sample_100 sample_107
+gene-LOC132462341|LOC132462341          360       464        391        346
+gene-abce1|abce1                        694       325        276         77
+gene-si:dkey-6i22.5|si:dkey-6i22.5        0        10         13         11
+gene-ube2v1|ube2v1                       10        22         15         19
+gene-muc15|muc15                          0        40         40         29
+                                   sample_108 sample_109 sample_11 sample_110
+gene-LOC132462341|LOC132462341            691        408       436        509
+gene-abce1|abce1                          409        196       281        284
+gene-si:dkey-6i22.5|si:dkey-6i22.5         49         42        14         36
+gene-ube2v1|ube2v1                         74         28        63         35
+gene-muc15|muc15                            8          0        38          0
+                                   sample_116 sample_12 sample_13 sample_18
+gene-LOC132462341|LOC132462341            366       373       432       385
+gene-abce1|abce1                          327       310       393       386
+gene-si:dkey-6i22.5|si:dkey-6i22.5          0        14         9         0
+gene-ube2v1|ube2v1                         30        31        25        42
+gene-muc15|muc15                           16        15         0         0
+                                   sample_19 sample_2 sample_20 sample_21
+gene-LOC132462341|LOC132462341           330      288       307       346
+gene-abce1|abce1                         106      290       252       326
+gene-si:dkey-6i22.5|si:dkey-6i22.5         0       14         3        21
+gene-ube2v1|ube2v1                        17       14        21        60
+gene-muc15|muc15                           0        0        22        22
+                                   sample_28 sample_29 sample_3 sample_30
+gene-LOC132462341|LOC132462341           293       347      452       452
+gene-abce1|abce1                         345       254      363       353
+gene-si:dkey-6i22.5|si:dkey-6i22.5        26         9       39        20
+gene-ube2v1|ube2v1                        61        14       29        37
+gene-muc15|muc15                          69        22        0        15
+                                   sample_31 sample_36 sample_4 sample_5
+gene-LOC132462341|LOC132462341           984       230      469      400
+gene-abce1|abce1                         922       160      588      285
+gene-si:dkey-6i22.5|si:dkey-6i22.5        10         0        0       10
+gene-ube2v1|ube2v1                        68        37        0       30
+gene-muc15|muc15                           0        34       55       51
+                                   sample_78 sample_79 sample_80 sample_83
+gene-LOC132462341|LOC132462341           472       311       368       312
+gene-abce1|abce1                         178       119       197       134
+gene-si:dkey-6i22.5|si:dkey-6i22.5        48        41        60        39
+gene-ube2v1|ube2v1                        10        13        56        32
+gene-muc15|muc15                           0        30        19        31
+                                   sample_88 sample_90 sample_91 sample_92
+gene-LOC132462341|LOC132462341           551       631       605       366
+gene-abce1|abce1                         128       103       315       204
+gene-si:dkey-6i22.5|si:dkey-6i22.5        49        54        20        27
+gene-ube2v1|ube2v1                        45        55        27        38
+gene-muc15|muc15                           0         0        42        34
+                                   sample_94 sample_97 sample_98 sample_99
+gene-LOC132462341|LOC132462341           339       517       577       235
+gene-abce1|abce1                         301        56        49       260
+gene-si:dkey-6i22.5|si:dkey-6i22.5         7        22        63        12
+gene-ube2v1|ube2v1                        60        25        18        50
+gene-muc15|muc15                           0         0        26        56
+16688 more rows ...
+
+$samples
+           group lib.size norm.factors
+sample_1     16C 49973355    1.0828322
+sample_10    16C 43459343    1.3481915
+sample_100    9C 44577844    0.9792758
+sample_107    9C 41972179    0.7062689
+sample_108    9C 47313070    1.5247621
+31 more rows ...
+
+$common.dispersion
+[1] 0.3258355
+
+$trended.dispersion
+[1] 0.1792662 0.2158552 0.8880326 0.7699354 0.9217978
+16688 more elements ...
+
+$tagwise.dispersion
+[1] 0.1017614 0.1666824 0.9805648 0.3988847 2.8340881
+16688 more elements ...
+
+$AveLogCPM
+[1]  3.3189831  2.6344211 -0.7839951 -0.2807668 -0.9718511
+16688 more elements ...
+
+$trend.method
+[1] "locfit"
+
+$prior.df
+[1] 4.732584
+
+$prior.n
+[1] 0.1391936
+
+$span
+[1] 0.2910468</code></pre>
+</section>
+<section id="exact-test-gene-expression" class="level3">
+<h3 class="anchored" data-anchor-id="exact-test-gene-expression">3.1.7 Exact test (Gene expression)</h3>
+<div class="sourceCode" id="cb18"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb18-1"><a href="#cb18-1" aria-hidden="true" tabindex="-1"></a>exact_test_genes <span class="ot">&lt;-</span> <span class="fu">exactTest</span>(dge)</span>
+<span id="cb18-2"><a href="#cb18-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb18-3"><a href="#cb18-3" aria-hidden="true" tabindex="-1"></a>exact_test_genes</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<pre><code>An object of class "DGEExact"
+$table
+                                        logFC     logCPM       PValue
+gene-LOC132462341|LOC132462341      0.3690768  3.3189831 0.0174459833
+gene-abce1|abce1                   -0.7406649  2.6344211 0.0002052135
+gene-si:dkey-6i22.5|si:dkey-6i22.5  1.8787265 -0.7839951 0.0001945058
+gene-ube2v1|ube2v1                  0.2838600 -0.2807668 0.3721151448
+gene-muc15|muc15                    0.0123765 -0.9718511 0.9923746564
+16688 more rows ...
+
+$comparison
+[1] "16C" "9C" 
+
+$genes
+NULL</code></pre>
+</section>
+<section id="differential-gene-expression-summary" class="level3">
+<h3 class="anchored" data-anchor-id="differential-gene-expression-summary">3.1.8 Differential gene expression summary</h3>
+<div class="sourceCode" id="cb20"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb20-1"><a href="#cb20-1" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(<span class="fu">decideTests</span>(<span class="at">object =</span> exact_test_genes, <span class="at">p.value =</span> <span class="fl">0.05</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<pre><code>       9C-16C
+Down     2071
+NotSig  11980
+Up       2642</code></pre>
+</section>
+<section id="peek-at-degs" class="level3">
+<h3 class="anchored" data-anchor-id="peek-at-degs">3.1.9 Peek at DEGs</h3>
+<p>Selects all genes (<code>n = "Inf"</code>) with adjusted p-value <code>&lt; 0.05</code>, sorts by false discovery rate (<code>adjust.method = "fdr"</code>).</p>
+<p>Converts object to a data frame (the <code>$table</code> part).</p>
+<div class="sourceCode" id="cb22"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb22-1"><a href="#cb22-1" aria-hidden="true" tabindex="-1"></a>top_degs_table <span class="ot">&lt;-</span>  <span class="fu">topTags</span>(<span class="at">object =</span> exact_test_genes, <span class="at">n =</span> <span class="st">"Inf"</span>, <span class="at">adjust.method =</span> <span class="st">"fdr"</span>, <span class="at">p.value =</span> <span class="fl">0.05</span>)<span class="sc">$</span>table</span>
+<span id="cb22-2"><a href="#cb22-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb22-3"><a href="#cb22-3" aria-hidden="true" tabindex="-1"></a><span class="fu">str</span>(top_degs_table)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<pre><code>'data.frame':   16693 obs. of  4 variables:
+ $ logFC : num  1.9 -2.59 -1.45 -3.13 1.87 ...
+ $ logCPM: num  6.59 4.06 4.93 3.18 5.57 ...
+ $ PValue: num  1.26e-64 5.31e-37 2.15e-30 1.48e-26 4.65e-25 ...
+ $ FDR   : num  2.10e-60 4.43e-33 1.19e-26 6.18e-23 1.43e-21 ...</code></pre>
+</section>
+<section id="convert-gene-id-rownames-to-column" class="level3">
+<h3 class="anchored" data-anchor-id="convert-gene-id-rownames-to-column">3.1.10 Convert gene ID rownames to column</h3>
+<div class="sourceCode" id="cb24"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb24-1"><a href="#cb24-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Step 1: Extract row names and create a new column 'gene_ids'</span></span>
+<span id="cb24-2"><a href="#cb24-2" aria-hidden="true" tabindex="-1"></a>top_degs_table<span class="sc">$</span>gene_ids <span class="ot">&lt;-</span> <span class="fu">rownames</span>(top_degs_table)</span>
+<span id="cb24-3"><a href="#cb24-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb24-4"><a href="#cb24-4" aria-hidden="true" tabindex="-1"></a><span class="co"># Step 2: Reorder columns to make 'gene_ids' the first column</span></span>
+<span id="cb24-5"><a href="#cb24-5" aria-hidden="true" tabindex="-1"></a>top_degs_table <span class="ot">&lt;-</span> top_degs_table[, <span class="fu">c</span>(<span class="st">"gene_ids"</span>, <span class="fu">names</span>(top_degs_table)[<span class="sc">-</span><span class="fu">length</span>(<span class="fu">names</span>(top_degs_table))])]</span>
+<span id="cb24-6"><a href="#cb24-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb24-7"><a href="#cb24-7" aria-hidden="true" tabindex="-1"></a><span class="co"># Step 3: Check the result</span></span>
+<span id="cb24-8"><a href="#cb24-8" aria-hidden="true" tabindex="-1"></a><span class="fu">head</span>(top_degs_table)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<pre><code>                                                     gene_ids     logFC
+gene-LOC132469840|LOC132469840 gene-LOC132469840|LOC132469840  1.897837
+gene-serpinh1b|serpinh1b             gene-serpinh1b|serpinh1b -2.589704
+gene-znf706|znf706                         gene-znf706|znf706 -1.450400
+gene-hacd4|hacd4                             gene-hacd4|hacd4 -3.133038
+gene-LOC132448390|LOC132448390 gene-LOC132448390|LOC132448390  1.874161
+gene-zgc:103586|zgc:103586         gene-zgc:103586|zgc:103586  1.584728
+                                 logCPM       PValue          FDR
+gene-LOC132469840|LOC132469840 6.594858 1.259480e-64 2.102450e-60
+gene-serpinh1b|serpinh1b       4.063945 5.307949e-37 4.430280e-33
+gene-znf706|znf706             4.929053 2.146565e-30 1.194420e-26
+gene-hacd4|hacd4               3.179135 1.480134e-26 6.176968e-23
+gene-LOC132448390|LOC132448390 5.570204 4.647165e-25 1.434822e-21
+gene-zgc:103586|zgc:103586     5.356047 5.157212e-25 1.434822e-21</code></pre>
+</section>
+<section id="write-degs-to-file" class="level3">
+<h3 class="anchored" data-anchor-id="write-degs-to-file">3.1.11 Write DEGs to file</h3>
+<div class="sourceCode" id="cb26"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb26-1"><a href="#cb26-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Write dataframe to CSV</span></span>
+<span id="cb26-2"><a href="#cb26-2" aria-hidden="true" tabindex="-1"></a><span class="fu">write.csv</span>(</span>
+<span id="cb26-3"><a href="#cb26-3" aria-hidden="true" tabindex="-1"></a>  top_degs_table, </span>
+<span id="cb26-4"><a href="#cb26-4" aria-hidden="true" tabindex="-1"></a>  <span class="at">file =</span> <span class="st">"../output/13.0.0-RNAseq-edgeR/DEGs_9C-vs-16C-p-0.05.csv"</span>, </span>
+<span id="cb26-5"><a href="#cb26-5" aria-hidden="true" tabindex="-1"></a>  <span class="at">quote =</span> <span class="cn">FALSE</span>, </span>
+<span id="cb26-6"><a href="#cb26-6" aria-hidden="true" tabindex="-1"></a>  <span class="at">row.names =</span> <span class="cn">FALSE</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</section>
+<section id="volcano-plot" class="level3">
+<h3 class="anchored" data-anchor-id="volcano-plot">3.1.12 Volcano plot</h3>
+<div class="sourceCode" id="cb27"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb27-1"><a href="#cb27-1" aria-hidden="true" tabindex="-1"></a>ghibli_colors <span class="ot">&lt;-</span> <span class="fu">ghibli_palette</span>(<span class="st">"PonyoMedium"</span>, <span class="at">type =</span> <span class="st">"discrete"</span>)</span>
+<span id="cb27-2"><a href="#cb27-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb27-3"><a href="#cb27-3" aria-hidden="true" tabindex="-1"></a>ghibli_subset <span class="ot">&lt;-</span> <span class="fu">c</span>(ghibli_colors[<span class="dv">3</span>], ghibli_colors[<span class="dv">6</span>], ghibli_colors[<span class="dv">4</span>])</span>
+<span id="cb27-4"><a href="#cb27-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb27-5"><a href="#cb27-5" aria-hidden="true" tabindex="-1"></a><span class="co"># Create new column and fill with `NA`</span></span>
+<span id="cb27-6"><a href="#cb27-6" aria-hidden="true" tabindex="-1"></a>top_degs_table<span class="sc">$</span>topDE <span class="ot">&lt;-</span> <span class="st">"NA"</span></span>
+<span id="cb27-7"><a href="#cb27-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb27-8"><a href="#cb27-8" aria-hidden="true" tabindex="-1"></a><span class="co"># Set value of "Up" for genes with FC &gt; 1 and FDR &lt; 0.05</span></span>
+<span id="cb27-9"><a href="#cb27-9" aria-hidden="true" tabindex="-1"></a>top_degs_table<span class="sc">$</span>topDE[top_degs_table<span class="sc">$</span>logFC <span class="sc">&gt;</span> <span class="dv">1</span> <span class="sc">&amp;</span> top_degs_table<span class="sc">$</span>FDR <span class="sc">&lt;</span> <span class="fl">0.05</span>] <span class="ot">&lt;-</span> <span class="st">"Up"</span></span>
+<span id="cb27-10"><a href="#cb27-10" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb27-11"><a href="#cb27-11" aria-hidden="true" tabindex="-1"></a><span class="co"># Set value of "Down" for genes with FC &lt; -1 and FDR &lt; 0.05</span></span>
+<span id="cb27-12"><a href="#cb27-12" aria-hidden="true" tabindex="-1"></a>top_degs_table<span class="sc">$</span>topDE[top_degs_table<span class="sc">$</span>logFC <span class="sc">&lt;</span> <span class="sc">-</span><span class="dv">1</span> <span class="sc">&amp;</span> top_degs_table<span class="sc">$</span>FDR <span class="sc">&lt;</span> <span class="fl">0.05</span>] <span class="ot">&lt;-</span> <span class="st">"Down"</span></span>
+<span id="cb27-13"><a href="#cb27-13" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb27-14"><a href="#cb27-14" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(<span class="at">data=</span>top_degs_table, <span class="fu">aes</span>(<span class="at">x=</span>logFC, <span class="at">y=</span><span class="sc">-</span><span class="fu">log10</span>(FDR), <span class="at">color =</span> topDE)) <span class="sc">+</span> </span>
+<span id="cb27-15"><a href="#cb27-15" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_point</span>() <span class="sc">+</span></span>
+<span id="cb27-16"><a href="#cb27-16" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_minimal</span>() <span class="sc">+</span></span>
+<span id="cb27-17"><a href="#cb27-17" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_colour_discrete</span>(<span class="at">type =</span> ghibli_subset, <span class="at">breaks =</span> <span class="fu">c</span>(<span class="st">"Up"</span>, <span class="st">"Down"</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p><img src="13.0.0-RNAseq-edgeR_files/figure-gfm/plot-volcano-degs-1.png" class="img-fluid"><!-- --></p>
+</section>
+</section>
+</section>
+<section id="citations" class="level1">
+<h1>4 CITATIONS</h1>
+<div id="refs" class="references csl-bib-body hanging-indent" role="list">
+<div id="ref-chen2024" class="csl-entry" role="listitem">
+Chen, Yunshun, Lizhong Chen, Aaron T. L. Lun, Pedro L. Baldoni, and Gordon K. Smyth. 2024. “edgeR 4.0: Powerful Differential Analysis of Sequencing Data with Expanded Functionality and Improved Support for Small Counts and Larger Datasets.” <a href="http://dx.doi.org/10.1101/2024.01.21.576131" class="uri">http://dx.doi.org/10.1101/2024.01.21.576131</a>.
+</div>
+<div id="ref-chen2016" class="csl-entry" role="listitem">
+Chen, Yunshun, Aaron T. L. Lun, and Gordon K. Smyth. 2016. “From Reads to Genes to Pathways: Differential Expression Analysis of RNA-Seq Experiments Using Rsubread and the edgeR Quasi-Likelihood Pipeline.” <em>F1000Research</em> 5 (August): 1438. <a href="https://doi.org/10.12688/f1000research.8987.2" class="uri">https://doi.org/10.12688/f1000research.8987.2</a>.
+</div>
+<div id="ref-mccarthy2012" class="csl-entry" role="listitem">
+McCarthy, Davis J., Yunshun Chen, and Gordon K. Smyth. 2012. “Differential Expression Analysis of Multifactor RNA-Seq Experiments with Respect to Biological Variation.” <em>Nucleic Acids Research</em> 40 (10): 4288–97. <a href="https://doi.org/10.1093/nar/gks042" class="uri">https://doi.org/10.1093/nar/gks042</a>.
+</div>
+<div id="ref-robinson2009" class="csl-entry" role="listitem">
+Robinson, Mark D., Davis J. McCarthy, and Gordon K. Smyth. 2009. “edgeR: A Bioconductor Package for Differential Expression Analysis of Digital Gene Expression Data.” <em>Bioinformatics</em> 26 (1): 139–40. <a href="https://doi.org/10.1093/bioinformatics/btp616" class="uri">https://doi.org/10.1093/bioinformatics/btp616</a>.
+</div>
+</div>
+
+
+</section>
+
+</main> <!-- /main -->
+<script id="quarto-html-after-body" type="application/javascript">
+window.document.addEventListener("DOMContentLoaded", function (event) {
+  const toggleBodyColorMode = (bsSheetEl) => {
+    const mode = bsSheetEl.getAttribute("data-mode");
+    const bodyEl = window.document.querySelector("body");
+    if (mode === "dark") {
+      bodyEl.classList.add("quarto-dark");
+      bodyEl.classList.remove("quarto-light");
+    } else {
+      bodyEl.classList.add("quarto-light");
+      bodyEl.classList.remove("quarto-dark");
+    }
+  }
+  const toggleBodyColorPrimary = () => {
+    const bsSheetEl = window.document.querySelector("link#quarto-bootstrap");
+    if (bsSheetEl) {
+      toggleBodyColorMode(bsSheetEl);
+    }
+  }
+  toggleBodyColorPrimary();  
+  const icon = "";
+  const anchorJS = new window.AnchorJS();
+  anchorJS.options = {
+    placement: 'right',
+    icon: icon
+  };
+  anchorJS.add('.anchored');
+  const isCodeAnnotation = (el) => {
+    for (const clz of el.classList) {
+      if (clz.startsWith('code-annotation-')) {                     
+        return true;
+      }
+    }
+    return false;
+  }
+  const clipboard = new window.ClipboardJS('.code-copy-button', {
+    text: function(trigger) {
+      const codeEl = trigger.previousElementSibling.cloneNode(true);
+      for (const childEl of codeEl.children) {
+        if (isCodeAnnotation(childEl)) {
+          childEl.remove();
+        }
+      }
+      return codeEl.innerText;
+    }
+  });
+  clipboard.on('success', function(e) {
+    // button target
+    const button = e.trigger;
+    // don't keep focus
+    button.blur();
+    // flash "checked"
+    button.classList.add('code-copy-button-checked');
+    var currentTitle = button.getAttribute("title");
+    button.setAttribute("title", "Copied!");
+    let tooltip;
+    if (window.bootstrap) {
+      button.setAttribute("data-bs-toggle", "tooltip");
+      button.setAttribute("data-bs-placement", "left");
+      button.setAttribute("data-bs-title", "Copied!");
+      tooltip = new bootstrap.Tooltip(button, 
+        { trigger: "manual", 
+          customClass: "code-copy-button-tooltip",
+          offset: [0, -8]});
+      tooltip.show();    
+    }
+    setTimeout(function() {
+      if (tooltip) {
+        tooltip.hide();
+        button.removeAttribute("data-bs-title");
+        button.removeAttribute("data-bs-toggle");
+        button.removeAttribute("data-bs-placement");
+      }
+      button.setAttribute("title", currentTitle);
+      button.classList.remove('code-copy-button-checked');
+    }, 1000);
+    // clear code selection
+    e.clearSelection();
+  });
+    var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
+    var mailtoRegex = new RegExp(/^mailto:/);
+      var filterRegex = new RegExp("https:\/\/robertslab\.github\.io\/sams-notebook");
+    var isInternal = (href) => {
+        return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
+    }
+    // Inspect non-navigation links and adorn them if external
+ 	var links = window.document.querySelectorAll('a[href]:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item):not(.quarto-navigation-tool)');
+    for (var i=0; i<links.length; i++) {
+      const link = links[i];
+      if (!isInternal(link.href)) {
+        // undo the damage that might have been done by quarto-nav.js in the case of
+        // links that we want to consider external
+        if (link.dataset.originalHref !== undefined) {
+          link.href = link.dataset.originalHref;
+        }
+      }
+    }
+  function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
+    const config = {
+      allowHTML: true,
+      maxWidth: 500,
+      delay: 100,
+      arrow: false,
+      appendTo: function(el) {
+          return el.parentElement;
+      },
+      interactive: true,
+      interactiveBorder: 10,
+      theme: 'quarto',
+      placement: 'bottom-start',
+    };
+    if (contentFn) {
+      config.content = contentFn;
+    }
+    if (onTriggerFn) {
+      config.onTrigger = onTriggerFn;
+    }
+    if (onUntriggerFn) {
+      config.onUntrigger = onUntriggerFn;
+    }
+    window.tippy(el, config); 
+  }
+  const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+  for (var i=0; i<noterefs.length; i++) {
+    const ref = noterefs[i];
+    tippyHover(ref, function() {
+      // use id or data attribute instead here
+      let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+      try { href = new URL(href).hash; } catch {}
+      const id = href.replace(/^#\/?/, "");
+      const note = window.document.getElementById(id);
+      if (note) {
+        return note.innerHTML;
+      } else {
+        return "";
+      }
+    });
+  }
+  const xrefs = window.document.querySelectorAll('a.quarto-xref');
+  const processXRef = (id, note) => {
+    // Strip column container classes
+    const stripColumnClz = (el) => {
+      el.classList.remove("page-full", "page-columns");
+      if (el.children) {
+        for (const child of el.children) {
+          stripColumnClz(child);
+        }
+      }
+    }
+    stripColumnClz(note)
+    if (id === null || id.startsWith('sec-')) {
+      // Special case sections, only their first couple elements
+      const container = document.createElement("div");
+      if (note.children && note.children.length > 2) {
+        container.appendChild(note.children[0].cloneNode(true));
+        for (let i = 1; i < note.children.length; i++) {
+          const child = note.children[i];
+          if (child.tagName === "P" && child.innerText === "") {
+            continue;
+          } else {
+            container.appendChild(child.cloneNode(true));
+            break;
+          }
+        }
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(container);
+        }
+        return container.innerHTML
+      } else {
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(note);
+        }
+        return note.innerHTML;
+      }
+    } else {
+      // Remove any anchor links if they are present
+      const anchorLink = note.querySelector('a.anchorjs-link');
+      if (anchorLink) {
+        anchorLink.remove();
+      }
+      if (window.Quarto?.typesetMath) {
+        window.Quarto.typesetMath(note);
+      }
+      // TODO in 1.5, we should make sure this works without a callout special case
+      if (note.classList.contains("callout")) {
+        return note.outerHTML;
+      } else {
+        return note.innerHTML;
+      }
+    }
+  }
+  for (var i=0; i<xrefs.length; i++) {
+    const xref = xrefs[i];
+    tippyHover(xref, undefined, function(instance) {
+      instance.disable();
+      let url = xref.getAttribute('href');
+      let hash = undefined; 
+      if (url.startsWith('#')) {
+        hash = url;
+      } else {
+        try { hash = new URL(url).hash; } catch {}
+      }
+      if (hash) {
+        const id = hash.replace(/^#\/?/, "");
+        const note = window.document.getElementById(id);
+        if (note !== null) {
+          try {
+            const html = processXRef(id, note.cloneNode(true));
+            instance.setContent(html);
+          } finally {
+            instance.enable();
+            instance.show();
+          }
+        } else {
+          // See if we can fetch this
+          fetch(url.split('#')[0])
+          .then(res => res.text())
+          .then(html => {
+            const parser = new DOMParser();
+            const htmlDoc = parser.parseFromString(html, "text/html");
+            const note = htmlDoc.getElementById(id);
+            if (note !== null) {
+              const html = processXRef(id, note);
+              instance.setContent(html);
+            } 
+          }).finally(() => {
+            instance.enable();
+            instance.show();
+          });
+        }
+      } else {
+        // See if we can fetch a full url (with no hash to target)
+        // This is a special case and we should probably do some content thinning / targeting
+        fetch(url)
+        .then(res => res.text())
+        .then(html => {
+          const parser = new DOMParser();
+          const htmlDoc = parser.parseFromString(html, "text/html");
+          const note = htmlDoc.querySelector('main.content');
+          if (note !== null) {
+            // This should only happen for chapter cross references
+            // (since there is no id in the URL)
+            // remove the first header
+            if (note.children.length > 0 && note.children[0].tagName === "HEADER") {
+              note.children[0].remove();
+            }
+            const html = processXRef(null, note);
+            instance.setContent(html);
+          } 
+        }).finally(() => {
+          instance.enable();
+          instance.show();
+        });
+      }
+    }, function(instance) {
+    });
+  }
+      let selectedAnnoteEl;
+      const selectorForAnnotation = ( cell, annotation) => {
+        let cellAttr = 'data-code-cell="' + cell + '"';
+        let lineAttr = 'data-code-annotation="' +  annotation + '"';
+        const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+        return selector;
+      }
+      const selectCodeLines = (annoteEl) => {
+        const doc = window.document;
+        const targetCell = annoteEl.getAttribute("data-target-cell");
+        const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+        const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+        const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+        const lineIds = lines.map((line) => {
+          return targetCell + "-" + line;
+        })
+        let top = null;
+        let height = null;
+        let parent = null;
+        if (lineIds.length > 0) {
+            //compute the position of the single el (top and bottom and make a div)
+            const el = window.document.getElementById(lineIds[0]);
+            top = el.offsetTop;
+            height = el.offsetHeight;
+            parent = el.parentElement.parentElement;
+          if (lineIds.length > 1) {
+            const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+            const bottom = lastEl.offsetTop + lastEl.offsetHeight;
+            height = bottom - top;
+          }
+          if (top !== null && height !== null && parent !== null) {
+            // cook up a div (if necessary) and position it 
+            let div = window.document.getElementById("code-annotation-line-highlight");
+            if (div === null) {
+              div = window.document.createElement("div");
+              div.setAttribute("id", "code-annotation-line-highlight");
+              div.style.position = 'absolute';
+              parent.appendChild(div);
+            }
+            div.style.top = top - 2 + "px";
+            div.style.height = height + 4 + "px";
+            div.style.left = 0;
+            let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+            if (gutterDiv === null) {
+              gutterDiv = window.document.createElement("div");
+              gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+              gutterDiv.style.position = 'absolute';
+              const codeCell = window.document.getElementById(targetCell);
+              const gutter = codeCell.querySelector('.code-annotation-gutter');
+              gutter.appendChild(gutterDiv);
+            }
+            gutterDiv.style.top = top - 2 + "px";
+            gutterDiv.style.height = height + 4 + "px";
+          }
+          selectedAnnoteEl = annoteEl;
+        }
+      };
+      const unselectCodeLines = () => {
+        const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+        elementsIds.forEach((elId) => {
+          const div = window.document.getElementById(elId);
+          if (div) {
+            div.remove();
+          }
+        });
+        selectedAnnoteEl = undefined;
+      };
+        // Handle positioning of the toggle
+    window.addEventListener(
+      "resize",
+      throttle(() => {
+        elRect = undefined;
+        if (selectedAnnoteEl) {
+          selectCodeLines(selectedAnnoteEl);
+        }
+      }, 10)
+    );
+    function throttle(fn, ms) {
+    let throttle = false;
+    let timer;
+      return (...args) => {
+        if(!throttle) { // first call gets through
+            fn.apply(this, args);
+            throttle = true;
+        } else { // all the others get throttled
+            if(timer) clearTimeout(timer); // cancel #2
+            timer = setTimeout(() => {
+              fn.apply(this, args);
+              timer = throttle = false;
+            }, ms);
+        }
+      };
+    }
+      // Attach click handler to the DT
+      const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
+      for (const annoteDlNode of annoteDls) {
+        annoteDlNode.addEventListener('click', (event) => {
+          const clickedEl = event.target;
+          if (clickedEl !== selectedAnnoteEl) {
+            unselectCodeLines();
+            const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
+            if (activeEl) {
+              activeEl.classList.remove('code-annotation-active');
+            }
+            selectCodeLines(clickedEl);
+            clickedEl.classList.add('code-annotation-active');
+          } else {
+            // Unselect the line
+            unselectCodeLines();
+            clickedEl.classList.remove('code-annotation-active');
+          }
+        });
+      }
+  const findCites = (el) => {
+    const parentEl = el.parentElement;
+    if (parentEl) {
+      const cites = parentEl.dataset.cites;
+      if (cites) {
+        return {
+          el,
+          cites: cites.split(' ')
+        };
+      } else {
+        return findCites(el.parentElement)
+      }
+    } else {
+      return undefined;
+    }
+  };
+  var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+  for (var i=0; i<bibliorefs.length; i++) {
+    const ref = bibliorefs[i];
+    const citeInfo = findCites(ref);
+    if (citeInfo) {
+      tippyHover(citeInfo.el, function() {
+        var popup = window.document.createElement('div');
+        citeInfo.cites.forEach(function(cite) {
+          var citeDiv = window.document.createElement('div');
+          citeDiv.classList.add('hanging-indent');
+          citeDiv.classList.add('csl-entry');
+          var biblioDiv = window.document.getElementById('ref-' + cite);
+          if (biblioDiv) {
+            citeDiv.innerHTML = biblioDiv.innerHTML;
+          }
+          popup.appendChild(citeDiv);
+        });
+        return popup.innerHTML;
+      });
+    }
+  }
+});
+</script>
+</div> <!-- /content -->
+
+
+
+
+</body></html>

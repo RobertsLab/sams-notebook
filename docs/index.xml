@@ -10,7 +10,1142 @@
 <atom:link href="https://robertslab.github.io/sams-notebook/index.xml" rel="self" type="application/rss+xml"/>
 <description></description>
 <generator>quarto-1.4.552</generator>
-<lastBuildDate>Tue, 04 Jun 2024 07:00:00 GMT</lastBuildDate>
+<lastBuildDate>Tue, 11 Jun 2024 07:00:00 GMT</lastBuildDate>
+<item>
+  <title>Differential Gene Expression - G.macrocephalus RNA-seq 9C vs 16C Using edgeR</title>
+  <dc:creator>Sam White</dc:creator>
+  <link>https://robertslab.github.io/sams-notebook/posts/2024/2024-06-12-Differential-Gene-Expression---G.macrocephalus-RNA-seq-9C-vs-16C-Using-edgeR/</link>
+  <description><![CDATA[ 
+
+
+
+
+
+<section id="rnaseq-edger" class="level1">
+<h1>13.0.0-RNAseq-edgeR</h1>
+<p>Sam White 2024-05-29</p>
+<ul>
+<li>1 CREATE OUTPUT DIRECTORY</li>
+<li>2 edgeR GROUPING VECTOR
+<ul>
+<li>2.1 Check sample info</li>
+<li>2.2 Create edgeR grouping vector</li>
+</ul></li>
+<li>3 DEGs
+<ul>
+<li>3.1 Load count matrix
+<ul>
+<li>3.1.1 Reformat header</li>
+<li>3.1.2 Convert to matrix</li>
+<li>3.1.3 Load matrix into edgeR</li>
+<li>3.1.4 Filter low counts</li>
+<li>3.1.5 Normalization</li>
+<li>3.1.6 Model fitting and estimating dispersions</li>
+<li>3.1.7 Exact test (Gene expression)</li>
+<li>3.1.8 Differential gene expression summary</li>
+<li>3.1.9 Peek at DEGs</li>
+<li>3.1.10 Convert gene ID rownames to column</li>
+<li>3.1.11 Write DEGs to file</li>
+<li>3.1.12 Volcano plot</li>
+</ul></li>
+</ul></li>
+<li>4 CITATIONS</li>
+</ul>
+<p>Differential gene expression of 9<sup>o</sup>C vs 16<sup>o</sup>C liver RNA-seq using <a href="https://bioconductor.org/packages/release/bioc/vignettes/edgeR/inst/doc/edgeRUsersGuide.pdf">edgeR</a> (Chen et al.&nbsp;2024; McCarthy, Chen, and Smyth 2012; Chen, Lun, and Smyth 2016; Robinson, McCarthy, and Smyth 2009)</p>
+<div class="callout callout-style-default callout-note callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Note
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>Copied from <a href="https://github.com/RobertsLab/project-cod-temperature/blob/d5f8a5c4a89613928ef57431e9454464ca0a6826/code/13.0.0-RNAseq-edgeR.md">13.0.0-RNAseq-edgeR.md</a>, commit <code>d5f8a5c</code>.</p>
+</div>
+</div>
+</section>
+<section id="create-output-directory" class="level1">
+<h1>1 CREATE OUTPUT DIRECTORY</h1>
+<div class="sourceCode" id="cb1" style="background: #f1f3f5;"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb1-1"><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># Make output directory, if it doesn't exist</span></span>
+<span id="cb1-2"><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">mkdir</span> <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">--parents</span> ../output/13.0.0-RNAseq-edgeR</span></code></pre></div>
+</section>
+<section id="edger-grouping-vector" class="level1">
+<h1>2 edgeR GROUPING VECTOR</h1>
+<section id="check-sample-info" class="level2">
+<h2 class="anchored" data-anchor-id="check-sample-info">2.1 Check sample info</h2>
+<p>Only looking at 9<sup>o</sup>C and 16<sup>o</sup>C</p>
+<div class="sourceCode" id="cb2" style="background: #f1f3f5;"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb2-1"><span class="bu" style="color: null;
+background-color: null;
+font-style: inherit;">echo</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"Header for ../data/DESeq2_Sample_Information.csv:"</span></span>
+<span id="cb2-2"><span class="bu" style="color: null;
+background-color: null;
+font-style: inherit;">echo</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">""</span></span>
+<span id="cb2-3"></span>
+<span id="cb2-4"><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">head</span> <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">-n</span> 1 ../data/DESeq2_Sample_Information.csv</span>
+<span id="cb2-5"></span>
+<span id="cb2-6"><span class="bu" style="color: null;
+background-color: null;
+font-style: inherit;">echo</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">""</span></span>
+<span id="cb2-7"><span class="bu" style="color: null;
+background-color: null;
+font-style: inherit;">echo</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"---------------------------------------------"</span></span>
+<span id="cb2-8"><span class="bu" style="color: null;
+background-color: null;
+font-style: inherit;">echo</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">""</span></span>
+<span id="cb2-9"><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">awk</span> <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">-F</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">","</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">'NR==1 {header=$2 " " $4; print header; next} $4 == 16 || $4 == 9 {print $2, $4}'</span> ../data/DESeq2_Sample_Information.csv <span class="dt" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">\</span></span>
+<span id="cb2-10"><span class="kw" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">|</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">sort</span> <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">-k1,1</span> <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">-n</span> <span class="dt" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">\</span></span>
+<span id="cb2-11"><span class="kw" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">|</span> <span class="ex" style="color: null;
+background-color: null;
+font-style: inherit;">column</span> <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">-t</span></span></code></pre></div>
+<pre><code>Header for ../data/DESeq2_Sample_Information.csv:
+
+sample_name,sample_number,tank,temp_treatment,tissue_type
+
+---------------------------------------------
+
+sample_number  temp_treatment
+1              16
+2              16
+3              16
+4              16
+5              16
+10             16
+11             16
+12             16
+13             16
+18             16
+19             16
+19             16
+19             16
+20             16
+20             16
+20             16
+21             16
+28             16
+29             16
+30             16
+31             16
+36             16
+78             9
+79             9
+80             9
+83             9
+88             9
+90             9
+91             9
+92             9
+94             9
+97             9
+98             9
+99             9
+100            9
+107            9
+108            9
+109            9
+110            9
+116            9</code></pre>
+</section>
+<section id="create-edger-grouping-vector" class="level2">
+<h2 class="anchored" data-anchor-id="create-edger-grouping-vector">2.2 Create edgeR grouping vector</h2>
+<p>Since all sample IDs <code>&lt;=</code> to <code>36</code> are part of the 16<sup>o</sup>C treatment, we can use this to create vector which matches sample ordering in <code>../output/10.1-hisat-deseq2/gene_count_matrix.csv</code></p>
+<div class="sourceCode" id="cb4" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb4-1"><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># Read the first line of the CSV file</span></span>
+<span id="cb4-2">header <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">readLines</span>(<span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"../output/10.1-hisat-deseq2/gene_count_matrix.csv"</span>, <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">n =</span> <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">1</span>)</span>
+<span id="cb4-3"></span>
+<span id="cb4-4"><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># Split the header to extract the values</span></span>
+<span id="cb4-5">values <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">as.numeric</span>(<span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">unlist</span>(<span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">strsplit</span>(header, <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">","</span>))[<span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">-</span><span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">1</span>]) <span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># Remove the first element which is "gene_id"</span></span>
+<span id="cb4-6"></span>
+<span id="cb4-7"><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># Apply the conditional logic to generate the temperatures vector</span></span>
+<span id="cb4-8">temperatures <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">ifelse</span>(values <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">&lt;=</span> <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">36</span>, <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"16C"</span>, <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"9C"</span>)</span>
+<span id="cb4-9"></span>
+<span id="cb4-10"><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># Print the resulting vector</span></span>
+<span id="cb4-11"><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">print</span>(temperatures)</span></code></pre></div>
+<pre><code> [1] "16C" "16C" "9C"  "9C"  "9C"  "9C"  "16C" "9C"  "9C"  "16C" "16C" "16C"
+[13] "16C" "16C" "16C" "16C" "16C" "16C" "16C" "16C" "16C" "16C" "16C" "16C"
+[25] "9C"  "9C"  "9C"  "9C"  "9C"  "9C"  "9C"  "9C"  "9C"  "9C"  "9C"  "9C" </code></pre>
+</section>
+</section>
+<section id="degs" class="level1">
+<h1>3 DEGs</h1>
+<section id="load-count-matrix" class="level2">
+<h2 class="anchored" data-anchor-id="load-count-matrix">3.1 Load count matrix</h2>
+<section id="reformat-header" class="level3">
+<h3 class="anchored" data-anchor-id="reformat-header">3.1.1 Reformat header</h3>
+<div class="sourceCode" id="cb6" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb6-1"><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># Read the entire CSV file</span></span>
+<span id="cb6-2">csv_file <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">readLines</span>(<span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"../output/10.1-hisat-deseq2/gene_count_matrix.csv"</span>)</span>
+<span id="cb6-3"></span>
+<span id="cb6-4"><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># Extract the header line</span></span>
+<span id="cb6-5">header <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> csv_file[<span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">1</span>]</span>
+<span id="cb6-6"></span>
+<span id="cb6-7"><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># Split the header to extract the values</span></span>
+<span id="cb6-8">header_values <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">unlist</span>(<span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">strsplit</span>(header, <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">","</span>))</span>
+<span id="cb6-9"></span>
+<span id="cb6-10"><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># Prepend 'sample_' to each value (excluding 'gene_id')</span></span>
+<span id="cb6-11">header_values[<span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">-</span><span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">1</span>] <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">paste0</span>(<span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"sample_"</span>, header_values[<span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">-</span><span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">1</span>])</span>
+<span id="cb6-12"></span>
+<span id="cb6-13"><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># Combine the modified header back into a single string</span></span>
+<span id="cb6-14">modified_header <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">paste</span>(header_values, <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">collapse =</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">","</span>)</span>
+<span id="cb6-15"></span>
+<span id="cb6-16"><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># Replace the old header with the new modified header in the CSV content</span></span>
+<span id="cb6-17">csv_file[<span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">1</span>] <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> modified_header</span>
+<span id="cb6-18"></span>
+<span id="cb6-19"><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># Convert the modified CSV content to a data frame</span></span>
+<span id="cb6-20">csv_content <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">read.csv</span>(<span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">textConnection</span>(csv_file), <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">row.names =</span> <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">1</span>)</span>
+<span id="cb6-21"></span>
+<span id="cb6-22"><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">str</span>(csv_content)</span></code></pre></div>
+<pre><code>'data.frame':   30575 obs. of  36 variables:
+ $ sample_1  : int  360 694 0 10 0 0 0 402 3696 335 ...
+ $ sample_10 : int  464 325 10 22 9 40 3 550 2492 171 ...
+ $ sample_100: int  391 276 13 15 0 40 0 293 2615 149 ...
+ $ sample_107: int  346 77 11 19 0 29 0 182 2184 99 ...
+ $ sample_108: int  691 409 49 74 18 8 41 1082 2702 241 ...
+ $ sample_109: int  408 196 42 28 0 0 7 213 2579 149 ...
+ $ sample_11 : int  436 281 14 63 0 38 4 234 3631 286 ...
+ $ sample_110: int  509 284 36 35 0 0 0 149 3158 139 ...
+ $ sample_116: int  366 327 0 30 0 16 3 444 2121 100 ...
+ $ sample_12 : int  373 310 14 31 27 15 0 360 2673 168 ...
+ $ sample_13 : int  432 393 9 25 0 0 0 531 2893 267 ...
+ $ sample_18 : int  385 386 0 42 0 0 0 242 2210 205 ...
+ $ sample_19 : int  330 106 0 17 0 0 27 269 2324 139 ...
+ $ sample_2  : int  288 290 14 14 0 0 0 194 2384 201 ...
+ $ sample_20 : int  307 252 3 21 0 22 0 359 2561 123 ...
+ $ sample_21 : int  346 326 21 60 0 22 0 383 2654 215 ...
+ $ sample_28 : int  293 345 26 61 0 69 0 395 2887 157 ...
+ $ sample_29 : int  347 254 9 14 0 22 4 392 2250 101 ...
+ $ sample_3  : int  452 363 39 29 4 0 0 408 3143 222 ...
+ $ sample_30 : int  452 353 20 37 35 15 10 489 2830 183 ...
+ $ sample_31 : int  984 922 10 68 0 0 0 310 1297 270 ...
+ $ sample_36 : int  230 160 0 37 0 34 23 352 1981 93 ...
+ $ sample_4  : int  469 588 0 0 0 55 0 168 2971 290 ...
+ $ sample_5  : int  400 285 10 30 4 51 0 403 2651 225 ...
+ $ sample_78 : int  472 178 48 10 0 0 0 462 2669 195 ...
+ $ sample_79 : int  311 119 41 13 0 30 0 287 2671 182 ...
+ $ sample_80 : int  368 197 60 56 0 19 4 310 1790 123 ...
+ $ sample_83 : int  312 134 39 32 0 31 4 113 2173 162 ...
+ $ sample_88 : int  551 128 49 45 8 0 0 457 2603 179 ...
+ $ sample_90 : int  631 103 54 55 32 0 0 321 3260 177 ...
+ $ sample_91 : int  605 315 20 27 0 42 4 396 2186 130 ...
+ $ sample_92 : int  366 204 27 38 0 34 0 234 2451 134 ...
+ $ sample_94 : int  339 301 7 60 14 0 0 455 2464 153 ...
+ $ sample_97 : int  517 56 22 25 0 0 22 279 2768 189 ...
+ $ sample_98 : int  577 49 63 18 0 26 101 229 1935 282 ...
+ $ sample_99 : int  235 260 12 50 0 56 0 208 1991 138 ...</code></pre>
+</section>
+<section id="convert-to-matrix" class="level3">
+<h3 class="anchored" data-anchor-id="convert-to-matrix">3.1.2 Convert to matrix</h3>
+<div class="sourceCode" id="cb8" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb8-1"><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># Convert the data frame to a matrix</span></span>
+<span id="cb8-2">gene_count_matrix <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">as.matrix</span>(csv_content)</span>
+<span id="cb8-3"></span>
+<span id="cb8-4"><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># Print the matrix</span></span>
+<span id="cb8-5"><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">print</span>(<span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">head</span>(gene_count_matrix))</span></code></pre></div>
+<pre><code>                                   sample_1 sample_10 sample_100 sample_107
+gene-LOC132462341|LOC132462341          360       464        391        346
+gene-abce1|abce1                        694       325        276         77
+gene-si:dkey-6i22.5|si:dkey-6i22.5        0        10         13         11
+gene-ube2v1|ube2v1                       10        22         15         19
+gene-cldn15la|cldn15la                    0         9          0          0
+gene-muc15|muc15                          0        40         40         29
+                                   sample_108 sample_109 sample_11 sample_110
+gene-LOC132462341|LOC132462341            691        408       436        509
+gene-abce1|abce1                          409        196       281        284
+gene-si:dkey-6i22.5|si:dkey-6i22.5         49         42        14         36
+gene-ube2v1|ube2v1                         74         28        63         35
+gene-cldn15la|cldn15la                     18          0         0          0
+gene-muc15|muc15                            8          0        38          0
+                                   sample_116 sample_12 sample_13 sample_18
+gene-LOC132462341|LOC132462341            366       373       432       385
+gene-abce1|abce1                          327       310       393       386
+gene-si:dkey-6i22.5|si:dkey-6i22.5          0        14         9         0
+gene-ube2v1|ube2v1                         30        31        25        42
+gene-cldn15la|cldn15la                      0        27         0         0
+gene-muc15|muc15                           16        15         0         0
+                                   sample_19 sample_2 sample_20 sample_21
+gene-LOC132462341|LOC132462341           330      288       307       346
+gene-abce1|abce1                         106      290       252       326
+gene-si:dkey-6i22.5|si:dkey-6i22.5         0       14         3        21
+gene-ube2v1|ube2v1                        17       14        21        60
+gene-cldn15la|cldn15la                     0        0         0         0
+gene-muc15|muc15                           0        0        22        22
+                                   sample_28 sample_29 sample_3 sample_30
+gene-LOC132462341|LOC132462341           293       347      452       452
+gene-abce1|abce1                         345       254      363       353
+gene-si:dkey-6i22.5|si:dkey-6i22.5        26         9       39        20
+gene-ube2v1|ube2v1                        61        14       29        37
+gene-cldn15la|cldn15la                     0         0        4        35
+gene-muc15|muc15                          69        22        0        15
+                                   sample_31 sample_36 sample_4 sample_5
+gene-LOC132462341|LOC132462341           984       230      469      400
+gene-abce1|abce1                         922       160      588      285
+gene-si:dkey-6i22.5|si:dkey-6i22.5        10         0        0       10
+gene-ube2v1|ube2v1                        68        37        0       30
+gene-cldn15la|cldn15la                     0         0        0        4
+gene-muc15|muc15                           0        34       55       51
+                                   sample_78 sample_79 sample_80 sample_83
+gene-LOC132462341|LOC132462341           472       311       368       312
+gene-abce1|abce1                         178       119       197       134
+gene-si:dkey-6i22.5|si:dkey-6i22.5        48        41        60        39
+gene-ube2v1|ube2v1                        10        13        56        32
+gene-cldn15la|cldn15la                     0         0         0         0
+gene-muc15|muc15                           0        30        19        31
+                                   sample_88 sample_90 sample_91 sample_92
+gene-LOC132462341|LOC132462341           551       631       605       366
+gene-abce1|abce1                         128       103       315       204
+gene-si:dkey-6i22.5|si:dkey-6i22.5        49        54        20        27
+gene-ube2v1|ube2v1                        45        55        27        38
+gene-cldn15la|cldn15la                     8        32         0         0
+gene-muc15|muc15                           0         0        42        34
+                                   sample_94 sample_97 sample_98 sample_99
+gene-LOC132462341|LOC132462341           339       517       577       235
+gene-abce1|abce1                         301        56        49       260
+gene-si:dkey-6i22.5|si:dkey-6i22.5         7        22        63        12
+gene-ube2v1|ube2v1                        60        25        18        50
+gene-cldn15la|cldn15la                    14         0         0         0
+gene-muc15|muc15                           0         0        26        56</code></pre>
+</section>
+<section id="load-matrix-into-edger" class="level3">
+<h3 class="anchored" data-anchor-id="load-matrix-into-edger">3.1.3 Load matrix into edgeR</h3>
+<div class="sourceCode" id="cb10" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb10-1">dge <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">DGEList</span>(<span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">counts =</span> gene_count_matrix, <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">group =</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">factor</span>(temperatures))</span>
+<span id="cb10-2"></span>
+<span id="cb10-3">dge</span></code></pre></div>
+<pre><code>An object of class "DGEList"
+$counts
+                                   sample_1 sample_10 sample_100 sample_107
+gene-LOC132462341|LOC132462341          360       464        391        346
+gene-abce1|abce1                        694       325        276         77
+gene-si:dkey-6i22.5|si:dkey-6i22.5        0        10         13         11
+gene-ube2v1|ube2v1                       10        22         15         19
+gene-cldn15la|cldn15la                    0         9          0          0
+                                   sample_108 sample_109 sample_11 sample_110
+gene-LOC132462341|LOC132462341            691        408       436        509
+gene-abce1|abce1                          409        196       281        284
+gene-si:dkey-6i22.5|si:dkey-6i22.5         49         42        14         36
+gene-ube2v1|ube2v1                         74         28        63         35
+gene-cldn15la|cldn15la                     18          0         0          0
+                                   sample_116 sample_12 sample_13 sample_18
+gene-LOC132462341|LOC132462341            366       373       432       385
+gene-abce1|abce1                          327       310       393       386
+gene-si:dkey-6i22.5|si:dkey-6i22.5          0        14         9         0
+gene-ube2v1|ube2v1                         30        31        25        42
+gene-cldn15la|cldn15la                      0        27         0         0
+                                   sample_19 sample_2 sample_20 sample_21
+gene-LOC132462341|LOC132462341           330      288       307       346
+gene-abce1|abce1                         106      290       252       326
+gene-si:dkey-6i22.5|si:dkey-6i22.5         0       14         3        21
+gene-ube2v1|ube2v1                        17       14        21        60
+gene-cldn15la|cldn15la                     0        0         0         0
+                                   sample_28 sample_29 sample_3 sample_30
+gene-LOC132462341|LOC132462341           293       347      452       452
+gene-abce1|abce1                         345       254      363       353
+gene-si:dkey-6i22.5|si:dkey-6i22.5        26         9       39        20
+gene-ube2v1|ube2v1                        61        14       29        37
+gene-cldn15la|cldn15la                     0         0        4        35
+                                   sample_31 sample_36 sample_4 sample_5
+gene-LOC132462341|LOC132462341           984       230      469      400
+gene-abce1|abce1                         922       160      588      285
+gene-si:dkey-6i22.5|si:dkey-6i22.5        10         0        0       10
+gene-ube2v1|ube2v1                        68        37        0       30
+gene-cldn15la|cldn15la                     0         0        0        4
+                                   sample_78 sample_79 sample_80 sample_83
+gene-LOC132462341|LOC132462341           472       311       368       312
+gene-abce1|abce1                         178       119       197       134
+gene-si:dkey-6i22.5|si:dkey-6i22.5        48        41        60        39
+gene-ube2v1|ube2v1                        10        13        56        32
+gene-cldn15la|cldn15la                     0         0         0         0
+                                   sample_88 sample_90 sample_91 sample_92
+gene-LOC132462341|LOC132462341           551       631       605       366
+gene-abce1|abce1                         128       103       315       204
+gene-si:dkey-6i22.5|si:dkey-6i22.5        49        54        20        27
+gene-ube2v1|ube2v1                        45        55        27        38
+gene-cldn15la|cldn15la                     8        32         0         0
+                                   sample_94 sample_97 sample_98 sample_99
+gene-LOC132462341|LOC132462341           339       517       577       235
+gene-abce1|abce1                         301        56        49       260
+gene-si:dkey-6i22.5|si:dkey-6i22.5         7        22        63        12
+gene-ube2v1|ube2v1                        60        25        18        50
+gene-cldn15la|cldn15la                    14         0         0         0
+30570 more rows ...
+
+$samples
+           group lib.size norm.factors
+sample_1     16C 49994893            1
+sample_10    16C 43506227            1
+sample_100    9C 44600544            1
+sample_107    9C 41991971            1
+sample_108    9C 47412580            1
+31 more rows ...</code></pre>
+</section>
+<section id="filter-low-counts" class="level3">
+<h3 class="anchored" data-anchor-id="filter-low-counts">3.1.4 Filter low counts</h3>
+<p>Filters for genes with at &gt;= <code>10</code> reads across at least 3 samples.</p>
+<div class="sourceCode" id="cb12" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb12-1">keep <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">filterByExpr</span>(dge)</span>
+<span id="cb12-2"></span>
+<span id="cb12-3">dge <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> dge[keep, , keep.lib.sizes<span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">=</span><span class="cn" style="color: #8f5902;
+background-color: null;
+font-style: inherit;">FALSE</span>]</span>
+<span id="cb12-4"></span>
+<span id="cb12-5">dge</span></code></pre></div>
+<pre><code>An object of class "DGEList"
+$counts
+                                   sample_1 sample_10 sample_100 sample_107
+gene-LOC132462341|LOC132462341          360       464        391        346
+gene-abce1|abce1                        694       325        276         77
+gene-si:dkey-6i22.5|si:dkey-6i22.5        0        10         13         11
+gene-ube2v1|ube2v1                       10        22         15         19
+gene-muc15|muc15                          0        40         40         29
+                                   sample_108 sample_109 sample_11 sample_110
+gene-LOC132462341|LOC132462341            691        408       436        509
+gene-abce1|abce1                          409        196       281        284
+gene-si:dkey-6i22.5|si:dkey-6i22.5         49         42        14         36
+gene-ube2v1|ube2v1                         74         28        63         35
+gene-muc15|muc15                            8          0        38          0
+                                   sample_116 sample_12 sample_13 sample_18
+gene-LOC132462341|LOC132462341            366       373       432       385
+gene-abce1|abce1                          327       310       393       386
+gene-si:dkey-6i22.5|si:dkey-6i22.5          0        14         9         0
+gene-ube2v1|ube2v1                         30        31        25        42
+gene-muc15|muc15                           16        15         0         0
+                                   sample_19 sample_2 sample_20 sample_21
+gene-LOC132462341|LOC132462341           330      288       307       346
+gene-abce1|abce1                         106      290       252       326
+gene-si:dkey-6i22.5|si:dkey-6i22.5         0       14         3        21
+gene-ube2v1|ube2v1                        17       14        21        60
+gene-muc15|muc15                           0        0        22        22
+                                   sample_28 sample_29 sample_3 sample_30
+gene-LOC132462341|LOC132462341           293       347      452       452
+gene-abce1|abce1                         345       254      363       353
+gene-si:dkey-6i22.5|si:dkey-6i22.5        26         9       39        20
+gene-ube2v1|ube2v1                        61        14       29        37
+gene-muc15|muc15                          69        22        0        15
+                                   sample_31 sample_36 sample_4 sample_5
+gene-LOC132462341|LOC132462341           984       230      469      400
+gene-abce1|abce1                         922       160      588      285
+gene-si:dkey-6i22.5|si:dkey-6i22.5        10         0        0       10
+gene-ube2v1|ube2v1                        68        37        0       30
+gene-muc15|muc15                           0        34       55       51
+                                   sample_78 sample_79 sample_80 sample_83
+gene-LOC132462341|LOC132462341           472       311       368       312
+gene-abce1|abce1                         178       119       197       134
+gene-si:dkey-6i22.5|si:dkey-6i22.5        48        41        60        39
+gene-ube2v1|ube2v1                        10        13        56        32
+gene-muc15|muc15                           0        30        19        31
+                                   sample_88 sample_90 sample_91 sample_92
+gene-LOC132462341|LOC132462341           551       631       605       366
+gene-abce1|abce1                         128       103       315       204
+gene-si:dkey-6i22.5|si:dkey-6i22.5        49        54        20        27
+gene-ube2v1|ube2v1                        45        55        27        38
+gene-muc15|muc15                           0         0        42        34
+                                   sample_94 sample_97 sample_98 sample_99
+gene-LOC132462341|LOC132462341           339       517       577       235
+gene-abce1|abce1                         301        56        49       260
+gene-si:dkey-6i22.5|si:dkey-6i22.5         7        22        63        12
+gene-ube2v1|ube2v1                        60        25        18        50
+gene-muc15|muc15                           0         0        26        56
+16688 more rows ...
+
+$samples
+           group lib.size norm.factors
+sample_1     16C 49973355            1
+sample_10    16C 43459343            1
+sample_100    9C 44577844            1
+sample_107    9C 41972179            1
+sample_108    9C 47313070            1
+31 more rows ...</code></pre>
+</section>
+<section id="normalization" class="level3">
+<h3 class="anchored" data-anchor-id="normalization">3.1.5 Normalization</h3>
+<div class="sourceCode" id="cb14" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb14-1">dge <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">calcNormFactors</span>(<span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">object =</span> dge)</span>
+<span id="cb14-2"></span>
+<span id="cb14-3">dge</span></code></pre></div>
+<pre><code>An object of class "DGEList"
+$counts
+                                   sample_1 sample_10 sample_100 sample_107
+gene-LOC132462341|LOC132462341          360       464        391        346
+gene-abce1|abce1                        694       325        276         77
+gene-si:dkey-6i22.5|si:dkey-6i22.5        0        10         13         11
+gene-ube2v1|ube2v1                       10        22         15         19
+gene-muc15|muc15                          0        40         40         29
+                                   sample_108 sample_109 sample_11 sample_110
+gene-LOC132462341|LOC132462341            691        408       436        509
+gene-abce1|abce1                          409        196       281        284
+gene-si:dkey-6i22.5|si:dkey-6i22.5         49         42        14         36
+gene-ube2v1|ube2v1                         74         28        63         35
+gene-muc15|muc15                            8          0        38          0
+                                   sample_116 sample_12 sample_13 sample_18
+gene-LOC132462341|LOC132462341            366       373       432       385
+gene-abce1|abce1                          327       310       393       386
+gene-si:dkey-6i22.5|si:dkey-6i22.5          0        14         9         0
+gene-ube2v1|ube2v1                         30        31        25        42
+gene-muc15|muc15                           16        15         0         0
+                                   sample_19 sample_2 sample_20 sample_21
+gene-LOC132462341|LOC132462341           330      288       307       346
+gene-abce1|abce1                         106      290       252       326
+gene-si:dkey-6i22.5|si:dkey-6i22.5         0       14         3        21
+gene-ube2v1|ube2v1                        17       14        21        60
+gene-muc15|muc15                           0        0        22        22
+                                   sample_28 sample_29 sample_3 sample_30
+gene-LOC132462341|LOC132462341           293       347      452       452
+gene-abce1|abce1                         345       254      363       353
+gene-si:dkey-6i22.5|si:dkey-6i22.5        26         9       39        20
+gene-ube2v1|ube2v1                        61        14       29        37
+gene-muc15|muc15                          69        22        0        15
+                                   sample_31 sample_36 sample_4 sample_5
+gene-LOC132462341|LOC132462341           984       230      469      400
+gene-abce1|abce1                         922       160      588      285
+gene-si:dkey-6i22.5|si:dkey-6i22.5        10         0        0       10
+gene-ube2v1|ube2v1                        68        37        0       30
+gene-muc15|muc15                           0        34       55       51
+                                   sample_78 sample_79 sample_80 sample_83
+gene-LOC132462341|LOC132462341           472       311       368       312
+gene-abce1|abce1                         178       119       197       134
+gene-si:dkey-6i22.5|si:dkey-6i22.5        48        41        60        39
+gene-ube2v1|ube2v1                        10        13        56        32
+gene-muc15|muc15                           0        30        19        31
+                                   sample_88 sample_90 sample_91 sample_92
+gene-LOC132462341|LOC132462341           551       631       605       366
+gene-abce1|abce1                         128       103       315       204
+gene-si:dkey-6i22.5|si:dkey-6i22.5        49        54        20        27
+gene-ube2v1|ube2v1                        45        55        27        38
+gene-muc15|muc15                           0         0        42        34
+                                   sample_94 sample_97 sample_98 sample_99
+gene-LOC132462341|LOC132462341           339       517       577       235
+gene-abce1|abce1                         301        56        49       260
+gene-si:dkey-6i22.5|si:dkey-6i22.5         7        22        63        12
+gene-ube2v1|ube2v1                        60        25        18        50
+gene-muc15|muc15                           0         0        26        56
+16688 more rows ...
+
+$samples
+           group lib.size norm.factors
+sample_1     16C 49973355    1.0828322
+sample_10    16C 43459343    1.3481915
+sample_100    9C 44577844    0.9792758
+sample_107    9C 41972179    0.7062689
+sample_108    9C 47313070    1.5247621
+31 more rows ...</code></pre>
+</section>
+<section id="model-fitting-and-estimating-dispersions" class="level3">
+<h3 class="anchored" data-anchor-id="model-fitting-and-estimating-dispersions">3.1.6 Model fitting and estimating dispersions</h3>
+<div class="sourceCode" id="cb16" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb16-1">dge <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">estimateDisp</span>(dge)</span>
+<span id="cb16-2"></span>
+<span id="cb16-3">dge</span></code></pre></div>
+<pre><code>An object of class "DGEList"
+$counts
+                                   sample_1 sample_10 sample_100 sample_107
+gene-LOC132462341|LOC132462341          360       464        391        346
+gene-abce1|abce1                        694       325        276         77
+gene-si:dkey-6i22.5|si:dkey-6i22.5        0        10         13         11
+gene-ube2v1|ube2v1                       10        22         15         19
+gene-muc15|muc15                          0        40         40         29
+                                   sample_108 sample_109 sample_11 sample_110
+gene-LOC132462341|LOC132462341            691        408       436        509
+gene-abce1|abce1                          409        196       281        284
+gene-si:dkey-6i22.5|si:dkey-6i22.5         49         42        14         36
+gene-ube2v1|ube2v1                         74         28        63         35
+gene-muc15|muc15                            8          0        38          0
+                                   sample_116 sample_12 sample_13 sample_18
+gene-LOC132462341|LOC132462341            366       373       432       385
+gene-abce1|abce1                          327       310       393       386
+gene-si:dkey-6i22.5|si:dkey-6i22.5          0        14         9         0
+gene-ube2v1|ube2v1                         30        31        25        42
+gene-muc15|muc15                           16        15         0         0
+                                   sample_19 sample_2 sample_20 sample_21
+gene-LOC132462341|LOC132462341           330      288       307       346
+gene-abce1|abce1                         106      290       252       326
+gene-si:dkey-6i22.5|si:dkey-6i22.5         0       14         3        21
+gene-ube2v1|ube2v1                        17       14        21        60
+gene-muc15|muc15                           0        0        22        22
+                                   sample_28 sample_29 sample_3 sample_30
+gene-LOC132462341|LOC132462341           293       347      452       452
+gene-abce1|abce1                         345       254      363       353
+gene-si:dkey-6i22.5|si:dkey-6i22.5        26         9       39        20
+gene-ube2v1|ube2v1                        61        14       29        37
+gene-muc15|muc15                          69        22        0        15
+                                   sample_31 sample_36 sample_4 sample_5
+gene-LOC132462341|LOC132462341           984       230      469      400
+gene-abce1|abce1                         922       160      588      285
+gene-si:dkey-6i22.5|si:dkey-6i22.5        10         0        0       10
+gene-ube2v1|ube2v1                        68        37        0       30
+gene-muc15|muc15                           0        34       55       51
+                                   sample_78 sample_79 sample_80 sample_83
+gene-LOC132462341|LOC132462341           472       311       368       312
+gene-abce1|abce1                         178       119       197       134
+gene-si:dkey-6i22.5|si:dkey-6i22.5        48        41        60        39
+gene-ube2v1|ube2v1                        10        13        56        32
+gene-muc15|muc15                           0        30        19        31
+                                   sample_88 sample_90 sample_91 sample_92
+gene-LOC132462341|LOC132462341           551       631       605       366
+gene-abce1|abce1                         128       103       315       204
+gene-si:dkey-6i22.5|si:dkey-6i22.5        49        54        20        27
+gene-ube2v1|ube2v1                        45        55        27        38
+gene-muc15|muc15                           0         0        42        34
+                                   sample_94 sample_97 sample_98 sample_99
+gene-LOC132462341|LOC132462341           339       517       577       235
+gene-abce1|abce1                         301        56        49       260
+gene-si:dkey-6i22.5|si:dkey-6i22.5         7        22        63        12
+gene-ube2v1|ube2v1                        60        25        18        50
+gene-muc15|muc15                           0         0        26        56
+16688 more rows ...
+
+$samples
+           group lib.size norm.factors
+sample_1     16C 49973355    1.0828322
+sample_10    16C 43459343    1.3481915
+sample_100    9C 44577844    0.9792758
+sample_107    9C 41972179    0.7062689
+sample_108    9C 47313070    1.5247621
+31 more rows ...
+
+$common.dispersion
+[1] 0.3258355
+
+$trended.dispersion
+[1] 0.1792662 0.2158552 0.8880326 0.7699354 0.9217978
+16688 more elements ...
+
+$tagwise.dispersion
+[1] 0.1017614 0.1666824 0.9805648 0.3988847 2.8340881
+16688 more elements ...
+
+$AveLogCPM
+[1]  3.3189831  2.6344211 -0.7839951 -0.2807668 -0.9718511
+16688 more elements ...
+
+$trend.method
+[1] "locfit"
+
+$prior.df
+[1] 4.732584
+
+$prior.n
+[1] 0.1391936
+
+$span
+[1] 0.2910468</code></pre>
+</section>
+<section id="exact-test-gene-expression" class="level3">
+<h3 class="anchored" data-anchor-id="exact-test-gene-expression">3.1.7 Exact test (Gene expression)</h3>
+<div class="sourceCode" id="cb18" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb18-1">exact_test_genes <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">exactTest</span>(dge)</span>
+<span id="cb18-2"></span>
+<span id="cb18-3">exact_test_genes</span></code></pre></div>
+<pre><code>An object of class "DGEExact"
+$table
+                                        logFC     logCPM       PValue
+gene-LOC132462341|LOC132462341      0.3690768  3.3189831 0.0174459833
+gene-abce1|abce1                   -0.7406649  2.6344211 0.0002052135
+gene-si:dkey-6i22.5|si:dkey-6i22.5  1.8787265 -0.7839951 0.0001945058
+gene-ube2v1|ube2v1                  0.2838600 -0.2807668 0.3721151448
+gene-muc15|muc15                    0.0123765 -0.9718511 0.9923746564
+16688 more rows ...
+
+$comparison
+[1] "16C" "9C" 
+
+$genes
+NULL</code></pre>
+</section>
+<section id="differential-gene-expression-summary" class="level3">
+<h3 class="anchored" data-anchor-id="differential-gene-expression-summary">3.1.8 Differential gene expression summary</h3>
+<div class="sourceCode" id="cb20" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb20-1"><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">summary</span>(<span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">decideTests</span>(<span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">object =</span> exact_test_genes, <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">p.value =</span> <span class="fl" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">0.05</span>))</span></code></pre></div>
+<pre><code>       9C-16C
+Down     2071
+NotSig  11980
+Up       2642</code></pre>
+</section>
+<section id="peek-at-degs" class="level3">
+<h3 class="anchored" data-anchor-id="peek-at-degs">3.1.9 Peek at DEGs</h3>
+<p>Selects all genes (<code>n = "Inf"</code>) with adjusted p-value <code>&lt; 0.05</code>, sorts by false discovery rate (<code>adjust.method = "fdr"</code>).</p>
+<p>Converts object to a data frame (the <code>$table</code> part).</p>
+<div class="sourceCode" id="cb22" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb22-1">top_degs_table <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span>  <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">topTags</span>(<span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">object =</span> exact_test_genes, <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">n =</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"Inf"</span>, <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">adjust.method =</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"fdr"</span>, <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">p.value =</span> <span class="fl" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">0.05</span>)<span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">$</span>table</span>
+<span id="cb22-2"></span>
+<span id="cb22-3"><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">str</span>(top_degs_table)</span></code></pre></div>
+<pre><code>'data.frame':   16693 obs. of  4 variables:
+ $ logFC : num  1.9 -2.59 -1.45 -3.13 1.87 ...
+ $ logCPM: num  6.59 4.06 4.93 3.18 5.57 ...
+ $ PValue: num  1.26e-64 5.31e-37 2.15e-30 1.48e-26 4.65e-25 ...
+ $ FDR   : num  2.10e-60 4.43e-33 1.19e-26 6.18e-23 1.43e-21 ...</code></pre>
+</section>
+<section id="convert-gene-id-rownames-to-column" class="level3">
+<h3 class="anchored" data-anchor-id="convert-gene-id-rownames-to-column">3.1.10 Convert gene ID rownames to column</h3>
+<div class="sourceCode" id="cb24" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb24-1"><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># Step 1: Extract row names and create a new column 'gene_ids'</span></span>
+<span id="cb24-2">top_degs_table<span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">$</span>gene_ids <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">rownames</span>(top_degs_table)</span>
+<span id="cb24-3"></span>
+<span id="cb24-4"><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># Step 2: Reorder columns to make 'gene_ids' the first column</span></span>
+<span id="cb24-5">top_degs_table <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> top_degs_table[, <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">c</span>(<span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"gene_ids"</span>, <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">names</span>(top_degs_table)[<span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">-</span><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">length</span>(<span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">names</span>(top_degs_table))])]</span>
+<span id="cb24-6"></span>
+<span id="cb24-7"><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># Step 3: Check the result</span></span>
+<span id="cb24-8"><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">head</span>(top_degs_table)</span></code></pre></div>
+<pre><code>                                                     gene_ids     logFC
+gene-LOC132469840|LOC132469840 gene-LOC132469840|LOC132469840  1.897837
+gene-serpinh1b|serpinh1b             gene-serpinh1b|serpinh1b -2.589704
+gene-znf706|znf706                         gene-znf706|znf706 -1.450400
+gene-hacd4|hacd4                             gene-hacd4|hacd4 -3.133038
+gene-LOC132448390|LOC132448390 gene-LOC132448390|LOC132448390  1.874161
+gene-zgc:103586|zgc:103586         gene-zgc:103586|zgc:103586  1.584728
+                                 logCPM       PValue          FDR
+gene-LOC132469840|LOC132469840 6.594858 1.259480e-64 2.102450e-60
+gene-serpinh1b|serpinh1b       4.063945 5.307949e-37 4.430280e-33
+gene-znf706|znf706             4.929053 2.146565e-30 1.194420e-26
+gene-hacd4|hacd4               3.179135 1.480134e-26 6.176968e-23
+gene-LOC132448390|LOC132448390 5.570204 4.647165e-25 1.434822e-21
+gene-zgc:103586|zgc:103586     5.356047 5.157212e-25 1.434822e-21</code></pre>
+</section>
+<section id="write-degs-to-file" class="level3">
+<h3 class="anchored" data-anchor-id="write-degs-to-file">3.1.11 Write DEGs to file</h3>
+<div class="sourceCode" id="cb26" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb26-1"><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># Write dataframe to CSV</span></span>
+<span id="cb26-2"><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">write.csv</span>(</span>
+<span id="cb26-3">  top_degs_table, </span>
+<span id="cb26-4">  <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">file =</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"../output/13.0.0-RNAseq-edgeR/DEGs_9C-vs-16C-p-0.05.csv"</span>, </span>
+<span id="cb26-5">  <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">quote =</span> <span class="cn" style="color: #8f5902;
+background-color: null;
+font-style: inherit;">FALSE</span>, </span>
+<span id="cb26-6">  <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">row.names =</span> <span class="cn" style="color: #8f5902;
+background-color: null;
+font-style: inherit;">FALSE</span>)</span></code></pre></div>
+</section>
+<section id="volcano-plot" class="level3">
+<h3 class="anchored" data-anchor-id="volcano-plot">3.1.12 Volcano plot</h3>
+<div class="sourceCode" id="cb27" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb27-1">ghibli_colors <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">ghibli_palette</span>(<span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"PonyoMedium"</span>, <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">type =</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"discrete"</span>)</span>
+<span id="cb27-2"></span>
+<span id="cb27-3">ghibli_subset <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">c</span>(ghibli_colors[<span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">3</span>], ghibli_colors[<span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">6</span>], ghibli_colors[<span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">4</span>])</span>
+<span id="cb27-4"></span>
+<span id="cb27-5"><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># Create new column and fill with `NA`</span></span>
+<span id="cb27-6">top_degs_table<span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">$</span>topDE <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"NA"</span></span>
+<span id="cb27-7"></span>
+<span id="cb27-8"><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># Set value of "Up" for genes with FC &gt; 1 and FDR &lt; 0.05</span></span>
+<span id="cb27-9">top_degs_table<span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">$</span>topDE[top_degs_table<span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">$</span>logFC <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">&gt;</span> <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">1</span> <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">&amp;</span> top_degs_table<span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">$</span>FDR <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">&lt;</span> <span class="fl" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">0.05</span>] <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"Up"</span></span>
+<span id="cb27-10"></span>
+<span id="cb27-11"><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># Set value of "Down" for genes with FC &lt; -1 and FDR &lt; 0.05</span></span>
+<span id="cb27-12">top_degs_table<span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">$</span>topDE[top_degs_table<span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">$</span>logFC <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">&lt;</span> <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">-</span><span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">1</span> <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">&amp;</span> top_degs_table<span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">$</span>FDR <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">&lt;</span> <span class="fl" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">0.05</span>] <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"Down"</span></span>
+<span id="cb27-13"></span>
+<span id="cb27-14"><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">ggplot</span>(<span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">data=</span>top_degs_table, <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">aes</span>(<span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">x=</span>logFC, <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">y=</span><span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">-</span><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">log10</span>(FDR), <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">color =</span> topDE)) <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">+</span> </span>
+<span id="cb27-15">  <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">geom_point</span>() <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">+</span></span>
+<span id="cb27-16">  <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">theme_minimal</span>() <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">+</span></span>
+<span id="cb27-17">  <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">scale_colour_discrete</span>(<span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">type =</span> ghibli_subset, <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">breaks =</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">c</span>(<span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"Up"</span>, <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"Down"</span>))</span></code></pre></div>
+<p><img src="https://robertslab.github.io/sams-notebook/posts/2024/2024-06-12-Differential-Gene-Expression---G.macrocephalus-RNA-seq-9C-vs-16C-Using-edgeR/13.0.0-RNAseq-edgeR_files/figure-gfm/plot-volcano-degs-1.png" class="img-fluid"><!-- --></p>
+</section>
+</section>
+</section>
+<section id="citations" class="level1">
+<h1>4 CITATIONS</h1>
+<div id="refs" class="references csl-bib-body hanging-indent">
+<div id="ref-chen2024" class="csl-entry">
+Chen, Yunshun, Lizhong Chen, Aaron T. L. Lun, Pedro L. Baldoni, and Gordon K. Smyth. 2024. “edgeR 4.0: Powerful Differential Analysis of Sequencing Data with Expanded Functionality and Improved Support for Small Counts and Larger Datasets.” <a href="http://dx.doi.org/10.1101/2024.01.21.576131" class="uri">http://dx.doi.org/10.1101/2024.01.21.576131</a>.
+</div>
+<div id="ref-chen2016" class="csl-entry">
+Chen, Yunshun, Aaron T. L. Lun, and Gordon K. Smyth. 2016. “From Reads to Genes to Pathways: Differential Expression Analysis of RNA-Seq Experiments Using Rsubread and the edgeR Quasi-Likelihood Pipeline.” <em>F1000Research</em> 5 (August): 1438. <a href="https://doi.org/10.12688/f1000research.8987.2" class="uri">https://doi.org/10.12688/f1000research.8987.2</a>.
+</div>
+<div id="ref-mccarthy2012" class="csl-entry">
+McCarthy, Davis J., Yunshun Chen, and Gordon K. Smyth. 2012. “Differential Expression Analysis of Multifactor RNA-Seq Experiments with Respect to Biological Variation.” <em>Nucleic Acids Research</em> 40 (10): 4288–97. <a href="https://doi.org/10.1093/nar/gks042" class="uri">https://doi.org/10.1093/nar/gks042</a>.
+</div>
+<div id="ref-robinson2009" class="csl-entry">
+Robinson, Mark D., Davis J. McCarthy, and Gordon K. Smyth. 2009. “edgeR: A Bioconductor Package for Differential Expression Analysis of Digital Gene Expression Data.” <em>Bioinformatics</em> 26 (1): 139–40. <a href="https://doi.org/10.1093/bioinformatics/btp616" class="uri">https://doi.org/10.1093/bioinformatics/btp616</a>.
+</div>
+</div>
+
+
+</section>
+
+ ]]></description>
+  <category>edgeR</category>
+  <category>Pacific cod</category>
+  <category>RNA-seq</category>
+  <category>differential gene expression</category>
+  <category>2024</category>
+  <category>Gadus macrocephalus</category>
+  <guid>https://robertslab.github.io/sams-notebook/posts/2024/2024-06-12-Differential-Gene-Expression---G.macrocephalus-RNA-seq-9C-vs-16C-Using-edgeR/</guid>
+  <pubDate>Tue, 11 Jun 2024 07:00:00 GMT</pubDate>
+</item>
 <item>
   <title>Samples Received - Lajonkairia lajonkairii Egg Samples from Mackenzie Gavery</title>
   <dc:creator>Sam White</dc:creator>
@@ -138,7 +1273,7 @@ Warning
 <div id="fig-gel" class="lightbox quarto-figure quarto-figure-center quarto-float anchored" alt="Gel with untouched samples on left.">
 <figure class="quarto-float quarto-float-fig figure">
 <div aria-describedby="fig-gel-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
-<a href="./20240531-gmac-gel-gDNA-labeled.jpg" class="lightbox" data-glightbox="description: .lightbox-desc-1" data-gallery="quarto-lightbox-gallery-1"><img src="https://robertslab.github.io/sams-notebook/posts/2024/2024-05-31-Agarose-Gel---G.macrocephalus-gDNA-from-20240521/20240531-gmac-gel-gDNA-labeled.jpg" class="img-fluid figure-img" alt="Gel with untouched samples on left."></a>
+<a href="./20240531-gmac-gel-gDNA-labeled.jpg" class="lightbox" data-gallery="quarto-lightbox-gallery-1" data-glightbox="description: .lightbox-desc-1"><img src="https://robertslab.github.io/sams-notebook/posts/2024/2024-05-31-Agarose-Gel---G.macrocephalus-gDNA-from-20240521/20240531-gmac-gel-gDNA-labeled.jpg" class="img-fluid figure-img" alt="Gel with untouched samples on left."></a>
 </div>
 <figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-gel-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
 Figure&nbsp;1: Gel - Samples 6, 42, 95, and 122 were previously “untouched.” L = Ladder
@@ -148,7 +1283,7 @@ Figure&nbsp;1: Gel - Samples 6, 42, 95, and 122 were previously “untouched.”
 <div id="fig-ladder" class="lightbox quarto-figure quarto-figure-center quarto-float anchored" alt="O'GeneRuler">
 <figure class="quarto-float quarto-float-fig figure">
 <div aria-describedby="fig-ladder-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
-<a href="./ogene-ruler.jpeg" class="lightbox" data-glightbox="description: .lightbox-desc-2" data-gallery="quarto-lightbox-gallery-2"><img src="https://robertslab.github.io/sams-notebook/posts/2024/2024-05-31-Agarose-Gel---G.macrocephalus-gDNA-from-20240521/ogene-ruler.jpeg" class="img-fluid figure-img" alt="O'GeneRuler"></a>
+<a href="./ogene-ruler.jpeg" class="lightbox" data-gallery="quarto-lightbox-gallery-2" data-glightbox="description: .lightbox-desc-2"><img src="https://robertslab.github.io/sams-notebook/posts/2024/2024-05-31-Agarose-Gel---G.macrocephalus-gDNA-from-20240521/ogene-ruler.jpeg" class="img-fluid figure-img" alt="O'GeneRuler"></a>
 </div>
 <figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-ladder-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
 Figure&nbsp;2: Ladder
@@ -6661,97 +7796,6 @@ Li, Yong, Yi Jin Liew, Guoxin Cui, Maha J. Cziesielski, Noura Zahran, Craig T. M
   <category>Crassostrea virginica</category>
   <guid>https://robertslab.github.io/sams-notebook/posts/2024/2024-01-24-Figure-Updates---CEABIGR-Spurious-Transcription-Calcs-and-Plotting-Using-Exon-Sum-Threshold/</guid>
   <pubDate>Wed, 24 Jan 2024 08:00:00 GMT</pubDate>
-</item>
-<item>
-  <title>Data Exploration - CEABIGR Spurious Transcription Calculations and Plotting</title>
-  <dc:creator>Sam White</dc:creator>
-  <link>https://robertslab.github.io/sams-notebook/posts/2024/2024-01-03-Data-Exploration---CEABIGR-Spurious-Transcription-Calculations-and-Plotting/</link>
-  <description><![CDATA[ 
-
-
-
-
-
-<section id="intro" class="level1">
-<h1>Intro</h1>
-<p>As part of the <a href="https://github.com/sr320/ceabigr">CEABIGR project</a> (GitHub repo) Steven performed some inital data wrangling to test out the basic calculations to determine the natural log of the fold change in exon expression, relative to Exon 1, for each gene in a single sample. The decision to perform the calculation in this manner was based on <span class="citation" data-cites="li2018">(Li et al. 2018)</span>. I took the next steps to perform this across all samples, as well as generate some comparison plots. After this, will explore how spurious transcription relates to methylation levels across genes.</p>
-<p>See <a href="https://github.com/sr320/ceabigr/blob/585fb039e7d7b12295781f0a0141e84eee901631/code/65-exon-coverage.qmd"><code>65-exon-coverage.qmd</code></a> for code.</p>
-<div class="callout callout-style-default callout-note callout-titled">
-<div class="callout-header d-flex align-content-center">
-<div class="callout-icon-container">
-<i class="callout-icon"></i>
-</div>
-<div class="callout-title-container flex-fill">
-Note
-</div>
-</div>
-<div class="callout-body-container callout-body">
-<p>Code and plots link to commit <code>585fb03</code>.</p>
-</div>
-</div>
-</section>
-<section id="plots" class="level1">
-<h1>Plots</h1>
-<p>All plots are line plots of the mean natural log fold-change in exon expression (Exons 2-6), relative to Exon 1. Black bars represent standard error.</p>
-<div class="callout callout-style-default callout-note callout-titled">
-<div class="callout-header d-flex align-content-center">
-<div class="callout-icon-container">
-<i class="callout-icon"></i>
-</div>
-<div class="callout-title-container flex-fill">
-Note
-</div>
-</div>
-<div class="callout-body-container callout-body">
-<p>Plots are simply arranged side-by-side. Scales of axes are <em>not</em> intended to match.</p>
-</div>
-</div>
-<div>
-
-</div>
-<div class="quarto-layout-panel" data-layout-nrow="3">
-<div class="quarto-layout-row">
-<div class="quarto-layout-cell" style="flex-basis: 50.0%;justify-content: center;">
-<p><img src="https://raw.githubusercontent.com/sr320/ceabigr/585fb039e7d7b12295781f0a0141e84eee901631/output/65-exon-coverage/figures/control-females.v.control-males-line_plot.png" class="img-fluid" alt="Line plots of mean natural log fold-change of exon expression relative to Exon 1. Pink line is control females. Blue line is control males. Black bars represent standard error."></p>
-</div>
-<div class="quarto-layout-cell" style="flex-basis: 50.0%;justify-content: center;">
-<p><img src="https://raw.githubusercontent.com/sr320/ceabigr/585fb039e7d7b12295781f0a0141e84eee901631/output/65-exon-coverage/figures/control-females.v.exposed-females-line_plot.png" class="img-fluid" alt="Line plots of mean natural log fold-change of exon expression relative to Exon 1. Pink line is control females. Blue line is exposed females. Black bars represent standard error."></p>
-</div>
-</div>
-<div class="quarto-layout-row">
-<div class="quarto-layout-cell" style="flex-basis: 50.0%;justify-content: center;">
-<p><img src="https://raw.githubusercontent.com/sr320/ceabigr/585fb039e7d7b12295781f0a0141e84eee901631/output/65-exon-coverage/figures/control-males.v.exposed-males-line_plot.png" class="img-fluid" alt="Line plots of mean natural log fold-change of exon expression relative to Exon 1. Pink line is control males. Blue line is exposed males. Black bars represent standard error."></p>
-</div>
-<div class="quarto-layout-cell" style="flex-basis: 50.0%;justify-content: center;">
-<p><img src="https://raw.githubusercontent.com/sr320/ceabigr/585fb039e7d7b12295781f0a0141e84eee901631/output/65-exon-coverage/figures/controls.v.exposed-line_plot.png" class="img-fluid" alt="Line plots of mean natural log fold-change of exon expression relative to Exon 1. Pink line is controls. Blue line is exposed. Black bars represent standard error."></p>
-</div>
-</div>
-<div class="quarto-layout-row">
-<div class="quarto-layout-cell" style="flex-basis: 50.0%;justify-content: center;">
-<p><img src="https://raw.githubusercontent.com/sr320/ceabigr/585fb039e7d7b12295781f0a0141e84eee901631/output/65-exon-coverage/figures/exposed-females.v.exposed-males-line_plot.png" class="img-fluid" alt="Line plots of mean natural log fold-change of exon expression relative to Exon 1. Pink line is exposed females. Blue line is exposed males. Black bars represent standard error."></p>
-</div>
-<div class="quarto-layout-cell" style="flex-basis: 50.0%;justify-content: center;">
-<p><img src="https://raw.githubusercontent.com/sr320/ceabigr/585fb039e7d7b12295781f0a0141e84eee901631/output/65-exon-coverage/figures/females.v.males-line_plot.png" class="img-fluid" alt="Line plots of mean natural log fold-change of exon expression relative to Exon 1. Pink line is females. Blue line is males. Black bars represent standard error."></p>
-</div>
-</div>
-</div>
-
-
-
-</section>
-
-<div id="quarto-appendix" class="default"><section class="quarto-appendix-contents" id="quarto-bibliography"><h2 class="anchored quarto-appendix-heading">References</h2><div id="refs" class="references csl-bib-body hanging-indent" data-entry-spacing="0">
-<div id="ref-li2018" class="csl-entry">
-Li, Yong, Yi Jin Liew, Guoxin Cui, Maha J. Cziesielski, Noura Zahran, Craig T. Michell, Christian R. Voolstra, and Manuel Aranda. 2018. <span>“DNA Methylation Regulates Transcriptional Homeostasis of Algal Endosymbiosis in the Coral Model Aiptasia.”</span> <em>Science Advances</em> 4 (8). <a href="https://doi.org/10.1126/sciadv.aat2142">https://doi.org/10.1126/sciadv.aat2142</a>.
-</div>
-</div></section></div> ]]></description>
-  <category>2024</category>
-  <category>CEABIGR</category>
-  <category>plot</category>
-  <category>Eastern oyster</category>
-  <category>Crassostrea virginica</category>
-  <guid>https://robertslab.github.io/sams-notebook/posts/2024/2024-01-03-Data-Exploration---CEABIGR-Spurious-Transcription-Calculations-and-Plotting/</guid>
-  <pubDate>Wed, 03 Jan 2024 08:00:00 GMT</pubDate>
 </item>
 </channel>
 </rss>
