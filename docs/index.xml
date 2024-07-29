@@ -10,7 +10,2060 @@
 <atom:link href="https://robertslab.github.io/sams-notebook/index.xml" rel="self" type="application/rss+xml"/>
 <description></description>
 <generator>quarto-1.4.552</generator>
-<lastBuildDate>Mon, 22 Jul 2024 07:00:00 GMT</lastBuildDate>
+<lastBuildDate>Mon, 29 Jul 2024 07:00:00 GMT</lastBuildDate>
+<item>
+  <title>Primer Design - Lake Trout C1q Gene Bisulfite Sequencing Primers Using Primer3</title>
+  <dc:creator>Sam White</dc:creator>
+  <link>https://robertslab.github.io/sams-notebook/posts/2024/2024-07-29-Primer-Design---Lake-Trout-C1q-Gene-Bisulfite-Sequencing-Primers-Using-Primer3/</link>
+  <description><![CDATA[ 
+
+
+
+
+
+<p>This notebook describes using <a href="https://github.com/primer3-org/primer3">Primer3</a> (Untergasser et al.&nbsp;2012; Koressaar and Remm 2007) to reproducibly design primers for sequencing of the <a href="https://en.wikipedia.org/wiki/Lake_trout">lake trout (<em>S.namaycush</em>)</a> (Wikipedia) C1q gene (<a href="https://github.com/RobertsLab/resources/issues/1941#issuecomment-2246548960"><code>LOC120027825</code></a> (GitHub Issue)), after bisulfite treatment.</p>
+<p>This process also utilizes <a href="https://github.com/mdshw5/pyfaidx">pyfaidx</a> (Shirley et al.&nbsp;2015) and <a href="https://www.htslib.org/">samtools</a> (Li et al.&nbsp;2009).</p>
+<ul>
+<li>1 CREATE BASH VARIABLES FILE</li>
+<li>2 DOWNLOAD NCBI GENOME FILES
+<ul>
+<li>2.1 Download the actual files</li>
+<li>2.2 Check MD5 Checkums</li>
+<li>2.3 Decompress NCBI files</li>
+</ul></li>
+<li>3 EXTRACT C1Q GENE SEQUENCE
+<ul>
+<li>3.1 Peek at GFF</li>
+<li>3.2 Create FastA index</li>
+<li>3.3 Format region and extract C1q sequence as FastA.</li>
+</ul></li>
+<li>4 EXTRACT C1Q WITH 5’/3’ BUFFER REGIONS</li>
+<li>5 PRIMER DESIGN USING PRIMER3
+<ul>
+<li>5.1 Bisulfite conversions</li>
+<li>5.2 Design primers
+<ul>
+<li>5.2.1 Bisulfite lowercase <code>t</code></li>
+</ul></li>
+</ul></li>
+<li>6 CITATIONS</li>
+</ul>
+<p>This notebook describes using <a href="https://github.com/primer3-org/primer3">Primer3</a> (Untergasser et al.&nbsp;2012; Koressaar and Remm 2007) to reproducibly design primers for sequencing of the <a href="https://en.wikipedia.org/wiki/Lake_trout">lake trout (<em>S.namaycush</em>)</a> (Wikipedia) C1q gene (<a href="https://github.com/RobertsLab/resources/issues/1941#issuecomment-2246548960"><code>LOC120027825</code></a> (GitHub Issue)), after bisulfite treatment.</p>
+<p>This process also utilizes <a href="https://github.com/mdshw5/pyfaidx">pyfaidx</a> (Shirley et al.&nbsp;2015) and <a href="https://www.htslib.org/">samtools</a> (Li et al.&nbsp;2009).</p>
+<section id="create-bash-variables-file" class="level1">
+<h1>1 CREATE BASH VARIABLES FILE</h1>
+<p>This allows usage of Bash variables across R Markdown chunks.</p>
+<div class="sourceCode" id="cb1" style="background: #f1f3f5;"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb1-1"><span class="kw" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">{</span></span>
+<span id="cb1-2"><span class="bu" style="color: null;
+background-color: null;
+font-style: inherit;">echo</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"#### Assign Variables ####"</span></span>
+<span id="cb1-3"><span class="bu" style="color: null;
+background-color: null;
+font-style: inherit;">echo</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">""</span></span>
+<span id="cb1-4"></span>
+<span id="cb1-5"><span class="bu" style="color: null;
+background-color: null;
+font-style: inherit;">echo</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"# DATA DIRECTORIES"</span></span>
+<span id="cb1-6"><span class="bu" style="color: null;
+background-color: null;
+font-style: inherit;">echo</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">'export data_dir="../data/S_namaycush/genomes"'</span></span>
+<span id="cb1-7"><span class="bu" style="color: null;
+background-color: null;
+font-style: inherit;">echo</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">'export output_top=../output'</span></span>
+<span id="cb1-8"><span class="bu" style="color: null;
+background-color: null;
+font-style: inherit;">echo</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">""</span></span>
+<span id="cb1-9"></span>
+<span id="cb1-10"><span class="bu" style="color: null;
+background-color: null;
+font-style: inherit;">echo</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"# SEQUENCE"</span></span>
+<span id="cb1-11"><span class="bu" style="color: null;
+background-color: null;
+font-style: inherit;">echo</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">'export sequence_ID="LOC120027825"'</span></span>
+<span id="cb1-12"><span class="bu" style="color: null;
+background-color: null;
+font-style: inherit;">echo</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">""</span></span>
+<span id="cb1-13"></span>
+<span id="cb1-14"><span class="bu" style="color: null;
+background-color: null;
+font-style: inherit;">echo</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"# SEQUENCE REGIONS"</span></span>
+<span id="cb1-15"><span class="bu" style="color: null;
+background-color: null;
+font-style: inherit;">echo</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">'export left_buffer="3500"'</span></span>
+<span id="cb1-16"><span class="bu" style="color: null;
+background-color: null;
+font-style: inherit;">echo</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">'export right_buffer="3500"'</span></span>
+<span id="cb1-17"><span class="bu" style="color: null;
+background-color: null;
+font-style: inherit;">echo</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">""</span></span>
+<span id="cb1-18"></span>
+<span id="cb1-19"><span class="bu" style="color: null;
+background-color: null;
+font-style: inherit;">echo</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"# INPUT FILES"</span></span>
+<span id="cb1-20"><span class="bu" style="color: null;
+background-color: null;
+font-style: inherit;">echo</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">'export genome_fasta="GCF_016432855.1_SaNama_1.0_genomic.fna"'</span></span>
+<span id="cb1-21"><span class="bu" style="color: null;
+background-color: null;
+font-style: inherit;">echo</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">'export genome_gff="GCF_016432855.1_SaNama_1.0_genomic.gff"'</span></span>
+<span id="cb1-22"><span class="bu" style="color: null;
+background-color: null;
+font-style: inherit;">echo</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">'export ncbi_gff_gz="GCF_016432855.1_SaNama_1.0_genomic.gff.gz"'</span></span>
+<span id="cb1-23"><span class="bu" style="color: null;
+background-color: null;
+font-style: inherit;">echo</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">'export ncbi_fasta_gz="GCF_016432855.1_SaNama_1.0_genomic.fna.gz"'</span></span>
+<span id="cb1-24"><span class="bu" style="color: null;
+background-color: null;
+font-style: inherit;">echo</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">'export ncbi_md5sums="md5checksums.txt"'</span></span>
+<span id="cb1-25"><span class="bu" style="color: null;
+background-color: null;
+font-style: inherit;">echo</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">'export ncbi_url="https://ftp.ncbi.nlm.nih.gov/genomes/all/GCF/016/432/855/GCF_016432855.1_SaNama_1.0/"'</span></span>
+<span id="cb1-26"><span class="bu" style="color: null;
+background-color: null;
+font-style: inherit;">echo</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">""</span></span>
+<span id="cb1-27"></span>
+<span id="cb1-28"><span class="bu" style="color: null;
+background-color: null;
+font-style: inherit;">echo</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"# OUTPUT FILES"</span></span>
+<span id="cb1-29"><span class="bu" style="color: null;
+background-color: null;
+font-style: inherit;">echo</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">'export c1q_fasta="${sequence_ID}.fasta"'</span></span>
+<span id="cb1-30"><span class="bu" style="color: null;
+background-color: null;
+font-style: inherit;">echo</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">'export c1q_buffer_fasta="${sequence_ID}-${left_buffer}bp.left-${right_buffer}bp.right.fasta"'</span></span>
+<span id="cb1-31"><span class="bu" style="color: null;
+background-color: null;
+font-style: inherit;">echo</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">'export c1q_faidx_region_file="${sequence_ID}"-region.txt'</span></span>
+<span id="cb1-32"><span class="bu" style="color: null;
+background-color: null;
+font-style: inherit;">echo</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">'export c1q_buffer_faidx_region_file="${sequence_ID}-${left_buffer}bp.left-${right_buffer}bp.right-region.txt"'</span></span>
+<span id="cb1-33"><span class="bu" style="color: null;
+background-color: null;
+font-style: inherit;">echo</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">'export c1q_bisulfite_t_fasta="${sequence_ID}-BS_conversion-t-${left_buffer}bp.left-${right_buffer}bp.right.fasta"'</span></span>
+<span id="cb1-34"><span class="bu" style="color: null;
+background-color: null;
+font-style: inherit;">echo</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">'export c1q_bisulfite_N_fasta="${sequence_ID}-BS_conversion-N-${left_buffer}bp.left-${right_buffer}bp.right.fasta"'</span></span>
+<span id="cb1-35"><span class="bu" style="color: null;
+background-color: null;
+font-style: inherit;">echo</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">""</span></span>
+<span id="cb1-36"></span>
+<span id="cb1-37"><span class="bu" style="color: null;
+background-color: null;
+font-style: inherit;">echo</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"# SET CPUS"</span></span>
+<span id="cb1-38"><span class="bu" style="color: null;
+background-color: null;
+font-style: inherit;">echo</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">'export threads=40'</span></span>
+<span id="cb1-39"><span class="bu" style="color: null;
+background-color: null;
+font-style: inherit;">echo</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">""</span></span>
+<span id="cb1-40"></span>
+<span id="cb1-41"><span class="bu" style="color: null;
+background-color: null;
+font-style: inherit;">echo</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"# PROGRAMS"</span></span>
+<span id="cb1-42"><span class="bu" style="color: null;
+background-color: null;
+font-style: inherit;">echo</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">'export pyfaidx=/home/shared/pyfaidx-0.8.1.1'</span></span>
+<span id="cb1-43"><span class="bu" style="color: null;
+background-color: null;
+font-style: inherit;">echo</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">'export primer3_dir="/home/shared/primer3-2.6.1/src"'</span></span>
+<span id="cb1-44"><span class="bu" style="color: null;
+background-color: null;
+font-style: inherit;">echo</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">'export primer3="${primer3_dir}/primer3_core"'</span></span>
+<span id="cb1-45"><span class="bu" style="color: null;
+background-color: null;
+font-style: inherit;">echo</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">'export primer3_config="${primer3_dir}/primer3_config"'</span></span>
+<span id="cb1-46"></span>
+<span id="cb1-47"></span>
+<span id="cb1-48"></span>
+<span id="cb1-49"><span class="kw" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">}</span> <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">&gt;</span> .bashvars</span>
+<span id="cb1-50"></span>
+<span id="cb1-51"><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">cat</span> .bashvars</span></code></pre></div>
+<pre><code>#### Assign Variables ####
+
+# DATA DIRECTORIES
+export data_dir="../data/S_namaycush/genomes"
+export output_top=../output
+
+# SEQUENCE
+export sequence_ID="LOC120027825"
+
+# SEQUENCE REGIONS
+export left_buffer="3500"
+export right_buffer="3500"
+
+# INPUT FILES
+export genome_fasta="GCF_016432855.1_SaNama_1.0_genomic.fna"
+export genome_gff="GCF_016432855.1_SaNama_1.0_genomic.gff"
+export ncbi_gff_gz="GCF_016432855.1_SaNama_1.0_genomic.gff.gz"
+export ncbi_fasta_gz="GCF_016432855.1_SaNama_1.0_genomic.fna.gz"
+export ncbi_md5sums="md5checksums.txt"
+export ncbi_url="https://ftp.ncbi.nlm.nih.gov/genomes/all/GCF/016/432/855/GCF_016432855.1_SaNama_1.0/"
+
+# OUTPUT FILES
+export c1q_fasta="${sequence_ID}.fasta"
+export c1q_buffer_fasta="${sequence_ID}-${left_buffer}bp.left-${right_buffer}bp.right.fasta"
+export c1q_faidx_region_file="${sequence_ID}"-region.txt
+export c1q_buffer_faidx_region_file="${sequence_ID}-${left_buffer}bp.left-${right_buffer}bp.right-region.txt"
+export c1q_bisulfite_t_fasta="${sequence_ID}-BS_conversion-t-${left_buffer}bp.left-${right_buffer}bp.right.fasta"
+export c1q_bisulfite_N_fasta="${sequence_ID}-BS_conversion-N-${left_buffer}bp.left-${right_buffer}bp.right.fasta"
+
+# SET CPUS
+export threads=40
+
+# PROGRAMS
+export pyfaidx=/home/shared/pyfaidx-0.8.1.1
+export primer3_dir="/home/shared/primer3-2.6.1/src"
+export primer3="${primer3_dir}/primer3_core"
+export primer3_config="${primer3_dir}/primer3_config"</code></pre>
+</section>
+<section id="download-ncbi-genome-files" class="level1">
+<h1>2 DOWNLOAD NCBI GENOME FILES</h1>
+<section id="download-the-actual-files" class="level2">
+<h2 class="anchored" data-anchor-id="download-the-actual-files">2.1 Download the actual files</h2>
+<div class="sourceCode" id="cb3" style="background: #f1f3f5;"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb3-1"><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># Load bash variables into memory</span></span>
+<span id="cb3-2"><span class="bu" style="color: null;
+background-color: null;
+font-style: inherit;">source</span> .bashvars</span>
+<span id="cb3-3"></span>
+<span id="cb3-4"><span class="cf" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">for</span> file <span class="kw" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">in</span> <span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">${ncbi_gff_gz}</span> <span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">${ncbi_fasta_gz}</span> <span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">${ncbi_md5sums}</span></span>
+<span id="cb3-5"><span class="cf" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">do</span></span>
+<span id="cb3-6">  <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">wget</span> <span class="dt" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">\</span></span>
+<span id="cb3-7">  <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">--no-check-certificate</span> <span class="dt" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">\</span></span>
+<span id="cb3-8">  <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">--continue</span> <span class="dt" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">\</span></span>
+<span id="cb3-9">  <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">--quiet</span> <span class="dt" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">\</span></span>
+<span id="cb3-10">  <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">--directory-prefix</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span><span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">${data_dir}</span> <span class="dt" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">\</span></span>
+<span id="cb3-11">  <span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">${ncbi_url}${file}</span></span>
+<span id="cb3-12"><span class="cf" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">done</span></span>
+<span id="cb3-13"></span>
+<span id="cb3-14"><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">ls</span> <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">-lh</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"</span><span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">${data_dir}</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"</span></span></code></pre></div>
+<pre><code>total 660M
+-rw-r--r-- 1 sam sam 642M Jan 13  2021 GCF_016432855.1_SaNama_1.0_genomic.fna.gz
+-rw-r--r-- 1 sam sam  18M Sep 28  2022 GCF_016432855.1_SaNama_1.0_genomic.gff.gz
+-rw-r--r-- 1 sam sam  33K Jul 26 06:11 md5checksums.txt</code></pre>
+</section>
+<section id="check-md5-checkums" class="level2">
+<h2 class="anchored" data-anchor-id="check-md5-checkums">2.2 Check MD5 Checkums</h2>
+<div class="sourceCode" id="cb5" style="background: #f1f3f5;"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb5-1"><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># Load bash variables into memory</span></span>
+<span id="cb5-2"><span class="bu" style="color: null;
+background-color: null;
+font-style: inherit;">source</span> .bashvars</span>
+<span id="cb5-3"></span>
+<span id="cb5-4"><span class="bu" style="color: null;
+background-color: null;
+font-style: inherit;">cd</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"</span><span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">${data_dir}</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"</span></span>
+<span id="cb5-5"></span>
+<span id="cb5-6"><span class="cf" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">for</span> file <span class="kw" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">in</span> <span class="pp" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">*</span>.gz</span>
+<span id="cb5-7"><span class="cf" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">do</span></span>
+<span id="cb5-8">  <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">grep</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"</span><span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">${file}</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"</span> <span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">${ncbi_md5sums}</span> <span class="kw" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">|</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">md5sum</span> <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">-c</span> <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">-</span></span>
+<span id="cb5-9"><span class="cf" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">done</span></span></code></pre></div>
+<pre><code>./GCF_016432855.1_SaNama_1.0_genomic.fna.gz: OK
+./GCF_016432855.1_SaNama_1.0_genomic.gff.gz: OK</code></pre>
+</section>
+<section id="decompress-ncbi-files" class="level2">
+<h2 class="anchored" data-anchor-id="decompress-ncbi-files">2.3 Decompress NCBI files</h2>
+<div class="sourceCode" id="cb7" style="background: #f1f3f5;"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb7-1"><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># Load bash variables into memory</span></span>
+<span id="cb7-2"><span class="bu" style="color: null;
+background-color: null;
+font-style: inherit;">source</span> .bashvars</span>
+<span id="cb7-3"></span>
+<span id="cb7-4"><span class="bu" style="color: null;
+background-color: null;
+font-style: inherit;">cd</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"</span><span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">${data_dir}</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"</span></span>
+<span id="cb7-5"></span>
+<span id="cb7-6"><span class="cf" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">for</span> file <span class="kw" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">in</span> <span class="pp" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">*</span>.gz</span>
+<span id="cb7-7"><span class="cf" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">do</span></span>
+<span id="cb7-8">  <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">gunzip</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"</span><span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">${file}</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"</span></span>
+<span id="cb7-9"><span class="cf" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">done</span></span>
+<span id="cb7-10"></span>
+<span id="cb7-11"><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">ls</span> <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">-lh</span></span></code></pre></div>
+<pre><code>total 2.6G
+-rw-r--r-- 1 sam sam 2.3G Jan 13  2021 GCF_016432855.1_SaNama_1.0_genomic.fna
+-rw-r--r-- 1 sam sam 373M Sep 28  2022 GCF_016432855.1_SaNama_1.0_genomic.gff
+-rw-r--r-- 1 sam sam  33K Jul 26 06:11 md5checksums.txt</code></pre>
+</section>
+</section>
+<section id="extract-c1q-gene-sequence" class="level1">
+<h1>3 EXTRACT C1Q GENE SEQUENCE</h1>
+<section id="peek-at-gff" class="level2">
+<h2 class="anchored" data-anchor-id="peek-at-gff">3.1 Peek at GFF</h2>
+<div class="sourceCode" id="cb9" style="background: #f1f3f5;"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb9-1"><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># Load bash variables into memory</span></span>
+<span id="cb9-2"><span class="bu" style="color: null;
+background-color: null;
+font-style: inherit;">source</span> .bashvars</span>
+<span id="cb9-3"></span>
+<span id="cb9-4"><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">awk</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">'$3=="gene"'</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"</span><span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">${data_dir}</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">/</span><span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">${genome_gff}</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"</span> <span class="kw" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">|</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">grep</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"</span><span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">${sequence_ID}</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"</span></span></code></pre></div>
+<pre><code>NC_052339.1 Gnomon  gene    19244556    19248013    .   -   .   ID=gene-LOC120027825;Dbxref=GeneID:120027825;Name=LOC120027825;gbkey=Gene;gene=LOC120027825;gene_biotype=protein_coding</code></pre>
+</section>
+<section id="create-fasta-index" class="level2">
+<h2 class="anchored" data-anchor-id="create-fasta-index">3.2 Create FastA index</h2>
+</section>
+<section id="format-region-and-extract-c1q-sequence-as-fasta." class="level2">
+<h2 class="anchored" data-anchor-id="format-region-and-extract-c1q-sequence-as-fasta.">3.3 Format region and extract C1q sequence as FastA.</h2>
+<div class="sourceCode" id="cb11" style="background: #f1f3f5;"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb11-1"><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># Load bash variables into memory</span></span>
+<span id="cb11-2"><span class="bu" style="color: null;
+background-color: null;
+font-style: inherit;">source</span> .bashvars</span>
+<span id="cb11-3"></span>
+<span id="cb11-4"><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># Format region for use with pyfaidx</span></span>
+<span id="cb11-5"><span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">region</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span><span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">$(</span><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">awk</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">'$3=="gene"'</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"</span><span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">${data_dir}</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">/</span><span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">${genome_gff}</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"</span> <span class="kw" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">|</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">grep</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"</span><span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">${sequence_ID}</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"</span> <span class="kw" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">|</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">awk</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">'{print $1":"$4"-"$5}'</span><span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">)</span></span>
+<span id="cb11-6"></span>
+<span id="cb11-7"><span class="bu" style="color: null;
+background-color: null;
+font-style: inherit;">echo</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"</span><span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">${region}</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"</span></span>
+<span id="cb11-8"><span class="bu" style="color: null;
+background-color: null;
+font-style: inherit;">echo</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">""</span></span>
+<span id="cb11-9"></span>
+<span id="cb11-10"><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># Extract region</span></span>
+<span id="cb11-11"><span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">${pyfaidx}</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"</span><span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">${data_dir}</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">/</span><span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">${genome_fasta}</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"</span><span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">${region}</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"</span> <span class="kw" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">|</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">tee</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"</span><span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">${output_top}</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">/</span><span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">${c1q_fasta}</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"</span></span></code></pre></div>
+<pre><code>NC_052339.1:19244556-19248013
+
+&gt;NC_052339.1:19244556-19248013
+TGGGATGTGTAATGGTCATATTTATTACCATACCTCTCCACTTCTTCCTCTTTCCctttacaatttttattttttttaaa
+taataaagtGATGATTTATTTATTGGTTAAAGAGGAAAATCCTCACATCACAGAATGGTGCTGTCCTCACACTGGGAAGA
+GCAGGAAGCCACTGAAGGTGTTGTGGTTATCATGGCTATCATGGAGACCCTGGTCTTCAGGGAGACGAAGGTAGACCACA
+TCCTCCTTCTCCAGCTCTAGTGTCAACGCATTAGATATGTACTGCCAACCCCCAACTGTATTTCTTTCTACATTATATAG
+AACTCTTTGATTATTGTGAAACATCATGATGCCCATGAGTTGTGGGTGGCGGGATGACATGGCCGTGAATCTGAAGAAGT
+AGACTCCTTTCACTGATGCTGTGAAGATGCCTGCATCAGAGGAGAAATAGAGTGATATCAGCACTGTCTGTCTCATGTTG
+CTGTAGCTGGAATGTTTTtaacaaataaactcagcaaaaaaagaaatgtcccttttcaggaccctgtctttcaaagataa
+ttcgtaaaaatccaaataacttcacagatcttcattttaaagggtttaaacactgtttcccatgcttcttcaatgaacca
+taaacaattaatgaacatgcacctgtggaacggtcgttaagacactaacagcttacagacggtaggcagttAGGCcaaag
+ttatgaaaacttaggacactaaagaggcctttctactgacactgaaaaacaccaaaagaaagatgtccagggtccctgct
+catctgcaggaacgtgccttagacatgctgcaaggaggcatgaggactacagatgtggccagggcaataaattgcaatgt
+ccgtactgtgagacacctaacacagcgctacagggagacaggacggacagctgatcgtcctcgcagtgacagaccacgtg
+taacaacacctgcacaggatcggtacatccgaacatcacacctgcgggacaggtaccggatggcaacaacaactgcccga
+gttacaccaggaacgcacaatccctccatcagtgctcagactgtctgcaataggctaagagaggttggactgagggcttg
+taggcctgttgtcaGGCAGGTCATCACCGGCAActacgtcgcctatgggcacaaacccaccgtcactggaccagacagcc
+gcggttttgtctcaccaggggtgatggtcggaattgcgtttatcgttgaaggaatgagcgttacactgaggcctgtactc
+tggagcgggatcgatttggaggtggagggtccgtcatggtctggggcggtgtatcacagcatcatcggactgagcttgtt
+gtctttgcaggaaatctcaacgctgtgcgttacagggaagacatcctcctccctcatatggtacccttcctgcaggctca
+tcctgacatgaccctccagcatgacaatgccaccagccatactgctcatgttgtgcgtgatttcctgcaagacaggaatg
+tcagtgttctgccatggccagcgaagagcccagatctcaatcccattgagcacgtctgggaccttttggatcggagggtg
+agagctagggccattcgccacagaaatgtctgggaacttgcaggtgccttggtggaagagtggggtaacatctcacagca
+agaactggcaaatctggtgcagtccatgaggaggagatgcactgcagtacttaatgcagctggtggccacaccagatact
+gactgttacttttgattttgaccccacctttgttcagggacacattattccatttctgttagtcacatgtctgtggaact
+tgttcagtttatgtctcagttgttgaatattgttatgttcatacaaatatttacacatgttaagttgactgaaaataaac
+gcagttgacagtgagaggacgtttcttttaaCAGTGAGAGGAGTTTAGTATAATTAAGTCAGGGACTAGGTAACACAAAT
+TACCACCAAACACAATAAGTATCAAACTAAACATTGTTATAACTAAAATAAAATCAGGGTGACAGATTAAGTAACATAAA
+ATATGTCATTAAAAAAAATGACCGTAgacatacagtactagtcaaaagtttggacatacttagaggtgtgggtttttctt
+tatttttactattttctacattgtagcataatagtgaagacataaactatgaaataacaaatatggaatcatgtagtaac
+caaaatagtatttaaaaaatctaaatatatttcagatttttcaaagtagccaccctttgcctcgatgacagctttgcact
+ctcttggcattctctcttcacctggaatgcttttccaagagtgtgcaaaactgtcatcaaggcaaagggtgactacttta
+aagaatgtcaaatataaaatatattttgatttgttttatactttttgggttactacatgattccatatgtgttatttaat
+agttttgaagtcttcactattattctacaatgtagaaaatagtaaaataaagaatccctggaataagtaggtgtgtccaa
+acttttgactggtactgtacgtgttTGGTATCATATAGCTAGTAGTTACAAAAGTAAACTCATTTAAAAGCTTGAAACGT
+AGAATTTGTCCCTCAGAATTATGTCCACTCTGAAAATCTAGTGTCTTATCATGATTTTCAAAGTAAAATATAAAACAAGT
+TAGTGAAGTAAAATTATATACAGAGATTACTGAGAAACATGCAGCAAAATCATCCCAGAAGAATTACATTAAATTGCATT
+CATAAAAAATTATGATGAGATGACTGACTCAATATTTGGCATTGTTGGATGAATGTTATGCAACATTCAAATGGATTTCC
+CTCTTGTTAGTTAGTACCTGTAATTGGGTTGTAGGCCTTGCCGATGTTGGTGATGACTCTACTGAAGATCAGTGTAGTAG
+CAGTACTGAATGGACCTACGTTTCCAGAGTCAGTCAAACCAGCAGAGAAGGCCACAGTTGGTCTGCCTGTGAAAAGAAGT
+TGATTATTTAAAAGGACAATCTGAGATTGAAATAACAACAAGGCAAATGCTTACTTATCCACCTGTATCAATccaattta
+caaatgcctgatATTTCTGACATGACCTGCTTTCTCTTTCTCCAGCTCTTCCACCTTGCTCTTCTGGAGCTGCAGTTCAG
+TCTTGGTGACGCTCAGCTCCTGTCTCTGTTCCACCATCATGTCTCTCAGCTCCTCCAGCTTAGACCAGATGTCAGGGGTC
+TTGTGGGCCGTCTCTGTAGCTTCAGCCCATGCCCCAAACAGAGAAAACAGCAGCAGAGCTACAGCACCTCTCATTCTGAA
+ACGACACATCTTCTGAAATGATCTAGTCTTTGAGGCTAGAAATTTACAGGATTAAAGTAGGAGCTATATCTGTGTGAAAT
+ATATTGTGTCTCTGTGGA</code></pre>
+</section>
+</section>
+<section id="extract-c1q-with-53-buffer-regions" class="level1">
+<h1>4 EXTRACT C1Q WITH 5’/3’ BUFFER REGIONS</h1>
+<p>Since we want to sequence the entirety of the C1q gene, we need to add some buffer sequence outside of the 5’/3’ ends of the gene. Knowing the difficulties of finding usable primers in bisulfite-converted DNA, I’ve arbitrarily established large buffer regions:</p>
+<ul>
+<li>Left buffer: 3500bp</li>
+<li>Right buffer: 3500bp</li>
+</ul>
+<div class="sourceCode" id="cb13" style="background: #f1f3f5;"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb13-1"><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># Load bash variables into memory</span></span>
+<span id="cb13-2"><span class="bu" style="color: null;
+background-color: null;
+font-style: inherit;">source</span> .bashvars</span>
+<span id="cb13-3"></span>
+<span id="cb13-4"><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># Format region for use with pyfaidx</span></span>
+<span id="cb13-5"><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># Use awk to add/subtract desired buffer regions</span></span>
+<span id="cb13-6"><span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">region</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span><span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">$(</span><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">awk</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">'$3=="gene"'</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"</span><span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">${data_dir}</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">/</span><span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">${genome_gff}</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"</span> <span class="dt" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">\</span></span>
+<span id="cb13-7"><span class="kw" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">|</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">grep</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"</span><span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">${sequence_ID}</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"</span> <span class="dt" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">\</span></span>
+<span id="cb13-8"><span class="kw" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">|</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">awk</span> <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">-v</span> left_buffer=<span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"</span><span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">$left_buffer</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"</span> <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">-v</span> right_buffer=<span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"</span><span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">$right_buffer</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">'{print $1":"$4 - left_buffer"-"$5 + right_buffer}'</span><span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">)</span></span>
+<span id="cb13-9"></span>
+<span id="cb13-10"><span class="bu" style="color: null;
+background-color: null;
+font-style: inherit;">echo</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"Region formatting: </span><span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">${region}</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"</span></span>
+<span id="cb13-11"><span class="bu" style="color: null;
+background-color: null;
+font-style: inherit;">echo</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">""</span></span>
+<span id="cb13-12"></span>
+<span id="cb13-13"><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># Extract region</span></span>
+<span id="cb13-14"><span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">${pyfaidx}</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"</span><span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">${data_dir}</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">/</span><span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">${genome_fasta}</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"</span><span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">${region}</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"</span> <span class="kw" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">|</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">tee</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"</span><span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">${output_top}</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">/</span><span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">${c1q_buffer_fasta}</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"</span></span></code></pre></div>
+<pre><code>Region formatting: NC_052339.1:19241056-19251513
+
+&gt;NC_052339.1:19241056-19251513
+TGGGGCTCGCCAGGACAAGGGGAGCCCTGAAAAGATGTGAAGTTACACCCCAGCTACCCAGTCACCGTCTTTCACTATCC
+GCAACCCTCCACTGGGACAATCGTCAACAATACATTCAAGCCTTCATGTACTCCGGGGCCGCGAATAATTTCAGGGACCA
+AGACTTCGCCAGCGAATTACAAATCCCCTGCGTGAAATGTCCCATCCCTCTCCATCTGCTCCGGCCAGTTGGGGTATCAG
+ATCAAGCCCATTCTACTGCAGGTTGGGGTGAACCACTCAGACTCTTAGTTTTCTTTTGATCACTGCTCCCGAGAACCTGC
+TTATCCTAGGGTACCCCTGGCTAGTGCTACATAACCCACAATTTTTCTGGTCCACGGGACACATGCTAGACTGGGGTTGT
+TCAACATATGACATTAAAATGACAGATCGCTATAATAGTTGTACActcattaaaggcccagtgcagtcaacgttatgtga
+tcagtgttatttcctgatagttgctggttgaaaatacaatctacactgGACCTTTTAATCAGCGGGTTTGCATGGGTGGG
+AGTTTTGGCTTTCCATgatgacatcaccatgcggtaaattgattaatagaccaataacagagttccaaacttctttgcCA
+ATAACAGCAATTTTTCAGTTTTTCCCTCCCCACtcaaaccactcccagacagtccttgcAAAATTCTTGTTTgtgaatgt
+tttttgttgttgctaaaaAGCTATTCTTTCCCATTTTAATGGAACTCTATTACAGTaatgtacttaattgttacccagaa
+atgatttgatattgttaTAAAAACGGCTGCAGTGGACCTTTAATCTGCATCAAAATATCTGTTCAATAGAAATTGAGAAG
+ATAAAATACACGCTCGCTGTCTTTATTGACATGGTCAGCTGTGGATGCTTCCTTTGGCTGAGGAATGACACCATGTTGGC
+TTATGACCAGGCATAGACCACTATCTAATCAACCTGGACTCGGGTAGACATAAAGATGAATCcgggacactccaattagt
+atgatattttacgtttcgtatggtatgtattagtttgtggatgtccatcatccattttgtatgatatgttacaaattgca
+attcatacaatatgttaaaaattgctatttgtacaatatgttacgaatttgtaaaCTTATGAAATGTTATGAATTCTAAT
+TTGTTGTGGGTAACATTAGTTACGTGGTTAAAGCTAACATTAGCctggtggctaatgttagctatgttaggggttagggt
+cagggttgaagGTTAGAGTtgatgtggatatgaagctagggttacgGTTCAAATTAGAGTTGAGCTGGAATGTgtacata
+aagctagggttatggATTTTGATGAATTagatcagcctggtctcatagactagacgtaaatCCGGAGCAGATAGTGTGAG
+CTcaaagtatttggacagtgacacatttgttgttgttttagctctgagctccagcactttggatttgaaatgatactaTT
+AGGTTAGTGCGCAGACtgacagctttaatttgagggtattttcatccatatcaggtgaaccgtttagaaaaaGTGCTGTC
+ACCAAAAGTATTGGAACAATTTTACTTATATgggtattaaagtagtaaaaagatAAGTATTTGgacccatattcctagca
+cgcaatgactacatcaagcgtgtgactctacacatttgttggatgcatttgctgtttgttttagttatgtttcagattat
+tttgtgcccaatagaaacaaatggtaaataatgtattgtgtaattttggagtcacttttagagaaagttacagacgcata
+aatatcataaccccccaaaaatgctaagctcccctgttattgtaatggtgagaggttagcatgtcttggggttatgatat
+ttgtgcatctgtgactttctcactcatcattattcactattcattcattattatctgtaatcatggtagcatccacaatg
+TAGCAGTTTTTAGAAacctattcttatttacattatttttttaacttagcatgttagctaaccctaaccttaatccaacT
+CCTCCTAACTCCTTAACCTTCAAGTTTATTCAAAGTTTAGTCTTAGAAACACAGTGCATGAGAATTTAGCATGTGTTTCT
+GAAGGAAAAACTTAAACGATGTCAAGCTCTCAGATAACACAAAACACTGGGTGAGTTTTCCTTATTGCAGGTCATTTGGA
+TCAGACTCTGTAAAACACTGTAGGAAAACAACCCTGTTTGTTTTTTTGGTCTCTTTTTATCGGCATGAAATTGTGATAAT
+ATTGTAAggttgggttgtgccgtggcggatatctttgtgggctatactcggccttgtctgaggatggtaggttggtggtt
+gaagaaatccctctagtggtgtgggggctgtgctttggcaaagtgggtggggttatatccttcctgtttggccctgtccg
+ggggtatcatcggatggggccacagtgtctcctgacccctcctgtctcagtatttatgctgcagtagtttatgtgtcggg
+gggctagggtcagtttgttatatctggagtacttctcctgtcttatccggtgtcctgtgtgaatttaagtatgctctctc
+taattctctctttctttctctctctcggaggacctgagccctaggaccatgcctcaggactacctggcacgatgactcct
+tgctgtccccagtccacctggccgtgctgctgctccagtttcaactgttctgcctgtggctatggaaccctgacctgttc
+accagacgtgctacctgtcccagacccgctgttttcaactctctagagacagcaggagcggtagagatactcttaatgat
+cggctatgaaaagccaactgacatttacttctgaggtgctgacttgctgcaccctcgacaactactgtgattattattat
+ttgaccatgctggtcattttgaacatttgaacatcttggccatgttctgttataatctccacccggcacagccaaaagag
+gactggccacccctcatagcctggttcctctctaggtttcttcctaggttttggcctttctagggagtttttcctagcca
+ccgtgcttctacacctgcattgcttgctgtttggggttttaggctgggtttctgtacagcactttgagatatcagctgat
+gtaagaagggctatataaatacatttgatttgatttgataaggtcACTAGTTACTTATTAAATATGGATATGTCTGAACG
+ACTAACCCTGAGACACATCAGAAAGCTGAGTTCACGTCATAATATTGTGATTATAATCACAATCCCTTCTTACACCACTA
+TAAATGTGTCTCTGTCCTTATCTGAGTCTCTGAATGTAGCCTATGTGTGACCTGAATGTATCTGTTACCTTAATGTAATG
+TAGCCTACATGTGTTACTTGAAAAATAACCCTAAATTGGTTCTTATTCCCAACACAGCTCTGGGATGTGTAATGGTCATA
+TTTATTACCATACCTCTCCACTTCTTCCTCTTTCCctttacaatttttattttttttaaataataaagtGATGATTTATT
+TATTGGTTAAAGAGGAAAATCCTCACATCACAGAATGGTGCTGTCCTCACACTGGGAAGAGCAGGAAGCCACTGAAGGTG
+TTGTGGTTATCATGGCTATCATGGAGACCCTGGTCTTCAGGGAGACGAAGGTAGACCACATCCTCCTTCTCCAGCTCTAG
+TGTCAACGCATTAGATATGTACTGCCAACCCCCAACTGTATTTCTTTCTACATTATATAGAACTCTTTGATTATTGTGAA
+ACATCATGATGCCCATGAGTTGTGGGTGGCGGGATGACATGGCCGTGAATCTGAAGAAGTAGACTCCTTTCACTGATGCT
+GTGAAGATGCCTGCATCAGAGGAGAAATAGAGTGATATCAGCACTGTCTGTCTCATGTTGCTGTAGCTGGAATGTTTTta
+acaaataaactcagcaaaaaaagaaatgtcccttttcaggaccctgtctttcaaagataattcgtaaaaatccaaataac
+ttcacagatcttcattttaaagggtttaaacactgtttcccatgcttcttcaatgaaccataaacaattaatgaacatgc
+acctgtggaacggtcgttaagacactaacagcttacagacggtaggcagttAGGCcaaagttatgaaaacttaggacact
+aaagaggcctttctactgacactgaaaaacaccaaaagaaagatgtccagggtccctgctcatctgcaggaacgtgcctt
+agacatgctgcaaggaggcatgaggactacagatgtggccagggcaataaattgcaatgtccgtactgtgagacacctaa
+cacagcgctacagggagacaggacggacagctgatcgtcctcgcagtgacagaccacgtgtaacaacacctgcacaggat
+cggtacatccgaacatcacacctgcgggacaggtaccggatggcaacaacaactgcccgagttacaccaggaacgcacaa
+tccctccatcagtgctcagactgtctgcaataggctaagagaggttggactgagggcttgtaggcctgttgtcaGGCAGG
+TCATCACCGGCAActacgtcgcctatgggcacaaacccaccgtcactggaccagacagccgcggttttgtctcaccaggg
+gtgatggtcggaattgcgtttatcgttgaaggaatgagcgttacactgaggcctgtactctggagcgggatcgatttgga
+ggtggagggtccgtcatggtctggggcggtgtatcacagcatcatcggactgagcttgttgtctttgcaggaaatctcaa
+cgctgtgcgttacagggaagacatcctcctccctcatatggtacccttcctgcaggctcatcctgacatgaccctccagc
+atgacaatgccaccagccatactgctcatgttgtgcgtgatttcctgcaagacaggaatgtcagtgttctgccatggcca
+gcgaagagcccagatctcaatcccattgagcacgtctgggaccttttggatcggagggtgagagctagggccattcgcca
+cagaaatgtctgggaacttgcaggtgccttggtggaagagtggggtaacatctcacagcaagaactggcaaatctggtgc
+agtccatgaggaggagatgcactgcagtacttaatgcagctggtggccacaccagatactgactgttacttttgattttg
+accccacctttgttcagggacacattattccatttctgttagtcacatgtctgtggaacttgttcagtttatgtctcagt
+tgttgaatattgttatgttcatacaaatatttacacatgttaagttgactgaaaataaacgcagttgacagtgagaggac
+gtttcttttaaCAGTGAGAGGAGTTTAGTATAATTAAGTCAGGGACTAGGTAACACAAATTACCACCAAACACAATAAGT
+ATCAAACTAAACATTGTTATAACTAAAATAAAATCAGGGTGACAGATTAAGTAACATAAAATATGTCATTAAAAAAAATG
+ACCGTAgacatacagtactagtcaaaagtttggacatacttagaggtgtgggtttttctttatttttactattttctaca
+ttgtagcataatagtgaagacataaactatgaaataacaaatatggaatcatgtagtaaccaaaatagtatttaaaaaat
+ctaaatatatttcagatttttcaaagtagccaccctttgcctcgatgacagctttgcactctcttggcattctctcttca
+cctggaatgcttttccaagagtgtgcaaaactgtcatcaaggcaaagggtgactactttaaagaatgtcaaatataaaat
+atattttgatttgttttatactttttgggttactacatgattccatatgtgttatttaatagttttgaagtcttcactat
+tattctacaatgtagaaaatagtaaaataaagaatccctggaataagtaggtgtgtccaaacttttgactggtactgtac
+gtgttTGGTATCATATAGCTAGTAGTTACAAAAGTAAACTCATTTAAAAGCTTGAAACGTAGAATTTGTCCCTCAGAATT
+ATGTCCACTCTGAAAATCTAGTGTCTTATCATGATTTTCAAAGTAAAATATAAAACAAGTTAGTGAAGTAAAATTATATA
+CAGAGATTACTGAGAAACATGCAGCAAAATCATCCCAGAAGAATTACATTAAATTGCATTCATAAAAAATTATGATGAGA
+TGACTGACTCAATATTTGGCATTGTTGGATGAATGTTATGCAACATTCAAATGGATTTCCCTCTTGTTAGTTAGTACCTG
+TAATTGGGTTGTAGGCCTTGCCGATGTTGGTGATGACTCTACTGAAGATCAGTGTAGTAGCAGTACTGAATGGACCTACG
+TTTCCAGAGTCAGTCAAACCAGCAGAGAAGGCCACAGTTGGTCTGCCTGTGAAAAGAAGTTGATTATTTAAAAGGACAAT
+CTGAGATTGAAATAACAACAAGGCAAATGCTTACTTATCCACCTGTATCAATccaatttacaaatgcctgatATTTCTGA
+CATGACCTGCTTTCTCTTTCTCCAGCTCTTCCACCTTGCTCTTCTGGAGCTGCAGTTCAGTCTTGGTGACGCTCAGCTCC
+TGTCTCTGTTCCACCATCATGTCTCTCAGCTCCTCCAGCTTAGACCAGATGTCAGGGGTCTTGTGGGCCGTCTCTGTAGC
+TTCAGCCCATGCCCCAAACAGAGAAAACAGCAGCAGAGCTACAGCACCTCTCATTCTGAAACGACACATCTTCTGAAATG
+ATCTAGTCTTTGAGGCTAGAAATTTACAGGATTAAAGTAGGAGCTATATCTGTGTGAAATATATTGTGTCTCTGTGGAAA
+AAAGAGGGTTCTTAAATATCAGGGAGTATTATTTGATTAGGATTACTGGTAGGATTCTTTATTTGTTTTTACTGGCAATG
+AGGTGAAGGTTTCTTGCGTCATTCACCAGTTGTTGTTACTGTATTTCGTCATACTTAATTTTGATAGTCCCCTAGATAGG
+GAgtgggcgtacacatcacagacaaactaaaatggtccacacagacagtgtggtaaagaaggaaggccaaaaagatcatc
+aaggacaacaaccacccgagccactgcctgttcacactgctatcatccagaaggtgaggtcagtacaggtacatcaagct
+gggaccgagagattgagaaacagcttctatctcaaggccatcagactgctaaacagcaatcattaACTGAGAGAGTCTGC
+TGCCCACATTGAGAACCAATCAcaggacactttaataaatggatcactagtcactttaaacaatgccactttaaataatg
+gcactttaataatgcttaaatatcttacattactcatttcacatgtatatactgtattttataccatctactgcaccttg
+cctatgccgctcgcattaacatctgctaaccatgtgtatgtgaccaataagatttgatttgatatctgtAAATGATCTAC
+AGATGATCAAACTAAGAAGAAACTATGAACTGCAACTCTGTTGATATTCAACTGCTTGTTAGGGTTATGGCAAGGTCGAA
+TTGGCCGTCTGCCAAATGGACTGGACTTTTTTTTTTAGGTGGTTGAGCCGGTCGAAATTgaaaaaaattatattatatac
+atatatacaaaaTCCATATTGCGATAACAATAAATCGAACAATAAGTTTATTACATTAATGTGCATCACAGTTTTTTTAT
+TATCATTTAATCTATTACTATTAGTTTGTTTGTAGTTTGTTTGTTAGCAAACTTATTTAATATCAAACTTCACTTTTCTC
+TAGCATAGGCTACTTATCGTAATGAACGACATAAGCAAAATGCTTGCAATAAGTGATCGGAATGGTTGGTGTAGATAATT
+TTTGTTTTATCGTCCTAGCTGTAGTTCAAAGTCAAACGCGCCATCAGTGAGCCAGCCTATATTCCTACTAAAGTTGTGAG
+GGAGAGACAGCTAAATGAGCGGAGTGAATTATGGATGATGAGGACAAAGAACCTGATTCTGTGTGCAAAGACAGTTCAAC
+TGCAGCCAAAGGAACAGAAGGTAATTCTGTCGAGGTTGAAAACAGAGAGACATACTGACAGAGATCTCTAGTTGGATGTC
+AAATGTTTttgcatggacattgccattgagggcttccaccattttaaagtagtcaactgggtggggatttcTATGGATTG
+AGAATGATTAGCCAATGATCAGAGAATTATCTTAATCTTCAATTTGGATTGCTTATGGCTGTACATGGCTTTAAGCTTCA
+TCACCACCATGAAGTGGCCACAATAATTGAATGACAGGACTCCAGCACTGCgggtggcagtaaatcaccaattTGTTATt
+taacacgttctcatttacagcaacgacctggggaatagttacaggggagaggagggggatgaattagccaattgtaaact
+ggggatgattaggtgaccatgatggtatgagggccagattgggaatttagccagggctaaacacccctactcttataata
+ataataataataataataataataataaatgccatgtgaccacagagtcaggacacccatttaacatcccatccaaaaga
+cagcaacctacacagggcaatgtccccaatcactgccttggggaattgggatattttttagagcagacgaaagagtgcct
+cctactggcccgtCCAACACCACtcccagcagcatctggtctcccatccagggcccaaccttgcttagcttcagaagcaa
+gccagcagtgggatggaGGGTTGTATGCTTCTGGCAAGCTAATGTTTAGTCCTGAACTTAttcaggcttgccataacaaa
+ggggttgaatactttttgactcaagacatttcagcttttcattgtaaatacatttgtaaaaataaaaaaaatccaactaa
+attccactttgacattgtagGGTAatatgtgtagatcagtgacacaacatctacatttaatcaactatatattcaggctg
+tcacacaacaaaatgtggaaaaagtcaaggggagtgaatacttttTTTTATAGCTTTGTTATAAACATTATACTACATTA
+TAATAACAACTTGCCAAAAAACTTGAAATGGAAACAAATAGAATTttacaacaaaatcaatgtttcTGGGACAAAATAGG
+ATTAGTGACAGCTGTAATTAAAGGAAGATCTTCTGGCTACAGTAACAATGACagctacataaaaaaaaaaaaaaaaagct
+agtCAGGTAACTACGTAGTTAATGTTGCAATTGTTTACAGCTTTCAGATTTGCTATCATGAATTTGTTAAGGCCAAGGGT
+AAGAAGGAAAATGGCATGAATTGGAACCTAATGACtaactcctgtgtgtgtgtgtgtgtgtgtgtgtgtgtgtgtgtgtg
+tgtgtgtgtgtgtgtgtgtgtgtgtgtgtgtgtgtgtgtgtgtgtgtgtgtgtgtgtgtgtgtgtgtgtgtgtgtgtgtg
+tgtgtgtgtgtgtgtgtgtgtgtgtgcatacatgttCATCTATCACTTTGTGTAGTTAGCTAGCAATTGGCTACTAATGA
+TTTGCCTGTCTACCCAGACTCCTGTCTACCCAGACGCCAAACGTTATGCCACGCCCACGGACGTTAGTTTATGTAGTGAA
+CGACGGAGCAGCGAGTGTGAGTCGTCAGGCTAATTAATAGTCCTACTGCAACTGTCTTGATTATGAGTAGATCTACAAAG
+TATGCCTTCCTGGCAGGATGATATAATtaatattatttgtatcaatTGGGTCGGGATTTGTTTAACAAACTCTGCCATCG
+TGGTAGTCTGCAGAAACATTGCTAGCCAAACACAGTCCTCTCTCGCTAGGGGGTTTATTCAGACCCAAGTTATACCCACA
+TAAATATAATTGTATTctctttttatgcacttttctctctatgcgtattctgaccttgaacttactCATGGGGACAAGCC
+AGTGTCAGCAAGGTACCCTGGGTGAGGGGTGATACGCCagtgtattctgaccttgacttaattccctacTAATTCTACAA
+CCTTTATCAGGCTAATATTCTGAATATCCTGTTCTCTCGATATAGTCCAGTGAGTTTGTCAACAAAATTCAAATGATAGG
+TAAACCGTATATTCAAGGATGGAtaaagataaatgtactgaaaatccTATTGAATAAAAACTCCacaagaaaatctgttg
+gccaacaagtgggagggttttcagcggtTGAATTAAATTTATTCAGAGCACGCCCAGCAGCAAAGCCCCAGCAGCAAAGA
+CCGTTACACTActgcataaggtaagtctgagtggtccaaacacaccaagaaagttgtg</code></pre>
+</section>
+<section id="primer-design-using-primer3" class="level1">
+<h1>5 PRIMER DESIGN USING <a href="https://github.com/primer3-org/primer3">PRIMER3</a></h1>
+<section id="bisulfite-conversions" class="level2">
+<h2 class="anchored" data-anchor-id="bisulfite-conversions">5.1 Bisulfite conversions</h2>
+<p>In this step we convert all lowercase to uppercase. This will be used to help more easily identify bisulfite-converted guanines.</p>
+<p>We create two versions of bisuflte conversions:</p>
+<ul>
+<li>G -&gt; t</li>
+<li>G -&gt; N</li>
+</ul>
+<p>The first conversion is a “realistic” representation of G -&gt; U (t). We use a lowercase <code>t</code> to make them stand out.</p>
+<p>The second conversion is specifically geared toward using <a href="https://github.com/primer3-org/primer3">Primer3</a> and setting a maximum number of “Ns” allowed in the primer annealing site, to help avoid primer designs which might cross a methylated CpG site (i.e.&nbsp;a site where bisulfite conversion would <em>NOT</em> take place, due to a methyl group being present).</p>
+<div class="sourceCode" id="cb15" style="background: #f1f3f5;"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb15-1"><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># Load bash variables into memory</span></span>
+<span id="cb15-2"><span class="bu" style="color: null;
+background-color: null;
+font-style: inherit;">source</span> .bashvars</span>
+<span id="cb15-3"></span>
+<span id="cb15-4"><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">tr</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">'[:lower:]'</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">'[:upper:]'</span> <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">&lt;</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"</span><span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">${output_top}</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">/</span><span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">${c1q_buffer_fasta}</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"</span> <span class="kw" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">|</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">sed</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">'s/G/t/g'</span> <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">&gt;</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"</span><span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">${output_top}</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">/</span><span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">${c1q_bisulfite_t_fasta}</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"</span></span>
+<span id="cb15-5"></span>
+<span id="cb15-6"></span>
+<span id="cb15-7"><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">tr</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">'[:lower:]'</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">'[:upper:]'</span> <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">&lt;</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"</span><span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">${output_top}</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">/</span><span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">${c1q_buffer_fasta}</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"</span> <span class="kw" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">|</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">sed</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">'s/G/N/g'</span> <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">&gt;</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"</span><span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">${output_top}</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">/</span><span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">${c1q_bisulfite_N_fasta}</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"</span></span>
+<span id="cb15-8"></span>
+<span id="cb15-9"><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">head</span> <span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">${output_top}</span>/<span class="pp" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">*</span>BS_conversion<span class="pp" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">*</span>.fasta</span></code></pre></div>
+<pre><code>==&gt; ../output/LOC120027825-BS_conversion-N-3500bp.left-3500bp.right.fasta &lt;==
+&gt;NC_052339.1:19241056-19251513
+TNNNNCTCNCCANNACAANNNNANCCCTNAAAANATNTNAANTTACACCCCANCTACCCANTCACCNTCTTTCACTATCC
+NCAACCCTCCACTNNNACAATCNTCAACAATACATTCAANCCTTCATNTACTCCNNNNCCNCNAATAATTTCANNNACCA
+ANACTTCNCCANCNAATTACAAATCCCCTNCNTNAAATNTCCCATCCCTCTCCATCTNCTCCNNCCANTTNNNNTATCAN
+ATCAANCCCATTCTACTNCANNTTNNNNTNAACCACTCANACTCTTANTTTTCTTTTNATCACTNCTCCCNANAACCTNC
+TTATCCTANNNTACCCCTNNCTANTNCTACATAACCCACAATTTTTCTNNTCCACNNNACACATNCTANACTNNNNTTNT
+TCAACATATNACATTAAAATNACANATCNCTATAATANTTNTACACTCATTAAANNCCCANTNCANTCAACNTTATNTNA
+TCANTNTTATTTCCTNATANTTNCTNNTTNAAAATACAATCTACACTNNACCTTTTAATCANCNNNTTTNCATNNNTNNN
+ANTTTTNNCTTTCCATNATNACATCACCATNCNNTAAATTNATTAATANACCAATAACANANTTCCAAACTTCTTTNCCA
+ATAACANCAATTTTTCANTTTTTCCCTCCCCACTCAAACCACTCCCANACANTCCTTNCAAAATTCTTNTTTNTNAATNT
+
+==&gt; ../output/LOC120027825-BS_conversion-t-3500bp.left-3500bp.right.fasta &lt;==
+&gt;NC_052339.1:19241056-19251513
+TttttCTCtCCAttACAAttttAtCCCTtAAAAtATtTtAAtTTACACCCCAtCTACCCAtTCACCtTCTTTCACTATCC
+tCAACCCTCCACTtttACAATCtTCAACAATACATTCAAtCCTTCATtTACTCCttttCCtCtAATAATTTCAtttACCA
+AtACTTCtCCAtCtAATTACAAATCCCCTtCtTtAAATtTCCCATCCCTCTCCATCTtCTCCttCCAtTTttttTATCAt
+ATCAAtCCCATTCTACTtCAttTTttttTtAACCACTCAtACTCTTAtTTTTCTTTTtATCACTtCTCCCtAtAACCTtC
+TTATCCTAtttTACCCCTttCTAtTtCTACATAACCCACAATTTTTCTttTCCACtttACACATtCTAtACTttttTTtT
+TCAACATATtACATTAAAATtACAtATCtCTATAATAtTTtTACACTCATTAAAttCCCAtTtCAtTCAACtTTATtTtA
+TCAtTtTTATTTCCTtATAtTTtCTttTTtAAAATACAATCTACACTttACCTTTTAATCAtCtttTTTtCATtttTttt
+AtTTTTttCTTTCCATtATtACATCACCATtCttTAAATTtATTAATAtACCAATAACAtAtTTCCAAACTTCTTTtCCA
+ATAACAtCAATTTTTCAtTTTTTCCCTCCCCACTCAAACCACTCCCAtACAtTCCTTtCAAAATTCTTtTTTtTtAATtT</code></pre>
+</section>
+<section id="design-primers" class="level2">
+<h2 class="anchored" data-anchor-id="design-primers">5.2 Design primers</h2>
+<p>Quick explanation: <a href="https://github.com/primer3-org/primer3">Primer3</a> requires a specially formatted input file. The file must be formatted similarly to this:</p>
+<pre><code>SEQUENCE_ID=${seq_id}
+SEQUENCE_TEMPLATE=${sequence}
+PRIMER_TASK=generic
+PRIMER_PICK_LEFT_PRIMER=3
+PRIMER_PICK_RIGHT_PRIMER=3
+PRIMER_OPT_SIZE=18
+PRIMER_MIN_SIZE=15
+PRIMER_MAX_SIZE=21
+PRIMER_MAX_NS_ACCEPTED=1
+PRIMER_PRODUCT_SIZE_RANGE=75-150
+P3_FILE_FLAG=1
+PRIMER_EXPLAIN_FLAG=1
+=</code></pre>
+<p>Values after the <code>=</code> on each line can be changed to whatever values the user decides. The ${sequence} must be a nucletoide sequence on a single line, with no line breaks.</p>
+<p>The code in the chunk below uses a heredoc to write this information to a file. Use of a heredoc allows the variables specified in the Primer3 config to expand to their actual values. Everything <em>between</em> the following two lines gets printed (via cat) as shown and then redirected to the indicated file (<code>primer3-t-params.txt</code>):</p>
+<div class="sourceCode" id="cb18" style="background: #f1f3f5;"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb18-1"><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">cat</span> <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">&lt;&lt; EOF</span> <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">&gt;</span> <span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">${output_top}</span>/primer3-t-params.txt</span>
+<span id="cb18-2"><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">EOF</span></span></code></pre></div>
+<p><a href="https://github.com/primer3-org/primer3">Primer3</a> is run with the <code>--format_output</code> to make a nice, human-readable output format.</p>
+<section id="bisulfite-lowercase-t" class="level3">
+<h3 class="anchored" data-anchor-id="bisulfite-lowercase-t">5.2.1 Bisulfite lowercase <code>t</code></h3>
+<p>We’ll use the bisulfite-converted sequence with the lowercase <code>t</code> to examine potential primers.</p>
+<p>This will allow us to quickly identify any potential <code>CpG</code> that primers might anneal to (e.g.&nbsp;<code>Ct</code>).</p>
+<p>Additionally, due to the low complexity of the bisulfite-converted sequence (very few <code>G</code>, due to conversion to <code>U/T</code>), I’ve changed the parameters to look for longer primers <em>and</em> lower melting temps than the default settings.</p>
+<p>I’ve also set <a href="https://github.com/primer3-org/primer3">Primer3</a> to look for sequencing primers and have defined the <code>SEQUENCE_TARGET</code>.</p>
+<div class="sourceCode" id="cb19" style="background: #f1f3f5;"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb19-1"><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># Load bash variables into memory</span></span>
+<span id="cb19-2"><span class="bu" style="color: null;
+background-color: null;
+font-style: inherit;">source</span> .bashvars</span>
+<span id="cb19-3"></span>
+<span id="cb19-4"><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># Get sequence only, by skipping the first record</span></span>
+<span id="cb19-5"><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># Remove newlines so sequence is on a single line</span></span>
+<span id="cb19-6"><span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">c1q_sequence</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span><span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">$(</span><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">awk</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">'NR &gt; 1'</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"</span><span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">${output_top}</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">/</span><span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">${c1q_fasta}</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"</span> <span class="kw" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">|</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">tr</span> <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">-d</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">'\n'</span><span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">)</span></span>
+<span id="cb19-7"></span>
+<span id="cb19-8"><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># Determine length of C1q</span></span>
+<span id="cb19-9"><span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">c1q_length</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span><span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">${</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">#</span><span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">c1q_sequence}</span></span>
+<span id="cb19-10"></span>
+<span id="cb19-11"><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># Get sequence only, by skipping the first record</span></span>
+<span id="cb19-12"><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># Remove newlines so sequence is on a single line</span></span>
+<span id="cb19-13"><span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">c1q_buffer_sequence</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span><span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">$(</span><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">awk</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">'NR &gt; 1'</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"</span><span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">${output_top}</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">/</span><span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">${c1q_bisulfite_t_fasta}</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"</span> <span class="kw" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">|</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">tr</span> <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">-d</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">'\n'</span><span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">)</span></span>
+<span id="cb19-14"></span>
+<span id="cb19-15"><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># Determine length of C1q with the 5'/3' buffer sequences included</span></span>
+<span id="cb19-16"><span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">c1q_buffer_length</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span><span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">${</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">#</span><span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">c1q_buffer_sequence}</span></span>
+<span id="cb19-17"></span>
+<span id="cb19-18"><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># Calculate combined length of 5'buffer regaion and C1q length</span></span>
+<span id="cb19-19"><span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">c1q_buffer_and_seq_length</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span><span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">$((left_buffer</span> <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">+</span> <span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">c1q_length))</span></span>
+<span id="cb19-20"></span>
+<span id="cb19-21"></span>
+<span id="cb19-22"><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># Use heredoc to create Primer3 parameters file</span></span>
+<span id="cb19-23"><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">cat</span> <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">&lt;&lt; EOF</span> <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">&gt;</span> <span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">${output_top}</span>/primer3-t-params.txt</span>
+<span id="cb19-24"><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">SEQUENCE_ID=</span><span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">${sequence_ID}</span></span>
+<span id="cb19-25"><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">SEQUENCE_TEMPLATE=</span><span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">${c1q_buffer_sequence}</span></span>
+<span id="cb19-26"><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">PRIMER_TASK=pick_sequencing_primers</span></span>
+<span id="cb19-27"><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">SEQUENCE_TARGET=</span><span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">${left_buffer}</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">,</span><span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">${c1q_length}</span></span>
+<span id="cb19-28"><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">PRIMER_MIN_TM=50</span></span>
+<span id="cb19-29"><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">PRIMER_OPT_TM=55</span></span>
+<span id="cb19-30"><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">PRIMER_PICK_LEFT_PRIMER=1</span></span>
+<span id="cb19-31"><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">PRIMER_PICK_RIGHT_PRIMER=1</span></span>
+<span id="cb19-32"><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">PRIMER_OPT_SIZE=30</span></span>
+<span id="cb19-33"><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">PRIMER_MIN_SIZE=25</span></span>
+<span id="cb19-34"><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">PRIMER_MAX_SIZE=36</span></span>
+<span id="cb19-35"><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">PRIMER_MAX_NS_ACCEPTED=0</span></span>
+<span id="cb19-36"><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">P3_FILE_FLAG=1</span></span>
+<span id="cb19-37"><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">PRIMER_EXPLAIN_FLAG=1</span></span>
+<span id="cb19-38"><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">PRIMER_THERMODYNAMIC_PARAMETERS_PATH=</span><span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">${primer3_config}</span></span>
+<span id="cb19-39"><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">PRIMER_NUM_RETURN=10</span></span>
+<span id="cb19-40"><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">PRIMER_PAIR_EXPLAIN=considered 0, ok 0</span></span>
+<span id="cb19-41"><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">=</span></span>
+<span id="cb19-42"><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">EOF</span></span>
+<span id="cb19-43"></span>
+<span id="cb19-44"></span>
+<span id="cb19-45"><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># Run Primer3</span></span>
+<span id="cb19-46"><span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">${primer3}</span> <span class="dt" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">\</span></span>
+<span id="cb19-47">--format_output <span class="dt" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">\</span></span>
+<span id="cb19-48">--output=<span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"</span><span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">${output_top}</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">/primer3-t-primers.txt"</span> <span class="dt" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">\</span></span>
+<span id="cb19-49"><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"</span><span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">${output_top}</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">/primer3-t-params.txt"</span></span>
+<span id="cb19-50"></span>
+<span id="cb19-51"></span>
+<span id="cb19-52"><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># Pull out any primers falling outside of target</span></span>
+<span id="cb19-53"><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">tail</span> <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">-n</span> 30 <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"</span><span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">${output_top}</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">/primer3-t-primers.txt"</span> <span class="dt" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">\</span></span>
+<span id="cb19-54"><span class="kw" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">|</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">head</span> <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">-n</span> <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">-12</span> <span class="dt" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">\</span></span>
+<span id="cb19-55"><span class="kw" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">|</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">awk</span> <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">-v</span> left_buffer=<span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"</span><span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">$left_buffer</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"</span> <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">-v</span> target=<span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"</span><span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">$c1q_buffer_and_seq_length</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">'$3 &lt;= left_buffer || $3 &gt;= target {print $0}'</span></span>
+<span id="cb19-56"></span>
+<span id="cb19-57"><span class="bu" style="color: null;
+background-color: null;
+font-style: inherit;">echo</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">""</span></span>
+<span id="cb19-58"><span class="bu" style="color: null;
+background-color: null;
+font-style: inherit;">echo</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">""</span></span>
+<span id="cb19-59"><span class="bu" style="color: null;
+background-color: null;
+font-style: inherit;">echo</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"----------------------------------------------------------------------------------"</span></span>
+<span id="cb19-60"><span class="bu" style="color: null;
+background-color: null;
+font-style: inherit;">echo</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">""</span></span>
+<span id="cb19-61"><span class="bu" style="color: null;
+background-color: null;
+font-style: inherit;">echo</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"Primer results file:"</span></span>
+<span id="cb19-62"><span class="bu" style="color: null;
+background-color: null;
+font-style: inherit;">echo</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">""</span></span>
+<span id="cb19-63"><span class="bu" style="color: null;
+background-color: null;
+font-style: inherit;">echo</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">""</span></span>
+<span id="cb19-64"></span>
+<span id="cb19-65"><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># Print the full output file</span></span>
+<span id="cb19-66"><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">cat</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"</span><span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">${output_top}</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">/primer3-t-primers.txt"</span></span></code></pre></div>
+<pre><code>                    start  len      tm     gc%  any_th  3'_th hairpin seq
+ 1 LEFT_PRIMER       3265   30   54.89   23.33    0.00   0.00    0.00 ttATATtTCTtAACtACTAACCCTtAtACA
+
+                     start  len      tm     gc%  any_th  3'_th hairpin seq
+ 7 RIGHT_PRIMER      7171   29   56.70   20.69    2.75   0.00    0.00 aAaAaTGTaTGTGTGGAaaATTTTAGTTT
+
+
+----------------------------------------------------------------------------------
+
+Primer results file:
+
+
+PRIMER PICKING RESULTS FOR LOC120027825
+
+No mispriming library specified
+Using 0-based sequence positions
+WARNING: No right primer found in range 5634 - 5674
+
+SEQUENCE SIZE: 10458
+INCLUDED REGION SIZE: 10458
+
+TARGETS (start, len)*: 3500,3458
+    0 TttttCTCtCCAttACAAttttAtCCCTtAAAAtATtTtAAtTTACACCCCAtCTACCCA
+                                                                  
+
+   60 tTCACCtTCTTTCACTATCCtCAACCCTCCACTtttACAATCtTCAACAATACATTCAAt
+                                                                  
+
+  120 CCTTCATtTACTCCttttCCtCtAATAATTTCAtttACCAAtACTTCtCCAtCtAATTAC
+                                                                  
+
+  180 AAATCCCCTtCtTtAAATtTCCCATCCCTCTCCATCTtCTCCttCCAtTTttttTATCAt
+                                                                  
+
+  240 ATCAAtCCCATTCTACTtCAttTTttttTtAACCACTCAtACTCTTAtTTTTCTTTTtAT
+                                                                  
+
+  300 CACTtCTCCCtAtAACCTtCTTATCCTAtttTACCCCTttCTAtTtCTACATAACCCACA
+                                                                  
+
+  360 ATTTTTCTttTCCACtttACACATtCTAtACTttttTTtTTCAACATATtACATTAAAAT
+                                                                  
+
+  420 tACAtATCtCTATAATAtTTtTACACTCATTAAAttCCCAtTtCAtTCAACtTTATtTtA
+                                                                  
+
+  480 TCAtTtTTATTTCCTtATAtTTtCTttTTtAAAATACAATCTACACTttACCTTTTAATC
+                                                                  
+
+  540 AtCtttTTTtCATtttTtttAtTTTTttCTTTCCATtATtACATCACCATtCttTAAATT
+                                                                  
+
+  600 tATTAATAtACCAATAACAtAtTTCCAAACTTCTTTtCCAATAACAtCAATTTTTCAtTT
+                                                                  
+
+  660 TTTCCCTCCCCACTCAAACCACTCCCAtACAtTCCTTtCAAAATTCTTtTTTtTtAATtT
+                                                                  
+
+  720 TTTTTtTTtTTtCTAAAAAtCTATTCTTTCCCATTTTAATttAACTCTATTACAtTAATt
+                                                                  
+
+  780 TACTTAATTtTTACCCAtAAATtATTTtATATTtTTATAAAAACttCTtCAtTttACCTT
+                                                                  
+
+  840 TAATCTtCATCAAAATATCTtTTCAATAtAAATTtAtAAtATAAAATACACtCTCtCTtT
+                                                                  
+
+  900 CTTTATTtACATttTCAtCTtTttATtCTTCCTTTttCTtAttAATtACACCATtTTttC
+                                                                  
+
+  960 TTATtACCAttCATAtACCACTATCTAATCAACCTttACTCtttTAtACATAAAtATtAA
+                                                                  
+
+ 1020 TCCtttACACTCCAATTAtTATtATATTTTACtTTTCtTATttTATtTATTAtTTTtTtt
+                                                                  
+
+ 1080 ATtTCCATCATCCATTTTtTATtATATtTTACAAATTtCAATTCATACAATATtTTAAAA
+                                                                  
+
+ 1140 ATTtCTATTTtTACAATATtTTACtAATTTtTAAACTTATtAAATtTTATtAATTCTAAT
+                                                                  
+
+ 1200 TTtTTtTtttTAACATTAtTTACtTttTTAAAtCTAACATTAtCCTttTttCTAATtTTA
+                                                                  
+
+ 1260 tCTATtTTAttttTTAtttTCAtttTTtAAttTTAtAtTTtATtTttATATtAAtCTAtt
+                                                                  
+
+ 1320 tTTACttTTCAAATTAtAtTTtAtCTttAATtTtTACATAAAtCTAtttTTATttATTTT
+                                                                  
+
+ 1380 tATtAATTAtATCAtCCTttTCTCATAtACTAtACtTAAATCCttAtCAtATAtTtTtAt
+                                                                  
+
+ 1440 CTCAAAtTATTTttACAtTtACACATTTtTTtTTtTTTTAtCTCTtAtCTCCAtCACTTT
+                                                                  
+
+ 1500 ttATTTtAAATtATACTATTAttTTAtTtCtCAtACTtACAtCTTTAATTTtAtttTATT
+                                                                  
+
+ 1560 TTCATCCATATCAttTtAACCtTTTAtAAAAAtTtCTtTCACCAAAAtTATTttAACAAT
+                                                                  
+
+ 1620 TTTACTTATATtttTATTAAAtTAtTAAAAAtATAAtTATTTttACCCATATTCCTAtCA
+                                                                  
+
+ 1680 CtCAATtACTACATCAAtCtTtTtACTCTACACATTTtTTttATtCATTTtCTtTTTtTT
+                                                                  
+
+ 1740 TTAtTTATtTTTCAtATTATTTTtTtCCCAATAtAAACAAATttTAAATAATtTATTtTt
+                                                                  
+
+ 1800 TAATTTTttAtTCACTTTTAtAtAAAtTTACAtACtCATAAATATCATAACCCCCCAAAA
+                                                                  
+
+ 1860 ATtCTAAtCTCCCCTtTTATTtTAATttTtAtAttTTAtCATtTCTTttttTTATtATAT
+                                                                  
+
+ 1920 TTtTtCATCTtTtACTTTCTCACTCATCATTATTCACTATTCATTCATTATTATCTtTAA
+                                                                  
+
+ 1980 TCATttTAtCATCCACAATtTAtCAtTTTTTAtAAACCTATTCTTATTTACATTATTTTT
+                                                                  
+
+ 2040 TTAACTTAtCATtTTAtCTAACCCTAACCTTAATCCAACTCCTCCTAACTCCTTAACCTT
+                                                                  
+
+ 2100 CAAtTTTATTCAAAtTTTAtTCTTAtAAACACAtTtCATtAtAATTTAtCATtTtTTTCT
+                                                                  
+
+ 2160 tAAttAAAAACTTAAACtATtTCAAtCTCTCAtATAACACAAAACACTtttTtAtTTTTC
+                                                                  
+
+ 2220 CTTATTtCAttTCATTTttATCAtACTCTtTAAAACACTtTAttAAAACAACCCTtTTTt
+                                                                  
+
+ 2280 TTTTTTTttTCTCTTTTTATCttCATtAAATTtTtATAATATTtTAAttTTtttTTtTtC
+                                                                  
+
+ 2340 CtTttCttATATCTTTtTtttCTATACTCttCCTTtTCTtAttATttTAttTTttTttTT
+                                                                  
+
+ 2400 tAAtAAATCCCTCTAtTttTtTtttttCTtTtCTTTttCAAAtTtttTttttTTATATCC
+                                                                  
+
+ 2460 TTCCTtTTTttCCCTtTCCtttttTATCATCttATttttCCACAtTtTCTCCTtACCCCT
+                                                                  
+
+ 2520 CCTtTCTCAtTATTTATtCTtCAtTAtTTTATtTtTCttttttCTAtttTCAtTTTtTTA
+                                                                  
+
+ 2580 TATCTttAtTACTTCTCCTtTCTTATCCttTtTCCTtTtTtAATTTAAtTATtCTCTCTC
+                                                                  
+
+ 2640 TAATTCTCTCTTTCTTTCTCTCTCTCttAttACCTtAtCCCTAttACCATtCCTCAttAC
+                                                                  
+
+ 2700 TACCTttCACtATtACTCCTTtCTtTCCCCAtTCCACCTttCCtTtCTtCTtCTCCAtTT
+                                                                  
+
+ 2760 TCAACTtTTCTtCCTtTttCTATttAACCCTtACCTtTTCACCAtACtTtCTACCTtTCC
+                                                                  
+
+ 2820 CAtACCCtCTtTTTTCAACTCTCTAtAtACAtCAttAtCttTAtAtATACTCTTAATtAT
+                                                                  
+
+ 2880 CttCTATtAAAAtCCAACTtACATTTACTTCTtAttTtCTtACTTtCTtCACCCTCtACA
+                                                                  
+
+ 2940 ACTACTtTtATTATTATTATTTtACCATtCTttTCATTTTtAACATTTtAACATCTTttC
+                                                                  
+
+ 3000 CATtTTCTtTTATAATCTCCACCCttCACAtCCAAAAtAttACTttCCACCCCTCATAtC
+                                                                  
+
+ 3060 CTttTTCCTCTCTAttTTTCTTCCTAttTTTTttCCTTTCTAtttAtTTTTTCCTAtCCA
+                                                                  
+
+ 3120 CCtTtCTTCTACACCTtCATTtCTTtCTtTTTttttTTTTAttCTtttTTTCTtTACAtC
+                                                                  
+
+ 3180 ACTTTtAtATATCAtCTtATtTAAtAAtttCTATATAAATACATTTtATTTtATTTtATA
+                                                                  
+
+ 3240 AttTCACTAtTTACTTATTAAATATttATATtTCTtAACtACTAACCCTtAtACACATCA
+                               &gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;     
+
+ 3300 tAAAtCTtAtTTCACtTCATAATATTtTtATTATAATCACAATCCCTTCTTACACCACTA
+                                                                  
+
+ 3360 TAAATtTtTCTCTtTCCTTATCTtAtTCTCTtAATtTAtCCTATtTtTtACCTtAATtTA
+                                                                  
+
+ 3420 TCTtTTACCTTAATtTAATtTAtCCTACATtTtTTACTTtAAAAATAACCCTAAATTttT
+                                                                  
+
+ 3480 TCTTATTCCCAACACAtCTCTtttATtTtTAATttTCATATTTATTACCATACCTCTCCA
+                          ****************************************
+
+ 3540 CTTCTTCCTCTTTCCCTTTACAATTTTTATTTTTTTTAAATAATAAAtTtATtATTTATT
+      ************************************************************
+
+ 3600 TATTttTTAAAtAttAAAATCCTCACATCACAtAATttTtCTtTCCTCACACTtttAAtA
+      ************************************************&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;
+
+ 3660 tCAttAAtCCACTtAAttTtTTtTttTTATCATttCTATCATttAtACCCTttTCTTCAt
+      &lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;******************************************
+
+ 3720 ttAtACtAAttTAtACCACATCCTCCTTCTCCAtCTCTAtTtTCAACtCATTAtATATtT
+      ************************************************************
+
+ 3780 ACTtCCAACCCCCAACTtTATTTCTTTCTACATTATATAtAACTCTTTtATTATTtTtAA
+      **********&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;********************
+
+ 3840 ACATCATtATtCCCATtAtTTtTtttTttCtttATtACATttCCtTtAATCTtAAtAAtT
+      ************************************************************
+
+ 3900 AtACTCCTTTCACTtATtCTtTtAAtATtCCTtCATCAtAttAtAAATAtAtTtATATCA
+      ************************************************************
+
+ 3960 tCACTtTCTtTCTCATtTTtCTtTAtCTttAATtTTTTTAACAAATAAACTCAtCAAAAA
+      ************************************************************
+
+ 4020 AAtAAATtTCCCTTTTCAttACCCTtTCTTTCAAAtATAATTCtTAAAAATCCAAATAAC
+      ************************************************************
+
+ 4080 TTCACAtATCTTCATTTTAAAtttTTTAAACACTtTTTCCCATtCTTCTTCAATtAACCA
+      ************************************************************
+
+ 4140 TAAACAATTAATtAACATtCACCTtTttAACttTCtTTAAtACACTAACAtCTTACAtAC
+      *************************&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;*****
+
+ 4200 ttTAttCAtTTAttCCAAAtTTATtAAAACTTAttACACTAAAtAttCCTTTCTACTtAC
+      *******************************************************&gt;&gt;&gt;&gt;&gt;
+
+ 4260 ACTtAAAAACACCAAAAtAAAtATtTCCAtttTCCCTtCTCATCTtCAttAACtTtCCTT
+      &gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;***********************************
+
+ 4320 AtACATtCTtCAAttAttCATtAttACTACAtATtTttCCAtttCAATAAATTtCAATtT
+      ************************************************************
+
+ 4380 CCtTACTtTtAtACACCTAACACAtCtCTACAtttAtACAttACttACAtCTtATCtTCC
+      ************************************************************
+
+ 4440 TCtCAtTtACAtACCACtTtTAACAACACCTtCACAttATCttTACATCCtAACATCACA
+      ************************************************************
+
+ 4500 CCTtCtttACAttTACCttATttCAACAACAACTtCCCtAtTTACACCAttAACtCACAA
+      ************************************************************
+
+ 4560 TCCCTCCATCAtTtCTCAtACTtTCTtCAATAttCTAAtAtAttTTttACTtAtttCTTt
+      ************************************************************
+
+ 4620 TAttCCTtTTtTCAttCAttTCATCACCttCAACTACtTCtCCTATtttCACAAACCCAC
+      ***************************&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;****
+
+ 4680 CtTCACTttACCAtACAtCCtCttTTTTtTCTCACCAttttTtATttTCttAATTtCtTT
+      ************************************************************
+
+ 4740 TATCtTTtAAttAATtAtCtTTACACTtAttCCTtTACTCTttAtCtttATCtATTTttA
+      ************************&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;******
+
+ 4800 ttTttAtttTCCtTCATttTCTttttCttTtTATCACAtCATCATCttACTtAtCTTtTT
+      ************************************************************
+
+ 4860 tTCTTTtCAttAAATCTCAACtCTtTtCtTTACAtttAAtACATCCTCCTCCCTCATATt
+      ************************************************************
+
+ 4920 tTACCCTTCCTtCAttCTCATCCTtACATtACCCTCCAtCATtACAATtCCACCAtCCAT
+      ************************************************************
+
+ 4980 ACTtCTCATtTTtTtCtTtATTTCCTtCAAtACAttAATtTCAtTtTTCTtCCATttCCA
+      ************************************************************
+
+ 5040 tCtAAtAtCCCAtATCTCAATCCCATTtAtCACtTCTtttACCTTTTttATCttAtttTt
+      ************************************************************
+
+ 5100 AtAtCTAtttCCATTCtCCACAtAAATtTCTtttAACTTtCAttTtCCTTttTttAAtAt
+      ************************************************************
+
+ 5160 TttttTAACATCTCACAtCAAtAACTttCAAATCTttTtCAtTCCATtAttAttAtATtC
+      *************&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;*****************
+
+ 5220 ACTtCAtTACTTAATtCAtCTttTttCCACACCAtATACTtACTtTTACTTTTtATTTTt
+      ************************************************************
+
+ 5280 ACCCCACCTTTtTTCAtttACACATTATTCCATTTCTtTTAtTCACATtTCTtTttAACT
+      **************&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;****************
+
+ 5340 TtTTCAtTTTATtTCTCAtTTtTTtAATATTtTTATtTTCATACAAATATTTACACATtT
+      ************************************************************
+
+ 5400 TAAtTTtACTtAAAATAAACtCAtTTtACAtTtAtAttACtTTTCTTTTAACAtTtAtAt
+      ************************************************************
+
+ 5460 tAtTTTAtTATAATTAAtTCAtttACTAttTAACACAAATTACCACCAAACACAATAAtT
+      ************************************************************
+
+ 5520 ATCAAACTAAACATTtTTATAACTAAAATAAAATCAtttTtACAtATTAAtTAACATAAA
+      ************************************************************
+
+ 5580 ATATtTCATTAAAAAAAATtACCtTAtACATACAtTACTAtTCAAAAtTTTttACATACT
+      ************************************************************
+
+ 5640 TAtAttTtTtttTTTTTCTTTATTTTTACTATTTTCTACATTtTAtCATAATAtTtAAtA
+      ************************************************************
+
+ 5700 CATAAACTATtAAATAACAAATATttAATCATtTAtTAACCAAAATAtTATTTAAAAAAT
+      ************************************************************
+
+ 5760 CTAAATATATTTCAtATTTTTCAAAtTAtCCACCCTTTtCCTCtATtACAtCTTTtCACT
+      ****&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;**************************
+
+ 5820 CTCTTttCATTCTCTCTTCACCTttAATtCTTTTCCAAtAtTtTtCAAAACTtTCATCAA
+      ************************************************************
+
+ 5880 ttCAAAtttTtACTACTTTAAAtAATtTCAAATATAAAATATATTTTtATTTtTTTTATA
+      ************************************************************
+
+ 5940 CTTTTTtttTTACTACATtATTCCATATtTtTTATTTAATAtTTTTtAAtTCTTCACTAT
+      ************************************************************
+
+ 6000 TATTCTACAATtTAtAAAATAtTAAAATAAAtAATCCCTttAATAAtTAttTtTtTCCAA
+      ************************************************************
+
+ 6060 ACTTTTtACTttTACTtTACtTtTTTttTATCATATAtCTAtTAtTTACAAAAtTAAACT
+      ************************************************************
+
+ 6120 CATTTAAAAtCTTtAAACtTAtAATTTtTCCCTCAtAATTATtTCCACTCTtAAAATCTA
+      *******************************&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;
+
+ 6180 tTtTCTTATCATtATTTTCAAAtTAAAATATAAAACAAtTTAtTtAAtTAAAATTATATA
+      &lt;***********************************************************
+
+ 6240 CAtAtATTACTtAtAAACATtCAtCAAAATCATCCCAtAAtAATTACATTAAATTtCATT
+      *****************************&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;*
+
+ 6300 CATAAAAAATTATtATtAtATtACTtACTCAATATTTttCATTtTTttATtAATtTTATt
+      ************************************************************
+
+ 6360 CAACATTCAAATttATTTCCCTCTTtTTAtTTAtTACCTtTAATTtttTTtTAttCCTTt
+      ************************************************************
+
+ 6420 CCtATtTTttTtATtACTCTACTtAAtATCAtTtTAtTAtCAtTACTtAATttACCTACt
+      ************************************************************
+
+ 6480 TTTCCAtAtTCAtTCAAACCAtCAtAtAAttCCACAtTTttTCTtCCTtTtAAAAtAAtT
+      ************************************************************
+
+ 6540 TtATTATTTAAAAttACAATCTtAtATTtAAATAACAACAAttCAAATtCTTACTTATCC
+      ************************************************************
+
+ 6600 ACCTtTATCAATCCAATTTACAAATtCCTtATATTTCTtACATtACCTtCTTTCTCTTTC
+      ************************************************************
+
+ 6660 TCCAtCTCTTCCACCTTtCTCTTCTttAtCTtCAtTTCAtTCTTttTtACtCTCAtCTCC
+      *************&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;******************
+
+ 6720 TtTCTCTtTTCCACCATCATtTCTCTCAtCTCCTCCAtCTTAtACCAtATtTCAttttTC
+      ***********************************&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;
+
+ 6780 TTtTtttCCtTCTCTtTAtCTTCAtCCCATtCCCCAAACAtAtAAAACAtCAtCAtAtCT
+      &gt;&gt;&gt;&gt;&gt;*******************************************************
+
+ 6840 ACAtCACCTCTCATTCTtAAACtACACATCTTCTtAAATtATCTAtTCTTTtAttCTAtA
+      ************************************************************
+
+ 6900 AATTTACAttATTAAAtTAttAtCTATATCTtTtTtAAATATATTtTtTCTCTtTttAAA
+      **********************************************************  
+
+ 6960 AAAtAtttTTCTTAAATATCAtttAtTATTATTTtATTAttATTACTttTAttATTCTTT
+                                                                  
+
+ 7020 ATTTtTTTTTACTttCAATtAttTtAAttTTTCTTtCtTCATTCACCAtTTtTTtTTACT
+                                                                  
+
+ 7080 tTATTTCtTCATACTTAATTTTtATAtTCCCCTAtATAtttAtTtttCtTACACATCACA
+                                                                  
+
+ 7140 tACAAACTAAAATttTCCACACAtACAtTtTttTAAAtAAttAAttCCAAAAAtATCATC
+         &lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;                            
+
+ 7200 AAttACAACAACCACCCtAtCCACTtCCTtTTCACACTtCTATCATCCAtAAttTtAttT
+                                                                  
+
+ 7260 CAtTACAttTACATCAAtCTtttACCtAtAtATTtAtAAACAtCTTCTATCTCAAttCCA
+                                                                  
+
+ 7320 TCAtACTtCTAAACAtCAATCATTAACTtAtAtAtTCTtCTtCCCACATTtAtAACCAAT
+                                                                  
+
+ 7380 CACAttACACTTTAATAAATttATCACTAtTCACTTTAAACAATtCCACTTTAAATAATt
+                                                                  
+
+ 7440 tCACTTTAATAATtCTTAAATATCTTACATTACTCATTTCACATtTATATACTtTATTTT
+                                                                  
+
+ 7500 ATACCATCTACTtCACCTTtCCTATtCCtCTCtCATTAACATCTtCTAACCATtTtTATt
+                                                                  
+
+ 7560 TtACCAATAAtATTTtATTTtATATCTtTAAATtATCTACAtATtATCAAACTAAtAAtA
+                                                                  
+
+ 7620 AACTATtAACTtCAACTCTtTTtATATTCAACTtCTTtTTAtttTTATttCAAttTCtAA
+                                                                  
+
+ 7680 TTttCCtTCTtCCAAATttACTttACTTTTTTTTTTAttTttTTtAtCCttTCtAAATTt
+                                                                  
+
+ 7740 AAAAAAATTATATTATATACATATATACAAAATCCATATTtCtATAACAATAAATCtAAC
+                                                                  
+
+ 7800 AATAAtTTTATTACATTAATtTtCATCACAtTTTTTTTATTATCATTTAATCTATTACTA
+                                                                  
+
+ 7860 TTAtTTTtTTTtTAtTTTtTTTtTTAtCAAACTTATTTAATATCAAACTTCACTTTTCTC
+                                                                  
+
+ 7920 TAtCATAttCTACTTATCtTAATtAACtACATAAtCAAAATtCTTtCAATAAtTtATCtt
+                                                                  
+
+ 7980 AATttTTttTtTAtATAATTTTTtTTTTATCtTCCTAtCTtTAtTTCAAAtTCAAACtCt
+                                                                  
+
+ 8040 CCATCAtTtAtCCAtCCTATATTCCTACTAAAtTTtTtAtttAtAtACAtCTAAATtAtC
+                                                                  
+
+ 8100 ttAtTtAATTATttATtATtAttACAAAtAACCTtATTCTtTtTtCAAAtACAtTTCAAC
+                                                                  
+
+ 8160 TtCAtCCAAAttAACAtAAttTAATTCTtTCtAttTTtAAAACAtAtAtACATACTtACA
+                                                                  
+
+ 8220 tAtATCTCTAtTTttATtTCAAATtTTTTTtCATttACATTtCCATTtAtttCTTCCACC
+                                                                  
+
+ 8280 ATTTTAAAtTAtTCAACTtttTttttATTTCTATttATTtAtAATtATTAtCCAATtATC
+                                                                  
+
+ 8340 AtAtAATTATCTTAATCTTCAATTTttATTtCTTATttCTtTACATttCTTTAAtCTTCA
+                                                                  
+
+ 8400 TCACCACCATtAAtTttCCACAATAATTtAATtACAttACTCCAtCACTtCtttTttCAt
+                                                                  
+
+ 8460 TAAATCACCAATTTtTTATTTAACACtTTCTCATTTACAtCAACtACCTttttAATAtTT
+                                                                  
+
+ 8520 ACAttttAtAttAtttttATtAATTAtCCAATTtTAAACTttttATtATTAttTtACCAT
+                                                                  
+
+ 8580 tATttTATtAtttCCAtATTtttAATTTAtCCAtttCTAAACACCCCTACTCTTATAATA
+                                                                  
+
+ 8640 ATAATAATAATAATAATAATAATAATAAATtCCATtTtACCACAtAtTCAttACACCCAT
+                                                                  
+
+ 8700 TTAACATCCCATCCAAAAtACAtCAACCTACACAtttCAATtTCCCCAATCACTtCCTTt
+                                                                  
+
+ 8760 tttAATTtttATATTTTTTAtAtCAtACtAAAtAtTtCCTCCTACTttCCCtTCCAACAC
+                                                                  
+
+ 8820 CACTCCCAtCAtCATCTttTCTCCCATCCAtttCCCAACCTTtCTTAtCTTCAtAAtCAA
+                                                                  
+
+ 8880 tCCAtCAtTtttATttAtttTTtTATtCTTCTttCAAtCTAATtTTTAtTCCTtAACTTA
+                                                                  
+
+ 8940 TTCAttCTTtCCATAACAAAttttTTtAATACTTTTTtACTCAAtACATTTCAtCTTTTC
+                                                                  
+
+ 9000 ATTtTAAATACATTTtTAAAAATAAAAAAAATCCAACTAAATTCCACTTTtACATTtTAt
+                                                                  
+
+ 9060 ttTAATATtTtTAtATCAtTtACACAACATCTACATTTAATCAACTATATATTCAttCTt
+                                                                  
+
+ 9120 TCACACAACAAAATtTttAAAAAtTCAAttttAtTtAATACTTTTTTTTATAtCTTTtTT
+                                                                  
+
+ 9180 ATAAACATTATACTACATTATAATAACAACTTtCCAAAAAACTTtAAATttAAACAAATA
+                                                                  
+
+ 9240 tAATTTTACAACAAAATCAATtTTTCTtttACAAAATAttATTAtTtACAtCTtTAATTA
+                                                                  
+
+ 9300 AAttAAtATCTTCTttCTACAtTAACAATtACAtCTACATAAAAAAAAAAAAAAAAAtCT
+                                                                  
+
+ 9360 AtTCAttTAACTACtTAtTTAATtTTtCAATTtTTTACAtCTTTCAtATTTtCTATCATt
+                                                                  
+
+ 9420 AATTTtTTAAttCCAAtttTAAtAAttAAAATttCATtAATTttAACCTAATtACTAACT
+                                                                  
+
+ 9480 CCTtTtTtTtTtTtTtTtTtTtTtTtTtTtTtTtTtTtTtTtTtTtTtTtTtTtTtTtTt
+                                                                  
+
+ 9540 TtTtTtTtTtTtTtTtTtTtTtTtTtTtTtTtTtTtTtTtTtTtTtTtTtTtTtTtTtTt
+                                                                  
+
+ 9600 TtTtTtTtTtTtTtTtTtTtTtTtTtCATACATtTTCATCTATCACTTTtTtTAtTTAtC
+                                                                  
+
+ 9660 TAtCAATTttCTACTAATtATTTtCCTtTCTACCCAtACTCCTtTCTACCCAtACtCCAA
+                                                                  
+
+ 9720 ACtTTATtCCACtCCCACttACtTTAtTTTATtTAtTtAACtACttAtCAtCtAtTtTtA
+                                                                  
+
+ 9780 tTCtTCAttCTAATTAATAtTCCTACTtCAACTtTCTTtATTATtAtTAtATCTACAAAt
+                                                                  
+
+ 9840 TATtCCTTCCTttCAttATtATATAATTAATATTATTTtTATCAATTtttTCtttATTTt
+                                                                  
+
+ 9900 TTTAACAAACTCTtCCATCtTttTAtTCTtCAtAAACATTtCTAtCCAAACACAtTCCTC
+                                                                  
+
+ 9960 TCTCtCTAtttttTTTATTCAtACCCAAtTTATACCCACATAAATATAATTtTATTCTCT
+                                                                  
+
+10020 TTTTATtCACTTTTCTCTCTATtCtTATTCTtACCTTtAACTTACTCATttttACAAtCC
+                                                                  
+
+10080 AtTtTCAtCAAttTACCCTtttTtAttttTtATACtCCAtTtTATTCTtACCTTtACTTA
+                                                                  
+
+10140 ATTCCCTACTAATTCTACAACCTTTATCAttCTAATATTCTtAATATCCTtTTCTCTCtA
+                                                                  
+
+10200 TATAtTCCAtTtAtTTTtTCAACAAAATTCAAATtATAttTAAACCtTATATTCAAttAT
+                                                                  
+
+10260 ttATAAAtATAAATtTACTtAAAATCCTATTtAATAAAAACTCCACAAtAAAATCTtTTt
+                                                                  
+
+10320 tCCAACAAtTtttAtttTTTTCAtCttTTtAATTAAATTTATTCAtAtCACtCCCAtCAt
+                                                                  
+
+10380 CAAAtCCCCAtCAtCAAAtACCtTTACACTACTtCATAAttTAAtTCTtAtTttTCCAAA
+                                                                  
+
+10440 CACACCAAtAAAtTTtTt
+                        
+
+KEYS (in order of precedence):
+****** target
+&gt;&gt;&gt;&gt;&gt;&gt; left primer
+&lt;&lt;&lt;&lt;&lt;&lt; right primer
+^^^^^^ left primer / right primer overlap
+
+                    start  len      tm     gc%  any_th  3'_th hairpin seq
+ 1 LEFT_PRIMER       3265   30   54.89   23.33    0.00   0.00    0.00 ttATATtTCTtAACtACTAACCCTtAtACA
+ 2 LEFT_PRIMER       3790   30   55.04   23.33    0.00   0.00    0.00 CCCAACTtTATTTCTTTCTACATTATATAt
+ 3 LEFT_PRIMER       4255   30   55.30   20.00    0.00   0.00    0.00 CTtACACTtAAAAACACCAAAAtAAAtATt
+ 4 LEFT_PRIMER       4764   30   55.09   23.33    0.00   0.00    0.00 ACTtAttCCTtTACTCTttAtCtttATCtA
+ 5 LEFT_PRIMER       5294   30   55.72   23.33    0.00   0.00    0.00 CAtttACACATTATTCCATTTCTtTTAtTC
+ 6 LEFT_PRIMER       5764   30   54.46   20.00    0.00   0.00    0.00 ATATATTTCAtATTTTTCAAAtTAtCCACC
+ 7 LEFT_PRIMER       6269   30   55.20   20.00    0.00   0.00   31.63 TCATCCCAtAAtAATTACATTAAATTtCAT
+ 8 LEFT_PRIMER       6755   30   54.98   20.00    0.00   0.00    0.00 CAtCTTAtACCAtATtTCAttttTCTTtTt
+
+                     start  len      tm     gc%  any_th  3'_th hairpin seq
+ 1 RIGHT_PRIMER      3677   30   55.32   20.00    0.00   0.00   42.14 aaTTaAGTGGaTTaaTGaTaTTaaaAGTGT
+ 2 RIGHT_PRIMER      4194   30   54.81   20.00    0.00   0.00    0.00 TAAGaTGTTAGTGTaTTAAaGAaaGTTaaA
+ 3 RIGHT_PRIMER      4675   29   59.24   34.48    0.00   0.00    0.00 GTTTGTGaaaATAGGaGAaGTAGTTGaaG
+ 4 RIGHT_PRIMER      5202   30   57.40   23.33    0.00   0.00    0.00 AaTGaAaaAGATTTGaaAGTTaTTGaTGTG
+ 5 RIGHT_PRIMER      6180   30   55.05   23.33    0.00   0.00    0.00 aTAGATTTTaAGAGTGGAaATAATTaTGAG
+ 6 RIGHT_PRIMER      6701   29   57.64   31.03    0.00   0.00    0.00 GAaTGAAaTGaAGaTaaAGAAGAGaAAGG
+ 7 RIGHT_PRIMER      7171   29   56.70   20.69    2.75   0.00    0.00 aAaAaTGTaTGTGTGGAaaATTTTAGTTT
+
+Statistics
+         con   too    in    in   not          no    tm    tm   high  high  high        high      
+         sid  many   tar  excl    ok   bad    GC   too   too any_th 3'_th hair-  poly   end      
+        ered    Ns   get   reg   reg   GC% clamp   low  high  compl compl   pin     X  stab    ok
+Left    3303     0     0     0     0   974     0     9   185      0     0     0    61     0     8
+Right   3607     0     0     0     0  1486     0     3   460      0     0     0    34     0     7
+Pair Stats:
+considered 0, ok 0
+libprimer3 release 2.6.1</code></pre>
+<p>Looks like we have two primers we can use for sequencing. Neither overlaps a potential <code>CpG</code>, and both are outside of the C1q gene sequence.</p>
+</section>
+</section>
+</section>
+<section id="citations" class="level1">
+<h1>6 CITATIONS</h1>
+<div id="refs" class="references csl-bib-body hanging-indent">
+<div id="ref-koressaar2007" class="csl-entry">
+Koressaar, Triinu, and Maido Remm. 2007. “Enhancements and Modifications of Primer Design Program Primer3.” <em>Bioinformatics</em> 23 (10): 1289–91. <a href="https://doi.org/10.1093/bioinformatics/btm091" class="uri">https://doi.org/10.1093/bioinformatics/btm091</a>.
+</div>
+<div id="ref-li2009" class="csl-entry">
+Li, Heng, Bob Handsaker, Alec Wysoker, Tim Fennell, Jue Ruan, Nils Homer, Gabor Marth, Goncalo Abecasis, and Richard Durbin. 2009. “The Sequence Alignment/Map Format and SAMtools.” <em>Bioinformatics</em> 25 (16): 2078–79. <a href="https://doi.org/10.1093/bioinformatics/btp352" class="uri">https://doi.org/10.1093/bioinformatics/btp352</a>.
+</div>
+<div id="ref-shirley2015" class="csl-entry">
+Shirley, Matthew D, Zhaorong Ma, Brent S Pedersen, and Sarah J Wheelan. 2015. “Efficient”Pythonic” Access to FASTA Files Using Pyfaidx.” <a href="http://dx.doi.org/10.7287/peerj.preprints.970v1" class="uri">http://dx.doi.org/10.7287/peerj.preprints.970v1</a>.
+</div>
+<div id="ref-untergasser2012" class="csl-entry">
+Untergasser, Andreas, Ioana Cutcutache, Triinu Koressaar, Jian Ye, Brant C. Faircloth, Maido Remm, and Steven G. Rozen. 2012. “Primer3new Capabilities and Interfaces.” <em>Nucleic Acids Research</em> 40 (15): e115–15. <a href="https://doi.org/10.1093/nar/gks596" class="uri">https://doi.org/10.1093/nar/gks596</a>.
+</div>
+</div>
+
+
+</section>
+
+ ]]></description>
+  <category>2024</category>
+  <category>C1q</category>
+  <category>lake trout</category>
+  <category>Salvelinus namaycush</category>
+  <category>Primer3</category>
+  <category>primer design</category>
+  <guid>https://robertslab.github.io/sams-notebook/posts/2024/2024-07-29-Primer-Design---Lake-Trout-C1q-Gene-Bisulfite-Sequencing-Primers-Using-Primer3/</guid>
+  <pubDate>Mon, 29 Jul 2024 07:00:00 GMT</pubDate>
+</item>
 <item>
   <title>Samples Submitted - Macs Manilla Clam Egg Samples for sRNA-seq at Azenta</title>
   <dc:creator>Sam White</dc:creator>
@@ -1428,7 +3481,7 @@ Note
 <div id="fig-histology-dropoff" class="lightbox quarto-figure quarto-figure-center quarto-float anchored" alt="Histology cassettess in drop off area.">
 <figure class="quarto-float quarto-float-fig figure">
 <div aria-describedby="fig-histology-dropoff-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
-<a href="./20240618-clam-histo-dropoff.jpg" class="lightbox" data-gallery="quarto-lightbox-gallery-1" data-glightbox="description: .lightbox-desc-1"><img src="https://robertslab.github.io/sams-notebook/posts/2024/2024-06-18-Samples-Submitted---Littleneck-Clam-Histology-Cassettes-to-UW-Pathology-Research-Services-Laboratory/20240618-clam-histo-dropoff.jpg" class="img-fluid figure-img" alt="Histology cassettess in drop off area."></a>
+<a href="./20240618-clam-histo-dropoff.jpg" class="lightbox" data-glightbox="description: .lightbox-desc-1" data-gallery="quarto-lightbox-gallery-1"><img src="https://robertslab.github.io/sams-notebook/posts/2024/2024-06-18-Samples-Submitted---Littleneck-Clam-Histology-Cassettes-to-UW-Pathology-Research-Services-Laboratory/20240618-clam-histo-dropoff.jpg" class="img-fluid figure-img" alt="Histology cassettess in drop off area."></a>
 </div>
 <figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-histology-dropoff-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
 Figure&nbsp;1: Histology cassettess in drop off area.
@@ -1746,1141 +3799,6 @@ Note
   <guid>https://robertslab.github.io/sams-notebook/posts/2024/2024-06-15-Computer-Maintenance---Replace-Bad-HDD-on-Gannet/</guid>
   <pubDate>Sat, 15 Jun 2024 07:00:00 GMT</pubDate>
   <media:content url="https://robertslab.github.io/sams-notebook/posts/2024/2024-06-15-Computer-Maintenance---Replace-Bad-HDD-on-Gannet/20240615-gannet-synology-repairing.png" medium="image" type="image/png" height="43" width="144"/>
-</item>
-<item>
-  <title>Differential Gene Expression - G.macrocephalus RNA-seq 9C vs 16C Using edgeR</title>
-  <dc:creator>Sam White</dc:creator>
-  <link>https://robertslab.github.io/sams-notebook/posts/2024/2024-06-12-Differential-Gene-Expression---G.macrocephalus-RNA-seq-9C-vs-16C-Using-edgeR/</link>
-  <description><![CDATA[ 
-
-
-
-
-
-<section id="rnaseq-edger" class="level1">
-<h1>13.0.0-RNAseq-edgeR</h1>
-<p>Sam White 2024-05-29</p>
-<ul>
-<li>1 CREATE OUTPUT DIRECTORY</li>
-<li>2 edgeR GROUPING VECTOR
-<ul>
-<li>2.1 Check sample info</li>
-<li>2.2 Create edgeR grouping vector</li>
-</ul></li>
-<li>3 DEGs
-<ul>
-<li>3.1 Load count matrix
-<ul>
-<li>3.1.1 Reformat header</li>
-<li>3.1.2 Convert to matrix</li>
-<li>3.1.3 Load matrix into edgeR</li>
-<li>3.1.4 Filter low counts</li>
-<li>3.1.5 Normalization</li>
-<li>3.1.6 Model fitting and estimating dispersions</li>
-<li>3.1.7 Exact test (Gene expression)</li>
-<li>3.1.8 Differential gene expression summary</li>
-<li>3.1.9 Peek at DEGs</li>
-<li>3.1.10 Convert gene ID rownames to column</li>
-<li>3.1.11 Write DEGs to file</li>
-<li>3.1.12 Volcano plot</li>
-</ul></li>
-</ul></li>
-<li>4 CITATIONS</li>
-</ul>
-<p>Differential gene expression of 9<sup>o</sup>C vs 16<sup>o</sup>C liver RNA-seq using <a href="https://bioconductor.org/packages/release/bioc/vignettes/edgeR/inst/doc/edgeRUsersGuide.pdf">edgeR</a> (Chen et al.&nbsp;2024; McCarthy, Chen, and Smyth 2012; Chen, Lun, and Smyth 2016; Robinson, McCarthy, and Smyth 2009)</p>
-<div class="callout callout-style-default callout-note callout-titled">
-<div class="callout-header d-flex align-content-center">
-<div class="callout-icon-container">
-<i class="callout-icon"></i>
-</div>
-<div class="callout-title-container flex-fill">
-Note
-</div>
-</div>
-<div class="callout-body-container callout-body">
-<p>Copied from <a href="https://github.com/RobertsLab/project-cod-temperature/blob/d5f8a5c4a89613928ef57431e9454464ca0a6826/code/13.0.0-RNAseq-edgeR.md">13.0.0-RNAseq-edgeR.md</a>, commit <code>d5f8a5c</code>.</p>
-</div>
-</div>
-</section>
-<section id="create-output-directory" class="level1">
-<h1>1 CREATE OUTPUT DIRECTORY</h1>
-<div class="sourceCode" id="cb1" style="background: #f1f3f5;"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb1-1"><span class="co" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;"># Make output directory, if it doesn't exist</span></span>
-<span id="cb1-2"><span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">mkdir</span> <span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">--parents</span> ../output/13.0.0-RNAseq-edgeR</span></code></pre></div>
-</section>
-<section id="edger-grouping-vector" class="level1">
-<h1>2 edgeR GROUPING VECTOR</h1>
-<section id="check-sample-info" class="level2">
-<h2 class="anchored" data-anchor-id="check-sample-info">2.1 Check sample info</h2>
-<p>Only looking at 9<sup>o</sup>C and 16<sup>o</sup>C</p>
-<div class="sourceCode" id="cb2" style="background: #f1f3f5;"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb2-1"><span class="bu" style="color: null;
-background-color: null;
-font-style: inherit;">echo</span> <span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"Header for ../data/DESeq2_Sample_Information.csv:"</span></span>
-<span id="cb2-2"><span class="bu" style="color: null;
-background-color: null;
-font-style: inherit;">echo</span> <span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">""</span></span>
-<span id="cb2-3"></span>
-<span id="cb2-4"><span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">head</span> <span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">-n</span> 1 ../data/DESeq2_Sample_Information.csv</span>
-<span id="cb2-5"></span>
-<span id="cb2-6"><span class="bu" style="color: null;
-background-color: null;
-font-style: inherit;">echo</span> <span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">""</span></span>
-<span id="cb2-7"><span class="bu" style="color: null;
-background-color: null;
-font-style: inherit;">echo</span> <span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"---------------------------------------------"</span></span>
-<span id="cb2-8"><span class="bu" style="color: null;
-background-color: null;
-font-style: inherit;">echo</span> <span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">""</span></span>
-<span id="cb2-9"><span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">awk</span> <span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">-F</span><span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">","</span> <span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">'NR==1 {header=$2 " " $4; print header; next} $4 == 16 || $4 == 9 {print $2, $4}'</span> ../data/DESeq2_Sample_Information.csv <span class="dt" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">\</span></span>
-<span id="cb2-10"><span class="kw" style="color: #003B4F;
-background-color: null;
-font-style: inherit;">|</span> <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">sort</span> <span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">-k1,1</span> <span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">-n</span> <span class="dt" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">\</span></span>
-<span id="cb2-11"><span class="kw" style="color: #003B4F;
-background-color: null;
-font-style: inherit;">|</span> <span class="ex" style="color: null;
-background-color: null;
-font-style: inherit;">column</span> <span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">-t</span></span></code></pre></div>
-<pre><code>Header for ../data/DESeq2_Sample_Information.csv:
-
-sample_name,sample_number,tank,temp_treatment,tissue_type
-
----------------------------------------------
-
-sample_number  temp_treatment
-1              16
-2              16
-3              16
-4              16
-5              16
-10             16
-11             16
-12             16
-13             16
-18             16
-19             16
-19             16
-19             16
-20             16
-20             16
-20             16
-21             16
-28             16
-29             16
-30             16
-31             16
-36             16
-78             9
-79             9
-80             9
-83             9
-88             9
-90             9
-91             9
-92             9
-94             9
-97             9
-98             9
-99             9
-100            9
-107            9
-108            9
-109            9
-110            9
-116            9</code></pre>
-</section>
-<section id="create-edger-grouping-vector" class="level2">
-<h2 class="anchored" data-anchor-id="create-edger-grouping-vector">2.2 Create edgeR grouping vector</h2>
-<p>Since all sample IDs <code>&lt;=</code> to <code>36</code> are part of the 16<sup>o</sup>C treatment, we can use this to create vector which matches sample ordering in <code>../output/10.1-hisat-deseq2/gene_count_matrix.csv</code></p>
-<div class="sourceCode" id="cb4" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb4-1"><span class="co" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;"># Read the first line of the CSV file</span></span>
-<span id="cb4-2">header <span class="ot" style="color: #003B4F;
-background-color: null;
-font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">readLines</span>(<span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"../output/10.1-hisat-deseq2/gene_count_matrix.csv"</span>, <span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">n =</span> <span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">1</span>)</span>
-<span id="cb4-3"></span>
-<span id="cb4-4"><span class="co" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;"># Split the header to extract the values</span></span>
-<span id="cb4-5">values <span class="ot" style="color: #003B4F;
-background-color: null;
-font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">as.numeric</span>(<span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">unlist</span>(<span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">strsplit</span>(header, <span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">","</span>))[<span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">-</span><span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">1</span>]) <span class="co" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;"># Remove the first element which is "gene_id"</span></span>
-<span id="cb4-6"></span>
-<span id="cb4-7"><span class="co" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;"># Apply the conditional logic to generate the temperatures vector</span></span>
-<span id="cb4-8">temperatures <span class="ot" style="color: #003B4F;
-background-color: null;
-font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">ifelse</span>(values <span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">&lt;=</span> <span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">36</span>, <span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"16C"</span>, <span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"9C"</span>)</span>
-<span id="cb4-9"></span>
-<span id="cb4-10"><span class="co" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;"># Print the resulting vector</span></span>
-<span id="cb4-11"><span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">print</span>(temperatures)</span></code></pre></div>
-<pre><code> [1] "16C" "16C" "9C"  "9C"  "9C"  "9C"  "16C" "9C"  "9C"  "16C" "16C" "16C"
-[13] "16C" "16C" "16C" "16C" "16C" "16C" "16C" "16C" "16C" "16C" "16C" "16C"
-[25] "9C"  "9C"  "9C"  "9C"  "9C"  "9C"  "9C"  "9C"  "9C"  "9C"  "9C"  "9C" </code></pre>
-</section>
-</section>
-<section id="degs" class="level1">
-<h1>3 DEGs</h1>
-<section id="load-count-matrix" class="level2">
-<h2 class="anchored" data-anchor-id="load-count-matrix">3.1 Load count matrix</h2>
-<section id="reformat-header" class="level3">
-<h3 class="anchored" data-anchor-id="reformat-header">3.1.1 Reformat header</h3>
-<div class="sourceCode" id="cb6" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb6-1"><span class="co" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;"># Read the entire CSV file</span></span>
-<span id="cb6-2">csv_file <span class="ot" style="color: #003B4F;
-background-color: null;
-font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">readLines</span>(<span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"../output/10.1-hisat-deseq2/gene_count_matrix.csv"</span>)</span>
-<span id="cb6-3"></span>
-<span id="cb6-4"><span class="co" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;"># Extract the header line</span></span>
-<span id="cb6-5">header <span class="ot" style="color: #003B4F;
-background-color: null;
-font-style: inherit;">&lt;-</span> csv_file[<span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">1</span>]</span>
-<span id="cb6-6"></span>
-<span id="cb6-7"><span class="co" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;"># Split the header to extract the values</span></span>
-<span id="cb6-8">header_values <span class="ot" style="color: #003B4F;
-background-color: null;
-font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">unlist</span>(<span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">strsplit</span>(header, <span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">","</span>))</span>
-<span id="cb6-9"></span>
-<span id="cb6-10"><span class="co" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;"># Prepend 'sample_' to each value (excluding 'gene_id')</span></span>
-<span id="cb6-11">header_values[<span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">-</span><span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">1</span>] <span class="ot" style="color: #003B4F;
-background-color: null;
-font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">paste0</span>(<span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"sample_"</span>, header_values[<span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">-</span><span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">1</span>])</span>
-<span id="cb6-12"></span>
-<span id="cb6-13"><span class="co" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;"># Combine the modified header back into a single string</span></span>
-<span id="cb6-14">modified_header <span class="ot" style="color: #003B4F;
-background-color: null;
-font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">paste</span>(header_values, <span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">collapse =</span> <span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">","</span>)</span>
-<span id="cb6-15"></span>
-<span id="cb6-16"><span class="co" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;"># Replace the old header with the new modified header in the CSV content</span></span>
-<span id="cb6-17">csv_file[<span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">1</span>] <span class="ot" style="color: #003B4F;
-background-color: null;
-font-style: inherit;">&lt;-</span> modified_header</span>
-<span id="cb6-18"></span>
-<span id="cb6-19"><span class="co" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;"># Convert the modified CSV content to a data frame</span></span>
-<span id="cb6-20">csv_content <span class="ot" style="color: #003B4F;
-background-color: null;
-font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">read.csv</span>(<span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">textConnection</span>(csv_file), <span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">row.names =</span> <span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">1</span>)</span>
-<span id="cb6-21"></span>
-<span id="cb6-22"><span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">str</span>(csv_content)</span></code></pre></div>
-<pre><code>'data.frame':   30575 obs. of  36 variables:
- $ sample_1  : int  360 694 0 10 0 0 0 402 3696 335 ...
- $ sample_10 : int  464 325 10 22 9 40 3 550 2492 171 ...
- $ sample_100: int  391 276 13 15 0 40 0 293 2615 149 ...
- $ sample_107: int  346 77 11 19 0 29 0 182 2184 99 ...
- $ sample_108: int  691 409 49 74 18 8 41 1082 2702 241 ...
- $ sample_109: int  408 196 42 28 0 0 7 213 2579 149 ...
- $ sample_11 : int  436 281 14 63 0 38 4 234 3631 286 ...
- $ sample_110: int  509 284 36 35 0 0 0 149 3158 139 ...
- $ sample_116: int  366 327 0 30 0 16 3 444 2121 100 ...
- $ sample_12 : int  373 310 14 31 27 15 0 360 2673 168 ...
- $ sample_13 : int  432 393 9 25 0 0 0 531 2893 267 ...
- $ sample_18 : int  385 386 0 42 0 0 0 242 2210 205 ...
- $ sample_19 : int  330 106 0 17 0 0 27 269 2324 139 ...
- $ sample_2  : int  288 290 14 14 0 0 0 194 2384 201 ...
- $ sample_20 : int  307 252 3 21 0 22 0 359 2561 123 ...
- $ sample_21 : int  346 326 21 60 0 22 0 383 2654 215 ...
- $ sample_28 : int  293 345 26 61 0 69 0 395 2887 157 ...
- $ sample_29 : int  347 254 9 14 0 22 4 392 2250 101 ...
- $ sample_3  : int  452 363 39 29 4 0 0 408 3143 222 ...
- $ sample_30 : int  452 353 20 37 35 15 10 489 2830 183 ...
- $ sample_31 : int  984 922 10 68 0 0 0 310 1297 270 ...
- $ sample_36 : int  230 160 0 37 0 34 23 352 1981 93 ...
- $ sample_4  : int  469 588 0 0 0 55 0 168 2971 290 ...
- $ sample_5  : int  400 285 10 30 4 51 0 403 2651 225 ...
- $ sample_78 : int  472 178 48 10 0 0 0 462 2669 195 ...
- $ sample_79 : int  311 119 41 13 0 30 0 287 2671 182 ...
- $ sample_80 : int  368 197 60 56 0 19 4 310 1790 123 ...
- $ sample_83 : int  312 134 39 32 0 31 4 113 2173 162 ...
- $ sample_88 : int  551 128 49 45 8 0 0 457 2603 179 ...
- $ sample_90 : int  631 103 54 55 32 0 0 321 3260 177 ...
- $ sample_91 : int  605 315 20 27 0 42 4 396 2186 130 ...
- $ sample_92 : int  366 204 27 38 0 34 0 234 2451 134 ...
- $ sample_94 : int  339 301 7 60 14 0 0 455 2464 153 ...
- $ sample_97 : int  517 56 22 25 0 0 22 279 2768 189 ...
- $ sample_98 : int  577 49 63 18 0 26 101 229 1935 282 ...
- $ sample_99 : int  235 260 12 50 0 56 0 208 1991 138 ...</code></pre>
-</section>
-<section id="convert-to-matrix" class="level3">
-<h3 class="anchored" data-anchor-id="convert-to-matrix">3.1.2 Convert to matrix</h3>
-<div class="sourceCode" id="cb8" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb8-1"><span class="co" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;"># Convert the data frame to a matrix</span></span>
-<span id="cb8-2">gene_count_matrix <span class="ot" style="color: #003B4F;
-background-color: null;
-font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">as.matrix</span>(csv_content)</span>
-<span id="cb8-3"></span>
-<span id="cb8-4"><span class="co" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;"># Print the matrix</span></span>
-<span id="cb8-5"><span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">print</span>(<span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">head</span>(gene_count_matrix))</span></code></pre></div>
-<pre><code>                                   sample_1 sample_10 sample_100 sample_107
-gene-LOC132462341|LOC132462341          360       464        391        346
-gene-abce1|abce1                        694       325        276         77
-gene-si:dkey-6i22.5|si:dkey-6i22.5        0        10         13         11
-gene-ube2v1|ube2v1                       10        22         15         19
-gene-cldn15la|cldn15la                    0         9          0          0
-gene-muc15|muc15                          0        40         40         29
-                                   sample_108 sample_109 sample_11 sample_110
-gene-LOC132462341|LOC132462341            691        408       436        509
-gene-abce1|abce1                          409        196       281        284
-gene-si:dkey-6i22.5|si:dkey-6i22.5         49         42        14         36
-gene-ube2v1|ube2v1                         74         28        63         35
-gene-cldn15la|cldn15la                     18          0         0          0
-gene-muc15|muc15                            8          0        38          0
-                                   sample_116 sample_12 sample_13 sample_18
-gene-LOC132462341|LOC132462341            366       373       432       385
-gene-abce1|abce1                          327       310       393       386
-gene-si:dkey-6i22.5|si:dkey-6i22.5          0        14         9         0
-gene-ube2v1|ube2v1                         30        31        25        42
-gene-cldn15la|cldn15la                      0        27         0         0
-gene-muc15|muc15                           16        15         0         0
-                                   sample_19 sample_2 sample_20 sample_21
-gene-LOC132462341|LOC132462341           330      288       307       346
-gene-abce1|abce1                         106      290       252       326
-gene-si:dkey-6i22.5|si:dkey-6i22.5         0       14         3        21
-gene-ube2v1|ube2v1                        17       14        21        60
-gene-cldn15la|cldn15la                     0        0         0         0
-gene-muc15|muc15                           0        0        22        22
-                                   sample_28 sample_29 sample_3 sample_30
-gene-LOC132462341|LOC132462341           293       347      452       452
-gene-abce1|abce1                         345       254      363       353
-gene-si:dkey-6i22.5|si:dkey-6i22.5        26         9       39        20
-gene-ube2v1|ube2v1                        61        14       29        37
-gene-cldn15la|cldn15la                     0         0        4        35
-gene-muc15|muc15                          69        22        0        15
-                                   sample_31 sample_36 sample_4 sample_5
-gene-LOC132462341|LOC132462341           984       230      469      400
-gene-abce1|abce1                         922       160      588      285
-gene-si:dkey-6i22.5|si:dkey-6i22.5        10         0        0       10
-gene-ube2v1|ube2v1                        68        37        0       30
-gene-cldn15la|cldn15la                     0         0        0        4
-gene-muc15|muc15                           0        34       55       51
-                                   sample_78 sample_79 sample_80 sample_83
-gene-LOC132462341|LOC132462341           472       311       368       312
-gene-abce1|abce1                         178       119       197       134
-gene-si:dkey-6i22.5|si:dkey-6i22.5        48        41        60        39
-gene-ube2v1|ube2v1                        10        13        56        32
-gene-cldn15la|cldn15la                     0         0         0         0
-gene-muc15|muc15                           0        30        19        31
-                                   sample_88 sample_90 sample_91 sample_92
-gene-LOC132462341|LOC132462341           551       631       605       366
-gene-abce1|abce1                         128       103       315       204
-gene-si:dkey-6i22.5|si:dkey-6i22.5        49        54        20        27
-gene-ube2v1|ube2v1                        45        55        27        38
-gene-cldn15la|cldn15la                     8        32         0         0
-gene-muc15|muc15                           0         0        42        34
-                                   sample_94 sample_97 sample_98 sample_99
-gene-LOC132462341|LOC132462341           339       517       577       235
-gene-abce1|abce1                         301        56        49       260
-gene-si:dkey-6i22.5|si:dkey-6i22.5         7        22        63        12
-gene-ube2v1|ube2v1                        60        25        18        50
-gene-cldn15la|cldn15la                    14         0         0         0
-gene-muc15|muc15                           0         0        26        56</code></pre>
-</section>
-<section id="load-matrix-into-edger" class="level3">
-<h3 class="anchored" data-anchor-id="load-matrix-into-edger">3.1.3 Load matrix into edgeR</h3>
-<div class="sourceCode" id="cb10" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb10-1">dge <span class="ot" style="color: #003B4F;
-background-color: null;
-font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">DGEList</span>(<span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">counts =</span> gene_count_matrix, <span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">group =</span> <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">factor</span>(temperatures))</span>
-<span id="cb10-2"></span>
-<span id="cb10-3">dge</span></code></pre></div>
-<pre><code>An object of class "DGEList"
-$counts
-                                   sample_1 sample_10 sample_100 sample_107
-gene-LOC132462341|LOC132462341          360       464        391        346
-gene-abce1|abce1                        694       325        276         77
-gene-si:dkey-6i22.5|si:dkey-6i22.5        0        10         13         11
-gene-ube2v1|ube2v1                       10        22         15         19
-gene-cldn15la|cldn15la                    0         9          0          0
-                                   sample_108 sample_109 sample_11 sample_110
-gene-LOC132462341|LOC132462341            691        408       436        509
-gene-abce1|abce1                          409        196       281        284
-gene-si:dkey-6i22.5|si:dkey-6i22.5         49         42        14         36
-gene-ube2v1|ube2v1                         74         28        63         35
-gene-cldn15la|cldn15la                     18          0         0          0
-                                   sample_116 sample_12 sample_13 sample_18
-gene-LOC132462341|LOC132462341            366       373       432       385
-gene-abce1|abce1                          327       310       393       386
-gene-si:dkey-6i22.5|si:dkey-6i22.5          0        14         9         0
-gene-ube2v1|ube2v1                         30        31        25        42
-gene-cldn15la|cldn15la                      0        27         0         0
-                                   sample_19 sample_2 sample_20 sample_21
-gene-LOC132462341|LOC132462341           330      288       307       346
-gene-abce1|abce1                         106      290       252       326
-gene-si:dkey-6i22.5|si:dkey-6i22.5         0       14         3        21
-gene-ube2v1|ube2v1                        17       14        21        60
-gene-cldn15la|cldn15la                     0        0         0         0
-                                   sample_28 sample_29 sample_3 sample_30
-gene-LOC132462341|LOC132462341           293       347      452       452
-gene-abce1|abce1                         345       254      363       353
-gene-si:dkey-6i22.5|si:dkey-6i22.5        26         9       39        20
-gene-ube2v1|ube2v1                        61        14       29        37
-gene-cldn15la|cldn15la                     0         0        4        35
-                                   sample_31 sample_36 sample_4 sample_5
-gene-LOC132462341|LOC132462341           984       230      469      400
-gene-abce1|abce1                         922       160      588      285
-gene-si:dkey-6i22.5|si:dkey-6i22.5        10         0        0       10
-gene-ube2v1|ube2v1                        68        37        0       30
-gene-cldn15la|cldn15la                     0         0        0        4
-                                   sample_78 sample_79 sample_80 sample_83
-gene-LOC132462341|LOC132462341           472       311       368       312
-gene-abce1|abce1                         178       119       197       134
-gene-si:dkey-6i22.5|si:dkey-6i22.5        48        41        60        39
-gene-ube2v1|ube2v1                        10        13        56        32
-gene-cldn15la|cldn15la                     0         0         0         0
-                                   sample_88 sample_90 sample_91 sample_92
-gene-LOC132462341|LOC132462341           551       631       605       366
-gene-abce1|abce1                         128       103       315       204
-gene-si:dkey-6i22.5|si:dkey-6i22.5        49        54        20        27
-gene-ube2v1|ube2v1                        45        55        27        38
-gene-cldn15la|cldn15la                     8        32         0         0
-                                   sample_94 sample_97 sample_98 sample_99
-gene-LOC132462341|LOC132462341           339       517       577       235
-gene-abce1|abce1                         301        56        49       260
-gene-si:dkey-6i22.5|si:dkey-6i22.5         7        22        63        12
-gene-ube2v1|ube2v1                        60        25        18        50
-gene-cldn15la|cldn15la                    14         0         0         0
-30570 more rows ...
-
-$samples
-           group lib.size norm.factors
-sample_1     16C 49994893            1
-sample_10    16C 43506227            1
-sample_100    9C 44600544            1
-sample_107    9C 41991971            1
-sample_108    9C 47412580            1
-31 more rows ...</code></pre>
-</section>
-<section id="filter-low-counts" class="level3">
-<h3 class="anchored" data-anchor-id="filter-low-counts">3.1.4 Filter low counts</h3>
-<p>Filters for genes with at &gt;= <code>10</code> reads across at least 3 samples.</p>
-<div class="sourceCode" id="cb12" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb12-1">keep <span class="ot" style="color: #003B4F;
-background-color: null;
-font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">filterByExpr</span>(dge)</span>
-<span id="cb12-2"></span>
-<span id="cb12-3">dge <span class="ot" style="color: #003B4F;
-background-color: null;
-font-style: inherit;">&lt;-</span> dge[keep, , keep.lib.sizes<span class="ot" style="color: #003B4F;
-background-color: null;
-font-style: inherit;">=</span><span class="cn" style="color: #8f5902;
-background-color: null;
-font-style: inherit;">FALSE</span>]</span>
-<span id="cb12-4"></span>
-<span id="cb12-5">dge</span></code></pre></div>
-<pre><code>An object of class "DGEList"
-$counts
-                                   sample_1 sample_10 sample_100 sample_107
-gene-LOC132462341|LOC132462341          360       464        391        346
-gene-abce1|abce1                        694       325        276         77
-gene-si:dkey-6i22.5|si:dkey-6i22.5        0        10         13         11
-gene-ube2v1|ube2v1                       10        22         15         19
-gene-muc15|muc15                          0        40         40         29
-                                   sample_108 sample_109 sample_11 sample_110
-gene-LOC132462341|LOC132462341            691        408       436        509
-gene-abce1|abce1                          409        196       281        284
-gene-si:dkey-6i22.5|si:dkey-6i22.5         49         42        14         36
-gene-ube2v1|ube2v1                         74         28        63         35
-gene-muc15|muc15                            8          0        38          0
-                                   sample_116 sample_12 sample_13 sample_18
-gene-LOC132462341|LOC132462341            366       373       432       385
-gene-abce1|abce1                          327       310       393       386
-gene-si:dkey-6i22.5|si:dkey-6i22.5          0        14         9         0
-gene-ube2v1|ube2v1                         30        31        25        42
-gene-muc15|muc15                           16        15         0         0
-                                   sample_19 sample_2 sample_20 sample_21
-gene-LOC132462341|LOC132462341           330      288       307       346
-gene-abce1|abce1                         106      290       252       326
-gene-si:dkey-6i22.5|si:dkey-6i22.5         0       14         3        21
-gene-ube2v1|ube2v1                        17       14        21        60
-gene-muc15|muc15                           0        0        22        22
-                                   sample_28 sample_29 sample_3 sample_30
-gene-LOC132462341|LOC132462341           293       347      452       452
-gene-abce1|abce1                         345       254      363       353
-gene-si:dkey-6i22.5|si:dkey-6i22.5        26         9       39        20
-gene-ube2v1|ube2v1                        61        14       29        37
-gene-muc15|muc15                          69        22        0        15
-                                   sample_31 sample_36 sample_4 sample_5
-gene-LOC132462341|LOC132462341           984       230      469      400
-gene-abce1|abce1                         922       160      588      285
-gene-si:dkey-6i22.5|si:dkey-6i22.5        10         0        0       10
-gene-ube2v1|ube2v1                        68        37        0       30
-gene-muc15|muc15                           0        34       55       51
-                                   sample_78 sample_79 sample_80 sample_83
-gene-LOC132462341|LOC132462341           472       311       368       312
-gene-abce1|abce1                         178       119       197       134
-gene-si:dkey-6i22.5|si:dkey-6i22.5        48        41        60        39
-gene-ube2v1|ube2v1                        10        13        56        32
-gene-muc15|muc15                           0        30        19        31
-                                   sample_88 sample_90 sample_91 sample_92
-gene-LOC132462341|LOC132462341           551       631       605       366
-gene-abce1|abce1                         128       103       315       204
-gene-si:dkey-6i22.5|si:dkey-6i22.5        49        54        20        27
-gene-ube2v1|ube2v1                        45        55        27        38
-gene-muc15|muc15                           0         0        42        34
-                                   sample_94 sample_97 sample_98 sample_99
-gene-LOC132462341|LOC132462341           339       517       577       235
-gene-abce1|abce1                         301        56        49       260
-gene-si:dkey-6i22.5|si:dkey-6i22.5         7        22        63        12
-gene-ube2v1|ube2v1                        60        25        18        50
-gene-muc15|muc15                           0         0        26        56
-16688 more rows ...
-
-$samples
-           group lib.size norm.factors
-sample_1     16C 49973355            1
-sample_10    16C 43459343            1
-sample_100    9C 44577844            1
-sample_107    9C 41972179            1
-sample_108    9C 47313070            1
-31 more rows ...</code></pre>
-</section>
-<section id="normalization" class="level3">
-<h3 class="anchored" data-anchor-id="normalization">3.1.5 Normalization</h3>
-<div class="sourceCode" id="cb14" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb14-1">dge <span class="ot" style="color: #003B4F;
-background-color: null;
-font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">calcNormFactors</span>(<span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">object =</span> dge)</span>
-<span id="cb14-2"></span>
-<span id="cb14-3">dge</span></code></pre></div>
-<pre><code>An object of class "DGEList"
-$counts
-                                   sample_1 sample_10 sample_100 sample_107
-gene-LOC132462341|LOC132462341          360       464        391        346
-gene-abce1|abce1                        694       325        276         77
-gene-si:dkey-6i22.5|si:dkey-6i22.5        0        10         13         11
-gene-ube2v1|ube2v1                       10        22         15         19
-gene-muc15|muc15                          0        40         40         29
-                                   sample_108 sample_109 sample_11 sample_110
-gene-LOC132462341|LOC132462341            691        408       436        509
-gene-abce1|abce1                          409        196       281        284
-gene-si:dkey-6i22.5|si:dkey-6i22.5         49         42        14         36
-gene-ube2v1|ube2v1                         74         28        63         35
-gene-muc15|muc15                            8          0        38          0
-                                   sample_116 sample_12 sample_13 sample_18
-gene-LOC132462341|LOC132462341            366       373       432       385
-gene-abce1|abce1                          327       310       393       386
-gene-si:dkey-6i22.5|si:dkey-6i22.5          0        14         9         0
-gene-ube2v1|ube2v1                         30        31        25        42
-gene-muc15|muc15                           16        15         0         0
-                                   sample_19 sample_2 sample_20 sample_21
-gene-LOC132462341|LOC132462341           330      288       307       346
-gene-abce1|abce1                         106      290       252       326
-gene-si:dkey-6i22.5|si:dkey-6i22.5         0       14         3        21
-gene-ube2v1|ube2v1                        17       14        21        60
-gene-muc15|muc15                           0        0        22        22
-                                   sample_28 sample_29 sample_3 sample_30
-gene-LOC132462341|LOC132462341           293       347      452       452
-gene-abce1|abce1                         345       254      363       353
-gene-si:dkey-6i22.5|si:dkey-6i22.5        26         9       39        20
-gene-ube2v1|ube2v1                        61        14       29        37
-gene-muc15|muc15                          69        22        0        15
-                                   sample_31 sample_36 sample_4 sample_5
-gene-LOC132462341|LOC132462341           984       230      469      400
-gene-abce1|abce1                         922       160      588      285
-gene-si:dkey-6i22.5|si:dkey-6i22.5        10         0        0       10
-gene-ube2v1|ube2v1                        68        37        0       30
-gene-muc15|muc15                           0        34       55       51
-                                   sample_78 sample_79 sample_80 sample_83
-gene-LOC132462341|LOC132462341           472       311       368       312
-gene-abce1|abce1                         178       119       197       134
-gene-si:dkey-6i22.5|si:dkey-6i22.5        48        41        60        39
-gene-ube2v1|ube2v1                        10        13        56        32
-gene-muc15|muc15                           0        30        19        31
-                                   sample_88 sample_90 sample_91 sample_92
-gene-LOC132462341|LOC132462341           551       631       605       366
-gene-abce1|abce1                         128       103       315       204
-gene-si:dkey-6i22.5|si:dkey-6i22.5        49        54        20        27
-gene-ube2v1|ube2v1                        45        55        27        38
-gene-muc15|muc15                           0         0        42        34
-                                   sample_94 sample_97 sample_98 sample_99
-gene-LOC132462341|LOC132462341           339       517       577       235
-gene-abce1|abce1                         301        56        49       260
-gene-si:dkey-6i22.5|si:dkey-6i22.5         7        22        63        12
-gene-ube2v1|ube2v1                        60        25        18        50
-gene-muc15|muc15                           0         0        26        56
-16688 more rows ...
-
-$samples
-           group lib.size norm.factors
-sample_1     16C 49973355    1.0828322
-sample_10    16C 43459343    1.3481915
-sample_100    9C 44577844    0.9792758
-sample_107    9C 41972179    0.7062689
-sample_108    9C 47313070    1.5247621
-31 more rows ...</code></pre>
-</section>
-<section id="model-fitting-and-estimating-dispersions" class="level3">
-<h3 class="anchored" data-anchor-id="model-fitting-and-estimating-dispersions">3.1.6 Model fitting and estimating dispersions</h3>
-<div class="sourceCode" id="cb16" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb16-1">dge <span class="ot" style="color: #003B4F;
-background-color: null;
-font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">estimateDisp</span>(dge)</span>
-<span id="cb16-2"></span>
-<span id="cb16-3">dge</span></code></pre></div>
-<pre><code>An object of class "DGEList"
-$counts
-                                   sample_1 sample_10 sample_100 sample_107
-gene-LOC132462341|LOC132462341          360       464        391        346
-gene-abce1|abce1                        694       325        276         77
-gene-si:dkey-6i22.5|si:dkey-6i22.5        0        10         13         11
-gene-ube2v1|ube2v1                       10        22         15         19
-gene-muc15|muc15                          0        40         40         29
-                                   sample_108 sample_109 sample_11 sample_110
-gene-LOC132462341|LOC132462341            691        408       436        509
-gene-abce1|abce1                          409        196       281        284
-gene-si:dkey-6i22.5|si:dkey-6i22.5         49         42        14         36
-gene-ube2v1|ube2v1                         74         28        63         35
-gene-muc15|muc15                            8          0        38          0
-                                   sample_116 sample_12 sample_13 sample_18
-gene-LOC132462341|LOC132462341            366       373       432       385
-gene-abce1|abce1                          327       310       393       386
-gene-si:dkey-6i22.5|si:dkey-6i22.5          0        14         9         0
-gene-ube2v1|ube2v1                         30        31        25        42
-gene-muc15|muc15                           16        15         0         0
-                                   sample_19 sample_2 sample_20 sample_21
-gene-LOC132462341|LOC132462341           330      288       307       346
-gene-abce1|abce1                         106      290       252       326
-gene-si:dkey-6i22.5|si:dkey-6i22.5         0       14         3        21
-gene-ube2v1|ube2v1                        17       14        21        60
-gene-muc15|muc15                           0        0        22        22
-                                   sample_28 sample_29 sample_3 sample_30
-gene-LOC132462341|LOC132462341           293       347      452       452
-gene-abce1|abce1                         345       254      363       353
-gene-si:dkey-6i22.5|si:dkey-6i22.5        26         9       39        20
-gene-ube2v1|ube2v1                        61        14       29        37
-gene-muc15|muc15                          69        22        0        15
-                                   sample_31 sample_36 sample_4 sample_5
-gene-LOC132462341|LOC132462341           984       230      469      400
-gene-abce1|abce1                         922       160      588      285
-gene-si:dkey-6i22.5|si:dkey-6i22.5        10         0        0       10
-gene-ube2v1|ube2v1                        68        37        0       30
-gene-muc15|muc15                           0        34       55       51
-                                   sample_78 sample_79 sample_80 sample_83
-gene-LOC132462341|LOC132462341           472       311       368       312
-gene-abce1|abce1                         178       119       197       134
-gene-si:dkey-6i22.5|si:dkey-6i22.5        48        41        60        39
-gene-ube2v1|ube2v1                        10        13        56        32
-gene-muc15|muc15                           0        30        19        31
-                                   sample_88 sample_90 sample_91 sample_92
-gene-LOC132462341|LOC132462341           551       631       605       366
-gene-abce1|abce1                         128       103       315       204
-gene-si:dkey-6i22.5|si:dkey-6i22.5        49        54        20        27
-gene-ube2v1|ube2v1                        45        55        27        38
-gene-muc15|muc15                           0         0        42        34
-                                   sample_94 sample_97 sample_98 sample_99
-gene-LOC132462341|LOC132462341           339       517       577       235
-gene-abce1|abce1                         301        56        49       260
-gene-si:dkey-6i22.5|si:dkey-6i22.5         7        22        63        12
-gene-ube2v1|ube2v1                        60        25        18        50
-gene-muc15|muc15                           0         0        26        56
-16688 more rows ...
-
-$samples
-           group lib.size norm.factors
-sample_1     16C 49973355    1.0828322
-sample_10    16C 43459343    1.3481915
-sample_100    9C 44577844    0.9792758
-sample_107    9C 41972179    0.7062689
-sample_108    9C 47313070    1.5247621
-31 more rows ...
-
-$common.dispersion
-[1] 0.3258355
-
-$trended.dispersion
-[1] 0.1792662 0.2158552 0.8880326 0.7699354 0.9217978
-16688 more elements ...
-
-$tagwise.dispersion
-[1] 0.1017614 0.1666824 0.9805648 0.3988847 2.8340881
-16688 more elements ...
-
-$AveLogCPM
-[1]  3.3189831  2.6344211 -0.7839951 -0.2807668 -0.9718511
-16688 more elements ...
-
-$trend.method
-[1] "locfit"
-
-$prior.df
-[1] 4.732584
-
-$prior.n
-[1] 0.1391936
-
-$span
-[1] 0.2910468</code></pre>
-</section>
-<section id="exact-test-gene-expression" class="level3">
-<h3 class="anchored" data-anchor-id="exact-test-gene-expression">3.1.7 Exact test (Gene expression)</h3>
-<div class="sourceCode" id="cb18" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb18-1">exact_test_genes <span class="ot" style="color: #003B4F;
-background-color: null;
-font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">exactTest</span>(dge)</span>
-<span id="cb18-2"></span>
-<span id="cb18-3">exact_test_genes</span></code></pre></div>
-<pre><code>An object of class "DGEExact"
-$table
-                                        logFC     logCPM       PValue
-gene-LOC132462341|LOC132462341      0.3690768  3.3189831 0.0174459833
-gene-abce1|abce1                   -0.7406649  2.6344211 0.0002052135
-gene-si:dkey-6i22.5|si:dkey-6i22.5  1.8787265 -0.7839951 0.0001945058
-gene-ube2v1|ube2v1                  0.2838600 -0.2807668 0.3721151448
-gene-muc15|muc15                    0.0123765 -0.9718511 0.9923746564
-16688 more rows ...
-
-$comparison
-[1] "16C" "9C" 
-
-$genes
-NULL</code></pre>
-</section>
-<section id="differential-gene-expression-summary" class="level3">
-<h3 class="anchored" data-anchor-id="differential-gene-expression-summary">3.1.8 Differential gene expression summary</h3>
-<div class="sourceCode" id="cb20" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb20-1"><span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">summary</span>(<span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">decideTests</span>(<span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">object =</span> exact_test_genes, <span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">p.value =</span> <span class="fl" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">0.05</span>))</span></code></pre></div>
-<pre><code>       9C-16C
-Down     2071
-NotSig  11980
-Up       2642</code></pre>
-</section>
-<section id="peek-at-degs" class="level3">
-<h3 class="anchored" data-anchor-id="peek-at-degs">3.1.9 Peek at DEGs</h3>
-<p>Selects all genes (<code>n = "Inf"</code>) with adjusted p-value <code>&lt; 0.05</code>, sorts by false discovery rate (<code>adjust.method = "fdr"</code>).</p>
-<p>Converts object to a data frame (the <code>$table</code> part).</p>
-<div class="sourceCode" id="cb22" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb22-1">top_degs_table <span class="ot" style="color: #003B4F;
-background-color: null;
-font-style: inherit;">&lt;-</span>  <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">topTags</span>(<span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">object =</span> exact_test_genes, <span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">n =</span> <span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"Inf"</span>, <span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">adjust.method =</span> <span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"fdr"</span>, <span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">p.value =</span> <span class="fl" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">0.05</span>)<span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">$</span>table</span>
-<span id="cb22-2"></span>
-<span id="cb22-3"><span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">str</span>(top_degs_table)</span></code></pre></div>
-<pre><code>'data.frame':   16693 obs. of  4 variables:
- $ logFC : num  1.9 -2.59 -1.45 -3.13 1.87 ...
- $ logCPM: num  6.59 4.06 4.93 3.18 5.57 ...
- $ PValue: num  1.26e-64 5.31e-37 2.15e-30 1.48e-26 4.65e-25 ...
- $ FDR   : num  2.10e-60 4.43e-33 1.19e-26 6.18e-23 1.43e-21 ...</code></pre>
-</section>
-<section id="convert-gene-id-rownames-to-column" class="level3">
-<h3 class="anchored" data-anchor-id="convert-gene-id-rownames-to-column">3.1.10 Convert gene ID rownames to column</h3>
-<div class="sourceCode" id="cb24" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb24-1"><span class="co" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;"># Step 1: Extract row names and create a new column 'gene_ids'</span></span>
-<span id="cb24-2">top_degs_table<span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">$</span>gene_ids <span class="ot" style="color: #003B4F;
-background-color: null;
-font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">rownames</span>(top_degs_table)</span>
-<span id="cb24-3"></span>
-<span id="cb24-4"><span class="co" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;"># Step 2: Reorder columns to make 'gene_ids' the first column</span></span>
-<span id="cb24-5">top_degs_table <span class="ot" style="color: #003B4F;
-background-color: null;
-font-style: inherit;">&lt;-</span> top_degs_table[, <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">c</span>(<span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"gene_ids"</span>, <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">names</span>(top_degs_table)[<span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">-</span><span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">length</span>(<span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">names</span>(top_degs_table))])]</span>
-<span id="cb24-6"></span>
-<span id="cb24-7"><span class="co" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;"># Step 3: Check the result</span></span>
-<span id="cb24-8"><span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">head</span>(top_degs_table)</span></code></pre></div>
-<pre><code>                                                     gene_ids     logFC
-gene-LOC132469840|LOC132469840 gene-LOC132469840|LOC132469840  1.897837
-gene-serpinh1b|serpinh1b             gene-serpinh1b|serpinh1b -2.589704
-gene-znf706|znf706                         gene-znf706|znf706 -1.450400
-gene-hacd4|hacd4                             gene-hacd4|hacd4 -3.133038
-gene-LOC132448390|LOC132448390 gene-LOC132448390|LOC132448390  1.874161
-gene-zgc:103586|zgc:103586         gene-zgc:103586|zgc:103586  1.584728
-                                 logCPM       PValue          FDR
-gene-LOC132469840|LOC132469840 6.594858 1.259480e-64 2.102450e-60
-gene-serpinh1b|serpinh1b       4.063945 5.307949e-37 4.430280e-33
-gene-znf706|znf706             4.929053 2.146565e-30 1.194420e-26
-gene-hacd4|hacd4               3.179135 1.480134e-26 6.176968e-23
-gene-LOC132448390|LOC132448390 5.570204 4.647165e-25 1.434822e-21
-gene-zgc:103586|zgc:103586     5.356047 5.157212e-25 1.434822e-21</code></pre>
-</section>
-<section id="write-degs-to-file" class="level3">
-<h3 class="anchored" data-anchor-id="write-degs-to-file">3.1.11 Write DEGs to file</h3>
-<div class="sourceCode" id="cb26" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb26-1"><span class="co" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;"># Write dataframe to CSV</span></span>
-<span id="cb26-2"><span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">write.csv</span>(</span>
-<span id="cb26-3">  top_degs_table, </span>
-<span id="cb26-4">  <span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">file =</span> <span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"../output/13.0.0-RNAseq-edgeR/DEGs_9C-vs-16C-p-0.05.csv"</span>, </span>
-<span id="cb26-5">  <span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">quote =</span> <span class="cn" style="color: #8f5902;
-background-color: null;
-font-style: inherit;">FALSE</span>, </span>
-<span id="cb26-6">  <span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">row.names =</span> <span class="cn" style="color: #8f5902;
-background-color: null;
-font-style: inherit;">FALSE</span>)</span></code></pre></div>
-</section>
-<section id="volcano-plot" class="level3">
-<h3 class="anchored" data-anchor-id="volcano-plot">3.1.12 Volcano plot</h3>
-<div class="sourceCode" id="cb27" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb27-1">ghibli_colors <span class="ot" style="color: #003B4F;
-background-color: null;
-font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">ghibli_palette</span>(<span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"PonyoMedium"</span>, <span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">type =</span> <span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"discrete"</span>)</span>
-<span id="cb27-2"></span>
-<span id="cb27-3">ghibli_subset <span class="ot" style="color: #003B4F;
-background-color: null;
-font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">c</span>(ghibli_colors[<span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">3</span>], ghibli_colors[<span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">6</span>], ghibli_colors[<span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">4</span>])</span>
-<span id="cb27-4"></span>
-<span id="cb27-5"><span class="co" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;"># Create new column and fill with `NA`</span></span>
-<span id="cb27-6">top_degs_table<span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">$</span>topDE <span class="ot" style="color: #003B4F;
-background-color: null;
-font-style: inherit;">&lt;-</span> <span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"NA"</span></span>
-<span id="cb27-7"></span>
-<span id="cb27-8"><span class="co" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;"># Set value of "Up" for genes with FC &gt; 1 and FDR &lt; 0.05</span></span>
-<span id="cb27-9">top_degs_table<span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">$</span>topDE[top_degs_table<span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">$</span>logFC <span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">&gt;</span> <span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">1</span> <span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">&amp;</span> top_degs_table<span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">$</span>FDR <span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">&lt;</span> <span class="fl" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">0.05</span>] <span class="ot" style="color: #003B4F;
-background-color: null;
-font-style: inherit;">&lt;-</span> <span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"Up"</span></span>
-<span id="cb27-10"></span>
-<span id="cb27-11"><span class="co" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;"># Set value of "Down" for genes with FC &lt; -1 and FDR &lt; 0.05</span></span>
-<span id="cb27-12">top_degs_table<span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">$</span>topDE[top_degs_table<span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">$</span>logFC <span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">&lt;</span> <span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">-</span><span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">1</span> <span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">&amp;</span> top_degs_table<span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">$</span>FDR <span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">&lt;</span> <span class="fl" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">0.05</span>] <span class="ot" style="color: #003B4F;
-background-color: null;
-font-style: inherit;">&lt;-</span> <span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"Down"</span></span>
-<span id="cb27-13"></span>
-<span id="cb27-14"><span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">ggplot</span>(<span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">data=</span>top_degs_table, <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">aes</span>(<span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">x=</span>logFC, <span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">y=</span><span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">-</span><span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">log10</span>(FDR), <span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">color =</span> topDE)) <span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">+</span> </span>
-<span id="cb27-15">  <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">geom_point</span>() <span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">+</span></span>
-<span id="cb27-16">  <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">theme_minimal</span>() <span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">+</span></span>
-<span id="cb27-17">  <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">scale_colour_discrete</span>(<span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">type =</span> ghibli_subset, <span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">breaks =</span> <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">c</span>(<span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"Up"</span>, <span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"Down"</span>))</span></code></pre></div>
-<p><img src="https://robertslab.github.io/sams-notebook/posts/2024/2024-06-12-Differential-Gene-Expression---G.macrocephalus-RNA-seq-9C-vs-16C-Using-edgeR/13.0.0-RNAseq-edgeR_files/figure-gfm/plot-volcano-degs-1.png" class="img-fluid"><!-- --></p>
-</section>
-</section>
-</section>
-<section id="citations" class="level1">
-<h1>4 CITATIONS</h1>
-<div id="refs" class="references csl-bib-body hanging-indent">
-<div id="ref-chen2024" class="csl-entry">
-Chen, Yunshun, Lizhong Chen, Aaron T. L. Lun, Pedro L. Baldoni, and Gordon K. Smyth. 2024. “edgeR 4.0: Powerful Differential Analysis of Sequencing Data with Expanded Functionality and Improved Support for Small Counts and Larger Datasets.” <a href="http://dx.doi.org/10.1101/2024.01.21.576131" class="uri">http://dx.doi.org/10.1101/2024.01.21.576131</a>.
-</div>
-<div id="ref-chen2016" class="csl-entry">
-Chen, Yunshun, Aaron T. L. Lun, and Gordon K. Smyth. 2016. “From Reads to Genes to Pathways: Differential Expression Analysis of RNA-Seq Experiments Using Rsubread and the edgeR Quasi-Likelihood Pipeline.” <em>F1000Research</em> 5 (August): 1438. <a href="https://doi.org/10.12688/f1000research.8987.2" class="uri">https://doi.org/10.12688/f1000research.8987.2</a>.
-</div>
-<div id="ref-mccarthy2012" class="csl-entry">
-McCarthy, Davis J., Yunshun Chen, and Gordon K. Smyth. 2012. “Differential Expression Analysis of Multifactor RNA-Seq Experiments with Respect to Biological Variation.” <em>Nucleic Acids Research</em> 40 (10): 4288–97. <a href="https://doi.org/10.1093/nar/gks042" class="uri">https://doi.org/10.1093/nar/gks042</a>.
-</div>
-<div id="ref-robinson2009" class="csl-entry">
-Robinson, Mark D., Davis J. McCarthy, and Gordon K. Smyth. 2009. “edgeR: A Bioconductor Package for Differential Expression Analysis of Digital Gene Expression Data.” <em>Bioinformatics</em> 26 (1): 139–40. <a href="https://doi.org/10.1093/bioinformatics/btp616" class="uri">https://doi.org/10.1093/bioinformatics/btp616</a>.
-</div>
-</div>
-
-
-</section>
-
- ]]></description>
-  <category>edgeR</category>
-  <category>Pacific cod</category>
-  <category>RNA-seq</category>
-  <category>differential gene expression</category>
-  <category>2024</category>
-  <category>Gadus macrocephalus</category>
-  <guid>https://robertslab.github.io/sams-notebook/posts/2024/2024-06-12-Differential-Gene-Expression---G.macrocephalus-RNA-seq-9C-vs-16C-Using-edgeR/</guid>
-  <pubDate>Tue, 11 Jun 2024 07:00:00 GMT</pubDate>
 </item>
 </channel>
 </rss>
