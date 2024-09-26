@@ -2,14 +2,14 @@
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
 
 <meta charset="utf-8">
-<meta name="generator" content="quarto-1.4.552">
+<meta name="generator" content="quarto-1.4.554">
 
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
 <meta name="author" content="Sam White">
 <meta name="dcterms.date" content="2024-02-02">
 
-<title>Sam’s Notebook - sRNA-seq Paired Read Merging Exploratios - Coral E5 Deep Dive</title>
+<title>Sam’s Notebook - sRNA-seq Paired Read Merging Explorations - Coral E5 Deep Dive</title>
 <style>
 code{white-space: pre-wrap;}
 span.smallcaps{font-variant: small-caps;}
@@ -98,17 +98,16 @@ div.csl-indent {
 <link href="../../../site_libs/bootstrap/bootstrap.min.css" rel="stylesheet" id="quarto-bootstrap" data-mode="dark">
 <script id="quarto-search-options" type="application/json">{
   "location": "navbar",
-  "copy-button": false,
-  "collapse-after": 3,
+  "copy-button": true,
+  "collapse-after": 2,
   "panel-placement": "end",
-  "type": "overlay",
-  "limit": 50,
+  "type": "textbox",
+  "limit": 100,
   "keyboard-shortcut": [
     "f",
     "/",
     "s"
   ],
-  "show-item-context": false,
   "language": {
     "search-no-results-text": "No results",
     "search-matching-documents-text": "matching documents",
@@ -234,7 +233,7 @@ gtag('config', 'G-7483T61T11', { 'anonymize_ip': true});
 <header id="title-block-header" class="quarto-title-block default toc-left page-columns page-full">
   <div class="quarto-title-banner page-columns page-full">
     <div class="quarto-title column-page-right">
-      <h1 class="title">sRNA-seq Paired Read Merging Exploratios - Coral E5 Deep Dive</h1>
+      <h1 class="title">sRNA-seq Paired Read Merging Explorations - Coral E5 Deep Dive</h1>
                                 <div class="quarto-categories">
                 <div class="quarto-category">2024</div>
                 <div class="quarto-category">E5</div>
@@ -274,40 +273,40 @@ gtag('config', 'G-7483T61T11', { 'anonymize_ip': true});
     <h2 id="toc-title">Contents</h2>
    
   <ul>
-  <li><a href="#intro" id="toc-intro" class="nav-link active" data-scroll-target="#intro">INTRO</a></li>
-  <li><a href="#setup" id="toc-setup" class="nav-link" data-scroll-target="#setup">SETUP</a>
+  <li><a href="#intro" id="toc-intro" class="nav-link active" data-scroll-target="#intro">1 INTRO</a></li>
+  <li><a href="#setup" id="toc-setup" class="nav-link" data-scroll-target="#setup">2 SETUP</a>
   <ul>
-  <li><a href="#create-a-bash-variables-file" id="toc-create-a-bash-variables-file" class="nav-link" data-scroll-target="#create-a-bash-variables-file">Create a Bash variables file</a></li>
-  <li><a href="#download-raw-srnaseq-reads" id="toc-download-raw-srnaseq-reads" class="nav-link" data-scroll-target="#download-raw-srnaseq-reads">Download raw sRNAseq reads</a>
+  <li><a href="#create-a-bash-variables-file" id="toc-create-a-bash-variables-file" class="nav-link" data-scroll-target="#create-a-bash-variables-file">2.1 Create a Bash variables file</a></li>
+  <li><a href="#download-raw-srnaseq-reads" id="toc-download-raw-srnaseq-reads" class="nav-link" data-scroll-target="#download-raw-srnaseq-reads">2.2 Download raw sRNAseq reads</a>
   <ul>
-  <li><a href="#verify-raw-read-checksums" id="toc-verify-raw-read-checksums" class="nav-link" data-scroll-target="#verify-raw-read-checksums">Verify raw read checksums</a></li>
+  <li><a href="#verify-raw-read-checksums" id="toc-verify-raw-read-checksums" class="nav-link" data-scroll-target="#verify-raw-read-checksums">2.2.1 Verify raw read checksums</a></li>
   </ul></li>
-  <li><a href="#create-adapters-fasta" id="toc-create-adapters-fasta" class="nav-link" data-scroll-target="#create-adapters-fasta">Create adapters FastA</a></li>
-  <li><a href="#fastp" id="toc-fastp" class="nav-link" data-scroll-target="#fastp"><code>fastp</code></a>
+  <li><a href="#create-adapters-fasta" id="toc-create-adapters-fasta" class="nav-link" data-scroll-target="#create-adapters-fasta">2.3 Create adapters FastA</a></li>
+  <li><a href="#fastp" id="toc-fastp" class="nav-link" data-scroll-target="#fastp">2.4 <code>fastp</code></a>
   <ul>
-  <li><a href="#paired-end-trimming" id="toc-paired-end-trimming" class="nav-link" data-scroll-target="#paired-end-trimming">Paired-end Trimming</a>
+  <li><a href="#paired-end-trimming" id="toc-paired-end-trimming" class="nav-link" data-scroll-target="#paired-end-trimming">2.4.1 Paired-end Trimming</a>
   <ul class="collapse">
-  <li><a href="#polyg-trimming-only" id="toc-polyg-trimming-only" class="nav-link" data-scroll-target="#polyg-trimming-only">PolyG Trimming Only</a></li>
-  <li><a href="#adapters-polyg-trimming" id="toc-adapters-polyg-trimming" class="nav-link" data-scroll-target="#adapters-polyg-trimming">Adapters &amp; PolyG Trimming</a></li>
-  <li><a href="#polyg-trimming-max-length-31" id="toc-polyg-trimming-max-length-31" class="nav-link" data-scroll-target="#polyg-trimming-max-length-31">PolyG Trimming Max Length 31</a></li>
-  <li><a href="#adapters-polyg-trimming-max-length-31" id="toc-adapters-polyg-trimming-max-length-31" class="nav-link" data-scroll-target="#adapters-polyg-trimming-max-length-31">Adapters &amp; PolyG Trimming Max Length 31</a></li>
-  <li><a href="#adapters-polyg-trimming-max-length-31-with-merge" id="toc-adapters-polyg-trimming-max-length-31-with-merge" class="nav-link" data-scroll-target="#adapters-polyg-trimming-max-length-31-with-merge">Adapters &amp; PolyG Trimming Max Length 31 With Merge</a></li>
+  <li><a href="#polyg-trimming-only" id="toc-polyg-trimming-only" class="nav-link" data-scroll-target="#polyg-trimming-only">2.4.1.1 PolyG Trimming Only</a></li>
+  <li><a href="#adapters-polyg-trimming" id="toc-adapters-polyg-trimming" class="nav-link" data-scroll-target="#adapters-polyg-trimming">2.4.1.2 Adapters &amp; PolyG Trimming</a></li>
+  <li><a href="#polyg-trimming-max-length-31" id="toc-polyg-trimming-max-length-31" class="nav-link" data-scroll-target="#polyg-trimming-max-length-31">2.4.1.3 PolyG Trimming Max Length 31</a></li>
+  <li><a href="#adapters-polyg-trimming-max-length-31" id="toc-adapters-polyg-trimming-max-length-31" class="nav-link" data-scroll-target="#adapters-polyg-trimming-max-length-31">2.4.1.4 Adapters &amp; PolyG Trimming Max Length 31</a></li>
+  <li><a href="#adapters-polyg-trimming-max-length-31-with-merge" id="toc-adapters-polyg-trimming-max-length-31-with-merge" class="nav-link" data-scroll-target="#adapters-polyg-trimming-max-length-31-with-merge">2.4.1.5 Adapters &amp; PolyG Trimming Max Length 31 With Merge</a></li>
   </ul></li>
-  <li><a href="#single-end-trimming---r1-reads-only" id="toc-single-end-trimming---r1-reads-only" class="nav-link" data-scroll-target="#single-end-trimming---r1-reads-only">Single-end Trimming - R1 Reads Only</a>
+  <li><a href="#single-end-trimming---r1-reads-only" id="toc-single-end-trimming---r1-reads-only" class="nav-link" data-scroll-target="#single-end-trimming---r1-reads-only">2.4.2 Single-end Trimming - R1 Reads Only</a>
   <ul class="collapse">
-  <li><a href="#auto-adapters-polyg-trimming" id="toc-auto-adapters-polyg-trimming" class="nav-link" data-scroll-target="#auto-adapters-polyg-trimming">Auto-adapters &amp; PolyG Trimming</a></li>
-  <li><a href="#auto-adapters-polyg-trimming-max-length-31" id="toc-auto-adapters-polyg-trimming-max-length-31" class="nav-link" data-scroll-target="#auto-adapters-polyg-trimming-max-length-31">Auto-adapters &amp; PolyG Trimming Max Length 31</a></li>
+  <li><a href="#auto-adapters-polyg-trimming" id="toc-auto-adapters-polyg-trimming" class="nav-link" data-scroll-target="#auto-adapters-polyg-trimming">2.4.2.1 Auto-adapters &amp; PolyG Trimming</a></li>
+  <li><a href="#auto-adapters-polyg-trimming-max-length-31" id="toc-auto-adapters-polyg-trimming-max-length-31" class="nav-link" data-scroll-target="#auto-adapters-polyg-trimming-max-length-31">2.4.2.2 Auto-adapters &amp; PolyG Trimming Max Length 31</a></li>
   </ul></li>
   </ul></li>
-  <li><a href="#bbmerge" id="toc-bbmerge" class="nav-link" data-scroll-target="#bbmerge">BBMerge</a>
+  <li><a href="#bbmerge" id="toc-bbmerge" class="nav-link" data-scroll-target="#bbmerge">2.5 BBMerge</a>
   <ul>
-  <li><a href="#raw-reads" id="toc-raw-reads" class="nav-link" data-scroll-target="#raw-reads">Raw reads</a></li>
-  <li><a href="#trimmed-polyg-only" id="toc-trimmed-polyg-only" class="nav-link" data-scroll-target="#trimmed-polyg-only">Trimmed PolyG Only</a></li>
-  <li><a href="#trimmed-adapters-polyg" id="toc-trimmed-adapters-polyg" class="nav-link" data-scroll-target="#trimmed-adapters-polyg">Trimmed Adapters &amp; PolyG</a></li>
-  <li><a href="#trimmed-adapters-polyg-max-length-31bp" id="toc-trimmed-adapters-polyg-max-length-31bp" class="nav-link" data-scroll-target="#trimmed-adapters-polyg-max-length-31bp">Trimmed Adapters &amp; PolyG Max Length 31bp</a></li>
+  <li><a href="#raw-reads" id="toc-raw-reads" class="nav-link" data-scroll-target="#raw-reads">2.5.1 Raw reads</a></li>
+  <li><a href="#trimmed-polyg-only" id="toc-trimmed-polyg-only" class="nav-link" data-scroll-target="#trimmed-polyg-only">2.5.2 Trimmed PolyG Only</a></li>
+  <li><a href="#trimmed-adapters-polyg" id="toc-trimmed-adapters-polyg" class="nav-link" data-scroll-target="#trimmed-adapters-polyg">2.5.3 Trimmed Adapters &amp; PolyG</a></li>
+  <li><a href="#trimmed-adapters-polyg-max-length-31bp" id="toc-trimmed-adapters-polyg-max-length-31bp" class="nav-link" data-scroll-target="#trimmed-adapters-polyg-max-length-31bp">2.5.4 Trimmed Adapters &amp; PolyG Max Length 31bp</a></li>
   </ul></li>
-  <li><a href="#fastqc" id="toc-fastqc" class="nav-link" data-scroll-target="#fastqc">FastQC</a></li>
-  <li><a href="#multiqc" id="toc-multiqc" class="nav-link" data-scroll-target="#multiqc">MultiQC</a></li>
+  <li><a href="#fastqc" id="toc-fastqc" class="nav-link" data-scroll-target="#fastqc">2.6 FastQC</a></li>
+  <li><a href="#multiqc" id="toc-multiqc" class="nav-link" data-scroll-target="#multiqc">2.7 MultiQC</a></li>
   </ul></li>
   </ul>
 </nav>
@@ -324,25 +323,63 @@ gtag('config', 'G-7483T61T11', { 'anonymize_ip': true});
 
 
 <section id="intro" class="level1">
-<h1>INTRO</h1>
+<h1>1 INTRO</h1>
 <p>Our previous sRNA-seq data analysis for this project revealed that the R2 reads didn’t seem to match with anything (specifically, no clade assignments when using <a href="https://github.com/friedlanderlab/mirtrace">miRTrace</a>), which seemed odd. Since the insert sizes should be small for these libraries and the read lengths kind of long (150bp PE), we’d expect the resulting reads to overlap. And, in turn, R2 reads should be reverse complements of R1 reads (and vice versa). After discussing things with Azenta (company which performed library construction and sequencing), they indicated that their in-house pipeline discards the R2 reads because they come from the opposite strand and most miRNAs are found on the R1 strand.</p>
-<p>It seemed like a bit of waste to discard all the data that exists in the R2 reads, so I wanted to explore merging the reads to see if we could preserve the R2 data. Additionally, I came across <a href="https://github.com/HCGB-IGTP/XICRA">XICRA</a> (GitHub repo) <span class="citation" data-cites="sanchezherrero2021">(<a href="#ref-sanchezherrero2021" role="doc-biblioref">Sanchez Herrero et al. 2021</a>)</span> which describes using paired-end sequence data to identify miRNA isoforms (isomiRs), suggesting that we should try to retain the R2 reads to improve our miRNA analyses.</p>
+<p>It seemed like a bit of waste to discard all the data that exists in the R2 reads, so I wanted to explore merging the reads to see if we could preserve the R2 data. Additionally, I came across <a href="https://github.com/HCGB-IGTP/XICRA">XICRA</a> (GitHub repo) [<span class="citation" data-cites="sanchezherrero2021">Sanchez Herrero et al. (<a href="#ref-sanchezherrero2021" role="doc-biblioref">2021</a>)</span>] which describes using paired-end sequence data to identify miRNA isoforms (isomiRs), suggesting that we should try to retain the R2 reads to improve our miRNA analyses.</p>
 <p>I decided to explore merging/trimming using two different sets of software:</p>
 <ul>
-<li><p><a href="https://jgi.doe.gov/data-and-tools/software-tools/bbtools/bb-tools-user-guide/bbmerge-guide/">BBMerge</a> <span class="citation" data-cites="bushnell2017">(<a href="#ref-bushnell2017" role="doc-biblioref">Bushnell, Rood, and Singer 2017</a>)</span></p></li>
-<li><p><a href="https://github.com/OpenGene/fastp"><code>fastp</code></a><span class="citation" data-cites="chen2023 chen2018">(<a href="#ref-chen2023" role="doc-biblioref">Chen 2023</a>; <a href="#ref-chen2018" role="doc-biblioref">Chen et al. 2018</a>)</span></p></li>
+<li><p><a href="https://jgi.doe.gov/data-and-tools/software-tools/bbtools/bb-tools-user-guide/bbmerge-guide/">BBMerge</a> [<span class="citation" data-cites="bushnell2017">Bushnell, Rood, and Singer (<a href="#ref-bushnell2017" role="doc-biblioref">2017</a>)</span>]</p></li>
+<li><p><a href="https://github.com/OpenGene/fastp"><code>fastp</code></a>[<span class="citation" data-cites="chen2023">Chen (<a href="#ref-chen2023" role="doc-biblioref">2023</a>)</span>; <span class="citation" data-cites="chen2018">Chen et al. (<a href="#ref-chen2018" role="doc-biblioref">2018</a>)</span>]</p></li>
 </ul>
 <p><a href="https://jgi.doe.gov/data-and-tools/software-tools/bbtools/bb-tools-user-guide/bbmerge-guide/">BBMerge</a> seemed like a good tool, as it’s specifically designed to handle merging of Illumina PE sequencing reads. Plus, it’s part of the <a href="https://sourceforge.net/projects/bbmap/">BBTols suite</a>, which has a number of other tools, and packages like this usually have nice cross-compatibility between the different tools.</p>
 <p><a href="https://github.com/OpenGene/fastp"><code>fastp</code></a> has both trimming <em>and</em> merging built into the tools itself, which I hadn’t previously realized (but, had never explored, since this isn’t how we usually work with PE sequencing data). I was simply going to use <a href="https://github.com/OpenGene/fastp"><code>fastp</code></a> for trimming, as it’s the trimmer thta I’m most familiar with. I honestly thought I’d trim with <a href="https://github.com/OpenGene/fastp"><code>fastp</code></a>, and then merge with <a href="https://jgi.doe.gov/data-and-tools/software-tools/bbtools/bb-tools-user-guide/bbmerge-guide/">BBMerge</a>, but the fact that <a href="https://github.com/OpenGene/fastp"><code>fastp</code></a> had it built-in could make my life easier.</p>
 <p>So, with all of that out of the way, let’s start the analysis. This will only use a single set of PE sequencing reads, as an initial exploration. We’ll decide on the best approach and then use that approach to run all the sequencing data through the chosen “pipeline.”</p>
+<div class="callout callout-style-default callout-note callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Note
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>Code below is knitted from <a href="https://github.com/RobertsLab/code/blob/5529ffc115d5ca9bc9e51459556bee803f67efc8/r_projects/sam/20240202-e5-coral-sRNAseq-merging-explorations/code/20240202-e5-coral-sRNAseq-merging-explorations.Rmd">20240202-e5-coral-sRNAseq-merging-explorations.Rmd</a>, commit <code>5529ffc</code>.</p>
+</div>
+</div>
+<ul>
+<li><a href="#1-intro" id="toc-1-intro">1 INTRO</a></li>
+<li><a href="#2-setup" id="toc-2-setup">2 SETUP</a>
+<ul>
+<li><a href="#21-create-a-bash-variables-file" id="toc-21-create-a-bash-variables-file">2.1 Create a Bash variables file</a></li>
+<li><a href="#22-download-raw-srnaseq-reads" id="toc-22-download-raw-srnaseq-reads">2.2 Download raw sRNAseq reads</a>
+<ul>
+<li><a href="#221-verify-raw-read-checksums" id="toc-221-verify-raw-read-checksums">2.2.1 Verify raw read checksums</a></li>
+</ul></li>
+<li><a href="#23-create-adapters-fasta" id="toc-23-create-adapters-fasta">2.3 Create adapters FastA</a></li>
+<li><a href="#24-fastp" id="toc-24-fastp">2.4 <code>fastp</code></a>
+<ul>
+<li><a href="#241-paired-end-trimming" id="toc-241-paired-end-trimming">2.4.1 Paired-end Trimming</a></li>
+<li><a href="#242-single-end-trimming---r1-reads-only" id="toc-242-single-end-trimming---r1-reads-only">2.4.2 Single-end Trimming - R1 Reads Only</a></li>
+</ul></li>
+<li><a href="#25-bbmerge" id="toc-25-bbmerge">2.5 BBMerge</a>
+<ul>
+<li><a href="#251-raw-reads" id="toc-251-raw-reads">2.5.1 Raw reads</a></li>
+<li><a href="#252-trimmed-polyg-only" id="toc-252-trimmed-polyg-only">2.5.2 Trimmed PolyG Only</a></li>
+<li><a href="#253-trimmed-adapters--polyg" id="toc-253-trimmed-adapters--polyg">2.5.3 Trimmed Adapters &amp; PolyG</a></li>
+<li><a href="#254-trimmed-adapters--polyg-max-length-31bp" id="toc-254-trimmed-adapters--polyg-max-length-31bp">2.5.4 Trimmed Adapters &amp; PolyG Max Length 31bp</a></li>
+</ul></li>
+<li><a href="#26-fastqc" id="toc-26-fastqc">2.6 FastQC</a></li>
+<li><a href="#27-multiqc" id="toc-27-multiqc">2.7 MultiQC</a></li>
+</ul></li>
+</ul>
 </section>
 <section id="setup" class="level1">
-<h1>SETUP</h1>
+<h1>2 SETUP</h1>
 <section id="create-a-bash-variables-file" class="level2">
-<h2 class="anchored" data-anchor-id="create-a-bash-variables-file">Create a Bash variables file</h2>
+<h2 class="anchored" data-anchor-id="create-a-bash-variables-file">2.1 Create a Bash variables file</h2>
 <p>This allows usage of Bash variables across R Markdown chunks.</p>
-<div class="cell">
-<div class="sourceCode cell-code" id="cb1"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="kw">{</span></span>
+<div class="sourceCode" id="cb1"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="kw">{</span></span>
 <span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="bu">echo</span> <span class="st">"#### Assign Variables ####"</span></span>
 <span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="bu">echo</span> <span class="st">""</span></span>
 <span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a></span>
@@ -383,7 +420,6 @@ gtag('config', 'G-7483T61T11', { 'anonymize_ip': true});
 <span id="cb1-39"><a href="#cb1-39" aria-hidden="true" tabindex="-1"></a><span class="kw">}</span> <span class="op">&gt;</span> .bashvars</span>
 <span id="cb1-40"><a href="#cb1-40" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb1-41"><a href="#cb1-41" aria-hidden="true" tabindex="-1"></a><span class="fu">cat</span> .bashvars</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-stdout">
 <pre><code>#### Assign Variables ####
 
 ## Data URL
@@ -412,15 +448,12 @@ export threads=46
 
 # Initialize arrays
 export trimmed_fastqs_array=()</code></pre>
-</div>
-</div>
 </section>
 <section id="download-raw-srnaseq-reads" class="level2">
-<h2 class="anchored" data-anchor-id="download-raw-srnaseq-reads">Download raw sRNAseq reads</h2>
+<h2 class="anchored" data-anchor-id="download-raw-srnaseq-reads">2.2 Download raw sRNAseq reads</h2>
 <p>Reads are downloaded from <a href="https://owl.fish.washington.edu/nightingales/P_evermanni/30-852430235/" class="uri">https://owl.fish.washington.edu/nightingales/P_evermanni/30-852430235/</a></p>
 <p>The <code>--cut-dirs 3</code> command cuts the preceding directory structure (i.e.&nbsp;<code>nightingales/P_evermanni/30-852430235/</code>) so that we just end up with the reads.</p>
-<div class="cell">
-<div class="sourceCode cell-code" id="cb3"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Load bash variables into memory</span></span>
+<div class="sourceCode" id="cb3"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Load bash variables into memory</span></span>
 <span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a><span class="bu">source</span> .bashvars</span>
 <span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a><span class="fu">mkdir</span> <span class="at">--parents</span> <span class="st">"</span><span class="va">${raw_reads_dir}</span><span class="st">"</span> <span class="st">"</span><span class="va">${trimmed_fastqs_dir}</span><span class="st">"</span></span>
@@ -437,34 +470,26 @@ export trimmed_fastqs_array=()</code></pre>
 <span id="cb3-15"><a href="#cb3-15" aria-hidden="true" tabindex="-1"></a>--accept <span class="st">"sRNA-POR-79*,checksums.md5"</span> <span class="va">${raw_reads_url}</span></span>
 <span id="cb3-16"><a href="#cb3-16" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb3-17"><a href="#cb3-17" aria-hidden="true" tabindex="-1"></a><span class="fu">ls</span> <span class="at">-lh</span> <span class="st">"</span><span class="va">${raw_reads_dir}</span><span class="st">"</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-stdout">
 <pre><code>total 1.8G
 -rw-r--r-- 1 sam sam  798 May 17  2023 checksums.md5
 -rw-r--r-- 1 sam sam 899M May 17  2023 sRNA-POR-79-S1-TP2_R1_001.fastq.gz
 -rw-r--r-- 1 sam sam 916M May 17  2023 sRNA-POR-79-S1-TP2_R2_001.fastq.gz</code></pre>
-</div>
-</div>
 <section id="verify-raw-read-checksums" class="level3">
-<h3 class="anchored" data-anchor-id="verify-raw-read-checksums">Verify raw read checksums</h3>
-<div class="cell">
-<div class="sourceCode cell-code" id="cb5"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Load bash variables into memory</span></span>
+<h3 class="anchored" data-anchor-id="verify-raw-read-checksums">2.2.1 Verify raw read checksums</h3>
+<div class="sourceCode" id="cb5"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Load bash variables into memory</span></span>
 <span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a><span class="bu">source</span> .bashvars</span>
 <span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a><span class="bu">cd</span> <span class="st">"</span><span class="va">${raw_reads_dir}</span><span class="st">"</span></span>
 <span id="cb5-5"><a href="#cb5-5" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb5-6"><a href="#cb5-6" aria-hidden="true" tabindex="-1"></a><span class="co"># Checksums file contains other files, so this just looks for the sRNAseq files.</span></span>
 <span id="cb5-7"><a href="#cb5-7" aria-hidden="true" tabindex="-1"></a><span class="fu">grep</span> <span class="st">"sRNA-POR-79"</span> checksums.md5 <span class="kw">|</span> <span class="fu">md5sum</span> <span class="at">--check</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-stdout">
 <pre><code>sRNA-POR-79-S1-TP2_R1_001.fastq.gz: OK
 sRNA-POR-79-S1-TP2_R2_001.fastq.gz: OK</code></pre>
-</div>
-</div>
 </section>
 </section>
 <section id="create-adapters-fasta" class="level2">
-<h2 class="anchored" data-anchor-id="create-adapters-fasta">Create adapters FastA</h2>
-<div class="cell">
-<div class="sourceCode cell-code" id="cb7"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Load bash variables into memory</span></span>
+<h2 class="anchored" data-anchor-id="create-adapters-fasta">2.3 Create adapters FastA</h2>
+<div class="sourceCode" id="cb7"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Load bash variables into memory</span></span>
 <span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a><span class="bu">source</span> .bashvars</span>
 <span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb7-4"><a href="#cb7-4" aria-hidden="true" tabindex="-1"></a><span class="bu">echo</span> <span class="st">"Creating adapters FastA."</span></span>
@@ -488,7 +513,6 @@ sRNA-POR-79-S1-TP2_R2_001.fastq.gz: OK</code></pre>
 <span id="cb7-22"><a href="#cb7-22" aria-hidden="true" tabindex="-1"></a><span class="bu">echo</span> <span class="st">""</span></span>
 <span id="cb7-23"><a href="#cb7-23" aria-hidden="true" tabindex="-1"></a><span class="fu">cat</span> <span class="st">"</span><span class="va">${NEB_adapters_fasta}</span><span class="st">"</span></span>
 <span id="cb7-24"><a href="#cb7-24" aria-hidden="true" tabindex="-1"></a><span class="bu">echo</span> <span class="st">""</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-stdout">
 <pre><code>Creating adapters FastA.
 
 
@@ -498,11 +522,9 @@ Adapters FastA:
 AGATCGGAAGAGCACACGTCTGAACTCCAGTCAC
 &gt;adapter_2
 GATCGTCGGACTGTAGAACTCTGAACGTGTAGATCTCGGTGGTCGCCGTATCATT</code></pre>
-</div>
-</div>
 </section>
 <section id="fastp" class="level2">
-<h2 class="anchored" data-anchor-id="fastp"><a href="https://github.com/OpenGene/fastp"><code>fastp</code></a></h2>
+<h2 class="anchored" data-anchor-id="fastp">2.4 <a href="https://github.com/OpenGene/fastp"><code>fastp</code></a></h2>
 <p><a href="https://github.com/OpenGene/fastp"><code>fastp</code></a> has many built-in functions, including before/after trimming plots, and read 1 and read 2 merging.</p>
 <div class="callout callout-style-default callout-note callout-titled">
 <div class="callout-header d-flex align-content-center">
@@ -518,12 +540,11 @@ Note
 </div>
 </div>
 <section id="paired-end-trimming" class="level3">
-<h3 class="anchored" data-anchor-id="paired-end-trimming">Paired-end Trimming</h3>
+<h3 class="anchored" data-anchor-id="paired-end-trimming">2.4.1 Paired-end Trimming</h3>
 <p>The paired end trimming will examine how some of the trimming options impact sequencing read lengths, quality, and subsequent merging.</p>
 <section id="polyg-trimming-only" class="level4">
-<h4 class="anchored" data-anchor-id="polyg-trimming-only">PolyG Trimming Only</h4>
-<div class="cell">
-<div class="sourceCode cell-code" id="cb9"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Load bash variables into memory</span></span>
+<h4 class="anchored" data-anchor-id="polyg-trimming-only">2.4.1.1 PolyG Trimming Only</h4>
+<div class="sourceCode" id="cb9"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Load bash variables into memory</span></span>
 <span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a><span class="bu">source</span> .bashvars</span>
 <span id="cb9-3"><a href="#cb9-3" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb9-4"><a href="#cb9-4" aria-hidden="true" tabindex="-1"></a><span class="st">"</span><span class="va">${fastp}</span><span class="st">"</span> <span class="dt">\</span></span>
@@ -538,7 +559,6 @@ Note
 <span id="cb9-13"><a href="#cb9-13" aria-hidden="true" tabindex="-1"></a>--html <span class="st">"fastp-polyG-only.html"</span> <span class="dt">\</span></span>
 <span id="cb9-14"><a href="#cb9-14" aria-hidden="true" tabindex="-1"></a>--json <span class="st">"fastp-polyG-only.json"</span> <span class="dt">\</span></span>
 <span id="cb9-15"><a href="#cb9-15" aria-hidden="true" tabindex="-1"></a>--report_title <span class="st">"fastp-polyG-only"</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-stdout">
 <pre><code>WARNING: fastp uses up to 16 threads although you specified 46
 Read1 before filtering:
 total reads: 19762559
@@ -578,14 +598,11 @@ JSON report: fastp-polyG-only.json
 HTML report: fastp-polyG-only.html
 
 /home/shared/fastp --in1 ./raw/sRNA-POR-79-S1-TP2_R1_001.fastq.gz --in2 ./raw/sRNA-POR-79-S1-TP2_R2_001.fastq.gz --out1 ./trimmed-reads/fastp-polyG_only.R1.fq.gz --out2 ./trimmed-reads/fastp-polyG_only.R2.fq.gz --disable_adapter_trimming --trim_poly_g --overlap_len_require 17 --thread 46 --html fastp-polyG-only.html --json fastp-polyG-only.json --report_title fastp-polyG-only 
-fastp v0.23.2, time used: 42 seconds</code></pre>
-</div>
-</div>
+fastp v0.23.2, time used: 43 seconds</code></pre>
 </section>
 <section id="adapters-polyg-trimming" class="level4">
-<h4 class="anchored" data-anchor-id="adapters-polyg-trimming">Adapters &amp; PolyG Trimming</h4>
-<div class="cell">
-<div class="sourceCode cell-code" id="cb11"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Load bash variables into memory</span></span>
+<h4 class="anchored" data-anchor-id="adapters-polyg-trimming">2.4.1.2 Adapters &amp; PolyG Trimming</h4>
+<div class="sourceCode" id="cb11"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Load bash variables into memory</span></span>
 <span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a><span class="bu">source</span> .bashvars</span>
 <span id="cb11-3"><a href="#cb11-3" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb11-4"><a href="#cb11-4" aria-hidden="true" tabindex="-1"></a><span class="st">"</span><span class="va">${fastp}</span><span class="st">"</span> <span class="dt">\</span></span>
@@ -600,7 +617,6 @@ fastp v0.23.2, time used: 42 seconds</code></pre>
 <span id="cb11-13"><a href="#cb11-13" aria-hidden="true" tabindex="-1"></a>--html <span class="st">"fastp-adapters-polyG.html"</span> <span class="dt">\</span></span>
 <span id="cb11-14"><a href="#cb11-14" aria-hidden="true" tabindex="-1"></a>--json <span class="st">"fastp-adapters-polyG.json"</span> <span class="dt">\</span></span>
 <span id="cb11-15"><a href="#cb11-15" aria-hidden="true" tabindex="-1"></a>--report_title <span class="st">"fastp-adapters-polyG-only"</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-stdout">
 <pre><code>WARNING: fastp uses up to 16 threads although you specified 46
 Read1 before filtering:
 total reads: 19762559
@@ -642,16 +658,14 @@ JSON report: fastp-adapters-polyG.json
 HTML report: fastp-adapters-polyG.html
 
 /home/shared/fastp --in1 ./raw/sRNA-POR-79-S1-TP2_R1_001.fastq.gz --in2 ./raw/sRNA-POR-79-S1-TP2_R2_001.fastq.gz --out1 ./trimmed-reads/fastp-adapters-polyG.R1.fq.gz --out2 ./trimmed-reads/fastp-adapters-polyG.R2.fq.gz --adapter_fasta NEB-adapters.fasta --trim_poly_g --overlap_len_require 17 --thread 46 --html fastp-adapters-polyG.html --json fastp-adapters-polyG.json --report_title fastp-adapters-polyG-only 
-fastp v0.23.2, time used: 31 seconds</code></pre>
-</div>
-</div>
+fastp v0.23.2, time used: 32 seconds</code></pre>
 </section>
 <section id="polyg-trimming-max-length-31" class="level4">
-<h4 class="anchored" data-anchor-id="polyg-trimming-max-length-31">PolyG Trimming Max Length 31</h4>
+<h4 class="anchored" data-anchor-id="polyg-trimming-max-length-31">2.4.1.3 PolyG Trimming Max Length 31</h4>
 <p>This can’t be run because we know from the polyG only trimming, that most read lengths are &gt;89bp. As such, it will end up discarding all the reads…</p>
 </section>
 <section id="adapters-polyg-trimming-max-length-31" class="level4">
-<h4 class="anchored" data-anchor-id="adapters-polyg-trimming-max-length-31">Adapters &amp; PolyG Trimming Max Length 31</h4>
+<h4 class="anchored" data-anchor-id="adapters-polyg-trimming-max-length-31">2.4.1.4 Adapters &amp; PolyG Trimming Max Length 31</h4>
 <div class="callout callout-style-default callout-note callout-titled">
 <div class="callout-header d-flex align-content-center">
 <div class="callout-icon-container">
@@ -665,8 +679,7 @@ Note
 <p>The max length is based on the <code>fastp</code> insert peak size from the adapter and polyG trimming results, and previous evaluation of mean read lengths via <a href="https://www.bioinformatics.babraham.ac.uk/projects/fastqc/"><code>FastQC</code></a> and <a href="https://multiqc.info/"><code>MultiQC</code></a>.</p>
 </div>
 </div>
-<div class="cell">
-<div class="sourceCode cell-code" id="cb13"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Load bash variables into memory</span></span>
+<div class="sourceCode" id="cb13"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Load bash variables into memory</span></span>
 <span id="cb13-2"><a href="#cb13-2" aria-hidden="true" tabindex="-1"></a><span class="bu">source</span> .bashvars</span>
 <span id="cb13-3"><a href="#cb13-3" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb13-4"><a href="#cb13-4" aria-hidden="true" tabindex="-1"></a><span class="st">"</span><span class="va">${fastp}</span><span class="st">"</span> <span class="dt">\</span></span>
@@ -682,7 +695,6 @@ Note
 <span id="cb13-14"><a href="#cb13-14" aria-hidden="true" tabindex="-1"></a>--html <span class="st">"fastp-adapters-polyG-31bp.html"</span> <span class="dt">\</span></span>
 <span id="cb13-15"><a href="#cb13-15" aria-hidden="true" tabindex="-1"></a>--json <span class="st">"fastp-adapters-polyG-31bp.json"</span> <span class="dt">\</span></span>
 <span id="cb13-16"><a href="#cb13-16" aria-hidden="true" tabindex="-1"></a>--report_title <span class="st">"fastp-adapters-polyG-31bp"</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-stdout">
 <pre><code>WARNING: fastp uses up to 16 threads although you specified 46
 Read1 before filtering:
 total reads: 19762559
@@ -726,14 +738,11 @@ HTML report: fastp-adapters-polyG-31bp.html
 
 /home/shared/fastp --in1 ./raw/sRNA-POR-79-S1-TP2_R1_001.fastq.gz --in2 ./raw/sRNA-POR-79-S1-TP2_R2_001.fastq.gz --out1 ./trimmed-reads/fastp-adapters-polyG-31bp.R1.fq.gz --out2 ./trimmed-reads/fastp-adapters-polyG-31bp.R2.fq.gz --adapter_fasta NEB-adapters.fasta --trim_poly_g --overlap_len_require 17 --length_limit 31 --thread 46 --html fastp-adapters-polyG-31bp.html --json fastp-adapters-polyG-31bp.json --report_title fastp-adapters-polyG-31bp 
 fastp v0.23.2, time used: 31 seconds</code></pre>
-</div>
-</div>
 </section>
 <section id="adapters-polyg-trimming-max-length-31-with-merge" class="level4">
-<h4 class="anchored" data-anchor-id="adapters-polyg-trimming-max-length-31-with-merge">Adapters &amp; PolyG Trimming Max Length 31 With Merge</h4>
+<h4 class="anchored" data-anchor-id="adapters-polyg-trimming-max-length-31-with-merge">2.4.1.5 Adapters &amp; PolyG Trimming Max Length 31 With Merge</h4>
 <p>This will attempt to merge the R1 and R2 reads.</p>
-<div class="cell">
-<div class="sourceCode cell-code" id="cb15"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Load bash variables into memory</span></span>
+<div class="sourceCode" id="cb15"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Load bash variables into memory</span></span>
 <span id="cb15-2"><a href="#cb15-2" aria-hidden="true" tabindex="-1"></a><span class="bu">source</span> .bashvars</span>
 <span id="cb15-3"><a href="#cb15-3" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb15-4"><a href="#cb15-4" aria-hidden="true" tabindex="-1"></a><span class="st">"</span><span class="va">${fastp}</span><span class="st">"</span> <span class="dt">\</span></span>
@@ -749,7 +758,6 @@ fastp v0.23.2, time used: 31 seconds</code></pre>
 <span id="cb15-14"><a href="#cb15-14" aria-hidden="true" tabindex="-1"></a>--html <span class="st">"fastp-adapters-polyG-31bp-merged.html"</span> <span class="dt">\</span></span>
 <span id="cb15-15"><a href="#cb15-15" aria-hidden="true" tabindex="-1"></a>--json <span class="st">"fastp-adapters-polyG-31bp-merged.json"</span> <span class="dt">\</span></span>
 <span id="cb15-16"><a href="#cb15-16" aria-hidden="true" tabindex="-1"></a>--report_title <span class="st">"fastp-adapters-polyG-31bp-merged"</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-stdout">
 <pre><code>WARNING: fastp uses up to 16 threads although you specified 46
 Read1 before filtering:
 total reads: 19762559
@@ -793,18 +801,15 @@ JSON report: fastp-adapters-polyG-31bp-merged.json
 HTML report: fastp-adapters-polyG-31bp-merged.html
 
 /home/shared/fastp --in1 ./raw/sRNA-POR-79-S1-TP2_R1_001.fastq.gz --in2 ./raw/sRNA-POR-79-S1-TP2_R2_001.fastq.gz --adapter_fasta NEB-adapters.fasta --trim_poly_g --overlap_len_require 17 --length_limit 31 --merge --merged_out ./trimmed-reads/fastp-adapters-polyG-31bp-merged.fq.gz --thread 46 --html fastp-adapters-polyG-31bp-merged.html --json fastp-adapters-polyG-31bp-merged.json --report_title fastp-adapters-polyG-31bp-merged 
-fastp v0.23.2, time used: 44 seconds</code></pre>
-</div>
-</div>
+fastp v0.23.2, time used: 43 seconds</code></pre>
 </section>
 </section>
 <section id="single-end-trimming---r1-reads-only" class="level3">
-<h3 class="anchored" data-anchor-id="single-end-trimming---r1-reads-only">Single-end Trimming - R1 Reads Only</h3>
+<h3 class="anchored" data-anchor-id="single-end-trimming---r1-reads-only">2.4.2 Single-end Trimming - R1 Reads Only</h3>
 <p>Using just the R1 reads, per Azenta’s recommendation.</p>
 <section id="auto-adapters-polyg-trimming" class="level4">
-<h4 class="anchored" data-anchor-id="auto-adapters-polyg-trimming">Auto-adapters &amp; PolyG Trimming</h4>
-<div class="cell">
-<div class="sourceCode cell-code" id="cb17"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Load bash variables into memory</span></span>
+<h4 class="anchored" data-anchor-id="auto-adapters-polyg-trimming">2.4.2.1 Auto-adapters &amp; PolyG Trimming</h4>
+<div class="sourceCode" id="cb17"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Load bash variables into memory</span></span>
 <span id="cb17-2"><a href="#cb17-2" aria-hidden="true" tabindex="-1"></a><span class="bu">source</span> .bashvars</span>
 <span id="cb17-3"><a href="#cb17-3" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb17-4"><a href="#cb17-4" aria-hidden="true" tabindex="-1"></a><span class="st">"</span><span class="va">${fastp}</span><span class="st">"</span> <span class="dt">\</span></span>
@@ -815,7 +820,6 @@ fastp v0.23.2, time used: 44 seconds</code></pre>
 <span id="cb17-9"><a href="#cb17-9" aria-hidden="true" tabindex="-1"></a>--html <span class="st">"fastp-R1-auto_adapters-polyG.html"</span> <span class="dt">\</span></span>
 <span id="cb17-10"><a href="#cb17-10" aria-hidden="true" tabindex="-1"></a>--json <span class="st">"fastp-R1-auto_adapters-polyG.json"</span> <span class="dt">\</span></span>
 <span id="cb17-11"><a href="#cb17-11" aria-hidden="true" tabindex="-1"></a>--report_title <span class="st">"fastp-R1-auto_adapters-polyG"</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-stdout">
 <pre><code>Detecting adapter sequence for read1...
 &gt;Illumina TruSeq Adapter Read 1
 AGATCGGAAGAGCACACGTCTGAACTCCAGTCA
@@ -847,12 +851,10 @@ JSON report: fastp-R1-auto_adapters-polyG.json
 HTML report: fastp-R1-auto_adapters-polyG.html
 
 /home/shared/fastp --in1 ./raw/sRNA-POR-79-S1-TP2_R1_001.fastq.gz --out1 ./trimmed-reads/fastp-R1-auto_adapters-polyG.fq.gz --trim_poly_g --thread 46 --html fastp-R1-auto_adapters-polyG.html --json fastp-R1-auto_adapters-polyG.json --report_title fastp-R1-auto_adapters-polyG 
-fastp v0.23.2, time used: 30 seconds</code></pre>
-</div>
-</div>
+fastp v0.23.2, time used: 31 seconds</code></pre>
 </section>
 <section id="auto-adapters-polyg-trimming-max-length-31" class="level4">
-<h4 class="anchored" data-anchor-id="auto-adapters-polyg-trimming-max-length-31">Auto-adapters &amp; PolyG Trimming Max Length 31</h4>
+<h4 class="anchored" data-anchor-id="auto-adapters-polyg-trimming-max-length-31">2.4.2.2 Auto-adapters &amp; PolyG Trimming Max Length 31</h4>
 <div class="callout callout-style-default callout-note callout-titled">
 <div class="callout-header d-flex align-content-center">
 <div class="callout-icon-container">
@@ -866,8 +868,7 @@ Note
 <p>The max length is based on the <code>fastp</code> insert peak size from the adapter and polyG trimming results, and previous evaluation of mean read lengths via <a href="https://www.bioinformatics.babraham.ac.uk/projects/fastqc/"><code>FastQC</code></a> and <a href="https://multiqc.info/"><code>MultiQC</code></a>.</p>
 </div>
 </div>
-<div class="cell">
-<div class="sourceCode cell-code" id="cb19"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb19-1"><a href="#cb19-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Load bash variables into memory</span></span>
+<div class="sourceCode" id="cb19"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb19-1"><a href="#cb19-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Load bash variables into memory</span></span>
 <span id="cb19-2"><a href="#cb19-2" aria-hidden="true" tabindex="-1"></a><span class="bu">source</span> .bashvars</span>
 <span id="cb19-3"><a href="#cb19-3" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb19-4"><a href="#cb19-4" aria-hidden="true" tabindex="-1"></a><span class="st">"</span><span class="va">${fastp}</span><span class="st">"</span> <span class="dt">\</span></span>
@@ -879,7 +880,6 @@ Note
 <span id="cb19-10"><a href="#cb19-10" aria-hidden="true" tabindex="-1"></a>--html <span class="st">"fastp-R1-auto_adapters-polyG-31bp.html"</span> <span class="dt">\</span></span>
 <span id="cb19-11"><a href="#cb19-11" aria-hidden="true" tabindex="-1"></a>--json <span class="st">"fastp-R1-auto_adapters-polyG-31bp.json"</span> <span class="dt">\</span></span>
 <span id="cb19-12"><a href="#cb19-12" aria-hidden="true" tabindex="-1"></a>--report_title <span class="st">"fastp-R1-auto_adapters-polyG-31bp"</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-stdout">
 <pre><code>Detecting adapter sequence for read1...
 &gt;Illumina TruSeq Adapter Read 1
 AGATCGGAAGAGCACACGTCTGAACTCCAGTCA
@@ -912,19 +912,16 @@ JSON report: fastp-R1-auto_adapters-polyG-31bp.json
 HTML report: fastp-R1-auto_adapters-polyG-31bp.html
 
 /home/shared/fastp --in1 ./raw/sRNA-POR-79-S1-TP2_R1_001.fastq.gz --out1 ./trimmed-reads/fastp-R1-31bp-auto_adapters-polyG.fq.gz --trim_poly_g --length_limit 31 --thread 46 --html fastp-R1-auto_adapters-polyG-31bp.html --json fastp-R1-auto_adapters-polyG-31bp.json --report_title fastp-R1-auto_adapters-polyG-31bp 
-fastp v0.23.2, time used: 30 seconds</code></pre>
-</div>
-</div>
+fastp v0.23.2, time used: 31 seconds</code></pre>
 </section>
 </section>
 </section>
 <section id="bbmerge" class="level2">
-<h2 class="anchored" data-anchor-id="bbmerge">BBMerge</h2>
+<h2 class="anchored" data-anchor-id="bbmerge">2.5 BBMerge</h2>
 <section id="raw-reads" class="level3">
-<h3 class="anchored" data-anchor-id="raw-reads">Raw reads</h3>
+<h3 class="anchored" data-anchor-id="raw-reads">2.5.1 Raw reads</h3>
 <p><a href="https://jgi.doe.gov/data-and-tools/software-tools/bbtools/bb-tools-user-guide/bbmerge-guide/">BBMerge</a> documentations actually indicates that merging performs best using <em>raw</em>, untrimmed reads, so we’ll try that out first…</p>
-<div class="cell">
-<div class="sourceCode cell-code" id="cb21"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb21-1"><a href="#cb21-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Load bash variables into memory</span></span>
+<div class="sourceCode" id="cb21"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb21-1"><a href="#cb21-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Load bash variables into memory</span></span>
 <span id="cb21-2"><a href="#cb21-2" aria-hidden="true" tabindex="-1"></a><span class="bu">source</span> .bashvars</span>
 <span id="cb21-3"><a href="#cb21-3" aria-hidden="true" tabindex="-1"></a><span class="va">${bbmerge}</span> <span class="dt">\</span></span>
 <span id="cb21-4"><a href="#cb21-4" aria-hidden="true" tabindex="-1"></a>in1=./raw/sRNA-POR-79-S1-TP2_R1_001.fastq.gz <span class="dt">\</span></span>
@@ -932,14 +929,13 @@ fastp v0.23.2, time used: 30 seconds</code></pre>
 <span id="cb21-6"><a href="#cb21-6" aria-hidden="true" tabindex="-1"></a>adapters=./NEB-adapters.fasta <span class="dt">\</span></span>
 <span id="cb21-7"><a href="#cb21-7" aria-hidden="true" tabindex="-1"></a>mininsert=17 <span class="dt">\</span></span>
 <span id="cb21-8"><a href="#cb21-8" aria-hidden="true" tabindex="-1"></a>out=./trimmed-reads/sRNA-POR-79-S1-TP2-raw-bbmerge.fq.gz</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-stdout">
 <pre><code>java -ea -Xmx1000m -Xms1000m -Djava.library.path=/home/shared/bbmap-39.06/jni/ -cp /home/shared/bbmap-39.06/current/ jgi.BBMerge in1=./raw/sRNA-POR-79-S1-TP2_R1_001.fastq.gz in2=./raw/sRNA-POR-79-S1-TP2_R2_001.fastq.gz adapters=./NEB-adapters.fasta mininsert=17 out=./trimmed-reads/sRNA-POR-79-S1-TP2-raw-bbmerge.fq.gz
 Executing jgi.BBMerge [in1=./raw/sRNA-POR-79-S1-TP2_R1_001.fastq.gz, in2=./raw/sRNA-POR-79-S1-TP2_R2_001.fastq.gz, adapters=./NEB-adapters.fasta, mininsert=17, out=./trimmed-reads/sRNA-POR-79-S1-TP2-raw-bbmerge.fq.gz]
 Version 39.06
 
 Writing mergable reads merged.
 Started output threads.
-Total time: 55.112 seconds.
+Total time: 56.412 seconds.
 
 Pairs:                  19762559
 Joined:                 151908      0.769%
@@ -959,15 +955,12 @@ Insert range:           17 - 289
 50th percentile:        156
 25th percentile:        72
 10th percentile:        32</code></pre>
-</div>
-</div>
 </section>
 <section id="trimmed-polyg-only" class="level3">
-<h3 class="anchored" data-anchor-id="trimmed-polyg-only">Trimmed PolyG Only</h3>
+<h3 class="anchored" data-anchor-id="trimmed-polyg-only">2.5.2 Trimmed PolyG Only</h3>
 <p>Running <a href="https://jgi.doe.gov/data-and-tools/software-tools/bbtools/bb-tools-user-guide/bbmerge-guide/">BBMerge</a> on just raw reads yielded poor results (&gt;99% of reads could <em>not</em> be merged). Additionally, the average insert size was determined to be 131.5bp, which is not going to be useful for sRNA-seq.</p>
 <p>I know that there’s a very large stretch of polyG sequence in the reads (likely due to the small insert size and “long” read length - Gs get added as a “placeholder” base each cycle that exceeds the insert size), so let’s try merging reads <em>after</em> polyG sequence has been trimmed.</p>
-<div class="cell">
-<div class="sourceCode cell-code" id="cb23"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb23-1"><a href="#cb23-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Load bash variables into memory</span></span>
+<div class="sourceCode" id="cb23"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb23-1"><a href="#cb23-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Load bash variables into memory</span></span>
 <span id="cb23-2"><a href="#cb23-2" aria-hidden="true" tabindex="-1"></a><span class="bu">source</span> .bashvars</span>
 <span id="cb23-3"><a href="#cb23-3" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb23-4"><a href="#cb23-4" aria-hidden="true" tabindex="-1"></a><span class="va">${bbmerge}</span> <span class="dt">\</span></span>
@@ -976,14 +969,13 @@ Insert range:           17 - 289
 <span id="cb23-7"><a href="#cb23-7" aria-hidden="true" tabindex="-1"></a>adapters=./NEB-adapters.fasta <span class="dt">\</span></span>
 <span id="cb23-8"><a href="#cb23-8" aria-hidden="true" tabindex="-1"></a>mininsert=17 <span class="dt">\</span></span>
 <span id="cb23-9"><a href="#cb23-9" aria-hidden="true" tabindex="-1"></a>out=./trimmed-reads/sRNA-POR-79-S1-TP2-fastp-polyG_only-bbmerge.fq.gz</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-stdout">
 <pre><code>java -ea -Xmx1000m -Xms1000m -Djava.library.path=/home/shared/bbmap-39.06/jni/ -cp /home/shared/bbmap-39.06/current/ jgi.BBMerge in1=./trimmed-reads/fastp-polyG_only.R1.fq.gz in2=./trimmed-reads/fastp-polyG_only.R2.fq.gz adapters=./NEB-adapters.fasta mininsert=17 out=./trimmed-reads/sRNA-POR-79-S1-TP2-fastp-polyG_only-bbmerge.fq.gz
 Executing jgi.BBMerge [in1=./trimmed-reads/fastp-polyG_only.R1.fq.gz, in2=./trimmed-reads/fastp-polyG_only.R2.fq.gz, adapters=./NEB-adapters.fasta, mininsert=17, out=./trimmed-reads/sRNA-POR-79-S1-TP2-fastp-polyG_only-bbmerge.fq.gz]
 Version 39.06
 
 Writing mergable reads merged.
 Started output threads.
-Total time: 52.843 seconds.
+Total time: 52.363 seconds.
 
 Pairs:                  19450041
 Joined:                 12649853    65.038%
@@ -1003,14 +995,11 @@ Insert range:           17 - 289
 50th percentile:        29
 25th percentile:        25
 10th percentile:        21</code></pre>
-</div>
-</div>
 <p>The results from using polyG-trimmed reads are certainly much better than just merging raw reads (12,649,853 reads could be joined this time). Mean insert size is now determined to be 30bp, which is what we might expect. However, the insert range (17 - 289) is still concerning, as reads &gt;30bp likely aren’t usable. Adapter sequences are still present, which are certainly contributing to some of the inability to merge, as well as the large read lengths. So, let’s try merging reads that have been trimmed of both polyG and adapter sequences.</p>
 </section>
 <section id="trimmed-adapters-polyg" class="level3">
-<h3 class="anchored" data-anchor-id="trimmed-adapters-polyg">Trimmed Adapters &amp; PolyG</h3>
-<div class="cell">
-<div class="sourceCode cell-code" id="cb25"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb25-1"><a href="#cb25-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Load bash variables into memory</span></span>
+<h3 class="anchored" data-anchor-id="trimmed-adapters-polyg">2.5.3 Trimmed Adapters &amp; PolyG</h3>
+<div class="sourceCode" id="cb25"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb25-1"><a href="#cb25-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Load bash variables into memory</span></span>
 <span id="cb25-2"><a href="#cb25-2" aria-hidden="true" tabindex="-1"></a><span class="bu">source</span> .bashvars</span>
 <span id="cb25-3"><a href="#cb25-3" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb25-4"><a href="#cb25-4" aria-hidden="true" tabindex="-1"></a><span class="va">${bbmerge}</span> <span class="dt">\</span></span>
@@ -1019,14 +1008,13 @@ Insert range:           17 - 289
 <span id="cb25-7"><a href="#cb25-7" aria-hidden="true" tabindex="-1"></a>adapters=./NEB-adapters.fasta <span class="dt">\</span></span>
 <span id="cb25-8"><a href="#cb25-8" aria-hidden="true" tabindex="-1"></a>mininsert=17 <span class="dt">\</span></span>
 <span id="cb25-9"><a href="#cb25-9" aria-hidden="true" tabindex="-1"></a>out=./trimmed-reads/sRNA-POR-79-S1-TP2-fastp-adapters-polyG-bbmerge.fq.gz</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-stdout">
 <pre><code>java -ea -Xmx1000m -Xms1000m -Djava.library.path=/home/shared/bbmap-39.06/jni/ -cp /home/shared/bbmap-39.06/current/ jgi.BBMerge in1=./trimmed-reads/fastp-adapters-polyG.R1.fq.gz in2=./trimmed-reads/fastp-adapters-polyG.R2.fq.gz adapters=./NEB-adapters.fasta mininsert=17 out=./trimmed-reads/sRNA-POR-79-S1-TP2-fastp-adapters-polyG-bbmerge.fq.gz
 Executing jgi.BBMerge [in1=./trimmed-reads/fastp-adapters-polyG.R1.fq.gz, in2=./trimmed-reads/fastp-adapters-polyG.R2.fq.gz, adapters=./NEB-adapters.fasta, mininsert=17, out=./trimmed-reads/sRNA-POR-79-S1-TP2-fastp-adapters-polyG-bbmerge.fq.gz]
 Version 39.06
 
 Writing mergable reads merged.
 Started output threads.
-Total time: 27.736 seconds.
+Total time: 27.985 seconds.
 
 Pairs:                  16734573
 Joined:                 15533284    92.822%
@@ -1046,15 +1034,12 @@ Insert range:           17 - 289
 50th percentile:        29
 25th percentile:        25
 10th percentile:        21</code></pre>
-</div>
-</div>
 <p>Well, trimming adapters certainly made a difference, as well! Now, 15,533,284 reads get joined (as opposed to 12,649,853 when using just polyG-trimmed reads). The average insert size changes very little, but, oddly, the insert range remains the same (17 - 289).</p>
 <p>For kicks, let’s throw the reads that have been trimmed to 31bp into <a href="https://jgi.doe.gov/data-and-tools/software-tools/bbtools/bb-tools-user-guide/bbmerge-guide/">BBMerge</a> and see what happens.</p>
 </section>
 <section id="trimmed-adapters-polyg-max-length-31bp" class="level3">
-<h3 class="anchored" data-anchor-id="trimmed-adapters-polyg-max-length-31bp">Trimmed Adapters &amp; PolyG Max Length 31bp</h3>
-<div class="cell">
-<div class="sourceCode cell-code" id="cb27"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb27-1"><a href="#cb27-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Load bash variables into memory</span></span>
+<h3 class="anchored" data-anchor-id="trimmed-adapters-polyg-max-length-31bp">2.5.4 Trimmed Adapters &amp; PolyG Max Length 31bp</h3>
+<div class="sourceCode" id="cb27"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb27-1"><a href="#cb27-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Load bash variables into memory</span></span>
 <span id="cb27-2"><a href="#cb27-2" aria-hidden="true" tabindex="-1"></a><span class="bu">source</span> .bashvars</span>
 <span id="cb27-3"><a href="#cb27-3" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb27-4"><a href="#cb27-4" aria-hidden="true" tabindex="-1"></a><span class="va">${bbmerge}</span> <span class="dt">\</span></span>
@@ -1063,14 +1048,13 @@ Insert range:           17 - 289
 <span id="cb27-7"><a href="#cb27-7" aria-hidden="true" tabindex="-1"></a>adapters=./NEB-adapters.fasta <span class="dt">\</span></span>
 <span id="cb27-8"><a href="#cb27-8" aria-hidden="true" tabindex="-1"></a>mininsert=17 <span class="dt">\</span></span>
 <span id="cb27-9"><a href="#cb27-9" aria-hidden="true" tabindex="-1"></a>out=./trimmed-reads/sRNA-POR-79-S1-TP2-fastp-adapters-polyG-31bp-bbmerge.fq.gz</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-stdout">
 <pre><code>java -ea -Xmx1000m -Xms1000m -Djava.library.path=/home/shared/bbmap-39.06/jni/ -cp /home/shared/bbmap-39.06/current/ jgi.BBMerge in1=./trimmed-reads/fastp-adapters-polyG-31bp.R1.fq.gz in2=./trimmed-reads/fastp-adapters-polyG-31bp.R2.fq.gz adapters=./NEB-adapters.fasta mininsert=17 out=./trimmed-reads/sRNA-POR-79-S1-TP2-fastp-adapters-polyG-31bp-bbmerge.fq.gz
 Executing jgi.BBMerge [in1=./trimmed-reads/fastp-adapters-polyG-31bp.R1.fq.gz, in2=./trimmed-reads/fastp-adapters-polyG-31bp.R2.fq.gz, adapters=./NEB-adapters.fasta, mininsert=17, out=./trimmed-reads/sRNA-POR-79-S1-TP2-fastp-adapters-polyG-31bp-bbmerge.fq.gz]
 Version 39.06
 
 Writing mergable reads merged.
 Started output threads.
-Total time: 21.459 seconds.
+Total time: 21.354 seconds.
 
 Pairs:                  13190855
 Joined:                 12346728    93.601%
@@ -1090,16 +1074,13 @@ Insert range:           17 - 35
 50th percentile:        28
 25th percentile:        24
 10th percentile:        20</code></pre>
-</div>
-</div>
 <p>This resulted in 12,346,728 reads being joined. This is on par with the 12,649,853 reads joined when using just polyG-trimmed reads. Additionally, we see the average insert size is 26.3bp, which is even more inline with what we’d expect for miRNAs (22-24bp), and the insert range is also inline with what we’d expect for these libraries (17 - 35bp). However, this is about 20% fewer reads than the 15,533,284 reads when using polyG- and adapter-trimmed reads.</p>
 <p>Maybe I’ll test out the subsequent downstream analyses using these different merging results…</p>
 </section>
 </section>
 <section id="fastqc" class="level2">
-<h2 class="anchored" data-anchor-id="fastqc">FastQC</h2>
-<div class="cell">
-<div class="sourceCode cell-code" id="cb29"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb29-1"><a href="#cb29-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Load bash variables into memory</span></span>
+<h2 class="anchored" data-anchor-id="fastqc">2.6 FastQC</h2>
+<div class="sourceCode" id="cb29"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb29-1"><a href="#cb29-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Load bash variables into memory</span></span>
 <span id="cb29-2"><a href="#cb29-2" aria-hidden="true" tabindex="-1"></a><span class="bu">source</span> .bashvars</span>
 <span id="cb29-3"><a href="#cb29-3" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb29-4"><a href="#cb29-4" aria-hidden="true" tabindex="-1"></a><span class="co"># Populate array with FastQ files</span></span>
@@ -1115,7 +1096,6 @@ Insert range:           17 - 35
 <span id="cb29-14"><a href="#cb29-14" aria-hidden="true" tabindex="-1"></a>--quiet <span class="dt">\</span></span>
 <span id="cb29-15"><a href="#cb29-15" aria-hidden="true" tabindex="-1"></a>--outdir ./ <span class="dt">\</span></span>
 <span id="cb29-16"><a href="#cb29-16" aria-hidden="true" tabindex="-1"></a><span class="va">${fastqc_list}</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-stdout">
 <pre><code>application/gzip
 application/gzip
 application/gzip
@@ -1129,32 +1109,23 @@ application/gzip
 application/gzip
 application/gzip
 application/gzip</code></pre>
-</div>
-</div>
 </section>
 <section id="multiqc" class="level2">
-<h2 class="anchored" data-anchor-id="multiqc">MultiQC</h2>
-<div class="cell">
-<div class="sourceCode cell-code" id="cb31"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb31-1"><a href="#cb31-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Load bash variables into memory</span></span>
+<h2 class="anchored" data-anchor-id="multiqc">2.7 MultiQC</h2>
+<div class="sourceCode" id="cb31"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb31-1"><a href="#cb31-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Load bash variables into memory</span></span>
 <span id="cb31-2"><a href="#cb31-2" aria-hidden="true" tabindex="-1"></a><span class="bu">source</span> .bashvars</span>
 <span id="cb31-3"><a href="#cb31-3" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb31-4"><a href="#cb31-4" aria-hidden="true" tabindex="-1"></a><span class="va">${multiqc}</span> .</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-stdout">
-<pre><code>
-  /// MultiQC 🔍 | v1.14
+<pre><code>  /// MultiQC 🔍 | v1.14
 
-|           multiqc | MultiQC Version v1.21 now available!
-|           multiqc | Search path : /home/shared/8TB_HDD_01/sam/gitrepos/RobertsLab/sams-notebook/posts/2024/2024-02-02-sRNA-seq-Paired-Read-Merging-Exploratios---Coral-E5-Deep-Dive
-|         searching | ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 100% 109/109  
+|           multiqc | MultiQC Version v1.25 now available!
+|           multiqc | Search path : /home/shared/8TB_HDD_01/sam/gitrepos/RobertsLab/code/r_projects/sam/20240202-e5-coral-sRNAseq-merging-explorations/code
+|         searching | ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 100% 57/57  
 |            fastqc | Found 13 reports
 |           multiqc | Compressing plot data
-|           multiqc | Previous MultiQC output found! Adjusting filenames..
-|           multiqc | Use -f or --force to overwrite existing reports instead
-|           multiqc | Report      : multiqc_report_1.html
-|           multiqc | Data        : multiqc_data_1
+|           multiqc | Report      : multiqc_report.html
+|           multiqc | Data        : multiqc_data
 |           multiqc | MultiQC complete</code></pre>
-</div>
-</div>
 <p>Check out the <a href="https://multiqc.info/"><code>MultiQC</code></a> results here (HTML):</p>
 <ul>
 <li><a href="./multiqc_report.html">MultiQC Report</a></li>

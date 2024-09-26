@@ -7,146 +7,379 @@ title: Data Investigation - Mysterious Case of Excessive Exons in CEABIGR
 date: '2023-12-06'
 code-fold: false
 draft: false
-engine: knitr
 categories: 
   - CEABIGR
   - Crassostrea viriginica
   - Eastern oyster
   - 2023
 ---
+After Steven [ran through some prelimiary exon expression
+analyses](https://github.com/sr320/ceabigr/issues/86#issuecomment-1816557386)
+(GitHub Isse), he noticed that there were some genes with a seemingly
+excessive number of exons (like over 800!). Seeing that, I’ve decided to
+do some investigation to see if these gene feature annotations stem from
+the source (i.e. from NCBI GFF) or were introduced accidentally through
+some subsequent data analysis/manipulations.
 
-After Steven [ran through some prelimiary exon expression analyses](https://github.com/sr320/ceabigr/issues/86#issuecomment-1816557386) (GitHub Isse), he noticed that there were some genes with a seemingly excessive number of exons (like over 800!). Seeing that, I've decided to do some investigation to see if these gene feature annotations stem from the source (i.e. from NCBI GFF) or were introduced accidentally through some subsequent data analysis/manipulations.
+::: {.callout-note}
+Code below was knitted from [20231206-cvir-exons-exploration/code/20231206-cvir-exons-exploration.Rmd](https://github.com/RobertsLab/code/blob/72303d5bd3686c54ec1c9cb561c835fd4788d09e/r_projects/sam/20231206-cvir-exons-exploration/code/20231206-cvir-exons-exploration.Rmd), commit `72303d5`.
+:::
 
-First, let's look at a file which appears to provide mappings of GeneIDs and exons:
+- <a
+  href="#1-investigate-genome-featuresc_virginica-30_gnomon_exon-geneidbed"
+  id="toc-1-investigate-genome-featuresc_virginica-30_gnomon_exon-geneidbed">1
+  Investigate
+  <code>genome-features/C_virginica-3.0_Gnomon_exon-geneID.bed</code></a>
+  - <a href="#11-inspect-exon-geneid-mapping-file"
+    id="toc-11-inspect-exon-geneid-mapping-file">1.1 Inspect exon-geneID
+    mapping file</a>
+  - <a
+    href="#12-count-exons-per-gene-in-c_virginica-30_gnomon_exon-geneidbed"
+    id="toc-12-count-exons-per-gene-in-c_virginica-30_gnomon_exon-geneidbed">1.2
+    Count exons per gene in
+    <code>C_virginica-3.0_Gnomon_exon-geneID.bed</code></a>
+- <a href="#2-inspect-ncbi-gff" id="toc-2-inspect-ncbi-gff">2 Inspect NCBI
+  GFF</a>
+  - <a href="#21-search-for-genes-with-high-number-of-exons"
+    id="toc-21-search-for-genes-with-high-number-of-exons">2.1 Search for
+    gene(s) with high number of exons</a>
+- <a href="#3-inspect-output19-exon-expressions12m-exon_expressiontab"
+  id="toc-3-inspect-output19-exon-expressions12m-exon_expressiontab">3
+  Inspect
+  <code>output/19-exon-expression/S12M-exon_expression.tab</code></a>
+  - <a
+    href="#31-count-colums-in-output19-exon-expressions12m-exon_expressiontab"
+    id="toc-31-count-colums-in-output19-exon-expressions12m-exon_expressiontab">3.1
+    Count colums in
+    <code>output/19-exon-expression/S12M-exon_expression.tab</code></a>
+  - <a
+    href="#32-compare-number-of-exons-in-gene-loc111119012-between-s12m-exon_expressiontab-and-gcf_0020227652_c_virginica-30_genomicgff"
+    id="toc-32-compare-number-of-exons-in-gene-loc111119012-between-s12m-exon_expressiontab-and-gcf_0020227652_c_virginica-30_genomicgff">3.2
+    Compare number of exons in gene-LOC111119012 between
+    <code>S12M-exon_expression.tab</code> and
+    <code>GCF_002022765.2_C_virginica-3.0_genomic.gff</code></a>
+- <a
+  href="#4-compare-total-exons-in-e_datactab-and-gcf_0020227652_c_virginica-30_genomicgff"
+  id="toc-4-compare-total-exons-in-e_datactab-and-gcf_0020227652_c_virginica-30_genomicgff">4
+  Compare total exons in <code>e_data.ctab</code> and
+  <code>GCF_002022765.2_C_virginica-3.0_genomic.gff</code></a>
+  - <a href="#41-count-exons-in-s12m-e_datactab"
+    id="toc-41-count-exons-in-s12m-e_datactab">4.1 Count exons in S12M
+    <code>e_data.ctab</code>.</a>
+  - <a href="#42-count-exons-in-gcf_0020227652_c_virginica-30_genomicgff"
+    id="toc-42-count-exons-in-gcf_0020227652_c_virginica-30_genomicgff">4.2
+    Count exons in
+    <code>GCF_002022765.2_C_virginica-3.0_genomic.gff</code></a>
 
-# Investigate `genome-features/C_virginica-3.0_Gnomon_exon-geneID.bed`
+First, let’s look at a file which appears to provide mappings of GeneIDs
+and exons:
 
-## Inspect exon-geneID mapping file
+# 1 Investigate `genome-features/C_virginica-3.0_Gnomon_exon-geneID.bed`
 
-This might be a poor place to start, as this file exists in a directory with no README. As such, I'm not certain of the source of this file...
+## 1.1 Inspect exon-geneID mapping file
 
-```{bash head-Cvirginica-30-Gnomon-exon-geneID-bed}
-head /home/sam/gitrepos/ceabigr/genome-features/C_virginica-3.0_Gnomon_exon-geneID.bed
+This might be a poor place to start, as this file exists in a directory
+with no README. As such, I’m not certain of the source of this file…
+
+``` bash
+head /home/shared/8TB_HDD_01/sam/gitrepos/ceabigr/genome-features/C_virginica-3.0_Gnomon_exon-geneID.bed
 ```
 
-This appears to have all exons start/stop locations for each gene. At least, that's my assumption, based off of the filename.
+    NC_035780.1 13578   13603   gene-LOC111116054
+    NC_035780.1 14237   14290   gene-LOC111116054
+    NC_035780.1 14557   14594   gene-LOC111116054
+    NC_035780.1 28961   29073   gene-LOC111126949
+    NC_035780.1 30524   31557   gene-LOC111126949
+    NC_035780.1 31736   31887   gene-LOC111126949
+    NC_035780.1 31977   32565   gene-LOC111126949
+    NC_035780.1 32959   33324   gene-LOC111126949
+    NC_035780.1 66869   66897   gene-LOC111110729
+    NC_035780.1 64123   64334   gene-LOC111110729
 
-## Count exons per gene in `C_virginica-3.0_Gnomon_exon-geneID.bed`
+This appears to have all exons start/stop locations for each gene. At
+least, that’s my assumption, based off of the filename.
 
-```{bash count-exons-per-gene-C_virginica-3.0_Gnomon_exon-geneID.bed}
-awk '{print $4}' /home/sam/gitrepos/ceabigr/genome-features/C_virginica-3.0_Gnomon_exon-geneID.bed \
+## 1.2 Count exons per gene in `C_virginica-3.0_Gnomon_exon-geneID.bed`
+
+``` bash
+awk '{print $4}' /home/shared/8TB_HDD_01/sam/gitrepos/ceabigr/genome-features/C_virginica-3.0_Gnomon_exon-geneID.bed \
 | uniq --count \
 | sort --numeric-sort --reverse  -k1,1 \
 | head
 ```
 
-Well, this shows us that this file indeed has many, many genes with *thousands* of exons! This is highly dubious, so let's glance at the NCBI GFF to see if this is "real" or not.
+       2889 gene-LOC111108212
+       2600 gene-LOC111125463
+       2237 gene-LOC111125330
+       1559 gene-LOC111130297
+       1557 gene-LOC111112605
+       1555 gene-LOC111128998
+       1540 gene-LOC111122636
+       1506 gene-LOC111107250
+       1384 gene-LOC111125942
+       1383 gene-LOC111133666
 
-# Inspect NCBI GFF
+Well, this shows us that this file indeed has many, many genes with
+*thousands* of exons! This is highly dubious, so let’s glance at the
+NCBI GFF to see if this is “real” or not.
 
-## Decompress NCBI GFF
+# 2 Inspect NCBI GFF
 
-```{bash gunzip-NCBI-gff}
-#| eval: FALSE
-gunzip --keep /home/sam/gitrepos/ceabigr/genome-features/GCF_002022765.2_C_virginica-3.0_genomic.gff.gz
-```
+## 2.1 Search for gene(s) with high number of exons
 
-## Search for gene(s) with high number of exons
+<div class="callout-note">
 
-::: {.callout-note}
-Exons in the GFF do _not_ refer to the full parent gene ID!
+Exons in the GFF do *not* refer to the full parent gene ID!
 
 Need to use truncated version. E.g. `LOC111108212`
-:::
 
-```{bash grep-genes-NCBI-gff}
-awk -F "\t" '$3 == "exon"' /home/sam/gitrepos/ceabigr/genome-features/GCF_002022765.2_C_virginica-3.0_genomic.gff \
+</div>
+
+``` bash
+awk -F "\t" '$3 == "exon"' /home/shared/8TB_HDD_01/sam/gitrepos/ceabigr/genome-features/GCF_002022765.2_C_virginica-3.0_genomic.gff \
 | grep "gene=LOC111110729" \
 | wc -l
 ```
 
-So, the exon counts in `genome-features/C_virginica-3.0_Gnomon_exon-geneID.bed` are indeed artificial!
+    5
 
-Now that I've investigated that, I probably should've just started with the input files that Steven was using in the first place. However, this certainly identifies a problematic file that should likely be removed from the repo...
+So, the exon counts in
+`genome-features/C_virginica-3.0_Gnomon_exon-geneID.bed` are indeed
+artificial!
 
-Let's look at the data Steven was working with and see what we can figure out.
+Now that I’ve investigated that, I probably should’ve just started with
+the input files that Steven was using in the first place. However, this
+certainly identifies a problematic file that should likely be removed
+from the repo…
 
-# Inspect `output/19-exon-expression/S12M-exon_expression.tab`
+Let’s look at the data Steven was working with and see what we can
+figure out.
 
-## Count colums in `output/19-exon-expression/S12M-exon_expression.tab`
+# 3 Inspect `output/19-exon-expression/S12M-exon_expression.tab`
 
-Due to the layout of this file (a column for each possible number of exons across *all* genes), the head command will produce an unwieldy output. Instead, we'll just count the number of columns (fields) to get an idea of what we're dealing with.
+## 3.1 Count colums in `output/19-exon-expression/S12M-exon_expression.tab`
 
-::: {.callout-note}
+Due to the layout of this file (a column for each possible number of
+exons across *all* genes), the head command will produce an unwieldy
+output. Instead, we’ll just count the number of columns (fields) to get
+an idea of what we’re dealing with.
+
+<div class="callout-note">
+
 We subtract `1` to account for the first column
-:::
 
-```{r head-output/19-exon-expression/S12M-exon_expression.tab}
-S12M.columns <- system("awk '{print NF-1}' /home/sam/gitrepos/ceabigr/output/19-exon-expression/S12M-exon_expression.tab | sort --unique",
+</div>
+
+``` r
+S12M.columns <- system("awk '{print NF-1}' /home/shared/8TB_HDD_01/sam/gitrepos/ceabigr/output/19-exon-expression/S12M-exon_expression.tab | sort --unique",
                        intern = TRUE)
 ```
 
-Well, we're seeing that there is a *maximum* number of exons across _all_ genes: `r S12M.columns`
+Well, we’re seeing that there is a *maximum* number of exons across
+*all* genes: 462
 
-Next let's see if we can ID the gene with `r S12M.columns` exons.
+Next let’s see if we can ID the gene with 462 exons.
 
-```{r id-gene-with-462-exons}
-#| warning: false
+``` r
 library(dplyr)
 
-S12M.df <- read.csv("/home/sam/gitrepos/ceabigr/output/19-exon-expression/S12M-exon_expression.tab",
+S12M.df <- read.csv("/home/shared/8TB_HDD_01/sam/gitrepos/ceabigr/output/19-exon-expression/S12M-exon_expression.tab",
                     sep = "\t")
 
 str(S12M.df)
+```
 
+    'data.frame':   38838 obs. of  463 variables:
+     $ gene_name: chr  "gene-LOC111116054" "gene-LOC111126949" "gene-LOC111110729" "gene-LOC111112434" ...
+     $ exon_1   : int  130 22 282 24 69 416 193 23 23 3 ...
+     $ exon_2   : int  103 180 63 40 39 NA 106 173 173 1 ...
+     $ exon_3   : int  9 35 55 123 86 NA NA 3 NA 2 ...
+     $ exon_4   : int  NA 110 11 NA 21 NA NA 1 NA 2 ...
+     $ exon_5   : int  NA 47 NA NA 85 NA NA 2 NA NA ...
+     $ exon_6   : int  NA NA NA NA NA NA NA 2 NA NA ...
+     $ exon_7   : int  NA NA NA NA NA NA NA 75 NA NA ...
+     $ exon_8   : int  NA NA NA NA NA NA NA 214 NA NA ...
+     $ exon_9   : int  NA NA NA NA NA NA NA NA NA NA ...
+     $ exon_10  : int  NA NA NA NA NA NA NA NA NA NA ...
+     $ exon_11  : int  NA NA NA NA NA NA NA NA NA NA ...
+     $ exon_12  : int  NA NA NA NA NA NA NA NA NA NA ...
+     $ exon_13  : int  NA NA NA NA NA NA NA NA NA NA ...
+     $ exon_14  : int  NA NA NA NA NA NA NA NA NA NA ...
+     $ exon_15  : int  NA NA NA NA NA NA NA NA NA NA ...
+     $ exon_16  : int  NA NA NA NA NA NA NA NA NA NA ...
+     $ exon_17  : int  NA NA NA NA NA NA NA NA NA NA ...
+     $ exon_18  : int  NA NA NA NA NA NA NA NA NA NA ...
+     $ exon_19  : int  NA NA NA NA NA NA NA NA NA NA ...
+     $ exon_20  : int  NA NA NA NA NA NA NA NA NA NA ...
+     $ exon_21  : int  NA NA NA NA NA NA NA NA NA NA ...
+     $ exon_22  : int  NA NA NA NA NA NA NA NA NA NA ...
+     $ exon_23  : int  NA NA NA NA NA NA NA NA NA NA ...
+     $ exon_24  : int  NA NA NA NA NA NA NA NA NA NA ...
+     $ exon_25  : int  NA NA NA NA NA NA NA NA NA NA ...
+     $ exon_26  : int  NA NA NA NA NA NA NA NA NA NA ...
+     $ exon_27  : int  NA NA NA NA NA NA NA NA NA NA ...
+     $ exon_28  : int  NA NA NA NA NA NA NA NA NA NA ...
+     $ exon_29  : int  NA NA NA NA NA NA NA NA NA NA ...
+     $ exon_30  : int  NA NA NA NA NA NA NA NA NA NA ...
+     $ exon_31  : int  NA NA NA NA NA NA NA NA NA NA ...
+     $ exon_32  : int  NA NA NA NA NA NA NA NA NA NA ...
+     $ exon_33  : int  NA NA NA NA NA NA NA NA NA NA ...
+     $ exon_34  : int  NA NA NA NA NA NA NA NA NA NA ...
+     $ exon_35  : int  NA NA NA NA NA NA NA NA NA NA ...
+     $ exon_36  : int  NA NA NA NA NA NA NA NA NA NA ...
+     $ exon_37  : int  NA NA NA NA NA NA NA NA NA NA ...
+     $ exon_38  : int  NA NA NA NA NA NA NA NA NA NA ...
+     $ exon_39  : int  NA NA NA NA NA NA NA NA NA NA ...
+     $ exon_40  : int  NA NA NA NA NA NA NA NA NA NA ...
+     $ exon_41  : int  NA NA NA NA NA NA NA NA NA NA ...
+     $ exon_42  : int  NA NA NA NA NA NA NA NA NA NA ...
+     $ exon_43  : int  NA NA NA NA NA NA NA NA NA NA ...
+     $ exon_44  : int  NA NA NA NA NA NA NA NA NA NA ...
+     $ exon_45  : int  NA NA NA NA NA NA NA NA NA NA ...
+     $ exon_46  : int  NA NA NA NA NA NA NA NA NA NA ...
+     $ exon_47  : int  NA NA NA NA NA NA NA NA NA NA ...
+     $ exon_48  : int  NA NA NA NA NA NA NA NA NA NA ...
+     $ exon_49  : int  NA NA NA NA NA NA NA NA NA NA ...
+     $ exon_50  : int  NA NA NA NA NA NA NA NA NA NA ...
+     $ exon_51  : int  NA NA NA NA NA NA NA NA NA NA ...
+     $ exon_52  : int  NA NA NA NA NA NA NA NA NA NA ...
+     $ exon_53  : int  NA NA NA NA NA NA NA NA NA NA ...
+     $ exon_54  : int  NA NA NA NA NA NA NA NA NA NA ...
+     $ exon_55  : int  NA NA NA NA NA NA NA NA NA NA ...
+     $ exon_56  : int  NA NA NA NA NA NA NA NA NA NA ...
+     $ exon_57  : int  NA NA NA NA NA NA NA NA NA NA ...
+     $ exon_58  : int  NA NA NA NA NA NA NA NA NA NA ...
+     $ exon_59  : int  NA NA NA NA NA NA NA NA NA NA ...
+     $ exon_60  : int  NA NA NA NA NA NA NA NA NA NA ...
+     $ exon_61  : int  NA NA NA NA NA NA NA NA NA NA ...
+     $ exon_62  : int  NA NA NA NA NA NA NA NA NA NA ...
+     $ exon_63  : int  NA NA NA NA NA NA NA NA NA NA ...
+     $ exon_64  : int  NA NA NA NA NA NA NA NA NA NA ...
+     $ exon_65  : int  NA NA NA NA NA NA NA NA NA NA ...
+     $ exon_66  : int  NA NA NA NA NA NA NA NA NA NA ...
+     $ exon_67  : int  NA NA NA NA NA NA NA NA NA NA ...
+     $ exon_68  : int  NA NA NA NA NA NA NA NA NA NA ...
+     $ exon_69  : int  NA NA NA NA NA NA NA NA NA NA ...
+     $ exon_70  : int  NA NA NA NA NA NA NA NA NA NA ...
+     $ exon_71  : int  NA NA NA NA NA NA NA NA NA NA ...
+     $ exon_72  : int  NA NA NA NA NA NA NA NA NA NA ...
+     $ exon_73  : int  NA NA NA NA NA NA NA NA NA NA ...
+     $ exon_74  : int  NA NA NA NA NA NA NA NA NA NA ...
+     $ exon_75  : int  NA NA NA NA NA NA NA NA NA NA ...
+     $ exon_76  : int  NA NA NA NA NA NA NA NA NA NA ...
+     $ exon_77  : int  NA NA NA NA NA NA NA NA NA NA ...
+     $ exon_78  : int  NA NA NA NA NA NA NA NA NA NA ...
+     $ exon_79  : int  NA NA NA NA NA NA NA NA NA NA ...
+     $ exon_80  : int  NA NA NA NA NA NA NA NA NA NA ...
+     $ exon_81  : int  NA NA NA NA NA NA NA NA NA NA ...
+     $ exon_82  : int  NA NA NA NA NA NA NA NA NA NA ...
+     $ exon_83  : int  NA NA NA NA NA NA NA NA NA NA ...
+     $ exon_84  : int  NA NA NA NA NA NA NA NA NA NA ...
+     $ exon_85  : int  NA NA NA NA NA NA NA NA NA NA ...
+     $ exon_86  : int  NA NA NA NA NA NA NA NA NA NA ...
+     $ exon_87  : int  NA NA NA NA NA NA NA NA NA NA ...
+     $ exon_88  : int  NA NA NA NA NA NA NA NA NA NA ...
+     $ exon_89  : int  NA NA NA NA NA NA NA NA NA NA ...
+     $ exon_90  : int  NA NA NA NA NA NA NA NA NA NA ...
+     $ exon_91  : int  NA NA NA NA NA NA NA NA NA NA ...
+     $ exon_92  : int  NA NA NA NA NA NA NA NA NA NA ...
+     $ exon_93  : int  NA NA NA NA NA NA NA NA NA NA ...
+     $ exon_94  : int  NA NA NA NA NA NA NA NA NA NA ...
+     $ exon_95  : int  NA NA NA NA NA NA NA NA NA NA ...
+     $ exon_96  : int  NA NA NA NA NA NA NA NA NA NA ...
+     $ exon_97  : int  NA NA NA NA NA NA NA NA NA NA ...
+     $ exon_98  : int  NA NA NA NA NA NA NA NA NA NA ...
+      [list output truncated]
+
+``` r
 result <- S12M.df %>%
   filter(!is.na(exon_462) & grepl("[0-9]", exon_462))
 
 print(result$gene_name)
+```
 
+    [1] "gene-LOC111119012"
+
+``` r
 selected_gene_names <- result$gene_name
 ```
 
-Okay, we've identified `r selected_gene_names` as the gene which contains `r S12M.columns`. Let's see if this matches the original NCBI GFF.
+Okay, we’ve identified gene-LOC111119012 as the gene which contains 462.
+Let’s see if this matches the original NCBI GFF.
 
-## Compare number of exons in `r selected_gene_names` between `S12M-exon_expression.tab` and `GCF_002022765.2_C_virginica-3.0_genomic.gff`
+## 3.2 Compare number of exons in gene-LOC111119012 between `S12M-exon_expression.tab` and `GCF_002022765.2_C_virginica-3.0_genomic.gff`
 
-```{bash compare-gene-LOC111119012-in-GFF-S12M-exon_expression.tab}
-awk -F "\t" '$3 == "exon"' /home/sam/gitrepos/ceabigr/genome-features/GCF_002022765.2_C_virginica-3.0_genomic.gff \
+``` bash
+awk -F "\t" '$3 == "exon"' /home/shared/8TB_HDD_01/sam/gitrepos/ceabigr/genome-features/GCF_002022765.2_C_virginica-3.0_genomic.gff \
 | grep "gene=LOC111119012" \
 | wc -l
 ```
 
+    268
 
-Okay, they do _not_ match, which points to an issue with `S12M-exon_expression.tab`! I generated that file in [`19-exon-expression.Rmd`](https://github.com/sr320/ceabigr/blob/main/code/19-exon-expression.Rmd) using the Ballgown exon file (`e_data.ctab`) file as a source. Let's check that first before I re-examine [`19-exon-expression.Rmd`](https://github.com/sr320/ceabigr/blob/main/code/19-exon-expression.Rmd).
+Okay, they do *not* match, which points to an issue with
+`S12M-exon_expression.tab`! I generated that file in
+[`19-exon-expression.Rmd`](https://github.com/sr320/ceabigr/blob/main/code/19-exon-expression.Rmd)
+using the Ballgown exon file (`e_data.ctab`) file as a source. Let’s
+check that first before I re-examine
+[`19-exon-expression.Rmd`](https://github.com/sr320/ceabigr/blob/main/code/19-exon-expression.Rmd).
 
-# Compare total exons in `e_data.ctab` and `GCF_002022765.2_C_virginica-3.0_genomic.gff`
+# 4 Compare total exons in `e_data.ctab` and `GCF_002022765.2_C_virginica-3.0_genomic.gff`
 
-## Count exons in S12M `e_data.ctab`.
+## 4.1 Count exons in S12M `e_data.ctab`.
 
-```{r check-e_data.ctab}
-S12M.edata.df <- read.csv("/home/sam/gitrepos/ceabigr/data/ballgown/S12M/e_data.ctab",
+``` r
+S12M.edata.df <- read.csv("/home/shared/8TB_HDD_01/sam/gitrepos/ceabigr/data/ballgown/S12M/e_data.ctab",
                           sep = "\t")
 
 str(S12M.edata.df)
+```
 
+    'data.frame':   352757 obs. of  12 variables:
+     $ e_id   : int  1 2 3 4 5 6 7 8 9 10 ...
+     $ chr    : chr  "NC_007175.2" "NC_007175.2" "NC_007175.2" "NC_007175.2" ...
+     $ strand : chr  "+" "+" "+" "+" ...
+     $ start  : int  1 1710 8250 2645 3430 3499 3578 3647 4897 5673 ...
+     $ end    : int  1623 2430 8997 3429 3495 3567 3646 4859 5589 5743 ...
+     $ rcount : int  3406 26400 15868 1336 52 53 41 2586 1190 38 ...
+     $ ucount : int  3406 26400 15868 1336 52 53 41 2585 1190 38 ...
+     $ mrcount: num  3406 26400 15868 1336 52 ...
+     $ cov    : num  232.4 4148.4 2338.9 181.2 68.7 ...
+     $ cov_sd : num  159.7 3089.9 2148.5 67.5 3.4 ...
+     $ mcov   : num  232.4 4148.4 2338.9 181.2 68.7 ...
+     $ mcov_sd: num  159.7 3089.9 2148.5 67.5 3.4 ...
+
+``` r
 exon.count.S12M.edata <- nrow(S12M.edata.df)
 
 print(exon.count.S12M.edata)
 ```
 
-## Count exons in `GCF_002022765.2_C_virginica-3.0_genomic.gff`
+    [1] 352757
 
-```{r count-exons-ncbi-gff}
-exon.count.ncbi.gff <- system("awk -F '\t' '$3 == \"exon\"' /home/sam/gitrepos/ceabigr/genome-features/GCF_002022765.2_C_virginica-3.0_genomic.gff | wc -l", intern = TRUE)
+## 4.2 Count exons in `GCF_002022765.2_C_virginica-3.0_genomic.gff`
+
+``` r
+exon.count.ncbi.gff <- system("awk -F '\t' '$3 == \"exon\"' /home/shared/8TB_HDD_01/sam/gitrepos/ceabigr/genome-features/GCF_002022765.2_C_virginica-3.0_genomic.gff | wc -l", intern = TRUE)
 
 print(exon.count.ncbi.gff)
 ```
 
-Number of exons in `e_data.ctab`: `r exon.count.S12M.edata`
+    [1] "731916"
 
-Number of exons in NCBI GFF:       `r exon.count.ncbi.gff`
+Number of exons in `e_data.ctab`: 352757
 
-So, we're seeing that S12M `e_data.ctab` has ~50% of the total number of exons in the [_Crassostrea virginica_ (Eastern oyster)](https://en.wikipedia.org/wiki/Eastern_oyster) genome (as annotated by NCBI). This makes sense to me, as the data we're using is RNAseq. So, not all genes are going to be expressed and, thus, we won't have data for each gene/exon in the genome.
+Number of exons in NCBI GFF: 731916
 
-Regardless, based off of the difference in exon counts of `r selected_gene_names` in `GCF_002022765.2_C_virginica-3.0_genomic.gff` and `S12M-exon_expression.tab`, I will revisit [`19-exon-expression.Rmd`](https://github.com/sr320/ceabigr/blob/main/code/19-exon-expression.Rmd) to see where things might have gone wrong.
+So, we’re seeing that S12M `e_data.ctab` has \~50% of the total number
+of exons in the [*Crassostrea virginica* (Eastern
+oyster)](https://en.wikipedia.org/wiki/Eastern_oyster) genome (as
+annotated by NCBI). This makes sense to me, as the data we’re using is
+RNAseq. So, not all genes are going to be expressed and, thus, we won’t
+have data for each gene/exon in the genome.
+
+Regardless, based off of the difference in exon counts of
+gene-LOC111119012 in `GCF_002022765.2_C_virginica-3.0_genomic.gff` and
+`S12M-exon_expression.tab`, I will revisit
+[`19-exon-expression.Rmd`](https://github.com/sr320/ceabigr/blob/main/code/19-exon-expression.Rmd)
+to see where things might have gone wrong.
