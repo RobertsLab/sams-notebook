@@ -2,7 +2,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
 
 <meta charset="utf-8">
-<meta name="generator" content="quarto-1.4.554">
+<meta name="generator" content="quarto-1.4.552">
 
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
@@ -282,7 +282,8 @@ gtag('config', 'G-7483T61T11', { 'anonymize_ip': true});
   <li><a href="#extract-c1q-gene-sequence" id="toc-extract-c1q-gene-sequence" class="nav-link" data-scroll-target="#extract-c1q-gene-sequence">3 EXTRACT C1Q GENE SEQUENCE</a>
   <ul>
   <li><a href="#peek-at-gff" id="toc-peek-at-gff" class="nav-link" data-scroll-target="#peek-at-gff">3.1 Peek at GFF</a></li>
-  <li><a href="#format-region-and-extract-c1q-sequence-as-fasta." id="toc-format-region-and-extract-c1q-sequence-as-fasta." class="nav-link" data-scroll-target="#format-region-and-extract-c1q-sequence-as-fasta.">3.2 Format region and extract C1q sequence as FastA.</a></li>
+  <li><a href="#create-fasta-index" id="toc-create-fasta-index" class="nav-link" data-scroll-target="#create-fasta-index">3.2 Create FastA index</a></li>
+  <li><a href="#format-region-and-extract-c1q-sequence-as-fasta." id="toc-format-region-and-extract-c1q-sequence-as-fasta." class="nav-link" data-scroll-target="#format-region-and-extract-c1q-sequence-as-fasta.">3.3 Format region and extract C1q sequence as FastA.</a></li>
   </ul></li>
   <li><a href="#extract-c1q-with-53-buffer-regions" id="toc-extract-c1q-with-53-buffer-regions" class="nav-link" data-scroll-target="#extract-c1q-with-53-buffer-regions">4 EXTRACT C1Q WITH 5’/3’ BUFFER REGIONS</a></li>
   <li><a href="#primer-design-using-primer3" id="toc-primer-design-using-primer3" class="nav-link" data-scroll-target="#primer-design-using-primer3">5 PRIMER DESIGN USING PRIMER3</a>
@@ -293,19 +294,7 @@ gtag('config', 'G-7483T61T11', { 'anonymize_ip': true});
   <li><a href="#bisulfite-lowercase-t" id="toc-bisulfite-lowercase-t" class="nav-link" data-scroll-target="#bisulfite-lowercase-t">5.2.1 Bisulfite lowercase <code>t</code></a></li>
   </ul></li>
   </ul></li>
-  <li><a href="#genome-bisulfite-conversion" id="toc-genome-bisulfite-conversion" class="nav-link" data-scroll-target="#genome-bisulfite-conversion">6 GENOME BISULFITE CONVERSION</a></li>
-  <li><a href="#split-genome" id="toc-split-genome" class="nav-link" data-scroll-target="#split-genome">7 SPLIT GENOME</a>
-  <ul>
-  <li><a href="#split-mulit-fasta-file-in-to-individual-fasta-files-with-pyfaidx" id="toc-split-mulit-fasta-file-in-to-individual-fasta-files-with-pyfaidx" class="nav-link" data-scroll-target="#split-mulit-fasta-file-in-to-individual-fasta-files-with-pyfaidx">7.1 Split mulit-FastA file in to individual FastA files with PyFaidx</a></li>
-  </ul></li>
-  <li><a href="#primer-search-with-emboss-primersearch" id="toc-primer-search-with-emboss-primersearch" class="nav-link" data-scroll-target="#primer-search-with-emboss-primersearch">8 PRIMER SEARCH WITH EMBOSS PRIMERSEARCH</a>
-  <ul>
-  <li><a href="#create-emboss-primersearch-primers-file" id="toc-create-emboss-primersearch-primers-file" class="nav-link" data-scroll-target="#create-emboss-primersearch-primers-file">8.1 Create EMBOSS PrimerSearch Primers File</a></li>
-  <li><a href="#run-emboss-primersearch" id="toc-run-emboss-primersearch" class="nav-link" data-scroll-target="#run-emboss-primersearch">8.2 Run EMBOSS PrimerSearch</a></li>
-  <li><a href="#check-primer-matches" id="toc-check-primer-matches" class="nav-link" data-scroll-target="#check-primer-matches">8.3 Check primer matches</a></li>
-  </ul></li>
-  <li><a href="#summary" id="toc-summary" class="nav-link" data-scroll-target="#summary">9 SUMMARY</a></li>
-  <li><a href="#citations" id="toc-citations" class="nav-link" data-scroll-target="#citations">10 CITATIONS</a></li>
+  <li><a href="#citations" id="toc-citations" class="nav-link" data-scroll-target="#citations">6 CITATIONS</a></li>
   </ul>
 </nav>
 </nav>
@@ -320,10 +309,8 @@ gtag('config', 'G-7483T61T11', { 'anonymize_ip': true});
 
 
 
-<p>This notebook describes using <a href="https://github.com/primer3-org/primer3">Primer3</a> (<a href="#ref-untergasser2012">Untergasser et al. 2012</a>; <a href="#ref-koressaar2007">Koressaar and Remm 2007</a>) to reproducibly design primers for sequencing of the <a href="https://en.wikipedia.org/wiki/Lake_trout">lake trout (<em>S.namaycush</em>)</a> (Wikipedia) C1q gene (<a href="https://github.com/RobertsLab/resources/issues/1941#issuecomment-2246548960"><code>LOC120027825</code></a> (GitHub Issue)), after bisulfite treatment.</p>
-<p>This process also utilizes <a href="https://github.com/mdshw5/pyfaidx">pyfaidx</a> (<a href="#ref-shirley2015">Shirley et al.&nbsp;2015</a>).</p>
-<p><a href="https://emboss.sourceforge.net/apps/cvs/emboss/apps/primersearch.html">EMBOSS PrimerSearch</a> (<a href="#ref-rice2000">Rice, Longden, and Bleasby 2000</a>) will be utilized to assess primer specificity across the genome.</p>
-<p>Markdown from this post was rendered from the R Markdown file, <a href="https://github.com/RobertsLab/code/blob/739ea5953e7aef1453c8071a06fe05ce5d824ee0/r_projects/sam/20240726-snam-c1q-bs-primer-design/code/20240726-snam-c1q-bs-primer-design.Rmd">20240726-snam-c1q-bs-primer-design.Rmd</a> (GitHub), commit <code>739ea59</code>.</p>
+<p>This notebook describes using <a href="https://github.com/primer3-org/primer3">Primer3</a> (<a href="#ref-untergasser2012">Untergasser et al.&nbsp;2012</a>; <a href="#ref-koressaar2007">Koressaar and Remm 2007</a>) to reproducibly design primers for sequencing of the <a href="https://en.wikipedia.org/wiki/Lake_trout">lake trout (<em>S.namaycush</em>)</a> (Wikipedia) C1q gene (<a href="https://github.com/RobertsLab/resources/issues/1941#issuecomment-2246548960"><code>LOC120027825</code></a> (GitHub Issue)), after bisulfite treatment.</p>
+<p>This process also utilizes <a href="https://github.com/mdshw5/pyfaidx">pyfaidx</a> (<a href="#ref-shirley2015">Shirley et al.&nbsp;2015</a>) and <a href="https://www.htslib.org/">samtools</a> (<a href="#ref-li2009">Li et al.&nbsp;2009</a>).</p>
 <ul>
 <li><a href="#1-create-bash-variables-file" id="toc-1-create-bash-variables-file">1 CREATE BASH VARIABLES FILE</a></li>
 <li><a href="#2-download-ncbi-genome-files" id="toc-2-download-ncbi-genome-files">2 DOWNLOAD NCBI GENOME FILES</a>
@@ -335,7 +322,8 @@ gtag('config', 'G-7483T61T11', { 'anonymize_ip': true});
 <li><a href="#3-extract-c1q-gene-sequence" id="toc-3-extract-c1q-gene-sequence">3 EXTRACT C1Q GENE SEQUENCE</a>
 <ul>
 <li><a href="#31-peek-at-gff" id="toc-31-peek-at-gff">3.1 Peek at GFF</a></li>
-<li><a href="#32-format-region-and-extract-c1q-sequence-as-fasta" id="toc-32-format-region-and-extract-c1q-sequence-as-fasta">3.2 Format region and extract C1q sequence as FastA.</a></li>
+<li><a href="#32-create-fasta-index" id="toc-32-create-fasta-index">3.2 Create FastA index</a></li>
+<li><a href="#33-format-region-and-extract-c1q-sequence-as-fasta" id="toc-33-format-region-and-extract-c1q-sequence-as-fasta">3.3 Format region and extract C1q sequence as FastA.</a></li>
 </ul></li>
 <li><a href="#4-extract-c1q-with-53-buffer-regions" id="toc-4-extract-c1q-with-53-buffer-regions">4 EXTRACT C1Q WITH 5’/3’ BUFFER REGIONS</a></li>
 <li><a href="#5-primer-design-using-primer3" id="toc-5-primer-design-using-primer3">5 PRIMER DESIGN USING PRIMER3</a>
@@ -346,20 +334,10 @@ gtag('config', 'G-7483T61T11', { 'anonymize_ip': true});
 <li><a href="#521-bisulfite-lowercase-t" id="toc-521-bisulfite-lowercase-t">5.2.1 Bisulfite lowercase <code>t</code></a></li>
 </ul></li>
 </ul></li>
-<li><a href="#6-genome-bisulfite-conversion" id="toc-6-genome-bisulfite-conversion">6 GENOME BISULFITE CONVERSION</a></li>
-<li><a href="#7-split-genome" id="toc-7-split-genome">7 SPLIT GENOME</a>
-<ul>
-<li><a href="#71-split-mulit-fasta-file-in-to-individual-fasta-files-with-pyfaidx" id="toc-71-split-mulit-fasta-file-in-to-individual-fasta-files-with-pyfaidx">7.1 Split mulit-FastA file in to individual FastA files with PyFaidx</a></li>
-</ul></li>
-<li><a href="#8-primer-search-with-emboss-primersearch" id="toc-8-primer-search-with-emboss-primersearch">8 PRIMER SEARCH WITH EMBOSS PRIMERSEARCH</a>
-<ul>
-<li><a href="#81-create-emboss-primersearch-primers-file" id="toc-81-create-emboss-primersearch-primers-file">8.1 Create EMBOSS PrimerSearch Primers File</a></li>
-<li><a href="#82-run-emboss-primersearch" id="toc-82-run-emboss-primersearch">8.2 Run EMBOSS PrimerSearch</a></li>
-<li><a href="#83-check-primer-matches" id="toc-83-check-primer-matches">8.3 Check primer matches</a></li>
-</ul></li>
-<li><a href="#9-summary" id="toc-9-summary">9 SUMMARY</a></li>
-<li><a href="#10-citations" id="toc-10-citations">10 CITATIONS</a></li>
+<li><a href="#6-citations" id="toc-6-citations">6 CITATIONS</a></li>
 </ul>
+<p>This notebook describes using <a href="https://github.com/primer3-org/primer3">Primer3</a> (<a href="#ref-untergasser2012">Untergasser et al.&nbsp;2012</a>; <a href="#ref-koressaar2007">Koressaar and Remm 2007</a>) to reproducibly design primers for sequencing of the <a href="https://en.wikipedia.org/wiki/Lake_trout">lake trout (<em>S.namaycush</em>)</a> (Wikipedia) C1q gene (<a href="https://github.com/RobertsLab/resources/issues/1941#issuecomment-2246548960"><code>LOC120027825</code></a> (GitHub Issue)), after bisulfite treatment.</p>
+<p>This process also utilizes <a href="https://github.com/mdshw5/pyfaidx">pyfaidx</a> (<a href="#ref-shirley2015">Shirley et al.&nbsp;2015</a>) and <a href="https://www.htslib.org/">samtools</a> (<a href="#ref-li2009">Li et al.&nbsp;2009</a>).</p>
 <section id="create-bash-variables-file" class="level1">
 <h1>1 CREATE BASH VARIABLES FILE</h1>
 <p>This allows usage of Bash variables across R Markdown chunks.</p>
@@ -370,59 +348,55 @@ gtag('config', 'G-7483T61T11', { 'anonymize_ip': true});
 <span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a><span class="bu">echo</span> <span class="st">"# DATA DIRECTORIES"</span></span>
 <span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a><span class="bu">echo</span> <span class="st">'export data_dir="../data/S_namaycush/genomes"'</span></span>
 <span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a><span class="bu">echo</span> <span class="st">'export output_top=../output'</span></span>
-<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a><span class="bu">echo</span> <span class="st">'export genome_fasta_splits_dir="${data_dir}/fasta_splits"'</span></span>
-<span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a><span class="bu">echo</span> <span class="st">""</span></span>
-<span id="cb1-10"><a href="#cb1-10" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-11"><a href="#cb1-11" aria-hidden="true" tabindex="-1"></a><span class="bu">echo</span> <span class="st">"# SEQUENCE"</span></span>
-<span id="cb1-12"><a href="#cb1-12" aria-hidden="true" tabindex="-1"></a><span class="bu">echo</span> <span class="st">'export sequence_ID="LOC120027825"'</span></span>
-<span id="cb1-13"><a href="#cb1-13" aria-hidden="true" tabindex="-1"></a><span class="bu">echo</span> <span class="st">""</span></span>
-<span id="cb1-14"><a href="#cb1-14" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-15"><a href="#cb1-15" aria-hidden="true" tabindex="-1"></a><span class="bu">echo</span> <span class="st">"# SEQUENCE REGIONS"</span></span>
-<span id="cb1-16"><a href="#cb1-16" aria-hidden="true" tabindex="-1"></a><span class="bu">echo</span> <span class="st">'export left_buffer="3500"'</span></span>
-<span id="cb1-17"><a href="#cb1-17" aria-hidden="true" tabindex="-1"></a><span class="bu">echo</span> <span class="st">'export right_buffer="3500"'</span></span>
-<span id="cb1-18"><a href="#cb1-18" aria-hidden="true" tabindex="-1"></a><span class="bu">echo</span> <span class="st">""</span></span>
-<span id="cb1-19"><a href="#cb1-19" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-20"><a href="#cb1-20" aria-hidden="true" tabindex="-1"></a><span class="bu">echo</span> <span class="st">"# INPUT FILES"</span></span>
-<span id="cb1-21"><a href="#cb1-21" aria-hidden="true" tabindex="-1"></a><span class="bu">echo</span> <span class="st">'export genome_fasta="GCF_016432855.1_SaNama_1.0_genomic.fna"'</span></span>
-<span id="cb1-22"><a href="#cb1-22" aria-hidden="true" tabindex="-1"></a><span class="bu">echo</span> <span class="st">'export genome_gff="GCF_016432855.1_SaNama_1.0_genomic.gff"'</span></span>
-<span id="cb1-23"><a href="#cb1-23" aria-hidden="true" tabindex="-1"></a><span class="bu">echo</span> <span class="st">'export ncbi_gff_gz="GCF_016432855.1_SaNama_1.0_genomic.gff.gz"'</span></span>
-<span id="cb1-24"><a href="#cb1-24" aria-hidden="true" tabindex="-1"></a><span class="bu">echo</span> <span class="st">'export ncbi_fasta_gz="GCF_016432855.1_SaNama_1.0_genomic.fna.gz"'</span></span>
-<span id="cb1-25"><a href="#cb1-25" aria-hidden="true" tabindex="-1"></a><span class="bu">echo</span> <span class="st">'export ncbi_md5sums="md5checksums.txt"'</span></span>
-<span id="cb1-26"><a href="#cb1-26" aria-hidden="true" tabindex="-1"></a><span class="bu">echo</span> <span class="st">'export ncbi_url="https://ftp.ncbi.nlm.nih.gov/genomes/all/GCF/016/432/855/GCF_016432855.1_SaNama_1.0/"'</span></span>
-<span id="cb1-27"><a href="#cb1-27" aria-hidden="true" tabindex="-1"></a><span class="bu">echo</span> <span class="st">""</span></span>
-<span id="cb1-28"><a href="#cb1-28" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-29"><a href="#cb1-29" aria-hidden="true" tabindex="-1"></a><span class="bu">echo</span> <span class="st">"# OUTPUT FILES"</span></span>
-<span id="cb1-30"><a href="#cb1-30" aria-hidden="true" tabindex="-1"></a><span class="bu">echo</span> <span class="st">'export bisulfite_genome_fasta="bisulfite.GCF_016432855.1_SaNama_1.0_genomic.fna"'</span></span>
-<span id="cb1-31"><a href="#cb1-31" aria-hidden="true" tabindex="-1"></a><span class="bu">echo</span> <span class="st">'export c1q_fasta="${sequence_ID}.fasta"'</span></span>
-<span id="cb1-32"><a href="#cb1-32" aria-hidden="true" tabindex="-1"></a><span class="bu">echo</span> <span class="st">'export c1q_buffer_fasta="${sequence_ID}-${left_buffer}bp.left-${right_buffer}bp.right.fasta"'</span></span>
-<span id="cb1-33"><a href="#cb1-33" aria-hidden="true" tabindex="-1"></a><span class="bu">echo</span> <span class="st">'export c1q_faidx_region_file="${sequence_ID}"-region.txt'</span></span>
-<span id="cb1-34"><a href="#cb1-34" aria-hidden="true" tabindex="-1"></a><span class="bu">echo</span> <span class="st">'export c1q_buffer_faidx_region_file="${sequence_ID}-${left_buffer}bp.left-${right_buffer}bp.right-region.txt"'</span></span>
-<span id="cb1-35"><a href="#cb1-35" aria-hidden="true" tabindex="-1"></a><span class="bu">echo</span> <span class="st">'export c1q_bisulfite_t_fasta="${sequence_ID}-BS_conversion-t-${left_buffer}bp.left-${right_buffer}bp.right.fasta"'</span></span>
-<span id="cb1-36"><a href="#cb1-36" aria-hidden="true" tabindex="-1"></a><span class="bu">echo</span> <span class="st">'export c1q_bisulfite_N_fasta="${sequence_ID}-BS_conversion-N-${left_buffer}bp.left-${right_buffer}bp.right.fasta"'</span></span>
-<span id="cb1-37"><a href="#cb1-37" aria-hidden="true" tabindex="-1"></a><span class="bu">echo</span> <span class="st">""</span></span>
-<span id="cb1-38"><a href="#cb1-38" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-39"><a href="#cb1-39" aria-hidden="true" tabindex="-1"></a><span class="bu">echo</span> <span class="st">"# SET CPUS"</span></span>
-<span id="cb1-40"><a href="#cb1-40" aria-hidden="true" tabindex="-1"></a><span class="bu">echo</span> <span class="st">'export threads=40'</span></span>
-<span id="cb1-41"><a href="#cb1-41" aria-hidden="true" tabindex="-1"></a><span class="bu">echo</span> <span class="st">""</span></span>
-<span id="cb1-42"><a href="#cb1-42" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-43"><a href="#cb1-43" aria-hidden="true" tabindex="-1"></a><span class="bu">echo</span> <span class="st">"# PROGRAMS"</span></span>
-<span id="cb1-44"><a href="#cb1-44" aria-hidden="true" tabindex="-1"></a><span class="bu">echo</span> <span class="st">'export pyfaidx=/home/shared/pyfaidx-0.8.1.1'</span></span>
-<span id="cb1-45"><a href="#cb1-45" aria-hidden="true" tabindex="-1"></a><span class="bu">echo</span> <span class="st">'export primer3_dir="/home/shared/primer3-2.6.1/src"'</span></span>
-<span id="cb1-46"><a href="#cb1-46" aria-hidden="true" tabindex="-1"></a><span class="bu">echo</span> <span class="st">'export primer3="${primer3_dir}/primer3_core"'</span></span>
-<span id="cb1-47"><a href="#cb1-47" aria-hidden="true" tabindex="-1"></a><span class="bu">echo</span> <span class="st">'export primer3_config="${primer3_dir}/primer3_config"'</span></span>
-<span id="cb1-48"><a href="#cb1-48" aria-hidden="true" tabindex="-1"></a><span class="bu">echo</span> <span class="st">'export primersearch="/home/shared/EMBOSS-6.6.0/emboss/primersearch"'</span></span>
-<span id="cb1-49"><a href="#cb1-49" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a><span class="bu">echo</span> <span class="st">""</span></span>
+<span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-10"><a href="#cb1-10" aria-hidden="true" tabindex="-1"></a><span class="bu">echo</span> <span class="st">"# SEQUENCE"</span></span>
+<span id="cb1-11"><a href="#cb1-11" aria-hidden="true" tabindex="-1"></a><span class="bu">echo</span> <span class="st">'export sequence_ID="LOC120027825"'</span></span>
+<span id="cb1-12"><a href="#cb1-12" aria-hidden="true" tabindex="-1"></a><span class="bu">echo</span> <span class="st">""</span></span>
+<span id="cb1-13"><a href="#cb1-13" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-14"><a href="#cb1-14" aria-hidden="true" tabindex="-1"></a><span class="bu">echo</span> <span class="st">"# SEQUENCE REGIONS"</span></span>
+<span id="cb1-15"><a href="#cb1-15" aria-hidden="true" tabindex="-1"></a><span class="bu">echo</span> <span class="st">'export left_buffer="3500"'</span></span>
+<span id="cb1-16"><a href="#cb1-16" aria-hidden="true" tabindex="-1"></a><span class="bu">echo</span> <span class="st">'export right_buffer="3500"'</span></span>
+<span id="cb1-17"><a href="#cb1-17" aria-hidden="true" tabindex="-1"></a><span class="bu">echo</span> <span class="st">""</span></span>
+<span id="cb1-18"><a href="#cb1-18" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-19"><a href="#cb1-19" aria-hidden="true" tabindex="-1"></a><span class="bu">echo</span> <span class="st">"# INPUT FILES"</span></span>
+<span id="cb1-20"><a href="#cb1-20" aria-hidden="true" tabindex="-1"></a><span class="bu">echo</span> <span class="st">'export genome_fasta="GCF_016432855.1_SaNama_1.0_genomic.fna"'</span></span>
+<span id="cb1-21"><a href="#cb1-21" aria-hidden="true" tabindex="-1"></a><span class="bu">echo</span> <span class="st">'export genome_gff="GCF_016432855.1_SaNama_1.0_genomic.gff"'</span></span>
+<span id="cb1-22"><a href="#cb1-22" aria-hidden="true" tabindex="-1"></a><span class="bu">echo</span> <span class="st">'export ncbi_gff_gz="GCF_016432855.1_SaNama_1.0_genomic.gff.gz"'</span></span>
+<span id="cb1-23"><a href="#cb1-23" aria-hidden="true" tabindex="-1"></a><span class="bu">echo</span> <span class="st">'export ncbi_fasta_gz="GCF_016432855.1_SaNama_1.0_genomic.fna.gz"'</span></span>
+<span id="cb1-24"><a href="#cb1-24" aria-hidden="true" tabindex="-1"></a><span class="bu">echo</span> <span class="st">'export ncbi_md5sums="md5checksums.txt"'</span></span>
+<span id="cb1-25"><a href="#cb1-25" aria-hidden="true" tabindex="-1"></a><span class="bu">echo</span> <span class="st">'export ncbi_url="https://ftp.ncbi.nlm.nih.gov/genomes/all/GCF/016/432/855/GCF_016432855.1_SaNama_1.0/"'</span></span>
+<span id="cb1-26"><a href="#cb1-26" aria-hidden="true" tabindex="-1"></a><span class="bu">echo</span> <span class="st">""</span></span>
+<span id="cb1-27"><a href="#cb1-27" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-28"><a href="#cb1-28" aria-hidden="true" tabindex="-1"></a><span class="bu">echo</span> <span class="st">"# OUTPUT FILES"</span></span>
+<span id="cb1-29"><a href="#cb1-29" aria-hidden="true" tabindex="-1"></a><span class="bu">echo</span> <span class="st">'export c1q_fasta="${sequence_ID}.fasta"'</span></span>
+<span id="cb1-30"><a href="#cb1-30" aria-hidden="true" tabindex="-1"></a><span class="bu">echo</span> <span class="st">'export c1q_buffer_fasta="${sequence_ID}-${left_buffer}bp.left-${right_buffer}bp.right.fasta"'</span></span>
+<span id="cb1-31"><a href="#cb1-31" aria-hidden="true" tabindex="-1"></a><span class="bu">echo</span> <span class="st">'export c1q_faidx_region_file="${sequence_ID}"-region.txt'</span></span>
+<span id="cb1-32"><a href="#cb1-32" aria-hidden="true" tabindex="-1"></a><span class="bu">echo</span> <span class="st">'export c1q_buffer_faidx_region_file="${sequence_ID}-${left_buffer}bp.left-${right_buffer}bp.right-region.txt"'</span></span>
+<span id="cb1-33"><a href="#cb1-33" aria-hidden="true" tabindex="-1"></a><span class="bu">echo</span> <span class="st">'export c1q_bisulfite_t_fasta="${sequence_ID}-BS_conversion-t-${left_buffer}bp.left-${right_buffer}bp.right.fasta"'</span></span>
+<span id="cb1-34"><a href="#cb1-34" aria-hidden="true" tabindex="-1"></a><span class="bu">echo</span> <span class="st">'export c1q_bisulfite_N_fasta="${sequence_ID}-BS_conversion-N-${left_buffer}bp.left-${right_buffer}bp.right.fasta"'</span></span>
+<span id="cb1-35"><a href="#cb1-35" aria-hidden="true" tabindex="-1"></a><span class="bu">echo</span> <span class="st">""</span></span>
+<span id="cb1-36"><a href="#cb1-36" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-37"><a href="#cb1-37" aria-hidden="true" tabindex="-1"></a><span class="bu">echo</span> <span class="st">"# SET CPUS"</span></span>
+<span id="cb1-38"><a href="#cb1-38" aria-hidden="true" tabindex="-1"></a><span class="bu">echo</span> <span class="st">'export threads=40'</span></span>
+<span id="cb1-39"><a href="#cb1-39" aria-hidden="true" tabindex="-1"></a><span class="bu">echo</span> <span class="st">""</span></span>
+<span id="cb1-40"><a href="#cb1-40" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-41"><a href="#cb1-41" aria-hidden="true" tabindex="-1"></a><span class="bu">echo</span> <span class="st">"# PROGRAMS"</span></span>
+<span id="cb1-42"><a href="#cb1-42" aria-hidden="true" tabindex="-1"></a><span class="bu">echo</span> <span class="st">'export pyfaidx=/home/shared/pyfaidx-0.8.1.1'</span></span>
+<span id="cb1-43"><a href="#cb1-43" aria-hidden="true" tabindex="-1"></a><span class="bu">echo</span> <span class="st">'export primer3_dir="/home/shared/primer3-2.6.1/src"'</span></span>
+<span id="cb1-44"><a href="#cb1-44" aria-hidden="true" tabindex="-1"></a><span class="bu">echo</span> <span class="st">'export primer3="${primer3_dir}/primer3_core"'</span></span>
+<span id="cb1-45"><a href="#cb1-45" aria-hidden="true" tabindex="-1"></a><span class="bu">echo</span> <span class="st">'export primer3_config="${primer3_dir}/primer3_config"'</span></span>
+<span id="cb1-46"><a href="#cb1-46" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-47"><a href="#cb1-47" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-48"><a href="#cb1-48" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-49"><a href="#cb1-49" aria-hidden="true" tabindex="-1"></a><span class="kw">}</span> <span class="op">&gt;</span> .bashvars</span>
 <span id="cb1-50"><a href="#cb1-50" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-51"><a href="#cb1-51" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-52"><a href="#cb1-52" aria-hidden="true" tabindex="-1"></a><span class="kw">}</span> <span class="op">&gt;</span> .bashvars</span>
-<span id="cb1-53"><a href="#cb1-53" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-54"><a href="#cb1-54" aria-hidden="true" tabindex="-1"></a><span class="fu">cat</span> .bashvars</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span id="cb1-51"><a href="#cb1-51" aria-hidden="true" tabindex="-1"></a><span class="fu">cat</span> .bashvars</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <pre><code>#### Assign Variables ####
 
 # DATA DIRECTORIES
 export data_dir="../data/S_namaycush/genomes"
 export output_top=../output
-export genome_fasta_splits_dir="${data_dir}/fasta_splits"
 
 # SEQUENCE
 export sequence_ID="LOC120027825"
@@ -440,7 +414,6 @@ export ncbi_md5sums="md5checksums.txt"
 export ncbi_url="https://ftp.ncbi.nlm.nih.gov/genomes/all/GCF/016/432/855/GCF_016432855.1_SaNama_1.0/"
 
 # OUTPUT FILES
-export bisulfite_genome_fasta="bisulfite.GCF_016432855.1_SaNama_1.0_genomic.fna"
 export c1q_fasta="${sequence_ID}.fasta"
 export c1q_buffer_fasta="${sequence_ID}-${left_buffer}bp.left-${right_buffer}bp.right.fasta"
 export c1q_faidx_region_file="${sequence_ID}"-region.txt
@@ -455,8 +428,7 @@ export threads=40
 export pyfaidx=/home/shared/pyfaidx-0.8.1.1
 export primer3_dir="/home/shared/primer3-2.6.1/src"
 export primer3="${primer3_dir}/primer3_core"
-export primer3_config="${primer3_dir}/primer3_config"
-export primersearch="/home/shared/EMBOSS-6.6.0/emboss/primersearch"</code></pre>
+export primer3_config="${primer3_dir}/primer3_config"</code></pre>
 </section>
 <section id="download-ncbi-genome-files" class="level1">
 <h1>2 DOWNLOAD NCBI GENOME FILES</h1>
@@ -524,8 +496,11 @@ export primersearch="/home/shared/EMBOSS-6.6.0/emboss/primersearch"</code></pre>
 <span id="cb9-4"><a href="#cb9-4" aria-hidden="true" tabindex="-1"></a><span class="fu">awk</span> <span class="st">'$3=="gene"'</span> <span class="st">"</span><span class="va">${data_dir}</span><span class="st">/</span><span class="va">${genome_gff}</span><span class="st">"</span> <span class="kw">|</span> <span class="fu">grep</span> <span class="st">"</span><span class="va">${sequence_ID}</span><span class="st">"</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <pre><code>NC_052339.1 Gnomon  gene    19244556    19248013    .   -   .   ID=gene-LOC120027825;Dbxref=GeneID:120027825;Name=LOC120027825;gbkey=Gene;gene=LOC120027825;gene_biotype=protein_coding</code></pre>
 </section>
+<section id="create-fasta-index" class="level2">
+<h2 class="anchored" data-anchor-id="create-fasta-index">3.2 Create FastA index</h2>
+</section>
 <section id="format-region-and-extract-c1q-sequence-as-fasta." class="level2">
-<h2 class="anchored" data-anchor-id="format-region-and-extract-c1q-sequence-as-fasta.">3.2 Format region and extract C1q sequence as FastA.</h2>
+<h2 class="anchored" data-anchor-id="format-region-and-extract-c1q-sequence-as-fasta.">3.3 Format region and extract C1q sequence as FastA.</h2>
 <div class="sourceCode" id="cb11"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Load bash variables into memory</span></span>
 <span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a><span class="bu">source</span> .bashvars</span>
 <span id="cb11-3"><a href="#cb11-3" aria-hidden="true" tabindex="-1"></a></span>
@@ -864,37 +839,22 @@ PRIMER_EXPLAIN_FLAG=1
 <span id="cb19-48"><a href="#cb19-48" aria-hidden="true" tabindex="-1"></a>--output=<span class="st">"</span><span class="va">${output_top}</span><span class="st">/primer3-t-primers.txt"</span> <span class="dt">\</span></span>
 <span id="cb19-49"><a href="#cb19-49" aria-hidden="true" tabindex="-1"></a><span class="st">"</span><span class="va">${output_top}</span><span class="st">/primer3-t-params.txt"</span></span>
 <span id="cb19-50"><a href="#cb19-50" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb19-51"><a href="#cb19-51" aria-hidden="true" tabindex="-1"></a><span class="co"># Run Primer3 with default output for parsable results</span></span>
-<span id="cb19-52"><a href="#cb19-52" aria-hidden="true" tabindex="-1"></a><span class="va">${primer3}</span> <span class="dt">\</span></span>
-<span id="cb19-53"><a href="#cb19-53" aria-hidden="true" tabindex="-1"></a>--output=<span class="st">"</span><span class="va">${output_top}</span><span class="st">/primer3-t-primers-default-format.txt"</span> <span class="dt">\</span></span>
-<span id="cb19-54"><a href="#cb19-54" aria-hidden="true" tabindex="-1"></a><span class="st">"</span><span class="va">${output_top}</span><span class="st">/primer3-t-params.txt"</span></span>
-<span id="cb19-55"><a href="#cb19-55" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb19-51"><a href="#cb19-51" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb19-52"><a href="#cb19-52" aria-hidden="true" tabindex="-1"></a><span class="co"># Pull out any primers falling outside of target</span></span>
+<span id="cb19-53"><a href="#cb19-53" aria-hidden="true" tabindex="-1"></a><span class="fu">tail</span> <span class="at">-n</span> 30 <span class="st">"</span><span class="va">${output_top}</span><span class="st">/primer3-t-primers.txt"</span> <span class="dt">\</span></span>
+<span id="cb19-54"><a href="#cb19-54" aria-hidden="true" tabindex="-1"></a><span class="kw">|</span> <span class="fu">head</span> <span class="at">-n</span> <span class="at">-12</span> <span class="dt">\</span></span>
+<span id="cb19-55"><a href="#cb19-55" aria-hidden="true" tabindex="-1"></a><span class="kw">|</span> <span class="fu">awk</span> <span class="at">-v</span> left_buffer=<span class="st">"</span><span class="va">$left_buffer</span><span class="st">"</span> <span class="at">-v</span> target=<span class="st">"</span><span class="va">$c1q_buffer_and_seq_length</span><span class="st">"</span> <span class="st">'$3 &lt;= left_buffer || $3 &gt;= target {print $0}'</span></span>
 <span id="cb19-56"><a href="#cb19-56" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb19-57"><a href="#cb19-57" aria-hidden="true" tabindex="-1"></a><span class="co"># Pull out any primers falling outside of target</span></span>
-<span id="cb19-58"><a href="#cb19-58" aria-hidden="true" tabindex="-1"></a><span class="fu">tail</span> <span class="at">-n</span> 30 <span class="st">"</span><span class="va">${output_top}</span><span class="st">/primer3-t-primers.txt"</span> <span class="dt">\</span></span>
-<span id="cb19-59"><a href="#cb19-59" aria-hidden="true" tabindex="-1"></a><span class="kw">|</span> <span class="fu">head</span> <span class="at">-n</span> <span class="at">-12</span> <span class="dt">\</span></span>
-<span id="cb19-60"><a href="#cb19-60" aria-hidden="true" tabindex="-1"></a><span class="kw">|</span> <span class="fu">awk</span> <span class="at">-v</span> left_buffer=<span class="st">"</span><span class="va">$left_buffer</span><span class="st">"</span> <span class="at">-v</span> target=<span class="st">"</span><span class="va">$c1q_buffer_and_seq_length</span><span class="st">"</span> <span class="st">'$3 &lt;= left_buffer || $3 &gt;= target {print $0}'</span></span>
-<span id="cb19-61"><a href="#cb19-61" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb19-57"><a href="#cb19-57" aria-hidden="true" tabindex="-1"></a><span class="bu">echo</span> <span class="st">""</span></span>
+<span id="cb19-58"><a href="#cb19-58" aria-hidden="true" tabindex="-1"></a><span class="bu">echo</span> <span class="st">""</span></span>
+<span id="cb19-59"><a href="#cb19-59" aria-hidden="true" tabindex="-1"></a><span class="bu">echo</span> <span class="st">"----------------------------------------------------------------------------------"</span></span>
+<span id="cb19-60"><a href="#cb19-60" aria-hidden="true" tabindex="-1"></a><span class="bu">echo</span> <span class="st">""</span></span>
+<span id="cb19-61"><a href="#cb19-61" aria-hidden="true" tabindex="-1"></a><span class="bu">echo</span> <span class="st">"Primer results file:"</span></span>
 <span id="cb19-62"><a href="#cb19-62" aria-hidden="true" tabindex="-1"></a><span class="bu">echo</span> <span class="st">""</span></span>
 <span id="cb19-63"><a href="#cb19-63" aria-hidden="true" tabindex="-1"></a><span class="bu">echo</span> <span class="st">""</span></span>
-<span id="cb19-64"><a href="#cb19-64" aria-hidden="true" tabindex="-1"></a><span class="bu">echo</span> <span class="st">"----------------------------------------------------------------------------------"</span></span>
-<span id="cb19-65"><a href="#cb19-65" aria-hidden="true" tabindex="-1"></a><span class="bu">echo</span> <span class="st">""</span></span>
-<span id="cb19-66"><a href="#cb19-66" aria-hidden="true" tabindex="-1"></a><span class="bu">echo</span> <span class="st">"Primer results file:"</span></span>
-<span id="cb19-67"><a href="#cb19-67" aria-hidden="true" tabindex="-1"></a><span class="bu">echo</span> <span class="st">""</span></span>
-<span id="cb19-68"><a href="#cb19-68" aria-hidden="true" tabindex="-1"></a><span class="bu">echo</span> <span class="st">""</span></span>
-<span id="cb19-69"><a href="#cb19-69" aria-hidden="true" tabindex="-1"></a><span class="co"># Print the full output file</span></span>
-<span id="cb19-70"><a href="#cb19-70" aria-hidden="true" tabindex="-1"></a><span class="fu">cat</span> <span class="st">"</span><span class="va">${output_top}</span><span class="st">/primer3-t-primers.txt"</span></span>
-<span id="cb19-71"><a href="#cb19-71" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb19-72"><a href="#cb19-72" aria-hidden="true" tabindex="-1"></a><span class="bu">echo</span> <span class="st">""</span></span>
-<span id="cb19-73"><a href="#cb19-73" aria-hidden="true" tabindex="-1"></a><span class="bu">echo</span> <span class="st">""</span></span>
-<span id="cb19-74"><a href="#cb19-74" aria-hidden="true" tabindex="-1"></a><span class="bu">echo</span> <span class="st">"----------------------------------------------------------------------------------"</span></span>
-<span id="cb19-75"><a href="#cb19-75" aria-hidden="true" tabindex="-1"></a><span class="bu">echo</span> <span class="st">""</span></span>
-<span id="cb19-76"><a href="#cb19-76" aria-hidden="true" tabindex="-1"></a><span class="bu">echo</span> <span class="st">"Primer default (i.e. computer-friendly) results file:"</span></span>
-<span id="cb19-77"><a href="#cb19-77" aria-hidden="true" tabindex="-1"></a><span class="bu">echo</span> <span class="st">""</span></span>
-<span id="cb19-78"><a href="#cb19-78" aria-hidden="true" tabindex="-1"></a><span class="bu">echo</span> <span class="st">""</span></span>
-<span id="cb19-79"><a href="#cb19-79" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb19-80"><a href="#cb19-80" aria-hidden="true" tabindex="-1"></a><span class="co"># Print the full output file</span></span>
-<span id="cb19-81"><a href="#cb19-81" aria-hidden="true" tabindex="-1"></a><span class="fu">cat</span> <span class="st">"</span><span class="va">${output_top}</span><span class="st">/primer3-t-primers-default-format.txt"</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span id="cb19-64"><a href="#cb19-64" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb19-65"><a href="#cb19-65" aria-hidden="true" tabindex="-1"></a><span class="co"># Print the full output file</span></span>
+<span id="cb19-66"><a href="#cb19-66" aria-hidden="true" tabindex="-1"></a><span class="fu">cat</span> <span class="st">"</span><span class="va">${output_top}</span><span class="st">/primer3-t-primers.txt"</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <pre><code>                    start  len      tm     gc%  any_th  3'_th hairpin seq
  1 LEFT_PRIMER       3265   30   54.89   23.33    0.00   0.00    0.00 ttATATtTCTtAACtACTAACCCTtAtACA
 
@@ -1475,349 +1435,19 @@ Left    3303     0     0     0     0   974     0     9   185      0     0     0 
 Right   3607     0     0     0     0  1486     0     3   460      0     0     0    34     0     7
 Pair Stats:
 considered 0, ok 0
-libprimer3 release 2.6.1
-
-
-
-
-----------------------------------------------------------------------------------
-
-Primer default (i.e. computer-friendly) results file:
-
-
-SEQUENCE_ID=LOC120027825
-SEQUENCE_TEMPLATE=TttttCTCtCCAttACAAttttAtCCCTtAAAAtATtTtAAtTTACACCCCAtCTACCCAtTCACCtTCTTTCACTATCCtCAACCCTCCACTtttACAATCtTCAACAATACATTCAAtCCTTCATtTACTCCttttCCtCtAATAATTTCAtttACCAAtACTTCtCCAtCtAATTACAAATCCCCTtCtTtAAATtTCCCATCCCTCTCCATCTtCTCCttCCAtTTttttTATCAtATCAAtCCCATTCTACTtCAttTTttttTtAACCACTCAtACTCTTAtTTTTCTTTTtATCACTtCTCCCtAtAACCTtCTTATCCTAtttTACCCCTttCTAtTtCTACATAACCCACAATTTTTCTttTCCACtttACACATtCTAtACTttttTTtTTCAACATATtACATTAAAATtACAtATCtCTATAATAtTTtTACACTCATTAAAttCCCAtTtCAtTCAACtTTATtTtATCAtTtTTATTTCCTtATAtTTtCTttTTtAAAATACAATCTACACTttACCTTTTAATCAtCtttTTTtCATtttTtttAtTTTTttCTTTCCATtATtACATCACCATtCttTAAATTtATTAATAtACCAATAACAtAtTTCCAAACTTCTTTtCCAATAACAtCAATTTTTCAtTTTTTCCCTCCCCACTCAAACCACTCCCAtACAtTCCTTtCAAAATTCTTtTTTtTtAATtTTTTTTtTTtTTtCTAAAAAtCTATTCTTTCCCATTTTAATttAACTCTATTACAtTAATtTACTTAATTtTTACCCAtAAATtATTTtATATTtTTATAAAAACttCTtCAtTttACCTTTAATCTtCATCAAAATATCTtTTCAATAtAAATTtAtAAtATAAAATACACtCTCtCTtTCTTTATTtACATttTCAtCTtTttATtCTTCCTTTttCTtAttAATtACACCATtTTttCTTATtACCAttCATAtACCACTATCTAATCAACCTttACTCtttTAtACATAAAtATtAATCCtttACACTCCAATTAtTATtATATTTTACtTTTCtTATttTATtTATTAtTTTtTttATtTCCATCATCCATTTTtTATtATATtTTACAAATTtCAATTCATACAATATtTTAAAAATTtCTATTTtTACAATATtTTACtAATTTtTAAACTTATtAAATtTTATtAATTCTAATTTtTTtTtttTAACATTAtTTACtTttTTAAAtCTAACATTAtCCTttTttCTAATtTTAtCTATtTTAttttTTAtttTCAtttTTtAAttTTAtAtTTtATtTttATATtAAtCTAtttTTACttTTCAAATTAtAtTTtAtCTttAATtTtTACATAAAtCTAtttTTATttATTTTtATtAATTAtATCAtCCTttTCTCATAtACTAtACtTAAATCCttAtCAtATAtTtTtAtCTCAAAtTATTTttACAtTtACACATTTtTTtTTtTTTTAtCTCTtAtCTCCAtCACTTTttATTTtAAATtATACTATTAttTTAtTtCtCAtACTtACAtCTTTAATTTtAtttTATTTTCATCCATATCAttTtAACCtTTTAtAAAAAtTtCTtTCACCAAAAtTATTttAACAATTTTACTTATATtttTATTAAAtTAtTAAAAAtATAAtTATTTttACCCATATTCCTAtCACtCAATtACTACATCAAtCtTtTtACTCTACACATTTtTTttATtCATTTtCTtTTTtTTTTAtTTATtTTTCAtATTATTTTtTtCCCAATAtAAACAAATttTAAATAATtTATTtTtTAATTTTttAtTCACTTTTAtAtAAAtTTACAtACtCATAAATATCATAACCCCCCAAAAATtCTAAtCTCCCCTtTTATTtTAATttTtAtAttTTAtCATtTCTTttttTTATtATATTTtTtCATCTtTtACTTTCTCACTCATCATTATTCACTATTCATTCATTATTATCTtTAATCATttTAtCATCCACAATtTAtCAtTTTTTAtAAACCTATTCTTATTTACATTATTTTTTTAACTTAtCATtTTAtCTAACCCTAACCTTAATCCAACTCCTCCTAACTCCTTAACCTTCAAtTTTATTCAAAtTTTAtTCTTAtAAACACAtTtCATtAtAATTTAtCATtTtTTTCTtAAttAAAAACTTAAACtATtTCAAtCTCTCAtATAACACAAAACACTtttTtAtTTTTCCTTATTtCAttTCATTTttATCAtACTCTtTAAAACACTtTAttAAAACAACCCTtTTTtTTTTTTTttTCTCTTTTTATCttCATtAAATTtTtATAATATTtTAAttTTtttTTtTtCCtTttCttATATCTTTtTtttCTATACTCttCCTTtTCTtAttATttTAttTTttTttTTtAAtAAATCCCTCTAtTttTtTtttttCTtTtCTTTttCAAAtTtttTttttTTATATCCTTCCTtTTTttCCCTtTCCtttttTATCATCttATttttCCACAtTtTCTCCTtACCCCTCCTtTCTCAtTATTTATtCTtCAtTAtTTTATtTtTCttttttCTAtttTCAtTTTtTTATATCTttAtTACTTCTCCTtTCTTATCCttTtTCCTtTtTtAATTTAAtTATtCTCTCTCTAATTCTCTCTTTCTTTCTCTCTCTCttAttACCTtAtCCCTAttACCATtCCTCAttACTACCTttCACtATtACTCCTTtCTtTCCCCAtTCCACCTttCCtTtCTtCTtCTCCAtTTTCAACTtTTCTtCCTtTttCTATttAACCCTtACCTtTTCACCAtACtTtCTACCTtTCCCAtACCCtCTtTTTTCAACTCTCTAtAtACAtCAttAtCttTAtAtATACTCTTAATtATCttCTATtAAAAtCCAACTtACATTTACTTCTtAttTtCTtACTTtCTtCACCCTCtACAACTACTtTtATTATTATTATTTtACCATtCTttTCATTTTtAACATTTtAACATCTTttCCATtTTCTtTTATAATCTCCACCCttCACAtCCAAAAtAttACTttCCACCCCTCATAtCCTttTTCCTCTCTAttTTTCTTCCTAttTTTTttCCTTTCTAtttAtTTTTTCCTAtCCACCtTtCTTCTACACCTtCATTtCTTtCTtTTTttttTTTTAttCTtttTTTCTtTACAtCACTTTtAtATATCAtCTtATtTAAtAAtttCTATATAAATACATTTtATTTtATTTtATAAttTCACTAtTTACTTATTAAATATttATATtTCTtAACtACTAACCCTtAtACACATCAtAAAtCTtAtTTCACtTCATAATATTtTtATTATAATCACAATCCCTTCTTACACCACTATAAATtTtTCTCTtTCCTTATCTtAtTCTCTtAATtTAtCCTATtTtTtACCTtAATtTATCTtTTACCTTAATtTAATtTAtCCTACATtTtTTACTTtAAAAATAACCCTAAATTttTTCTTATTCCCAACACAtCTCTtttATtTtTAATttTCATATTTATTACCATACCTCTCCACTTCTTCCTCTTTCCCTTTACAATTTTTATTTTTTTTAAATAATAAAtTtATtATTTATTTATTttTTAAAtAttAAAATCCTCACATCACAtAATttTtCTtTCCTCACACTtttAAtAtCAttAAtCCACTtAAttTtTTtTttTTATCATttCTATCATttAtACCCTttTCTTCAtttAtACtAAttTAtACCACATCCTCCTTCTCCAtCTCTAtTtTCAACtCATTAtATATtTACTtCCAACCCCCAACTtTATTTCTTTCTACATTATATAtAACTCTTTtATTATTtTtAAACATCATtATtCCCATtAtTTtTtttTttCtttATtACATttCCtTtAATCTtAAtAAtTAtACTCCTTTCACTtATtCTtTtAAtATtCCTtCATCAtAttAtAAATAtAtTtATATCAtCACTtTCTtTCTCATtTTtCTtTAtCTttAATtTTTTTAACAAATAAACTCAtCAAAAAAAtAAATtTCCCTTTTCAttACCCTtTCTTTCAAAtATAATTCtTAAAAATCCAAATAACTTCACAtATCTTCATTTTAAAtttTTTAAACACTtTTTCCCATtCTTCTTCAATtAACCATAAACAATTAATtAACATtCACCTtTttAACttTCtTTAAtACACTAACAtCTTACAtACttTAttCAtTTAttCCAAAtTTATtAAAACTTAttACACTAAAtAttCCTTTCTACTtACACTtAAAAACACCAAAAtAAAtATtTCCAtttTCCCTtCTCATCTtCAttAACtTtCCTTAtACATtCTtCAAttAttCATtAttACTACAtATtTttCCAtttCAATAAATTtCAATtTCCtTACTtTtAtACACCTAACACAtCtCTACAtttAtACAttACttACAtCTtATCtTCCTCtCAtTtACAtACCACtTtTAACAACACCTtCACAttATCttTACATCCtAACATCACACCTtCtttACAttTACCttATttCAACAACAACTtCCCtAtTTACACCAttAACtCACAATCCCTCCATCAtTtCTCAtACTtTCTtCAATAttCTAAtAtAttTTttACTtAtttCTTtTAttCCTtTTtTCAttCAttTCATCACCttCAACTACtTCtCCTATtttCACAAACCCACCtTCACTttACCAtACAtCCtCttTTTTtTCTCACCAttttTtATttTCttAATTtCtTTTATCtTTtAAttAATtAtCtTTACACTtAttCCTtTACTCTttAtCtttATCtATTTttAttTttAtttTCCtTCATttTCTttttCttTtTATCACAtCATCATCttACTtAtCTTtTTtTCTTTtCAttAAATCTCAACtCTtTtCtTTACAtttAAtACATCCTCCTCCCTCATATttTACCCTTCCTtCAttCTCATCCTtACATtACCCTCCAtCATtACAATtCCACCAtCCATACTtCTCATtTTtTtCtTtATTTCCTtCAAtACAttAATtTCAtTtTTCTtCCATttCCAtCtAAtAtCCCAtATCTCAATCCCATTtAtCACtTCTtttACCTTTTttATCttAtttTtAtAtCTAtttCCATTCtCCACAtAAATtTCTtttAACTTtCAttTtCCTTttTttAAtAtTttttTAACATCTCACAtCAAtAACTttCAAATCTttTtCAtTCCATtAttAttAtATtCACTtCAtTACTTAATtCAtCTttTttCCACACCAtATACTtACTtTTACTTTTtATTTTtACCCCACCTTTtTTCAtttACACATTATTCCATTTCTtTTAtTCACATtTCTtTttAACTTtTTCAtTTTATtTCTCAtTTtTTtAATATTtTTATtTTCATACAAATATTTACACATtTTAAtTTtACTtAAAATAAACtCAtTTtACAtTtAtAttACtTTTCTTTTAACAtTtAtAttAtTTTAtTATAATTAAtTCAtttACTAttTAACACAAATTACCACCAAACACAATAAtTATCAAACTAAACATTtTTATAACTAAAATAAAATCAtttTtACAtATTAAtTAACATAAAATATtTCATTAAAAAAAATtACCtTAtACATACAtTACTAtTCAAAAtTTTttACATACTTAtAttTtTtttTTTTTCTTTATTTTTACTATTTTCTACATTtTAtCATAATAtTtAAtACATAAACTATtAAATAACAAATATttAATCATtTAtTAACCAAAATAtTATTTAAAAAATCTAAATATATTTCAtATTTTTCAAAtTAtCCACCCTTTtCCTCtATtACAtCTTTtCACTCTCTTttCATTCTCTCTTCACCTttAATtCTTTTCCAAtAtTtTtCAAAACTtTCATCAAttCAAAtttTtACTACTTTAAAtAATtTCAAATATAAAATATATTTTtATTTtTTTTATACTTTTTtttTTACTACATtATTCCATATtTtTTATTTAATAtTTTTtAAtTCTTCACTATTATTCTACAATtTAtAAAATAtTAAAATAAAtAATCCCTttAATAAtTAttTtTtTCCAAACTTTTtACTttTACTtTACtTtTTTttTATCATATAtCTAtTAtTTACAAAAtTAAACTCATTTAAAAtCTTtAAACtTAtAATTTtTCCCTCAtAATTATtTCCACTCTtAAAATCTAtTtTCTTATCATtATTTTCAAAtTAAAATATAAAACAAtTTAtTtAAtTAAAATTATATACAtAtATTACTtAtAAACATtCAtCAAAATCATCCCAtAAtAATTACATTAAATTtCATTCATAAAAAATTATtATtAtATtACTtACTCAATATTTttCATTtTTttATtAATtTTATtCAACATTCAAATttATTTCCCTCTTtTTAtTTAtTACCTtTAATTtttTTtTAttCCTTtCCtATtTTttTtATtACTCTACTtAAtATCAtTtTAtTAtCAtTACTtAATttACCTACtTTTCCAtAtTCAtTCAAACCAtCAtAtAAttCCACAtTTttTCTtCCTtTtAAAAtAAtTTtATTATTTAAAAttACAATCTtAtATTtAAATAACAACAAttCAAATtCTTACTTATCCACCTtTATCAATCCAATTTACAAATtCCTtATATTTCTtACATtACCTtCTTTCTCTTTCTCCAtCTCTTCCACCTTtCTCTTCTttAtCTtCAtTTCAtTCTTttTtACtCTCAtCTCCTtTCTCTtTTCCACCATCATtTCTCTCAtCTCCTCCAtCTTAtACCAtATtTCAttttTCTTtTtttCCtTCTCTtTAtCTTCAtCCCATtCCCCAAACAtAtAAAACAtCAtCAtAtCTACAtCACCTCTCATTCTtAAACtACACATCTTCTtAAATtATCTAtTCTTTtAttCTAtAAATTTACAttATTAAAtTAttAtCTATATCTtTtTtAAATATATTtTtTCTCTtTttAAAAAAtAtttTTCTTAAATATCAtttAtTATTATTTtATTAttATTACTttTAttATTCTTTATTTtTTTTTACTttCAATtAttTtAAttTTTCTTtCtTCATTCACCAtTTtTTtTTACTtTATTTCtTCATACTTAATTTTtATAtTCCCCTAtATAtttAtTtttCtTACACATCACAtACAAACTAAAATttTCCACACAtACAtTtTttTAAAtAAttAAttCCAAAAAtATCATCAAttACAACAACCACCCtAtCCACTtCCTtTTCACACTtCTATCATCCAtAAttTtAttTCAtTACAttTACATCAAtCTtttACCtAtAtATTtAtAAACAtCTTCTATCTCAAttCCATCAtACTtCTAAACAtCAATCATTAACTtAtAtAtTCTtCTtCCCACATTtAtAACCAATCACAttACACTTTAATAAATttATCACTAtTCACTTTAAACAATtCCACTTTAAATAATttCACTTTAATAATtCTTAAATATCTTACATTACTCATTTCACATtTATATACTtTATTTTATACCATCTACTtCACCTTtCCTATtCCtCTCtCATTAACATCTtCTAACCATtTtTATtTtACCAATAAtATTTtATTTtATATCTtTAAATtATCTACAtATtATCAAACTAAtAAtAAACTATtAACTtCAACTCTtTTtATATTCAACTtCTTtTTAtttTTATttCAAttTCtAATTttCCtTCTtCCAAATttACTttACTTTTTTTTTTAttTttTTtAtCCttTCtAAATTtAAAAAAATTATATTATATACATATATACAAAATCCATATTtCtATAACAATAAATCtAACAATAAtTTTATTACATTAATtTtCATCACAtTTTTTTTATTATCATTTAATCTATTACTATTAtTTTtTTTtTAtTTTtTTTtTTAtCAAACTTATTTAATATCAAACTTCACTTTTCTCTAtCATAttCTACTTATCtTAATtAACtACATAAtCAAAATtCTTtCAATAAtTtATCttAATttTTttTtTAtATAATTTTTtTTTTATCtTCCTAtCTtTAtTTCAAAtTCAAACtCtCCATCAtTtAtCCAtCCTATATTCCTACTAAAtTTtTtAtttAtAtACAtCTAAATtAtCttAtTtAATTATttATtATtAttACAAAtAACCTtATTCTtTtTtCAAAtACAtTTCAACTtCAtCCAAAttAACAtAAttTAATTCTtTCtAttTTtAAAACAtAtAtACATACTtACAtAtATCTCTAtTTttATtTCAAATtTTTTTtCATttACATTtCCATTtAtttCTTCCACCATTTTAAAtTAtTCAACTtttTttttATTTCTATttATTtAtAATtATTAtCCAATtATCAtAtAATTATCTTAATCTTCAATTTttATTtCTTATttCTtTACATttCTTTAAtCTTCATCACCACCATtAAtTttCCACAATAATTtAATtACAttACTCCAtCACTtCtttTttCAtTAAATCACCAATTTtTTATTTAACACtTTCTCATTTACAtCAACtACCTttttAATAtTTACAttttAtAttAtttttATtAATTAtCCAATTtTAAACTttttATtATTAttTtACCATtATttTATtAtttCCAtATTtttAATTTAtCCAtttCTAAACACCCCTACTCTTATAATAATAATAATAATAATAATAATAATAATAAATtCCATtTtACCACAtAtTCAttACACCCATTTAACATCCCATCCAAAAtACAtCAACCTACACAtttCAATtTCCCCAATCACTtCCTTttttAATTtttATATTTTTTAtAtCAtACtAAAtAtTtCCTCCTACTttCCCtTCCAACACCACTCCCAtCAtCATCTttTCTCCCATCCAtttCCCAACCTTtCTTAtCTTCAtAAtCAAtCCAtCAtTtttATttAtttTTtTATtCTTCTttCAAtCTAATtTTTAtTCCTtAACTTATTCAttCTTtCCATAACAAAttttTTtAATACTTTTTtACTCAAtACATTTCAtCTTTTCATTtTAAATACATTTtTAAAAATAAAAAAAATCCAACTAAATTCCACTTTtACATTtTAtttTAATATtTtTAtATCAtTtACACAACATCTACATTTAATCAACTATATATTCAttCTtTCACACAACAAAATtTttAAAAAtTCAAttttAtTtAATACTTTTTTTTATAtCTTTtTTATAAACATTATACTACATTATAATAACAACTTtCCAAAAAACTTtAAATttAAACAAATAtAATTTTACAACAAAATCAATtTTTCTtttACAAAATAttATTAtTtACAtCTtTAATTAAAttAAtATCTTCTttCTACAtTAACAATtACAtCTACATAAAAAAAAAAAAAAAAAtCTAtTCAttTAACTACtTAtTTAATtTTtCAATTtTTTACAtCTTTCAtATTTtCTATCATtAATTTtTTAAttCCAAtttTAAtAAttAAAATttCATtAATTttAACCTAATtACTAACTCCTtTtTtTtTtTtTtTtTtTtTtTtTtTtTtTtTtTtTtTtTtTtTtTtTtTtTtTtTtTtTtTtTtTtTtTtTtTtTtTtTtTtTtTtTtTtTtTtTtTtTtTtTtTtTtTtTtTtTtTtTtTtTtTtTtTtTtTtTtTtTtTtCATACATtTTCATCTATCACTTTtTtTAtTTAtCTAtCAATTttCTACTAATtATTTtCCTtTCTACCCAtACTCCTtTCTACCCAtACtCCAAACtTTATtCCACtCCCACttACtTTAtTTTATtTAtTtAACtACttAtCAtCtAtTtTtAtTCtTCAttCTAATTAATAtTCCTACTtCAACTtTCTTtATTATtAtTAtATCTACAAAtTATtCCTTCCTttCAttATtATATAATTAATATTATTTtTATCAATTtttTCtttATTTtTTTAACAAACTCTtCCATCtTttTAtTCTtCAtAAACATTtCTAtCCAAACACAtTCCTCTCTCtCTAtttttTTTATTCAtACCCAAtTTATACCCACATAAATATAATTtTATTCTCTTTTTATtCACTTTTCTCTCTATtCtTATTCTtACCTTtAACTTACTCATttttACAAtCCAtTtTCAtCAAttTACCCTtttTtAttttTtATACtCCAtTtTATTCTtACCTTtACTTAATTCCCTACTAATTCTACAACCTTTATCAttCTAATATTCTtAATATCCTtTTCTCTCtATATAtTCCAtTtAtTTTtTCAACAAAATTCAAATtATAttTAAACCtTATATTCAAttATttATAAAtATAAATtTACTtAAAATCCTATTtAATAAAAACTCCACAAtAAAATCTtTTttCCAACAAtTtttAtttTTTTCAtCttTTtAATTAAATTTATTCAtAtCACtCCCAtCAtCAAAtCCCCAtCAtCAAAtACCtTTACACTACTtCATAAttTAAtTCTtAtTttTCCAAACACACCAAtAAAtTTtTt
-PRIMER_TASK=pick_sequencing_primers
-SEQUENCE_TARGET=3500,3458
-PRIMER_MIN_TM=50
-PRIMER_OPT_TM=55
-PRIMER_PICK_LEFT_PRIMER=1
-PRIMER_PICK_RIGHT_PRIMER=1
-PRIMER_OPT_SIZE=30
-PRIMER_MIN_SIZE=25
-PRIMER_MAX_SIZE=36
-PRIMER_MAX_NS_ACCEPTED=0
-P3_FILE_FLAG=1
-PRIMER_EXPLAIN_FLAG=1
-PRIMER_THERMODYNAMIC_PARAMETERS_PATH=/home/shared/primer3-2.6.1/src/primer3_config
-PRIMER_NUM_RETURN=10
-PRIMER_PAIR_EXPLAIN=considered 0, ok 0
-PRIMER_WARNING=No right primer found in range 5634 - 5674
-PRIMER_LEFT_EXPLAIN=sequencing locations 8, considered 3303, GC content failed 974, low tm 9, high tm 185, long poly-x seq 61, ok 8
-PRIMER_RIGHT_EXPLAIN=sequencing locations 8, considered 3607, GC content failed 1486, low tm 3, high tm 460, long poly-x seq 34, ok 7
-PRIMER_PAIR_EXPLAIN=considered 0, ok 0
-PRIMER_LEFT_NUM_RETURNED=8
-PRIMER_RIGHT_NUM_RETURNED=7
-PRIMER_INTERNAL_NUM_RETURNED=0
-PRIMER_PAIR_NUM_RETURNED=0
-PRIMER_LEFT_0_PENALTY=0.111457
-PRIMER_RIGHT_0_PENALTY=0.319138
-PRIMER_LEFT_0_SEQUENCE=ttATATtTCTtAACtACTAACCCTtAtACA
-PRIMER_RIGHT_0_SEQUENCE=aaTTaAGTGGaTTaaTGaTaTTaaaAGTGT
-PRIMER_LEFT_0=3265,30
-PRIMER_RIGHT_0=3677,30
-PRIMER_LEFT_0_TM=54.889
-PRIMER_RIGHT_0_TM=55.319
-PRIMER_LEFT_0_GC_PERCENT=23.333
-PRIMER_RIGHT_0_GC_PERCENT=20.000
-PRIMER_LEFT_0_SELF_ANY_TH=0.00
-PRIMER_RIGHT_0_SELF_ANY_TH=0.00
-PRIMER_LEFT_0_SELF_END_TH=0.00
-PRIMER_RIGHT_0_SELF_END_TH=0.00
-PRIMER_LEFT_0_HAIRPIN_TH=0.00
-PRIMER_RIGHT_0_HAIRPIN_TH=42.14
-PRIMER_LEFT_0_END_STABILITY=2.2900
-PRIMER_RIGHT_0_END_STABILITY=3.5500
-PRIMER_LEFT_1_PENALTY=0.036926
-PRIMER_RIGHT_1_PENALTY=0.190778
-PRIMER_LEFT_1_SEQUENCE=CCCAACTtTATTTCTTTCTACATTATATAt
-PRIMER_RIGHT_1_SEQUENCE=TAAGaTGTTAGTGTaTTAAaGAaaGTTaaA
-PRIMER_LEFT_1=3790,30
-PRIMER_RIGHT_1=4194,30
-PRIMER_LEFT_1_TM=55.037
-PRIMER_RIGHT_1_TM=54.809
-PRIMER_LEFT_1_GC_PERCENT=23.333
-PRIMER_RIGHT_1_GC_PERCENT=20.000
-PRIMER_LEFT_1_SELF_ANY_TH=0.00
-PRIMER_RIGHT_1_SELF_ANY_TH=0.00
-PRIMER_LEFT_1_SELF_END_TH=0.00
-PRIMER_RIGHT_1_SELF_END_TH=0.00
-PRIMER_LEFT_1_HAIRPIN_TH=0.00
-PRIMER_RIGHT_1_HAIRPIN_TH=0.00
-PRIMER_LEFT_1_END_STABILITY=0.8600
-PRIMER_RIGHT_1_END_STABILITY=1.5200
-PRIMER_LEFT_2_PENALTY=0.297844
-PRIMER_RIGHT_2_PENALTY=5.242954
-PRIMER_LEFT_2_SEQUENCE=CTtACACTtAAAAACACCAAAAtAAAtATt
-PRIMER_RIGHT_2_SEQUENCE=GTTTGTGaaaATAGGaGAaGTAGTTGaaG
-PRIMER_LEFT_2=4255,30
-PRIMER_RIGHT_2=4675,29
-PRIMER_LEFT_2_TM=55.298
-PRIMER_RIGHT_2_TM=59.243
-PRIMER_LEFT_2_GC_PERCENT=20.000
-PRIMER_RIGHT_2_GC_PERCENT=34.483
-PRIMER_LEFT_2_SELF_ANY_TH=0.00
-PRIMER_RIGHT_2_SELF_ANY_TH=0.00
-PRIMER_LEFT_2_SELF_END_TH=0.00
-PRIMER_RIGHT_2_SELF_END_TH=0.00
-PRIMER_LEFT_2_HAIRPIN_TH=0.00
-PRIMER_RIGHT_2_HAIRPIN_TH=0.00
-PRIMER_LEFT_2_END_STABILITY=1.2800
-PRIMER_RIGHT_2_END_STABILITY=3.0200
-PRIMER_LEFT_3_PENALTY=0.093240
-PRIMER_RIGHT_3_PENALTY=2.400939
-PRIMER_LEFT_3_SEQUENCE=ACTtAttCCTtTACTCTttAtCtttATCtA
-PRIMER_RIGHT_3_SEQUENCE=AaTGaAaaAGATTTGaaAGTTaTTGaTGTG
-PRIMER_LEFT_3=4764,30
-PRIMER_RIGHT_3=5202,30
-PRIMER_LEFT_3_TM=55.093
-PRIMER_RIGHT_3_TM=57.401
-PRIMER_LEFT_3_GC_PERCENT=23.333
-PRIMER_RIGHT_3_GC_PERCENT=23.333
-PRIMER_LEFT_3_SELF_ANY_TH=0.00
-PRIMER_RIGHT_3_SELF_ANY_TH=0.00
-PRIMER_LEFT_3_SELF_END_TH=0.00
-PRIMER_RIGHT_3_SELF_END_TH=0.00
-PRIMER_LEFT_3_HAIRPIN_TH=0.00
-PRIMER_RIGHT_3_HAIRPIN_TH=0.00
-PRIMER_LEFT_3_END_STABILITY=1.9800
-PRIMER_RIGHT_3_END_STABILITY=3.2100
-PRIMER_LEFT_4_PENALTY=0.721992
-PRIMER_RIGHT_4_PENALTY=0.050560
-PRIMER_LEFT_4_SEQUENCE=CAtttACACATTATTCCATTTCTtTTAtTC
-PRIMER_RIGHT_4_SEQUENCE=aTAGATTTTaAGAGTGGAaATAATTaTGAG
-PRIMER_LEFT_4=5294,30
-PRIMER_RIGHT_4=6180,30
-PRIMER_LEFT_4_TM=55.722
-PRIMER_RIGHT_4_TM=55.051
-PRIMER_LEFT_4_GC_PERCENT=23.333
-PRIMER_RIGHT_4_GC_PERCENT=23.333
-PRIMER_LEFT_4_SELF_ANY_TH=0.00
-PRIMER_RIGHT_4_SELF_ANY_TH=0.00
-PRIMER_LEFT_4_SELF_END_TH=0.00
-PRIMER_RIGHT_4_SELF_END_TH=0.00
-PRIMER_LEFT_4_HAIRPIN_TH=0.00
-PRIMER_RIGHT_4_HAIRPIN_TH=0.00
-PRIMER_LEFT_4_END_STABILITY=1.7500
-PRIMER_RIGHT_4_END_STABILITY=2.9000
-PRIMER_LEFT_5_PENALTY=0.543198
-PRIMER_RIGHT_5_PENALTY=3.641468
-PRIMER_LEFT_5_SEQUENCE=ATATATTTCAtATTTTTCAAAtTAtCCACC
-PRIMER_RIGHT_5_SEQUENCE=GAaTGAAaTGaAGaTaaAGAAGAGaAAGG
-PRIMER_LEFT_5=5764,30
-PRIMER_RIGHT_5=6701,29
-PRIMER_LEFT_5_TM=54.457
-PRIMER_RIGHT_5_TM=57.641
-PRIMER_LEFT_5_GC_PERCENT=20.000
-PRIMER_RIGHT_5_GC_PERCENT=31.034
-PRIMER_LEFT_5_SELF_ANY_TH=0.00
-PRIMER_RIGHT_5_SELF_ANY_TH=0.00
-PRIMER_LEFT_5_SELF_END_TH=0.00
-PRIMER_RIGHT_5_SELF_END_TH=0.00
-PRIMER_LEFT_5_HAIRPIN_TH=0.00
-PRIMER_RIGHT_5_HAIRPIN_TH=0.00
-PRIMER_LEFT_5_END_STABILITY=4.6100
-PRIMER_RIGHT_5_END_STABILITY=3.1100
-PRIMER_LEFT_6_PENALTY=0.195406
-PRIMER_RIGHT_6_PENALTY=2.701604
-PRIMER_LEFT_6_SEQUENCE=TCATCCCAtAAtAATTACATTAAATTtCAT
-PRIMER_RIGHT_6_SEQUENCE=aAaAaTGTaTGTGTGGAaaATTTTAGTTT
-PRIMER_LEFT_6=6269,30
-PRIMER_RIGHT_6=7171,29
-PRIMER_LEFT_6_TM=55.195
-PRIMER_RIGHT_6_TM=56.702
-PRIMER_LEFT_6_GC_PERCENT=20.000
-PRIMER_RIGHT_6_GC_PERCENT=20.690
-PRIMER_LEFT_6_SELF_ANY_TH=0.00
-PRIMER_RIGHT_6_SELF_ANY_TH=2.75
-PRIMER_LEFT_6_SELF_END_TH=0.00
-PRIMER_RIGHT_6_SELF_END_TH=0.00
-PRIMER_LEFT_6_HAIRPIN_TH=31.63
-PRIMER_RIGHT_6_HAIRPIN_TH=0.00
-PRIMER_LEFT_6_END_STABILITY=2.5700
-PRIMER_RIGHT_6_END_STABILITY=2.6600
-PRIMER_LEFT_7_PENALTY=0.018465
-PRIMER_LEFT_7_SEQUENCE=CAtCTTAtACCAtATtTCAttttTCTTtTt
-PRIMER_LEFT_7=6755,30
-PRIMER_LEFT_7_TM=54.982
-PRIMER_LEFT_7_GC_PERCENT=20.000
-PRIMER_LEFT_7_SELF_ANY_TH=0.00
-PRIMER_LEFT_7_SELF_END_TH=0.00
-PRIMER_LEFT_7_HAIRPIN_TH=0.00
-PRIMER_LEFT_7_END_STABILITY=1.9400
-=</code></pre>
+libprimer3 release 2.6.1</code></pre>
 <p>Looks like we have two primers we can use for sequencing. Neither overlaps a potential <code>CpG</code>, and both are outside of the C1q gene sequence.</p>
-<p>Next, we need to test them against the entire bisulfite-converted genome to assess specificity.</p>
 </section>
 </section>
-</section>
-<section id="genome-bisulfite-conversion" class="level1">
-<h1>6 GENOME BISULFITE CONVERSION</h1>
-<div class="sourceCode" id="cb21"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb21-1"><a href="#cb21-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Load bash variables into memory</span></span>
-<span id="cb21-2"><a href="#cb21-2" aria-hidden="true" tabindex="-1"></a><span class="bu">source</span> .bashvars</span>
-<span id="cb21-3"><a href="#cb21-3" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb21-4"><a href="#cb21-4" aria-hidden="true" tabindex="-1"></a><span class="fu">tr</span> <span class="st">'[:lower:]'</span> <span class="st">'[:upper:]'</span> <span class="op">&lt;</span> <span class="st">"</span><span class="va">${data_dir}</span><span class="st">/</span><span class="va">${genome_fasta}</span><span class="st">"</span> <span class="kw">|</span> <span class="fu">sed</span> <span class="st">'/^&gt;/!s/G/T/g'</span> <span class="op">&gt;</span> <span class="st">"</span><span class="va">${data_dir}</span><span class="st">/</span><span class="va">${bisulfite_genome_fasta}</span><span class="st">"</span></span>
-<span id="cb21-5"><a href="#cb21-5" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb21-6"><a href="#cb21-6" aria-hidden="true" tabindex="-1"></a><span class="fu">head</span> <span class="st">"</span><span class="va">${data_dir}</span><span class="st">/</span><span class="va">${bisulfite_genome_fasta}</span><span class="st">"</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<pre><code>&gt;NC_052307.1 SALVELINUS NAMAYCUSH ISOLATE SENECA CHROMOSOME 1, SANAMA_1.0, WHOLE GENOME SHOTGUN SEQUENCE
-TTTTTAATTAATTATTTTACAATTTTTTTAAAACATAATTACTTTTTATTTTTATTCCACAATATAATTTAAATTACAAA
-TCTTTACTCCTATTATATTCTATATATTACCACATTATTATTCATAAAACTTATCTTTCAAACAAAAATCAACTTTTAAT
-ATACATTTCACATCTCATATATATCAATTCCATACATTTTTTTTTCTACTTCCTCATTTTTTTTTTTCTACTTCCTCATT
-TTTTTTTTTCTACTTCCTCATTTTTTTTTTTCTACTTCCTCATTTTTTTTTTTCTACTTCCTCATTTTTTTTTTTCTACT
-TCCTCATTTTTTTTTTTCTACTTCCTCATTTTTTTTTTTCTACTTCCTCATTTTCTACTTCCTCATTTTTTTTTTTCTAC
-ATCCTCATTTTTTTTTTTCTACTTCTTTTTTTTCTACTTCCTCATTTTTTTTTTTCTACATCCTCATTTTTTTTTTTCTA
-CTTCCTCATTTTTTTTTTTCTACTTCATCATTTTTTTTTTTCTACTTCTTTTTTTTCTACATCCTCATTTTTTTTTTTCT
-ACTTCCTCATTTTTTTTTTTCTACTTCCTCATTTTTTTTTTTCTACTTCCTCATTTTTTTTTTTCTACTTCCTCATTTTT
-TTTTTTCTACTTCTTTTTTTTCTACTTCCTCATTTTTTTTTTTCTACTTCCTCATTTTTTTTTTTCTACTTCTTTTTTTT</code></pre>
-</section>
-<section id="split-genome" class="level1">
-<h1>7 SPLIT GENOME</h1>
-<p>For some reason, I feel like the EMBOSS PrimerSearch tool will <em>not</em> work on mulit-FastA files (or, it makes the results more difficult to decipher?), but I’m just going off of memory and repeating a process I’ve done previously.</p>
-<p>This will split the bisulfite-converted genome multi-FastA file into separate FastA files.</p>
-<section id="split-mulit-fasta-file-in-to-individual-fasta-files-with-pyfaidx" class="level2">
-<h2 class="anchored" data-anchor-id="split-mulit-fasta-file-in-to-individual-fasta-files-with-pyfaidx">7.1 Split mulit-FastA file in to individual FastA files with PyFaidx</h2>
-<div class="sourceCode" id="cb23"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb23-1"><a href="#cb23-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Load bash variables into memory</span></span>
-<span id="cb23-2"><a href="#cb23-2" aria-hidden="true" tabindex="-1"></a><span class="bu">source</span> .bashvars</span>
-<span id="cb23-3"><a href="#cb23-3" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb23-4"><a href="#cb23-4" aria-hidden="true" tabindex="-1"></a><span class="co"># Make directory if it doesn't exist</span></span>
-<span id="cb23-5"><a href="#cb23-5" aria-hidden="true" tabindex="-1"></a><span class="fu">mkdir</span> <span class="at">--parents</span> <span class="va">${genome_fasta_splits_dir}</span></span>
-<span id="cb23-6"><a href="#cb23-6" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb23-7"><a href="#cb23-7" aria-hidden="true" tabindex="-1"></a><span class="bu">cd</span> <span class="va">${genome_fasta_splits_dir}</span></span>
-<span id="cb23-8"><a href="#cb23-8" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb23-9"><a href="#cb23-9" aria-hidden="true" tabindex="-1"></a><span class="co"># Count sequences in FastA</span></span>
-<span id="cb23-10"><a href="#cb23-10" aria-hidden="true" tabindex="-1"></a><span class="bu">echo</span> <span class="st">"-------------------------------------------------------------------"</span></span>
-<span id="cb23-11"><a href="#cb23-11" aria-hidden="true" tabindex="-1"></a><span class="bu">echo</span> <span class="st">"NUMBER OF SEQUENCES IN ORIGINAL FASTA"</span></span>
-<span id="cb23-12"><a href="#cb23-12" aria-hidden="true" tabindex="-1"></a><span class="fu">grep</span> <span class="at">-c</span> <span class="st">"^&gt;"</span> ../<span class="va">${bisulfite_genome_fasta}</span></span>
-<span id="cb23-13"><a href="#cb23-13" aria-hidden="true" tabindex="-1"></a><span class="bu">echo</span> <span class="st">"-------------------------------------------------------------------"</span></span>
-<span id="cb23-14"><a href="#cb23-14" aria-hidden="true" tabindex="-1"></a><span class="bu">echo</span> <span class="st">""</span></span>
-<span id="cb23-15"><a href="#cb23-15" aria-hidden="true" tabindex="-1"></a><span class="bu">echo</span> <span class="st">""</span></span>
-<span id="cb23-16"><a href="#cb23-16" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb23-17"><a href="#cb23-17" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb23-18"><a href="#cb23-18" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb23-19"><a href="#cb23-19" aria-hidden="true" tabindex="-1"></a><span class="co"># Split FastA</span></span>
-<span id="cb23-20"><a href="#cb23-20" aria-hidden="true" tabindex="-1"></a><span class="va">${pyfaidx}</span> <span class="dt">\</span></span>
-<span id="cb23-21"><a href="#cb23-21" aria-hidden="true" tabindex="-1"></a>--split-files <span class="dt">\</span></span>
-<span id="cb23-22"><a href="#cb23-22" aria-hidden="true" tabindex="-1"></a>../<span class="va">${bisulfite_genome_fasta}</span></span>
-<span id="cb23-23"><a href="#cb23-23" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb23-24"><a href="#cb23-24" aria-hidden="true" tabindex="-1"></a><span class="co"># Count number of individual FastA files</span></span>
-<span id="cb23-25"><a href="#cb23-25" aria-hidden="true" tabindex="-1"></a><span class="bu">echo</span> <span class="st">"-------------------------------------------------------------------"</span></span>
-<span id="cb23-26"><a href="#cb23-26" aria-hidden="true" tabindex="-1"></a><span class="bu">echo</span> <span class="st">"NUMBER OF INDIVIDUAL FASTA FILES"</span></span>
-<span id="cb23-27"><a href="#cb23-27" aria-hidden="true" tabindex="-1"></a><span class="fu">ls</span> <span class="at">-1</span> <span class="kw">|</span> <span class="fu">wc</span> <span class="at">-l</span></span>
-<span id="cb23-28"><a href="#cb23-28" aria-hidden="true" tabindex="-1"></a><span class="bu">echo</span> <span class="st">"-------------------------------------------------------------------"</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<pre><code>-------------------------------------------------------------------
-NUMBER OF SEQUENCES IN ORIGINAL FASTA
-4121
--------------------------------------------------------------------
-
-
--------------------------------------------------------------------
-NUMBER OF INDIVIDUAL FASTA FILES
-4121
--------------------------------------------------------------------</code></pre>
-</section>
-</section>
-<section id="primer-search-with-emboss-primersearch" class="level1">
-<h1>8 PRIMER SEARCH WITH <a href="https://emboss.sourceforge.net/apps/cvs/emboss/apps/primersearch.html">EMBOSS PRIMERSEARCH</a></h1>
-<p>This will run <a href="https://emboss.sourceforge.net/apps/cvs/emboss/apps/primersearch.html">EMBOSS PrimerSearch</a> against the genome to assess primer specificity.</p>
-<section id="create-emboss-primersearch-primers-file" class="level2">
-<h2 class="anchored" data-anchor-id="create-emboss-primersearch-primers-file">8.1 Create EMBOSS PrimerSearch Primers File</h2>
-<p>Create a tab-delimited file to use with EMBOSS PrimerSearch.</p>
-<div class="sourceCode" id="cb25"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb25-1"><a href="#cb25-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Load bash variables into memory</span></span>
-<span id="cb25-2"><a href="#cb25-2" aria-hidden="true" tabindex="-1"></a><span class="bu">source</span> .bashvars</span>
-<span id="cb25-3"><a href="#cb25-3" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb25-4"><a href="#cb25-4" aria-hidden="true" tabindex="-1"></a><span class="co"># Get primer info from Primer3 default format output</span></span>
-<span id="cb25-5"><a href="#cb25-5" aria-hidden="true" tabindex="-1"></a><span class="va">seq_id</span><span class="op">=</span><span class="va">$(</span><span class="fu">grep</span> <span class="st">"SEQUENCE_ID="</span> <span class="st">"</span><span class="va">${output_top}</span><span class="st">/primer3-t-primers-default-format.txt"</span> <span class="kw">|</span> <span class="fu">sed</span> <span class="st">'s/SEQUENCE_ID=//'</span><span class="va">)</span></span>
-<span id="cb25-6"><a href="#cb25-6" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb25-7"><a href="#cb25-7" aria-hidden="true" tabindex="-1"></a><span class="va">left_primer</span><span class="op">=</span><span class="va">$(</span><span class="fu">grep</span> <span class="st">"PRIMER_LEFT_0_SEQUENCE="</span> <span class="st">"</span><span class="va">${output_top}</span><span class="st">/primer3-t-primers-default-format.txt"</span> <span class="kw">|</span> <span class="fu">sed</span> <span class="st">'s/PRIMER_LEFT_0_SEQUENCE=//'</span> <span class="kw">|</span> <span class="fu">tr</span> <span class="st">'[:lower:]'</span> <span class="st">'[:upper:]'</span><span class="va">)</span></span>
-<span id="cb25-8"><a href="#cb25-8" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb25-9"><a href="#cb25-9" aria-hidden="true" tabindex="-1"></a><span class="va">right_primer</span><span class="op">=</span><span class="va">$(</span><span class="fu">grep</span> <span class="st">"PRIMER_RIGHT_6_SEQUENCE="</span> <span class="st">"</span><span class="va">${output_top}</span><span class="st">/primer3-t-primers-default-format.txt"</span> <span class="kw">|</span> <span class="fu">sed</span> <span class="st">'s/PRIMER_RIGHT_6_SEQUENCE=//'</span> <span class="kw">|</span> <span class="fu">tr</span> <span class="st">'[:lower:]'</span> <span class="st">'[:upper:]'</span><span class="va">)</span></span>
-<span id="cb25-10"><a href="#cb25-10" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb25-11"><a href="#cb25-11" aria-hidden="true" tabindex="-1"></a><span class="co"># Create EMBOSS primer file</span></span>
-<span id="cb25-12"><a href="#cb25-12" aria-hidden="true" tabindex="-1"></a><span class="bu">printf</span> <span class="st">"%s\t%s\t%s\t\n"</span> <span class="st">"</span><span class="va">${seq_id}</span><span class="st">"</span> <span class="st">"</span><span class="va">${left_primer}</span><span class="st">"</span> <span class="st">"</span><span class="va">${right_primer}</span><span class="st">"</span> <span class="kw">|</span> <span class="fu">tee</span> <span class="st">"</span><span class="va">${output_top}</span><span class="st">/emboss-primers.txt"</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<pre><code>LOC120027825    TTATATTTCTTAACTACTAACCCTTATACA  AAAAATGTATGTGTGGAAAATTTTAGTTT   </code></pre>
-</section>
-<section id="run-emboss-primersearch" class="level2">
-<h2 class="anchored" data-anchor-id="run-emboss-primersearch">8.2 Run EMBOSS PrimerSearch</h2>
-<p>This will run EMBOSS PrimerSearch and allow for a 10% mismatch in primer annealing sites (<code>${primersearch} -auto ${fasta} ${primers} 10</code>).</p>
-<p>Afterwards, the resulting output files (<code>*.primersearch</code>) will be searched for the term <code>Amplimer</code>, indicating a PCR product would be produced. If no amplimer is identified in a <code>*.primersearch</code> file, then that file is deleted. This should leave just the results in which primer matches were identified.</p>
-<div class="sourceCode" id="cb27"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb27-1"><a href="#cb27-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Load bash variables into memory</span></span>
-<span id="cb27-2"><a href="#cb27-2" aria-hidden="true" tabindex="-1"></a><span class="bu">source</span> .bashvars</span>
-<span id="cb27-3"><a href="#cb27-3" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb27-4"><a href="#cb27-4" aria-hidden="true" tabindex="-1"></a><span class="bu">cd</span> <span class="va">${genome_fasta_splits_dir}</span></span>
-<span id="cb27-5"><a href="#cb27-5" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb27-6"><a href="#cb27-6" aria-hidden="true" tabindex="-1"></a><span class="va">primers</span><span class="op">=</span><span class="st">"../../../../output/emboss-primers.txt"</span></span>
-<span id="cb27-7"><a href="#cb27-7" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb27-8"><a href="#cb27-8" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb27-9"><a href="#cb27-9" aria-hidden="true" tabindex="-1"></a><span class="bu">time</span> <span class="dt">\</span></span>
-<span id="cb27-10"><a href="#cb27-10" aria-hidden="true" tabindex="-1"></a>for fasta in <span class="pp">*</span>.fna</span>
-<span id="cb27-11"><a href="#cb27-11" aria-hidden="true" tabindex="-1"></a>  <span class="cf">do</span></span>
-<span id="cb27-12"><a href="#cb27-12" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Remove path from FastA filename</span></span>
-<span id="cb27-13"><a href="#cb27-13" aria-hidden="true" tabindex="-1"></a>  <span class="va">fasta_no_path</span><span class="op">=</span><span class="va">$(</span><span class="bu">echo</span> <span class="va">${fasta</span><span class="op">##</span><span class="pp">*</span>/<span class="va">})</span></span>
-<span id="cb27-14"><a href="#cb27-14" aria-hidden="true" tabindex="-1"></a>  </span>
-<span id="cb27-15"><a href="#cb27-15" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Remove file extension from FastA filename</span></span>
-<span id="cb27-16"><a href="#cb27-16" aria-hidden="true" tabindex="-1"></a>  <span class="va">fasta_no_ext</span><span class="op">=</span><span class="va">$(</span><span class="bu">echo</span> <span class="va">${fasta_no_path</span><span class="op">%%</span>.<span class="pp">*</span><span class="va">})</span></span>
-<span id="cb27-17"><a href="#cb27-17" aria-hidden="true" tabindex="-1"></a>  </span>
-<span id="cb27-18"><a href="#cb27-18" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Convert filename to lowercase</span></span>
-<span id="cb27-19"><a href="#cb27-19" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Will be used for output from EMBOSS PrimerSearch</span></span>
-<span id="cb27-20"><a href="#cb27-20" aria-hidden="true" tabindex="-1"></a>  <span class="va">fasta_no_ext_lower</span><span class="op">=</span><span class="va">$(</span><span class="bu">echo</span> <span class="va">${fasta_no_ext}</span> <span class="kw">|</span> <span class="fu">tr</span> <span class="st">'[:upper:]'</span> <span class="st">'[:lower:]'</span><span class="va">)</span></span>
-<span id="cb27-21"><a href="#cb27-21" aria-hidden="true" tabindex="-1"></a>  </span>
-<span id="cb27-22"><a href="#cb27-22" aria-hidden="true" tabindex="-1"></a>  <span class="co">###### Run EMBOSS PrimerSearch on all FastA files ########</span></span>
-<span id="cb27-23"><a href="#cb27-23" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Allows for a 10% mismatch</span></span>
-<span id="cb27-24"><a href="#cb27-24" aria-hidden="true" tabindex="-1"></a>  <span class="va">${primersearch}</span> <span class="at">-auto</span> <span class="va">${fasta}</span> <span class="va">${primers}</span> 10</span>
-<span id="cb27-25"><a href="#cb27-25" aria-hidden="true" tabindex="-1"></a>  <span class="co">##### </span><span class="re">END</span><span class="co"> EMBOSS ##########</span></span>
-<span id="cb27-26"><a href="#cb27-26" aria-hidden="true" tabindex="-1"></a>  </span>
-<span id="cb27-27"><a href="#cb27-27" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Find EMBOSS PrimerSearch output files with primer matches</span></span>
-<span id="cb27-28"><a href="#cb27-28" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Remove those without a match</span></span>
-<span id="cb27-29"><a href="#cb27-29" aria-hidden="true" tabindex="-1"></a>  <span class="cf">if</span> <span class="ot">! </span><span class="fu">grep</span> <span class="at">--quiet</span> <span class="st">"Amplimer"</span> <span class="st">"</span><span class="va">${fasta_no_ext_lower}</span><span class="st">.primersearch"</span></span>
-<span id="cb27-30"><a href="#cb27-30" aria-hidden="true" tabindex="-1"></a>    <span class="cf">then</span> <span class="fu">rm</span> <span class="va">${fasta_no_ext_lower}</span>.primersearch</span>
-<span id="cb27-31"><a href="#cb27-31" aria-hidden="true" tabindex="-1"></a>  <span class="cf">fi</span></span>
-<span id="cb27-32"><a href="#cb27-32" aria-hidden="true" tabindex="-1"></a><span class="cf">done</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<pre><code>real    5m31.589s
-user    4m35.689s
-sys 1m14.992s</code></pre>
-</section>
-<section id="check-primer-matches" class="level2">
-<h2 class="anchored" data-anchor-id="check-primer-matches">8.3 Check primer matches</h2>
-<p>This will print the contents of any remaining <code>*.primersearch</code> output files (i.e.&nbsp;sequences with primer matches)</p>
-<div class="sourceCode" id="cb29"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb29-1"><a href="#cb29-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Load bash variables into memory</span></span>
-<span id="cb29-2"><a href="#cb29-2" aria-hidden="true" tabindex="-1"></a><span class="bu">source</span> .bashvars</span>
-<span id="cb29-3"><a href="#cb29-3" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb29-4"><a href="#cb29-4" aria-hidden="true" tabindex="-1"></a><span class="bu">cd</span> <span class="va">${genome_fasta_splits_dir}</span></span>
-<span id="cb29-5"><a href="#cb29-5" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb29-6"><a href="#cb29-6" aria-hidden="true" tabindex="-1"></a><span class="co"># Check contents of files with matches</span></span>
-<span id="cb29-7"><a href="#cb29-7" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> file <span class="kw">in</span> <span class="pp">*</span>.primersearch</span>
-<span id="cb29-8"><a href="#cb29-8" aria-hidden="true" tabindex="-1"></a>  <span class="cf">do</span></span>
-<span id="cb29-9"><a href="#cb29-9" aria-hidden="true" tabindex="-1"></a>  <span class="bu">echo</span> <span class="st">"FILE: </span><span class="va">${file}</span><span class="st">"</span></span>
-<span id="cb29-10"><a href="#cb29-10" aria-hidden="true" tabindex="-1"></a>  <span class="bu">echo</span> <span class="st">""</span></span>
-<span id="cb29-11"><a href="#cb29-11" aria-hidden="true" tabindex="-1"></a>  <span class="fu">cat</span> <span class="va">${file}</span></span>
-<span id="cb29-12"><a href="#cb29-12" aria-hidden="true" tabindex="-1"></a>  <span class="bu">echo</span> <span class="st">"----------------------------------"</span></span>
-<span id="cb29-13"><a href="#cb29-13" aria-hidden="true" tabindex="-1"></a>  <span class="bu">echo</span> <span class="st">""</span></span>
-<span id="cb29-14"><a href="#cb29-14" aria-hidden="true" tabindex="-1"></a><span class="cf">done</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<pre><code>FILE: nc_052339.primersearch
-
-
-Primer name LOC120027825
-Amplimer 1
-    Sequence: NC_052339.1  
-    
-    TTATATTTCTTAACTACTAACCCTTATACA hits forward strand at 19244321 with 0 mismatches
-    AAAAATGTATGTGTGGAAAATTTTAGTTT hits reverse strand at [18091692] with 0 mismatches
-    Amplimer length: 3907 bp
-----------------------------------</code></pre>
-</section>
-</section>
-<section id="summary" class="level1">
-<h1>9 SUMMARY</h1>
-<p>EMBOSS PrimerSearch has identified only a single location in the genome where the forward and reverse primers match, as well as in the expected location on chromosome <code>NC_052339</code>.</p>
 </section>
 <section id="citations" class="level1">
-<h1>10 CITATIONS</h1>
+<h1>6 CITATIONS</h1>
 <div id="refs" class="references csl-bib-body hanging-indent" role="list">
 <div id="ref-koressaar2007" class="csl-entry" role="listitem">
 Koressaar, Triinu, and Maido Remm. 2007. “Enhancements and Modifications of Primer Design Program Primer3.” <em>Bioinformatics</em> 23 (10): 1289–91. <a href="https://doi.org/10.1093/bioinformatics/btm091" class="uri">https://doi.org/10.1093/bioinformatics/btm091</a>.
 </div>
-<div id="ref-rice2000" class="csl-entry" role="listitem">
-Rice, Peter, Ian Longden, and Alan Bleasby. 2000. “EMBOSS: The European Molecular Biology Open Software Suite.” <em>Trends in Genetics</em> 16 (6): 276–77. <a href="https://doi.org/10.1016/s0168-9525(00)02024-2" class="uri">https://doi.org/10.1016/s0168-9525(00)02024-2</a>.
+<div id="ref-li2009" class="csl-entry" role="listitem">
+Li, Heng, Bob Handsaker, Alec Wysoker, Tim Fennell, Jue Ruan, Nils Homer, Gabor Marth, Goncalo Abecasis, and Richard Durbin. 2009. “The Sequence Alignment/Map Format and SAMtools.” <em>Bioinformatics</em> 25 (16): 2078–79. <a href="https://doi.org/10.1093/bioinformatics/btp352" class="uri">https://doi.org/10.1093/bioinformatics/btp352</a>.
 </div>
 <div id="ref-shirley2015" class="csl-entry" role="listitem">
 Shirley, Matthew D, Zhaorong Ma, Brent S Pedersen, and Sarah J Wheelan. 2015. “Efficient”Pythonic” Access to FASTA Files Using Pyfaidx.” <a href="http://dx.doi.org/10.7287/peerj.preprints.970v1" class="uri">http://dx.doi.org/10.7287/peerj.preprints.970v1</a>.
