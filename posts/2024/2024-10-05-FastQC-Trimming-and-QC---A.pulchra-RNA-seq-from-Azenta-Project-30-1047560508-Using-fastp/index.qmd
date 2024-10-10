@@ -20,4 +20,442 @@ categories:
   - trimming
   - E5
   - timeseries_molecular
+bibliography: references.bib
 ---
+
+::: callout-note
+This notebook entry is knitted from [`urol-e5/timeseries_molecular/D-Apul/code/01.00-D-Apul-RNAseq-trimming-fastp-FastQC-MultiQC.Rmd`](https://github.com/urol-e5/timeseries_molecular/blob/5245d490fceb30c2ddecdbaa5dead3eccf56be95/D-Apul/code/01.00-D-Apul-RNAseq-trimming-fastp-FastQC-MultiQC.Rmd) (GitHub), commit `5245d49`.
+:::
+
+This Rmd file trims *A.pulchra* RNA-seq files using [fastp](https://github.com/OpenGene/fastp) [@chen2023], followed by quality checks with [FastQC](https://github.com/s-andrews/FastQC) and [MultiQC](https://multiqc.info/) [@ewels2016].
+
+Expects input files formatted like so: `<number>--<sample_name>_R[12]_001.fastq.gz`
+
+All trimmed FastQs produced by this script are here:
+
+[01.00-D-Apul-RNAseq-trimming-fastp-FastQC-MultiQC/trimmed-fastqs/](https://gannet.fish.washington.edu/Atumefaciens/gitrepos/urol-e5/timeseries_molecular/D-Apul/output/01.00-D-Apul-RNAseq-trimming-fastp-FastQC-MultiQC/trimmed-fastqs/)
+
+# 1 Create a Bash variables file
+
+This allows usage of Bash variables across R Markdown chunks.
+
+``` bash
+{
+echo "#### Assign Variables ####"
+echo ""
+
+echo "# Data directories"
+echo 'export timeseries_dir=/home/shared/8TB_HDD_01/sam/gitrepos/urol-e5/timeseries_molecular'
+echo 'export output_dir_top=${timeseries_dir}/D-Apul/output/01.00-D-Apul-RNAseq-trimming-fastp-FastQC-MultiQC'
+echo 'export raw_reads_dir=${timeseries_dir}/D-Apul/data/raw-fastqs'
+echo 'export raw_reads_url="https://owl.fish.washington.edu/nightingales/E5-coral-time-series/30-1047560508/"'
+echo 'export trimmed_fastqs_dir=${output_dir_top}/trimmed-fastqs'
+echo 'export trimmed_fastqc_dir=${output_dir_top}/trimmed-fastqc'
+echo ""
+
+echo "# Paths to programs"
+echo 'export programs_dir="/home/shared"'
+echo 'export fastp="${programs_dir}/fastp"'
+echo 'export fastqc=${programs_dir}/FastQC-0.12.1/fastqc'
+echo 'export multiqc=/home/sam/programs/mambaforge/bin/multiqc'
+echo ""
+
+echo "# Set FastQ filename patterns"
+echo "export fastq_pattern='*.fastq.gz'"
+echo "export R1_fastq_pattern='*_R1_*.fastq.gz'"
+echo "export R2_fastq_pattern='*_R2_*.fastq.gz'"
+echo "export trimmed_fastq_pattern='*fastp-trim.fq.gz'"
+echo ""
+
+echo "# Set number of CPUs to use"
+echo 'export threads=40'
+echo ""
+
+
+echo "## Inititalize arrays"
+echo 'export fastq_array_R1=()'
+echo 'export fastq_array_R2=()'
+echo 'export raw_fastqs_array=()'
+echo 'export R1_names_array=()'
+echo 'export R2_names_array=()'
+echo ""
+
+echo "# Programs associative array"
+echo "declare -A programs_array"
+echo "programs_array=("
+echo '[fastp]="${fastp}" \'
+echo '[fastqc]="${fastqc}" \'
+echo '[multiqc]="${multiqc}" \'
+echo ")"
+echo ""
+
+echo "# Print formatting"
+echo 'export line="--------------------------------------------------------"'
+echo ""
+} > .bashvars
+
+cat .bashvars
+```
+
+```         
+#### Assign Variables ####
+
+# Data directories
+export timeseries_dir=/home/shared/8TB_HDD_01/sam/gitrepos/urol-e5/timeseries_molecular
+export output_dir_top=${timeseries_dir}/D-Apul/output/01.00-D-Apul-RNAseq-trimming-fastp-FastQC-MultiQC
+export raw_reads_dir=${timeseries_dir}/D-Apul/data/raw-fastqs
+export raw_reads_url="https://owl.fish.washington.edu/nightingales/E5-coral-time-series/30-1047560508/"
+export trimmed_fastqs_dir=${output_dir_top}/trimmed-fastqs
+export trimmed_fastqc_dir=${output_dir_top}/trimmed-fastqc
+
+# Paths to programs
+export programs_dir="/home/shared"
+export fastp="${programs_dir}/fastp"
+export fastqc=${programs_dir}/FastQC-0.12.1/fastqc
+export multiqc=/home/sam/programs/mambaforge/bin/multiqc
+
+# Set FastQ filename patterns
+export fastq_pattern='*.fastq.gz'
+export R1_fastq_pattern='*_R1_*.fastq.gz'
+export R2_fastq_pattern='*_R2_*.fastq.gz'
+export trimmed_fastq_pattern='*fastp-trim.fq.gz'
+
+# Set number of CPUs to use
+export threads=40
+
+## Inititalize arrays
+export fastq_array_R1=()
+export fastq_array_R2=()
+export raw_fastqs_array=()
+export R1_names_array=()
+export R2_names_array=()
+
+# Programs associative array
+declare -A programs_array
+programs_array=(
+[fastp]="${fastp}" \
+[fastqc]="${fastqc}" \
+[multiqc]="${multiqc}" \
+)
+
+# Print formatting
+export line="--------------------------------------------------------"
+```
+
+If needed, download raw RNA-seq.
+
+Change `eval=FALSE` to `eval=TRUE` to execute the next two chunks to download RNA-seq and then verify MD5 checksums.
+
+``` bash
+# Load bash variables into memory
+source .bashvars
+
+# Make output directory if it doesn't exist
+mkdir --parents ${raw_reads_dir}
+
+# Create list of only A.pulchra sample names
+sample_list=$(awk -F "," 'NR > 2 {print $5"\t"$6}' ${timeseries_dir}/data/rna_metadata.csv | awk -F"[\t-]" '$2 == "ACR" {print $1}')
+
+echo ""
+echo "${line}"
+echo ""
+echo "Sample list:"
+echo ""
+echo "${sample_list}"
+echo ""
+echo "${line}"
+echo ""
+
+
+# Use printf to format each item for use in wget
+formatted_list=$(printf "*%s*," ${sample_list})
+
+# Remove the trailing comma and append *.md5
+formatted_list="${formatted_list%,},*.md5"
+
+# Output the final wget command
+echo ""
+echo "${line}"
+echo ""
+echo "Formatted wget accept list:"
+echo ""
+echo "wget --accept=\"$formatted_list\""
+echo ""
+echo "${line}"
+echo ""
+
+# Run wget to retrieve FastQs and MD5 files
+wget \
+--directory-prefix ${raw_reads_dir} \
+--recursive \
+--no-check-certificate \
+--continue \
+--cut-dirs 3 \
+--no-host-directories \
+--no-parent \
+--quiet \
+--accept=\"$formatted_list\" ${raw_reads_url}
+
+ls -lh "${raw_reads_dir}"
+```
+
+Verify raw read checksums
+
+``` bash
+# Load bash variables into memory
+source .bashvars
+
+cd "${raw_reads_dir}"
+
+# Checksums file contains other files, so this just looks for the sRNAseq files.
+for file in *.md5
+do
+  md5sum --check "${file}"
+done
+```
+
+# 2 Fastp Trimming
+
+[fastp](https://github.com/OpenGene/fastp) (Chen 2023) is set to auto-detect Illumina adapters, as well as trim the first 20bp from each read, as past experience shows these first 20bp are more inconsistent than the remainder of the read length.
+
+``` bash
+# Load bash variables into memory
+source .bashvars
+
+# Make output directories, if it doesn't exist
+mkdir --parents "${trimmed_fastqs_dir}"
+
+# Change to raw reads directory
+cd "${raw_reads_dir}"
+
+# Create arrays of fastq R1 files and sample names
+for fastq in ${R1_fastq_pattern}
+do
+  fastq_array_R1+=("${fastq}")
+  R1_names_array+=("$(echo "${fastq}" | awk -F"_" '{print $1}')")
+done
+
+# Create array of fastq R2 files
+for fastq in ${R2_fastq_pattern}
+do
+  fastq_array_R2+=("${fastq}")
+  R2_names_array+=("$(echo "${fastq}" | awk -F"_" '{print $1}')")
+done
+
+# Create list of fastq files used in analysis
+# Create MD5 checksum for reference
+if [ ! -f "${output_dir_top}"/raw-fastq-checksums.md5 ]; then
+for fastq in *.gz
+  do
+    md5sum ${fastq} >> "${output_dir_top}"/raw-fastq-checksums.md5
+  done
+fi
+
+# Run fastp on files
+# Adds JSON report output for downstream usage by MultiQC
+for index in "${!fastq_array_R1[@]}"
+do
+  R1_sample_name=$(echo "${R1_names_array[index]}")
+  R2_sample_name=$(echo "${R2_names_array[index]}")
+  ${fastp} \
+  --in1 ${fastq_array_R1[index]} \
+  --in2 ${fastq_array_R2[index]} \
+  --detect_adapter_for_pe \
+  --trim_front1 20 \
+  --trim_front2 20 \
+  --thread ${threads} \
+  --html "${trimmed_fastqs_dir}"/"${R1_sample_name}".fastp-trim.report.html \
+  --json "${trimmed_fastqs_dir}"/"${R1_sample_name}".fastp-trim.report.json \
+  --out1 "${trimmed_fastqs_dir}"/"${R1_sample_name}"_R1_001.fastp-trim.fq.gz \
+  --out2 "${trimmed_fastqs_dir}"/"${R2_sample_name}"_R2_001.fastp-trim.fq.gz \
+  2>> "${trimmed_fastqs_dir}"/fastp.stderr
+
+  # Generate md5 checksums for newly trimmed files
+  cd "${trimmed_fastqs_dir}"
+  md5sum "${R1_sample_name}"_R1_001.fastp-trim.fq.gz > "${R1_sample_name}"_R1_001.fastp-trim.fq.gz.md5
+  md5sum "${R2_sample_name}"_R2_001.fastp-trim.fq.gz > "${R2_sample_name}"_R2_001.fastp-trim.fq.gz.md5
+  cd -
+done
+```
+
+# 3 Quality Check with FastQC and MultiQC
+
+``` bash
+# Load bash variables into memory
+source .bashvars
+
+# Make output directory if it doesn't exist
+mkdir --parents "${trimmed_fastqc_dir}"
+
+############ RUN FASTQC ############
+
+
+# Create array of trimmed FastQs
+trimmed_fastqs_array=(${trimmed_fastqs_dir}/${trimmed_fastq_pattern})
+
+# Pass array contents to new variable as space-delimited list
+trimmed_fastqc_list=$(echo "${trimmed_fastqs_array[*]}")
+
+echo "Beginning FastQC on trimmed reads..."
+echo ""
+
+# Run FastQC
+### NOTE: Do NOT quote raw_fastqc_list
+${programs_array[fastqc]} \
+--threads ${threads} \
+--outdir ${trimmed_fastqs_dir} \
+--quiet \
+${trimmed_fastqc_list}
+
+echo "FastQC on trimmed reads complete!"
+echo ""
+
+############ END FASTQC ############
+
+############ RUN MULTIQC ############
+echo "Beginning MultiQC on trimmed FastQC..."
+echo ""
+
+${programs_array[multiqc]} ${trimmed_fastqs_dir} -o ${trimmed_fastqs_dir}
+
+echo ""
+echo "MultiQC on trimmed FastQs complete."
+echo ""
+
+############ END MULTIQC ############
+
+echo "Removing FastQC zip files."
+echo ""
+rm ${trimmed_fastqs_dir}/*.zip
+echo "FastQC zip files removed."
+echo ""
+```
+
+```         
+Beginning FastQC on trimmed reads...
+
+application/gzip
+application/gzip
+application/gzip
+application/gzip
+application/gzip
+application/gzip
+application/gzip
+application/gzip
+application/gzip
+application/gzip
+application/gzip
+application/gzip
+application/gzip
+application/gzip
+application/gzip
+application/gzip
+application/gzip
+application/gzip
+application/gzip
+application/gzip
+application/gzip
+application/gzip
+application/gzip
+application/gzip
+application/gzip
+application/gzip
+application/gzip
+application/gzip
+application/gzip
+application/gzip
+application/gzip
+application/gzip
+application/gzip
+application/gzip
+application/gzip
+application/gzip
+application/gzip
+application/gzip
+application/gzip
+application/gzip
+application/gzip
+application/gzip
+application/gzip
+application/gzip
+application/gzip
+application/gzip
+application/gzip
+application/gzip
+application/gzip
+application/gzip
+application/gzip
+application/gzip
+application/gzip
+application/gzip
+application/gzip
+application/gzip
+application/gzip
+application/gzip
+application/gzip
+application/gzip
+application/gzip
+application/gzip
+application/gzip
+application/gzip
+application/gzip
+application/gzip
+application/gzip
+application/gzip
+application/gzip
+application/gzip
+application/gzip
+application/gzip
+application/gzip
+application/gzip
+application/gzip
+application/gzip
+application/gzip
+application/gzip
+application/gzip
+application/gzip
+application/gzip
+application/gzip
+application/gzip
+application/gzip
+application/gzip
+application/gzip
+application/gzip
+application/gzip
+FastQC on trimmed reads complete!
+
+Beginning MultiQC on trimmed FastQC...
+
+
+  /// MultiQC 🔍 | v1.14
+
+|           multiqc | MultiQC Version v1.25.1 now available!
+|           multiqc | Search path : /home/shared/8TB_HDD_01/sam/gitrepos/urol-e5/timeseries_molecular/D-Apul/output/01.00-D-Apul-RNAseq-trimming-fastp-FastQC-MultiQC/trimmed-fastqs
+|         searching | ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 100% 442/442  
+|            fastqc | Found 88 reports
+|           multiqc | Compressing plot data
+|           multiqc | Previous MultiQC output found! Adjusting filenames..
+|           multiqc | Use -f or --force to overwrite existing reports instead
+|           multiqc | Report      : ../output/01.00-D-Apul-RNAseq-trimming-fastp-FastQC-MultiQC/trimmed-fastqs/multiqc_report_1.html
+|           multiqc | Data        : ../output/01.00-D-Apul-RNAseq-trimming-fastp-FastQC-MultiQC/trimmed-fastqs/multiqc_data_1
+|           multiqc | MultiQC complete
+|           multiqc | 1 flat-image plot used in the report due to large sample numbers
+|           multiqc | To force interactive plots, use the '--interactive' flag. 
+See the documentation.
+
+MultiQC on trimmed FastQs complete.
+
+Removing FastQC zip files.
+
+FastQC zip files removed.
+```
+
+::: {#refs .references .csl-bib-body .hanging-indent}
+::: {#ref-chen2023 .csl-entry}
+Chen, Shifu. 2023. “Ultrafast One-Pass FASTQ Data Preprocessing, Quality Control, and Deduplication Using Fastp.” *iMeta* 2 (2). <https://doi.org/10.1002/imt2.107>.
+:::
+
+::: {#ref-ewels2016 .csl-entry}
+Ewels, Philip, Måns Magnusson, Sverker Lundin, and Max Käller. 2016. “MultiQC: Summarize Analysis Results for Multiple Tools and Samples in a Single Report.” *Bioinformatics* 32 (19): 3047–48. <https://doi.org/10.1093/bioinformatics/btw354>.
+:::
+:::
