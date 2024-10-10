@@ -1,0 +1,258 @@
+---
+author: Sam White
+toc-title: Contents
+toc-depth: 5
+toc-location: left
+title: Data Wrangling - Generate GTF from A.pulchra Genome GFF Using gffread
+date: '2024-10-08'
+draft: false
+engine: knitr
+categories: 
+  - 2024
+  - coral
+  - Acropora pulchra
+  - genome
+  - GFF
+  - GTF
+  - gffread
+  - E5
+  - timeseries_molecular
+bibliography: references.bib
+---
+
+::: callout-note
+This notebook entry is knitted from [`urol-e5/timeseries_molecular/D-Apul/code/02.00-D-Apul-RNAseq-gff-to-gtf.Rmd`](https://github.com/urol-e5/timeseries_molecular/blob/cf654b9967c7a5d81e3aeca370b0c8f324badcbd/D-Apul/code/02.00-D-Apul-RNAseq-gff-to-gtf.Rmd) (GitHub), commit `cf654b9`.
+:::
+
+This notebook will utilize [gffread](https://ccb.jhu.edu/software/stringtie/gff.shtml) [@pertea2020] to create an *A.pulchras* GTF file from the *A.pulchra* genome GFF, which is needed for downstream analysis with [HISAT2](https://github.com/DaehwanKimLab/hisat2); specifically for identification of exons and splice sites.
+
+# 1 Create a Bash variables file
+
+This allows usage of Bash variables across R Markdown chunks.
+
+``` bash
+{
+echo "#### Assign Variables ####"
+echo ""
+
+echo "# Data directories"
+echo 'export timeseries_dir=/home/shared/8TB_HDD_01/sam/gitrepos/urol-e5/timeseries_molecular'
+echo 'export genome_dir="${timeseries_dir}/D-Apul/data"'
+echo 'export output_dir_top=${timeseries_dir}/D-Apul/output/02.00-D-Apul-RNAseq-gff-to-gtf'
+echo ""
+
+echo "# Input/output files"
+
+echo 'export genome_gff="${genome_dir}/Apulchra-genome.gff"'
+echo 'export transcripts_gtf="Apulchra-genome.gtf"'
+
+echo "# Paths to programs"
+echo 'export programs_dir="/home/shared"'
+echo 'export gffread="${programs_dir}/gffread-0.12.7.Linux_x86_64/gffread"'
+
+echo "# Set number of CPUs to use"
+echo 'export threads=40'
+echo ""
+
+
+echo "# Programs associative array"
+echo "declare -A programs_array"
+echo "programs_array=("
+echo '[gffread]="${gffread}" \'
+echo ")"
+echo ""
+
+echo "# Print formatting"
+echo 'export line="--------------------------------------------------------"'
+echo ""
+} > .bashvars
+
+cat .bashvars
+```
+
+```         
+#### Assign Variables ####
+
+# Data directories
+export timeseries_dir=/home/shared/8TB_HDD_01/sam/gitrepos/urol-e5/timeseries_molecular
+export genome_dir="${timeseries_dir}/D-Apul/data"
+export output_dir_top=${timeseries_dir}/D-Apul/output/02.00-D-Apul-RNAseq-gff-to-gtf
+
+# Input/output files
+export genome_gff="${genome_dir}/Apulchra-genome.gff"
+export transcripts_gtf="Apulchra-genome.gtf"
+# Paths to programs
+export programs_dir="/home/shared"
+export gffread="${programs_dir}/gffread-0.12.7.Linux_x86_64/gffread"
+# Set number of CPUs to use
+export threads=40
+
+# Programs associative array
+declare -A programs_array
+programs_array=(
+[gffread]="${gffread}" \
+)
+
+# Print formatting
+export line="--------------------------------------------------------"
+```
+
+# 2 Preview and Validate Genome GFF
+
+## 2.1 Inspect GFF
+
+``` bash
+# Load bash variables into memory
+source .bashvars
+
+# Make directories, if they don't exist
+mkdir --parents "${output_dir_top}"
+
+head -n 20 "${genome_gff}"
+```
+
+```         
+##gff-version 3
+ntLink_0    funannotate gene    1105    7056    .   +   .   ID=FUN_000001;
+ntLink_0    funannotate mRNA    1105    7056    .   +   .   ID=FUN_000001-T1;Parent=FUN_000001;product=hypothetical protein;
+ntLink_0    funannotate exon    1105    1188    .   +   .   ID=FUN_000001-T1.exon1;Parent=FUN_000001-T1;
+ntLink_0    funannotate exon    1861    1941    .   +   .   ID=FUN_000001-T1.exon2;Parent=FUN_000001-T1;
+ntLink_0    funannotate exon    2762    2839    .   +   .   ID=FUN_000001-T1.exon3;Parent=FUN_000001-T1;
+ntLink_0    funannotate exon    5044    7056    .   +   .   ID=FUN_000001-T1.exon4;Parent=FUN_000001-T1;
+ntLink_0    funannotate CDS 1105    1188    .   +   0   ID=FUN_000001-T1.cds;Parent=FUN_000001-T1;
+ntLink_0    funannotate CDS 1861    1941    .   +   0   ID=FUN_000001-T1.cds;Parent=FUN_000001-T1;
+ntLink_0    funannotate CDS 2762    2839    .   +   0   ID=FUN_000001-T1.cds;Parent=FUN_000001-T1;
+ntLink_0    funannotate CDS 5044    7056    .   +   0   ID=FUN_000001-T1.cds;Parent=FUN_000001-T1;
+ntLink_0    funannotate gene    10215   15286   .   +   .   ID=FUN_000002;
+ntLink_0    funannotate mRNA    10215   15286   .   +   .   ID=FUN_000002-T1;Parent=FUN_000002;product=hypothetical protein;
+ntLink_0    funannotate exon    10215   10413   .   +   .   ID=FUN_000002-T1.exon1;Parent=FUN_000002-T1;
+ntLink_0    funannotate exon    10614   10676   .   +   .   ID=FUN_000002-T1.exon2;Parent=FUN_000002-T1;
+ntLink_0    funannotate exon    11272   11316   .   +   .   ID=FUN_000002-T1.exon3;Parent=FUN_000002-T1;
+ntLink_0    funannotate exon    11518   11591   .   +   .   ID=FUN_000002-T1.exon4;Parent=FUN_000002-T1;
+ntLink_0    funannotate exon    12241   12501   .   +   .   ID=FUN_000002-T1.exon5;Parent=FUN_000002-T1;
+ntLink_0    funannotate exon    13074   14383   .   +   .   ID=FUN_000002-T1.exon6;Parent=FUN_000002-T1;
+ntLink_0    funannotate exon    14722   14900   .   +   .   ID=FUN_000002-T1.exon7;Parent=FUN_000002-T1;
+```
+
+## 2.2 Valdiate GFF
+
+This identifies if there are rows with \>9 fields (which there shouldn’t be in a [GFF3](http://gmod.org/wiki/GFF3)).
+
+Additionally, it provides a preview of all rows lengths identified.
+
+``` bash
+# Load bash variables into memory
+source .bashvars
+
+# Capture number of fields (NF) in each row in array.
+field_count_array=($(awk -F "\t" '{print NF}' "${genome_gff}" | sort --unique))
+
+
+# Check array contents
+echo "List of number of fields in ${genome_gff}:"
+echo ""
+for field_count in "${field_count_array[@]}"
+do
+  echo "${field_count}"
+done
+
+echo ""
+echo "${line}"
+echo ""
+
+# Preview of each line "type" with a given number of fields
+# Check array contents
+echo ""
+for field_count in "${field_count_array[@]}"
+do
+  echo "Preview of lines with ${field_count} field(s):"
+  echo ""
+  awk \
+    -v field_count="${field_count}" \
+    -F "\t" \
+    'NF == field_count' \
+    "${genome_gff}" \
+    | head
+  echo ""
+  echo "${line}"
+  echo ""
+done
+```
+
+```         
+List of number of fields in /home/shared/8TB_HDD_01/sam/gitrepos/urol-e5/timeseries_molecular/D-Apul/data/Apulchra-genome.gff:
+
+1
+9
+
+--------------------------------------------------------
+
+
+Preview of lines with 1 field(s):
+
+##gff-version 3
+
+--------------------------------------------------------
+
+Preview of lines with 9 field(s):
+
+ntLink_0    funannotate gene    1105    7056    .   +   .   ID=FUN_000001;
+ntLink_0    funannotate mRNA    1105    7056    .   +   .   ID=FUN_000001-T1;Parent=FUN_000001;product=hypothetical protein;
+ntLink_0    funannotate exon    1105    1188    .   +   .   ID=FUN_000001-T1.exon1;Parent=FUN_000001-T1;
+ntLink_0    funannotate exon    1861    1941    .   +   .   ID=FUN_000001-T1.exon2;Parent=FUN_000001-T1;
+ntLink_0    funannotate exon    2762    2839    .   +   .   ID=FUN_000001-T1.exon3;Parent=FUN_000001-T1;
+ntLink_0    funannotate exon    5044    7056    .   +   .   ID=FUN_000001-T1.exon4;Parent=FUN_000001-T1;
+ntLink_0    funannotate CDS 1105    1188    .   +   0   ID=FUN_000001-T1.cds;Parent=FUN_000001-T1;
+ntLink_0    funannotate CDS 1861    1941    .   +   0   ID=FUN_000001-T1.cds;Parent=FUN_000001-T1;
+ntLink_0    funannotate CDS 2762    2839    .   +   0   ID=FUN_000001-T1.cds;Parent=FUN_000001-T1;
+ntLink_0    funannotate CDS 5044    7056    .   +   0   ID=FUN_000001-T1.cds;Parent=FUN_000001-T1;
+
+--------------------------------------------------------
+```
+
+Great! This looks like a valid GFF. Can proceed with GTF generation.
+
+# 3 Generate GTF
+
+``` bash
+# Load bash variables into memory
+source .bashvars
+
+${programs_array[gffread]} -E \
+"${genome_gff}" -T \
+1> ${output_dir_top}/"${transcripts_gtf}" \
+2> ${output_dir_top}/gffread-gff_to_gtf.stderr
+```
+
+# 4 Inspect GTF
+
+``` bash
+# Load bash variables into memory
+source .bashvars
+
+head ${output_dir_top}/"${transcripts_gtf}"
+```
+
+```         
+ntLink_0    funannotate transcript  1105    7056    .   +   .   transcript_id "FUN_000001-T1"; gene_id "FUN_000001"
+ntLink_0    funannotate exon    1105    1188    .   +   .   transcript_id "FUN_000001-T1"; gene_id "FUN_000001";
+ntLink_0    funannotate exon    1861    1941    .   +   .   transcript_id "FUN_000001-T1"; gene_id "FUN_000001";
+ntLink_0    funannotate exon    2762    2839    .   +   .   transcript_id "FUN_000001-T1"; gene_id "FUN_000001";
+ntLink_0    funannotate exon    5044    7056    .   +   .   transcript_id "FUN_000001-T1"; gene_id "FUN_000001";
+ntLink_0    funannotate CDS 1105    1188    .   +   0   transcript_id "FUN_000001-T1"; gene_id "FUN_000001";
+ntLink_0    funannotate CDS 1861    1941    .   +   0   transcript_id "FUN_000001-T1"; gene_id "FUN_000001";
+ntLink_0    funannotate CDS 2762    2839    .   +   0   transcript_id "FUN_000001-T1"; gene_id "FUN_000001";
+ntLink_0    funannotate CDS 5044    7056    .   +   0   transcript_id "FUN_000001-T1"; gene_id "FUN_000001";
+ntLink_0    funannotate transcript  10215   15286   .   +   .   transcript_id "FUN_000002-T1"; gene_id "FUN_000002"
+```
+
+## 4.1 Copy GTF to `D-Apul/data`
+
+To help make this easier to locate, will copy to the `D-Apul/data` directory, which also contains the genome FastA, genome FastA index, and the genome GFF files.
+
+``` bash
+# Load bash variables into memory
+source .bashvars
+
+cp ${output_dir_top}/"${transcripts_gtf}" "${genome_dir}"
+```
