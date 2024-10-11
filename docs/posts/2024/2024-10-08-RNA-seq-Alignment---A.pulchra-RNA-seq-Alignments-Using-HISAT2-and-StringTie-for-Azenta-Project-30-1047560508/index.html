@@ -1,0 +1,1763 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.5.57">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+<meta name="author" content="Sam White">
+<meta name="dcterms.date" content="2024-10-08">
+
+<title>RNA-seq Alignment - A.pulchra RNA-seq Alignments Using HISAT2 and StringTie for Azenta Project 30-1047560508 – Sam’s Notebook</title>
+<style>
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: min(4vw, 1.5em);}
+div.column{flex: auto; overflow-x: auto;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+  vertical-align: middle;
+}
+/* CSS for syntax highlighting */
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { display: inline-block; text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+</style>
+
+
+<script src="../../../site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="../../../site_libs/quarto-nav/headroom.min.js"></script>
+<script src="../../../site_libs/clipboard/clipboard.min.js"></script>
+<script src="../../../site_libs/quarto-search/autocomplete.umd.js"></script>
+<script src="../../../site_libs/quarto-search/fuse.min.js"></script>
+<script src="../../../site_libs/quarto-search/quarto-search.js"></script>
+<meta name="quarto:offset" content="../../../">
+<link href="../../..//images/favicon.ico" rel="icon">
+<script src="../../../site_libs/quarto-html/quarto.js"></script>
+<script src="../../../site_libs/quarto-html/popper.min.js"></script>
+<script src="../../../site_libs/quarto-html/tippy.umd.min.js"></script>
+<script src="../../../site_libs/quarto-html/anchor.min.js"></script>
+<link href="../../../site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="../../../site_libs/quarto-html/quarto-syntax-highlighting-dark.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="../../../site_libs/bootstrap/bootstrap.min.js"></script>
+<link href="../../../site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="../../../site_libs/bootstrap/bootstrap.min.css" rel="stylesheet" id="quarto-bootstrap" data-mode="dark">
+<script id="quarto-search-options" type="application/json">{
+  "location": "navbar",
+  "copy-button": true,
+  "collapse-after": 2,
+  "panel-placement": "end",
+  "type": "textbox",
+  "limit": 100,
+  "keyboard-shortcut": [
+    "f",
+    "/",
+    "s"
+  ],
+  "language": {
+    "search-no-results-text": "No results",
+    "search-matching-documents-text": "matching documents",
+    "search-copy-link-title": "Copy link to search",
+    "search-hide-matches-text": "Hide additional matches",
+    "search-more-match-text": "more match in this document",
+    "search-more-matches-text": "more matches in this document",
+    "search-clear-button-title": "Clear",
+    "search-text-placeholder": "",
+    "search-detached-cancel-button-title": "Cancel",
+    "search-submit-button-title": "Submit",
+    "search-label": "Search"
+  }
+}</script>
+<script async="" src="https://www.googletagmanager.com/gtag/js?id=G-7483T61T11"></script>
+
+<script type="text/javascript">
+
+window.dataLayer = window.dataLayer || [];
+function gtag(){dataLayer.push(arguments);}
+gtag('js', new Date());
+gtag('config', 'G-7483T61T11', { 'anonymize_ip': true});
+</script>
+
+  <script src="https://cdnjs.cloudflare.com/polyfill/v3/polyfill.min.js?features=es6"></script>
+  <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml-full.js" type="text/javascript"></script>
+
+<script type="text/javascript">
+const typesetMath = (el) => {
+  if (window.MathJax) {
+    // MathJax Typeset
+    window.MathJax.typeset([el]);
+  } else if (window.katex) {
+    // KaTeX Render
+    var mathElements = el.getElementsByClassName("math");
+    var macros = [];
+    for (var i = 0; i < mathElements.length; i++) {
+      var texText = mathElements[i].firstChild;
+      if (mathElements[i].tagName == "SPAN") {
+        window.katex.render(texText.data, mathElements[i], {
+          displayMode: mathElements[i].classList.contains('display'),
+          throwOnError: false,
+          macros: macros,
+          fleqn: false
+        });
+      }
+    }
+  }
+}
+window.Quarto = {
+  typesetMath
+};
+</script>
+
+<link rel="stylesheet" href="../../../styles.css">
+</head>
+
+<body class="floating nav-fixed">
+
+<div id="quarto-search-results"></div>
+  <header id="quarto-header" class="headroom fixed-top quarto-banner">
+    <nav class="navbar navbar-expand-lg " data-bs-theme="dark">
+      <div class="navbar-container container-fluid">
+      <div class="navbar-brand-container mx-auto">
+    <a class="navbar-brand" href="../../../index.html">
+    <span class="navbar-title">Sam’s Notebook</span>
+    </a>
+  </div>
+            <div id="quarto-search" class="" title="Search"></div>
+          <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarCollapse" aria-controls="navbarCollapse" role="menu" aria-expanded="false" aria-label="Toggle navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+  <span class="navbar-toggler-icon"></span>
+</button>
+          <div class="collapse navbar-collapse" id="navbarCollapse">
+            <ul class="navbar-nav navbar-nav-scroll ms-auto">
+  <li class="nav-item dropdown ">
+    <a class="nav-link dropdown-toggle" href="#" id="nav-menu-bi-hdd-network" role="link" data-bs-toggle="dropdown" aria-expanded="false">
+      <i class="bi bi-hdd-network" role="img">
+</i> 
+ <span class="menu-text"></span>
+    </a>
+    <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="nav-menu-bi-hdd-network">    
+        <li>
+    <a class="dropdown-item" href="http://raven.fish.washington.edu:8787" target="_blank">
+ <span class="dropdown-text">Rstudio Server - Raven</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="https://gannet.fish.washington.edu/Atumefaciens/" target="_blank">
+ <span class="dropdown-text">My Gannet Directory</span></a>
+  </li>  
+    </ul>
+  </li>
+  <li class="nav-item dropdown ">
+    <a class="nav-link dropdown-toggle" href="#" id="nav-menu-bi-journal-code" role="link" data-bs-toggle="dropdown" aria-expanded="false">
+      <i class="bi bi-journal-code" role="img">
+</i> 
+ <span class="menu-text"></span>
+    </a>
+    <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="nav-menu-bi-journal-code">    
+        <li>
+    <a class="dropdown-item" href="https://sr320.github.io" target="_blank">
+ <span class="dropdown-text">Steven’s Notebook</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="https://shedurkin.github.io/Roberts-LabNotebook/" target="_blank">
+ <span class="dropdown-text">Kathleen’s Notebook</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="https://meganewing.github.io/mewing-notebook/" target="_blank">
+ <span class="dropdown-text">Megan’s Notebook</span></a>
+  </li>  
+    </ul>
+  </li>
+  <li class="nav-item dropdown ">
+    <a class="nav-link dropdown-toggle" href="#" id="nav-menu-bi-github" role="link" data-bs-toggle="dropdown" aria-expanded="false">
+      <i class="bi bi-github" role="img">
+</i> 
+ <span class="menu-text"></span>
+    </a>
+    <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="nav-menu-bi-github">    
+        <li>
+    <a class="dropdown-item" href="https://github.com/RobertsLab/sams-notebook" target="_blank">
+ <span class="dropdown-text">Notebook repo</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="https://github.com/RobertsLab" target="_blank">
+ <span class="dropdown-text">Lab Organization (GitHub)</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="https://github.com/RobertsLab/lab-website" target="_blank">
+ <span class="dropdown-text">Edit Roberts Lab website</span></a>
+  </li>  
+    </ul>
+  </li>
+  <li class="nav-item compact">
+    <a class="nav-link" href="https://calendar.google.com/calendar/embed?src=mrc305@gmail.com&amp;ctz=America/Vancouver" target="_blank"> <i class="bi bi-calendar-week" role="img">
+</i> 
+<span class="menu-text"></span></a>
+  </li>  
+  <li class="nav-item compact">
+    <a class="nav-link" href="../../../index.xml"> <i class="bi bi-rss" role="img">
+</i> 
+<span class="menu-text"></span></a>
+  </li>  
+</ul>
+          </div> <!-- /navcollapse -->
+            <div class="quarto-navbar-tools">
+</div>
+      </div> <!-- /container-fluid -->
+    </nav>
+</header>
+<!-- content -->
+<header id="title-block-header" class="quarto-title-block default toc-left page-columns page-full">
+  <div class="quarto-title-banner page-columns page-full">
+    <div class="quarto-title column-page-right">
+      <h1 class="title">RNA-seq Alignment - A.pulchra RNA-seq Alignments Using HISAT2 and StringTie for Azenta Project 30-1047560508</h1>
+                                <div class="quarto-categories">
+                <div class="quarto-category">2024</div>
+                <div class="quarto-category">30-1047560508</div>
+                <div class="quarto-category">RNA-seq</div>
+                <div class="quarto-category">E5</div>
+                <div class="quarto-category">timeseries_molecular</div>
+                <div class="quarto-category">HISAT2</div>
+                <div class="quarto-category">StringTie</div>
+                <div class="quarto-category">alignment</div>
+                <div class="quarto-category">Acropora pulchra</div>
+                <div class="quarto-category">coral</div>
+              </div>
+                  </div>
+  </div>
+    
+  
+  <div class="quarto-title-meta column-page-right">
+
+      <div>
+      <div class="quarto-title-meta-heading">Author</div>
+      <div class="quarto-title-meta-contents">
+               <p>Sam White </p>
+            </div>
+    </div>
+      
+      <div>
+      <div class="quarto-title-meta-heading">Published</div>
+      <div class="quarto-title-meta-contents">
+        <p class="date">October 8, 2024</p>
+      </div>
+    </div>
+    
+      
+    </div>
+    
+  
+  </header><div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-full page-navbar">
+<!-- sidebar -->
+  <nav id="quarto-sidebar" class="sidebar collapse collapse-horizontal quarto-sidebar-collapse-item sidebar-navigation floating overflow-auto">
+    <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">Contents</h2>
+   
+  <ul>
+  <li><a href="#introduction" id="toc-introduction" class="nav-link active" data-scroll-target="#introduction">1 INTRODUCTION</a></li>
+  <li><a href="#create-a-bash-variables-file" id="toc-create-a-bash-variables-file" class="nav-link" data-scroll-target="#create-a-bash-variables-file">2 Create a Bash variables file</a></li>
+  <li><a href="#align-reads-using-hisat2" id="toc-align-reads-using-hisat2" class="nav-link" data-scroll-target="#align-reads-using-hisat2">3 Align reads using HISAT2</a>
+  <ul>
+  <li><a href="#review-hisat2-output" id="toc-review-hisat2-output" class="nav-link" data-scroll-target="#review-hisat2-output">3.1 Review HISAT2 Output</a></li>
+  <li><a href="#multiqc-alignment-rates" id="toc-multiqc-alignment-rates" class="nav-link" data-scroll-target="#multiqc-alignment-rates">3.2 MultiQC alignment rates</a></li>
+  </ul></li>
+  <li><a href="#merge-sorted-bams" id="toc-merge-sorted-bams" class="nav-link" data-scroll-target="#merge-sorted-bams">4 Merge sorted BAMs</a></li>
+  <li><a href="#create-combined-gtf" id="toc-create-combined-gtf" class="nav-link" data-scroll-target="#create-combined-gtf">5 Create combined GTF</a></li>
+  <li><a href="#create-deseq2-count-matrices" id="toc-create-deseq2-count-matrices" class="nav-link" data-scroll-target="#create-deseq2-count-matrices">6 Create DESeq2 Count Matrices</a></li>
+  <li><a href="#generate-checksums" id="toc-generate-checksums" class="nav-link" data-scroll-target="#generate-checksums">7 Generate checksums</a></li>
+  </ul>
+</nav>
+</nav>
+<div id="quarto-sidebar-glass" class="quarto-sidebar-collapse-item" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item"></div>
+<!-- margin-sidebar -->
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar zindex-bottom">
+    </div>
+<!-- main -->
+<main class="content quarto-banner-title-block column-page-right" id="quarto-document-content">
+
+
+
+
+
+<div class="callout callout-style-default callout-note callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Note
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>This notebook entry is knitted from <a href="https://github.com/urol-e5/timeseries_molecular/blob/0f801c0bd0e66eb33aeb8597fe759be44011d1b8/D-Apul/code/02.20-D-Apul-RNAseq-alignment-HiSat2.Rmd"><code>urol-e5/timeseries_molecular/D-Apul/code/02.20-D-Apul-RNAseq-alignment-HiSat2.Rmd</code></a> (GitHub), commit <code>0f801c0</code>.</p>
+</div>
+</div>
+<section id="introduction" class="level1">
+<h1>1 INTRODUCTION</h1>
+<p>This notebook will align trimmed <em>A.pulchra</em> RNA-seq data to the <em>A.pulchra</em> genome using <a href="https://github.com/DaehwanKimLab/hisat2">HISAT2</a> (Kim et al.&nbsp;2019). Follwed by <a href="https://ccb.jhu.edu/software/stringtie/index.shtml?t=manual">StringTie</a> (Pertea et al.&nbsp;2015, 2016) for transcript assembly/identification and count matrices for downstream expression analysis with <a href="https://github.com/thelovelab/DESeq2">DESeq2</a> and/or <span class="math display">\[Ballgown\]</span>(<a href="https://github.com/alyssafrazee/ballgown" class="uri">https://github.com/alyssafrazee/ballgown</a>.</p>
+<p>Since the BAM files produced by this notebook are too large for GitHub, they can be accessed on our server here:</p>
+<p><a href="https://gannet.fish.washington.edu/Atumefaciens/gitrepos/urol-e5/timeseries_molecular/D-Apul/output/02.20-D-Apul-RNAseq-alignment-HiSat2/" class="uri">https://gannet.fish.washington.edu/Atumefaciens/gitrepos/urol-e5/timeseries_molecular/D-Apul/output/02.20-D-Apul-RNAseq-alignment-HiSat2/</a></p>
+<p>Input(s)</p>
+<ul>
+<li>Trimmed FastQ files, with format: <code>*fastp-trim.fq.gz</code></li>
+<li>HISAT2 genome index: <code>Apulcrha-genome</code></li>
+<li>Genome GTF: <code>Apulchra-genome.gtf</code></li>
+<li>Sample metadata: <code>M-multi-species/data/rna_metadata.csv</code></li>
+</ul>
+<p>Outputs: - Primary: - <code>checksums.md5</code>: MD5 checksum for all files in this directory. Excludes subdirectories. - <code>apul-gene_count_matrix.csv</code>: Gene count matrix for use in <a href="https://github.com/thelovelab/DESeq2">DESeq2</a>. - <code>apul-transcript_count_matrix.csv</code>: Transcript count matrix for use in <a href="https://github.com/thelovelab/DESeq2">DESeq2</a>. - <code>prepDE-sample_list.txt</code>: Sample file list provided as input to StringTie for DESeq2 count matrix generation. Also serves as documentation of which files were used for this step. - <code>Apulchra-genome.stringtie.gtf</code>: Canonical StringTie GTF file compiled from all individual sample GTFs. - <code>sorted-bams-merged.bam</code>: Merged (and sorted) BAM consisting of all individual sample BAMs. - <code>sorted-bams-merged.bam.bai</code>: BAM index file. Useful for visualizing assemblies in IGV. - <code>sorted_bams.list</code>: List file needed for merging of BAMS with samtools. Also serves as documentation of which files were used for this step. - <code>multiqc_report.html</code>: MultiQC report aggregating all individual HISAT2 alignment stats and samtools flagstats. - <code>gtf_list.txt</code>: List file needed for merging of GTF files with StringTie. Also serves as documentation of which files were used for this step. - Individuals: Each subdirectory is labelled based on sample name and each contains individual HISAT2 alignment and StringTie output files. - <code>&lt;sample_name&gt;_checksums.md5</code>: MD5 checksums for all files in the directory. - <code>*.ctab</code>: Data tables formatted for import into Ballgown. - <code>&lt;sample_name&gt;.cov_refs.gtf</code>: StringTie genome reference sequnce coverage GTF. - <code>&lt;sample_name&gt;.gtf</code>: StringTie GTF. - <code>&lt;sample_name&gt;.sorted.bam</code>: HISAT2 assembly BAM. - <code>&lt;sample_name&gt;.sorted.bam.bai</code>: BAM index file. Useful for visualizing assemblies in IGV. - <code>&lt;sample_name&gt;-hisat2_output.flagstat</code>: samtools flagstat output file. - <code>&lt;sample_name&gt;_hisat2.stats</code>: HISAT2 assembly stats. - <code>input_fastqs_checksums.md5</code>: MD5 checksums of files used as input for assembly. Primarily serves as documentation to track/verify which files were actually used.</p>
+</section>
+<section id="create-a-bash-variables-file" class="level1">
+<h1>2 Create a Bash variables file</h1>
+<p>This allows usage of Bash variables across R Markdown chunks.</p>
+<div class="sourceCode" id="cb1"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="kw">{</span></span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="bu">echo</span> <span class="st">"#### Assign Variables ####"</span></span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="bu">echo</span> <span class="st">""</span></span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a><span class="bu">echo</span> <span class="st">"# Data directories"</span></span>
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a><span class="bu">echo</span> <span class="st">'export timeseries_dir=/home/shared/8TB_HDD_01/sam/gitrepos/urol-e5/timeseries_molecular'</span></span>
+<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a><span class="bu">echo</span> <span class="st">'export genome_dir="${timeseries_dir}/D-Apul/data"'</span></span>
+<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a><span class="bu">echo</span> <span class="st">'export genome_index_dir="${timeseries_dir}/D-Apul/output/02.10-D-Apul-RNAseq-genome-index-HiSat2"'</span></span>
+<span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a><span class="bu">echo</span> <span class="st">'export output_dir_top="${timeseries_dir}/D-Apul/output/02.20-D-Apul-RNAseq-alignment-HiSat2"'</span></span>
+<span id="cb1-10"><a href="#cb1-10" aria-hidden="true" tabindex="-1"></a><span class="bu">echo</span> <span class="st">'export trimmed_fastqs_dir="${timeseries_dir}/D-Apul/output/01.00-D-Apul-RNAseq-trimming-fastp-FastQC-MultiQC/trimmed-fastqs"'</span></span>
+<span id="cb1-11"><a href="#cb1-11" aria-hidden="true" tabindex="-1"></a><span class="bu">echo</span> <span class="st">'export trimmed_reads_url="https://gannet.fish.washington.edu/Atumefaciens/gitrepos/urol-e5/timeseries_molecular/D-Apul/output/01.00-D-Apul-RNAseq-trimming-fastp-FastQC-MultiQC/trimmed-fastqs/"'</span></span>
+<span id="cb1-12"><a href="#cb1-12" aria-hidden="true" tabindex="-1"></a><span class="bu">echo</span> <span class="st">""</span></span>
+<span id="cb1-13"><a href="#cb1-13" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-14"><a href="#cb1-14" aria-hidden="true" tabindex="-1"></a><span class="bu">echo</span> <span class="st">"# Location of Hisat2 index files"</span></span>
+<span id="cb1-15"><a href="#cb1-15" aria-hidden="true" tabindex="-1"></a><span class="bu">echo</span> <span class="st">"# Must keep variable name formatting, as it's used by HiSat2"</span></span>
+<span id="cb1-16"><a href="#cb1-16" aria-hidden="true" tabindex="-1"></a><span class="bu">echo</span> <span class="st">'export HISAT2_INDEXES="${genome_index_dir}"'</span></span>
+<span id="cb1-17"><a href="#cb1-17" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-18"><a href="#cb1-18" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-19"><a href="#cb1-19" aria-hidden="true" tabindex="-1"></a><span class="bu">echo</span> <span class="st">"# Input files"</span></span>
+<span id="cb1-20"><a href="#cb1-20" aria-hidden="true" tabindex="-1"></a><span class="bu">echo</span> <span class="st">'export exons="${output_dir_top}/Apulchra-genome_hisat2_exons.tab"'</span></span>
+<span id="cb1-21"><a href="#cb1-21" aria-hidden="true" tabindex="-1"></a><span class="bu">echo</span> <span class="st">'export genome_index_name="Apulchra-genome"'</span></span>
+<span id="cb1-22"><a href="#cb1-22" aria-hidden="true" tabindex="-1"></a><span class="bu">echo</span> <span class="st">'export genome_gff="${genome_dir}/Apulchra-genome.gff"'</span></span>
+<span id="cb1-23"><a href="#cb1-23" aria-hidden="true" tabindex="-1"></a><span class="bu">echo</span> <span class="st">'export genome_fasta="${genome_dir}/Apulchra-genome.fa"'</span></span>
+<span id="cb1-24"><a href="#cb1-24" aria-hidden="true" tabindex="-1"></a><span class="bu">echo</span> <span class="st">'export splice_sites="${output_dir_top}/Apulchra-genome_hisat2_splice_sites.tab"'</span></span>
+<span id="cb1-25"><a href="#cb1-25" aria-hidden="true" tabindex="-1"></a><span class="bu">echo</span> <span class="st">'export transcripts_gtf="${genome_dir}/Apulchra-genome.gtf"'</span></span>
+<span id="cb1-26"><a href="#cb1-26" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-27"><a href="#cb1-27" aria-hidden="true" tabindex="-1"></a><span class="bu">echo</span> <span class="st">"# Output files"</span></span>
+<span id="cb1-28"><a href="#cb1-28" aria-hidden="true" tabindex="-1"></a><span class="bu">echo</span> <span class="st">'export gtf_list="${output_dir_top}/gtf_list.txt"'</span></span>
+<span id="cb1-29"><a href="#cb1-29" aria-hidden="true" tabindex="-1"></a><span class="bu">echo</span> <span class="st">'export merged_bam="${output_dir_top}/sorted-bams-merged.bam"'</span></span>
+<span id="cb1-30"><a href="#cb1-30" aria-hidden="true" tabindex="-1"></a><span class="bu">echo</span> <span class="st">""</span></span>
+<span id="cb1-31"><a href="#cb1-31" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-32"><a href="#cb1-32" aria-hidden="true" tabindex="-1"></a><span class="bu">echo</span> <span class="st">"# Paths to programs"</span></span>
+<span id="cb1-33"><a href="#cb1-33" aria-hidden="true" tabindex="-1"></a><span class="bu">echo</span> <span class="st">'export programs_dir="/home/shared"'</span></span>
+<span id="cb1-34"><a href="#cb1-34" aria-hidden="true" tabindex="-1"></a><span class="bu">echo</span> <span class="st">'export hisat2_dir="${programs_dir}/hisat2-2.2.1"'</span></span>
+<span id="cb1-35"><a href="#cb1-35" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-36"><a href="#cb1-36" aria-hidden="true" tabindex="-1"></a><span class="bu">echo</span> <span class="st">'export hisat2="${hisat2_dir}/hisat2"'</span></span>
+<span id="cb1-37"><a href="#cb1-37" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-38"><a href="#cb1-38" aria-hidden="true" tabindex="-1"></a><span class="bu">echo</span> <span class="st">'export multiqc=/home/sam/programs/mambaforge/bin/multiqc'</span></span>
+<span id="cb1-39"><a href="#cb1-39" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-40"><a href="#cb1-40" aria-hidden="true" tabindex="-1"></a><span class="bu">echo</span> <span class="st">'export samtools="${programs_dir}/samtools-1.12/samtools"'</span></span>
+<span id="cb1-41"><a href="#cb1-41" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-42"><a href="#cb1-42" aria-hidden="true" tabindex="-1"></a><span class="bu">echo</span> <span class="st">'export prepDE="${programs_dir}/stringtie-2.2.1.Linux_x86_64/prepDE.py3"'</span></span>
+<span id="cb1-43"><a href="#cb1-43" aria-hidden="true" tabindex="-1"></a><span class="bu">echo</span> <span class="st">'export stringtie="${programs_dir}/stringtie-2.2.1.Linux_x86_64/stringtie"'</span></span>
+<span id="cb1-44"><a href="#cb1-44" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-45"><a href="#cb1-45" aria-hidden="true" tabindex="-1"></a><span class="bu">echo</span> <span class="st">""</span></span>
+<span id="cb1-46"><a href="#cb1-46" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-47"><a href="#cb1-47" aria-hidden="true" tabindex="-1"></a><span class="bu">echo</span> <span class="st">"# Set FastQ filename patterns"</span></span>
+<span id="cb1-48"><a href="#cb1-48" aria-hidden="true" tabindex="-1"></a><span class="bu">echo</span> <span class="st">"export R1_fastq_pattern='*_R1_*.fq.gz'"</span></span>
+<span id="cb1-49"><a href="#cb1-49" aria-hidden="true" tabindex="-1"></a><span class="bu">echo</span> <span class="st">"export R2_fastq_pattern='*_R2_*.fq.gz'"</span></span>
+<span id="cb1-50"><a href="#cb1-50" aria-hidden="true" tabindex="-1"></a><span class="bu">echo</span> <span class="st">"export trimmed_fastq_pattern='*fastp-trim.fq.gz'"</span></span>
+<span id="cb1-51"><a href="#cb1-51" aria-hidden="true" tabindex="-1"></a><span class="bu">echo</span> <span class="st">""</span></span>
+<span id="cb1-52"><a href="#cb1-52" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-53"><a href="#cb1-53" aria-hidden="true" tabindex="-1"></a><span class="bu">echo</span> <span class="st">"# Set number of CPUs to use"</span></span>
+<span id="cb1-54"><a href="#cb1-54" aria-hidden="true" tabindex="-1"></a><span class="bu">echo</span> <span class="st">'export threads=40'</span></span>
+<span id="cb1-55"><a href="#cb1-55" aria-hidden="true" tabindex="-1"></a><span class="bu">echo</span> <span class="st">""</span></span>
+<span id="cb1-56"><a href="#cb1-56" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-57"><a href="#cb1-57" aria-hidden="true" tabindex="-1"></a><span class="bu">echo</span> <span class="st">"# Set average read length - for StringTie prepDE.py"</span></span>
+<span id="cb1-58"><a href="#cb1-58" aria-hidden="true" tabindex="-1"></a><span class="bu">echo</span> <span class="st">'export read_length=125'</span></span>
+<span id="cb1-59"><a href="#cb1-59" aria-hidden="true" tabindex="-1"></a><span class="bu">echo</span> <span class="st">""</span></span>
+<span id="cb1-60"><a href="#cb1-60" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-61"><a href="#cb1-61" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-62"><a href="#cb1-62" aria-hidden="true" tabindex="-1"></a><span class="bu">echo</span> <span class="st">"## Initialize arrays"</span></span>
+<span id="cb1-63"><a href="#cb1-63" aria-hidden="true" tabindex="-1"></a><span class="bu">echo</span> <span class="st">'export fastq_array_R1=()'</span></span>
+<span id="cb1-64"><a href="#cb1-64" aria-hidden="true" tabindex="-1"></a><span class="bu">echo</span> <span class="st">'export fastq_array_R2=()'</span></span>
+<span id="cb1-65"><a href="#cb1-65" aria-hidden="true" tabindex="-1"></a><span class="bu">echo</span> <span class="st">'export R1_names_array=()'</span></span>
+<span id="cb1-66"><a href="#cb1-66" aria-hidden="true" tabindex="-1"></a><span class="bu">echo</span> <span class="st">'export R2_names_array=()'</span></span>
+<span id="cb1-67"><a href="#cb1-67" aria-hidden="true" tabindex="-1"></a><span class="bu">echo</span> <span class="st">"declare -A sample_timepoint_map"</span></span>
+<span id="cb1-68"><a href="#cb1-68" aria-hidden="true" tabindex="-1"></a><span class="bu">echo</span> <span class="st">""</span></span>
+<span id="cb1-69"><a href="#cb1-69" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-70"><a href="#cb1-70" aria-hidden="true" tabindex="-1"></a><span class="bu">echo</span> <span class="st">"# Programs associative array"</span></span>
+<span id="cb1-71"><a href="#cb1-71" aria-hidden="true" tabindex="-1"></a><span class="bu">echo</span> <span class="st">"declare -A programs_array"</span></span>
+<span id="cb1-72"><a href="#cb1-72" aria-hidden="true" tabindex="-1"></a><span class="bu">echo</span> <span class="st">"programs_array=("</span></span>
+<span id="cb1-73"><a href="#cb1-73" aria-hidden="true" tabindex="-1"></a><span class="bu">echo</span> <span class="st">'[hisat2]="${hisat2}" \'</span></span>
+<span id="cb1-74"><a href="#cb1-74" aria-hidden="true" tabindex="-1"></a><span class="bu">echo</span> <span class="st">'[multiqc]="${multiqc}" \'</span></span>
+<span id="cb1-75"><a href="#cb1-75" aria-hidden="true" tabindex="-1"></a><span class="bu">echo</span> <span class="st">'[prepDE]="${prepDE}" \'</span></span>
+<span id="cb1-76"><a href="#cb1-76" aria-hidden="true" tabindex="-1"></a><span class="bu">echo</span> <span class="st">'[samtools]="${samtools}" \'</span></span>
+<span id="cb1-77"><a href="#cb1-77" aria-hidden="true" tabindex="-1"></a><span class="bu">echo</span> <span class="st">'[stringtie]="${stringtie}" \'</span></span>
+<span id="cb1-78"><a href="#cb1-78" aria-hidden="true" tabindex="-1"></a><span class="bu">echo</span> <span class="st">")"</span></span>
+<span id="cb1-79"><a href="#cb1-79" aria-hidden="true" tabindex="-1"></a><span class="bu">echo</span> <span class="st">""</span></span>
+<span id="cb1-80"><a href="#cb1-80" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-81"><a href="#cb1-81" aria-hidden="true" tabindex="-1"></a><span class="bu">echo</span> <span class="st">"# Print formatting"</span></span>
+<span id="cb1-82"><a href="#cb1-82" aria-hidden="true" tabindex="-1"></a><span class="bu">echo</span> <span class="st">'export line="--------------------------------------------------------"'</span></span>
+<span id="cb1-83"><a href="#cb1-83" aria-hidden="true" tabindex="-1"></a><span class="bu">echo</span> <span class="st">""</span></span>
+<span id="cb1-84"><a href="#cb1-84" aria-hidden="true" tabindex="-1"></a><span class="kw">}</span> <span class="op">&gt;</span> .bashvars</span>
+<span id="cb1-85"><a href="#cb1-85" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-86"><a href="#cb1-86" aria-hidden="true" tabindex="-1"></a><span class="fu">cat</span> .bashvars</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<pre><code>#### Assign Variables ####
+
+# Data directories
+export timeseries_dir=/home/shared/8TB_HDD_01/sam/gitrepos/urol-e5/timeseries_molecular
+export genome_dir="${timeseries_dir}/D-Apul/data"
+export genome_index_dir="${timeseries_dir}/D-Apul/output/02.10-D-Apul-RNAseq-genome-index-HiSat2"
+export output_dir_top="${timeseries_dir}/D-Apul/output/02.20-D-Apul-RNAseq-alignment-HiSat2"
+export trimmed_fastqs_dir="${timeseries_dir}/D-Apul/output/01.00-D-Apul-RNAseq-trimming-fastp-FastQC-MultiQC/trimmed-fastqs"
+export trimmed_reads_url="https://gannet.fish.washington.edu/Atumefaciens/gitrepos/urol-e5/timeseries_molecular/D-Apul/output/01.00-D-Apul-RNAseq-trimming-fastp-FastQC-MultiQC/trimmed-fastqs/"
+
+# Location of Hisat2 index files
+# Must keep variable name formatting, as it's used by HiSat2
+export HISAT2_INDEXES="${genome_index_dir}"
+# Input files
+export exons="${output_dir_top}/Apulchra-genome_hisat2_exons.tab"
+export genome_index_name="Apulchra-genome"
+export genome_gff="${genome_dir}/Apulchra-genome.gff"
+export genome_fasta="${genome_dir}/Apulchra-genome.fa"
+export splice_sites="${output_dir_top}/Apulchra-genome_hisat2_splice_sites.tab"
+export transcripts_gtf="${genome_dir}/Apulchra-genome.gtf"
+# Output files
+export gtf_list="${output_dir_top}/gtf_list.txt"
+export merged_bam="${output_dir_top}/sorted-bams-merged.bam"
+
+# Paths to programs
+export programs_dir="/home/shared"
+export hisat2_dir="${programs_dir}/hisat2-2.2.1"
+export hisat2="${hisat2_dir}/hisat2"
+export multiqc=/home/sam/programs/mambaforge/bin/multiqc
+export samtools="${programs_dir}/samtools-1.12/samtools"
+export prepDE="${programs_dir}/stringtie-2.2.1.Linux_x86_64/prepDE.py3"
+export stringtie="${programs_dir}/stringtie-2.2.1.Linux_x86_64/stringtie"
+
+# Set FastQ filename patterns
+export R1_fastq_pattern='*_R1_*.fq.gz'
+export R2_fastq_pattern='*_R2_*.fq.gz'
+export trimmed_fastq_pattern='*fastp-trim.fq.gz'
+
+# Set number of CPUs to use
+export threads=40
+
+# Set average read length - for StringTie prepDE.py
+export read_length=125
+
+## Initialize arrays
+export fastq_array_R1=()
+export fastq_array_R2=()
+export R1_names_array=()
+export R2_names_array=()
+declare -A sample_timepoint_map
+
+# Programs associative array
+declare -A programs_array
+programs_array=(
+[hisat2]="${hisat2}" \
+[multiqc]="${multiqc}" \
+[prepDE]="${prepDE}" \
+[samtools]="${samtools}" \
+[stringtie]="${stringtie}" \
+)
+
+# Print formatting
+export line="--------------------------------------------------------"</code></pre>
+<p>If needed, download raw RNA-seq.</p>
+<p>Change <code>eval=FALSE</code> to <code>eval=TRUE</code> to execute the next two chunks to download RNA-seq and then verify MD5 checksums.</p>
+<div class="sourceCode" id="cb3"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Load bash variables into memory</span></span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a><span class="bu">source</span> .bashvars</span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a><span class="co"># Make output directory if it doesn't exist</span></span>
+<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a><span class="fu">mkdir</span> <span class="at">--parents</span> <span class="va">${trimmed_fastqs_dir}</span></span>
+<span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-7"><a href="#cb3-7" aria-hidden="true" tabindex="-1"></a><span class="co"># Run wget to retrieve FastQs and MD5 files</span></span>
+<span id="cb3-8"><a href="#cb3-8" aria-hidden="true" tabindex="-1"></a><span class="fu">wget</span> <span class="dt">\</span></span>
+<span id="cb3-9"><a href="#cb3-9" aria-hidden="true" tabindex="-1"></a>--directory-prefix <span class="va">${trimmed_fastqs_dir}</span> <span class="dt">\</span></span>
+<span id="cb3-10"><a href="#cb3-10" aria-hidden="true" tabindex="-1"></a>--recursive <span class="dt">\</span></span>
+<span id="cb3-11"><a href="#cb3-11" aria-hidden="true" tabindex="-1"></a>--no-check-certificate <span class="dt">\</span></span>
+<span id="cb3-12"><a href="#cb3-12" aria-hidden="true" tabindex="-1"></a>--continue <span class="dt">\</span></span>
+<span id="cb3-13"><a href="#cb3-13" aria-hidden="true" tabindex="-1"></a>--cut-dirs 3 <span class="dt">\</span></span>
+<span id="cb3-14"><a href="#cb3-14" aria-hidden="true" tabindex="-1"></a>--no-host-directories <span class="dt">\</span></span>
+<span id="cb3-15"><a href="#cb3-15" aria-hidden="true" tabindex="-1"></a>--no-parent <span class="dt">\</span></span>
+<span id="cb3-16"><a href="#cb3-16" aria-hidden="true" tabindex="-1"></a>--quiet <span class="dt">\</span></span>
+<span id="cb3-17"><a href="#cb3-17" aria-hidden="true" tabindex="-1"></a>--accept=<span class="st">"*fastp-trim*, *.md5"</span></span>
+<span id="cb3-18"><a href="#cb3-18" aria-hidden="true" tabindex="-1"></a><span class="va">${trimmed_reads_url}</span></span>
+<span id="cb3-19"><a href="#cb3-19" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-20"><a href="#cb3-20" aria-hidden="true" tabindex="-1"></a><span class="fu">ls</span> <span class="at">-lh</span> <span class="st">"</span><span class="va">${trimmed_fastqs_dir}</span><span class="st">"</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p>Verify raw read checksums</p>
+<div class="sourceCode" id="cb4"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Load bash variables into memory</span></span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a><span class="bu">source</span> .bashvars</span>
+<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a><span class="bu">cd</span> <span class="st">"</span><span class="va">${trimmed_fastqs_dir}</span><span class="st">"</span></span>
+<span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-6"><a href="#cb4-6" aria-hidden="true" tabindex="-1"></a><span class="co"># Verify checksums</span></span>
+<span id="cb4-7"><a href="#cb4-7" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> file <span class="kw">in</span> <span class="pp">*</span>.md5</span>
+<span id="cb4-8"><a href="#cb4-8" aria-hidden="true" tabindex="-1"></a><span class="cf">do</span></span>
+<span id="cb4-9"><a href="#cb4-9" aria-hidden="true" tabindex="-1"></a>  <span class="fu">md5sum</span> <span class="at">--check</span> <span class="st">"</span><span class="va">${file}</span><span class="st">"</span></span>
+<span id="cb4-10"><a href="#cb4-10" aria-hidden="true" tabindex="-1"></a><span class="cf">done</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</section>
+<section id="align-reads-using-hisat2" class="level1">
+<h1>3 Align reads using HISAT2</h1>
+<p>This requires usage of the <code>rna_metadata.csv</code></p>
+<p>This step has a lengthy, semi-complex workflow:</p>
+<ol type="1">
+<li>Parse <code>rna_metadata.csv</code> for <em>A.pulchra</em> sample names and time point. This info will be used for downstream file naming and to assing the time point to the read group (<code>SM:</code>) in the alignment file.</li>
+<li>Loop through all samples and perform individual alignments using HISAT2.</li>
+<li>HISAT2 output is piped to through multiple samtools tools: flagstat (stats aggregation), sort (creates/sorts BAM), index (creates BAM index). Piping saves time and disk space, by avoiding the generation of large SAM files.</li>
+<li>Loop continues and runs StringTie on sorted BAM file to produce individual GTF file.</li>
+<li>Loop continues and adds GTF path/filename to a list file, which will be used downstream.</li>
+</ol>
+<div class="sourceCode" id="cb5"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Load bash variables into memory</span></span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a><span class="bu">source</span> .bashvars</span>
+<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a><span class="co"># Make output directories, if they don't exist</span></span>
+<span id="cb5-5"><a href="#cb5-5" aria-hidden="true" tabindex="-1"></a><span class="fu">mkdir</span> <span class="at">--parents</span> <span class="st">"</span><span class="va">${output_dir_top}</span><span class="st">"</span></span>
+<span id="cb5-6"><a href="#cb5-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-7"><a href="#cb5-7" aria-hidden="true" tabindex="-1"></a><span class="co"># Change to ouput directory</span></span>
+<span id="cb5-8"><a href="#cb5-8" aria-hidden="true" tabindex="-1"></a><span class="bu">cd</span> <span class="st">"</span><span class="va">${output_dir_top}</span><span class="st">"</span></span>
+<span id="cb5-9"><a href="#cb5-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-10"><a href="#cb5-10" aria-hidden="true" tabindex="-1"></a><span class="co"># Create associative array with sample and timepoint</span></span>
+<span id="cb5-11"><a href="#cb5-11" aria-hidden="true" tabindex="-1"></a><span class="va">metadata</span><span class="op">=</span><span class="st">"../../../M-multi-species/data/rna_metadata.csv"</span></span>
+<span id="cb5-12"><a href="#cb5-12" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-13"><a href="#cb5-13" aria-hidden="true" tabindex="-1"></a><span class="co"># Declare the array</span></span>
+<span id="cb5-14"><a href="#cb5-14" aria-hidden="true" tabindex="-1"></a><span class="bu">declare</span> <span class="at">-A</span> <span class="va">sample_timepoint_map</span></span>
+<span id="cb5-15"><a href="#cb5-15" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-16"><a href="#cb5-16" aria-hidden="true" tabindex="-1"></a><span class="co"># Read the metadata file line by line</span></span>
+<span id="cb5-17"><a href="#cb5-17" aria-hidden="true" tabindex="-1"></a><span class="cf">while</span> <span class="va">IFS</span><span class="op">=</span><span class="st">','</span> <span class="bu">read</span> <span class="at">-r</span> <span class="va">sample_number</span> <span class="va">sample_name</span> <span class="va">plate</span> <span class="va">well_number</span> <span class="va">azenta_sample_name</span> <span class="va">colony_id</span> <span class="va">timepoint</span> <span class="va">sample_type</span> <span class="va">species_strain</span> <span class="va">SampleBuffer</span><span class="kw">;</span> <span class="cf">do</span></span>
+<span id="cb5-18"><a href="#cb5-18" aria-hidden="true" tabindex="-1"></a>    <span class="co"># Check if the species is "Acropora pulchra"</span></span>
+<span id="cb5-19"><a href="#cb5-19" aria-hidden="true" tabindex="-1"></a>    <span class="cf">if</span> <span class="kw">[[</span> <span class="st">"</span><span class="va">${species_strain}</span><span class="st">"</span> <span class="ot">==</span> <span class="st">"Acropora pulchra"</span> <span class="kw">]];</span> <span class="cf">then</span></span>
+<span id="cb5-20"><a href="#cb5-20" aria-hidden="true" tabindex="-1"></a>        <span class="co"># Add the Azenta sample name as the key and Timepoint as the value in the associative array</span></span>
+<span id="cb5-21"><a href="#cb5-21" aria-hidden="true" tabindex="-1"></a>        <span class="va">sample_timepoint_map</span><span class="op">[</span><span class="st">"</span><span class="va">${azenta_sample_name}</span><span class="st">"</span><span class="op">]=</span><span class="st">"</span><span class="va">${timepoint}</span><span class="st">"</span></span>
+<span id="cb5-22"><a href="#cb5-22" aria-hidden="true" tabindex="-1"></a>    <span class="cf">fi</span></span>
+<span id="cb5-23"><a href="#cb5-23" aria-hidden="true" tabindex="-1"></a><span class="cf">done</span> <span class="op">&lt;</span> <span class="op">&lt;(</span><span class="fu">tail</span> <span class="at">-n</span> +2 <span class="st">"</span><span class="va">${metadata}</span><span class="st">"</span><span class="op">)</span> <span class="co"># Skip the header</span></span>
+<span id="cb5-24"><a href="#cb5-24" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-25"><a href="#cb5-25" aria-hidden="true" tabindex="-1"></a><span class="co">## Populate trimmed reads arrays</span></span>
+<span id="cb5-26"><a href="#cb5-26" aria-hidden="true" tabindex="-1"></a><span class="va">fastq_array_R1</span><span class="op">=</span><span class="va">(</span><span class="st">"</span><span class="va">${trimmed_fastqs_dir}</span><span class="st">"</span>/<span class="va">${R1_fastq_pattern})</span></span>
+<span id="cb5-27"><a href="#cb5-27" aria-hidden="true" tabindex="-1"></a><span class="va">fastq_array_R2</span><span class="op">=</span><span class="va">(</span><span class="st">"</span><span class="va">${trimmed_fastqs_dir}</span><span class="st">"</span>/<span class="va">${R2_fastq_pattern})</span></span>
+<span id="cb5-28"><a href="#cb5-28" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-29"><a href="#cb5-29" aria-hidden="true" tabindex="-1"></a><span class="co">############## </span><span class="re">BEGIN</span><span class="co"> HISAT2 ALIGNMENTS ##############</span></span>
+<span id="cb5-30"><a href="#cb5-30" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> sample <span class="kw">in</span> <span class="st">"</span><span class="va">${</span><span class="op">!</span><span class="va">sample_timepoint_map</span><span class="op">[@]</span><span class="va">}</span><span class="st">"</span></span>
+<span id="cb5-31"><a href="#cb5-31" aria-hidden="true" tabindex="-1"></a><span class="cf">do</span></span>
+<span id="cb5-32"><a href="#cb5-32" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-33"><a href="#cb5-33" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-34"><a href="#cb5-34" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Create and switch to dedicated sample directory</span></span>
+<span id="cb5-35"><a href="#cb5-35" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mkdir</span> <span class="at">--parents</span> <span class="st">"</span><span class="va">${sample}</span><span class="st">"</span> <span class="kw">&amp;&amp;</span> <span class="bu">cd</span> <span class="st">"</span><span class="va">$_</span><span class="st">"</span></span>
+<span id="cb5-36"><a href="#cb5-36" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-37"><a href="#cb5-37" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Create HISAT2 list of fastq R1 files</span></span>
+<span id="cb5-38"><a href="#cb5-38" aria-hidden="true" tabindex="-1"></a>  <span class="co"># and generated MD5 checksums file.</span></span>
+<span id="cb5-39"><a href="#cb5-39" aria-hidden="true" tabindex="-1"></a>  <span class="cf">for</span> fastq <span class="kw">in</span> <span class="st">"</span><span class="va">${fastq_array_R1</span><span class="op">[@]</span><span class="va">}</span><span class="st">"</span></span>
+<span id="cb5-40"><a href="#cb5-40" aria-hidden="true" tabindex="-1"></a>  <span class="cf">do</span></span>
+<span id="cb5-41"><a href="#cb5-41" aria-hidden="true" tabindex="-1"></a>    <span class="co"># Parse sample name from FastQ filename</span></span>
+<span id="cb5-42"><a href="#cb5-42" aria-hidden="true" tabindex="-1"></a>    <span class="va">fastq_sample</span><span class="op">=</span><span class="va">$(</span><span class="bu">echo</span> <span class="st">"</span><span class="va">${fastq</span><span class="op">##</span><span class="pp">*</span>/<span class="va">}</span><span class="st">"</span> <span class="kw">|</span> <span class="fu">awk</span> <span class="at">-F</span><span class="st">"[_-]"</span> <span class="st">'{print $3}'</span><span class="va">)</span></span>
+<span id="cb5-43"><a href="#cb5-43" aria-hidden="true" tabindex="-1"></a>    </span>
+<span id="cb5-44"><a href="#cb5-44" aria-hidden="true" tabindex="-1"></a>    <span class="co"># Process matching FastQ file, based on sample name</span></span>
+<span id="cb5-45"><a href="#cb5-45" aria-hidden="true" tabindex="-1"></a>    <span class="cf">if</span> <span class="bu">[</span> <span class="st">"</span><span class="va">${fastq_sample}</span><span class="st">"</span> <span class="ot">==</span> <span class="st">"</span><span class="va">${sample}</span><span class="st">"</span> <span class="bu">]</span><span class="kw">;</span> <span class="cf">then</span></span>
+<span id="cb5-46"><a href="#cb5-46" aria-hidden="true" tabindex="-1"></a>      </span>
+<span id="cb5-47"><a href="#cb5-47" aria-hidden="true" tabindex="-1"></a>      <span class="co"># Generate checksum/list of input files used</span></span>
+<span id="cb5-48"><a href="#cb5-48" aria-hidden="true" tabindex="-1"></a>      <span class="fu">md5sum</span> <span class="st">"</span><span class="va">${fastq}</span><span class="st">"</span> <span class="op">&gt;&gt;</span> input_fastqs_checksums.md5</span>
+<span id="cb5-49"><a href="#cb5-49" aria-hidden="true" tabindex="-1"></a>      </span>
+<span id="cb5-50"><a href="#cb5-50" aria-hidden="true" tabindex="-1"></a>      <span class="co"># Create comma-separated lists of FastQs for HISAT2</span></span>
+<span id="cb5-51"><a href="#cb5-51" aria-hidden="true" tabindex="-1"></a>      <span class="bu">printf</span> <span class="at">-v</span> joined_R1 <span class="st">'%s,'</span> <span class="st">"</span><span class="va">${fastq}</span><span class="st">"</span></span>
+<span id="cb5-52"><a href="#cb5-52" aria-hidden="true" tabindex="-1"></a>      <span class="va">fastq_list_R1</span><span class="op">=</span><span class="va">$(</span><span class="bu">echo</span> <span class="st">"</span><span class="va">${joined_R1</span><span class="op">%</span>,<span class="va">}</span><span class="st">"</span><span class="va">)</span></span>
+<span id="cb5-53"><a href="#cb5-53" aria-hidden="true" tabindex="-1"></a>    <span class="cf">fi</span></span>
+<span id="cb5-54"><a href="#cb5-54" aria-hidden="true" tabindex="-1"></a>  <span class="cf">done</span></span>
+<span id="cb5-55"><a href="#cb5-55" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-56"><a href="#cb5-56" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Create HISAT2 list of fastq R1 files</span></span>
+<span id="cb5-57"><a href="#cb5-57" aria-hidden="true" tabindex="-1"></a>  <span class="co"># and generated MD5 checksums file.</span></span>
+<span id="cb5-58"><a href="#cb5-58" aria-hidden="true" tabindex="-1"></a>  <span class="cf">for</span> fastq <span class="kw">in</span> <span class="st">"</span><span class="va">${fastq_array_R2</span><span class="op">[@]</span><span class="va">}</span><span class="st">"</span></span>
+<span id="cb5-59"><a href="#cb5-59" aria-hidden="true" tabindex="-1"></a>  <span class="cf">do</span></span>
+<span id="cb5-60"><a href="#cb5-60" aria-hidden="true" tabindex="-1"></a>    <span class="co"># Parse sample name from FastQ filename</span></span>
+<span id="cb5-61"><a href="#cb5-61" aria-hidden="true" tabindex="-1"></a>    <span class="va">fastq_sample</span><span class="op">=</span><span class="va">$(</span><span class="bu">echo</span> <span class="st">"</span><span class="va">${fastq</span><span class="op">##</span><span class="pp">*</span>/<span class="va">}</span><span class="st">"</span> <span class="kw">|</span> <span class="fu">awk</span> <span class="at">-F</span><span class="st">"[_-]"</span> <span class="st">'{print $3}'</span><span class="va">)</span></span>
+<span id="cb5-62"><a href="#cb5-62" aria-hidden="true" tabindex="-1"></a>    </span>
+<span id="cb5-63"><a href="#cb5-63" aria-hidden="true" tabindex="-1"></a>    <span class="co"># Process matching FastQ file, based on sample name</span></span>
+<span id="cb5-64"><a href="#cb5-64" aria-hidden="true" tabindex="-1"></a>    <span class="cf">if</span> <span class="bu">[</span> <span class="st">"</span><span class="va">${fastq_sample}</span><span class="st">"</span> <span class="ot">==</span> <span class="st">"</span><span class="va">${sample}</span><span class="st">"</span> <span class="bu">]</span><span class="kw">;</span> <span class="cf">then</span></span>
+<span id="cb5-65"><a href="#cb5-65" aria-hidden="true" tabindex="-1"></a>      </span>
+<span id="cb5-66"><a href="#cb5-66" aria-hidden="true" tabindex="-1"></a>      <span class="co"># Generate checksum/list of input files used</span></span>
+<span id="cb5-67"><a href="#cb5-67" aria-hidden="true" tabindex="-1"></a>      <span class="fu">md5sum</span> <span class="st">"</span><span class="va">${fastq}</span><span class="st">"</span> <span class="op">&gt;&gt;</span> input_fastqs_checksums.md5</span>
+<span id="cb5-68"><a href="#cb5-68" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-69"><a href="#cb5-69" aria-hidden="true" tabindex="-1"></a>      <span class="co"># Create comma-separated lists of FastQs for HISAT2</span></span>
+<span id="cb5-70"><a href="#cb5-70" aria-hidden="true" tabindex="-1"></a>      <span class="bu">printf</span> <span class="at">-v</span> joined_R2 <span class="st">'%s,'</span> <span class="st">"</span><span class="va">${fastq}</span><span class="st">"</span></span>
+<span id="cb5-71"><a href="#cb5-71" aria-hidden="true" tabindex="-1"></a>      <span class="va">fastq_list_R2</span><span class="op">=</span><span class="va">$(</span><span class="bu">echo</span> <span class="st">"</span><span class="va">${joined_R2</span><span class="op">%</span>,<span class="va">}</span><span class="st">"</span><span class="va">)</span></span>
+<span id="cb5-72"><a href="#cb5-72" aria-hidden="true" tabindex="-1"></a>    <span class="cf">fi</span></span>
+<span id="cb5-73"><a href="#cb5-73" aria-hidden="true" tabindex="-1"></a>  <span class="cf">done</span></span>
+<span id="cb5-74"><a href="#cb5-74" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-75"><a href="#cb5-75" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-76"><a href="#cb5-76" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-77"><a href="#cb5-77" aria-hidden="true" tabindex="-1"></a>  <span class="co"># HISAT2 alignments</span></span>
+<span id="cb5-78"><a href="#cb5-78" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Sets read group info (RG) using samples array</span></span>
+<span id="cb5-79"><a href="#cb5-79" aria-hidden="true" tabindex="-1"></a>  <span class="st">"</span><span class="va">${programs_array</span><span class="op">[</span>hisat2<span class="op">]</span><span class="va">}</span><span class="st">"</span> <span class="dt">\</span></span>
+<span id="cb5-80"><a href="#cb5-80" aria-hidden="true" tabindex="-1"></a>  <span class="at">-x</span> <span class="st">"</span><span class="va">${genome_index_name}</span><span class="st">"</span> <span class="dt">\</span></span>
+<span id="cb5-81"><a href="#cb5-81" aria-hidden="true" tabindex="-1"></a>  <span class="at">-1</span> <span class="st">"</span><span class="va">${fastq_list_R1}</span><span class="st">"</span> <span class="dt">\</span></span>
+<span id="cb5-82"><a href="#cb5-82" aria-hidden="true" tabindex="-1"></a>  <span class="at">-2</span> <span class="st">"</span><span class="va">${fastq_list_R2}</span><span class="st">"</span> <span class="dt">\</span></span>
+<span id="cb5-83"><a href="#cb5-83" aria-hidden="true" tabindex="-1"></a>  <span class="at">--threads</span> <span class="st">"</span><span class="va">${threads}</span><span class="st">"</span> <span class="dt">\</span></span>
+<span id="cb5-84"><a href="#cb5-84" aria-hidden="true" tabindex="-1"></a>  <span class="at">--rg-id</span> <span class="st">"</span><span class="va">${sample}</span><span class="st">"</span> <span class="dt">\</span></span>
+<span id="cb5-85"><a href="#cb5-85" aria-hidden="true" tabindex="-1"></a>  <span class="at">--rg</span> <span class="st">"SM:""</span><span class="va">${sample_timepoint_map</span><span class="op">[</span><span class="va">$sample</span><span class="op">]</span><span class="va">}</span><span class="st">"</span> <span class="dt">\</span></span>
+<span id="cb5-86"><a href="#cb5-86" aria-hidden="true" tabindex="-1"></a>  <span class="dv">2</span><span class="op">&gt;</span> <span class="st">"</span><span class="va">${sample}</span><span class="st">"</span>_hisat2.stats <span class="dt">\</span></span>
+<span id="cb5-87"><a href="#cb5-87" aria-hidden="true" tabindex="-1"></a>  <span class="kw">|</span> <span class="fu">tee</span> <span class="op">&gt;(</span><span class="va">${programs_array</span><span class="op">[</span>samtools<span class="op">]</span><span class="va">}</span> flagstat <span class="at">-</span> <span class="op">&gt;</span> <span class="st">"</span><span class="va">${sample}</span><span class="st">"</span>-hisat2_output.flagstat<span class="op">)</span> <span class="dt">\</span></span>
+<span id="cb5-88"><a href="#cb5-88" aria-hidden="true" tabindex="-1"></a>  <span class="kw">|</span> <span class="va">${programs_array</span><span class="op">[</span>samtools<span class="op">]</span><span class="va">}</span> sort <span class="at">-</span> <span class="at">-@</span> <span class="st">"</span><span class="va">${threads}</span><span class="st">"</span> <span class="at">-O</span> BAM <span class="dt">\</span></span>
+<span id="cb5-89"><a href="#cb5-89" aria-hidden="true" tabindex="-1"></a>  <span class="kw">|</span> <span class="fu">tee</span> <span class="st">"</span><span class="va">${sample}</span><span class="st">"</span>.sorted.bam <span class="dt">\</span></span>
+<span id="cb5-90"><a href="#cb5-90" aria-hidden="true" tabindex="-1"></a>  <span class="kw">|</span> <span class="va">${programs_array</span><span class="op">[</span>samtools<span class="op">]</span><span class="va">}</span> index <span class="at">-</span> <span class="st">"</span><span class="va">${sample}</span><span class="st">"</span>.sorted.bam.bai</span>
+<span id="cb5-91"><a href="#cb5-91" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb5-92"><a href="#cb5-92" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb5-93"><a href="#cb5-93" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Run stringtie on alignments</span></span>
+<span id="cb5-94"><a href="#cb5-94" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Uses "-B" option to output tables intended for use in Ballgown</span></span>
+<span id="cb5-95"><a href="#cb5-95" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Uses "-e" option; recommended when using "-B" option.</span></span>
+<span id="cb5-96"><a href="#cb5-96" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Limits analysis to only reads alignments matching reference.</span></span>
+<span id="cb5-97"><a href="#cb5-97" aria-hidden="true" tabindex="-1"></a>  <span class="st">"</span><span class="va">${programs_array</span><span class="op">[</span>stringtie<span class="op">]</span><span class="va">}</span><span class="st">"</span> <span class="st">"</span><span class="va">${sample}</span><span class="st">"</span>.sorted.bam <span class="dt">\</span></span>
+<span id="cb5-98"><a href="#cb5-98" aria-hidden="true" tabindex="-1"></a>  <span class="at">-p</span> <span class="st">"</span><span class="va">${threads}</span><span class="st">"</span> <span class="dt">\</span></span>
+<span id="cb5-99"><a href="#cb5-99" aria-hidden="true" tabindex="-1"></a>  <span class="at">-o</span> <span class="st">"</span><span class="va">${sample}</span><span class="st">"</span>.gtf <span class="dt">\</span></span>
+<span id="cb5-100"><a href="#cb5-100" aria-hidden="true" tabindex="-1"></a>  <span class="at">-G</span> <span class="st">"</span><span class="va">${genome_gff}</span><span class="st">"</span> <span class="dt">\</span></span>
+<span id="cb5-101"><a href="#cb5-101" aria-hidden="true" tabindex="-1"></a>  <span class="at">-C</span> <span class="st">"</span><span class="va">${sample}</span><span class="st">.cov_refs.gtf"</span> <span class="dt">\</span></span>
+<span id="cb5-102"><a href="#cb5-102" aria-hidden="true" tabindex="-1"></a>  <span class="at">-B</span> <span class="dt">\</span></span>
+<span id="cb5-103"><a href="#cb5-103" aria-hidden="true" tabindex="-1"></a>  <span class="at">-e</span> </span>
+<span id="cb5-104"><a href="#cb5-104" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb5-105"><a href="#cb5-105" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb5-106"><a href="#cb5-106" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Add GTFs to list file, only if non-empty</span></span>
+<span id="cb5-107"><a href="#cb5-107" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Identifies GTF files that only have header</span></span>
+<span id="cb5-108"><a href="#cb5-108" aria-hidden="true" tabindex="-1"></a>  <span class="va">gtf_lines</span><span class="op">=</span><span class="va">$(</span><span class="fu">wc</span> <span class="at">-l</span> <span class="op">&lt;</span> <span class="st">"</span><span class="va">${sample}</span><span class="st">"</span>.gtf <span class="va">)</span></span>
+<span id="cb5-109"><a href="#cb5-109" aria-hidden="true" tabindex="-1"></a>  <span class="cf">if</span> <span class="bu">[</span> <span class="st">"</span><span class="va">${gtf_lines}</span><span class="st">"</span> <span class="ot">-gt</span> 2 <span class="bu">]</span><span class="kw">;</span> <span class="cf">then</span></span>
+<span id="cb5-110"><a href="#cb5-110" aria-hidden="true" tabindex="-1"></a>    <span class="bu">echo</span> <span class="st">"</span><span class="va">$(</span><span class="bu">pwd</span><span class="va">)</span><span class="st">/</span><span class="va">${sample}</span><span class="st">.gtf"</span> <span class="op">&gt;&gt;</span> <span class="st">"</span><span class="va">${gtf_list}</span><span class="st">"</span></span>
+<span id="cb5-111"><a href="#cb5-111" aria-hidden="true" tabindex="-1"></a>  <span class="cf">fi</span> </span>
+<span id="cb5-112"><a href="#cb5-112" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-113"><a href="#cb5-113" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Generate checksums</span></span>
+<span id="cb5-114"><a href="#cb5-114" aria-hidden="true" tabindex="-1"></a>  <span class="fu">find</span> ./ <span class="at">-type</span> f <span class="at">-not</span> <span class="at">-name</span> <span class="st">"*.md5"</span> <span class="at">-exec</span> md5sum {} <span class="dt">\;</span> <span class="op">&gt;</span> <span class="va">${sample}</span>_checksums.md5</span>
+<span id="cb5-115"><a href="#cb5-115" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Move up to orig. working directory</span></span>
+<span id="cb5-116"><a href="#cb5-116" aria-hidden="true" tabindex="-1"></a>  <span class="bu">cd</span> ..</span>
+<span id="cb5-117"><a href="#cb5-117" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-118"><a href="#cb5-118" aria-hidden="true" tabindex="-1"></a><span class="cf">done</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<section id="review-hisat2-output" class="level2">
+<h2 class="anchored" data-anchor-id="review-hisat2-output">3.1 Review HISAT2 Output</h2>
+<p>View the resulting directory structure of resulting from the HISAT2/StringTie process.</p>
+<div class="sourceCode" id="cb6"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Load bash variables into memory</span></span>
+<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a><span class="bu">source</span> .bashvars</span>
+<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-4"><a href="#cb6-4" aria-hidden="true" tabindex="-1"></a><span class="co"># Change to ouput directory</span></span>
+<span id="cb6-5"><a href="#cb6-5" aria-hidden="true" tabindex="-1"></a><span class="bu">cd</span> <span class="st">"</span><span class="va">${output_dir_top}</span><span class="st">"</span></span>
+<span id="cb6-6"><a href="#cb6-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-7"><a href="#cb6-7" aria-hidden="true" tabindex="-1"></a><span class="co"># Display HISAT2 output directory structure</span></span>
+<span id="cb6-8"><a href="#cb6-8" aria-hidden="true" tabindex="-1"></a><span class="co"># with directory (--du) and file sizes (-h)</span></span>
+<span id="cb6-9"><a href="#cb6-9" aria-hidden="true" tabindex="-1"></a><span class="ex">tree</span> <span class="at">--du</span> <span class="at">-h</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<pre><code>.
+├── [1.8G]  1A1
+│   ├── [ 553]  1A1_checksums.md5
+│   ├── [4.8M]  1A1.cov_refs.gtf
+│   ├── [ 34M]  1A1.gtf
+│   ├── [ 451]  1A1-hisat2_output.flagstat
+│   ├── [ 637]  1A1_hisat2.stats
+│   ├── [1.7G]  1A1.sorted.bam
+│   ├── [936K]  1A1.sorted.bam.bai
+│   ├── [2.4M]  e2t.ctab
+│   ├── [ 15M]  e_data.ctab
+│   ├── [1.9M]  i2t.ctab
+│   ├── [7.2M]  i_data.ctab
+│   ├── [ 420]  input_fastqs_checksums.md5
+│   └── [3.7M]  t_data.ctab
+├── [1.8G]  1A10
+│   ├── [ 559]  1A10_checksums.md5
+│   ├── [3.5M]  1A10.cov_refs.gtf
+│   ├── [ 34M]  1A10.gtf
+│   ├── [ 449]  1A10-hisat2_output.flagstat
+│   ├── [ 638]  1A10_hisat2.stats
+│   ├── [1.8G]  1A10.sorted.bam
+│   ├── [779K]  1A10.sorted.bam.bai
+│   ├── [2.4M]  e2t.ctab
+│   ├── [ 15M]  e_data.ctab
+│   ├── [1.9M]  i2t.ctab
+│   ├── [7.2M]  i_data.ctab
+│   ├── [ 424]  input_fastqs_checksums.md5
+│   └── [3.7M]  t_data.ctab
+├── [1.6G]  1A12
+│   ├── [ 559]  1A12_checksums.md5
+│   ├── [8.3M]  1A12.cov_refs.gtf
+│   ├── [ 34M]  1A12.gtf
+│   ├── [ 449]  1A12-hisat2_output.flagstat
+│   ├── [ 636]  1A12_hisat2.stats
+│   ├── [1.5G]  1A12.sorted.bam
+│   ├── [777K]  1A12.sorted.bam.bai
+│   ├── [2.4M]  e2t.ctab
+│   ├── [ 15M]  e_data.ctab
+│   ├── [1.9M]  i2t.ctab
+│   ├── [7.3M]  i_data.ctab
+│   ├── [ 424]  input_fastqs_checksums.md5
+│   └── [3.7M]  t_data.ctab
+├── [1.8G]  1A2
+│   ├── [ 553]  1A2_checksums.md5
+│   ├── [3.1M]  1A2.cov_refs.gtf
+│   ├── [ 34M]  1A2.gtf
+│   ├── [ 449]  1A2-hisat2_output.flagstat
+│   ├── [ 640]  1A2_hisat2.stats
+│   ├── [1.7G]  1A2.sorted.bam
+│   ├── [864K]  1A2.sorted.bam.bai
+│   ├── [2.4M]  e2t.ctab
+│   ├── [ 15M]  e_data.ctab
+│   ├── [1.9M]  i2t.ctab
+│   ├── [7.2M]  i_data.ctab
+│   ├── [ 420]  input_fastqs_checksums.md5
+│   └── [3.7M]  t_data.ctab
+├── [1.5G]  1A8
+│   ├── [ 553]  1A8_checksums.md5
+│   ├── [6.9M]  1A8.cov_refs.gtf
+│   ├── [ 34M]  1A8.gtf
+│   ├── [ 449]  1A8-hisat2_output.flagstat
+│   ├── [ 637]  1A8_hisat2.stats
+│   ├── [1.5G]  1A8.sorted.bam
+│   ├── [789K]  1A8.sorted.bam.bai
+│   ├── [2.4M]  e2t.ctab
+│   ├── [ 15M]  e_data.ctab
+│   ├── [1.9M]  i2t.ctab
+│   ├── [7.3M]  i_data.ctab
+│   ├── [ 422]  input_fastqs_checksums.md5
+│   └── [3.7M]  t_data.ctab
+├── [1.9G]  1A9
+│   ├── [ 553]  1A9_checksums.md5
+│   ├── [7.2M]  1A9.cov_refs.gtf
+│   ├── [ 34M]  1A9.gtf
+│   ├── [ 450]  1A9-hisat2_output.flagstat
+│   ├── [ 638]  1A9_hisat2.stats
+│   ├── [1.9G]  1A9.sorted.bam
+│   ├── [795K]  1A9.sorted.bam.bai
+│   ├── [2.4M]  e2t.ctab
+│   ├── [ 15M]  e_data.ctab
+│   ├── [1.9M]  i2t.ctab
+│   ├── [7.3M]  i_data.ctab
+│   ├── [ 422]  input_fastqs_checksums.md5
+│   └── [3.7M]  t_data.ctab
+├── [1.8G]  1B1
+│   ├── [ 553]  1B1_checksums.md5
+│   ├── [6.9M]  1B1.cov_refs.gtf
+│   ├── [ 34M]  1B1.gtf
+│   ├── [ 449]  1B1-hisat2_output.flagstat
+│   ├── [ 638]  1B1_hisat2.stats
+│   ├── [1.8G]  1B1.sorted.bam
+│   ├── [824K]  1B1.sorted.bam.bai
+│   ├── [2.4M]  e2t.ctab
+│   ├── [ 15M]  e_data.ctab
+│   ├── [1.9M]  i2t.ctab
+│   ├── [7.3M]  i_data.ctab
+│   ├── [ 420]  input_fastqs_checksums.md5
+│   └── [3.7M]  t_data.ctab
+├── [1.8G]  1B10
+│   ├── [ 559]  1B10_checksums.md5
+│   ├── [7.0M]  1B10.cov_refs.gtf
+│   ├── [ 34M]  1B10.gtf
+│   ├── [ 449]  1B10-hisat2_output.flagstat
+│   ├── [ 637]  1B10_hisat2.stats
+│   ├── [1.7G]  1B10.sorted.bam
+│   ├── [819K]  1B10.sorted.bam.bai
+│   ├── [2.4M]  e2t.ctab
+│   ├── [ 15M]  e_data.ctab
+│   ├── [1.9M]  i2t.ctab
+│   ├── [7.3M]  i_data.ctab
+│   ├── [ 424]  input_fastqs_checksums.md5
+│   └── [3.7M]  t_data.ctab
+├── [1.8G]  1B2
+│   ├── [ 553]  1B2_checksums.md5
+│   ├── [5.0M]  1B2.cov_refs.gtf
+│   ├── [ 34M]  1B2.gtf
+│   ├── [ 449]  1B2-hisat2_output.flagstat
+│   ├── [ 638]  1B2_hisat2.stats
+│   ├── [1.7G]  1B2.sorted.bam
+│   ├── [814K]  1B2.sorted.bam.bai
+│   ├── [2.4M]  e2t.ctab
+│   ├── [ 15M]  e_data.ctab
+│   ├── [1.9M]  i2t.ctab
+│   ├── [7.3M]  i_data.ctab
+│   ├── [ 422]  input_fastqs_checksums.md5
+│   └── [3.7M]  t_data.ctab
+├── [2.0G]  1B5
+│   ├── [ 553]  1B5_checksums.md5
+│   ├── [7.8M]  1B5.cov_refs.gtf
+│   ├── [ 34M]  1B5.gtf
+│   ├── [ 450]  1B5-hisat2_output.flagstat
+│   ├── [ 637]  1B5_hisat2.stats
+│   ├── [1.9G]  1B5.sorted.bam
+│   ├── [919K]  1B5.sorted.bam.bai
+│   ├── [2.4M]  e2t.ctab
+│   ├── [ 15M]  e_data.ctab
+│   ├── [1.9M]  i2t.ctab
+│   ├── [7.3M]  i_data.ctab
+│   ├── [ 422]  input_fastqs_checksums.md5
+│   └── [3.7M]  t_data.ctab
+├── [2.0G]  1B9
+│   ├── [ 553]  1B9_checksums.md5
+│   ├── [3.8M]  1B9.cov_refs.gtf
+│   ├── [ 34M]  1B9.gtf
+│   ├── [ 449]  1B9-hisat2_output.flagstat
+│   ├── [ 640]  1B9_hisat2.stats
+│   ├── [1.9G]  1B9.sorted.bam
+│   ├── [832K]  1B9.sorted.bam.bai
+│   ├── [2.4M]  e2t.ctab
+│   ├── [ 15M]  e_data.ctab
+│   ├── [1.9M]  i2t.ctab
+│   ├── [7.2M]  i_data.ctab
+│   ├── [ 422]  input_fastqs_checksums.md5
+│   └── [3.7M]  t_data.ctab
+├── [1.5G]  1C10
+│   ├── [ 559]  1C10_checksums.md5
+│   ├── [4.0M]  1C10.cov_refs.gtf
+│   ├── [ 34M]  1C10.gtf
+│   ├── [ 449]  1C10-hisat2_output.flagstat
+│   ├── [ 636]  1C10_hisat2.stats
+│   ├── [1.4G]  1C10.sorted.bam
+│   ├── [714K]  1C10.sorted.bam.bai
+│   ├── [2.4M]  e2t.ctab
+│   ├── [ 15M]  e_data.ctab
+│   ├── [1.9M]  i2t.ctab
+│   ├── [7.2M]  i_data.ctab
+│   ├── [ 424]  input_fastqs_checksums.md5
+│   └── [3.7M]  t_data.ctab
+├── [1.8G]  1C4
+│   ├── [ 553]  1C4_checksums.md5
+│   ├── [6.8M]  1C4.cov_refs.gtf
+│   ├── [ 34M]  1C4.gtf
+│   ├── [ 450]  1C4-hisat2_output.flagstat
+│   ├── [ 638]  1C4_hisat2.stats
+│   ├── [1.8G]  1C4.sorted.bam
+│   ├── [837K]  1C4.sorted.bam.bai
+│   ├── [2.4M]  e2t.ctab
+│   ├── [ 15M]  e_data.ctab
+│   ├── [1.9M]  i2t.ctab
+│   ├── [7.3M]  i_data.ctab
+│   ├── [ 422]  input_fastqs_checksums.md5
+│   └── [3.7M]  t_data.ctab
+├── [1.9G]  1D10
+│   ├── [ 559]  1D10_checksums.md5
+│   ├── [6.3M]  1D10.cov_refs.gtf
+│   ├── [ 34M]  1D10.gtf
+│   ├── [ 450]  1D10-hisat2_output.flagstat
+│   ├── [ 637]  1D10_hisat2.stats
+│   ├── [1.8G]  1D10.sorted.bam
+│   ├── [848K]  1D10.sorted.bam.bai
+│   ├── [2.4M]  e2t.ctab
+│   ├── [ 15M]  e_data.ctab
+│   ├── [1.9M]  i2t.ctab
+│   ├── [7.3M]  i_data.ctab
+│   ├── [ 424]  input_fastqs_checksums.md5
+│   └── [3.7M]  t_data.ctab
+├── [1.4G]  1D3
+│   ├── [ 553]  1D3_checksums.md5
+│   ├── [4.1M]  1D3.cov_refs.gtf
+│   ├── [ 34M]  1D3.gtf
+│   ├── [ 449]  1D3-hisat2_output.flagstat
+│   ├── [ 636]  1D3_hisat2.stats
+│   ├── [1.3G]  1D3.sorted.bam
+│   ├── [713K]  1D3.sorted.bam.bai
+│   ├── [2.4M]  e2t.ctab
+│   ├── [ 15M]  e_data.ctab
+│   ├── [1.9M]  i2t.ctab
+│   ├── [7.2M]  i_data.ctab
+│   ├── [ 422]  input_fastqs_checksums.md5
+│   └── [3.7M]  t_data.ctab
+├── [2.0G]  1D4
+│   ├── [ 553]  1D4_checksums.md5
+│   ├── [4.5M]  1D4.cov_refs.gtf
+│   ├── [ 34M]  1D4.gtf
+│   ├── [ 449]  1D4-hisat2_output.flagstat
+│   ├── [ 638]  1D4_hisat2.stats
+│   ├── [1.9G]  1D4.sorted.bam
+│   ├── [884K]  1D4.sorted.bam.bai
+│   ├── [2.4M]  e2t.ctab
+│   ├── [ 15M]  e_data.ctab
+│   ├── [1.9M]  i2t.ctab
+│   ├── [7.2M]  i_data.ctab
+│   ├── [ 422]  input_fastqs_checksums.md5
+│   └── [3.7M]  t_data.ctab
+├── [1.6G]  1D6
+│   ├── [ 553]  1D6_checksums.md5
+│   ├── [6.8M]  1D6.cov_refs.gtf
+│   ├── [ 34M]  1D6.gtf
+│   ├── [ 449]  1D6-hisat2_output.flagstat
+│   ├── [ 637]  1D6_hisat2.stats
+│   ├── [1.6G]  1D6.sorted.bam
+│   ├── [778K]  1D6.sorted.bam.bai
+│   ├── [2.4M]  e2t.ctab
+│   ├── [ 15M]  e_data.ctab
+│   ├── [1.9M]  i2t.ctab
+│   ├── [7.3M]  i_data.ctab
+│   ├── [ 422]  input_fastqs_checksums.md5
+│   └── [3.7M]  t_data.ctab
+├── [1.5G]  1D8
+│   ├── [ 553]  1D8_checksums.md5
+│   ├── [5.6M]  1D8.cov_refs.gtf
+│   ├── [ 34M]  1D8.gtf
+│   ├── [ 449]  1D8-hisat2_output.flagstat
+│   ├── [ 637]  1D8_hisat2.stats
+│   ├── [1.4G]  1D8.sorted.bam
+│   ├── [688K]  1D8.sorted.bam.bai
+│   ├── [2.4M]  e2t.ctab
+│   ├── [ 15M]  e_data.ctab
+│   ├── [1.9M]  i2t.ctab
+│   ├── [7.3M]  i_data.ctab
+│   ├── [ 422]  input_fastqs_checksums.md5
+│   └── [3.7M]  t_data.ctab
+├── [1.9G]  1D9
+│   ├── [ 553]  1D9_checksums.md5
+│   ├── [2.4M]  1D9.cov_refs.gtf
+│   ├── [ 34M]  1D9.gtf
+│   ├── [ 449]  1D9-hisat2_output.flagstat
+│   ├── [ 640]  1D9_hisat2.stats
+│   ├── [1.8G]  1D9.sorted.bam
+│   ├── [799K]  1D9.sorted.bam.bai
+│   ├── [2.4M]  e2t.ctab
+│   ├── [ 15M]  e_data.ctab
+│   ├── [1.9M]  i2t.ctab
+│   ├── [7.2M]  i_data.ctab
+│   ├── [ 422]  input_fastqs_checksums.md5
+│   └── [3.7M]  t_data.ctab
+├── [2.0G]  1E1
+│   ├── [ 553]  1E1_checksums.md5
+│   ├── [5.6M]  1E1.cov_refs.gtf
+│   ├── [ 34M]  1E1.gtf
+│   ├── [ 450]  1E1-hisat2_output.flagstat
+│   ├── [ 638]  1E1_hisat2.stats
+│   ├── [1.9G]  1E1.sorted.bam
+│   ├── [919K]  1E1.sorted.bam.bai
+│   ├── [2.4M]  e2t.ctab
+│   ├── [ 15M]  e_data.ctab
+│   ├── [1.9M]  i2t.ctab
+│   ├── [7.3M]  i_data.ctab
+│   ├── [ 420]  input_fastqs_checksums.md5
+│   └── [3.7M]  t_data.ctab
+├── [1.6G]  1E3
+│   ├── [ 553]  1E3_checksums.md5
+│   ├── [7.4M]  1E3.cov_refs.gtf
+│   ├── [ 34M]  1E3.gtf
+│   ├── [ 449]  1E3-hisat2_output.flagstat
+│   ├── [ 637]  1E3_hisat2.stats
+│   ├── [1.6G]  1E3.sorted.bam
+│   ├── [783K]  1E3.sorted.bam.bai
+│   ├── [2.4M]  e2t.ctab
+│   ├── [ 15M]  e_data.ctab
+│   ├── [1.9M]  i2t.ctab
+│   ├── [7.3M]  i_data.ctab
+│   ├── [ 422]  input_fastqs_checksums.md5
+│   └── [3.7M]  t_data.ctab
+├── [1.6G]  1E5
+│   ├── [ 553]  1E5_checksums.md5
+│   ├── [6.2M]  1E5.cov_refs.gtf
+│   ├── [ 34M]  1E5.gtf
+│   ├── [ 449]  1E5-hisat2_output.flagstat
+│   ├── [ 637]  1E5_hisat2.stats
+│   ├── [1.5G]  1E5.sorted.bam
+│   ├── [822K]  1E5.sorted.bam.bai
+│   ├── [2.4M]  e2t.ctab
+│   ├── [ 15M]  e_data.ctab
+│   ├── [1.9M]  i2t.ctab
+│   ├── [7.3M]  i_data.ctab
+│   ├── [ 422]  input_fastqs_checksums.md5
+│   └── [3.7M]  t_data.ctab
+├── [1.8G]  1E9
+│   ├── [ 553]  1E9_checksums.md5
+│   ├── [4.4M]  1E9.cov_refs.gtf
+│   ├── [ 34M]  1E9.gtf
+│   ├── [ 449]  1E9-hisat2_output.flagstat
+│   ├── [ 638]  1E9_hisat2.stats
+│   ├── [1.8G]  1E9.sorted.bam
+│   ├── [814K]  1E9.sorted.bam.bai
+│   ├── [2.4M]  e2t.ctab
+│   ├── [ 15M]  e_data.ctab
+│   ├── [1.9M]  i2t.ctab
+│   ├── [7.2M]  i_data.ctab
+│   ├── [ 422]  input_fastqs_checksums.md5
+│   └── [3.7M]  t_data.ctab
+├── [1.6G]  1F11
+│   ├── [ 559]  1F11_checksums.md5
+│   ├── [7.9M]  1F11.cov_refs.gtf
+│   ├── [ 34M]  1F11.gtf
+│   ├── [ 449]  1F11-hisat2_output.flagstat
+│   ├── [ 636]  1F11_hisat2.stats
+│   ├── [1.5G]  1F11.sorted.bam
+│   ├── [745K]  1F11.sorted.bam.bai
+│   ├── [2.4M]  e2t.ctab
+│   ├── [ 15M]  e_data.ctab
+│   ├── [1.9M]  i2t.ctab
+│   ├── [7.3M]  i_data.ctab
+│   ├── [ 424]  input_fastqs_checksums.md5
+│   └── [3.7M]  t_data.ctab
+├── [1.6G]  1F4
+│   ├── [ 553]  1F4_checksums.md5
+│   ├── [7.9M]  1F4.cov_refs.gtf
+│   ├── [ 34M]  1F4.gtf
+│   ├── [ 449]  1F4-hisat2_output.flagstat
+│   ├── [ 637]  1F4_hisat2.stats
+│   ├── [1.5G]  1F4.sorted.bam
+│   ├── [786K]  1F4.sorted.bam.bai
+│   ├── [2.4M]  e2t.ctab
+│   ├── [ 15M]  e_data.ctab
+│   ├── [1.9M]  i2t.ctab
+│   ├── [7.3M]  i_data.ctab
+│   ├── [ 422]  input_fastqs_checksums.md5
+│   └── [3.7M]  t_data.ctab
+├── [1.8G]  1F8
+│   ├── [ 553]  1F8_checksums.md5
+│   ├── [2.9M]  1F8.cov_refs.gtf
+│   ├── [ 34M]  1F8.gtf
+│   ├── [ 449]  1F8-hisat2_output.flagstat
+│   ├── [ 640]  1F8_hisat2.stats
+│   ├── [1.8G]  1F8.sorted.bam
+│   ├── [784K]  1F8.sorted.bam.bai
+│   ├── [2.4M]  e2t.ctab
+│   ├── [ 15M]  e_data.ctab
+│   ├── [1.9M]  i2t.ctab
+│   ├── [7.2M]  i_data.ctab
+│   ├── [ 422]  input_fastqs_checksums.md5
+│   └── [3.7M]  t_data.ctab
+├── [2.1G]  1G5
+│   ├── [ 553]  1G5_checksums.md5
+│   ├── [8.5M]  1G5.cov_refs.gtf
+│   ├── [ 34M]  1G5.gtf
+│   ├── [ 450]  1G5-hisat2_output.flagstat
+│   ├── [ 638]  1G5_hisat2.stats
+│   ├── [2.0G]  1G5.sorted.bam
+│   ├── [988K]  1G5.sorted.bam.bai
+│   ├── [2.4M]  e2t.ctab
+│   ├── [ 15M]  e_data.ctab
+│   ├── [1.9M]  i2t.ctab
+│   ├── [7.3M]  i_data.ctab
+│   ├── [ 422]  input_fastqs_checksums.md5
+│   └── [3.7M]  t_data.ctab
+├── [1.6G]  1H11
+│   ├── [ 559]  1H11_checksums.md5
+│   ├── [8.3M]  1H11.cov_refs.gtf
+│   ├── [ 34M]  1H11.gtf
+│   ├── [ 449]  1H11-hisat2_output.flagstat
+│   ├── [ 636]  1H11_hisat2.stats
+│   ├── [1.5G]  1H11.sorted.bam
+│   ├── [778K]  1H11.sorted.bam.bai
+│   ├── [2.4M]  e2t.ctab
+│   ├── [ 15M]  e_data.ctab
+│   ├── [1.9M]  i2t.ctab
+│   ├── [7.3M]  i_data.ctab
+│   └── [3.7M]  t_data.ctab
+├── [1.3G]  1H12
+│   ├── [ 559]  1H12_checksums.md5
+│   ├── [3.5M]  1H12.cov_refs.gtf
+│   ├── [ 34M]  1H12.gtf
+│   ├── [ 449]  1H12-hisat2_output.flagstat
+│   ├── [ 636]  1H12_hisat2.stats
+│   ├── [1.3G]  1H12.sorted.bam
+│   ├── [698K]  1H12.sorted.bam.bai
+│   ├── [2.4M]  e2t.ctab
+│   ├── [ 15M]  e_data.ctab
+│   ├── [1.9M]  i2t.ctab
+│   ├── [7.2M]  i_data.ctab
+│   ├── [ 424]  input_fastqs_checksums.md5
+│   └── [3.7M]  t_data.ctab
+├── [1.8G]  1H6
+│   ├── [ 553]  1H6_checksums.md5
+│   ├── [2.9M]  1H6.cov_refs.gtf
+│   ├── [ 34M]  1H6.gtf
+│   ├── [ 449]  1H6-hisat2_output.flagstat
+│   ├── [ 640]  1H6_hisat2.stats
+│   ├── [1.8G]  1H6.sorted.bam
+│   ├── [784K]  1H6.sorted.bam.bai
+│   ├── [2.4M]  e2t.ctab
+│   ├── [ 15M]  e_data.ctab
+│   ├── [1.9M]  i2t.ctab
+│   ├── [7.2M]  i_data.ctab
+│   └── [3.7M]  t_data.ctab
+├── [1.5G]  1H7
+│   ├── [ 553]  1H7_checksums.md5
+│   ├── [7.4M]  1H7.cov_refs.gtf
+│   ├── [ 34M]  1H7.gtf
+│   ├── [ 449]  1H7-hisat2_output.flagstat
+│   ├── [ 637]  1H7_hisat2.stats
+│   ├── [1.5G]  1H7.sorted.bam
+│   ├── [780K]  1H7.sorted.bam.bai
+│   ├── [2.4M]  e2t.ctab
+│   ├── [ 15M]  e_data.ctab
+│   ├── [1.9M]  i2t.ctab
+│   ├── [7.3M]  i_data.ctab
+│   ├── [ 422]  input_fastqs_checksums.md5
+│   └── [3.7M]  t_data.ctab
+├── [1.6G]  1H8
+│   ├── [ 553]  1H8_checksums.md5
+│   ├── [6.6M]  1H8.cov_refs.gtf
+│   ├── [ 34M]  1H8.gtf
+│   ├── [ 449]  1H8-hisat2_output.flagstat
+│   ├── [ 637]  1H8_hisat2.stats
+│   ├── [1.6G]  1H8.sorted.bam
+│   ├── [791K]  1H8.sorted.bam.bai
+│   ├── [2.4M]  e2t.ctab
+│   ├── [ 15M]  e_data.ctab
+│   ├── [1.9M]  i2t.ctab
+│   ├── [7.3M]  i_data.ctab
+│   ├── [ 422]  input_fastqs_checksums.md5
+│   └── [3.7M]  t_data.ctab
+├── [2.1G]  2B2
+│   ├── [ 553]  2B2_checksums.md5
+│   ├── [5.3M]  2B2.cov_refs.gtf
+│   ├── [ 34M]  2B2.gtf
+│   ├── [ 450]  2B2-hisat2_output.flagstat
+│   ├── [ 639]  2B2_hisat2.stats
+│   ├── [2.0G]  2B2.sorted.bam
+│   ├── [961K]  2B2.sorted.bam.bai
+│   ├── [2.4M]  e2t.ctab
+│   ├── [ 15M]  e_data.ctab
+│   ├── [1.9M]  i2t.ctab
+│   ├── [7.3M]  i_data.ctab
+│   ├── [ 424]  input_fastqs_checksums.md5
+│   └── [3.7M]  t_data.ctab
+├── [1.8G]  2B3
+│   ├── [ 553]  2B3_checksums.md5
+│   ├── [8.2M]  2B3.cov_refs.gtf
+│   ├── [ 34M]  2B3.gtf
+│   ├── [ 449]  2B3-hisat2_output.flagstat
+│   ├── [ 638]  2B3_hisat2.stats
+│   ├── [1.7G]  2B3.sorted.bam
+│   ├── [818K]  2B3.sorted.bam.bai
+│   ├── [2.4M]  e2t.ctab
+│   ├── [ 15M]  e_data.ctab
+│   ├── [1.9M]  i2t.ctab
+│   ├── [7.3M]  i_data.ctab
+│   ├── [ 424]  input_fastqs_checksums.md5
+│   └── [3.7M]  t_data.ctab
+├── [1.8G]  2C1
+│   ├── [ 553]  2C1_checksums.md5
+│   ├── [4.0M]  2C1.cov_refs.gtf
+│   ├── [ 34M]  2C1.gtf
+│   ├── [ 448]  2C1-hisat2_output.flagstat
+│   ├── [ 638]  2C1_hisat2.stats
+│   ├── [1.7G]  2C1.sorted.bam
+│   ├── [636K]  2C1.sorted.bam.bai
+│   ├── [2.4M]  e2t.ctab
+│   ├── [ 15M]  e_data.ctab
+│   ├── [1.9M]  i2t.ctab
+│   ├── [7.2M]  i_data.ctab
+│   ├── [ 422]  input_fastqs_checksums.md5
+│   └── [3.7M]  t_data.ctab
+├── [1.6G]  2C2
+│   ├── [ 553]  2C2_checksums.md5
+│   ├── [7.6M]  2C2.cov_refs.gtf
+│   ├── [ 34M]  2C2.gtf
+│   ├── [ 450]  2C2-hisat2_output.flagstat
+│   ├── [ 637]  2C2_hisat2.stats
+│   ├── [1.5G]  2C2.sorted.bam
+│   ├── [794K]  2C2.sorted.bam.bai
+│   ├── [2.4M]  e2t.ctab
+│   ├── [ 15M]  e_data.ctab
+│   ├── [1.9M]  i2t.ctab
+│   ├── [7.3M]  i_data.ctab
+│   ├── [ 424]  input_fastqs_checksums.md5
+│   └── [3.7M]  t_data.ctab
+├── [2.0G]  2D2
+│   ├── [ 553]  2D2_checksums.md5
+│   ├── [2.9M]  2D2.cov_refs.gtf
+│   ├── [ 34M]  2D2.gtf
+│   ├── [ 449]  2D2-hisat2_output.flagstat
+│   ├── [ 640]  2D2_hisat2.stats
+│   ├── [1.9G]  2D2.sorted.bam
+│   ├── [795K]  2D2.sorted.bam.bai
+│   ├── [2.4M]  e2t.ctab
+│   ├── [ 15M]  e_data.ctab
+│   ├── [1.9M]  i2t.ctab
+│   ├── [7.2M]  i_data.ctab
+│   ├── [ 424]  input_fastqs_checksums.md5
+│   └── [3.7M]  t_data.ctab
+├── [1.4G]  2E2
+│   ├── [ 553]  2E2_checksums.md5
+│   ├── [2.2M]  2E2.cov_refs.gtf
+│   ├── [ 33M]  2E2.gtf
+│   ├── [ 449]  2E2-hisat2_output.flagstat
+│   ├── [ 639]  2E2_hisat2.stats
+│   ├── [1.4G]  2E2.sorted.bam
+│   ├── [632K]  2E2.sorted.bam.bai
+│   ├── [2.4M]  e2t.ctab
+│   ├── [ 15M]  e_data.ctab
+│   ├── [1.9M]  i2t.ctab
+│   ├── [7.2M]  i_data.ctab
+│   ├── [ 424]  input_fastqs_checksums.md5
+│   └── [3.7M]  t_data.ctab
+├── [2.6G]  2F1
+│   ├── [ 553]  2F1_checksums.md5
+│   ├── [2.9M]  2F1.cov_refs.gtf
+│   ├── [ 34M]  2F1.gtf
+│   ├── [ 451]  2F1-hisat2_output.flagstat
+│   ├── [ 642]  2F1_hisat2.stats
+│   ├── [2.5G]  2F1.sorted.bam
+│   ├── [980K]  2F1.sorted.bam.bai
+│   ├── [2.4M]  e2t.ctab
+│   ├── [ 15M]  e_data.ctab
+│   ├── [1.9M]  i2t.ctab
+│   ├── [7.2M]  i_data.ctab
+│   ├── [ 424]  input_fastqs_checksums.md5
+│   └── [3.7M]  t_data.ctab
+├── [1.6G]  2G1
+│   ├── [ 553]  2G1_checksums.md5
+│   ├── [6.1M]  2G1.cov_refs.gtf
+│   ├── [ 34M]  2G1.gtf
+│   ├── [ 449]  2G1-hisat2_output.flagstat
+│   ├── [ 637]  2G1_hisat2.stats
+│   ├── [1.6G]  2G1.sorted.bam
+│   ├── [724K]  2G1.sorted.bam.bai
+│   ├── [2.4M]  e2t.ctab
+│   ├── [ 15M]  e_data.ctab
+│   ├── [1.9M]  i2t.ctab
+│   ├── [7.3M]  i_data.ctab
+│   ├── [ 424]  input_fastqs_checksums.md5
+│   └── [3.7M]  t_data.ctab
+├── [ 35M]  Apulchra-genome.stringtie.gtf
+├── [5.1M]  apul-gene_count_matrix.csv
+├── [5.2M]  apul-transcript_count_matrix.csv
+├── [ 587]  checksums.md5
+├── [5.1K]  gtf_list.txt
+├── [306K]  multiqc_data
+│   ├── [5.0K]  multiqc_bowtie2.txt
+│   ├── [ 307]  multiqc_citations.txt
+│   ├── [268K]  multiqc_data.json
+│   ├── [2.7K]  multiqc_general_stats.txt
+│   ├── [4.1K]  multiqc.log
+│   ├── [7.7K]  multiqc_samtools_flagstat.txt
+│   └── [ 14K]  multiqc_sources.txt
+├── [1.1M]  multiqc_report.html
+├── [5.2K]  prepDE-sample_list.txt
+├── [ 856]  sorted_bams.list
+├── [ 64G]  sorted-bams-merged.bam
+└── [ 13M]  sorted-bams-merged.bam.bai
+
+ 135G used in 41 directories, 535 files</code></pre>
+</section>
+<section id="multiqc-alignment-rates" class="level2">
+<h2 class="anchored" data-anchor-id="multiqc-alignment-rates">3.2 MultiQC alignment rates</h2>
+<div class="sourceCode" id="cb8"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Load bash variables into memory</span></span>
+<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a><span class="bu">source</span> .bashvars</span>
+<span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb8-4"><a href="#cb8-4" aria-hidden="true" tabindex="-1"></a><span class="co"># Change to ouput directory</span></span>
+<span id="cb8-5"><a href="#cb8-5" aria-hidden="true" tabindex="-1"></a><span class="bu">cd</span> <span class="st">"</span><span class="va">${output_dir_top}</span><span class="st">"</span></span>
+<span id="cb8-6"><a href="#cb8-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb8-7"><a href="#cb8-7" aria-hidden="true" tabindex="-1"></a><span class="va">${programs_array</span><span class="op">[</span>multiqc<span class="op">]</span><span class="va">}</span> .</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</section>
+</section>
+<section id="merge-sorted-bams" class="level1">
+<h1>4 Merge sorted BAMs</h1>
+<p>Merge all BAMs to singular BAM for use in transcriptome assembly later, if needed.</p>
+<div class="sourceCode" id="cb9"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Load bash variables into memory</span></span>
+<span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a><span class="bu">source</span> .bashvars</span>
+<span id="cb9-3"><a href="#cb9-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-4"><a href="#cb9-4" aria-hidden="true" tabindex="-1"></a><span class="co"># Change to ouput directory</span></span>
+<span id="cb9-5"><a href="#cb9-5" aria-hidden="true" tabindex="-1"></a><span class="bu">cd</span> <span class="st">"</span><span class="va">${output_dir_top}</span><span class="st">"</span></span>
+<span id="cb9-6"><a href="#cb9-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-7"><a href="#cb9-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-8"><a href="#cb9-8" aria-hidden="true" tabindex="-1"></a><span class="co">## Create list of sorted BAMs for merging</span></span>
+<span id="cb9-9"><a href="#cb9-9" aria-hidden="true" tabindex="-1"></a><span class="fu">find</span> . <span class="at">-name</span> <span class="st">"*sorted.bam"</span> <span class="op">&gt;</span> sorted_bams.list</span>
+<span id="cb9-10"><a href="#cb9-10" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-11"><a href="#cb9-11" aria-hidden="true" tabindex="-1"></a><span class="co">## Merge sorted BAMs</span></span>
+<span id="cb9-12"><a href="#cb9-12" aria-hidden="true" tabindex="-1"></a><span class="va">${programs_array</span><span class="op">[</span>samtools<span class="op">]</span><span class="va">}</span> merge <span class="dt">\</span></span>
+<span id="cb9-13"><a href="#cb9-13" aria-hidden="true" tabindex="-1"></a>-b sorted_bams.list <span class="dt">\</span></span>
+<span id="cb9-14"><a href="#cb9-14" aria-hidden="true" tabindex="-1"></a><span class="va">${merged_bam}</span> <span class="dt">\</span></span>
+<span id="cb9-15"><a href="#cb9-15" aria-hidden="true" tabindex="-1"></a>--threads <span class="va">${threads}</span></span>
+<span id="cb9-16"><a href="#cb9-16" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-17"><a href="#cb9-17" aria-hidden="true" tabindex="-1"></a><span class="co">## Index merged BAM</span></span>
+<span id="cb9-18"><a href="#cb9-18" aria-hidden="true" tabindex="-1"></a><span class="va">${programs_array</span><span class="op">[</span>samtools<span class="op">]</span><span class="va">}</span> index <span class="va">${merged_bam}</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</section>
+<section id="create-combined-gtf" class="level1">
+<h1>5 Create combined GTF</h1>
+<div class="sourceCode" id="cb10"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Load bash variables into memory</span></span>
+<span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a><span class="bu">source</span> .bashvars</span>
+<span id="cb10-3"><a href="#cb10-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb10-4"><a href="#cb10-4" aria-hidden="true" tabindex="-1"></a><span class="co"># Change to ouput directory</span></span>
+<span id="cb10-5"><a href="#cb10-5" aria-hidden="true" tabindex="-1"></a><span class="bu">cd</span> <span class="st">"</span><span class="va">${output_dir_top}</span><span class="st">"</span></span>
+<span id="cb10-6"><a href="#cb10-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb10-7"><a href="#cb10-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb10-8"><a href="#cb10-8" aria-hidden="true" tabindex="-1"></a><span class="co"># Create singular transcript file, using GTF list file</span></span>
+<span id="cb10-9"><a href="#cb10-9" aria-hidden="true" tabindex="-1"></a><span class="st">"</span><span class="va">${programs_array</span><span class="op">[</span>stringtie<span class="op">]</span><span class="va">}</span><span class="st">"</span> <span class="at">--merge</span> <span class="dt">\</span></span>
+<span id="cb10-10"><a href="#cb10-10" aria-hidden="true" tabindex="-1"></a><span class="st">"</span><span class="va">${gtf_list}</span><span class="st">"</span> <span class="dt">\</span></span>
+<span id="cb10-11"><a href="#cb10-11" aria-hidden="true" tabindex="-1"></a>-p <span class="st">"</span><span class="va">${threads}</span><span class="st">"</span> <span class="dt">\</span></span>
+<span id="cb10-12"><a href="#cb10-12" aria-hidden="true" tabindex="-1"></a>-G <span class="st">"</span><span class="va">${genome_gff}</span><span class="st">"</span> <span class="dt">\</span></span>
+<span id="cb10-13"><a href="#cb10-13" aria-hidden="true" tabindex="-1"></a>-o <span class="st">"</span><span class="va">${genome_index_name}</span><span class="st">"</span>.stringtie.gtf</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</section>
+<section id="create-deseq2-count-matrices" class="level1">
+<h1>6 Create DESeq2 Count Matrices</h1>
+<div class="sourceCode" id="cb11"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Load bash variables into memory</span></span>
+<span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a><span class="bu">source</span> .bashvars</span>
+<span id="cb11-3"><a href="#cb11-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb11-4"><a href="#cb11-4" aria-hidden="true" tabindex="-1"></a><span class="co"># Change to ouput directory</span></span>
+<span id="cb11-5"><a href="#cb11-5" aria-hidden="true" tabindex="-1"></a><span class="bu">cd</span> <span class="st">"</span><span class="va">${output_dir_top}</span><span class="st">"</span></span>
+<span id="cb11-6"><a href="#cb11-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb11-7"><a href="#cb11-7" aria-hidden="true" tabindex="-1"></a><span class="co"># Create file list for prepDE.py</span></span>
+<span id="cb11-8"><a href="#cb11-8" aria-hidden="true" tabindex="-1"></a><span class="cf">while</span> <span class="bu">read</span> <span class="at">-r</span> <span class="va">line</span></span>
+<span id="cb11-9"><a href="#cb11-9" aria-hidden="true" tabindex="-1"></a><span class="cf">do</span></span>
+<span id="cb11-10"><a href="#cb11-10" aria-hidden="true" tabindex="-1"></a>  <span class="va">sample_no_path</span><span class="op">=</span><span class="va">${line</span><span class="op">##</span><span class="pp">*</span>/<span class="va">}</span></span>
+<span id="cb11-11"><a href="#cb11-11" aria-hidden="true" tabindex="-1"></a>  <span class="va">sample</span><span class="op">=</span><span class="va">${sample_no_path</span><span class="op">%</span>.<span class="pp">*</span><span class="va">}</span></span>
+<span id="cb11-12"><a href="#cb11-12" aria-hidden="true" tabindex="-1"></a>  <span class="bu">echo</span> <span class="va">${sample}</span> <span class="va">${line}</span></span>
+<span id="cb11-13"><a href="#cb11-13" aria-hidden="true" tabindex="-1"></a><span class="cf">done</span> <span class="op">&lt;</span> gtf_list.txt <span class="op">&gt;&gt;</span> prepDE-sample_list.txt</span>
+<span id="cb11-14"><a href="#cb11-14" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb11-15"><a href="#cb11-15" aria-hidden="true" tabindex="-1"></a><span class="co"># Create count matrices for genes and transcripts</span></span>
+<span id="cb11-16"><a href="#cb11-16" aria-hidden="true" tabindex="-1"></a><span class="co"># Compatible with import to DESeq2</span></span>
+<span id="cb11-17"><a href="#cb11-17" aria-hidden="true" tabindex="-1"></a><span class="ex">python3</span> <span class="st">"</span><span class="va">${programs_array</span><span class="op">[</span>prepDE<span class="op">]</span><span class="va">}</span><span class="st">"</span> <span class="dt">\</span></span>
+<span id="cb11-18"><a href="#cb11-18" aria-hidden="true" tabindex="-1"></a>--input=prepDE-sample_list.txt <span class="dt">\</span></span>
+<span id="cb11-19"><a href="#cb11-19" aria-hidden="true" tabindex="-1"></a>-g apul-gene_count_matrix.csv <span class="dt">\</span></span>
+<span id="cb11-20"><a href="#cb11-20" aria-hidden="true" tabindex="-1"></a>-t apul-transcript_count_matrix.csv <span class="dt">\</span></span>
+<span id="cb11-21"><a href="#cb11-21" aria-hidden="true" tabindex="-1"></a>--length=<span class="va">${read_length}</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</section>
+<section id="generate-checksums" class="level1">
+<h1>7 Generate checksums</h1>
+<div class="sourceCode" id="cb12"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Load bash variables into memory</span></span>
+<span id="cb12-2"><a href="#cb12-2" aria-hidden="true" tabindex="-1"></a><span class="bu">source</span> .bashvars</span>
+<span id="cb12-3"><a href="#cb12-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb12-4"><a href="#cb12-4" aria-hidden="true" tabindex="-1"></a><span class="co"># Change to ouput directory</span></span>
+<span id="cb12-5"><a href="#cb12-5" aria-hidden="true" tabindex="-1"></a><span class="bu">cd</span> <span class="st">"</span><span class="va">${output_dir_top}</span><span class="st">"</span></span>
+<span id="cb12-6"><a href="#cb12-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb12-7"><a href="#cb12-7" aria-hidden="true" tabindex="-1"></a><span class="co"># Uses find command to avoid passing</span></span>
+<span id="cb12-8"><a href="#cb12-8" aria-hidden="true" tabindex="-1"></a><span class="co"># directory names to the md5sum command.</span></span>
+<span id="cb12-9"><a href="#cb12-9" aria-hidden="true" tabindex="-1"></a><span class="fu">find</span> . <span class="at">-maxdepth</span> 1 <span class="at">-type</span> f <span class="at">-exec</span> md5sum {} + <span class="dt">\</span></span>
+<span id="cb12-10"><a href="#cb12-10" aria-hidden="true" tabindex="-1"></a><span class="kw">|</span> <span class="fu">tee</span> <span class="at">--append</span> checksums.md5</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+
+
+</section>
+
+</main> <!-- /main -->
+<script id="quarto-html-after-body" type="application/javascript">
+window.document.addEventListener("DOMContentLoaded", function (event) {
+  const toggleBodyColorMode = (bsSheetEl) => {
+    const mode = bsSheetEl.getAttribute("data-mode");
+    const bodyEl = window.document.querySelector("body");
+    if (mode === "dark") {
+      bodyEl.classList.add("quarto-dark");
+      bodyEl.classList.remove("quarto-light");
+    } else {
+      bodyEl.classList.add("quarto-light");
+      bodyEl.classList.remove("quarto-dark");
+    }
+  }
+  const toggleBodyColorPrimary = () => {
+    const bsSheetEl = window.document.querySelector("link#quarto-bootstrap");
+    if (bsSheetEl) {
+      toggleBodyColorMode(bsSheetEl);
+    }
+  }
+  toggleBodyColorPrimary();  
+  const icon = "";
+  const anchorJS = new window.AnchorJS();
+  anchorJS.options = {
+    placement: 'right',
+    icon: icon
+  };
+  anchorJS.add('.anchored');
+  const isCodeAnnotation = (el) => {
+    for (const clz of el.classList) {
+      if (clz.startsWith('code-annotation-')) {                     
+        return true;
+      }
+    }
+    return false;
+  }
+  const onCopySuccess = function(e) {
+    // button target
+    const button = e.trigger;
+    // don't keep focus
+    button.blur();
+    // flash "checked"
+    button.classList.add('code-copy-button-checked');
+    var currentTitle = button.getAttribute("title");
+    button.setAttribute("title", "Copied!");
+    let tooltip;
+    if (window.bootstrap) {
+      button.setAttribute("data-bs-toggle", "tooltip");
+      button.setAttribute("data-bs-placement", "left");
+      button.setAttribute("data-bs-title", "Copied!");
+      tooltip = new bootstrap.Tooltip(button, 
+        { trigger: "manual", 
+          customClass: "code-copy-button-tooltip",
+          offset: [0, -8]});
+      tooltip.show();    
+    }
+    setTimeout(function() {
+      if (tooltip) {
+        tooltip.hide();
+        button.removeAttribute("data-bs-title");
+        button.removeAttribute("data-bs-toggle");
+        button.removeAttribute("data-bs-placement");
+      }
+      button.setAttribute("title", currentTitle);
+      button.classList.remove('code-copy-button-checked');
+    }, 1000);
+    // clear code selection
+    e.clearSelection();
+  }
+  const getTextToCopy = function(trigger) {
+      const codeEl = trigger.previousElementSibling.cloneNode(true);
+      for (const childEl of codeEl.children) {
+        if (isCodeAnnotation(childEl)) {
+          childEl.remove();
+        }
+      }
+      return codeEl.innerText;
+  }
+  const clipboard = new window.ClipboardJS('.code-copy-button:not([data-in-quarto-modal])', {
+    text: getTextToCopy
+  });
+  clipboard.on('success', onCopySuccess);
+  if (window.document.getElementById('quarto-embedded-source-code-modal')) {
+    // For code content inside modals, clipBoardJS needs to be initialized with a container option
+    // TODO: Check when it could be a function (https://github.com/zenorocha/clipboard.js/issues/860)
+    const clipboardModal = new window.ClipboardJS('.code-copy-button[data-in-quarto-modal]', {
+      text: getTextToCopy,
+      container: window.document.getElementById('quarto-embedded-source-code-modal')
+    });
+    clipboardModal.on('success', onCopySuccess);
+  }
+    var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
+    var mailtoRegex = new RegExp(/^mailto:/);
+      var filterRegex = new RegExp("https:\/\/robertslab\.github\.io\/sams-notebook");
+    var isInternal = (href) => {
+        return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
+    }
+    // Inspect non-navigation links and adorn them if external
+ 	var links = window.document.querySelectorAll('a[href]:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item):not(.quarto-navigation-tool):not(.about-link)');
+    for (var i=0; i<links.length; i++) {
+      const link = links[i];
+      if (!isInternal(link.href)) {
+        // undo the damage that might have been done by quarto-nav.js in the case of
+        // links that we want to consider external
+        if (link.dataset.originalHref !== undefined) {
+          link.href = link.dataset.originalHref;
+        }
+      }
+    }
+  function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
+    const config = {
+      allowHTML: true,
+      maxWidth: 500,
+      delay: 100,
+      arrow: false,
+      appendTo: function(el) {
+          return el.parentElement;
+      },
+      interactive: true,
+      interactiveBorder: 10,
+      theme: 'quarto',
+      placement: 'bottom-start',
+    };
+    if (contentFn) {
+      config.content = contentFn;
+    }
+    if (onTriggerFn) {
+      config.onTrigger = onTriggerFn;
+    }
+    if (onUntriggerFn) {
+      config.onUntrigger = onUntriggerFn;
+    }
+    window.tippy(el, config); 
+  }
+  const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+  for (var i=0; i<noterefs.length; i++) {
+    const ref = noterefs[i];
+    tippyHover(ref, function() {
+      // use id or data attribute instead here
+      let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+      try { href = new URL(href).hash; } catch {}
+      const id = href.replace(/^#\/?/, "");
+      const note = window.document.getElementById(id);
+      if (note) {
+        return note.innerHTML;
+      } else {
+        return "";
+      }
+    });
+  }
+  const xrefs = window.document.querySelectorAll('a.quarto-xref');
+  const processXRef = (id, note) => {
+    // Strip column container classes
+    const stripColumnClz = (el) => {
+      el.classList.remove("page-full", "page-columns");
+      if (el.children) {
+        for (const child of el.children) {
+          stripColumnClz(child);
+        }
+      }
+    }
+    stripColumnClz(note)
+    if (id === null || id.startsWith('sec-')) {
+      // Special case sections, only their first couple elements
+      const container = document.createElement("div");
+      if (note.children && note.children.length > 2) {
+        container.appendChild(note.children[0].cloneNode(true));
+        for (let i = 1; i < note.children.length; i++) {
+          const child = note.children[i];
+          if (child.tagName === "P" && child.innerText === "") {
+            continue;
+          } else {
+            container.appendChild(child.cloneNode(true));
+            break;
+          }
+        }
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(container);
+        }
+        return container.innerHTML
+      } else {
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(note);
+        }
+        return note.innerHTML;
+      }
+    } else {
+      // Remove any anchor links if they are present
+      const anchorLink = note.querySelector('a.anchorjs-link');
+      if (anchorLink) {
+        anchorLink.remove();
+      }
+      if (window.Quarto?.typesetMath) {
+        window.Quarto.typesetMath(note);
+      }
+      // TODO in 1.5, we should make sure this works without a callout special case
+      if (note.classList.contains("callout")) {
+        return note.outerHTML;
+      } else {
+        return note.innerHTML;
+      }
+    }
+  }
+  for (var i=0; i<xrefs.length; i++) {
+    const xref = xrefs[i];
+    tippyHover(xref, undefined, function(instance) {
+      instance.disable();
+      let url = xref.getAttribute('href');
+      let hash = undefined; 
+      if (url.startsWith('#')) {
+        hash = url;
+      } else {
+        try { hash = new URL(url).hash; } catch {}
+      }
+      if (hash) {
+        const id = hash.replace(/^#\/?/, "");
+        const note = window.document.getElementById(id);
+        if (note !== null) {
+          try {
+            const html = processXRef(id, note.cloneNode(true));
+            instance.setContent(html);
+          } finally {
+            instance.enable();
+            instance.show();
+          }
+        } else {
+          // See if we can fetch this
+          fetch(url.split('#')[0])
+          .then(res => res.text())
+          .then(html => {
+            const parser = new DOMParser();
+            const htmlDoc = parser.parseFromString(html, "text/html");
+            const note = htmlDoc.getElementById(id);
+            if (note !== null) {
+              const html = processXRef(id, note);
+              instance.setContent(html);
+            } 
+          }).finally(() => {
+            instance.enable();
+            instance.show();
+          });
+        }
+      } else {
+        // See if we can fetch a full url (with no hash to target)
+        // This is a special case and we should probably do some content thinning / targeting
+        fetch(url)
+        .then(res => res.text())
+        .then(html => {
+          const parser = new DOMParser();
+          const htmlDoc = parser.parseFromString(html, "text/html");
+          const note = htmlDoc.querySelector('main.content');
+          if (note !== null) {
+            // This should only happen for chapter cross references
+            // (since there is no id in the URL)
+            // remove the first header
+            if (note.children.length > 0 && note.children[0].tagName === "HEADER") {
+              note.children[0].remove();
+            }
+            const html = processXRef(null, note);
+            instance.setContent(html);
+          } 
+        }).finally(() => {
+          instance.enable();
+          instance.show();
+        });
+      }
+    }, function(instance) {
+    });
+  }
+      let selectedAnnoteEl;
+      const selectorForAnnotation = ( cell, annotation) => {
+        let cellAttr = 'data-code-cell="' + cell + '"';
+        let lineAttr = 'data-code-annotation="' +  annotation + '"';
+        const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+        return selector;
+      }
+      const selectCodeLines = (annoteEl) => {
+        const doc = window.document;
+        const targetCell = annoteEl.getAttribute("data-target-cell");
+        const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+        const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+        const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+        const lineIds = lines.map((line) => {
+          return targetCell + "-" + line;
+        })
+        let top = null;
+        let height = null;
+        let parent = null;
+        if (lineIds.length > 0) {
+            //compute the position of the single el (top and bottom and make a div)
+            const el = window.document.getElementById(lineIds[0]);
+            top = el.offsetTop;
+            height = el.offsetHeight;
+            parent = el.parentElement.parentElement;
+          if (lineIds.length > 1) {
+            const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+            const bottom = lastEl.offsetTop + lastEl.offsetHeight;
+            height = bottom - top;
+          }
+          if (top !== null && height !== null && parent !== null) {
+            // cook up a div (if necessary) and position it 
+            let div = window.document.getElementById("code-annotation-line-highlight");
+            if (div === null) {
+              div = window.document.createElement("div");
+              div.setAttribute("id", "code-annotation-line-highlight");
+              div.style.position = 'absolute';
+              parent.appendChild(div);
+            }
+            div.style.top = top - 2 + "px";
+            div.style.height = height + 4 + "px";
+            div.style.left = 0;
+            let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+            if (gutterDiv === null) {
+              gutterDiv = window.document.createElement("div");
+              gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+              gutterDiv.style.position = 'absolute';
+              const codeCell = window.document.getElementById(targetCell);
+              const gutter = codeCell.querySelector('.code-annotation-gutter');
+              gutter.appendChild(gutterDiv);
+            }
+            gutterDiv.style.top = top - 2 + "px";
+            gutterDiv.style.height = height + 4 + "px";
+          }
+          selectedAnnoteEl = annoteEl;
+        }
+      };
+      const unselectCodeLines = () => {
+        const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+        elementsIds.forEach((elId) => {
+          const div = window.document.getElementById(elId);
+          if (div) {
+            div.remove();
+          }
+        });
+        selectedAnnoteEl = undefined;
+      };
+        // Handle positioning of the toggle
+    window.addEventListener(
+      "resize",
+      throttle(() => {
+        elRect = undefined;
+        if (selectedAnnoteEl) {
+          selectCodeLines(selectedAnnoteEl);
+        }
+      }, 10)
+    );
+    function throttle(fn, ms) {
+    let throttle = false;
+    let timer;
+      return (...args) => {
+        if(!throttle) { // first call gets through
+            fn.apply(this, args);
+            throttle = true;
+        } else { // all the others get throttled
+            if(timer) clearTimeout(timer); // cancel #2
+            timer = setTimeout(() => {
+              fn.apply(this, args);
+              timer = throttle = false;
+            }, ms);
+        }
+      };
+    }
+      // Attach click handler to the DT
+      const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
+      for (const annoteDlNode of annoteDls) {
+        annoteDlNode.addEventListener('click', (event) => {
+          const clickedEl = event.target;
+          if (clickedEl !== selectedAnnoteEl) {
+            unselectCodeLines();
+            const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
+            if (activeEl) {
+              activeEl.classList.remove('code-annotation-active');
+            }
+            selectCodeLines(clickedEl);
+            clickedEl.classList.add('code-annotation-active');
+          } else {
+            // Unselect the line
+            unselectCodeLines();
+            clickedEl.classList.remove('code-annotation-active');
+          }
+        });
+      }
+  const findCites = (el) => {
+    const parentEl = el.parentElement;
+    if (parentEl) {
+      const cites = parentEl.dataset.cites;
+      if (cites) {
+        return {
+          el,
+          cites: cites.split(' ')
+        };
+      } else {
+        return findCites(el.parentElement)
+      }
+    } else {
+      return undefined;
+    }
+  };
+  var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+  for (var i=0; i<bibliorefs.length; i++) {
+    const ref = bibliorefs[i];
+    const citeInfo = findCites(ref);
+    if (citeInfo) {
+      tippyHover(citeInfo.el, function() {
+        var popup = window.document.createElement('div');
+        citeInfo.cites.forEach(function(cite) {
+          var citeDiv = window.document.createElement('div');
+          citeDiv.classList.add('hanging-indent');
+          citeDiv.classList.add('csl-entry');
+          var biblioDiv = window.document.getElementById('ref-' + cite);
+          if (biblioDiv) {
+            citeDiv.innerHTML = biblioDiv.innerHTML;
+          }
+          popup.appendChild(citeDiv);
+        });
+        return popup.innerHTML;
+      });
+    }
+  }
+});
+</script>
+</div> <!-- /content -->
+
+
+
+
+</body></html>
