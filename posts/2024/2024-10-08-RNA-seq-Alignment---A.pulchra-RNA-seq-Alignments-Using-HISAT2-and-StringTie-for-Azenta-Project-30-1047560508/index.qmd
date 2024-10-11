@@ -18,6 +18,7 @@ categories:
   - alignment
   - Acropora pulchra
   - coral
+bibliography: references.bib
 ---
 
 ::: callout-note
@@ -26,60 +27,62 @@ This notebook entry is knitted from [`urol-e5/timeseries_molecular/D-Apul/code/0
 
 # 1 INTRODUCTION
 
-This notebook will align trimmed *A.pulchra* RNA-seq data to the
-*A.pulchra* genome using
-[HISAT2](https://github.com/DaehwanKimLab/hisat2) (Kim et al. 2019).
-Follwed by
-[StringTie](https://ccb.jhu.edu/software/stringtie/index.shtml?t=manual)
-(Pertea et al. 2015, 2016) for transcript assembly/identification and
-count matrices for downstream expression analysis with
-[DESeq2](https://github.com/thelovelab/DESeq2) and/or
-$$Ballgown$$(<https://github.com/alyssafrazee/ballgown>.
+This notebook will align trimmed *A.pulchra* RNA-seq data to the *A.pulchra* genome using [HISAT2](https://github.com/DaehwanKimLab/hisat2) [@kim2019]. Follwed by [StringTie](https://ccb.jhu.edu/software/stringtie/index.shtml?t=manual) [@pertea2016; @pertea2015] for transcript assembly/identification and count matrices for downstream expression analysis with [DESeq2](https://github.com/thelovelab/DESeq2) and/or [Ballgown](https://github.com/alyssafrazee/ballgown).
 
-Since the BAM files produced by this notebook are too large for GitHub,
-they can be accessed on our server here:
+Since the BAM files produced by this notebook are too large for GitHub, they can be accessed on our server here:
 
 <https://gannet.fish.washington.edu/Atumefaciens/gitrepos/urol-e5/timeseries_molecular/D-Apul/output/02.20-D-Apul-RNAseq-alignment-HiSat2/>
 
 Input(s)
 
-- Trimmed FastQ files, with format: `*fastp-trim.fq.gz`
-- HISAT2 genome index: `Apulcrha-genome`
-- Genome GTF: `Apulchra-genome.gtf`
-- Sample metadata: `M-multi-species/data/rna_metadata.csv`
+-   Trimmed FastQ files, with format: `*fastp-trim.fq.gz`
+-   HISAT2 genome index: `Apulcrha-genome`
+-   Genome GTF: `Apulchra-genome.gtf`
+-   Sample metadata: `M-multi-species/data/rna_metadata.csv`
 
-Outputs: - Primary: - `checksums.md5`: MD5 checksum for all files in
-this directory. Excludes subdirectories. - `apul-gene_count_matrix.csv`:
-Gene count matrix for use in
-[DESeq2](https://github.com/thelovelab/DESeq2). -
-`apul-transcript_count_matrix.csv`: Transcript count matrix for use in
-[DESeq2](https://github.com/thelovelab/DESeq2). -
-`prepDE-sample_list.txt`: Sample file list provided as input to
-StringTie for DESeq2 count matrix generation. Also serves as
-documentation of which files were used for this step. -
-`Apulchra-genome.stringtie.gtf`: Canonical StringTie GTF file compiled
-from all individual sample GTFs. - `sorted-bams-merged.bam`: Merged (and
-sorted) BAM consisting of all individual sample BAMs. -
-`sorted-bams-merged.bam.bai`: BAM index file. Useful for visualizing
-assemblies in IGV. - `sorted_bams.list`: List file needed for merging of
-BAMS with samtools. Also serves as documentation of which files were
-used for this step. - `multiqc_report.html`: MultiQC report aggregating
-all individual HISAT2 alignment stats and samtools flagstats. -
-`gtf_list.txt`: List file needed for merging of GTF files with
-StringTie. Also serves as documentation of which files were used for
-this step. - Individuals: Each subdirectory is labelled based on sample
-name and each contains individual HISAT2 alignment and StringTie output
-files. - `<sample_name>_checksums.md5`: MD5 checksums for all files in
-the directory. - `*.ctab`: Data tables formatted for import into
-Ballgown. - `<sample_name>.cov_refs.gtf`: StringTie genome reference
-sequnce coverage GTF. - `<sample_name>.gtf`: StringTie GTF. -
-`<sample_name>.sorted.bam`: HISAT2 assembly BAM. -
-`<sample_name>.sorted.bam.bai`: BAM index file. Useful for visualizing
-assemblies in IGV. - `<sample_name>-hisat2_output.flagstat`: samtools
-flagstat output file. - `<sample_name>_hisat2.stats`: HISAT2 assembly
-stats. - `input_fastqs_checksums.md5`: MD5 checksums of files used as
-input for assembly. Primarily serves as documentation to track/verify
-which files were actually used.
+Outputs:
+
+- Primary:
+  
+  - `checksums.md5`: MD5 checksum for all files in this directory. Excludes subdirectories.
+  
+  - `apul-gene_count_matrix.csv`: Gene count matrix for use in [DESeq2](https://github.com/thelovelab/DESeq2).
+  
+  - `apul-transcript_count_matrix.csv`: Transcript count matrix for use in [DESeq2](https://github.com/thelovelab/DESeq2). 
+  
+  - `prepDE-sample_list.txt`: Sample file list provided as input to StringTie for DESeq2 count matrix generation. Also serves as documentation of which files were used   for this step. 
+  
+  - `Apulchra-genome.stringtie.gtf`: Canonical StringTie GTF file compiled from all individual sample GTFs. 
+  
+  - `sorted-bams-merged.bam`: Merged (and sorted) BAM consisting of all individual sample BAMs. 
+  
+  - `sorted-bams-merged.bam.bai`: BAM index file. Useful for visualizing assemblies in IGV. 
+  
+  - `sorted_bams.list`: List file needed for merging of BAMS with samtools. Also serves as documentation of which files were used for this step. 
+  
+  - `multiqc_report.html`: MultiQC report aggregating all individual HISAT2 alignment stats and samtools flagstats. 
+  
+  
+  - `gtf_list.txt`: List file needed for merging of GTF files with StringTie. Also serves as documentation of which files were used for this step. 
+- Individuals: Each subdirectory is labelled based on sample name and each contains individual HISAT2 alignment and StringTie output files. 
+  
+  - `<sample_name>_checksums.md5`: MD5 checksums for all files in the directory. 
+  
+  - `*.ctab`: Data tables formatted for import into Ballgown. 
+  
+  - `<sample_name>.cov_refs.gtf`: StringTie genome reference sequnce coverage GTF. 
+  
+  - `<sample_name>.gtf`: StringTie GTF. 
+  
+  - `<sample_name>.sorted.bam`: HISAT2 assembly BAM. 
+  
+  - `<sample_name>.sorted.bam.bai`: BAM index file. Useful for visualizing assemblies in IGV. 
+  
+  - `<sample_name>-hisat2_output.flagstat`: samtools flagstat output file. 
+  
+  - `<sample_name>_hisat2.stats`: HISAT2 assembly stats. 
+  
+  - `input_fastqs_checksums.md5`: MD5 checksums of files used as input for assembly. Primarily serves as documentation to track/verify which files were actually used.
 
 # 2 Create a Bash variables file
 
@@ -174,74 +177,75 @@ echo ""
 cat .bashvars
 ```
 
-    #### Assign Variables ####
+```         
+#### Assign Variables ####
 
-    # Data directories
-    export timeseries_dir=/home/shared/8TB_HDD_01/sam/gitrepos/urol-e5/timeseries_molecular
-    export genome_dir="${timeseries_dir}/D-Apul/data"
-    export genome_index_dir="${timeseries_dir}/D-Apul/output/02.10-D-Apul-RNAseq-genome-index-HiSat2"
-    export output_dir_top="${timeseries_dir}/D-Apul/output/02.20-D-Apul-RNAseq-alignment-HiSat2"
-    export trimmed_fastqs_dir="${timeseries_dir}/D-Apul/output/01.00-D-Apul-RNAseq-trimming-fastp-FastQC-MultiQC/trimmed-fastqs"
-    export trimmed_reads_url="https://gannet.fish.washington.edu/Atumefaciens/gitrepos/urol-e5/timeseries_molecular/D-Apul/output/01.00-D-Apul-RNAseq-trimming-fastp-FastQC-MultiQC/trimmed-fastqs/"
+# Data directories
+export timeseries_dir=/home/shared/8TB_HDD_01/sam/gitrepos/urol-e5/timeseries_molecular
+export genome_dir="${timeseries_dir}/D-Apul/data"
+export genome_index_dir="${timeseries_dir}/D-Apul/output/02.10-D-Apul-RNAseq-genome-index-HiSat2"
+export output_dir_top="${timeseries_dir}/D-Apul/output/02.20-D-Apul-RNAseq-alignment-HiSat2"
+export trimmed_fastqs_dir="${timeseries_dir}/D-Apul/output/01.00-D-Apul-RNAseq-trimming-fastp-FastQC-MultiQC/trimmed-fastqs"
+export trimmed_reads_url="https://gannet.fish.washington.edu/Atumefaciens/gitrepos/urol-e5/timeseries_molecular/D-Apul/output/01.00-D-Apul-RNAseq-trimming-fastp-FastQC-MultiQC/trimmed-fastqs/"
 
-    # Location of Hisat2 index files
-    # Must keep variable name formatting, as it's used by HiSat2
-    export HISAT2_INDEXES="${genome_index_dir}"
-    # Input files
-    export exons="${output_dir_top}/Apulchra-genome_hisat2_exons.tab"
-    export genome_index_name="Apulchra-genome"
-    export genome_gff="${genome_dir}/Apulchra-genome.gff"
-    export genome_fasta="${genome_dir}/Apulchra-genome.fa"
-    export splice_sites="${output_dir_top}/Apulchra-genome_hisat2_splice_sites.tab"
-    export transcripts_gtf="${genome_dir}/Apulchra-genome.gtf"
-    # Output files
-    export gtf_list="${output_dir_top}/gtf_list.txt"
-    export merged_bam="${output_dir_top}/sorted-bams-merged.bam"
+# Location of Hisat2 index files
+# Must keep variable name formatting, as it's used by HiSat2
+export HISAT2_INDEXES="${genome_index_dir}"
+# Input files
+export exons="${output_dir_top}/Apulchra-genome_hisat2_exons.tab"
+export genome_index_name="Apulchra-genome"
+export genome_gff="${genome_dir}/Apulchra-genome.gff"
+export genome_fasta="${genome_dir}/Apulchra-genome.fa"
+export splice_sites="${output_dir_top}/Apulchra-genome_hisat2_splice_sites.tab"
+export transcripts_gtf="${genome_dir}/Apulchra-genome.gtf"
+# Output files
+export gtf_list="${output_dir_top}/gtf_list.txt"
+export merged_bam="${output_dir_top}/sorted-bams-merged.bam"
 
-    # Paths to programs
-    export programs_dir="/home/shared"
-    export hisat2_dir="${programs_dir}/hisat2-2.2.1"
-    export hisat2="${hisat2_dir}/hisat2"
-    export multiqc=/home/sam/programs/mambaforge/bin/multiqc
-    export samtools="${programs_dir}/samtools-1.12/samtools"
-    export prepDE="${programs_dir}/stringtie-2.2.1.Linux_x86_64/prepDE.py3"
-    export stringtie="${programs_dir}/stringtie-2.2.1.Linux_x86_64/stringtie"
+# Paths to programs
+export programs_dir="/home/shared"
+export hisat2_dir="${programs_dir}/hisat2-2.2.1"
+export hisat2="${hisat2_dir}/hisat2"
+export multiqc=/home/sam/programs/mambaforge/bin/multiqc
+export samtools="${programs_dir}/samtools-1.12/samtools"
+export prepDE="${programs_dir}/stringtie-2.2.1.Linux_x86_64/prepDE.py3"
+export stringtie="${programs_dir}/stringtie-2.2.1.Linux_x86_64/stringtie"
 
-    # Set FastQ filename patterns
-    export R1_fastq_pattern='*_R1_*.fq.gz'
-    export R2_fastq_pattern='*_R2_*.fq.gz'
-    export trimmed_fastq_pattern='*fastp-trim.fq.gz'
+# Set FastQ filename patterns
+export R1_fastq_pattern='*_R1_*.fq.gz'
+export R2_fastq_pattern='*_R2_*.fq.gz'
+export trimmed_fastq_pattern='*fastp-trim.fq.gz'
 
-    # Set number of CPUs to use
-    export threads=40
+# Set number of CPUs to use
+export threads=40
 
-    # Set average read length - for StringTie prepDE.py
-    export read_length=125
+# Set average read length - for StringTie prepDE.py
+export read_length=125
 
-    ## Initialize arrays
-    export fastq_array_R1=()
-    export fastq_array_R2=()
-    export R1_names_array=()
-    export R2_names_array=()
-    declare -A sample_timepoint_map
+## Initialize arrays
+export fastq_array_R1=()
+export fastq_array_R2=()
+export R1_names_array=()
+export R2_names_array=()
+declare -A sample_timepoint_map
 
-    # Programs associative array
-    declare -A programs_array
-    programs_array=(
-    [hisat2]="${hisat2}" \
-    [multiqc]="${multiqc}" \
-    [prepDE]="${prepDE}" \
-    [samtools]="${samtools}" \
-    [stringtie]="${stringtie}" \
-    )
+# Programs associative array
+declare -A programs_array
+programs_array=(
+[hisat2]="${hisat2}" \
+[multiqc]="${multiqc}" \
+[prepDE]="${prepDE}" \
+[samtools]="${samtools}" \
+[stringtie]="${stringtie}" \
+)
 
-    # Print formatting
-    export line="--------------------------------------------------------"
+# Print formatting
+export line="--------------------------------------------------------"
+```
 
 If needed, download raw RNA-seq.
 
-Change `eval=FALSE` to `eval=TRUE` to execute the next two chunks to
-download RNA-seq and then verify MD5 checksums.
+Change `eval=FALSE` to `eval=TRUE` to execute the next two chunks to download RNA-seq and then verify MD5 checksums.
 
 ``` bash
 # Load bash variables into memory
@@ -287,20 +291,11 @@ This requires usage of the `rna_metadata.csv`
 
 This step has a lengthy, semi-complex workflow:
 
-1.  Parse `rna_metadata.csv` for *A.pulchra* sample names and time
-    point. This info will be used for downstream file naming and to
-    assing the time point to the read group (`SM:`) in the alignment
-    file.
-2.  Loop through all samples and perform individual alignments using
-    HISAT2.
-3.  HISAT2 output is piped to through multiple samtools tools: flagstat
-    (stats aggregation), sort (creates/sorts BAM), index (creates BAM
-    index). Piping saves time and disk space, by avoiding the generation
-    of large SAM files.
-4.  Loop continues and runs StringTie on sorted BAM file to produce
-    individual GTF file.
-5.  Loop continues and adds GTF path/filename to a list file, which will
-    be used downstream.
+1.  Parse `rna_metadata.csv` for *A.pulchra* sample names and time point. This info will be used for downstream file naming and to assing the time point to the read group (`SM:`) in the alignment file.
+2.  Loop through all samples and perform individual alignments using HISAT2.
+3.  HISAT2 output is piped to through multiple samtools tools: flagstat (stats aggregation), sort (creates/sorts BAM), index (creates BAM index). Piping saves time and disk space, by avoiding the generation of large SAM files.
+4.  Loop continues and runs StringTie on sorted BAM file to produce individual GTF file.
+5.  Loop continues and adds GTF path/filename to a list file, which will be used downstream.
 
 ``` bash
 # Load bash variables into memory
@@ -425,8 +420,7 @@ done
 
 ## 3.1 Review HISAT2 Output
 
-View the resulting directory structure of resulting from the
-HISAT2/StringTie process.
+View the resulting directory structure of resulting from the HISAT2/StringTie process.
 
 ``` bash
 # Load bash variables into memory
@@ -440,585 +434,587 @@ cd "${output_dir_top}"
 tree --du -h
 ```
 
-    .
-    ├── [1.8G]  1A1
-    │   ├── [ 553]  1A1_checksums.md5
-    │   ├── [4.8M]  1A1.cov_refs.gtf
-    │   ├── [ 34M]  1A1.gtf
-    │   ├── [ 451]  1A1-hisat2_output.flagstat
-    │   ├── [ 637]  1A1_hisat2.stats
-    │   ├── [1.7G]  1A1.sorted.bam
-    │   ├── [936K]  1A1.sorted.bam.bai
-    │   ├── [2.4M]  e2t.ctab
-    │   ├── [ 15M]  e_data.ctab
-    │   ├── [1.9M]  i2t.ctab
-    │   ├── [7.2M]  i_data.ctab
-    │   ├── [ 420]  input_fastqs_checksums.md5
-    │   └── [3.7M]  t_data.ctab
-    ├── [1.8G]  1A10
-    │   ├── [ 559]  1A10_checksums.md5
-    │   ├── [3.5M]  1A10.cov_refs.gtf
-    │   ├── [ 34M]  1A10.gtf
-    │   ├── [ 449]  1A10-hisat2_output.flagstat
-    │   ├── [ 638]  1A10_hisat2.stats
-    │   ├── [1.8G]  1A10.sorted.bam
-    │   ├── [779K]  1A10.sorted.bam.bai
-    │   ├── [2.4M]  e2t.ctab
-    │   ├── [ 15M]  e_data.ctab
-    │   ├── [1.9M]  i2t.ctab
-    │   ├── [7.2M]  i_data.ctab
-    │   ├── [ 424]  input_fastqs_checksums.md5
-    │   └── [3.7M]  t_data.ctab
-    ├── [1.6G]  1A12
-    │   ├── [ 559]  1A12_checksums.md5
-    │   ├── [8.3M]  1A12.cov_refs.gtf
-    │   ├── [ 34M]  1A12.gtf
-    │   ├── [ 449]  1A12-hisat2_output.flagstat
-    │   ├── [ 636]  1A12_hisat2.stats
-    │   ├── [1.5G]  1A12.sorted.bam
-    │   ├── [777K]  1A12.sorted.bam.bai
-    │   ├── [2.4M]  e2t.ctab
-    │   ├── [ 15M]  e_data.ctab
-    │   ├── [1.9M]  i2t.ctab
-    │   ├── [7.3M]  i_data.ctab
-    │   ├── [ 424]  input_fastqs_checksums.md5
-    │   └── [3.7M]  t_data.ctab
-    ├── [1.8G]  1A2
-    │   ├── [ 553]  1A2_checksums.md5
-    │   ├── [3.1M]  1A2.cov_refs.gtf
-    │   ├── [ 34M]  1A2.gtf
-    │   ├── [ 449]  1A2-hisat2_output.flagstat
-    │   ├── [ 640]  1A2_hisat2.stats
-    │   ├── [1.7G]  1A2.sorted.bam
-    │   ├── [864K]  1A2.sorted.bam.bai
-    │   ├── [2.4M]  e2t.ctab
-    │   ├── [ 15M]  e_data.ctab
-    │   ├── [1.9M]  i2t.ctab
-    │   ├── [7.2M]  i_data.ctab
-    │   ├── [ 420]  input_fastqs_checksums.md5
-    │   └── [3.7M]  t_data.ctab
-    ├── [1.5G]  1A8
-    │   ├── [ 553]  1A8_checksums.md5
-    │   ├── [6.9M]  1A8.cov_refs.gtf
-    │   ├── [ 34M]  1A8.gtf
-    │   ├── [ 449]  1A8-hisat2_output.flagstat
-    │   ├── [ 637]  1A8_hisat2.stats
-    │   ├── [1.5G]  1A8.sorted.bam
-    │   ├── [789K]  1A8.sorted.bam.bai
-    │   ├── [2.4M]  e2t.ctab
-    │   ├── [ 15M]  e_data.ctab
-    │   ├── [1.9M]  i2t.ctab
-    │   ├── [7.3M]  i_data.ctab
-    │   ├── [ 422]  input_fastqs_checksums.md5
-    │   └── [3.7M]  t_data.ctab
-    ├── [1.9G]  1A9
-    │   ├── [ 553]  1A9_checksums.md5
-    │   ├── [7.2M]  1A9.cov_refs.gtf
-    │   ├── [ 34M]  1A9.gtf
-    │   ├── [ 450]  1A9-hisat2_output.flagstat
-    │   ├── [ 638]  1A9_hisat2.stats
-    │   ├── [1.9G]  1A9.sorted.bam
-    │   ├── [795K]  1A9.sorted.bam.bai
-    │   ├── [2.4M]  e2t.ctab
-    │   ├── [ 15M]  e_data.ctab
-    │   ├── [1.9M]  i2t.ctab
-    │   ├── [7.3M]  i_data.ctab
-    │   ├── [ 422]  input_fastqs_checksums.md5
-    │   └── [3.7M]  t_data.ctab
-    ├── [1.8G]  1B1
-    │   ├── [ 553]  1B1_checksums.md5
-    │   ├── [6.9M]  1B1.cov_refs.gtf
-    │   ├── [ 34M]  1B1.gtf
-    │   ├── [ 449]  1B1-hisat2_output.flagstat
-    │   ├── [ 638]  1B1_hisat2.stats
-    │   ├── [1.8G]  1B1.sorted.bam
-    │   ├── [824K]  1B1.sorted.bam.bai
-    │   ├── [2.4M]  e2t.ctab
-    │   ├── [ 15M]  e_data.ctab
-    │   ├── [1.9M]  i2t.ctab
-    │   ├── [7.3M]  i_data.ctab
-    │   ├── [ 420]  input_fastqs_checksums.md5
-    │   └── [3.7M]  t_data.ctab
-    ├── [1.8G]  1B10
-    │   ├── [ 559]  1B10_checksums.md5
-    │   ├── [7.0M]  1B10.cov_refs.gtf
-    │   ├── [ 34M]  1B10.gtf
-    │   ├── [ 449]  1B10-hisat2_output.flagstat
-    │   ├── [ 637]  1B10_hisat2.stats
-    │   ├── [1.7G]  1B10.sorted.bam
-    │   ├── [819K]  1B10.sorted.bam.bai
-    │   ├── [2.4M]  e2t.ctab
-    │   ├── [ 15M]  e_data.ctab
-    │   ├── [1.9M]  i2t.ctab
-    │   ├── [7.3M]  i_data.ctab
-    │   ├── [ 424]  input_fastqs_checksums.md5
-    │   └── [3.7M]  t_data.ctab
-    ├── [1.8G]  1B2
-    │   ├── [ 553]  1B2_checksums.md5
-    │   ├── [5.0M]  1B2.cov_refs.gtf
-    │   ├── [ 34M]  1B2.gtf
-    │   ├── [ 449]  1B2-hisat2_output.flagstat
-    │   ├── [ 638]  1B2_hisat2.stats
-    │   ├── [1.7G]  1B2.sorted.bam
-    │   ├── [814K]  1B2.sorted.bam.bai
-    │   ├── [2.4M]  e2t.ctab
-    │   ├── [ 15M]  e_data.ctab
-    │   ├── [1.9M]  i2t.ctab
-    │   ├── [7.3M]  i_data.ctab
-    │   ├── [ 422]  input_fastqs_checksums.md5
-    │   └── [3.7M]  t_data.ctab
-    ├── [2.0G]  1B5
-    │   ├── [ 553]  1B5_checksums.md5
-    │   ├── [7.8M]  1B5.cov_refs.gtf
-    │   ├── [ 34M]  1B5.gtf
-    │   ├── [ 450]  1B5-hisat2_output.flagstat
-    │   ├── [ 637]  1B5_hisat2.stats
-    │   ├── [1.9G]  1B5.sorted.bam
-    │   ├── [919K]  1B5.sorted.bam.bai
-    │   ├── [2.4M]  e2t.ctab
-    │   ├── [ 15M]  e_data.ctab
-    │   ├── [1.9M]  i2t.ctab
-    │   ├── [7.3M]  i_data.ctab
-    │   ├── [ 422]  input_fastqs_checksums.md5
-    │   └── [3.7M]  t_data.ctab
-    ├── [2.0G]  1B9
-    │   ├── [ 553]  1B9_checksums.md5
-    │   ├── [3.8M]  1B9.cov_refs.gtf
-    │   ├── [ 34M]  1B9.gtf
-    │   ├── [ 449]  1B9-hisat2_output.flagstat
-    │   ├── [ 640]  1B9_hisat2.stats
-    │   ├── [1.9G]  1B9.sorted.bam
-    │   ├── [832K]  1B9.sorted.bam.bai
-    │   ├── [2.4M]  e2t.ctab
-    │   ├── [ 15M]  e_data.ctab
-    │   ├── [1.9M]  i2t.ctab
-    │   ├── [7.2M]  i_data.ctab
-    │   ├── [ 422]  input_fastqs_checksums.md5
-    │   └── [3.7M]  t_data.ctab
-    ├── [1.5G]  1C10
-    │   ├── [ 559]  1C10_checksums.md5
-    │   ├── [4.0M]  1C10.cov_refs.gtf
-    │   ├── [ 34M]  1C10.gtf
-    │   ├── [ 449]  1C10-hisat2_output.flagstat
-    │   ├── [ 636]  1C10_hisat2.stats
-    │   ├── [1.4G]  1C10.sorted.bam
-    │   ├── [714K]  1C10.sorted.bam.bai
-    │   ├── [2.4M]  e2t.ctab
-    │   ├── [ 15M]  e_data.ctab
-    │   ├── [1.9M]  i2t.ctab
-    │   ├── [7.2M]  i_data.ctab
-    │   ├── [ 424]  input_fastqs_checksums.md5
-    │   └── [3.7M]  t_data.ctab
-    ├── [1.8G]  1C4
-    │   ├── [ 553]  1C4_checksums.md5
-    │   ├── [6.8M]  1C4.cov_refs.gtf
-    │   ├── [ 34M]  1C4.gtf
-    │   ├── [ 450]  1C4-hisat2_output.flagstat
-    │   ├── [ 638]  1C4_hisat2.stats
-    │   ├── [1.8G]  1C4.sorted.bam
-    │   ├── [837K]  1C4.sorted.bam.bai
-    │   ├── [2.4M]  e2t.ctab
-    │   ├── [ 15M]  e_data.ctab
-    │   ├── [1.9M]  i2t.ctab
-    │   ├── [7.3M]  i_data.ctab
-    │   ├── [ 422]  input_fastqs_checksums.md5
-    │   └── [3.7M]  t_data.ctab
-    ├── [1.9G]  1D10
-    │   ├── [ 559]  1D10_checksums.md5
-    │   ├── [6.3M]  1D10.cov_refs.gtf
-    │   ├── [ 34M]  1D10.gtf
-    │   ├── [ 450]  1D10-hisat2_output.flagstat
-    │   ├── [ 637]  1D10_hisat2.stats
-    │   ├── [1.8G]  1D10.sorted.bam
-    │   ├── [848K]  1D10.sorted.bam.bai
-    │   ├── [2.4M]  e2t.ctab
-    │   ├── [ 15M]  e_data.ctab
-    │   ├── [1.9M]  i2t.ctab
-    │   ├── [7.3M]  i_data.ctab
-    │   ├── [ 424]  input_fastqs_checksums.md5
-    │   └── [3.7M]  t_data.ctab
-    ├── [1.4G]  1D3
-    │   ├── [ 553]  1D3_checksums.md5
-    │   ├── [4.1M]  1D3.cov_refs.gtf
-    │   ├── [ 34M]  1D3.gtf
-    │   ├── [ 449]  1D3-hisat2_output.flagstat
-    │   ├── [ 636]  1D3_hisat2.stats
-    │   ├── [1.3G]  1D3.sorted.bam
-    │   ├── [713K]  1D3.sorted.bam.bai
-    │   ├── [2.4M]  e2t.ctab
-    │   ├── [ 15M]  e_data.ctab
-    │   ├── [1.9M]  i2t.ctab
-    │   ├── [7.2M]  i_data.ctab
-    │   ├── [ 422]  input_fastqs_checksums.md5
-    │   └── [3.7M]  t_data.ctab
-    ├── [2.0G]  1D4
-    │   ├── [ 553]  1D4_checksums.md5
-    │   ├── [4.5M]  1D4.cov_refs.gtf
-    │   ├── [ 34M]  1D4.gtf
-    │   ├── [ 449]  1D4-hisat2_output.flagstat
-    │   ├── [ 638]  1D4_hisat2.stats
-    │   ├── [1.9G]  1D4.sorted.bam
-    │   ├── [884K]  1D4.sorted.bam.bai
-    │   ├── [2.4M]  e2t.ctab
-    │   ├── [ 15M]  e_data.ctab
-    │   ├── [1.9M]  i2t.ctab
-    │   ├── [7.2M]  i_data.ctab
-    │   ├── [ 422]  input_fastqs_checksums.md5
-    │   └── [3.7M]  t_data.ctab
-    ├── [1.6G]  1D6
-    │   ├── [ 553]  1D6_checksums.md5
-    │   ├── [6.8M]  1D6.cov_refs.gtf
-    │   ├── [ 34M]  1D6.gtf
-    │   ├── [ 449]  1D6-hisat2_output.flagstat
-    │   ├── [ 637]  1D6_hisat2.stats
-    │   ├── [1.6G]  1D6.sorted.bam
-    │   ├── [778K]  1D6.sorted.bam.bai
-    │   ├── [2.4M]  e2t.ctab
-    │   ├── [ 15M]  e_data.ctab
-    │   ├── [1.9M]  i2t.ctab
-    │   ├── [7.3M]  i_data.ctab
-    │   ├── [ 422]  input_fastqs_checksums.md5
-    │   └── [3.7M]  t_data.ctab
-    ├── [1.5G]  1D8
-    │   ├── [ 553]  1D8_checksums.md5
-    │   ├── [5.6M]  1D8.cov_refs.gtf
-    │   ├── [ 34M]  1D8.gtf
-    │   ├── [ 449]  1D8-hisat2_output.flagstat
-    │   ├── [ 637]  1D8_hisat2.stats
-    │   ├── [1.4G]  1D8.sorted.bam
-    │   ├── [688K]  1D8.sorted.bam.bai
-    │   ├── [2.4M]  e2t.ctab
-    │   ├── [ 15M]  e_data.ctab
-    │   ├── [1.9M]  i2t.ctab
-    │   ├── [7.3M]  i_data.ctab
-    │   ├── [ 422]  input_fastqs_checksums.md5
-    │   └── [3.7M]  t_data.ctab
-    ├── [1.9G]  1D9
-    │   ├── [ 553]  1D9_checksums.md5
-    │   ├── [2.4M]  1D9.cov_refs.gtf
-    │   ├── [ 34M]  1D9.gtf
-    │   ├── [ 449]  1D9-hisat2_output.flagstat
-    │   ├── [ 640]  1D9_hisat2.stats
-    │   ├── [1.8G]  1D9.sorted.bam
-    │   ├── [799K]  1D9.sorted.bam.bai
-    │   ├── [2.4M]  e2t.ctab
-    │   ├── [ 15M]  e_data.ctab
-    │   ├── [1.9M]  i2t.ctab
-    │   ├── [7.2M]  i_data.ctab
-    │   ├── [ 422]  input_fastqs_checksums.md5
-    │   └── [3.7M]  t_data.ctab
-    ├── [2.0G]  1E1
-    │   ├── [ 553]  1E1_checksums.md5
-    │   ├── [5.6M]  1E1.cov_refs.gtf
-    │   ├── [ 34M]  1E1.gtf
-    │   ├── [ 450]  1E1-hisat2_output.flagstat
-    │   ├── [ 638]  1E1_hisat2.stats
-    │   ├── [1.9G]  1E1.sorted.bam
-    │   ├── [919K]  1E1.sorted.bam.bai
-    │   ├── [2.4M]  e2t.ctab
-    │   ├── [ 15M]  e_data.ctab
-    │   ├── [1.9M]  i2t.ctab
-    │   ├── [7.3M]  i_data.ctab
-    │   ├── [ 420]  input_fastqs_checksums.md5
-    │   └── [3.7M]  t_data.ctab
-    ├── [1.6G]  1E3
-    │   ├── [ 553]  1E3_checksums.md5
-    │   ├── [7.4M]  1E3.cov_refs.gtf
-    │   ├── [ 34M]  1E3.gtf
-    │   ├── [ 449]  1E3-hisat2_output.flagstat
-    │   ├── [ 637]  1E3_hisat2.stats
-    │   ├── [1.6G]  1E3.sorted.bam
-    │   ├── [783K]  1E3.sorted.bam.bai
-    │   ├── [2.4M]  e2t.ctab
-    │   ├── [ 15M]  e_data.ctab
-    │   ├── [1.9M]  i2t.ctab
-    │   ├── [7.3M]  i_data.ctab
-    │   ├── [ 422]  input_fastqs_checksums.md5
-    │   └── [3.7M]  t_data.ctab
-    ├── [1.6G]  1E5
-    │   ├── [ 553]  1E5_checksums.md5
-    │   ├── [6.2M]  1E5.cov_refs.gtf
-    │   ├── [ 34M]  1E5.gtf
-    │   ├── [ 449]  1E5-hisat2_output.flagstat
-    │   ├── [ 637]  1E5_hisat2.stats
-    │   ├── [1.5G]  1E5.sorted.bam
-    │   ├── [822K]  1E5.sorted.bam.bai
-    │   ├── [2.4M]  e2t.ctab
-    │   ├── [ 15M]  e_data.ctab
-    │   ├── [1.9M]  i2t.ctab
-    │   ├── [7.3M]  i_data.ctab
-    │   ├── [ 422]  input_fastqs_checksums.md5
-    │   └── [3.7M]  t_data.ctab
-    ├── [1.8G]  1E9
-    │   ├── [ 553]  1E9_checksums.md5
-    │   ├── [4.4M]  1E9.cov_refs.gtf
-    │   ├── [ 34M]  1E9.gtf
-    │   ├── [ 449]  1E9-hisat2_output.flagstat
-    │   ├── [ 638]  1E9_hisat2.stats
-    │   ├── [1.8G]  1E9.sorted.bam
-    │   ├── [814K]  1E9.sorted.bam.bai
-    │   ├── [2.4M]  e2t.ctab
-    │   ├── [ 15M]  e_data.ctab
-    │   ├── [1.9M]  i2t.ctab
-    │   ├── [7.2M]  i_data.ctab
-    │   ├── [ 422]  input_fastqs_checksums.md5
-    │   └── [3.7M]  t_data.ctab
-    ├── [1.6G]  1F11
-    │   ├── [ 559]  1F11_checksums.md5
-    │   ├── [7.9M]  1F11.cov_refs.gtf
-    │   ├── [ 34M]  1F11.gtf
-    │   ├── [ 449]  1F11-hisat2_output.flagstat
-    │   ├── [ 636]  1F11_hisat2.stats
-    │   ├── [1.5G]  1F11.sorted.bam
-    │   ├── [745K]  1F11.sorted.bam.bai
-    │   ├── [2.4M]  e2t.ctab
-    │   ├── [ 15M]  e_data.ctab
-    │   ├── [1.9M]  i2t.ctab
-    │   ├── [7.3M]  i_data.ctab
-    │   ├── [ 424]  input_fastqs_checksums.md5
-    │   └── [3.7M]  t_data.ctab
-    ├── [1.6G]  1F4
-    │   ├── [ 553]  1F4_checksums.md5
-    │   ├── [7.9M]  1F4.cov_refs.gtf
-    │   ├── [ 34M]  1F4.gtf
-    │   ├── [ 449]  1F4-hisat2_output.flagstat
-    │   ├── [ 637]  1F4_hisat2.stats
-    │   ├── [1.5G]  1F4.sorted.bam
-    │   ├── [786K]  1F4.sorted.bam.bai
-    │   ├── [2.4M]  e2t.ctab
-    │   ├── [ 15M]  e_data.ctab
-    │   ├── [1.9M]  i2t.ctab
-    │   ├── [7.3M]  i_data.ctab
-    │   ├── [ 422]  input_fastqs_checksums.md5
-    │   └── [3.7M]  t_data.ctab
-    ├── [1.8G]  1F8
-    │   ├── [ 553]  1F8_checksums.md5
-    │   ├── [2.9M]  1F8.cov_refs.gtf
-    │   ├── [ 34M]  1F8.gtf
-    │   ├── [ 449]  1F8-hisat2_output.flagstat
-    │   ├── [ 640]  1F8_hisat2.stats
-    │   ├── [1.8G]  1F8.sorted.bam
-    │   ├── [784K]  1F8.sorted.bam.bai
-    │   ├── [2.4M]  e2t.ctab
-    │   ├── [ 15M]  e_data.ctab
-    │   ├── [1.9M]  i2t.ctab
-    │   ├── [7.2M]  i_data.ctab
-    │   ├── [ 422]  input_fastqs_checksums.md5
-    │   └── [3.7M]  t_data.ctab
-    ├── [2.1G]  1G5
-    │   ├── [ 553]  1G5_checksums.md5
-    │   ├── [8.5M]  1G5.cov_refs.gtf
-    │   ├── [ 34M]  1G5.gtf
-    │   ├── [ 450]  1G5-hisat2_output.flagstat
-    │   ├── [ 638]  1G5_hisat2.stats
-    │   ├── [2.0G]  1G5.sorted.bam
-    │   ├── [988K]  1G5.sorted.bam.bai
-    │   ├── [2.4M]  e2t.ctab
-    │   ├── [ 15M]  e_data.ctab
-    │   ├── [1.9M]  i2t.ctab
-    │   ├── [7.3M]  i_data.ctab
-    │   ├── [ 422]  input_fastqs_checksums.md5
-    │   └── [3.7M]  t_data.ctab
-    ├── [1.6G]  1H11
-    │   ├── [ 559]  1H11_checksums.md5
-    │   ├── [8.3M]  1H11.cov_refs.gtf
-    │   ├── [ 34M]  1H11.gtf
-    │   ├── [ 449]  1H11-hisat2_output.flagstat
-    │   ├── [ 636]  1H11_hisat2.stats
-    │   ├── [1.5G]  1H11.sorted.bam
-    │   ├── [778K]  1H11.sorted.bam.bai
-    │   ├── [2.4M]  e2t.ctab
-    │   ├── [ 15M]  e_data.ctab
-    │   ├── [1.9M]  i2t.ctab
-    │   ├── [7.3M]  i_data.ctab
-    │   └── [3.7M]  t_data.ctab
-    ├── [1.3G]  1H12
-    │   ├── [ 559]  1H12_checksums.md5
-    │   ├── [3.5M]  1H12.cov_refs.gtf
-    │   ├── [ 34M]  1H12.gtf
-    │   ├── [ 449]  1H12-hisat2_output.flagstat
-    │   ├── [ 636]  1H12_hisat2.stats
-    │   ├── [1.3G]  1H12.sorted.bam
-    │   ├── [698K]  1H12.sorted.bam.bai
-    │   ├── [2.4M]  e2t.ctab
-    │   ├── [ 15M]  e_data.ctab
-    │   ├── [1.9M]  i2t.ctab
-    │   ├── [7.2M]  i_data.ctab
-    │   ├── [ 424]  input_fastqs_checksums.md5
-    │   └── [3.7M]  t_data.ctab
-    ├── [1.8G]  1H6
-    │   ├── [ 553]  1H6_checksums.md5
-    │   ├── [2.9M]  1H6.cov_refs.gtf
-    │   ├── [ 34M]  1H6.gtf
-    │   ├── [ 449]  1H6-hisat2_output.flagstat
-    │   ├── [ 640]  1H6_hisat2.stats
-    │   ├── [1.8G]  1H6.sorted.bam
-    │   ├── [784K]  1H6.sorted.bam.bai
-    │   ├── [2.4M]  e2t.ctab
-    │   ├── [ 15M]  e_data.ctab
-    │   ├── [1.9M]  i2t.ctab
-    │   ├── [7.2M]  i_data.ctab
-    │   └── [3.7M]  t_data.ctab
-    ├── [1.5G]  1H7
-    │   ├── [ 553]  1H7_checksums.md5
-    │   ├── [7.4M]  1H7.cov_refs.gtf
-    │   ├── [ 34M]  1H7.gtf
-    │   ├── [ 449]  1H7-hisat2_output.flagstat
-    │   ├── [ 637]  1H7_hisat2.stats
-    │   ├── [1.5G]  1H7.sorted.bam
-    │   ├── [780K]  1H7.sorted.bam.bai
-    │   ├── [2.4M]  e2t.ctab
-    │   ├── [ 15M]  e_data.ctab
-    │   ├── [1.9M]  i2t.ctab
-    │   ├── [7.3M]  i_data.ctab
-    │   ├── [ 422]  input_fastqs_checksums.md5
-    │   └── [3.7M]  t_data.ctab
-    ├── [1.6G]  1H8
-    │   ├── [ 553]  1H8_checksums.md5
-    │   ├── [6.6M]  1H8.cov_refs.gtf
-    │   ├── [ 34M]  1H8.gtf
-    │   ├── [ 449]  1H8-hisat2_output.flagstat
-    │   ├── [ 637]  1H8_hisat2.stats
-    │   ├── [1.6G]  1H8.sorted.bam
-    │   ├── [791K]  1H8.sorted.bam.bai
-    │   ├── [2.4M]  e2t.ctab
-    │   ├── [ 15M]  e_data.ctab
-    │   ├── [1.9M]  i2t.ctab
-    │   ├── [7.3M]  i_data.ctab
-    │   ├── [ 422]  input_fastqs_checksums.md5
-    │   └── [3.7M]  t_data.ctab
-    ├── [2.1G]  2B2
-    │   ├── [ 553]  2B2_checksums.md5
-    │   ├── [5.3M]  2B2.cov_refs.gtf
-    │   ├── [ 34M]  2B2.gtf
-    │   ├── [ 450]  2B2-hisat2_output.flagstat
-    │   ├── [ 639]  2B2_hisat2.stats
-    │   ├── [2.0G]  2B2.sorted.bam
-    │   ├── [961K]  2B2.sorted.bam.bai
-    │   ├── [2.4M]  e2t.ctab
-    │   ├── [ 15M]  e_data.ctab
-    │   ├── [1.9M]  i2t.ctab
-    │   ├── [7.3M]  i_data.ctab
-    │   ├── [ 424]  input_fastqs_checksums.md5
-    │   └── [3.7M]  t_data.ctab
-    ├── [1.8G]  2B3
-    │   ├── [ 553]  2B3_checksums.md5
-    │   ├── [8.2M]  2B3.cov_refs.gtf
-    │   ├── [ 34M]  2B3.gtf
-    │   ├── [ 449]  2B3-hisat2_output.flagstat
-    │   ├── [ 638]  2B3_hisat2.stats
-    │   ├── [1.7G]  2B3.sorted.bam
-    │   ├── [818K]  2B3.sorted.bam.bai
-    │   ├── [2.4M]  e2t.ctab
-    │   ├── [ 15M]  e_data.ctab
-    │   ├── [1.9M]  i2t.ctab
-    │   ├── [7.3M]  i_data.ctab
-    │   ├── [ 424]  input_fastqs_checksums.md5
-    │   └── [3.7M]  t_data.ctab
-    ├── [1.8G]  2C1
-    │   ├── [ 553]  2C1_checksums.md5
-    │   ├── [4.0M]  2C1.cov_refs.gtf
-    │   ├── [ 34M]  2C1.gtf
-    │   ├── [ 448]  2C1-hisat2_output.flagstat
-    │   ├── [ 638]  2C1_hisat2.stats
-    │   ├── [1.7G]  2C1.sorted.bam
-    │   ├── [636K]  2C1.sorted.bam.bai
-    │   ├── [2.4M]  e2t.ctab
-    │   ├── [ 15M]  e_data.ctab
-    │   ├── [1.9M]  i2t.ctab
-    │   ├── [7.2M]  i_data.ctab
-    │   ├── [ 422]  input_fastqs_checksums.md5
-    │   └── [3.7M]  t_data.ctab
-    ├── [1.6G]  2C2
-    │   ├── [ 553]  2C2_checksums.md5
-    │   ├── [7.6M]  2C2.cov_refs.gtf
-    │   ├── [ 34M]  2C2.gtf
-    │   ├── [ 450]  2C2-hisat2_output.flagstat
-    │   ├── [ 637]  2C2_hisat2.stats
-    │   ├── [1.5G]  2C2.sorted.bam
-    │   ├── [794K]  2C2.sorted.bam.bai
-    │   ├── [2.4M]  e2t.ctab
-    │   ├── [ 15M]  e_data.ctab
-    │   ├── [1.9M]  i2t.ctab
-    │   ├── [7.3M]  i_data.ctab
-    │   ├── [ 424]  input_fastqs_checksums.md5
-    │   └── [3.7M]  t_data.ctab
-    ├── [2.0G]  2D2
-    │   ├── [ 553]  2D2_checksums.md5
-    │   ├── [2.9M]  2D2.cov_refs.gtf
-    │   ├── [ 34M]  2D2.gtf
-    │   ├── [ 449]  2D2-hisat2_output.flagstat
-    │   ├── [ 640]  2D2_hisat2.stats
-    │   ├── [1.9G]  2D2.sorted.bam
-    │   ├── [795K]  2D2.sorted.bam.bai
-    │   ├── [2.4M]  e2t.ctab
-    │   ├── [ 15M]  e_data.ctab
-    │   ├── [1.9M]  i2t.ctab
-    │   ├── [7.2M]  i_data.ctab
-    │   ├── [ 424]  input_fastqs_checksums.md5
-    │   └── [3.7M]  t_data.ctab
-    ├── [1.4G]  2E2
-    │   ├── [ 553]  2E2_checksums.md5
-    │   ├── [2.2M]  2E2.cov_refs.gtf
-    │   ├── [ 33M]  2E2.gtf
-    │   ├── [ 449]  2E2-hisat2_output.flagstat
-    │   ├── [ 639]  2E2_hisat2.stats
-    │   ├── [1.4G]  2E2.sorted.bam
-    │   ├── [632K]  2E2.sorted.bam.bai
-    │   ├── [2.4M]  e2t.ctab
-    │   ├── [ 15M]  e_data.ctab
-    │   ├── [1.9M]  i2t.ctab
-    │   ├── [7.2M]  i_data.ctab
-    │   ├── [ 424]  input_fastqs_checksums.md5
-    │   └── [3.7M]  t_data.ctab
-    ├── [2.6G]  2F1
-    │   ├── [ 553]  2F1_checksums.md5
-    │   ├── [2.9M]  2F1.cov_refs.gtf
-    │   ├── [ 34M]  2F1.gtf
-    │   ├── [ 451]  2F1-hisat2_output.flagstat
-    │   ├── [ 642]  2F1_hisat2.stats
-    │   ├── [2.5G]  2F1.sorted.bam
-    │   ├── [980K]  2F1.sorted.bam.bai
-    │   ├── [2.4M]  e2t.ctab
-    │   ├── [ 15M]  e_data.ctab
-    │   ├── [1.9M]  i2t.ctab
-    │   ├── [7.2M]  i_data.ctab
-    │   ├── [ 424]  input_fastqs_checksums.md5
-    │   └── [3.7M]  t_data.ctab
-    ├── [1.6G]  2G1
-    │   ├── [ 553]  2G1_checksums.md5
-    │   ├── [6.1M]  2G1.cov_refs.gtf
-    │   ├── [ 34M]  2G1.gtf
-    │   ├── [ 449]  2G1-hisat2_output.flagstat
-    │   ├── [ 637]  2G1_hisat2.stats
-    │   ├── [1.6G]  2G1.sorted.bam
-    │   ├── [724K]  2G1.sorted.bam.bai
-    │   ├── [2.4M]  e2t.ctab
-    │   ├── [ 15M]  e_data.ctab
-    │   ├── [1.9M]  i2t.ctab
-    │   ├── [7.3M]  i_data.ctab
-    │   ├── [ 424]  input_fastqs_checksums.md5
-    │   └── [3.7M]  t_data.ctab
-    ├── [ 35M]  Apulchra-genome.stringtie.gtf
-    ├── [5.1M]  apul-gene_count_matrix.csv
-    ├── [5.2M]  apul-transcript_count_matrix.csv
-    ├── [ 587]  checksums.md5
-    ├── [5.1K]  gtf_list.txt
-    ├── [306K]  multiqc_data
-    │   ├── [5.0K]  multiqc_bowtie2.txt
-    │   ├── [ 307]  multiqc_citations.txt
-    │   ├── [268K]  multiqc_data.json
-    │   ├── [2.7K]  multiqc_general_stats.txt
-    │   ├── [4.1K]  multiqc.log
-    │   ├── [7.7K]  multiqc_samtools_flagstat.txt
-    │   └── [ 14K]  multiqc_sources.txt
-    ├── [1.1M]  multiqc_report.html
-    ├── [5.2K]  prepDE-sample_list.txt
-    ├── [ 856]  sorted_bams.list
-    ├── [ 64G]  sorted-bams-merged.bam
-    └── [ 13M]  sorted-bams-merged.bam.bai
+```         
+.
+├── [1.8G]  1A1
+│   ├── [ 553]  1A1_checksums.md5
+│   ├── [4.8M]  1A1.cov_refs.gtf
+│   ├── [ 34M]  1A1.gtf
+│   ├── [ 451]  1A1-hisat2_output.flagstat
+│   ├── [ 637]  1A1_hisat2.stats
+│   ├── [1.7G]  1A1.sorted.bam
+│   ├── [936K]  1A1.sorted.bam.bai
+│   ├── [2.4M]  e2t.ctab
+│   ├── [ 15M]  e_data.ctab
+│   ├── [1.9M]  i2t.ctab
+│   ├── [7.2M]  i_data.ctab
+│   ├── [ 420]  input_fastqs_checksums.md5
+│   └── [3.7M]  t_data.ctab
+├── [1.8G]  1A10
+│   ├── [ 559]  1A10_checksums.md5
+│   ├── [3.5M]  1A10.cov_refs.gtf
+│   ├── [ 34M]  1A10.gtf
+│   ├── [ 449]  1A10-hisat2_output.flagstat
+│   ├── [ 638]  1A10_hisat2.stats
+│   ├── [1.8G]  1A10.sorted.bam
+│   ├── [779K]  1A10.sorted.bam.bai
+│   ├── [2.4M]  e2t.ctab
+│   ├── [ 15M]  e_data.ctab
+│   ├── [1.9M]  i2t.ctab
+│   ├── [7.2M]  i_data.ctab
+│   ├── [ 424]  input_fastqs_checksums.md5
+│   └── [3.7M]  t_data.ctab
+├── [1.6G]  1A12
+│   ├── [ 559]  1A12_checksums.md5
+│   ├── [8.3M]  1A12.cov_refs.gtf
+│   ├── [ 34M]  1A12.gtf
+│   ├── [ 449]  1A12-hisat2_output.flagstat
+│   ├── [ 636]  1A12_hisat2.stats
+│   ├── [1.5G]  1A12.sorted.bam
+│   ├── [777K]  1A12.sorted.bam.bai
+│   ├── [2.4M]  e2t.ctab
+│   ├── [ 15M]  e_data.ctab
+│   ├── [1.9M]  i2t.ctab
+│   ├── [7.3M]  i_data.ctab
+│   ├── [ 424]  input_fastqs_checksums.md5
+│   └── [3.7M]  t_data.ctab
+├── [1.8G]  1A2
+│   ├── [ 553]  1A2_checksums.md5
+│   ├── [3.1M]  1A2.cov_refs.gtf
+│   ├── [ 34M]  1A2.gtf
+│   ├── [ 449]  1A2-hisat2_output.flagstat
+│   ├── [ 640]  1A2_hisat2.stats
+│   ├── [1.7G]  1A2.sorted.bam
+│   ├── [864K]  1A2.sorted.bam.bai
+│   ├── [2.4M]  e2t.ctab
+│   ├── [ 15M]  e_data.ctab
+│   ├── [1.9M]  i2t.ctab
+│   ├── [7.2M]  i_data.ctab
+│   ├── [ 420]  input_fastqs_checksums.md5
+│   └── [3.7M]  t_data.ctab
+├── [1.5G]  1A8
+│   ├── [ 553]  1A8_checksums.md5
+│   ├── [6.9M]  1A8.cov_refs.gtf
+│   ├── [ 34M]  1A8.gtf
+│   ├── [ 449]  1A8-hisat2_output.flagstat
+│   ├── [ 637]  1A8_hisat2.stats
+│   ├── [1.5G]  1A8.sorted.bam
+│   ├── [789K]  1A8.sorted.bam.bai
+│   ├── [2.4M]  e2t.ctab
+│   ├── [ 15M]  e_data.ctab
+│   ├── [1.9M]  i2t.ctab
+│   ├── [7.3M]  i_data.ctab
+│   ├── [ 422]  input_fastqs_checksums.md5
+│   └── [3.7M]  t_data.ctab
+├── [1.9G]  1A9
+│   ├── [ 553]  1A9_checksums.md5
+│   ├── [7.2M]  1A9.cov_refs.gtf
+│   ├── [ 34M]  1A9.gtf
+│   ├── [ 450]  1A9-hisat2_output.flagstat
+│   ├── [ 638]  1A9_hisat2.stats
+│   ├── [1.9G]  1A9.sorted.bam
+│   ├── [795K]  1A9.sorted.bam.bai
+│   ├── [2.4M]  e2t.ctab
+│   ├── [ 15M]  e_data.ctab
+│   ├── [1.9M]  i2t.ctab
+│   ├── [7.3M]  i_data.ctab
+│   ├── [ 422]  input_fastqs_checksums.md5
+│   └── [3.7M]  t_data.ctab
+├── [1.8G]  1B1
+│   ├── [ 553]  1B1_checksums.md5
+│   ├── [6.9M]  1B1.cov_refs.gtf
+│   ├── [ 34M]  1B1.gtf
+│   ├── [ 449]  1B1-hisat2_output.flagstat
+│   ├── [ 638]  1B1_hisat2.stats
+│   ├── [1.8G]  1B1.sorted.bam
+│   ├── [824K]  1B1.sorted.bam.bai
+│   ├── [2.4M]  e2t.ctab
+│   ├── [ 15M]  e_data.ctab
+│   ├── [1.9M]  i2t.ctab
+│   ├── [7.3M]  i_data.ctab
+│   ├── [ 420]  input_fastqs_checksums.md5
+│   └── [3.7M]  t_data.ctab
+├── [1.8G]  1B10
+│   ├── [ 559]  1B10_checksums.md5
+│   ├── [7.0M]  1B10.cov_refs.gtf
+│   ├── [ 34M]  1B10.gtf
+│   ├── [ 449]  1B10-hisat2_output.flagstat
+│   ├── [ 637]  1B10_hisat2.stats
+│   ├── [1.7G]  1B10.sorted.bam
+│   ├── [819K]  1B10.sorted.bam.bai
+│   ├── [2.4M]  e2t.ctab
+│   ├── [ 15M]  e_data.ctab
+│   ├── [1.9M]  i2t.ctab
+│   ├── [7.3M]  i_data.ctab
+│   ├── [ 424]  input_fastqs_checksums.md5
+│   └── [3.7M]  t_data.ctab
+├── [1.8G]  1B2
+│   ├── [ 553]  1B2_checksums.md5
+│   ├── [5.0M]  1B2.cov_refs.gtf
+│   ├── [ 34M]  1B2.gtf
+│   ├── [ 449]  1B2-hisat2_output.flagstat
+│   ├── [ 638]  1B2_hisat2.stats
+│   ├── [1.7G]  1B2.sorted.bam
+│   ├── [814K]  1B2.sorted.bam.bai
+│   ├── [2.4M]  e2t.ctab
+│   ├── [ 15M]  e_data.ctab
+│   ├── [1.9M]  i2t.ctab
+│   ├── [7.3M]  i_data.ctab
+│   ├── [ 422]  input_fastqs_checksums.md5
+│   └── [3.7M]  t_data.ctab
+├── [2.0G]  1B5
+│   ├── [ 553]  1B5_checksums.md5
+│   ├── [7.8M]  1B5.cov_refs.gtf
+│   ├── [ 34M]  1B5.gtf
+│   ├── [ 450]  1B5-hisat2_output.flagstat
+│   ├── [ 637]  1B5_hisat2.stats
+│   ├── [1.9G]  1B5.sorted.bam
+│   ├── [919K]  1B5.sorted.bam.bai
+│   ├── [2.4M]  e2t.ctab
+│   ├── [ 15M]  e_data.ctab
+│   ├── [1.9M]  i2t.ctab
+│   ├── [7.3M]  i_data.ctab
+│   ├── [ 422]  input_fastqs_checksums.md5
+│   └── [3.7M]  t_data.ctab
+├── [2.0G]  1B9
+│   ├── [ 553]  1B9_checksums.md5
+│   ├── [3.8M]  1B9.cov_refs.gtf
+│   ├── [ 34M]  1B9.gtf
+│   ├── [ 449]  1B9-hisat2_output.flagstat
+│   ├── [ 640]  1B9_hisat2.stats
+│   ├── [1.9G]  1B9.sorted.bam
+│   ├── [832K]  1B9.sorted.bam.bai
+│   ├── [2.4M]  e2t.ctab
+│   ├── [ 15M]  e_data.ctab
+│   ├── [1.9M]  i2t.ctab
+│   ├── [7.2M]  i_data.ctab
+│   ├── [ 422]  input_fastqs_checksums.md5
+│   └── [3.7M]  t_data.ctab
+├── [1.5G]  1C10
+│   ├── [ 559]  1C10_checksums.md5
+│   ├── [4.0M]  1C10.cov_refs.gtf
+│   ├── [ 34M]  1C10.gtf
+│   ├── [ 449]  1C10-hisat2_output.flagstat
+│   ├── [ 636]  1C10_hisat2.stats
+│   ├── [1.4G]  1C10.sorted.bam
+│   ├── [714K]  1C10.sorted.bam.bai
+│   ├── [2.4M]  e2t.ctab
+│   ├── [ 15M]  e_data.ctab
+│   ├── [1.9M]  i2t.ctab
+│   ├── [7.2M]  i_data.ctab
+│   ├── [ 424]  input_fastqs_checksums.md5
+│   └── [3.7M]  t_data.ctab
+├── [1.8G]  1C4
+│   ├── [ 553]  1C4_checksums.md5
+│   ├── [6.8M]  1C4.cov_refs.gtf
+│   ├── [ 34M]  1C4.gtf
+│   ├── [ 450]  1C4-hisat2_output.flagstat
+│   ├── [ 638]  1C4_hisat2.stats
+│   ├── [1.8G]  1C4.sorted.bam
+│   ├── [837K]  1C4.sorted.bam.bai
+│   ├── [2.4M]  e2t.ctab
+│   ├── [ 15M]  e_data.ctab
+│   ├── [1.9M]  i2t.ctab
+│   ├── [7.3M]  i_data.ctab
+│   ├── [ 422]  input_fastqs_checksums.md5
+│   └── [3.7M]  t_data.ctab
+├── [1.9G]  1D10
+│   ├── [ 559]  1D10_checksums.md5
+│   ├── [6.3M]  1D10.cov_refs.gtf
+│   ├── [ 34M]  1D10.gtf
+│   ├── [ 450]  1D10-hisat2_output.flagstat
+│   ├── [ 637]  1D10_hisat2.stats
+│   ├── [1.8G]  1D10.sorted.bam
+│   ├── [848K]  1D10.sorted.bam.bai
+│   ├── [2.4M]  e2t.ctab
+│   ├── [ 15M]  e_data.ctab
+│   ├── [1.9M]  i2t.ctab
+│   ├── [7.3M]  i_data.ctab
+│   ├── [ 424]  input_fastqs_checksums.md5
+│   └── [3.7M]  t_data.ctab
+├── [1.4G]  1D3
+│   ├── [ 553]  1D3_checksums.md5
+│   ├── [4.1M]  1D3.cov_refs.gtf
+│   ├── [ 34M]  1D3.gtf
+│   ├── [ 449]  1D3-hisat2_output.flagstat
+│   ├── [ 636]  1D3_hisat2.stats
+│   ├── [1.3G]  1D3.sorted.bam
+│   ├── [713K]  1D3.sorted.bam.bai
+│   ├── [2.4M]  e2t.ctab
+│   ├── [ 15M]  e_data.ctab
+│   ├── [1.9M]  i2t.ctab
+│   ├── [7.2M]  i_data.ctab
+│   ├── [ 422]  input_fastqs_checksums.md5
+│   └── [3.7M]  t_data.ctab
+├── [2.0G]  1D4
+│   ├── [ 553]  1D4_checksums.md5
+│   ├── [4.5M]  1D4.cov_refs.gtf
+│   ├── [ 34M]  1D4.gtf
+│   ├── [ 449]  1D4-hisat2_output.flagstat
+│   ├── [ 638]  1D4_hisat2.stats
+│   ├── [1.9G]  1D4.sorted.bam
+│   ├── [884K]  1D4.sorted.bam.bai
+│   ├── [2.4M]  e2t.ctab
+│   ├── [ 15M]  e_data.ctab
+│   ├── [1.9M]  i2t.ctab
+│   ├── [7.2M]  i_data.ctab
+│   ├── [ 422]  input_fastqs_checksums.md5
+│   └── [3.7M]  t_data.ctab
+├── [1.6G]  1D6
+│   ├── [ 553]  1D6_checksums.md5
+│   ├── [6.8M]  1D6.cov_refs.gtf
+│   ├── [ 34M]  1D6.gtf
+│   ├── [ 449]  1D6-hisat2_output.flagstat
+│   ├── [ 637]  1D6_hisat2.stats
+│   ├── [1.6G]  1D6.sorted.bam
+│   ├── [778K]  1D6.sorted.bam.bai
+│   ├── [2.4M]  e2t.ctab
+│   ├── [ 15M]  e_data.ctab
+│   ├── [1.9M]  i2t.ctab
+│   ├── [7.3M]  i_data.ctab
+│   ├── [ 422]  input_fastqs_checksums.md5
+│   └── [3.7M]  t_data.ctab
+├── [1.5G]  1D8
+│   ├── [ 553]  1D8_checksums.md5
+│   ├── [5.6M]  1D8.cov_refs.gtf
+│   ├── [ 34M]  1D8.gtf
+│   ├── [ 449]  1D8-hisat2_output.flagstat
+│   ├── [ 637]  1D8_hisat2.stats
+│   ├── [1.4G]  1D8.sorted.bam
+│   ├── [688K]  1D8.sorted.bam.bai
+│   ├── [2.4M]  e2t.ctab
+│   ├── [ 15M]  e_data.ctab
+│   ├── [1.9M]  i2t.ctab
+│   ├── [7.3M]  i_data.ctab
+│   ├── [ 422]  input_fastqs_checksums.md5
+│   └── [3.7M]  t_data.ctab
+├── [1.9G]  1D9
+│   ├── [ 553]  1D9_checksums.md5
+│   ├── [2.4M]  1D9.cov_refs.gtf
+│   ├── [ 34M]  1D9.gtf
+│   ├── [ 449]  1D9-hisat2_output.flagstat
+│   ├── [ 640]  1D9_hisat2.stats
+│   ├── [1.8G]  1D9.sorted.bam
+│   ├── [799K]  1D9.sorted.bam.bai
+│   ├── [2.4M]  e2t.ctab
+│   ├── [ 15M]  e_data.ctab
+│   ├── [1.9M]  i2t.ctab
+│   ├── [7.2M]  i_data.ctab
+│   ├── [ 422]  input_fastqs_checksums.md5
+│   └── [3.7M]  t_data.ctab
+├── [2.0G]  1E1
+│   ├── [ 553]  1E1_checksums.md5
+│   ├── [5.6M]  1E1.cov_refs.gtf
+│   ├── [ 34M]  1E1.gtf
+│   ├── [ 450]  1E1-hisat2_output.flagstat
+│   ├── [ 638]  1E1_hisat2.stats
+│   ├── [1.9G]  1E1.sorted.bam
+│   ├── [919K]  1E1.sorted.bam.bai
+│   ├── [2.4M]  e2t.ctab
+│   ├── [ 15M]  e_data.ctab
+│   ├── [1.9M]  i2t.ctab
+│   ├── [7.3M]  i_data.ctab
+│   ├── [ 420]  input_fastqs_checksums.md5
+│   └── [3.7M]  t_data.ctab
+├── [1.6G]  1E3
+│   ├── [ 553]  1E3_checksums.md5
+│   ├── [7.4M]  1E3.cov_refs.gtf
+│   ├── [ 34M]  1E3.gtf
+│   ├── [ 449]  1E3-hisat2_output.flagstat
+│   ├── [ 637]  1E3_hisat2.stats
+│   ├── [1.6G]  1E3.sorted.bam
+│   ├── [783K]  1E3.sorted.bam.bai
+│   ├── [2.4M]  e2t.ctab
+│   ├── [ 15M]  e_data.ctab
+│   ├── [1.9M]  i2t.ctab
+│   ├── [7.3M]  i_data.ctab
+│   ├── [ 422]  input_fastqs_checksums.md5
+│   └── [3.7M]  t_data.ctab
+├── [1.6G]  1E5
+│   ├── [ 553]  1E5_checksums.md5
+│   ├── [6.2M]  1E5.cov_refs.gtf
+│   ├── [ 34M]  1E5.gtf
+│   ├── [ 449]  1E5-hisat2_output.flagstat
+│   ├── [ 637]  1E5_hisat2.stats
+│   ├── [1.5G]  1E5.sorted.bam
+│   ├── [822K]  1E5.sorted.bam.bai
+│   ├── [2.4M]  e2t.ctab
+│   ├── [ 15M]  e_data.ctab
+│   ├── [1.9M]  i2t.ctab
+│   ├── [7.3M]  i_data.ctab
+│   ├── [ 422]  input_fastqs_checksums.md5
+│   └── [3.7M]  t_data.ctab
+├── [1.8G]  1E9
+│   ├── [ 553]  1E9_checksums.md5
+│   ├── [4.4M]  1E9.cov_refs.gtf
+│   ├── [ 34M]  1E9.gtf
+│   ├── [ 449]  1E9-hisat2_output.flagstat
+│   ├── [ 638]  1E9_hisat2.stats
+│   ├── [1.8G]  1E9.sorted.bam
+│   ├── [814K]  1E9.sorted.bam.bai
+│   ├── [2.4M]  e2t.ctab
+│   ├── [ 15M]  e_data.ctab
+│   ├── [1.9M]  i2t.ctab
+│   ├── [7.2M]  i_data.ctab
+│   ├── [ 422]  input_fastqs_checksums.md5
+│   └── [3.7M]  t_data.ctab
+├── [1.6G]  1F11
+│   ├── [ 559]  1F11_checksums.md5
+│   ├── [7.9M]  1F11.cov_refs.gtf
+│   ├── [ 34M]  1F11.gtf
+│   ├── [ 449]  1F11-hisat2_output.flagstat
+│   ├── [ 636]  1F11_hisat2.stats
+│   ├── [1.5G]  1F11.sorted.bam
+│   ├── [745K]  1F11.sorted.bam.bai
+│   ├── [2.4M]  e2t.ctab
+│   ├── [ 15M]  e_data.ctab
+│   ├── [1.9M]  i2t.ctab
+│   ├── [7.3M]  i_data.ctab
+│   ├── [ 424]  input_fastqs_checksums.md5
+│   └── [3.7M]  t_data.ctab
+├── [1.6G]  1F4
+│   ├── [ 553]  1F4_checksums.md5
+│   ├── [7.9M]  1F4.cov_refs.gtf
+│   ├── [ 34M]  1F4.gtf
+│   ├── [ 449]  1F4-hisat2_output.flagstat
+│   ├── [ 637]  1F4_hisat2.stats
+│   ├── [1.5G]  1F4.sorted.bam
+│   ├── [786K]  1F4.sorted.bam.bai
+│   ├── [2.4M]  e2t.ctab
+│   ├── [ 15M]  e_data.ctab
+│   ├── [1.9M]  i2t.ctab
+│   ├── [7.3M]  i_data.ctab
+│   ├── [ 422]  input_fastqs_checksums.md5
+│   └── [3.7M]  t_data.ctab
+├── [1.8G]  1F8
+│   ├── [ 553]  1F8_checksums.md5
+│   ├── [2.9M]  1F8.cov_refs.gtf
+│   ├── [ 34M]  1F8.gtf
+│   ├── [ 449]  1F8-hisat2_output.flagstat
+│   ├── [ 640]  1F8_hisat2.stats
+│   ├── [1.8G]  1F8.sorted.bam
+│   ├── [784K]  1F8.sorted.bam.bai
+│   ├── [2.4M]  e2t.ctab
+│   ├── [ 15M]  e_data.ctab
+│   ├── [1.9M]  i2t.ctab
+│   ├── [7.2M]  i_data.ctab
+│   ├── [ 422]  input_fastqs_checksums.md5
+│   └── [3.7M]  t_data.ctab
+├── [2.1G]  1G5
+│   ├── [ 553]  1G5_checksums.md5
+│   ├── [8.5M]  1G5.cov_refs.gtf
+│   ├── [ 34M]  1G5.gtf
+│   ├── [ 450]  1G5-hisat2_output.flagstat
+│   ├── [ 638]  1G5_hisat2.stats
+│   ├── [2.0G]  1G5.sorted.bam
+│   ├── [988K]  1G5.sorted.bam.bai
+│   ├── [2.4M]  e2t.ctab
+│   ├── [ 15M]  e_data.ctab
+│   ├── [1.9M]  i2t.ctab
+│   ├── [7.3M]  i_data.ctab
+│   ├── [ 422]  input_fastqs_checksums.md5
+│   └── [3.7M]  t_data.ctab
+├── [1.6G]  1H11
+│   ├── [ 559]  1H11_checksums.md5
+│   ├── [8.3M]  1H11.cov_refs.gtf
+│   ├── [ 34M]  1H11.gtf
+│   ├── [ 449]  1H11-hisat2_output.flagstat
+│   ├── [ 636]  1H11_hisat2.stats
+│   ├── [1.5G]  1H11.sorted.bam
+│   ├── [778K]  1H11.sorted.bam.bai
+│   ├── [2.4M]  e2t.ctab
+│   ├── [ 15M]  e_data.ctab
+│   ├── [1.9M]  i2t.ctab
+│   ├── [7.3M]  i_data.ctab
+│   └── [3.7M]  t_data.ctab
+├── [1.3G]  1H12
+│   ├── [ 559]  1H12_checksums.md5
+│   ├── [3.5M]  1H12.cov_refs.gtf
+│   ├── [ 34M]  1H12.gtf
+│   ├── [ 449]  1H12-hisat2_output.flagstat
+│   ├── [ 636]  1H12_hisat2.stats
+│   ├── [1.3G]  1H12.sorted.bam
+│   ├── [698K]  1H12.sorted.bam.bai
+│   ├── [2.4M]  e2t.ctab
+│   ├── [ 15M]  e_data.ctab
+│   ├── [1.9M]  i2t.ctab
+│   ├── [7.2M]  i_data.ctab
+│   ├── [ 424]  input_fastqs_checksums.md5
+│   └── [3.7M]  t_data.ctab
+├── [1.8G]  1H6
+│   ├── [ 553]  1H6_checksums.md5
+│   ├── [2.9M]  1H6.cov_refs.gtf
+│   ├── [ 34M]  1H6.gtf
+│   ├── [ 449]  1H6-hisat2_output.flagstat
+│   ├── [ 640]  1H6_hisat2.stats
+│   ├── [1.8G]  1H6.sorted.bam
+│   ├── [784K]  1H6.sorted.bam.bai
+│   ├── [2.4M]  e2t.ctab
+│   ├── [ 15M]  e_data.ctab
+│   ├── [1.9M]  i2t.ctab
+│   ├── [7.2M]  i_data.ctab
+│   └── [3.7M]  t_data.ctab
+├── [1.5G]  1H7
+│   ├── [ 553]  1H7_checksums.md5
+│   ├── [7.4M]  1H7.cov_refs.gtf
+│   ├── [ 34M]  1H7.gtf
+│   ├── [ 449]  1H7-hisat2_output.flagstat
+│   ├── [ 637]  1H7_hisat2.stats
+│   ├── [1.5G]  1H7.sorted.bam
+│   ├── [780K]  1H7.sorted.bam.bai
+│   ├── [2.4M]  e2t.ctab
+│   ├── [ 15M]  e_data.ctab
+│   ├── [1.9M]  i2t.ctab
+│   ├── [7.3M]  i_data.ctab
+│   ├── [ 422]  input_fastqs_checksums.md5
+│   └── [3.7M]  t_data.ctab
+├── [1.6G]  1H8
+│   ├── [ 553]  1H8_checksums.md5
+│   ├── [6.6M]  1H8.cov_refs.gtf
+│   ├── [ 34M]  1H8.gtf
+│   ├── [ 449]  1H8-hisat2_output.flagstat
+│   ├── [ 637]  1H8_hisat2.stats
+│   ├── [1.6G]  1H8.sorted.bam
+│   ├── [791K]  1H8.sorted.bam.bai
+│   ├── [2.4M]  e2t.ctab
+│   ├── [ 15M]  e_data.ctab
+│   ├── [1.9M]  i2t.ctab
+│   ├── [7.3M]  i_data.ctab
+│   ├── [ 422]  input_fastqs_checksums.md5
+│   └── [3.7M]  t_data.ctab
+├── [2.1G]  2B2
+│   ├── [ 553]  2B2_checksums.md5
+│   ├── [5.3M]  2B2.cov_refs.gtf
+│   ├── [ 34M]  2B2.gtf
+│   ├── [ 450]  2B2-hisat2_output.flagstat
+│   ├── [ 639]  2B2_hisat2.stats
+│   ├── [2.0G]  2B2.sorted.bam
+│   ├── [961K]  2B2.sorted.bam.bai
+│   ├── [2.4M]  e2t.ctab
+│   ├── [ 15M]  e_data.ctab
+│   ├── [1.9M]  i2t.ctab
+│   ├── [7.3M]  i_data.ctab
+│   ├── [ 424]  input_fastqs_checksums.md5
+│   └── [3.7M]  t_data.ctab
+├── [1.8G]  2B3
+│   ├── [ 553]  2B3_checksums.md5
+│   ├── [8.2M]  2B3.cov_refs.gtf
+│   ├── [ 34M]  2B3.gtf
+│   ├── [ 449]  2B3-hisat2_output.flagstat
+│   ├── [ 638]  2B3_hisat2.stats
+│   ├── [1.7G]  2B3.sorted.bam
+│   ├── [818K]  2B3.sorted.bam.bai
+│   ├── [2.4M]  e2t.ctab
+│   ├── [ 15M]  e_data.ctab
+│   ├── [1.9M]  i2t.ctab
+│   ├── [7.3M]  i_data.ctab
+│   ├── [ 424]  input_fastqs_checksums.md5
+│   └── [3.7M]  t_data.ctab
+├── [1.8G]  2C1
+│   ├── [ 553]  2C1_checksums.md5
+│   ├── [4.0M]  2C1.cov_refs.gtf
+│   ├── [ 34M]  2C1.gtf
+│   ├── [ 448]  2C1-hisat2_output.flagstat
+│   ├── [ 638]  2C1_hisat2.stats
+│   ├── [1.7G]  2C1.sorted.bam
+│   ├── [636K]  2C1.sorted.bam.bai
+│   ├── [2.4M]  e2t.ctab
+│   ├── [ 15M]  e_data.ctab
+│   ├── [1.9M]  i2t.ctab
+│   ├── [7.2M]  i_data.ctab
+│   ├── [ 422]  input_fastqs_checksums.md5
+│   └── [3.7M]  t_data.ctab
+├── [1.6G]  2C2
+│   ├── [ 553]  2C2_checksums.md5
+│   ├── [7.6M]  2C2.cov_refs.gtf
+│   ├── [ 34M]  2C2.gtf
+│   ├── [ 450]  2C2-hisat2_output.flagstat
+│   ├── [ 637]  2C2_hisat2.stats
+│   ├── [1.5G]  2C2.sorted.bam
+│   ├── [794K]  2C2.sorted.bam.bai
+│   ├── [2.4M]  e2t.ctab
+│   ├── [ 15M]  e_data.ctab
+│   ├── [1.9M]  i2t.ctab
+│   ├── [7.3M]  i_data.ctab
+│   ├── [ 424]  input_fastqs_checksums.md5
+│   └── [3.7M]  t_data.ctab
+├── [2.0G]  2D2
+│   ├── [ 553]  2D2_checksums.md5
+│   ├── [2.9M]  2D2.cov_refs.gtf
+│   ├── [ 34M]  2D2.gtf
+│   ├── [ 449]  2D2-hisat2_output.flagstat
+│   ├── [ 640]  2D2_hisat2.stats
+│   ├── [1.9G]  2D2.sorted.bam
+│   ├── [795K]  2D2.sorted.bam.bai
+│   ├── [2.4M]  e2t.ctab
+│   ├── [ 15M]  e_data.ctab
+│   ├── [1.9M]  i2t.ctab
+│   ├── [7.2M]  i_data.ctab
+│   ├── [ 424]  input_fastqs_checksums.md5
+│   └── [3.7M]  t_data.ctab
+├── [1.4G]  2E2
+│   ├── [ 553]  2E2_checksums.md5
+│   ├── [2.2M]  2E2.cov_refs.gtf
+│   ├── [ 33M]  2E2.gtf
+│   ├── [ 449]  2E2-hisat2_output.flagstat
+│   ├── [ 639]  2E2_hisat2.stats
+│   ├── [1.4G]  2E2.sorted.bam
+│   ├── [632K]  2E2.sorted.bam.bai
+│   ├── [2.4M]  e2t.ctab
+│   ├── [ 15M]  e_data.ctab
+│   ├── [1.9M]  i2t.ctab
+│   ├── [7.2M]  i_data.ctab
+│   ├── [ 424]  input_fastqs_checksums.md5
+│   └── [3.7M]  t_data.ctab
+├── [2.6G]  2F1
+│   ├── [ 553]  2F1_checksums.md5
+│   ├── [2.9M]  2F1.cov_refs.gtf
+│   ├── [ 34M]  2F1.gtf
+│   ├── [ 451]  2F1-hisat2_output.flagstat
+│   ├── [ 642]  2F1_hisat2.stats
+│   ├── [2.5G]  2F1.sorted.bam
+│   ├── [980K]  2F1.sorted.bam.bai
+│   ├── [2.4M]  e2t.ctab
+│   ├── [ 15M]  e_data.ctab
+│   ├── [1.9M]  i2t.ctab
+│   ├── [7.2M]  i_data.ctab
+│   ├── [ 424]  input_fastqs_checksums.md5
+│   └── [3.7M]  t_data.ctab
+├── [1.6G]  2G1
+│   ├── [ 553]  2G1_checksums.md5
+│   ├── [6.1M]  2G1.cov_refs.gtf
+│   ├── [ 34M]  2G1.gtf
+│   ├── [ 449]  2G1-hisat2_output.flagstat
+│   ├── [ 637]  2G1_hisat2.stats
+│   ├── [1.6G]  2G1.sorted.bam
+│   ├── [724K]  2G1.sorted.bam.bai
+│   ├── [2.4M]  e2t.ctab
+│   ├── [ 15M]  e_data.ctab
+│   ├── [1.9M]  i2t.ctab
+│   ├── [7.3M]  i_data.ctab
+│   ├── [ 424]  input_fastqs_checksums.md5
+│   └── [3.7M]  t_data.ctab
+├── [ 35M]  Apulchra-genome.stringtie.gtf
+├── [5.1M]  apul-gene_count_matrix.csv
+├── [5.2M]  apul-transcript_count_matrix.csv
+├── [ 587]  checksums.md5
+├── [5.1K]  gtf_list.txt
+├── [306K]  multiqc_data
+│   ├── [5.0K]  multiqc_bowtie2.txt
+│   ├── [ 307]  multiqc_citations.txt
+│   ├── [268K]  multiqc_data.json
+│   ├── [2.7K]  multiqc_general_stats.txt
+│   ├── [4.1K]  multiqc.log
+│   ├── [7.7K]  multiqc_samtools_flagstat.txt
+│   └── [ 14K]  multiqc_sources.txt
+├── [1.1M]  multiqc_report.html
+├── [5.2K]  prepDE-sample_list.txt
+├── [ 856]  sorted_bams.list
+├── [ 64G]  sorted-bams-merged.bam
+└── [ 13M]  sorted-bams-merged.bam.bai
 
-     135G used in 41 directories, 535 files
+ 135G used in 41 directories, 535 files
+```
 
 ## 3.2 MultiQC alignment rates
 
@@ -1034,8 +1030,7 @@ ${programs_array[multiqc]} .
 
 # 4 Merge sorted BAMs
 
-Merge all BAMs to singular BAM for use in transcriptome assembly later,
-if needed.
+Merge all BAMs to singular BAM for use in transcriptome assembly later, if needed.
 
 ``` bash
 # Load bash variables into memory
