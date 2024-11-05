@@ -10,7 +10,1106 @@
 <atom:link href="https://robertslab.github.io/sams-notebook/index.xml" rel="self" type="application/rss+xml"/>
 <description></description>
 <generator>quarto-1.5.57</generator>
-<lastBuildDate>Fri, 01 Nov 2024 07:00:00 GMT</lastBuildDate>
+<lastBuildDate>Tue, 05 Nov 2024 08:00:00 GMT</lastBuildDate>
+<item>
+  <title>Sequencing Read Taxonomic Classification - Unmapped P.helanthoides RNA-seq Using DIAMOND-BLASTx and MEGAN6 on Mox</title>
+  <dc:creator>Sam White</dc:creator>
+  <link>https://robertslab.github.io/sams-notebook/posts/2024/2024-11-05-Sequencing-Read-Taxonomic-Classification---Unmapped-P.helanthoides-RNA-seq-Using-DIAMOND-BLASTx-and-MEGAN6-on-Mox/</link>
+  <description><![CDATA[ 
+
+
+
+
+
+<section id="intro" class="level1">
+<h1>INTRO</h1>
+<p>In preparation for a grant proposal involving sea star wasting disease, due in about two weeks, Steven <a href="https://github.com/RobertsLab/resources/issues/2009">asked that I perform taxonomic classification on unmapped P.helanthoides RNA-seq reads</a> (GitHub Issue). Due to time constraints, and a bit of luck, I opted to run this on Mox (Mox <em>should</em> have been decommissioned on 11/1/2024, but it’s still running and being able to use Mox, which is already set up, instead of resorting to Klone, was much faster to get this going). Also, due to time constraints, Steven <a href="https://github.com/RobertsLab/resources/issues/2009#issuecomment-2457459109">suggested I run this on just a single set of reads</a> (GitHub Issue comment). I opted for the following, since this analysis had already been started and was already working on these:</p>
+<ul>
+<li><code>PSC-0519_unmapped_reads.[12].fastq</code></li>
+</ul>
+</section>
+<section id="sbatch-script" class="level1">
+<h1>SBATCH SCRIPT</h1>
+<p>GitHub:</p>
+<ul>
+<li><a href="https://github.com/RobertsLab/sams-notebook/blob/master/sbatch_scripts/20241105-phel-diamond-meganizer.sh">20241105-phel-diamond-meganizer.sh</a></li>
+</ul>
+<div class="sourceCode" id="cb1" style="background: #f1f3f5;"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb1-1"><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">#!/bin/bash</span></span>
+<span id="cb1-2"><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">## Job Name</span></span>
+<span id="cb1-3"><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">#SBATCH --job-name=20241105-phel-diamond-meganizer</span></span>
+<span id="cb1-4"><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">## Allocation Definition</span></span>
+<span id="cb1-5"><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">#SBATCH --account=srlab</span></span>
+<span id="cb1-6"><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">#SBATCH --partition=srlab</span></span>
+<span id="cb1-7"><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">## Resources</span></span>
+<span id="cb1-8"><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">## Nodes</span></span>
+<span id="cb1-9"><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">#SBATCH --nodes=1</span></span>
+<span id="cb1-10"><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">## Walltime (days-hours:minutes:seconds format)</span></span>
+<span id="cb1-11"><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">#SBATCH --time=7-00:00:00</span></span>
+<span id="cb1-12"><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">## Memory per node</span></span>
+<span id="cb1-13"><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">#SBATCH --mem=120G</span></span>
+<span id="cb1-14"><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">##turn on e-mail notification</span></span>
+<span id="cb1-15"><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">#SBATCH --mail-type=ALL</span></span>
+<span id="cb1-16"><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">#SBATCH --mail-user=samwhite@uw.edu</span></span>
+<span id="cb1-17"><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">## Specify the working directory for this job</span></span>
+<span id="cb1-18"><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">#SBATCH --chdir=/gscratch/scrubbed/samwhite/outputs/20241105-phel-diamond-meganizer</span></span>
+<span id="cb1-19"></span>
+<span id="cb1-20"><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">## Perform DIAMOND BLASTx on unmapped P.helanthoides RNA-seq files from Steven.</span></span>
+<span id="cb1-21"><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">## Will be used to view taxonomic breakdown of sequencing reads.</span></span>
+<span id="cb1-22"></span>
+<span id="cb1-23"><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">## Expects input FastQ files to be match this pattern: *reads.[12].fastq</span></span>
+<span id="cb1-24"></span>
+<span id="cb1-25"></span>
+<span id="cb1-26"><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">###################################################################################</span></span>
+<span id="cb1-27"><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># These variables need to be set by user</span></span>
+<span id="cb1-28"></span>
+<span id="cb1-29"><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">## Assign Variables</span></span>
+<span id="cb1-30"></span>
+<span id="cb1-31"><span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">fastq_pattern</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">'*reads.[12].fastq'</span></span>
+<span id="cb1-32"></span>
+<span id="cb1-33"><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># Program paths</span></span>
+<span id="cb1-34"><span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">diamond</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span>/gscratch/srlab/programs/diamond-v2.1.1/diamond</span>
+<span id="cb1-35"><span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">meganizer</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span>/gscratch/srlab/programs/MEGAN-6.22.0/tools/daa-meganizer</span>
+<span id="cb1-36"></span>
+<span id="cb1-37"><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># DIAMOND NCBI nr database</span></span>
+<span id="cb1-38"><span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">dmnd_db</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span>/gscratch/srlab/blastdbs/20230215-ncbi-nr/20230215-ncbi-nr.dmnd</span>
+<span id="cb1-39"></span>
+<span id="cb1-40"><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># MEGAN mapping files</span></span>
+<span id="cb1-41"><span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">megan_mapping_dir</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span>/gscratch/srlab/sam/data/databases/MEGAN</span>
+<span id="cb1-42"><span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">megan_mapdb</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"</span><span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">${megan_mapping_dir}</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">/megan-map-Feb2022.db"</span></span>
+<span id="cb1-43"></span>
+<span id="cb1-44"><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># FastQ files directory</span></span>
+<span id="cb1-45"><span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">fastq_dir</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span>/gscratch/scrubbed/samwhite/data/P_helianthoides/RNAseq</span>
+<span id="cb1-46"></span>
+<span id="cb1-47"><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># CPU threads</span></span>
+<span id="cb1-48"><span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">threads</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span>40</span>
+<span id="cb1-49"></span>
+<span id="cb1-50"><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># MEGAN memory limit</span></span>
+<span id="cb1-51"><span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">mem_limit</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span>100G</span>
+<span id="cb1-52"></span>
+<span id="cb1-53"><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># Programs associative array</span></span>
+<span id="cb1-54"><span class="bu" style="color: null;
+background-color: null;
+font-style: inherit;">declare</span> <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">-A</span> <span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">programs_array</span></span>
+<span id="cb1-55"><span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">programs_array</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span><span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">(</span></span>
+<span id="cb1-56"><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">[</span>diamond<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">]</span><span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">=</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"</span><span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">${diamond}</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"</span> <span class="dt" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">\</span></span>
+<span id="cb1-57"><span class="pp" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">[</span><span class="ss" style="color: #20794D;
+background-color: null;
+font-style: inherit;">meganizer</span><span class="pp" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">]</span>=<span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"</span><span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">${meganizer}</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"</span></span>
+<span id="cb1-58"><span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">)</span></span>
+<span id="cb1-59"></span>
+<span id="cb1-60"><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">###################################################################################################</span></span>
+<span id="cb1-61"></span>
+<span id="cb1-62"><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># Exit script if any command fails</span></span>
+<span id="cb1-63"><span class="bu" style="color: null;
+background-color: null;
+font-style: inherit;">set</span> <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">-e</span></span>
+<span id="cb1-64"></span>
+<span id="cb1-65"><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># Load Python Mox module for Python module availability</span></span>
+<span id="cb1-66"><span class="ex" style="color: null;
+background-color: null;
+font-style: inherit;">module</span> load intel-python3_2017</span>
+<span id="cb1-67"></span>
+<span id="cb1-68"></span>
+<span id="cb1-69"><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># Loop through FastQ files, log filenames to fastq_list.txt.</span></span>
+<span id="cb1-70"><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># Run DIAMOND on each FastQ, followed by "MEGANization"</span></span>
+<span id="cb1-71"><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># DO NOT QUOTE ${fastq_pattern}</span></span>
+<span id="cb1-72"><span class="cf" style="color: #003B4F;
+background-color: null;
+font-weight: bold;
+font-style: inherit;">for</span> fastq <span class="kw" style="color: #003B4F;
+background-color: null;
+font-weight: bold;
+font-style: inherit;">in</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"</span><span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">${fastq_dir}</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"</span>/<span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">${fastq_pattern}</span></span>
+<span id="cb1-73"><span class="cf" style="color: #003B4F;
+background-color: null;
+font-weight: bold;
+font-style: inherit;">do</span></span>
+<span id="cb1-74">    <span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># Log input FastQs</span></span>
+<span id="cb1-75">    <span class="bu" style="color: null;
+background-color: null;
+font-style: inherit;">echo</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">""</span></span>
+<span id="cb1-76">    <span class="bu" style="color: null;
+background-color: null;
+font-style: inherit;">echo</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"Generating MD5 checksum for </span><span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">${fastq}</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">..."</span></span>
+<span id="cb1-77">    <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">md5sum</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"</span><span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">${fastq}</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"</span> <span class="kw" style="color: #003B4F;
+background-color: null;
+font-weight: bold;
+font-style: inherit;">|</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">tee</span> <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">--append</span> input_fastqs-checksums.md5</span>
+<span id="cb1-78">    <span class="bu" style="color: null;
+background-color: null;
+font-style: inherit;">echo</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">""</span></span>
+<span id="cb1-79"></span>
+<span id="cb1-80">    <span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># Strip leading path ${fastq##*/} by eliminating all text up to and including last slash from the left side.</span></span>
+<span id="cb1-81">    <span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># Strip extensions by eliminating ".fastq.gz" from the right side.</span></span>
+<span id="cb1-82">    <span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">no_path</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span><span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">$(</span><span class="bu" style="color: null;
+background-color: null;
+font-style: inherit;">echo</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"</span><span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">${fastq</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">##</span><span class="pp" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">*</span>/<span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">}</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"</span><span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">)</span></span>
+<span id="cb1-83">    <span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">no_ext</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span><span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">$(</span><span class="bu" style="color: null;
+background-color: null;
+font-style: inherit;">echo</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"</span><span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">${no_path</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">%%</span>.fastq<span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">}</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"</span><span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">)</span></span>
+<span id="cb1-84"></span>
+<span id="cb1-85">    <span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># Run DIAMOND with blastx</span></span>
+<span id="cb1-86">    <span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># Output format 100 produces a DAA binary file for use with MEGAN</span></span>
+<span id="cb1-87">    <span class="bu" style="color: null;
+background-color: null;
+font-style: inherit;">echo</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"Running DIAMOND BLASTx on </span><span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">${fastq}</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">."</span></span>
+<span id="cb1-88">    <span class="bu" style="color: null;
+background-color: null;
+font-style: inherit;">echo</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">""</span></span>
+<span id="cb1-89">    <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"</span><span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">${programs_array</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">[</span>diamond<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">]</span><span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">}</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"</span> blastx <span class="dt" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">\</span></span>
+<span id="cb1-90">    <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">--db</span> <span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">${dmnd_db}</span> <span class="dt" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">\</span></span>
+<span id="cb1-91">    <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">--query</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"</span><span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">${fastq}</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"</span> <span class="dt" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">\</span></span>
+<span id="cb1-92">    <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">--out</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"</span><span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">${no_ext}</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"</span>.blastx.meganized.daa <span class="dt" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">\</span></span>
+<span id="cb1-93">    <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">--outfmt</span> 100 <span class="dt" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">\</span></span>
+<span id="cb1-94">    <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">--top</span> 5 <span class="dt" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">\</span></span>
+<span id="cb1-95">    <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">--block-size</span> 15.0 <span class="dt" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">\</span></span>
+<span id="cb1-96">    <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">--index-chunks</span> 4 <span class="dt" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">\</span></span>
+<span id="cb1-97">    <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">--memory-limit</span> <span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">${mem_limit}</span> <span class="dt" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">\</span></span>
+<span id="cb1-98">    <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">--threads</span> <span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">${threads}</span></span>
+<span id="cb1-99">    <span class="bu" style="color: null;
+background-color: null;
+font-style: inherit;">echo</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"DIAMOND BLASTx on </span><span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">${fastq}</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;"> complete: </span><span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">${no_ext}</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">.blastx.meganized.daa"</span></span>
+<span id="cb1-100">    <span class="bu" style="color: null;
+background-color: null;
+font-style: inherit;">echo</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">""</span></span>
+<span id="cb1-101"></span>
+<span id="cb1-102">    <span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># Meganize DAA files</span></span>
+<span id="cb1-103">    <span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># Used for ability to import into MEGAN6</span></span>
+<span id="cb1-104">    <span class="bu" style="color: null;
+background-color: null;
+font-style: inherit;">echo</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"Now MEGANizing </span><span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">${no_ext}</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">.blastx.meganized.daa"</span></span>
+<span id="cb1-105">    <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"</span><span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">${programs_array</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">[</span>meganizer<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">]</span><span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">}</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"</span> <span class="dt" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">\</span></span>
+<span id="cb1-106">    <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">--in</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"</span><span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">${no_ext}</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"</span>.blastx.meganized.daa <span class="dt" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">\</span></span>
+<span id="cb1-107">    <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">--threads</span> <span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">${threads}</span> <span class="dt" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">\</span></span>
+<span id="cb1-108">    <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">--mapDB</span> <span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">${megan_mapdb}</span></span>
+<span id="cb1-109">    <span class="bu" style="color: null;
+background-color: null;
+font-style: inherit;">echo</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"MEGANization of </span><span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">${no_ext}</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">.blastx.meganized.daa completed."</span></span>
+<span id="cb1-110">    <span class="bu" style="color: null;
+background-color: null;
+font-style: inherit;">echo</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">""</span></span>
+<span id="cb1-111"></span>
+<span id="cb1-112"><span class="cf" style="color: #003B4F;
+background-color: null;
+font-weight: bold;
+font-style: inherit;">done</span></span>
+<span id="cb1-113"></span>
+<span id="cb1-114"><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># Generate MD5 checksums</span></span>
+<span id="cb1-115"><span class="cf" style="color: #003B4F;
+background-color: null;
+font-weight: bold;
+font-style: inherit;">for</span> file <span class="kw" style="color: #003B4F;
+background-color: null;
+font-weight: bold;
+font-style: inherit;">in</span> <span class="pp" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">*</span></span>
+<span id="cb1-116"><span class="cf" style="color: #003B4F;
+background-color: null;
+font-weight: bold;
+font-style: inherit;">do</span></span>
+<span id="cb1-117">  <span class="bu" style="color: null;
+background-color: null;
+font-style: inherit;">echo</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">""</span></span>
+<span id="cb1-118">  <span class="bu" style="color: null;
+background-color: null;
+font-style: inherit;">echo</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"Generating MD5 checksums for </span><span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">${file}</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">:"</span></span>
+<span id="cb1-119">  <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">md5sum</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"</span><span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">${file}</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"</span> <span class="kw" style="color: #003B4F;
+background-color: null;
+font-weight: bold;
+font-style: inherit;">|</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">tee</span> <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">--append</span> checksums.md5</span>
+<span id="cb1-120">  <span class="bu" style="color: null;
+background-color: null;
+font-style: inherit;">echo</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">""</span></span>
+<span id="cb1-121"><span class="cf" style="color: #003B4F;
+background-color: null;
+font-weight: bold;
+font-style: inherit;">done</span></span>
+<span id="cb1-122"></span>
+<span id="cb1-123"><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># Generate checksum for MEGAN database(s)</span></span>
+<span id="cb1-124"><span class="kw" style="color: #003B4F;
+background-color: null;
+font-weight: bold;
+font-style: inherit;">{</span></span>
+<span id="cb1-125">    <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">md5sum</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"</span><span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">${megan_mapdb}</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"</span></span>
+<span id="cb1-126">    <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">md5sum</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"</span><span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">${dmnd_db}</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"</span></span>
+<span id="cb1-127"><span class="kw" style="color: #003B4F;
+background-color: null;
+font-weight: bold;
+font-style: inherit;">}</span> <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">&gt;&gt;</span> checksums.md5</span>
+<span id="cb1-128"></span>
+<span id="cb1-129"><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">#######################################################################################################</span></span>
+<span id="cb1-130"></span>
+<span id="cb1-131"><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># Capture program options</span></span>
+<span id="cb1-132"><span class="cf" style="color: #003B4F;
+background-color: null;
+font-weight: bold;
+font-style: inherit;">if</span> <span class="kw" style="color: #003B4F;
+background-color: null;
+font-weight: bold;
+font-style: inherit;">[[</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"</span><span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">${</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">#</span><span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">programs_array</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">[@]</span><span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">}</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"</span> <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">-gt</span> 0 <span class="kw" style="color: #003B4F;
+background-color: null;
+font-weight: bold;
+font-style: inherit;">]];</span> <span class="cf" style="color: #003B4F;
+background-color: null;
+font-weight: bold;
+font-style: inherit;">then</span></span>
+<span id="cb1-133">  <span class="bu" style="color: null;
+background-color: null;
+font-style: inherit;">echo</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"Logging program options..."</span></span>
+<span id="cb1-134">  <span class="cf" style="color: #003B4F;
+background-color: null;
+font-weight: bold;
+font-style: inherit;">for</span> program <span class="kw" style="color: #003B4F;
+background-color: null;
+font-weight: bold;
+font-style: inherit;">in</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"</span><span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">${</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">!</span><span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">programs_array</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">[@]</span><span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">}</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"</span></span>
+<span id="cb1-135">  <span class="cf" style="color: #003B4F;
+background-color: null;
+font-weight: bold;
+font-style: inherit;">do</span></span>
+<span id="cb1-136">    <span class="kw" style="color: #003B4F;
+background-color: null;
+font-weight: bold;
+font-style: inherit;">{</span></span>
+<span id="cb1-137">    <span class="bu" style="color: null;
+background-color: null;
+font-style: inherit;">echo</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"Program options for </span><span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">${program}</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">: "</span></span>
+<span id="cb1-138">    <span class="bu" style="color: null;
+background-color: null;
+font-style: inherit;">echo</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">""</span></span>
+<span id="cb1-139">    <span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># Handle samtools help menus</span></span>
+<span id="cb1-140">    <span class="cf" style="color: #003B4F;
+background-color: null;
+font-weight: bold;
+font-style: inherit;">if</span> <span class="kw" style="color: #003B4F;
+background-color: null;
+font-weight: bold;
+font-style: inherit;">[[</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"</span><span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">${program}</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"</span> <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">==</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"samtools_index"</span> <span class="kw" style="color: #003B4F;
+background-color: null;
+font-weight: bold;
+font-style: inherit;">]]</span> <span class="dt" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">\</span></span>
+<span id="cb1-141">    <span class="kw" style="color: #003B4F;
+background-color: null;
+font-weight: bold;
+font-style: inherit;">||</span> <span class="kw" style="color: #003B4F;
+background-color: null;
+font-weight: bold;
+font-style: inherit;">[[</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"</span><span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">${program}</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"</span> <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">==</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"samtools_sort"</span> <span class="kw" style="color: #003B4F;
+background-color: null;
+font-weight: bold;
+font-style: inherit;">]]</span> <span class="dt" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">\</span></span>
+<span id="cb1-142">    <span class="kw" style="color: #003B4F;
+background-color: null;
+font-weight: bold;
+font-style: inherit;">||</span> <span class="kw" style="color: #003B4F;
+background-color: null;
+font-weight: bold;
+font-style: inherit;">[[</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"</span><span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">${program}</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"</span> <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">==</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"samtools_view"</span> <span class="kw" style="color: #003B4F;
+background-color: null;
+font-weight: bold;
+font-style: inherit;">]]</span></span>
+<span id="cb1-143">    <span class="cf" style="color: #003B4F;
+background-color: null;
+font-weight: bold;
+font-style: inherit;">then</span></span>
+<span id="cb1-144">      <span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">${programs_array</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">[</span><span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">$program</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">]</span><span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">}</span></span>
+<span id="cb1-145"></span>
+<span id="cb1-146">    <span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># Handle DIAMOND BLAST menu</span></span>
+<span id="cb1-147">    <span class="cf" style="color: #003B4F;
+background-color: null;
+font-weight: bold;
+font-style: inherit;">elif</span> <span class="kw" style="color: #003B4F;
+background-color: null;
+font-weight: bold;
+font-style: inherit;">[[</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"</span><span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">${program}</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"</span> <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">==</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"diamond"</span> <span class="kw" style="color: #003B4F;
+background-color: null;
+font-weight: bold;
+font-style: inherit;">]];</span> <span class="cf" style="color: #003B4F;
+background-color: null;
+font-weight: bold;
+font-style: inherit;">then</span></span>
+<span id="cb1-148">      <span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">${programs_array</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">[</span><span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">$program</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">]</span><span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">}</span> help</span>
+<span id="cb1-149"></span>
+<span id="cb1-150">    <span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># Handle NCBI BLASTx menu</span></span>
+<span id="cb1-151">    <span class="cf" style="color: #003B4F;
+background-color: null;
+font-weight: bold;
+font-style: inherit;">elif</span> <span class="kw" style="color: #003B4F;
+background-color: null;
+font-weight: bold;
+font-style: inherit;">[[</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"</span><span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">${program}</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"</span> <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">==</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"blastx"</span> <span class="kw" style="color: #003B4F;
+background-color: null;
+font-weight: bold;
+font-style: inherit;">]];</span> <span class="cf" style="color: #003B4F;
+background-color: null;
+font-weight: bold;
+font-style: inherit;">then</span></span>
+<span id="cb1-152">      <span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">${programs_array</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">[</span><span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">$program</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">]</span><span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">}</span> <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">-help</span></span>
+<span id="cb1-153">    <span class="cf" style="color: #003B4F;
+background-color: null;
+font-weight: bold;
+font-style: inherit;">fi</span></span>
+<span id="cb1-154">    <span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">${programs_array</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">[</span><span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">$program</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">]</span><span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">}</span> <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">-h</span></span>
+<span id="cb1-155">    <span class="bu" style="color: null;
+background-color: null;
+font-style: inherit;">echo</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">""</span></span>
+<span id="cb1-156">    <span class="bu" style="color: null;
+background-color: null;
+font-style: inherit;">echo</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">""</span></span>
+<span id="cb1-157">    <span class="bu" style="color: null;
+background-color: null;
+font-style: inherit;">echo</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"----------------------------------------------"</span></span>
+<span id="cb1-158">    <span class="bu" style="color: null;
+background-color: null;
+font-style: inherit;">echo</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">""</span></span>
+<span id="cb1-159">    <span class="bu" style="color: null;
+background-color: null;
+font-style: inherit;">echo</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">""</span></span>
+<span id="cb1-160">  <span class="kw" style="color: #003B4F;
+background-color: null;
+font-weight: bold;
+font-style: inherit;">}</span> <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">&amp;&gt;&gt;</span> program_options.log <span class="kw" style="color: #003B4F;
+background-color: null;
+font-weight: bold;
+font-style: inherit;">||</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">true</span></span>
+<span id="cb1-161"></span>
+<span id="cb1-162">    <span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># If MultiQC is in programs_array, copy the config file to this directory.</span></span>
+<span id="cb1-163">    <span class="cf" style="color: #003B4F;
+background-color: null;
+font-weight: bold;
+font-style: inherit;">if</span> <span class="kw" style="color: #003B4F;
+background-color: null;
+font-weight: bold;
+font-style: inherit;">[[</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"</span><span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">${program}</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"</span> <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">==</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"multiqc"</span> <span class="kw" style="color: #003B4F;
+background-color: null;
+font-weight: bold;
+font-style: inherit;">]];</span> <span class="cf" style="color: #003B4F;
+background-color: null;
+font-weight: bold;
+font-style: inherit;">then</span></span>
+<span id="cb1-164">      <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">cp</span> <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">--preserve</span> ~/.multiqc_config.yaml multiqc_config.yaml</span>
+<span id="cb1-165">    <span class="cf" style="color: #003B4F;
+background-color: null;
+font-weight: bold;
+font-style: inherit;">fi</span></span>
+<span id="cb1-166">  <span class="cf" style="color: #003B4F;
+background-color: null;
+font-weight: bold;
+font-style: inherit;">done</span></span>
+<span id="cb1-167">  <span class="bu" style="color: null;
+background-color: null;
+font-style: inherit;">echo</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"Finished logging programs options."</span></span>
+<span id="cb1-168">  <span class="bu" style="color: null;
+background-color: null;
+font-style: inherit;">echo</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">""</span></span>
+<span id="cb1-169"><span class="cf" style="color: #003B4F;
+background-color: null;
+font-weight: bold;
+font-style: inherit;">fi</span></span>
+<span id="cb1-170"></span>
+<span id="cb1-171"></span>
+<span id="cb1-172"><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># Document programs in PATH (primarily for program version ID)</span></span>
+<span id="cb1-173"><span class="bu" style="color: null;
+background-color: null;
+font-style: inherit;">echo</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"Logging system </span><span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">$PATH</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">..."</span></span>
+<span id="cb1-174"><span class="kw" style="color: #003B4F;
+background-color: null;
+font-weight: bold;
+font-style: inherit;">{</span></span>
+<span id="cb1-175"><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">date</span></span>
+<span id="cb1-176"><span class="bu" style="color: null;
+background-color: null;
+font-style: inherit;">echo</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">""</span></span>
+<span id="cb1-177"><span class="bu" style="color: null;
+background-color: null;
+font-style: inherit;">echo</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"System PATH for </span><span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">$SLURM_JOB_ID</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"</span></span>
+<span id="cb1-178"><span class="bu" style="color: null;
+background-color: null;
+font-style: inherit;">echo</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">""</span></span>
+<span id="cb1-179"><span class="bu" style="color: null;
+background-color: null;
+font-style: inherit;">printf</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"%0.s-"</span> <span class="dt" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">{</span><span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">1</span><span class="dt" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">..</span><span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">10</span><span class="dt" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">}</span></span>
+<span id="cb1-180"><span class="bu" style="color: null;
+background-color: null;
+font-style: inherit;">echo</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"</span><span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">${PATH}</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"</span> <span class="kw" style="color: #003B4F;
+background-color: null;
+font-weight: bold;
+font-style: inherit;">|</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">tr</span> : <span class="dt" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">\\</span>n</span>
+<span id="cb1-181"><span class="kw" style="color: #003B4F;
+background-color: null;
+font-weight: bold;
+font-style: inherit;">}</span> <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">&gt;&gt;</span> system_path.log</span>
+<span id="cb1-182"><span class="bu" style="color: null;
+background-color: null;
+font-style: inherit;">echo</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"Finished logging system </span><span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">$PATH</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">."</span></span></code></pre></div>
+</section>
+<section id="results" class="level1">
+<h1>RESULTS</h1>
+
+
+</section>
+
+ ]]></description>
+  <category>2024</category>
+  <category>MEGAN6</category>
+  <category>RNAseq</category>
+  <category>DIAMOND</category>
+  <category>BLASTx</category>
+  <category>Pycnopodia helianthoides</category>
+  <category>sunflower sea star</category>
+  <category>Mox</category>
+  <guid>https://robertslab.github.io/sams-notebook/posts/2024/2024-11-05-Sequencing-Read-Taxonomic-Classification---Unmapped-P.helanthoides-RNA-seq-Using-DIAMOND-BLASTx-and-MEGAN6-on-Mox/</guid>
+  <pubDate>Tue, 05 Nov 2024 08:00:00 GMT</pubDate>
+</item>
 <item>
   <title>Data Received - Manila clam Supplemental sRNA-seq Data from Azenta</title>
   <dc:creator>Sam White</dc:creator>
@@ -11247,111 +12346,6 @@ Untergasser, Andreas, Ioana Cutcutache, Triinu Koressaar, Jian Ye, Brant C. Fair
   <category>pyfaidx</category>
   <guid>https://robertslab.github.io/sams-notebook/posts/2024/2024-09-16-Primer-Design---Lake-Trout-C1q-Gene-Sequencing-Primers-Using-Primer3/</guid>
   <pubDate>Mon, 16 Sep 2024 07:00:00 GMT</pubDate>
-</item>
-<item>
-  <title>Bisulfite PCR - Second Primer Annealing Gradient Test with Lake Trout Bisulfite-treated DNA</title>
-  <dc:creator>Sam White</dc:creator>
-  <link>https://robertslab.github.io/sams-notebook/posts/2024/2024-09-11-Bisulfite-PCR---Second-Primer-Annealing-Gradient-Test-with-Lake-Trout-Bisulfite-treated-DNA/</link>
-  <description><![CDATA[ 
-
-
-
-
-
-<section id="intro" class="level2">
-<h2 class="anchored" data-anchor-id="intro">INTRO</h2>
-<p>After previously <a href="../../../posts/2024/2024-07-29-Primer-Design---Lake-Trout-C1q-Gene-Bisulfite-Sequencing-Primers-Using-Primer3/index.html">designing bisulfite PCR primers for the C1Q gene on 20240709</a>, and then <a href="../../../posts/2024/2024-08-28-Bisulfite-PCR---Testing-Primer-Annealing-Gradient-with-Lake-Trout-Bisulfite-treated-DNA/index.html">screwing up the initial PCR</a>, it was time to redo this the correct way. Due to their length, low complexity, and low melting temperatures (T<sub>m</sub>) I opted to test these out on a pool of the <a href="../../../posts/2024/2024-07-12-DNA-Isolation-and-Quantification---Lake-Trout-Liver/index.html"><em>Salvelinus namaycush</em> gDNA isolated on 20240712</a>, using a temperature gradient.</p>
-</section>
-<section id="materials-methods" class="level2">
-<h2 class="anchored" data-anchor-id="materials-methods">MATERIALS &amp; METHODS</h2>
-<section id="dna-pooling" class="level3">
-<h3 class="anchored" data-anchor-id="dna-pooling">DNA Pooling</h3>
-<p>1uL of each sample was used to create a pool of gDNA.</p>
-</section>
-<section id="pcr-reactions" class="level3">
-<h3 class="anchored" data-anchor-id="pcr-reactions">PCR Reactions</h3>
-<p>PCR reactions were run using <a href="https://www.neb.com/en-us/products/m0490-epimark-hot-start-taq-dna-polymerase">EpiMark Hot Start Taq DNA Polymerase</a> (New England Biolabs), according to the <a href="https://www.neb.com/en-us/protocols/2012/09/25/epimark-hot-start-taq-dna-polymerase-guidelines-for-pcr-reactions-m0490">manufacturer’s protocol</a>, in a total reaction volume of 25uL. Since all samples were the same, the equivalent of 1uL of DNA per reaction was added directly to the master mix. The master mix was then distributed to 0.1mL PCR plates and run on a CFX Connect (BioRad) thermalcycler.</p>
-<p>I tested three different annealing temps (45<sup>o</sup>C, 50<sup>o</sup>C, and 55<sup>o</sup>C).</p>
-</section>
-<section id="pcr-cycling" class="level3">
-<h3 class="anchored" data-anchor-id="pcr-cycling">PCR Cycling</h3>
-<p>Annealing temperature gradient PCR was performed in a CFX Connect (BioRad).</p>
-<p>Cycling params:</p>
-<div id="fig-PCR-parameters" class="quarto-float quarto-figure quarto-figure-center anchored" alt="PCR cycling parameters.">
-<figure class="quarto-float quarto-float-fig figure">
-<div aria-describedby="fig-PCR-parameters-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
-<img src="https://robertslab.github.io/sams-notebook/posts/2024/2024-09-11-Bisulfite-PCR---Second-Primer-Annealing-Gradient-Test-with-Lake-Trout-Bisulfite-treated-DNA/20240911-snam-bs-pcr-gradient-range.png" class="img-fluid figure-img" alt="PCR cycling parameters.">
-</div>
-<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-PCR-parameters-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
-Figure&nbsp;1: Screenshot of cycling program, also sdhowing temperature gradient.
-</figcaption>
-</figure>
-</div>
-<ol type="1">
-<li>95<sup>o</sup>C - 30s</li>
-<li>95<sup>o</sup>C - 15s</li>
-<li>45 - 55<sup>o</sup>C - 20s</li>
-<li>68<sup>o</sup>C - 4m</li>
-<li>Go to Step 2 x 39.</li>
-<li>68<sup>o</sup>C - 5m</li>
-<li>4<sup>o</sup>C - FOREVER</li>
-</ol>
-<p>Samples were loaded in the following positions:</p>
-<div id="fig-tubes" class="quarto-float quarto-figure quarto-figure-center anchored" alt="Tube placement in thermalcylcer.">
-<figure class="quarto-float quarto-float-fig figure">
-<div aria-describedby="fig-tubes-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
-<img src="https://robertslab.github.io/sams-notebook/posts/2024/2024-09-11-Bisulfite-PCR---Second-Primer-Annealing-Gradient-Test-with-Lake-Trout-Bisulfite-treated-DNA/20240911-snam-bs-pcr-thermalcyler-block.jpg" class="img-fluid figure-img" alt="Tube placement in thermalcylcer.">
-</div>
-<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-tubes-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
-Figure&nbsp;2: PCR tube placement in thermacylcer
-</figcaption>
-</figure>
-</div>
-<p>PCR reactions were loaded on a low-TAE, 1.0% agarose gel, with ethidium bromide. Gel was run at 107V for ~45mins and then imaged.</p>
-<p>O’GeneRuler (ThermoFisher) Ladder was used (5uL) for size reference:</p>
-<div id="fig-ladder" class="lightbox quarto-float quarto-figure quarto-figure-center anchored" alt="O'GeneRuler">
-<figure class="quarto-float quarto-float-fig figure">
-<div aria-describedby="fig-ladder-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
-<a href="../../../images/ogene-ruler.jpeg" class="lightbox" data-gallery="quarto-lightbox-gallery-1" title="Figure&nbsp;3: Ladder"><img src="https://robertslab.github.io/sams-notebook/images/ogene-ruler.jpeg" class="img-fluid figure-img" alt="O'GeneRuler"></a>
-</div>
-<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-ladder-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
-Figure&nbsp;3: Ladder
-</figcaption>
-</figure>
-</div>
-</section>
-</section>
-<section id="results" class="level2">
-<h2 class="anchored" data-anchor-id="results">RESULTS</h2>
-<p>No amplification.</p>
-<div id="fig-gel" class="quarto-float quarto-figure quarto-figure-center anchored" alt="Agarose gel showing no amplificaiton in any of the three annealing temps.">
-<figure class="quarto-float quarto-float-fig figure">
-<div aria-describedby="fig-gel-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
-<img src="https://robertslab.github.io/sams-notebook/posts/2024/2024-09-11-Bisulfite-PCR---Second-Primer-Annealing-Gradient-Test-with-Lake-Trout-Bisulfite-treated-DNA/20240911-snam-bs-pcr-gel.jpg" class="img-fluid figure-img" alt="Agarose gel showing no amplificaiton in any of the three annealing temps.">
-</div>
-<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-gel-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
-Figure&nbsp;4: Agarose gel showing no amplificaiton in any of the three annealing temp of 45<sup>o</sup>C, 50<sup>o</sup>C, and 55<sup>o</sup>C
-</figcaption>
-</figure>
-</div>
-</section>
-<section id="discussion" class="level2">
-<h2 class="anchored" data-anchor-id="discussion">DISCUSSION</h2>
-<p>Well, that’s a bummer. Will design some regular PCR primers to see if we can succussfully PCR the C1q gene from the original gDNA (i.e.&nbsp;<em>not</em> bisulfite converted DNA).</p>
-
-
-</section>
-
- ]]></description>
-  <category>2024</category>
-  <category>bisulfite</category>
-  <category>BS-PCR</category>
-  <category>PCR</category>
-  <category>DNA</category>
-  <category>Lake troute</category>
-  <category>Salvelinus namaycush</category>
-  <guid>https://robertslab.github.io/sams-notebook/posts/2024/2024-09-11-Bisulfite-PCR---Second-Primer-Annealing-Gradient-Test-with-Lake-Trout-Bisulfite-treated-DNA/</guid>
-  <pubDate>Wed, 11 Sep 2024 07:00:00 GMT</pubDate>
 </item>
 </channel>
 </rss>
