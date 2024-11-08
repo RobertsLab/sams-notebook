@@ -23,7 +23,13 @@ In preparation for a grant proposal involving sea star wasting disease, due in a
 
 - `PSC-0519_unmapped_reads.[12].fastq`
 
-# SBATCH SCRIPT
+# METHODS
+
+## DIAMOND BLASTx and MEGANization
+
+Reads were [`DIAMOND`](https://github.com/bbuchfink/diamond) BLASTx'd against a previously constructed DIAMON BLAST database. After [`DIAMOND`](https://github.com/bbuchfink/diamond) BLASTx, the resulting DAA files were "MEGANized" in preparation for use in [MEGAN6](https://software-ab.cs.uni-tuebingen.de/download/megan6/welcome.html). Both steps were run on Mox.
+
+### SBATCH SCRIPT
 
 GitHub:
 
@@ -214,11 +220,39 @@ echo "${PATH}" | tr : \\n
 echo "Finished logging system $PATH."
 ```
 
+## DAA to RMA Conversion
+
+Resulting DAA files were converted to RMA6 format for import and analysis in MEGAN6. Due to time constraints, this was performed on Raven without a script. Command used:
+
+```bash
+/home/shared/megan-6.24.20/tools/daa2rma \
+--in ./PSC-0519_unmapped_reads.1.blastx.meganized.daa ./PSC-0519_unmapped_reads.2.blastx.meganized.daa \
+--mapDB ~/data/databases/MEGAN/megan-map-Feb2022.db \
+--out ./PSC-0519_unmapped_reads.1.blastx.meganized.rma6 ./PSC-0519_unmapped_reads.2.blastx.meganized.rma6 \
+--threads 40 2>&1 | tee --append daa2rma_log.txt
+```
+
 # RESULTS
 
 The Mox run took just under 16hrs to complete:
 
 ![Screencap showing Mox runtime of 15hrs 42mins and 41secs for DIAMOND BLASTx.](./20241105-phel-mox-runtime.png){#fig-mox_runtime fig-alt="Screencap showing Mox runtime of 15hrs 42mins and 41secs for DIAMOND BLASTx." .lightbox}
+
+
+## DISCUSSION
+
+Looking at the entire taxonomies, down to the species level, most of the reads (>1,500,000) get assigned to [_Asterias rubens_](https://en.wikipedia.org/wiki/Common_starfish) (Wikipedia), the common sea star. This is surprising, as I'm fairly certain these sequencing reads came from [_Pycnopodia helianthoides_](https://en.wikipedia.org/wiki/Sunflower_sea_star) (Wikipedia), the sunflower star. Of course, these results are also dependent upon how much sequence data in NCBI for any given species. However, with that said, reads are only assigned to a given taxonomic level based on the BLASTx results. Thus, even if a read comes from a sea star, it would (should?) _not_ get assigned to a particular species unless the BLASTx confidence was _very_ high...
+
+Looking at the highest read assignments for non-eukaryotic species, we see that of the Bacteria (7,153 reads), [_Bacillus yapensis_](https://link.springer.com/article/10.1007/s10482-019-01348-7) (Journal article website), while in Archae (17,742 reads), [_Methanocaldococcus jannaschii_](https://en.wikipedia.org/wiki/Methanocaldococcus_jannaschii) (Wikipedia) had the most reads assigned.
+
+
+![MEGAN6 taxonomic heat map of assignments down to Species level. Darkest green box shows highest numbers of reads assigned to _Asterias rubens_.](https://gannet.fish.washington.edu/Atumefaciens/20241105-phel-diamond-meganizer/PSC-0519_unmapped_reads.1.blastx.meganized-all-heatmap.jpg){#fig-mox_runtime fig-alt="MEGAN6 taxonomic heat map of assignments down to species level. Darkest green box shows highest numbers of reads assigned to _Asterias rubens_." .lightbox}
+
+
+
+![MEGAN6 taxonomic heat map of assignments down to Class level. Top Class in Eukaryotes (Astroides), Bacteria (Bacilli), and Archae (Methanococci) are highlighted in yellow.](https://gannet.fish.washington.edu/Atumefaciens/20241105-phel-diamond-meganizer/PSC-0519_unmapped_reads.1.blastx.meganized-class-heatmap.jpg){#fig-mox_runtime fig-alt="MEGAN6 taxonomic heat map of assignments down to Class level. Top Class in Eukaryotes (Astroides), Bacteria (Bacilli), and Archae (Methanococci) are highlighted in yellow." .lightbox}
+
+
 
 ## Output files
 
@@ -239,3 +273,13 @@ Output files:
   - MD5: `4e5514926056f0f3273b44da6c3ed7df`
 
 - [`checksums.md5`](https://gannet.fish.washington.edu/Atumefaciens/20241105-phel-diamond-meganizer/checksums.md5)
+
+### RMA6
+
+- [`PSC-0519_unmapped_reads.1.blastx.meganized.rma6`](https://gannet.fish.washington.edu/Atumefaciens/20241105-phel-diamond-meganizer/PSC-0519_unmapped_reads.1.blastx.meganized.rma6)
+
+  - MD5: `b5f0118056d1b3481b5533e420146728`
+
+- [`PSC-0519_unmapped_reads.2.blastx.meganized.rma6`](https://gannet.fish.washington.edu/Atumefaciens/20241105-phel-diamond-meganizer/PSC-0519_unmapped_reads.2.blastx.meganized.rma6)
+
+  - MD5: `4e88764010274baccafffe58f67134d2`
