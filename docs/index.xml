@@ -1722,8 +1722,13 @@ Wickham, Hadley, Mara Averick, Jennifer Bryan, Winston Chang, Lucy McGowan, Roma
 <li><code>PSC-0519_unmapped_reads.[12].fastq</code></li>
 </ul>
 </section>
-<section id="sbatch-script" class="level1">
-<h1>SBATCH SCRIPT</h1>
+<section id="methods" class="level1">
+<h1>METHODS</h1>
+<section id="diamond-blastx-and-meganization" class="level2">
+<h2 class="anchored" data-anchor-id="diamond-blastx-and-meganization">DIAMOND BLASTx and MEGANization</h2>
+<p>Reads were <a href="https://github.com/bbuchfink/diamond"><code>DIAMOND</code></a> BLASTx’d against a previously constructed DIAMON BLAST database. After <a href="https://github.com/bbuchfink/diamond"><code>DIAMOND</code></a> BLASTx, the resulting DAA files were “MEGANized” in preparation for use in <a href="https://software-ab.cs.uni-tuebingen.de/download/megan6/welcome.html">MEGAN6</a>. Both steps were run on Mox.</p>
+<section id="sbatch-script" class="level3">
+<h3 class="anchored" data-anchor-id="sbatch-script">SBATCH SCRIPT</h3>
 <p>GitHub:</p>
 <ul>
 <li><a href="https://github.com/RobertsLab/sams-notebook/blob/master/sbatch_scripts/20241105-phel-diamond-meganizer.sh">20241105-phel-diamond-meganizer.sh</a></li>
@@ -2786,10 +2791,115 @@ font-style: inherit;">$PATH</span><span class="st" style="color: #20794D;
 background-color: null;
 font-style: inherit;">."</span></span></code></pre></div>
 </section>
+</section>
+<section id="daa-to-rma-conversion" class="level2">
+<h2 class="anchored" data-anchor-id="daa-to-rma-conversion">DAA to RMA Conversion</h2>
+<p>Resulting DAA files were converted to RMA6 format for import and analysis in MEGAN6. Due to time constraints, this was performed on Raven without a script. Command used:</p>
+<div class="sourceCode" id="cb2" style="background: #f1f3f5;"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb2-1"><span class="ex" style="color: null;
+background-color: null;
+font-style: inherit;">/home/shared/megan-6.24.20/tools/daa2rma</span> <span class="dt" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">\</span></span>
+<span id="cb2-2">--in ./PSC-0519_unmapped_reads.1.blastx.meganized.daa ./PSC-0519_unmapped_reads.2.blastx.meganized.daa <span class="dt" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">\</span></span>
+<span id="cb2-3">--mapDB ~/data/databases/MEGAN/megan-map-Feb2022.db <span class="dt" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">\</span></span>
+<span id="cb2-4">--out ./PSC-0519_unmapped_reads.1.blastx.meganized.rma6 ./PSC-0519_unmapped_reads.2.blastx.meganized.rma6 <span class="dt" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">\</span></span>
+<span id="cb2-5">--threads 40 <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">2</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">&gt;&amp;</span><span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">1</span> <span class="kw" style="color: #003B4F;
+background-color: null;
+font-weight: bold;
+font-style: inherit;">|</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">tee</span> <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">--append</span> daa2rma_log.txt</span></code></pre></div>
+</section>
+</section>
 <section id="results" class="level1">
 <h1>RESULTS</h1>
+<p>The Mox run took just under 16hrs to complete:</p>
+<div id="fig-mox_runtime" class="lightbox quarto-float quarto-figure quarto-figure-center anchored" alt="Screencap showing Mox runtime of 15hrs 42mins and 41secs for DIAMOND BLASTx.">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-mox_runtime-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<a href="./20241105-phel-mox-runtime.png" class="lightbox" data-gallery="quarto-lightbox-gallery-1" title="Figure&nbsp;1: Screencap showing Mox runtime of 15hrs 42mins and 41secs for DIAMOND BLASTx."><img src="https://robertslab.github.io/sams-notebook/posts/2024/2024-11-05-Sequencing-Read-Taxonomic-Classification---Unmapped-P.helanthoides-RNA-seq-Using-DIAMOND-BLASTx-and-MEGAN6-on-Mox/20241105-phel-mox-runtime.png" class="img-fluid figure-img" alt="Screencap showing Mox runtime of 15hrs 42mins and 41secs for DIAMOND BLASTx."></a>
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-mox_runtime-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;1: Screencap showing Mox runtime of 15hrs 42mins and 41secs for DIAMOND BLASTx.
+</figcaption>
+</figure>
+</div>
+<section id="discussion" class="level2">
+<h2 class="anchored" data-anchor-id="discussion">DISCUSSION</h2>
+<p>Looking at the entire taxonomies, down to the species level, most of the reads (&gt;1,500,000) get assigned to <a href="https://en.wikipedia.org/wiki/Common_starfish"><em>Asterias rubens</em></a> (Wikipedia), the common sea star. This is surprising, as I’m fairly certain these sequencing reads came from <a href="https://en.wikipedia.org/wiki/Sunflower_sea_star"><em>Pycnopodia helianthoides</em></a> (Wikipedia), the sunflower star. Of course, these results are also dependent upon how much sequence data in NCBI for any given species. However, with that said, reads are only assigned to a given taxonomic level based on the BLASTx results. Thus, even if a read comes from a sea star, it would (should?) <em>not</em> get assigned to a particular species unless the BLASTx confidence was <em>very</em> high…</p>
+<p>Looking at the highest read assignments for non-eukaryotic species, we see that of the Bacteria (7,153 reads), <a href="https://link.springer.com/article/10.1007/s10482-019-01348-7"><em>Bacillus yapensis</em></a> (Journal article website), while in Archae (17,742 reads), <a href="https://en.wikipedia.org/wiki/Methanocaldococcus_jannaschii"><em>Methanocaldococcus jannaschii</em></a> (Wikipedia) had the most reads assigned.</p>
+<div id="fig-mox_runtime" class="lightbox quarto-float quarto-figure quarto-figure-center anchored" alt="MEGAN6 taxonomic heat map of assignments down to species level. Darkest green box shows highest numbers of reads assigned to _Asterias rubens_.">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-mox_runtime-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<a href="https://gannet.fish.washington.edu/Atumefaciens/20241105-phel-diamond-meganizer/PSC-0519_unmapped_reads.1.blastx.meganized-all-heatmap.jpg" class="lightbox" data-gallery="quarto-lightbox-gallery-2" title="Figure&nbsp;2: MEGAN6 taxonomic heat map of assignments down to Species level. Darkest green box shows highest numbers of reads assigned to Asterias rubens."><img src="https://gannet.fish.washington.edu/Atumefaciens/20241105-phel-diamond-meganizer/PSC-0519_unmapped_reads.1.blastx.meganized-all-heatmap.jpg" class="img-fluid figure-img" alt="MEGAN6 taxonomic heat map of assignments down to species level. Darkest green box shows highest numbers of reads assigned to _Asterias rubens_."></a>
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-mox_runtime-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;2: MEGAN6 taxonomic heat map of assignments down to Species level. Darkest green box shows highest numbers of reads assigned to <em>Asterias rubens</em>.
+</figcaption>
+</figure>
+</div>
+<div id="fig-mox_runtime" class="lightbox quarto-float quarto-figure quarto-figure-center anchored" alt="MEGAN6 taxonomic heat map of assignments down to Class level. Top Class in Eukaryotes (Astroides), Bacteria (Bacilli), and Archae (Methanococci) are highlighted in yellow.">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-mox_runtime-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<a href="https://gannet.fish.washington.edu/Atumefaciens/20241105-phel-diamond-meganizer/PSC-0519_unmapped_reads.1.blastx.meganized-class-heatmap.jpg" class="lightbox" data-gallery="quarto-lightbox-gallery-3" title="Figure&nbsp;3: MEGAN6 taxonomic heat map of assignments down to Class level. Top Class in Eukaryotes (Astroides), Bacteria (Bacilli), and Archae (Methanococci) are highlighted in yellow."><img src="https://gannet.fish.washington.edu/Atumefaciens/20241105-phel-diamond-meganizer/PSC-0519_unmapped_reads.1.blastx.meganized-class-heatmap.jpg" class="img-fluid figure-img" alt="MEGAN6 taxonomic heat map of assignments down to Class level. Top Class in Eukaryotes (Astroides), Bacteria (Bacilli), and Archae (Methanococci) are highlighted in yellow."></a>
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-mox_runtime-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;3: MEGAN6 taxonomic heat map of assignments down to Class level. Top Class in Eukaryotes (Astroides), Bacteria (Bacilli), and Archae (Methanococci) are highlighted in yellow.
+</figcaption>
+</figure>
+</div>
+</section>
+<section id="output-files" class="level2">
+<h2 class="anchored" data-anchor-id="output-files">Output files</h2>
+<p>Output directory:</p>
+<ul>
+<li><a href="https://gannet.fish.washington.edu/Atumefaciens/20241105-phel-diamond-meganizer/">https://gannet.fish.washington.edu/Atumefaciens/20241105-phel-diamond-meganizer/</a></li>
+</ul>
+<section id="diamond-blastxmeganizer" class="level3">
+<h3 class="anchored" data-anchor-id="diamond-blastxmeganizer">DIAMOND BLASTX/MEGANIZER</h3>
+<p>Output files:</p>
+<ul>
+<li><p><a href="https://gannet.fish.washington.edu/Atumefaciens/20241105-phel-diamond-meganizer/PSC-0519_unmapped_reads.1.blastx.meganized.daa"><code>PSC-0519_unmapped_reads.1.blastx.meganized.daa</code></a> (186GB)</p>
+<ul>
+<li>MD5: <code>1e7207fa8dc3ff15373f46c4e0c5bbb3</code></li>
+</ul></li>
+<li><p><a href="https://gannet.fish.washington.edu/Atumefaciens/20241105-phel-diamond-meganizer/PSC-0519_unmapped_reads.2.blastx.meganized.daa"><code>PSC-0519_unmapped_reads.2.blastx.meganized.daa</code></a> (179GB)</p>
+<ul>
+<li>MD5: <code>4e5514926056f0f3273b44da6c3ed7df</code></li>
+</ul></li>
+<li><p><a href="https://gannet.fish.washington.edu/Atumefaciens/20241105-phel-diamond-meganizer/checksums.md5"><code>checksums.md5</code></a></p></li>
+</ul>
+</section>
+<section id="rma6" class="level3">
+<h3 class="anchored" data-anchor-id="rma6">RMA6</h3>
+<ul>
+<li><p><a href="https://gannet.fish.washington.edu/Atumefaciens/20241105-phel-diamond-meganizer/PSC-0519_unmapped_reads.1.blastx.meganized.rma6"><code>PSC-0519_unmapped_reads.1.blastx.meganized.rma6</code></a></p>
+<ul>
+<li>MD5: <code>b5f0118056d1b3481b5533e420146728</code></li>
+</ul></li>
+<li><p><a href="https://gannet.fish.washington.edu/Atumefaciens/20241105-phel-diamond-meganizer/PSC-0519_unmapped_reads.2.blastx.meganized.rma6"><code>PSC-0519_unmapped_reads.2.blastx.meganized.rma6</code></a></p>
+<ul>
+<li>MD5: <code>4e88764010274baccafffe58f67134d2</code></li>
+</ul></li>
+</ul>
 
 
+</section>
+</section>
 </section>
 
  ]]></description>
