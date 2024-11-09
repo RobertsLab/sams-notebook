@@ -17,8 +17,10 @@
 ## Specify the working directory for this job
 #SBATCH --chdir=/gscratch/scrubbed/samwhite/outputs/20241108-phel-diamond-meganizer-trinity_unmapped
 
-## Perform DIAMOND BLASTx on Trinity assembly of unmapped P.helanthoides RNA-seq reads from Steven.
+## Perform DIAMOND BLASTx on Trinity assembly of unmapped P.helanthoides RNA-seq reads from  Steven.
+## Run with the --long-reads option due to using assembled reads.
 ## Will be used to view taxonomic breakdown.
+
 
 
 
@@ -72,6 +74,7 @@ echo ""
 --db ${dmnd_db} \
 --query Trinity.fasta \
 --out Trinity.fasta-phel-unmapped.blastx.meganized.daa \
+--long-reads \
 --outfmt 100 \
 --top 5 \
 --block-size 15.0 \
