@@ -4,7 +4,7 @@
 #SBATCH --partition=ckpt
 #SBATCH --output=bismark_job_%A_%a.out
 #SBATCH --error=bismark_job_%A_%a.err
-#SBATCH --array=0-31
+#SBATCH --array=1-32
 #SBATCH --ntasks=1
 #SBATCH --cpus-per-task=40
 #SBATCH --mem=175G
