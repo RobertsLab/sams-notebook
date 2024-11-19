@@ -59,7 +59,7 @@ bismark \
 --non_directional \
 --gzip \
 -p "${bismark_threads}" \
--1 ${trimmed_fastqs_dir}/${R1}\
+-1 ${trimmed_fastqs_dir}/${R1} \
 -2 ${trimmed_fastqs_dir}/${R2} \
 --output_dir "${output_dir_top}" \
 2> "${output_dir_top}"/${sample_name}-${SLURM_ARRAY_TASK_ID}-bismark_summary.txt
