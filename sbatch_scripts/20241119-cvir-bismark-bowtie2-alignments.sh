@@ -45,8 +45,20 @@ R2=$(echo $pair | awk '{print $2}')
 echo "Contents of R2: ${R2}"
 echo ""
 
+# Check if R1 and R2 are not empty
+if [ -z "$R1" ] || [ -z "$R2" ]; then
+  echo "Error: R1 or R2 is empty. Exiting."
+  exit 1
+fi
+
 # Get just the sample name (excludes the _R[12]_001*)
 sample_name="${R1%%_*}"
+
+# Check if sample_name is not empty
+if [ -z "$sample_name" ]; then
+  echo "Error: sample_name is empty. Exiting."
+  exit 1
+fi
 
 echo "Contents of sample_name: ${sample_name}"
 echo ""
