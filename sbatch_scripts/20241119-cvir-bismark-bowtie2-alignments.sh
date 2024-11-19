@@ -17,11 +17,6 @@ output_dir_top="${repo_dir}/output/02.00-bismark-bowtie2-alignment"
 # PARAMETERS
 bowtie2_min_score="L,0,-0.6"
 
-# Program paths
-samtools_dir=
-bowtie2_dir=
-bismark_dir=
-bisulfite_genome_dir=
 
 # CPU threads
 # Bismark already spawns multiple instances and additional threads are multiplicative."
