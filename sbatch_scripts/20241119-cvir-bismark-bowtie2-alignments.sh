@@ -58,7 +58,7 @@ bismark \
 --parallel "${bismark_threads}" \
 --non_directional \
 --gzip \
--p "${threads}" \
+-p "${bismark_threads}" \
 -1 ${trimmed_fastqs_dir}/${R1}\
 -2 ${trimmed_fastqs_dir}/${R2} \
 --output_dir "${output_dir_top}" \
