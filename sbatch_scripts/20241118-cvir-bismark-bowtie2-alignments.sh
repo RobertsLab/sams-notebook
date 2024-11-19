@@ -4,7 +4,7 @@
 #SBATCH --partition=cpu-g2
 #SBATCH --output=bismark_job_%A_%a.out
 #SBATCH --error=bismark_job_%A_%a.err
-#SBATCH --array=0-$(($(wc -l < /gscratch/scrubbed/samwhite/gitrepos/ceasmallr/output/02.00-bismark-bowtie2-alignment/fastq_pairs.txt) - 1))
+#SBATCH --array=0-31
 #SBATCH --ntasks=1
 #SBATCH --cpus-per-task=40
 #SBATCH --mem=175G
