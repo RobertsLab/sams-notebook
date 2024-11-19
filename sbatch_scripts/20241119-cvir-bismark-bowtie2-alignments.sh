@@ -34,7 +34,7 @@ pwd
 pair=$(sed -n "${SLURM_ARRAY_TASK_ID}p" fastq_pairs.txt)
 
 echo "Contents of pair:"
-cat ${pair}
+echo "${pair}"
 echo ""
 
 R1=$(echo $pair | awk '{print $1}')
@@ -48,7 +48,7 @@ echo ""
 # Get just the sample name (excludes the _R[12]_001*)
 sample_name="${R1%%_*}"
 
-echo "Conents of sample_name: ${sample_name}"
+echo "Contents of sample_name: ${sample_name}"
 echo ""
 
 # Run Bismark
