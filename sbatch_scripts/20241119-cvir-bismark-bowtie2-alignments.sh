@@ -52,7 +52,7 @@ echo "Contents of sample_name: ${sample_name}"
 echo ""
 
 # Run Bismark
-${bismark_dir}/bismark \
+bismark \
 --genome ${bisulfite_genome_dir} \
 --score_min "${bowtie2_min_score}" \
 --parallel "${bismark_threads}" \
