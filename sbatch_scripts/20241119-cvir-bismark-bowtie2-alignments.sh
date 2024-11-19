@@ -27,13 +27,29 @@ bismark_threads=8
 
 cd "${output_dir_top}"
 
+echo "Currently in this directory:"
+pwd
+
 # Get the FastQ file pair for this task
 pair=$(sed -n "${SLURM_ARRAY_TASK_ID}p" fastq_pairs.txt)
+
+echo "Contents of pair:"
+cat ${pair}
+echo ""
+
 R1=$(echo $pair | awk '{print $1}')
+echo "Contents of R1: ${R1}"
+echo ""
+
 R2=$(echo $pair | awk '{print $2}')
+echo "Contents of R2: ${R2}"
+echo ""
 
 # Get just the sample name (excludes the _R[12]_001*)
 sample_name="${R1%%_*}"
+
+echo "Conents of sample_name: ${sample_name}"
+echo ""
 
 # Run Bismark
 ${bismark_dir}/bismark \
