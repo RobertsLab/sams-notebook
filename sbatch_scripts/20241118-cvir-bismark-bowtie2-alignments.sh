@@ -24,4 +24,4 @@ apptainer exec \
 --bind /mmfs1/home/ \
 --bind /gscratch \
 /gscratch/srlab/sr320/srlab-bioinformatics-container-586bf21.sif \
-/mmfs1/home/samwhite/gitrepos/RobertsLab/sams-notebook/sbatch_scripts/20241119-cvir-bismark-bowtie2-alignments.sh
+/gscratch/scrubbed/samwhite/gitrepos/ceasmallr/code/02.01-bismark-bowtie2-alignment-SLURM-array.sh
