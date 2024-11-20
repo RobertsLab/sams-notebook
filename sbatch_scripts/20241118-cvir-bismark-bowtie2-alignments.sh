@@ -1,14 +1,14 @@
 #!/bin/bash
 #SBATCH --job-name=bismark_job_array
-#SBATCH --account=srlab
-#SBATCH --partition=ckpt
+#SBATCH --account=coenv
+#SBATCH --partition=cpu-g2
 #SBATCH --output=bismark_job_%A_%a.out
 #SBATCH --error=bismark_job_%A_%a.err
 #SBATCH --array=1-32
 #SBATCH --ntasks=1
 #SBATCH --cpus-per-task=40
 #SBATCH --mem=175G
-#SBATCH --time=24:00:00
+#SBATCH --time=72:00:00
 ##turn on e-mail notification
 #SBATCH --mail-type=ALL
 #SBATCH --mail-user=samwhite@uw.edu
