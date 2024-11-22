@@ -4,16 +4,15 @@
 #SBATCH --partition=cpu-g2
 #SBATCH --output=bismark_job_%A_%a.out
 #SBATCH --error=bismark_job_%A_%a.err
-#SBATCH --array=1-32
 #SBATCH --ntasks=1
-#SBATCH --cpus-per-task=40
-#SBATCH --mem=175G
+#SBATCH --cpus-per-task=20
+#SBATCH --mem=100G
 #SBATCH --time=72:00:00
 ##turn on e-mail notification
 #SBATCH --mail-type=ALL
 #SBATCH --mail-user=samwhite@uw.edu
 ## Specify the working directory for this job
-#SBATCH --chdir=/gscratch/scrubbed/samwhite/gitrepos/ceasmallr/output/02.00-bismark-bowtie2-alignment/
+#SBATCH --chdir=/gscratch/scrubbed/samwhite/gitrepos/ceasmallr/output/02.01-bismark-bowtie2-alignment-SLURM-array/
 
 # Execute Roberts Lab bioinformatics container
 # Binds home directory
