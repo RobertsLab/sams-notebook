@@ -1,0 +1,218 @@
+---
+author: Sam White
+toc-title: Contents
+toc-depth: 5
+toc-location: left
+title: FastQ QC - M.trossulus WGBS from Psomagen Using FastQC and MultiQC
+date: '2024-11-07'
+draft: true
+engine: knitr
+categories: 
+  - 2024
+  - Mytilus trossulus
+  - WGBS
+  - Psomagen
+  - FastQC
+  - MultiQC
+  - mussel
+  - project-mytilus-methylation
+---
+# INTRO
+
+This is part of Chris' [project-mytilus-methylation](https://github.com/RobertsLab/project-mytilus-methylation)(GitHub repo). Data was received from Psomagen on [20241101](../2024-11-01-Data-Received---Mytilus-trossulus-WGBS-Data-from-Psomagen/index.qmd) (Notebook entry). I performed the initial QC using [`FastQC`](https://www.bioinformatics.babraham.ac.uk/projects/fastqc/) and [`MultiQC`](https://multiqc.info/). I'll add this info to [`Nightingales`](https://b.link/nightingales) (Google Sheet).
+
+A full backup of this repo, including large files is available here:
+
+- [https://gannet.fish.washington.edu/Atumefaciens/gitrepos/project-mytilus-methylation/](https://gannet.fish.washington.edu/Atumefaciens/gitrepos/project-mytilus-methylation/)
+
+:::: {.callout-note}
+This notebook is markdown knitted from [`00.00-WGBSseq-reads-FastQC-MultiQC.Rmd`](https://github.com/RobertsLab/project-mytilus-methylation/blob/b352e666f21e6e39f5843fd886e3502bf3b754ba/code/00.00-WGBSseq-reads-FastQC-MultiQC.Rmd) (commit `b352e66`).
+:::
+
+
+This Rmd file will download raw WGBSseq FastQs and evaluate them using
+[FastQC](https://github.com/s-andrews/FastQC) and
+[MultiQC](https://multiqc.info/)(Ewels et al. 2016).
+
+# 1 Create a Bash variables file
+
+This allows usage of Bash variables across R Markdown chunks.
+
+``` bash
+{
+echo "#### Assign Variables ####"
+echo ""
+
+echo "# Data directories"
+echo 'export output_dir_top="../output/00.00-WGBSseq-reads-FastQC-MultiQC"'
+echo 'export raw_fastqc_dir="${output_dir_top}/raw-fastqc"'
+echo 'export raw_reads_dir="../data/raw-wgbs"'
+echo 'export raw_reads_url="https://owl.fish.washington.edu/nightingales/M_trossulus/"'
+echo ""
+
+
+echo "# Set FastQ filename patterns"
+echo "export fastq_pattern='*.fastq.gz'"
+echo "export R1_fastq_pattern='*_1.fastq.gz'"
+echo "export R2_fastq_pattern='*_2.fastq.gz'"
+echo ""
+
+echo "# Set number of CPUs to use"
+echo 'export threads=50'
+echo ""
+
+
+echo "## Inititalize arrays"
+echo 'export fastq_array_R1=()'
+echo 'export fastq_array_R2=()'
+echo 'export raw_fastqs_array=()'
+echo 'export R1_names_array=()'
+echo 'export R2_names_array=()'
+echo ""
+
+echo "# Print formatting"
+echo 'export line="--------------------------------------------------------"'
+echo ""
+} > .bashvars
+
+cat .bashvars
+```
+
+    #### Assign Variables ####
+
+    # Data directories
+    export output_dir_top="../output/00.00-WGBSseq-reads-FastQC-MultiQC"
+    export raw_fastqc_dir="${output_dir_top}/raw-fastqc"
+    export raw_reads_dir="../data/raw-wgbs"
+    export raw_reads_url="https://owl.fish.washington.edu/nightingales/M_trossulus/"
+
+    # Set FastQ filename patterns
+    export fastq_pattern='*.fastq.gz'
+    export R1_fastq_pattern='*_1.fastq.gz'
+    export R2_fastq_pattern='*_2.fastq.gz'
+
+    # Set number of CPUs to use
+    export threads=50
+
+    ## Inititalize arrays
+    export fastq_array_R1=()
+    export fastq_array_R2=()
+    export raw_fastqs_array=()
+    export R1_names_array=()
+    export R2_names_array=()
+
+    # Print formatting
+    export line="--------------------------------------------------------"
+
+# 2 Download raw FastQs
+
+## 2.1 Download raw reads
+
+Reads are downloaded from
+<https://owl.fish.washington.edu/nightingales/M_trossulus/>
+
+``` bash
+# Load bash variables into memory
+source .bashvars
+
+# Make output directory if it doesn't exist
+mkdir --parents ${raw_reads_dir}
+
+# Run wget to retrieve FastQs and MD5 files
+wget \
+--directory-prefix ${raw_reads_dir} \
+--recursive \
+--no-check-certificate \
+--continue \
+--cut-dirs 3 \
+--no-host-directories \
+--no-parent \
+--quiet \
+--level=1 \
+--accept "[0-9]M*.fastq.gz,[0-9]M*.fastq.gz.md5sum" \
+${raw_reads_url}
+```
+
+## 2.2 Verify raw read checksums
+
+``` bash
+# Load bash variables into memory
+source .bashvars
+
+cd "${raw_reads_dir}"
+
+# Checksums file contains other files, so this just looks for the sRNAseq files.
+for file in *.md5sum
+do
+  md5sum --check "${file}"
+done
+```
+
+# 3 FastQC/MultiQC on raw reads
+
+``` bash
+# Load bash variables into memory
+source .bashvars
+
+# Make output directory if it doesn't exist
+mkdir --parents "${raw_fastqc_dir}"
+
+############ RUN FASTQC ############
+
+
+# Create array of trimmed FastQs
+raw_fastqs_array=(${raw_reads_dir}/${fastq_pattern})
+
+# Pass array contents to new variable as space-delimited list
+raw_fastqc_list=$(echo "${raw_fastqs_array[*]}")
+
+echo "Beginning FastQC on raw reads..."
+echo ""
+
+# Run FastQC
+### NOTE: Do NOT quote raw_fastqc_list
+fastqc \
+--threads ${threads} \
+--outdir ${raw_fastqc_dir} \
+--quiet \
+${raw_fastqc_list}
+
+echo "FastQC on raw reads complete!"
+echo ""
+
+############ END FASTQC ############
+
+############ RUN MULTIQC ############
+echo "Beginning MultiQC on raw FastQC..."
+echo ""
+
+multiqc ${raw_fastqc_dir} -o ${raw_fastqc_dir}
+
+echo ""
+echo "MultiQC on raw FastQs complete."
+echo ""
+
+############ END MULTIQC ############
+
+echo "Removing FastQC zip files."
+echo ""
+rm ${raw_fastqc_dir}/*.zip
+echo "FastQC zip files removed."
+echo ""
+
+# View directory contents
+ls -lh ${raw_fastqc_dir}
+```
+
+<div id="refs" class="references csl-bib-body hanging-indent">
+
+<div id="ref-ewels2016" class="csl-entry">
+
+Ewels, Philip, Måns Magnusson, Sverker Lundin, and Max Käller. 2016.
+“MultiQC: Summarize Analysis Results for Multiple Tools and Samples in a
+Single Report.” *Bioinformatics* 32 (19): 3047–48.
+<https://doi.org/10.1093/bioinformatics/btw354>.
+
+</div>
+
+</div>
