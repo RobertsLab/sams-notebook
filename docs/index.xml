@@ -1040,6 +1040,572 @@ Figure&nbsp;2: MEGAN6 taxonomic heat map of assignments down to Species level. D
   <media:content url="https://robertslab.github.io/sams-notebook/posts/2024/2024-11-08-Taxonomic-Classification---Trinity-Assembly-of-Unmapped-P.helianthoides-RNA-seq-Using-DIAMOND-BLASTx-and-MEGAN6-on-Mox/Trinity.fasta-phel-unmapped.blastx.meganized.daa-heatmap-all.jpg" medium="image" type="image/jpeg"/>
 </item>
 <item>
+  <title>FastQ QC - M.trossulus WGBS from Psomagen Using FastQC and MultiQC</title>
+  <dc:creator>Sam White</dc:creator>
+  <link>https://robertslab.github.io/sams-notebook/posts/2024/2024-11-07-FastQ-QC---M.trossulus-WGBS-from-Psomagen-Using-FastQC-and-MultiQC/</link>
+  <description><![CDATA[ 
+
+
+
+
+
+<section id="intro" class="level1">
+<h1>INTRO</h1>
+<p>This is part of Chris’ <a href="https://github.com/RobertsLab/project-mytilus-methylation">project-mytilus-methylation</a>(GitHub repo). Data was received from Psomagen on <a href="../../../posts/2024/2024-11-01-Data-Received---Mytilus-trossulus-WGBS-Data-from-Psomagen/index.html">20241101</a> (Notebook entry). I performed the initial QC using <a href="https://www.bioinformatics.babraham.ac.uk/projects/fastqc/"><code>FastQC</code></a> and <a href="https://multiqc.info/"><code>MultiQC</code></a>. I’ll add this info to <a href="https://b.link/nightingales"><code>Nightingales</code></a> (Google Sheet).</p>
+<p>A full backup of this repo, including large files is available here:</p>
+<ul>
+<li><a href="https://gannet.fish.washington.edu/Atumefaciens/gitrepos/project-mytilus-methylation/">https://gannet.fish.washington.edu/Atumefaciens/gitrepos/project-mytilus-methylation/</a></li>
+</ul>
+<div class="callout callout-style-default callout-note callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Note
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>This notebook is markdown knitted from <a href="https://github.com/RobertsLab/project-mytilus-methylation/blob/b352e666f21e6e39f5843fd886e3502bf3b754ba/code/00.00-WGBSseq-reads-FastQC-MultiQC.Rmd"><code>00.00-WGBSseq-reads-FastQC-MultiQC.Rmd</code></a> (commit <code>b352e66</code>).</p>
+</div>
+</div>
+<p>This Rmd file will download raw WGBSseq FastQs and evaluate them using <a href="https://github.com/s-andrews/FastQC">FastQC</a> and <a href="https://multiqc.info/">MultiQC</a>(Ewels et al.&nbsp;2016).</p>
+</section>
+<section id="create-a-bash-variables-file" class="level1">
+<h1>1 Create a Bash variables file</h1>
+<p>This allows usage of Bash variables across R Markdown chunks.</p>
+<div class="sourceCode" id="cb1" style="background: #f1f3f5;"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb1-1"><span class="kw" style="color: #003B4F;
+background-color: null;
+font-weight: bold;
+font-style: inherit;">{</span></span>
+<span id="cb1-2"><span class="bu" style="color: null;
+background-color: null;
+font-style: inherit;">echo</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"#### Assign Variables ####"</span></span>
+<span id="cb1-3"><span class="bu" style="color: null;
+background-color: null;
+font-style: inherit;">echo</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">""</span></span>
+<span id="cb1-4"></span>
+<span id="cb1-5"><span class="bu" style="color: null;
+background-color: null;
+font-style: inherit;">echo</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"# Data directories"</span></span>
+<span id="cb1-6"><span class="bu" style="color: null;
+background-color: null;
+font-style: inherit;">echo</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">'export output_dir_top="../output/00.00-WGBSseq-reads-FastQC-MultiQC"'</span></span>
+<span id="cb1-7"><span class="bu" style="color: null;
+background-color: null;
+font-style: inherit;">echo</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">'export raw_fastqc_dir="${output_dir_top}/raw-fastqc"'</span></span>
+<span id="cb1-8"><span class="bu" style="color: null;
+background-color: null;
+font-style: inherit;">echo</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">'export raw_reads_dir="../data/raw-wgbs"'</span></span>
+<span id="cb1-9"><span class="bu" style="color: null;
+background-color: null;
+font-style: inherit;">echo</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">'export raw_reads_url="https://owl.fish.washington.edu/nightingales/M_trossulus/"'</span></span>
+<span id="cb1-10"><span class="bu" style="color: null;
+background-color: null;
+font-style: inherit;">echo</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">""</span></span>
+<span id="cb1-11"></span>
+<span id="cb1-12"></span>
+<span id="cb1-13"><span class="bu" style="color: null;
+background-color: null;
+font-style: inherit;">echo</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"# Set FastQ filename patterns"</span></span>
+<span id="cb1-14"><span class="bu" style="color: null;
+background-color: null;
+font-style: inherit;">echo</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"export fastq_pattern='*.fastq.gz'"</span></span>
+<span id="cb1-15"><span class="bu" style="color: null;
+background-color: null;
+font-style: inherit;">echo</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"export R1_fastq_pattern='*_1.fastq.gz'"</span></span>
+<span id="cb1-16"><span class="bu" style="color: null;
+background-color: null;
+font-style: inherit;">echo</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"export R2_fastq_pattern='*_2.fastq.gz'"</span></span>
+<span id="cb1-17"><span class="bu" style="color: null;
+background-color: null;
+font-style: inherit;">echo</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">""</span></span>
+<span id="cb1-18"></span>
+<span id="cb1-19"><span class="bu" style="color: null;
+background-color: null;
+font-style: inherit;">echo</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"# Set number of CPUs to use"</span></span>
+<span id="cb1-20"><span class="bu" style="color: null;
+background-color: null;
+font-style: inherit;">echo</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">'export threads=50'</span></span>
+<span id="cb1-21"><span class="bu" style="color: null;
+background-color: null;
+font-style: inherit;">echo</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">""</span></span>
+<span id="cb1-22"></span>
+<span id="cb1-23"></span>
+<span id="cb1-24"><span class="bu" style="color: null;
+background-color: null;
+font-style: inherit;">echo</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"## Inititalize arrays"</span></span>
+<span id="cb1-25"><span class="bu" style="color: null;
+background-color: null;
+font-style: inherit;">echo</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">'export fastq_array_R1=()'</span></span>
+<span id="cb1-26"><span class="bu" style="color: null;
+background-color: null;
+font-style: inherit;">echo</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">'export fastq_array_R2=()'</span></span>
+<span id="cb1-27"><span class="bu" style="color: null;
+background-color: null;
+font-style: inherit;">echo</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">'export raw_fastqs_array=()'</span></span>
+<span id="cb1-28"><span class="bu" style="color: null;
+background-color: null;
+font-style: inherit;">echo</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">'export R1_names_array=()'</span></span>
+<span id="cb1-29"><span class="bu" style="color: null;
+background-color: null;
+font-style: inherit;">echo</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">'export R2_names_array=()'</span></span>
+<span id="cb1-30"><span class="bu" style="color: null;
+background-color: null;
+font-style: inherit;">echo</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">""</span></span>
+<span id="cb1-31"></span>
+<span id="cb1-32"><span class="bu" style="color: null;
+background-color: null;
+font-style: inherit;">echo</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"# Print formatting"</span></span>
+<span id="cb1-33"><span class="bu" style="color: null;
+background-color: null;
+font-style: inherit;">echo</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">'export line="--------------------------------------------------------"'</span></span>
+<span id="cb1-34"><span class="bu" style="color: null;
+background-color: null;
+font-style: inherit;">echo</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">""</span></span>
+<span id="cb1-35"><span class="kw" style="color: #003B4F;
+background-color: null;
+font-weight: bold;
+font-style: inherit;">}</span> <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">&gt;</span> .bashvars</span>
+<span id="cb1-36"></span>
+<span id="cb1-37"><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">cat</span> .bashvars</span></code></pre></div>
+<pre><code>#### Assign Variables ####
+
+# Data directories
+export output_dir_top="../output/00.00-WGBSseq-reads-FastQC-MultiQC"
+export raw_fastqc_dir="${output_dir_top}/raw-fastqc"
+export raw_reads_dir="../data/raw-wgbs"
+export raw_reads_url="https://owl.fish.washington.edu/nightingales/M_trossulus/"
+
+# Set FastQ filename patterns
+export fastq_pattern='*.fastq.gz'
+export R1_fastq_pattern='*_1.fastq.gz'
+export R2_fastq_pattern='*_2.fastq.gz'
+
+# Set number of CPUs to use
+export threads=50
+
+## Inititalize arrays
+export fastq_array_R1=()
+export fastq_array_R2=()
+export raw_fastqs_array=()
+export R1_names_array=()
+export R2_names_array=()
+
+# Print formatting
+export line="--------------------------------------------------------"</code></pre>
+</section>
+<section id="download-raw-fastqs" class="level1">
+<h1>2 Download raw FastQs</h1>
+<section id="download-raw-reads" class="level2">
+<h2 class="anchored" data-anchor-id="download-raw-reads">2.1 Download raw reads</h2>
+<p>Reads are downloaded from <a href="https://owl.fish.washington.edu/nightingales/M_trossulus/" class="uri">https://owl.fish.washington.edu/nightingales/M_trossulus/</a></p>
+<div class="sourceCode" id="cb3" style="background: #f1f3f5;"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb3-1"><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># Load bash variables into memory</span></span>
+<span id="cb3-2"><span class="bu" style="color: null;
+background-color: null;
+font-style: inherit;">source</span> .bashvars</span>
+<span id="cb3-3"></span>
+<span id="cb3-4"><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># Make output directory if it doesn't exist</span></span>
+<span id="cb3-5"><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">mkdir</span> <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">--parents</span> <span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">${raw_reads_dir}</span></span>
+<span id="cb3-6"></span>
+<span id="cb3-7"><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># Run wget to retrieve FastQs and MD5 files</span></span>
+<span id="cb3-8"><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">wget</span> <span class="dt" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">\</span></span>
+<span id="cb3-9">--directory-prefix <span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">${raw_reads_dir}</span> <span class="dt" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">\</span></span>
+<span id="cb3-10">--recursive <span class="dt" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">\</span></span>
+<span id="cb3-11">--no-check-certificate <span class="dt" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">\</span></span>
+<span id="cb3-12">--continue <span class="dt" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">\</span></span>
+<span id="cb3-13">--cut-dirs 3 <span class="dt" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">\</span></span>
+<span id="cb3-14">--no-host-directories <span class="dt" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">\</span></span>
+<span id="cb3-15">--no-parent <span class="dt" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">\</span></span>
+<span id="cb3-16">--quiet <span class="dt" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">\</span></span>
+<span id="cb3-17">--level=1 <span class="dt" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">\</span></span>
+<span id="cb3-18">--accept <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"[0-9]M*.fastq.gz,[0-9]M*.fastq.gz.md5sum"</span> <span class="dt" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">\</span></span>
+<span id="cb3-19"><span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">${raw_reads_url}</span></span></code></pre></div>
+</section>
+<section id="verify-raw-read-checksums" class="level2">
+<h2 class="anchored" data-anchor-id="verify-raw-read-checksums">2.2 Verify raw read checksums</h2>
+<div class="sourceCode" id="cb4" style="background: #f1f3f5;"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb4-1"><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># Load bash variables into memory</span></span>
+<span id="cb4-2"><span class="bu" style="color: null;
+background-color: null;
+font-style: inherit;">source</span> .bashvars</span>
+<span id="cb4-3"></span>
+<span id="cb4-4"><span class="bu" style="color: null;
+background-color: null;
+font-style: inherit;">cd</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"</span><span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">${raw_reads_dir}</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"</span></span>
+<span id="cb4-5"></span>
+<span id="cb4-6"><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># Checksums file contains other files, so this just looks for the sRNAseq files.</span></span>
+<span id="cb4-7"><span class="cf" style="color: #003B4F;
+background-color: null;
+font-weight: bold;
+font-style: inherit;">for</span> file <span class="kw" style="color: #003B4F;
+background-color: null;
+font-weight: bold;
+font-style: inherit;">in</span> <span class="pp" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">*</span>.md5sum</span>
+<span id="cb4-8"><span class="cf" style="color: #003B4F;
+background-color: null;
+font-weight: bold;
+font-style: inherit;">do</span></span>
+<span id="cb4-9">  <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">md5sum</span> <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">--check</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"</span><span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">${file}</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"</span></span>
+<span id="cb4-10"><span class="cf" style="color: #003B4F;
+background-color: null;
+font-weight: bold;
+font-style: inherit;">done</span></span></code></pre></div>
+</section>
+</section>
+<section id="fastqcmultiqc-on-raw-reads" class="level1">
+<h1>3 FastQC/MultiQC on raw reads</h1>
+<div class="sourceCode" id="cb5" style="background: #f1f3f5;"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb5-1"><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># Load bash variables into memory</span></span>
+<span id="cb5-2"><span class="bu" style="color: null;
+background-color: null;
+font-style: inherit;">source</span> .bashvars</span>
+<span id="cb5-3"></span>
+<span id="cb5-4"><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># Make output directory if it doesn't exist</span></span>
+<span id="cb5-5"><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">mkdir</span> <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">--parents</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"</span><span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">${raw_fastqc_dir}</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"</span></span>
+<span id="cb5-6"></span>
+<span id="cb5-7"><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">############ RUN FASTQC ############</span></span>
+<span id="cb5-8"></span>
+<span id="cb5-9"></span>
+<span id="cb5-10"><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># Create array of trimmed FastQs</span></span>
+<span id="cb5-11"><span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">raw_fastqs_array</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span><span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">(${raw_reads_dir}</span>/<span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">${fastq_pattern})</span></span>
+<span id="cb5-12"></span>
+<span id="cb5-13"><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># Pass array contents to new variable as space-delimited list</span></span>
+<span id="cb5-14"><span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">raw_fastqc_list</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span><span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">$(</span><span class="bu" style="color: null;
+background-color: null;
+font-style: inherit;">echo</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"</span><span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">${raw_fastqs_array</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">[*]</span><span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">}</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"</span><span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">)</span></span>
+<span id="cb5-15"></span>
+<span id="cb5-16"><span class="bu" style="color: null;
+background-color: null;
+font-style: inherit;">echo</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"Beginning FastQC on raw reads..."</span></span>
+<span id="cb5-17"><span class="bu" style="color: null;
+background-color: null;
+font-style: inherit;">echo</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">""</span></span>
+<span id="cb5-18"></span>
+<span id="cb5-19"><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># Run FastQC</span></span>
+<span id="cb5-20"><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">### </span><span class="al" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">NOTE</span><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">: Do NOT quote raw_fastqc_list</span></span>
+<span id="cb5-21"><span class="ex" style="color: null;
+background-color: null;
+font-style: inherit;">fastqc</span> <span class="dt" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">\</span></span>
+<span id="cb5-22">--threads <span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">${threads}</span> <span class="dt" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">\</span></span>
+<span id="cb5-23">--outdir <span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">${raw_fastqc_dir}</span> <span class="dt" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">\</span></span>
+<span id="cb5-24">--quiet <span class="dt" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">\</span></span>
+<span id="cb5-25"><span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">${raw_fastqc_list}</span></span>
+<span id="cb5-26"></span>
+<span id="cb5-27"><span class="bu" style="color: null;
+background-color: null;
+font-style: inherit;">echo</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"FastQC on raw reads complete!"</span></span>
+<span id="cb5-28"><span class="bu" style="color: null;
+background-color: null;
+font-style: inherit;">echo</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">""</span></span>
+<span id="cb5-29"></span>
+<span id="cb5-30"><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">############ </span><span class="re">END</span><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"> FASTQC ############</span></span>
+<span id="cb5-31"></span>
+<span id="cb5-32"><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">############ RUN MULTIQC ############</span></span>
+<span id="cb5-33"><span class="bu" style="color: null;
+background-color: null;
+font-style: inherit;">echo</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"Beginning MultiQC on raw FastQC..."</span></span>
+<span id="cb5-34"><span class="bu" style="color: null;
+background-color: null;
+font-style: inherit;">echo</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">""</span></span>
+<span id="cb5-35"></span>
+<span id="cb5-36"><span class="ex" style="color: null;
+background-color: null;
+font-style: inherit;">multiqc</span> <span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">${raw_fastqc_dir}</span> <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">-o</span> <span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">${raw_fastqc_dir}</span></span>
+<span id="cb5-37"></span>
+<span id="cb5-38"><span class="bu" style="color: null;
+background-color: null;
+font-style: inherit;">echo</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">""</span></span>
+<span id="cb5-39"><span class="bu" style="color: null;
+background-color: null;
+font-style: inherit;">echo</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"MultiQC on raw FastQs complete."</span></span>
+<span id="cb5-40"><span class="bu" style="color: null;
+background-color: null;
+font-style: inherit;">echo</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">""</span></span>
+<span id="cb5-41"></span>
+<span id="cb5-42"><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">############ </span><span class="re">END</span><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"> MULTIQC ############</span></span>
+<span id="cb5-43"></span>
+<span id="cb5-44"><span class="bu" style="color: null;
+background-color: null;
+font-style: inherit;">echo</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"Removing FastQC zip files."</span></span>
+<span id="cb5-45"><span class="bu" style="color: null;
+background-color: null;
+font-style: inherit;">echo</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">""</span></span>
+<span id="cb5-46"><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">rm</span> <span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">${raw_fastqc_dir}</span>/<span class="pp" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">*</span>.zip</span>
+<span id="cb5-47"><span class="bu" style="color: null;
+background-color: null;
+font-style: inherit;">echo</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"FastQC zip files removed."</span></span>
+<span id="cb5-48"><span class="bu" style="color: null;
+background-color: null;
+font-style: inherit;">echo</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">""</span></span>
+<span id="cb5-49"></span>
+<span id="cb5-50"><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># View directory contents</span></span>
+<span id="cb5-51"><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">ls</span> <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">-lh</span> <span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">${raw_fastqc_dir}</span></span></code></pre></div>
+<div id="refs" class="references csl-bib-body hanging-indent">
+<div id="ref-ewels2016" class="csl-entry">
+Ewels, Philip, Måns Magnusson, Sverker Lundin, and Max Käller. 2016. “MultiQC: Summarize Analysis Results for Multiple Tools and Samples in a Single Report.” <em>Bioinformatics</em> 32 (19): 3047–48. <a href="https://doi.org/10.1093/bioinformatics/btw354" class="uri">https://doi.org/10.1093/bioinformatics/btw354</a>.
+</div>
+</div>
+
+
+</section>
+
+ ]]></description>
+  <category>2024</category>
+  <category>Mytilus trossulus</category>
+  <category>WGBS</category>
+  <category>Psomagen</category>
+  <category>FastQC</category>
+  <category>MultiQC</category>
+  <category>mussel</category>
+  <category>project-mytilus-methylation</category>
+  <guid>https://robertslab.github.io/sams-notebook/posts/2024/2024-11-07-FastQ-QC---M.trossulus-WGBS-from-Psomagen-Using-FastQC-and-MultiQC/</guid>
+  <pubDate>Thu, 07 Nov 2024 08:00:00 GMT</pubDate>
+  <media:content url="https://robertslab.github.io/sams-notebook/posts/2024/2024-11-07-FastQ-QC---M.trossulus-WGBS-from-Psomagen-Using-FastQC-and-MultiQC/posts/2024/2024-11-07-FastQ-QC---M.trossulus-WGBS-from-Psomagen-Using-FastQC-and-MultiQC/20241107-mtro-screenshot-fastqc-example.png" medium="image" type="image/png"/>
+</item>
+<item>
   <title>Data Wrangling - GO to GOslims for Graces Dermasterias imbricata Project from Trinity Assembly Genes</title>
   <dc:creator>Sam White</dc:creator>
   <link>https://robertslab.github.io/sams-notebook/posts/2024/2024-11-06-Data-Wrangling---GO-to-GOslims-for-Graces-Dermasterias-imbricata-Project-from-Trinity-Assembly-Genes/</link>
@@ -3866,8 +4432,9 @@ Figure&nbsp;1: Screencap showing Mox runtime of 15hrs 42mins and 41secs for DIAM
 </figcaption>
 </figure>
 </div>
-<section id="discussion" class="level2">
-<h2 class="anchored" data-anchor-id="discussion">DISCUSSION</h2>
+</section>
+<section id="discussion" class="level1">
+<h1>DISCUSSION</h1>
 <p>Looking at the entire taxonomies, down to the species level, most of the reads (&gt;1,500,000) get assigned to <a href="https://en.wikipedia.org/wiki/Common_starfish"><em>Asterias rubens</em></a> (Wikipedia), the common sea star. This is surprising, as I’m fairly certain these sequencing reads came from <a href="https://en.wikipedia.org/wiki/Sunflower_sea_star"><em>Pycnopodia helianthoides</em></a> (Wikipedia), the sunflower star. Of course, these results are also dependent upon how much sequence data in NCBI for any given species. However, with that said, reads are only assigned to a given taxonomic level based on the BLASTx results. Thus, even if a read comes from a sea star, it would (should?) <em>not</em> get assigned to a particular species unless the BLASTx confidence was <em>very</em> high…</p>
 <p>Looking at the highest read assignments for non-eukaryotic species, we see that of the Bacteria (7,153 reads), <a href="https://link.springer.com/article/10.1007/s10482-019-01348-7"><em>Bacillus yapensis</em></a> (Journal article website), while in Archae (17,742 reads), <a href="https://en.wikipedia.org/wiki/Methanocaldococcus_jannaschii"><em>Methanocaldococcus jannaschii</em></a> (Wikipedia) had the most reads assigned.</p>
 <div id="fig-mox_runtime" class="lightbox quarto-float quarto-figure quarto-figure-center anchored" alt="MEGAN6 taxonomic heat map of assignments down to species level. Darkest green box shows highest numbers of reads assigned to _Asterias rubens_.">
@@ -3890,7 +4457,6 @@ Figure&nbsp;3: MEGAN6 taxonomic heat map of assignments down to Class level. Top
 </figcaption>
 </figure>
 </div>
-</section>
 <section id="output-files" class="level2">
 <h2 class="anchored" data-anchor-id="output-files">Output files</h2>
 <p>Output directory:</p>
@@ -3941,7 +4507,7 @@ Figure&nbsp;3: MEGAN6 taxonomic heat map of assignments down to Class level. Top
   <category>Mox</category>
   <guid>https://robertslab.github.io/sams-notebook/posts/2024/2024-11-05-Sequencing-Read-Taxonomic-Classification---Unmapped-P.helanthoides-RNA-seq-Using-DIAMOND-BLASTx-and-MEGAN6-on-Mox/</guid>
   <pubDate>Tue, 05 Nov 2024 08:00:00 GMT</pubDate>
-  <media:content url="https://robertslab.github.io/sams-notebook/posts/2024/2024/2024-11-05-Sequencing-Read-Taxonomic-Classification---Unmapped-P.helanthoides-RNA-seq-Using-DIAMOND-BLASTx-and-MEGAN6-on-Mox/20241105-phel-diamond-meganizer/PSC-0519_unmapped_reads.1.blastx.meganized-all-heatmap.jpg" medium="image" type="image/jpeg"/>
+  <media:content url="https://robertslab.github.io/sams-notebook/posts/2024/2024-11-05-Sequencing-Read-Taxonomic-Classification---Unmapped-P.helanthoides-RNA-seq-Using-DIAMOND-BLASTx-and-MEGAN6-on-MoxPSC-0519_unmapped_reads.1.blastx.meganized-all-heatmap.jpg" medium="image" type="image/jpeg"/>
 </item>
 <item>
   <title>Data Received - Manila clam Supplemental sRNA-seq Data from Azenta</title>
@@ -4911,7 +5477,7 @@ Wickham, Hadley, Mara Averick, Jennifer Bryan, Winston Chang, Lucy McGowan, Roma
 </section>
 <section id="agarose-gel" class="level2">
 <h2 class="anchored" data-anchor-id="agarose-gel">Agarose gel</h2>
-<p>Approximately 0.1uL of each sample was run an a 0.8% low-TAE agarose gel, stained with ethidium bromide. Sample volumes were mixed with 10uL of H<sub>2</sub>O and 2uL of <a href="https://www.thermofisher.com/order/catalog/product/R0631">6x Orange DNA Loading Dye (Thermo Scientific)</a>.</p>
+<p>Approximately 0.1uL of each sample was run an a 0.8% low-TAE agarose gel, stained with ethidium bromide. This was done just to spot check samples and I wasn’t concerned about loading exact quantities of DNA (or equal quantities) across samples. Sample volumes were mixed with 10uL of H<sub>2</sub>O and 2uL of <a href="https://www.thermofisher.com/order/catalog/product/R0631">6x Orange DNA Loading Dye (Thermo Scientific)</a>.</p>
 <p>The gel was run @ 107V for ~45mins and then imaged.</p>
 <p><a href="https://www.fishersci.se/shop/products/fermentas-o-generuler-ready-to-use-dna-ladder-mix/11803983">O’GeneRuler DNA Ladder Mix, Ready-to-Use 100-10,00bp (Thermo Scientific)</a> was used (5uL) for size reference:</p>
 <div id="fig-ladder" class="lightbox quarto-float quarto-figure quarto-figure-center anchored" alt="O'GeneRuler">
@@ -12209,214 +12775,6 @@ Figure&nbsp;1: MD5 checksum verification.
   <category>Manila clam</category>
   <guid>https://robertslab.github.io/sams-notebook/posts/2024/2024-10-01-Data-Received---R.philippinarum-(Manilla-clam)-sRNA-seq-Data-from-Azenta-Project-30-1035633055/</guid>
   <pubDate>Tue, 01 Oct 2024 07:00:00 GMT</pubDate>
-</item>
-<item>
-  <title>Data Received - E5 Coral Time Series RNA-seq Azenta Project 30-1047560508</title>
-  <dc:creator>Sam White</dc:creator>
-  <link>https://robertslab.github.io/sams-notebook/posts/2024/2024-09-26-Data-Received---E5-Coral-Time-Series-RNA-seq-Azenta-Project-30-1047560508/</link>
-  <description><![CDATA[ 
-
-
-
-
-
-<section id="intro" class="level1">
-<h1>INTRO</h1>
-<p>Coral time series RNA-seq data for Azenta project 30-1047560508 became availalbe today. Data was downloaded to <a href="https://owl.fish.washington.edu/nightingales/E5-coral-time-series/30-1047560508/">nigthingales on Owl</a> and MD5 checksums were verified.</p>
-<p>Sequencing report is here:</p>
-<p><a href="https://owl.fish.washington.edu/nightingales/E5-coral-time-series/30-1047560508/Azenta_30-1047560508_Data_Report.html">Azenta_30-1047560508_Data_Report.html</a></p>
-<div class="callout callout-style-default callout-note callout-titled">
-<div class="callout-header d-flex align-content-center">
-<div class="callout-icon-container">
-<i class="callout-icon"></i>
-</div>
-<div class="callout-title-container flex-fill">
-Note
-</div>
-</div>
-<div class="callout-body-container callout-body">
-<p>Data was initially received on 20240926, but Azenta provided updated data on 20241002. All files were replaced with the updated data.</p>
-</div>
-</div>
-</section>
-<section id="md5-checksum-verification" class="level1">
-<h1>MD5 CHECKSUM VERIFICATION</h1>
-<p>All MD5 checksums were successfully verified.</p>
-<div id="fig-MD5-checksum-verification-01" class="lightbox quarto-float quarto-figure quarto-figure-center anchored" alt="MD5 checksum verification 01">
-<figure class="quarto-float quarto-float-fig figure">
-<div aria-describedby="fig-MD5-checksum-verification-01-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
-<a href="./20240926-E5-coral-RNAseq-checksums-01.png" class="lightbox" data-gallery="quarto-lightbox-gallery-1" title="Figure&nbsp;1: Screenshot showing successful MD5 checksum verification 01"><img src="https://robertslab.github.io/sams-notebook/posts/2024/2024-09-26-Data-Received---E5-Coral-Time-Series-RNA-seq-Azenta-Project-30-1047560508/20240926-E5-coral-RNAseq-checksums-01.png" class="img-fluid figure-img" alt="MD5 checksum verification 01"></a>
-</div>
-<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-MD5-checksum-verification-01-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
-Figure&nbsp;1: Screenshot showing successful MD5 checksum verification 01
-</figcaption>
-</figure>
-</div>
-<div id="fig-MD5-checksum-verification-02" class="lightbox quarto-float quarto-figure quarto-figure-center anchored" alt="MD5 checksum verification 02">
-<figure class="quarto-float quarto-float-fig figure">
-<div aria-describedby="fig-MD5-checksum-verification-02-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
-<a href="./20240926-E5-coral-RNAseq-checksums-02.png" class="lightbox" data-gallery="quarto-lightbox-gallery-2" title="Figure&nbsp;2: Screenshot showing successful MD5 checksum verification 02"><img src="https://robertslab.github.io/sams-notebook/posts/2024/2024-09-26-Data-Received---E5-Coral-Time-Series-RNA-seq-Azenta-Project-30-1047560508/20240926-E5-coral-RNAseq-checksums-02.png" class="img-fluid figure-img" alt="MD5 checksum verification 02"></a>
-</div>
-<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-MD5-checksum-verification-02-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
-Figure&nbsp;2: Screenshot showing successful MD5 checksum verification 02
-</figcaption>
-</figure>
-</div>
-<div id="fig-MD5-checksum-verification-03" class="lightbox quarto-float quarto-figure quarto-figure-center anchored" alt="MD5 checksum verification 03">
-<figure class="quarto-float quarto-float-fig figure">
-<div aria-describedby="fig-MD5-checksum-verification-03-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
-<a href="./20240926-E5-coral-RNAseq-checksums-03.png" class="lightbox" data-gallery="quarto-lightbox-gallery-3" title="Figure&nbsp;3: Screenshot showing successful MD5 checksum verification 03"><img src="https://robertslab.github.io/sams-notebook/posts/2024/2024-09-26-Data-Received---E5-Coral-Time-Series-RNA-seq-Azenta-Project-30-1047560508/20240926-E5-coral-RNAseq-checksums-03.png" class="img-fluid figure-img" alt="MD5 checksum verification 03"></a>
-</div>
-<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-MD5-checksum-verification-03-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
-Figure&nbsp;3: Screenshot showing successful MD5 checksum verification 03
-</figcaption>
-</figure>
-</div>
-<div id="fig-MD5-checksum-verification-04" class="lightbox quarto-float quarto-figure quarto-figure-center anchored" alt="MD5 checksum verification 04">
-<figure class="quarto-float quarto-float-fig figure">
-<div aria-describedby="fig-MD5-checksum-verification-04-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
-<a href="./20240926-E5-coral-RNAseq-checksums-04.png" class="lightbox" data-gallery="quarto-lightbox-gallery-4" title="Figure&nbsp;4: Screenshot showing successful MD5 checksum verification 04"><img src="https://robertslab.github.io/sams-notebook/posts/2024/2024-09-26-Data-Received---E5-Coral-Time-Series-RNA-seq-Azenta-Project-30-1047560508/20240926-E5-coral-RNAseq-checksums-04.png" class="img-fluid figure-img" alt="MD5 checksum verification 04"></a>
-</div>
-<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-MD5-checksum-verification-04-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
-Figure&nbsp;4: Screenshot showing successful MD5 checksum verification 04
-</figcaption>
-</figure>
-</div>
-</section>
-<section id="sample-list" class="level1">
-<h1>SAMPLE LIST</h1>
-<p>Here is the full list of samples with which we received data for in this round (9/26/2024):</p>
-<pre><code>1--1A1
-2--1B1
-3--1C1
-4--1D1
-5--1E1
-6--1F1
-7--1G1
-8--1H1
-9--1A2
-10--1B2
-11--1C2
-12--1D2
-13--1E2
-14--1F2
-15--1G2
-16--1H2
-17--1A3
-18--1B3
-19--1C3
-20--1D3
-21--1E3
-22--1F3
-23--1G3
-24--1H3
-25--1A4
-26--1B4
-27--1C4
-28--1D4
-29--1E4
-30--1F4
-31--1G4
-32--1H4
-33--1A5
-34--1B5
-35--1C5
-36--1D5
-37--1E5
-38--1F5
-39--1G5
-40--1H5
-41--1A6
-42--1B6
-43--1C6
-44--1D6
-45--1E6
-46--1F6
-47--1G6
-48--1H6
-49--1A7
-50--1B7
-51--1C7
-52--1D7
-53--1E7
-54--1F7
-55--1G7
-56--1H7
-57--1A8
-58--1B8
-59--1C8
-60--1D8
-61--1E8
-62--1F8
-63--1G8
-64--1H8
-65--1A9
-66--1B9
-67--1C9
-68--1D9
-69--1E9
-70--1F9
-71--1G9
-72--1H9
-73--1A10
-74--1B10
-75--1C10
-76--1D10
-77--1E10
-78--1F10
-79--1G10
-80--1H10
-81--1A11
-82--1B11
-83--1C11
-84--1D11
-85--1E11
-86--1F11
-87--1G11
-88--1H11
-89--1A12
-90--1B12
-91--1C12
-92--1D12
-93--1E12
-94--1F12
-95--1G12
-96--1H12
-97--2A1
-98--2B1
-99--2C1
-100--2D1
-101--2E1
-102--2F1
-103--2G1
-104--2H1
-105--2A2
-106--2B2
-107--2C2
-108--2D2
-109--2E2
-110--2F2
-111--2G2
-112--2H2
-113--2A3
-114--2B3
-115--2C3
-116--2D3
-117--2E3</code></pre>
-
-
-</section>
-
- ]]></description>
-  <category>2024</category>
-  <category>E5</category>
-  <category>coral</category>
-  <category>RNA-seq</category>
-  <category>30-1047560508</category>
-  <category>Azenta</category>
-  <category>Data Received</category>
-  <guid>https://robertslab.github.io/sams-notebook/posts/2024/2024-09-26-Data-Received---E5-Coral-Time-Series-RNA-seq-Azenta-Project-30-1047560508/</guid>
-  <pubDate>Thu, 26 Sep 2024 07:00:00 GMT</pubDate>
 </item>
 </channel>
 </rss>
