@@ -1,0 +1,313 @@
+---
+author: Sam White
+toc-title: Contents
+toc-depth: 5
+toc-location: left
+title: Trimming and QC - M.trossulus WGBS Using fastp and FastQC-MultiQC
+date: '2024-11-07'
+draft: false
+engine: knitr
+categories: 
+  - 2024
+  - Mytilus trossulus
+  - WGBS
+  - fastp
+  - FastQC
+  - MultiQC
+  - bay mussel
+  - project-mytilus-methylation
+  - trimming
+image: "posts/2024/2024-11-07-Trimming-and-QC---M.trossulus-WGBS-Using-fastp-and-FastQC-MultiQC/20241107-mtro-trimming-multiqc-screenshot.png"
+---
+# INTRO
+
+This is part of Chris' [project-mytilus-methylation](https://github.com/RobertsLab/project-mytilus-methylation)(GitHub repo). Data was received from Psomagen on [20241101](../2024-11-01-Data-Received---Mytilus-trossulus-WGBS-Data-from-Psomagen/index.qmd) (Notebook entry). I performed the initial QC using [`FastQC`](https://www.bioinformatics.babraham.ac.uk/projects/fastqc/) and [`MultiQC`](https://multiqc.info/) [earlier today](../2024-11-07-FastQ-QC---M.trossulus-WGBS-from-Psomagen-Using-FastQC-and-MultiQC/index.qmd) (Notebook entry).
+
+Samples were trimmed using [`fastp`](https://github.com/OpenGene/fastp), followed by QC with [`FastQC`](https://www.bioinformatics.babraham.ac.uk/projects/fastqc/) and [`MultiQC`](https://multiqc.info/).
+
+A full backup of this repo, including large files, is available here:
+
+- [https://gannet.fish.washington.edu/Atumefaciens/gitrepos/project-mytilus-methylation/](https://gannet.fish.washington.edu/Atumefaciens/gitrepos/project-mytilus-methylation/)
+
+:::: {.callout-note}
+This notebook is markdown knitted from [`00.10-trimming-fastp-FastQC-MultiQC.Rmd`](https://github.com/RobertsLab/project-mytilus-methylation/blob/086a277968ccc4452ebe6dfca468e762a9557cef/code/00.10-trimming-fastp-FastQC-MultiQC.Rmd) (commit `086a277`).
+:::
+
+------------------------------------------------------------------------
+
+This Rmd file trims WGBS-seq files using
+[fastp](https://github.com/OpenGene/fastp) (Chen 2023), followed by
+quality checks with [FastQC](https://github.com/s-andrews/FastQC) and
+[MultiQC](https://multiqc.info/)(Ewels et al. 2016).
+
+Expects input files formatted like so: `<number>M_[12].fastq.gz`
+
+All trimmed FastQs produced by this script are here:
+
+[00.10-trimming-fastp-FastQC-MultiQC/trimmed-fastqs/](https://gannet.fish.washington.edu/Atumefaciens/gitrepos/project-mytilus-methylation/output/00.10-trimming-fastp-FastQC-MultiQC/trimmed-fastqs/)
+
+# 1 Create a Bash variables file
+
+This allows usage of Bash variables across R Markdown chunks.
+
+``` bash
+{
+echo "#### Assign Variables ####"
+echo ""
+
+echo "# Data directories"
+echo 'export repo_dir="/gscratch/scrubbed/samwhite/gitrepos/project-mytilus-methylation"'
+echo 'export output_dir_top="${repo_dir}/output/00.10-trimming-fastp-FastQC-MultiQC"'
+echo 'export raw_reads_dir="${repo_dir}/data/raw-wgbs"'
+echo 'export raw_reads_url="https://owl.fish.washington.edu/nightingales/M_trossulus/"'
+echo 'export trimmed_fastqs_dir=${output_dir_top}/trimmed-fastqs'
+echo 'export trimmed_fastqc_dir=${output_dir_top}/trimmed-fastqc'
+echo ""
+
+
+echo "# Set FastQ filename patterns"
+echo "export fastq_pattern='*.fastq.gz'"
+echo "export R1_fastq_pattern='*_1.fastq.gz'"
+echo "export R2_fastq_pattern='*_2.fastq.gz'"
+echo "export trimmed_fastq_pattern='*fastp-trim.fq.gz'"
+echo ""
+
+echo "# Set number of CPUs to use"
+echo 'export threads=50'
+echo ""
+
+
+echo "## Inititalize arrays"
+echo 'export fastq_array_R1=()'
+echo 'export fastq_array_R2=()'
+echo 'export raw_fastqs_array=()'
+echo 'export R1_names_array=()'
+echo 'export R2_names_array=()'
+echo ""
+
+echo "# Print formatting"
+echo 'export line="--------------------------------------------------------"'
+echo ""
+
+} > .bashvars
+
+cat .bashvars
+```
+
+    #### Assign Variables ####
+
+    # Data directories
+    export repo_dir="/gscratch/scrubbed/samwhite/gitrepos/project-mytilus-methylation"
+    export output_dir_top="${repo_dir}/output/00.10-trimming-fastp-FastQC-MultiQC"
+    export raw_reads_dir="${repo_dir}/data/raw-wgbs"
+    export raw_reads_url="https://owl.fish.washington.edu/nightingales/M_trossulus/"
+    export trimmed_fastqs_dir=${output_dir_top}/trimmed-fastqs
+    export trimmed_fastqc_dir=${output_dir_top}/trimmed-fastqc
+
+    # Set FastQ filename patterns
+    export fastq_pattern='*.fastq.gz'
+    export R1_fastq_pattern='*_1.fastq.gz'
+    export R2_fastq_pattern='*_2.fastq.gz'
+    export trimmed_fastq_pattern='*fastp-trim.fq.gz'
+
+    # Set number of CPUs to use
+    export threads=50
+
+    ## Inititalize arrays
+    export fastq_array_R1=()
+    export fastq_array_R2=()
+    export raw_fastqs_array=()
+    export R1_names_array=()
+    export R2_names_array=()
+
+    # Print formatting
+    export line="--------------------------------------------------------"
+
+If needed, download raw FastQs.
+
+Change `eval=FALSE` to `eval=TRUE` to execute the next two chunks to
+download RNA-seq and then verify MD5 checksums.
+
+Reads are downloaded from
+<https://owl.fish.washington.edu/nightingales/M_trossulus/>
+
+``` bash
+# Load bash variables into memory
+source .bashvars
+
+# Make output directory if it doesn't exist
+mkdir --parents ${raw_reads_dir}
+
+# Run wget to retrieve FastQs and MD5 files
+wget \
+--directory-prefix ${raw_reads_dir} \
+--recursive \
+--no-check-certificate \
+--continue \
+--cut-dirs 3 \
+--no-host-directories \
+--no-parent \
+--quiet \
+--level=1 \
+--accept "[0-9]M*.fastq.gz,[0-9]M*.fastq.gz.md5sum" \
+${raw_reads_url}
+
+
+ls -lh "${raw_reads_dir}"
+```
+
+Verify raw read checksums
+
+``` bash
+# Load bash variables into memory
+source .bashvars
+
+cd "${raw_reads_dir}"
+
+# Checksums file contains other files, so this just looks for the sRNAseq files.
+for file in *.md5sum
+do
+  md5sum --check "${file}"
+done
+```
+
+# 2 Fastp Trimming
+
+[fastp](https://github.com/OpenGene/fastp) (Chen 2023) is set to
+auto-detect Illumina adapters, as well as trim the first 20bp from each
+read, as past experience shows these first 20bp are more inconsistent
+than the remainder of the read length.
+
+``` bash
+# Load bash variables into memory
+source .bashvars
+
+# Make output directories, if it doesn't exist
+mkdir --parents "${trimmed_fastqs_dir}"
+
+# Change to raw reads directory
+cd "${raw_reads_dir}"
+
+# Create arrays of fastq R1 files and sample names
+for fastq in ${R1_fastq_pattern}
+do
+  fastq_array_R1+=("${fastq}")
+  R1_names_array+=("$(echo "${fastq}" | awk -F"_" '{print $1}')")
+done
+
+# Create array of fastq R2 files
+for fastq in ${R2_fastq_pattern}
+do
+  fastq_array_R2+=("${fastq}")
+  R2_names_array+=("$(echo "${fastq}" | awk -F"_" '{print $1}')")
+done
+
+# Create list of fastq files used in analysis
+# Create MD5 checksum for reference
+if [ ! -f "${output_dir_top}"/raw-fastq-checksums.md5 ]; then
+  for fastq in *.gz
+    do
+      md5sum "${fastq}" >>"${output_dir_top}"/raw-fastq-checksums.md5
+  done
+fi
+
+# Run fastp on files
+# Adds JSON report output for downstream usage by MultiQC
+for index in "${!fastq_array_R1[@]}"
+do
+  R1_sample_name=$(echo "${R1_names_array[index]}")
+  R2_sample_name=$(echo "${R2_names_array[index]}")
+  echo "${R1_sample_name}"
+  echo ""
+  fastp \
+  --in1 ${fastq_array_R1[index]} \
+  --in2 ${fastq_array_R2[index]} \
+  --detect_adapter_for_pe \
+  --trim_front1 20 \
+  --trim_front2 20 \
+  --thread ${threads} \
+  --html "${trimmed_fastqs_dir}"/"${R1_sample_name}".fastp-trim.report.html \
+  --json "${trimmed_fastqs_dir}"/"${R1_sample_name}".fastp-trim.report.json \
+  --out1 "${trimmed_fastqs_dir}"/"${R1_sample_name}"_R1.fastp-trim.fq.gz \
+  --out2 "${trimmed_fastqs_dir}"/"${R2_sample_name}"_R2.fastp-trim.fq.gz \
+  2>> "${trimmed_fastqs_dir}"/fastp.stderr
+
+  # Generate md5 checksums for newly trimmed files
+  cd "${trimmed_fastqs_dir}"
+  md5sum "${R1_sample_name}"_R1.fastp-trim.fq.gz > "${R1_sample_name}"_R1.fastp-trim.fq.gz.md5
+  md5sum "${R2_sample_name}"_R2.fastp-trim.fq.gz > "${R2_sample_name}"_R2.fastp-trim.fq.gz.md5
+  cd -
+done
+```
+
+# 3 Quality Check with FastQC and MultiQC
+
+``` bash
+# Load bash variables into memory
+source .bashvars
+
+
+############ RUN FASTQC ############
+
+
+# Create array of trimmed FastQs
+trimmed_fastqs_array=(${trimmed_fastqs_dir}/${trimmed_fastq_pattern})
+
+# Pass array contents to new variable as space-delimited list
+trimmed_fastqc_list=$(echo "${trimmed_fastqs_array[*]}")
+
+echo "Beginning FastQC on trimmed reads..."
+echo ""
+
+# Run FastQC
+### NOTE: Do NOT quote raw_fastqc_list
+fastqc \
+--threads ${threads} \
+--outdir ${trimmed_fastqs_dir} \
+--quiet \
+${trimmed_fastqc_list}
+
+echo "FastQC on trimmed reads complete!"
+echo ""
+
+############ END FASTQC ############
+
+############ RUN MULTIQC ############
+echo "Beginning MultiQC on trimmed FastQC..."
+echo ""
+
+multiqc ${trimmed_fastqs_dir} -o ${trimmed_fastqs_dir}
+
+echo ""
+echo "MultiQC on trimmed FastQs complete."
+echo ""
+
+############ END MULTIQC ############
+
+echo "Removing FastQC zip files."
+echo ""
+rm ${trimmed_fastqs_dir}/*.zip
+echo "FastQC zip files removed."
+echo ""
+```
+
+<div id="refs" class="references csl-bib-body hanging-indent">
+
+<div id="ref-chen2023" class="csl-entry">
+
+Chen, Shifu. 2023. “Ultrafast One-Pass FASTQ Data Preprocessing, Quality
+Control, and Deduplication Using Fastp.” *iMeta* 2 (2).
+<https://doi.org/10.1002/imt2.107>.
+
+</div>
+
+<div id="ref-ewels2016" class="csl-entry">
+
+Ewels, Philip, Måns Magnusson, Sverker Lundin, and Max Käller. 2016.
+“MultiQC: Summarize Analysis Results for Multiple Tools and Samples in a
+Single Report.” *Bioinformatics* 32 (19): 3047–48.
+<https://doi.org/10.1093/bioinformatics/btw354>.
+
+</div>
+
+</div>
