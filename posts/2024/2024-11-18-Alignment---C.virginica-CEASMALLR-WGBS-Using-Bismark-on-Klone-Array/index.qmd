@@ -1,0 +1,169 @@
+---
+author: Sam White
+toc-title: Contents
+toc-depth: 5
+toc-location: left
+title: Alignment - C.virginica CEASMALLR WGBS Using Bismark on Klone Array
+date: '2024-11-18'
+draft: false
+engine: knitr
+categories: 
+  - 2024
+  - trimming
+  - Crassostrea virginica
+  - Eastern oyster
+  - ceasmallr
+  - WGBS
+  - BS-seq
+  - Klone
+  - Bismark
+---
+# INTRO
+
+This notebook is part of the [ceasmallr](https://github.com/sr320/ceasmallr) (GitHub repo) project, comparing DNA methylation in [_Crassostrea virginica_ (Eastern oyster)](https://en.wikipedia.org/wiki/Eastern_oyster) larvae and zygotes, via whole-genome bisulfite sequencing (WGBS).
+
+Trimming was previously [performed on 20241115](../2024-11-15-Trimming-and-QC---C.virginica-CEASMALLR-FastQs-Using-fastp-BBTools-and-FastQC-MultiQC/index.qmd) (Notebook entry).
+
+Subsequently, the trimmed reads needed to aligned to the [_Crassostrea virginica_ (Eastern oyster)](https://en.wikipedia.org/wiki/Eastern_oyster) genome, using [`Bismark`](https://github.com/FelixKrueger/Bismark). Alignments were initially performed on Raven, but were done using [trimmed reads containing errors from 20220829](../../2022/2022-08-29-FastQ-Trimming-and-QC---C.virginica-Larval-BS-seq-Data-from-Lotterhos-Lab-and-Part-of-CEABIGR-Project-Using-fastp-on-Mox/index.qmd) (Notebook entry), so needed to be re-trimmed _and_ realigned. Additionally, the alignments took nearly two _weeks_! So, we explored a different approach to speed things up by utilizing node arrays on the Univ. of Washington's HPC, Klone (Hyak).
+
+The code originally run is here, and is still useful for those without access to HPC resources:
+
+- [02.00-bismark-bowtie2-alignment.Rmd](https://github.com/sr320/ceasmallr/blob/main/code/02.00-bismark-bowtie2-alignment.Rmd) (GitHub repo)
+
+# METHODS
+
+This approach required two scripts:
+
+- SLURM script
+
+  ```bash
+  #!/bin/bash
+#SBATCH --job-name=bismark_job_array
+#SBATCH --account=coenv
+#SBATCH --partition=cpu-g2
+#SBATCH --output=bismark_job_%A_%a.out
+#SBATCH --error=bismark_job_%A_%a.err
+#SBATCH --ntasks=1
+#SBATCH --cpus-per-task=20
+#SBATCH --mem=100G
+#SBATCH --time=72:00:00
+##turn on e-mail notification
+#SBATCH --mail-type=ALL
+#SBATCH --mail-user=samwhite@uw.edu
+## Specify the working directory for this job
+#SBATCH --chdir=/gscratch/scrubbed/samwhite/gitrepos/ceasmallr/output/02.01-bismark-bowtie2-alignment-SLURM-array/
+
+# Execute Roberts Lab bioinformatics container
+# Binds home directory
+# Binds /gscratch directory
+# Directory bindings allow outputs to be written to the hard drive.
+apptainer exec \
+--home "$PWD" \
+--bind /mmfs1/home/ \
+--bind /gscratch \
+/gscratch/srlab/sr320/srlab-bioinformatics-container-586bf21.sif \
+/gscratch/scrubbed/samwhite/gitrepos/ceasmallr/code/02.01-bismark-bowtie2-alignment-SLURM-array.sh
+```
+
+- Job script:
+
+  - [02.01-bismark-bowtie2-alignment-SLURM-array.sh](https://github.com/sr320/ceasmallr/blob/main/code/02.01-bismark-bowtie2-alignment-SLURM-array.sh) (GitHub repo)
+
+  ```bash
+  #!/bin/bash
+  
+  # This sccript is designed to be called by a SLURM script which
+  # runs this script across an array of HPC nodes.
+  
+  
+  ###################################################################################
+  # These variables need to be set by user
+  
+  ## Assign Variables
+  
+  # INPUT FILES
+  repo_dir="/gscratch/scrubbed/samwhite/gitrepos/ceasmallr"
+  trimmed_fastqs_dir="${repo_dir}/output/00.00-trimming-fastp"
+  bisulfite_genome_dir="${repo_dir}/data/Cvirginica_v300"
+  
+  
+  # OUTPUT FILES
+  output_dir_top="${repo_dir}/output/02.01-bismark-bowtie2-alignment-SLURM-array"
+  
+  # PARAMETERS
+  bowtie2_min_score="L,0,-0.6"
+  
+  
+  # CPU threads
+  # Bismark already spawns multiple instances and additional threads are multiplicative."
+  bismark_threads=15
+  
+  ###################################################################################
+  
+  # Print name of container
+  
+  echo "Running in Apptainer container: ${APPTAINER_CONTAINER}"
+  echo ""
+  
+  # Make output directory, if it doesn't exist
+  mkdir --parents "02.01-bismark-bowtie2-alignment-SLURM-array"${output_dir_top}""
+  
+  ## CREATE LIST OF PAIRED READS ##
+  
+  cd "${trimmed_fastqs_dir}"
+  
+  if [[ -f "${output_dir_top}"/fastq_pairs.txt ]]; then
+    rm "${output_dir_top}"/fastq_pairs.txt
+  fi
+  
+  # Find all _R1_ files and match them with their corresponding _R2_ files
+  for R1_file in *_R1_*.fq.gz; do
+      R2_file="${R1_file/_R1_/_R2_}"
+      if [[ -f "$R2_file" ]]; then
+          echo "$R1_file $R2_file" >> "${output_dir_top}"/fastq_pairs.txt
+      else
+          echo "Warning: No matching R2 file for $R1_file"
+      fi
+  done
+  
+  
+  ## SET ARRAY TASKS ##
+  cd "${output_dir_top}"
+  
+  # Get the FastQ file pair for this task
+  pair=$(sed -n "${SLURM_ARRAY_TASK_ID}p" fastq_pairs.txt)
+  
+  R1=$(echo $pair | awk '{print $1}')
+  
+  R2=$(echo $pair | awk '{print $2}')
+  
+  
+  # Check if R1 and R2 are not empty
+  if [ -z "$R1" ] || [ -z "$R2" ]; then
+    echo "Error: R1 or R2 is empty. Exiting."
+    exit 1
+  fi
+  
+  # Get just the sample name (excludes the _R[12]_001*)
+  sample_name="${R1%%_*}"
+  
+  # Check if sample_name is not empty
+  if [ -z "$sample_name" ]; then
+    echo "Error: sample_name is empty. Exiting."
+    exit 1
+  fi
+  
+  
+  ## RUN BISMARK ALIGNMENTS ##
+  bismark \
+  --genome ${bisulfite_genome_dir} \
+  --score_min "${bowtie2_min_score}" \
+  --parallel "${bismark_threads}" \
+  --non_directional \
+  --gzip \
+  -p "${bismark_threads}" \
+  -1 ${trimmed_fastqs_dir}/${R1} \
+  -2 ${trimmed_fastqs_dir}/${R2} \
+  --output_dir "${output_dir_top}" \
+  2> "${output_dir_top}"/${sample_name}-${SLURM_ARRAY_TASK_ID}-bismark_summary.txt
+  ```
