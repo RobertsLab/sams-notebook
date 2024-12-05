@@ -32,38 +32,59 @@ The code originally run is here, and is still useful for those without access to
 
 # METHODS
 
+:::: {.callout-important}
+When launching the SLURM job, you can initiate the array to determine the appropriate number of nodes by using Bash calculations.
+
+The file `fastq_pairs.txt` has to exist before execution!
+
+```bash
+sbatch --array=0-$(($$(wc -l < fastq_pairs.txt) - 1)) 02.02-bismark-SLURM-job.sh
+```
+
+:::
+
 This approach required two scripts:
 
 - SLURM script
 
+  - [02.02-bismark-SLURM-job.sh](https://github.com/sr320/ceasmallr/blob/main/code/02.02-bismark-SLURM-job.sh)
+
   ```bash
   #!/bin/bash
-#SBATCH --job-name=bismark_job_array
-#SBATCH --account=coenv
-#SBATCH --partition=cpu-g2
-#SBATCH --output=bismark_job_%A_%a.out
-#SBATCH --error=bismark_job_%A_%a.err
-#SBATCH --ntasks=1
-#SBATCH --cpus-per-task=20
-#SBATCH --mem=100G
-#SBATCH --time=72:00:00
-##turn on e-mail notification
-#SBATCH --mail-type=ALL
-#SBATCH --mail-user=samwhite@uw.edu
-## Specify the working directory for this job
-#SBATCH --chdir=/gscratch/scrubbed/samwhite/gitrepos/ceasmallr/output/02.01-bismark-bowtie2-alignment-SLURM-array/
-
-# Execute Roberts Lab bioinformatics container
-# Binds home directory
-# Binds /gscratch directory
-# Directory bindings allow outputs to be written to the hard drive.
-apptainer exec \
---home "$PWD" \
---bind /mmfs1/home/ \
---bind /gscratch \
-/gscratch/srlab/sr320/srlab-bioinformatics-container-586bf21.sif \
-/gscratch/scrubbed/samwhite/gitrepos/ceasmallr/code/02.01-bismark-bowtie2-alignment-SLURM-array.sh
-```
+  #SBATCH --job-name=bismark_job_array
+  #SBATCH --account=coenv
+  #SBATCH --partition=cpu-g2
+  #SBATCH --output=bismark_job_%A_%a.out
+  #SBATCH --error=bismark_job_%A_%a.err
+  #SBATCH --ntasks=1
+  #SBATCH --cpus-per-task=20
+  #SBATCH --mem=100G
+  #SBATCH --time=72:00:00
+  ##turn on e-mail notification
+  #SBATCH --mail-type=ALL
+  #SBATCH --mail-user=samwhite@uw.edu
+  ## Specify the working directory for this job
+  #SBATCH --chdir=/gscratch/scrubbed/samwhite/gitrepos/ceasmallr/output/02.01-bismark-bowtie2-alignment-SLURM-array/
+  
+  # Execute Roberts Lab bioinformatics container
+  # Binds home directory
+  # Binds /gscratch directory
+  # Directory bindings allow outputs to be written to the hard drive.
+  
+  # Executes Bismark alignment using 02.01-bismark-bowtie2-alignment-SLURM-array.sh script.
+  
+  # To execture this SLURM script as an array, start the script with the following command:
+  
+  # sbatch --array=0-$(($$(wc -l < fastq_pairs.txt) - 1)) 02.02-bismark-SLURM-job.sh
+  
+  # IMPORTANT: Requires fastq_pairs.txt to exist prior to submission!
+  apptainer exec \
+  --home "$PWD" \
+  --bind /mmfs1/home/ \
+  --bind /gscratch \
+  /gscratch/srlab/sr320/srlab-bioinformatics-container-586bf21.sif \
+  /gscratch/scrubbed/samwhite/gitrepos/ceasmallr/code/02.01-bismark-bowtie2-alignment-SLURM-array.sh
+  ```
 
 - Job script:
 
@@ -72,7 +93,7 @@ apptainer exec \
   ```bash
   #!/bin/bash
   
-  # This sccript is designed to be called by a SLURM script which
+  # This script is designed to be called by a SLURM script which
   # runs this script across an array of HPC nodes.
   
   
@@ -167,3 +188,7 @@ apptainer exec \
   --output_dir "${output_dir_top}" \
   2> "${output_dir_top}"/${sample_name}-${SLURM_ARRAY_TASK_ID}-bismark_summary.txt
   ```
+
+
+  # RESULTS
+
