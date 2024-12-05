@@ -1,0 +1,1511 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.5.57">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+<meta name="author" content="Sam White">
+<meta name="dcterms.date" content="2024-11-26">
+
+<title>Methylation Extraction - C.virginica CEASMALLR WGBS Using Bismark – Sam’s Notebook</title>
+<style>
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: min(4vw, 1.5em);}
+div.column{flex: auto; overflow-x: auto;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+  vertical-align: middle;
+}
+/* CSS for syntax highlighting */
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { display: inline-block; text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+/* CSS for citations */
+div.csl-bib-body { }
+div.csl-entry {
+  clear: both;
+}
+.hanging-indent div.csl-entry {
+  margin-left:2em;
+  text-indent:-2em;
+}
+div.csl-left-margin {
+  min-width:2em;
+  float:left;
+}
+div.csl-right-inline {
+  margin-left:2em;
+  padding-left:1em;
+}
+div.csl-indent {
+  margin-left: 2em;
+}</style>
+
+
+<script src="../../../site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="../../../site_libs/quarto-nav/headroom.min.js"></script>
+<script src="../../../site_libs/clipboard/clipboard.min.js"></script>
+<script src="../../../site_libs/quarto-search/autocomplete.umd.js"></script>
+<script src="../../../site_libs/quarto-search/fuse.min.js"></script>
+<script src="../../../site_libs/quarto-search/quarto-search.js"></script>
+<meta name="quarto:offset" content="../../../">
+<link href="../../..//images/favicon.ico" rel="icon">
+<script src="../../../site_libs/quarto-html/quarto.js"></script>
+<script src="../../../site_libs/quarto-html/popper.min.js"></script>
+<script src="../../../site_libs/quarto-html/tippy.umd.min.js"></script>
+<script src="../../../site_libs/quarto-html/anchor.min.js"></script>
+<link href="../../../site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="../../../site_libs/quarto-html/quarto-syntax-highlighting-dark.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="../../../site_libs/bootstrap/bootstrap.min.js"></script>
+<link href="../../../site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="../../../site_libs/bootstrap/bootstrap.min.css" rel="stylesheet" id="quarto-bootstrap" data-mode="dark">
+<script id="quarto-search-options" type="application/json">{
+  "location": "navbar",
+  "copy-button": true,
+  "collapse-after": 2,
+  "panel-placement": "end",
+  "type": "textbox",
+  "limit": 100,
+  "keyboard-shortcut": [
+    "f",
+    "/",
+    "s"
+  ],
+  "language": {
+    "search-no-results-text": "No results",
+    "search-matching-documents-text": "matching documents",
+    "search-copy-link-title": "Copy link to search",
+    "search-hide-matches-text": "Hide additional matches",
+    "search-more-match-text": "more match in this document",
+    "search-more-matches-text": "more matches in this document",
+    "search-clear-button-title": "Clear",
+    "search-text-placeholder": "",
+    "search-detached-cancel-button-title": "Cancel",
+    "search-submit-button-title": "Submit",
+    "search-label": "Search"
+  }
+}</script>
+<script async="" src="https://www.googletagmanager.com/gtag/js?id=G-7483T61T11"></script>
+
+<script type="text/javascript">
+
+window.dataLayer = window.dataLayer || [];
+function gtag(){dataLayer.push(arguments);}
+gtag('js', new Date());
+gtag('config', 'G-7483T61T11', { 'anonymize_ip': true});
+</script>
+
+
+<link rel="stylesheet" href="../../../styles.css">
+</head>
+
+<body class="floating nav-fixed">
+
+<div id="quarto-search-results"></div>
+  <header id="quarto-header" class="headroom fixed-top quarto-banner">
+    <nav class="navbar navbar-expand-lg " data-bs-theme="dark">
+      <div class="navbar-container container-fluid">
+      <div class="navbar-brand-container mx-auto">
+    <a class="navbar-brand" href="../../../index.html">
+    <span class="navbar-title">Sam’s Notebook</span>
+    </a>
+  </div>
+            <div id="quarto-search" class="" title="Search"></div>
+          <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarCollapse" aria-controls="navbarCollapse" role="menu" aria-expanded="false" aria-label="Toggle navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+  <span class="navbar-toggler-icon"></span>
+</button>
+          <div class="collapse navbar-collapse" id="navbarCollapse">
+            <ul class="navbar-nav navbar-nav-scroll ms-auto">
+  <li class="nav-item dropdown ">
+    <a class="nav-link dropdown-toggle" href="#" id="nav-menu-bi-hdd-network" role="link" data-bs-toggle="dropdown" aria-expanded="false">
+      <i class="bi bi-hdd-network" role="img">
+</i> 
+ <span class="menu-text"></span>
+    </a>
+    <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="nav-menu-bi-hdd-network">    
+        <li>
+    <a class="dropdown-item" href="http://raven.fish.washington.edu:8787" target="_blank">
+ <span class="dropdown-text">Rstudio Server - Raven</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="https://gannet.fish.washington.edu/Atumefaciens/" target="_blank">
+ <span class="dropdown-text">My Gannet Directory</span></a>
+  </li>  
+    </ul>
+  </li>
+  <li class="nav-item dropdown ">
+    <a class="nav-link dropdown-toggle" href="#" id="nav-menu-bi-journal-code" role="link" data-bs-toggle="dropdown" aria-expanded="false">
+      <i class="bi bi-journal-code" role="img">
+</i> 
+ <span class="menu-text"></span>
+    </a>
+    <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="nav-menu-bi-journal-code">    
+        <li>
+    <a class="dropdown-item" href="https://sr320.github.io" target="_blank">
+ <span class="dropdown-text">Steven’s Notebook</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="https://shedurkin.github.io/Roberts-LabNotebook/" target="_blank">
+ <span class="dropdown-text">Kathleen’s Notebook</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="https://meganewing.github.io/mewing-notebook/" target="_blank">
+ <span class="dropdown-text">Megan’s Notebook</span></a>
+  </li>  
+    </ul>
+  </li>
+  <li class="nav-item dropdown ">
+    <a class="nav-link dropdown-toggle" href="#" id="nav-menu-bi-github" role="link" data-bs-toggle="dropdown" aria-expanded="false">
+      <i class="bi bi-github" role="img">
+</i> 
+ <span class="menu-text"></span>
+    </a>
+    <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="nav-menu-bi-github">    
+        <li>
+    <a class="dropdown-item" href="https://github.com/RobertsLab/sams-notebook" target="_blank">
+ <span class="dropdown-text">Notebook repo</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="https://github.com/RobertsLab" target="_blank">
+ <span class="dropdown-text">Lab Organization (GitHub)</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="https://github.com/RobertsLab/lab-website" target="_blank">
+ <span class="dropdown-text">Edit Roberts Lab website</span></a>
+  </li>  
+    </ul>
+  </li>
+  <li class="nav-item compact">
+    <a class="nav-link" href="https://calendar.google.com/calendar/embed?src=mrc305@gmail.com&amp;ctz=America/Vancouver" target="_blank"> <i class="bi bi-calendar-week" role="img">
+</i> 
+<span class="menu-text"></span></a>
+  </li>  
+  <li class="nav-item compact">
+    <a class="nav-link" href="../../../index.xml"> <i class="bi bi-rss" role="img">
+</i> 
+<span class="menu-text"></span></a>
+  </li>  
+</ul>
+          </div> <!-- /navcollapse -->
+            <div class="quarto-navbar-tools">
+</div>
+      </div> <!-- /container-fluid -->
+    </nav>
+</header>
+<!-- content -->
+<header id="title-block-header" class="quarto-title-block default toc-left page-columns page-full">
+  <div class="quarto-title-banner page-columns page-full">
+    <div class="quarto-title column-page-right">
+      <h1 class="title">Methylation Extraction - C.virginica CEASMALLR WGBS Using Bismark</h1>
+                                <div class="quarto-categories">
+                <div class="quarto-category">2024</div>
+                <div class="quarto-category">Crassostrea virginica</div>
+                <div class="quarto-category">Eastern oyster</div>
+                <div class="quarto-category">ceasmallr</div>
+                <div class="quarto-category">wgbs</div>
+                <div class="quarto-category">BS-seq</div>
+                <div class="quarto-category">Bismark</div>
+                <div class="quarto-category">methylation extraction</div>
+              </div>
+                  </div>
+  </div>
+    
+  
+  <div class="quarto-title-meta column-page-right">
+
+      <div>
+      <div class="quarto-title-meta-heading">Author</div>
+      <div class="quarto-title-meta-contents">
+               <p>Sam White </p>
+            </div>
+    </div>
+      
+      <div>
+      <div class="quarto-title-meta-heading">Published</div>
+      <div class="quarto-title-meta-contents">
+        <p class="date">November 26, 2024</p>
+      </div>
+    </div>
+    
+      
+    </div>
+    
+  
+  </header><div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-full page-navbar">
+<!-- sidebar -->
+  <nav id="quarto-sidebar" class="sidebar collapse collapse-horizontal quarto-sidebar-collapse-item sidebar-navigation floating overflow-auto">
+    <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">Contents</h2>
+   
+  <ul>
+  <li><a href="#intro" id="toc-intro" class="nav-link active" data-scroll-target="#intro">INTRO</a></li>
+  <li><a href="#description" id="toc-description" class="nav-link" data-scroll-target="#description">1 DESCRIPTION</a>
+  <ul>
+  <li><a href="#inputs" id="toc-inputs" class="nav-link" data-scroll-target="#inputs">1.1 Inputs</a></li>
+  <li><a href="#outputs" id="toc-outputs" class="nav-link" data-scroll-target="#outputs">1.2 Outputs</a></li>
+  </ul></li>
+  <li><a href="#create-a-bash-variables-file" id="toc-create-a-bash-variables-file" class="nav-link" data-scroll-target="#create-a-bash-variables-file">2 Create a Bash variables file</a></li>
+  <li><a href="#methylation-extraction" id="toc-methylation-extraction" class="nav-link" data-scroll-target="#methylation-extraction">3 Methylation Extraction</a></li>
+  <li><a href="#cytosine-coverage" id="toc-cytosine-coverage" class="nav-link" data-scroll-target="#cytosine-coverage">4 Cytosine coverage</a></li>
+  <li><a href="#peek-at-output-files" id="toc-peek-at-output-files" class="nav-link" data-scroll-target="#peek-at-output-files">5 Peek at output files</a></li>
+  <li><a href="#list-all-outputs" id="toc-list-all-outputs" class="nav-link" data-scroll-target="#list-all-outputs">6 List all outputs</a></li>
+  <li><a href="#checksums" id="toc-checksums" class="nav-link" data-scroll-target="#checksums">7 Checksums</a></li>
+  <li><a href="#multiqc" id="toc-multiqc" class="nav-link" data-scroll-target="#multiqc">8 MultiQC</a></li>
+  </ul>
+</nav>
+</nav>
+<div id="quarto-sidebar-glass" class="quarto-sidebar-collapse-item" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item"></div>
+<!-- margin-sidebar -->
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar zindex-bottom">
+    </div>
+<!-- main -->
+<main class="content quarto-banner-title-block column-page-right" id="quarto-document-content">
+
+
+
+
+
+<section id="intro" class="level1">
+<h1>INTRO</h1>
+<p>This notebook is part of the <a href="https://github.com/sr320/ceasmallr">ceasmallr</a> (GitHub repo) project, comparing DNA methylation in <a href="https://en.wikipedia.org/wiki/Eastern_oyster"><em>Crassostrea virginica</em> (Eastern oyster)</a> larvae and zygotes, via whole-genome bisulfite sequencing (WGBS).</p>
+<p>Deduplication was <a href="../../../posts/2024/2024-11-25-Deduplication---C.virginica-CEASMALLR-WGBS-Using-Bismark/index.html">previously performed on 20241125</a> and now needed to <a href="https://felixkrueger.github.io/Bismark/">Bismark methylation extraction</a> (Bismark GitHub).</p>
+<div class="callout callout-style-default callout-note callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Note
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>This notebook was copied from knitted markdown from <a href="https://github.com/sr320/ceasmallr/blob/92cf9be13679dce017df317673a597004690ddfa/code/02.20-bismark-methylation-extraction.Rmd"><code>02.20-bismark-methylation-extraction.Rmd</code></a> (commit <code>92cf9be</code>).</p>
+</div>
+</div>
+</section>
+<section id="description" class="level1">
+<h1>1 DESCRIPTION</h1>
+<p>This notebook is a continuation of using <a href="https://felixkrueger.github.io/Bismark/">Bismark</a> (Krueger and Andrews 2011) to perform methylation analysis. This step will perform methylation extraction.</p>
+<p>Results will be summarized by <a href="https://github.com/MultiQC/MultiQC">MultiQC</a> (Ewels et al.&nbsp;2016).</p>
+<section id="inputs" class="level2">
+<h2 class="anchored" data-anchor-id="inputs">1.1 Inputs</h2>
+<p>This notebook relies on deduplicated BAMs generated by <a href="./02.10-bismark-deduplication.Rmd"><code>02.10-bismark-deduplication.Rmd</code></a>.</p>
+</section>
+<section id="outputs" class="level2">
+<h2 class="anchored" data-anchor-id="outputs">1.2 Outputs</h2>
+<ul>
+<li><p><code>*.CpG_report.merged_CpG_evidence.cov.gz</code>: CpG position and counts merged from all strands. Generated by <code>coverage2cytosine</code>.</p></li>
+<li><p><code>*.deduplicated.bedGraph.gz</code>: Bedgraph file with CpG loci and percent methylation.</p></li>
+<li><p><code>*.deduplicated.bedGraph.gz.bismark.zero.cov</code>: Extension of <code>*deduplicated.bedGraph.gz</code> which includes two additional columns, count methylated and count unmethylated, in that order.</p></li>
+<li><p><code>*.deduplicated.bismark.cov.gz</code>: 1-based counting version of <code>*.deduplicated.bedGraph.gz.bismark.zero.cov</code>. E.g. loci are at 49 49, instead of 48 49.</p></li>
+<li><p><code>*.deduplicated.CpG_report.txt.gz</code>: Report on all CpGs. <code>&lt;chromosome&gt; &lt;0-based start&gt; &lt;methylation status, +/-&gt; &lt;count_methyldated&gt; &lt;CG&gt; &lt;trinucleotide_context&gt;</code></p></li>
+<li><p><code>*.deduplicated.cytosine_context_summary.txt</code>: Cytosine context summary. See file headers for info.</p></li>
+<li><p><code>*.deduplicated.M-bias.txt</code>: Methylation bias table. See file headers for info.</p></li>
+<li><p><code>*.deduplicated_splitting_report.txt</code>: Summary methylation report in a human-readable format.</p></li>
+<li><p><code>CH*.deduplicated.txt.gz</code>: Strand-specific methylation status for each read in <code>CHH</code> or <code>CHG</code> context.</p></li>
+<li><p><code>CpG*.deduplicated.txt.gz</code>: Strand-specific methylation status for each read in <code>CpG</code> context.</p></li>
+<li><p><code>multiqc_report.html</code>: A summary report of the alignment results generated by <a href="https://github.com/MultiQC/MultiQC">MultiQC</a>, in HTML format.</p></li>
+</ul>
+<p>Due to the large file sizes of most of the output files, these cannot be hosted in the <a href="https://github.com/sr320/ceasmallr">ceasmallr GitHub repo</a>. As such these files are available for download here:</p>
+<ul>
+<li><a href="https://gannet.fish.washington.edu/gitrepos/ceasmallr/output/02.20-bismark-methylation-extraction/" class="uri">https://gannet.fish.washington.edu/gitrepos/ceasmallr/output/02.20-bismark-methylation-extraction/</a></li>
+</ul>
+</section>
+</section>
+<section id="create-a-bash-variables-file" class="level1">
+<h1>2 Create a Bash variables file</h1>
+<p>This allows usage of Bash variables across R Markdown chunks.</p>
+<div class="sourceCode" id="cb1"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="kw">{</span></span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="bu">echo</span> <span class="st">"#### Assign Variables ####"</span></span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="bu">echo</span> <span class="st">""</span></span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a><span class="bu">echo</span> <span class="st">"# Data directories"</span></span>
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a><span class="bu">echo</span> <span class="st">'export repo_dir=/home/shared/8TB_HDD_01/sam/gitrepos/ceasmallr'</span></span>
+<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a><span class="bu">echo</span> <span class="st">'export output_dir_top=${repo_dir}/output/02.20-bismark-methylation-extraction'</span></span>
+<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a><span class="bu">echo</span> <span class="st">'export deduplication_dir="${repo_dir}/output/02.10-bismark-deduplication"'</span></span>
+<span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a><span class="bu">echo</span> <span class="st">'export genome_dir="${repo_dir}/data/Cvirginica_v300/"'</span></span>
+<span id="cb1-10"><a href="#cb1-10" aria-hidden="true" tabindex="-1"></a><span class="bu">echo</span> <span class="st">""</span></span>
+<span id="cb1-11"><a href="#cb1-11" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-12"><a href="#cb1-12" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-13"><a href="#cb1-13" aria-hidden="true" tabindex="-1"></a><span class="bu">echo</span> <span class="st">"# Paths to programs"</span></span>
+<span id="cb1-14"><a href="#cb1-14" aria-hidden="true" tabindex="-1"></a><span class="bu">echo</span> <span class="st">'export programs_dir="/home/shared"'</span></span>
+<span id="cb1-15"><a href="#cb1-15" aria-hidden="true" tabindex="-1"></a><span class="bu">echo</span> <span class="st">'export bismark_dir="${programs_dir}/Bismark-0.24.0"'</span></span>
+<span id="cb1-16"><a href="#cb1-16" aria-hidden="true" tabindex="-1"></a><span class="bu">echo</span> <span class="st">'export bowtie2_dir="${programs_dir}/bowtie2-2.4.4-linux-x86_64"'</span></span>
+<span id="cb1-17"><a href="#cb1-17" aria-hidden="true" tabindex="-1"></a><span class="bu">echo</span> <span class="st">'export multiqc="/home/sam/programs/mambaforge/bin/multiqc"'</span></span>
+<span id="cb1-18"><a href="#cb1-18" aria-hidden="true" tabindex="-1"></a><span class="bu">echo</span> <span class="st">'export samtools_dir="${programs_dir}/samtools-1.12"'</span></span>
+<span id="cb1-19"><a href="#cb1-19" aria-hidden="true" tabindex="-1"></a><span class="bu">echo</span> <span class="st">""</span></span>
+<span id="cb1-20"><a href="#cb1-20" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-21"><a href="#cb1-21" aria-hidden="true" tabindex="-1"></a><span class="bu">echo</span> <span class="st">"# Set number of CPUs to use"</span></span>
+<span id="cb1-22"><a href="#cb1-22" aria-hidden="true" tabindex="-1"></a><span class="bu">echo</span> <span class="st">'export threads=40'</span></span>
+<span id="cb1-23"><a href="#cb1-23" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-24"><a href="#cb1-24" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-25"><a href="#cb1-25" aria-hidden="true" tabindex="-1"></a><span class="bu">echo</span> <span class="st">"# Print formatting"</span></span>
+<span id="cb1-26"><a href="#cb1-26" aria-hidden="true" tabindex="-1"></a><span class="bu">echo</span> <span class="st">'export line="--------------------------------------------------------"'</span></span>
+<span id="cb1-27"><a href="#cb1-27" aria-hidden="true" tabindex="-1"></a><span class="bu">echo</span> <span class="st">""</span></span>
+<span id="cb1-28"><a href="#cb1-28" aria-hidden="true" tabindex="-1"></a><span class="kw">}</span> <span class="op">&gt;</span> .bashvars</span>
+<span id="cb1-29"><a href="#cb1-29" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-30"><a href="#cb1-30" aria-hidden="true" tabindex="-1"></a><span class="fu">cat</span> .bashvars</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<pre><code>#### Assign Variables ####
+
+# Data directories
+export repo_dir=/home/shared/8TB_HDD_01/sam/gitrepos/ceasmallr
+export output_dir_top=${repo_dir}/output/02.20-bismark-methylation-extraction
+export deduplication_dir="${repo_dir}/output/02.10-bismark-deduplication"
+export genome_dir="${repo_dir}/data/Cvirginica_v300/"
+
+# Paths to programs
+export programs_dir="/home/shared"
+export bismark_dir="${programs_dir}/Bismark-0.24.0"
+export bowtie2_dir="${programs_dir}/bowtie2-2.4.4-linux-x86_64"
+export multiqc="/home/sam/programs/mambaforge/bin/multiqc"
+export samtools_dir="${programs_dir}/samtools-1.12"
+
+# Set number of CPUs to use
+export threads=40
+# Print formatting
+export line="--------------------------------------------------------"</code></pre>
+</section>
+<section id="methylation-extraction" class="level1">
+<h1>3 Methylation Extraction</h1>
+<div class="sourceCode" id="cb3"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Load bash variables into memory</span></span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a><span class="bu">source</span> .bashvars</span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a><span class="bu">cd</span> <span class="st">"</span><span class="va">${deduplication_dir}</span><span class="st">"</span></span>
+<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a><span class="va">${bismark_dir}</span><span class="ex">/bismark_methylation_extractor</span> <span class="dt">\</span></span>
+<span id="cb3-7"><a href="#cb3-7" aria-hidden="true" tabindex="-1"></a>--bedGraph <span class="dt">\</span></span>
+<span id="cb3-8"><a href="#cb3-8" aria-hidden="true" tabindex="-1"></a>--counts <span class="dt">\</span></span>
+<span id="cb3-9"><a href="#cb3-9" aria-hidden="true" tabindex="-1"></a>--scaffolds <span class="dt">\</span></span>
+<span id="cb3-10"><a href="#cb3-10" aria-hidden="true" tabindex="-1"></a>--parallel 10 <span class="dt">\</span></span>
+<span id="cb3-11"><a href="#cb3-11" aria-hidden="true" tabindex="-1"></a>--output_dir <span class="va">${output_dir_top}</span> <span class="dt">\</span></span>
+<span id="cb3-12"><a href="#cb3-12" aria-hidden="true" tabindex="-1"></a>--samtools_path <span class="va">${samtools_dir}</span> <span class="dt">\</span></span>
+<span id="cb3-13"><a href="#cb3-13" aria-hidden="true" tabindex="-1"></a>--gzip <span class="dt">\</span></span>
+<span id="cb3-14"><a href="#cb3-14" aria-hidden="true" tabindex="-1"></a>--paired-end <span class="dt">\</span></span>
+<span id="cb3-15"><a href="#cb3-15" aria-hidden="true" tabindex="-1"></a>--comprehensive <span class="dt">\</span></span>
+<span id="cb3-16"><a href="#cb3-16" aria-hidden="true" tabindex="-1"></a>--merge_non_CpG <span class="dt">\</span></span>
+<span id="cb3-17"><a href="#cb3-17" aria-hidden="true" tabindex="-1"></a>--zero_based <span class="dt">\</span></span>
+<span id="cb3-18"><a href="#cb3-18" aria-hidden="true" tabindex="-1"></a>--buffer_size 75% <span class="dt">\</span></span>
+<span id="cb3-19"><a href="#cb3-19" aria-hidden="true" tabindex="-1"></a>--cytosine_report <span class="dt">\</span></span>
+<span id="cb3-20"><a href="#cb3-20" aria-hidden="true" tabindex="-1"></a>--genome_folder <span class="va">${genome_dir}</span> <span class="dt">\</span></span>
+<span id="cb3-21"><a href="#cb3-21" aria-hidden="true" tabindex="-1"></a><span class="pp">*</span>deduplicated.bam</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</section>
+<section id="cytosine-coverage" class="level1">
+<h1>4 Cytosine coverage</h1>
+<div class="sourceCode" id="cb4"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Load bash variables into memory</span></span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a><span class="bu">source</span> .bashvars</span>
+<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a><span class="bu">cd</span> <span class="st">"</span><span class="va">${output_dir_top}</span><span class="st">"</span></span>
+<span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-6"><a href="#cb4-6" aria-hidden="true" tabindex="-1"></a><span class="fu">find</span> <span class="pp">*</span>deduplicated.bismark.cov.gz <span class="dt">\</span></span>
+<span id="cb4-7"><a href="#cb4-7" aria-hidden="true" tabindex="-1"></a><span class="kw">|</span> <span class="fu">xargs</span> basename <span class="at">-s</span> _bismark_bt2_pe.deduplicated.bismark.cov.gz <span class="dt">\</span></span>
+<span id="cb4-8"><a href="#cb4-8" aria-hidden="true" tabindex="-1"></a><span class="kw">|</span> <span class="fu">xargs</span> <span class="at">-I{}</span> <span class="va">${bismark_dir}</span>/coverage2cytosine <span class="dt">\</span></span>
+<span id="cb4-9"><a href="#cb4-9" aria-hidden="true" tabindex="-1"></a>--genome_folder <span class="va">${genome_dir}</span> <span class="dt">\</span></span>
+<span id="cb4-10"><a href="#cb4-10" aria-hidden="true" tabindex="-1"></a>-o {} <span class="dt">\</span></span>
+<span id="cb4-11"><a href="#cb4-11" aria-hidden="true" tabindex="-1"></a>--merge_CpG <span class="dt">\</span></span>
+<span id="cb4-12"><a href="#cb4-12" aria-hidden="true" tabindex="-1"></a>--zero_based <span class="dt">\</span></span>
+<span id="cb4-13"><a href="#cb4-13" aria-hidden="true" tabindex="-1"></a>--gzip <span class="dt">\</span></span>
+<span id="cb4-14"><a href="#cb4-14" aria-hidden="true" tabindex="-1"></a>{}_bismark_bt2_pe.deduplicated.bismark.cov.gz</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</section>
+<section id="peek-at-output-files" class="level1">
+<h1>5 Peek at output files</h1>
+<p>Glance at output file formats, using CF01-CM01-Zygote files as example.</p>
+<div class="sourceCode" id="cb5"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Load bash variables into memory</span></span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a><span class="bu">source</span> .bashvars</span>
+<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a><span class="bu">cd</span> <span class="st">"</span><span class="va">${output_dir_top}</span><span class="st">"</span></span>
+<span id="cb5-5"><a href="#cb5-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-6"><a href="#cb5-6" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> file <span class="kw">in</span> <span class="pp">*</span>CF01-CM01-Zygote<span class="pp">*</span><span class="kw">;</span> <span class="cf">do</span></span>
+<span id="cb5-7"><a href="#cb5-7" aria-hidden="true" tabindex="-1"></a>  <span class="cf">if</span> <span class="kw">[[</span> <span class="ot">-f</span> <span class="st">"</span><span class="va">$file</span><span class="st">"</span> <span class="kw">]];</span> <span class="cf">then</span></span>
+<span id="cb5-8"><a href="#cb5-8" aria-hidden="true" tabindex="-1"></a>    <span class="cf">if</span> <span class="kw">[[</span> <span class="st">"</span><span class="va">$file</span><span class="st">"</span> <span class="ot">==</span> <span class="pp">*</span>.gz <span class="kw">]];</span> <span class="cf">then</span></span>
+<span id="cb5-9"><a href="#cb5-9" aria-hidden="true" tabindex="-1"></a>      <span class="bu">echo</span> <span class="st">"&lt;===== </span><span class="va">$file</span><span class="st"> ====&gt;"</span></span>
+<span id="cb5-10"><a href="#cb5-10" aria-hidden="true" tabindex="-1"></a>      <span class="bu">echo</span> <span class="st">""</span></span>
+<span id="cb5-11"><a href="#cb5-11" aria-hidden="true" tabindex="-1"></a>      <span class="fu">zcat</span> <span class="st">"</span><span class="va">$file</span><span class="st">"</span> <span class="kw">|</span> <span class="fu">head</span> <span class="kw">|</span> <span class="ex">column</span> <span class="at">-t</span> <span class="at">-s</span> <span class="st">$'</span><span class="dt">\t</span><span class="st">'</span></span>
+<span id="cb5-12"><a href="#cb5-12" aria-hidden="true" tabindex="-1"></a>      <span class="bu">echo</span> <span class="st">""</span></span>
+<span id="cb5-13"><a href="#cb5-13" aria-hidden="true" tabindex="-1"></a>      <span class="bu">echo</span> <span class="st">"</span><span class="va">${line}</span><span class="st">"</span></span>
+<span id="cb5-14"><a href="#cb5-14" aria-hidden="true" tabindex="-1"></a>      <span class="bu">echo</span> <span class="st">""</span></span>
+<span id="cb5-15"><a href="#cb5-15" aria-hidden="true" tabindex="-1"></a>    <span class="cf">else</span></span>
+<span id="cb5-16"><a href="#cb5-16" aria-hidden="true" tabindex="-1"></a>      <span class="bu">echo</span> <span class="st">"&lt;===== </span><span class="va">$file</span><span class="st"> ====&gt;"</span></span>
+<span id="cb5-17"><a href="#cb5-17" aria-hidden="true" tabindex="-1"></a>      <span class="bu">echo</span> <span class="st">""</span></span>
+<span id="cb5-18"><a href="#cb5-18" aria-hidden="true" tabindex="-1"></a>      <span class="bu">echo</span> <span class="st">"</span><span class="va">$file</span><span class="st">"</span></span>
+<span id="cb5-19"><a href="#cb5-19" aria-hidden="true" tabindex="-1"></a>      <span class="fu">head</span> <span class="st">"</span><span class="va">$file</span><span class="st">"</span> <span class="kw">|</span> <span class="ex">column</span> <span class="at">-t</span> <span class="at">-s</span> <span class="st">$'</span><span class="dt">\t</span><span class="st">'</span></span>
+<span id="cb5-20"><a href="#cb5-20" aria-hidden="true" tabindex="-1"></a>      <span class="bu">echo</span> <span class="st">""</span></span>
+<span id="cb5-21"><a href="#cb5-21" aria-hidden="true" tabindex="-1"></a>      <span class="bu">echo</span> <span class="st">"</span><span class="va">${line}</span><span class="st">"</span></span>
+<span id="cb5-22"><a href="#cb5-22" aria-hidden="true" tabindex="-1"></a>      <span class="bu">echo</span> <span class="st">""</span></span>
+<span id="cb5-23"><a href="#cb5-23" aria-hidden="true" tabindex="-1"></a>    <span class="cf">fi</span></span>
+<span id="cb5-24"><a href="#cb5-24" aria-hidden="true" tabindex="-1"></a>  <span class="cf">fi</span></span>
+<span id="cb5-25"><a href="#cb5-25" aria-hidden="true" tabindex="-1"></a><span class="cf">done</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<pre><code>&lt;===== CF01-CM01-Zygote_R1_001.fastp-trim.REPAIRED_bismark_bt2_pe.deduplicated.bedGraph.gz ====&gt;
+
+track type=bedGraph
+NC_007175.2          48   49   2.08333333333333
+NC_007175.2          49   50   0
+NC_007175.2          50   51   1.92307692307692
+NC_007175.2          51   52   0
+NC_007175.2          87   88   0
+NC_007175.2          88   89   0
+NC_007175.2          146  147  0
+NC_007175.2          147  148  1.75438596491228
+NC_007175.2          148  149  0
+
+--------------------------------------------------------
+
+&lt;===== CF01-CM01-Zygote_R1_001.fastp-trim.REPAIRED_bismark_bt2_pe.deduplicated.bedGraph.gz.bismark.zero.cov ====&gt;
+
+CF01-CM01-Zygote_R1_001.fastp-trim.REPAIRED_bismark_bt2_pe.deduplicated.bedGraph.gz.bismark.zero.cov
+NC_007175.2  48   49   2.08333333333333  1  47
+NC_007175.2  49   50   0                 0  2
+NC_007175.2  50   51   1.92307692307692  1  51
+NC_007175.2  51   52   0                 0  1
+NC_007175.2  87   88   0                 0  104
+NC_007175.2  88   89   0                 0  33
+NC_007175.2  146  147  0                 0  116
+NC_007175.2  147  148  1.75438596491228  1  56
+NC_007175.2  148  149  0                 0  1
+NC_007175.2  192  193  0                 0  51
+
+--------------------------------------------------------
+
+&lt;===== CF01-CM01-Zygote_R1_001.fastp-trim.REPAIRED_bismark_bt2_pe.deduplicated.bismark.cov.gz ====&gt;
+
+NC_007175.2  49   49   2.08333333333333  1  47
+NC_007175.2  50   50   0                 0  2
+NC_007175.2  51   51   1.92307692307692  1  51
+NC_007175.2  52   52   0                 0  1
+NC_007175.2  88   88   0                 0  104
+NC_007175.2  89   89   0                 0  33
+NC_007175.2  147  147  0                 0  116
+NC_007175.2  148  148  1.75438596491228  1  56
+NC_007175.2  149  149  0                 0  1
+NC_007175.2  193  193  0                 0  51
+
+--------------------------------------------------------
+
+&lt;===== CF01-CM01-Zygote_R1_001.fastp-trim.REPAIRED_bismark_bt2_pe.deduplicated.CpG_report.txt.gz ====&gt;
+
+NC_007175.2  48   +  1  47   CG  CGC
+NC_007175.2  49   -  0  2    CG  CGA
+NC_007175.2  50   +  1  51   CG  CGG
+NC_007175.2  51   -  0  1    CG  CGC
+NC_007175.2  87   +  0  104  CG  CGT
+NC_007175.2  88   -  0  33   CG  CGT
+NC_007175.2  146  +  0  116  CG  CGG
+NC_007175.2  147  -  1  56   CG  CGA
+NC_007175.2  192  +  0  51   CG  CGC
+NC_007175.2  193  -  0  39   CG  CGA
+
+--------------------------------------------------------
+
+&lt;===== CF01-CM01-Zygote_R1_001.fastp-trim.REPAIRED_bismark_bt2_pe.deduplicated.cytosine_context_summary.txt ====&gt;
+
+CF01-CM01-Zygote_R1_001.fastp-trim.REPAIRED_bismark_bt2_pe.deduplicated.cytosine_context_summary.txt
+upstream  C-context  full context  count methylated  count unmethylated  percent methylation
+A         CAA        ACAA          66                446                 12.89
+C         CAA        CCAA          66                479                 12.11
+G         CAA        GCAA          19                198                 8.76
+T         CAA        TCAA          59                526                 10.09
+A         CAC        ACAC          16                118                 11.94
+C         CAC        CCAC          7                 69                  9.21
+G         CAC        GCAC          9                 38                  19.15
+T         CAC        TCAC          15                120                 11.11
+A         CAG        ACAG          142               1235                10.31
+
+--------------------------------------------------------
+
+&lt;===== CF01-CM01-Zygote_R1_001.fastp-trim.REPAIRED_bismark_bt2_pe.deduplicated.M-bias.txt ====&gt;
+
+CF01-CM01-Zygote_R1_001.fastp-trim.REPAIRED_bismark_bt2_pe.deduplicated.M-bias.txt
+CpG context (R1)
+================
+position          count methylated  count unmethylated  % methylation  coverage
+1                 9383              45046               17.24          54429
+2                 9270              45432               16.95          54702
+3                 9184              45622               16.76          54806
+4                 9457              45750               17.13          55207
+5                 10083             48122               17.32          58205
+6                 10548             48157               17.97          58705
+7                 10617             48528               17.95          59145
+
+--------------------------------------------------------
+
+&lt;===== CF01-CM01-Zygote_R1_001.fastp-trim.REPAIRED_bismark_bt2_pe.deduplicated_splitting_report.txt ====&gt;
+
+CF01-CM01-Zygote_R1_001.fastp-trim.REPAIRED_bismark_bt2_pe.deduplicated_splitting_report.txt
+CF01-CM01-Zygote_R1_001.fastp-trim.REPAIRED_bismark_bt2_pe.deduplicated.bam
+Parameters used to extract methylation information:
+Bismark Extractor Version: v0.24.0
+Bismark result file: paired-end (SAM format)
+Output specified: comprehensive
+No overlapping methylation calls specified
+Methylation in CHG and CHH context will be merged into "non-CpG context" output
+
+--------------------------------------------------------
+
+&lt;===== CF01-CM01-Zygote_R1_001.fastp-trim.REPAIRED.CpG_report.merged_CpG_evidence.cov.gz ====&gt;
+
+NC_007175.2  48   50   2.000000  1  49
+NC_007175.2  50   52   1.886792  1  52
+NC_007175.2  87   89   0.000000  0  137
+NC_007175.2  146  148  0.578035  1  172
+NC_007175.2  192  194  0.000000  0  90
+NC_007175.2  245  247  2.898551  2  67
+NC_007175.2  256  258  4.166667  5  115
+NC_007175.2  263  265  0.000000  0  155
+NC_007175.2  265  267  1.142857  2  173
+NC_007175.2  331  333  0.546448  1  182
+
+--------------------------------------------------------
+
+&lt;===== CF01-CM01-Zygote_R1_001.fastp-trim.REPAIRED.CpG_report.txt.gz ====&gt;
+
+NC_007175.2  48   +  1  47   CG  CGC
+NC_007175.2  49   -  0  2    CG  CGA
+NC_007175.2  50   +  1  51   CG  CGG
+NC_007175.2  51   -  0  1    CG  CGC
+NC_007175.2  87   +  0  104  CG  CGT
+NC_007175.2  88   -  0  33   CG  CGT
+NC_007175.2  146  +  0  116  CG  CGG
+NC_007175.2  147  -  1  56   CG  CGA
+NC_007175.2  192  +  0  51   CG  CGC
+NC_007175.2  193  -  0  39   CG  CGA
+
+--------------------------------------------------------
+
+&lt;===== CF01-CM01-Zygote_R1_001.fastp-trim.REPAIRED.cytosine_context_summary.txt ====&gt;
+
+CF01-CM01-Zygote_R1_001.fastp-trim.REPAIRED.cytosine_context_summary.txt
+upstream  C-context  full context  count methylated  count unmethylated  percent methylation
+A         CAA        ACAA          66                446                 12.89
+C         CAA        CCAA          66                479                 12.11
+G         CAA        GCAA          19                198                 8.76
+T         CAA        TCAA          59                526                 10.09
+A         CAC        ACAC          16                118                 11.94
+C         CAC        CCAC          7                 69                  9.21
+G         CAC        GCAC          9                 38                  19.15
+T         CAC        TCAC          15                120                 11.11
+A         CAG        ACAG          142               1235                10.31
+
+--------------------------------------------------------
+
+&lt;===== CpG_context_CF01-CM01-Zygote_R1_001.fastp-trim.REPAIRED_bismark_bt2_pe.deduplicated.txt.gz ====&gt;
+
+Bismark methylation extractor version v0.24.0
+GWNJ-1012:512:GW210315000:4:1101:21884:1094_1:N:0:TTATAACC+TCGATATC  -  NC_035785.1  24407680  z
+GWNJ-1012:512:GW210315000:4:1101:11776:1219_1:N:0:TTATAACC+TCGATATC  -  NC_035780.1  32653438  z
+GWNJ-1012:512:GW210315000:4:1101:20699:1141_1:N:0:TTATAACC+TCGATATC  -  NC_035788.1  57095043  z
+GWNJ-1012:512:GW210315000:4:1101:20699:1141_1:N:0:TTATAACC+TCGATATC  -  NC_035788.1  57095087  z
+GWNJ-1012:512:GW210315000:4:1101:20699:1141_1:N:0:TTATAACC+TCGATATC  -  NC_035788.1  57095119  z
+GWNJ-1012:512:GW210315000:4:1101:20699:1141_1:N:0:TTATAACC+TCGATATC  -  NC_035788.1  57095138  z
+GWNJ-1012:512:GW210315000:4:1101:9372:1595_1:N:0:TTATAACC+TCGATATC   +  NC_035781.1  2018694   Z
+GWNJ-1012:512:GW210315000:4:1101:15402:1642_1:N:0:TTATAACC+TCGATATC  +  NC_035783.1  49860452  Z
+GWNJ-1012:512:GW210315000:4:1101:9372:1595_1:N:0:TTATAACC+TCGATATC   +  NC_035781.1  2018682   Z
+
+--------------------------------------------------------
+
+&lt;===== Non_CpG_context_CF01-CM01-Zygote_R1_001.fastp-trim.REPAIRED_bismark_bt2_pe.deduplicated.txt.gz ====&gt;
+
+Bismark methylation extractor version v0.24.0
+GWNJ-1012:512:GW210315000:4:1101:11776:1219_1:N:0:TTATAACC+TCGATATC  -  NC_035780.1  32653467  x
+GWNJ-1012:512:GW210315000:4:1101:11776:1219_1:N:0:TTATAACC+TCGATATC  -  NC_035780.1  32653466  h
+GWNJ-1012:512:GW210315000:4:1101:11776:1219_1:N:0:TTATAACC+TCGATATC  -  NC_035780.1  32653465  h
+GWNJ-1012:512:GW210315000:4:1101:11776:1219_1:N:0:TTATAACC+TCGATATC  -  NC_035780.1  32653464  h
+GWNJ-1012:512:GW210315000:4:1101:11776:1219_1:N:0:TTATAACC+TCGATATC  -  NC_035780.1  32653461  x
+GWNJ-1012:512:GW210315000:4:1101:11776:1219_1:N:0:TTATAACC+TCGATATC  -  NC_035780.1  32653455  h
+GWNJ-1012:512:GW210315000:4:1101:11776:1219_1:N:0:TTATAACC+TCGATATC  -  NC_035780.1  32653454  h
+GWNJ-1012:512:GW210315000:4:1101:11776:1219_1:N:0:TTATAACC+TCGATATC  -  NC_035780.1  32653450  h
+GWNJ-1012:512:GW210315000:4:1101:20699:1141_1:N:0:TTATAACC+TCGATATC  +  NC_035788.1  57095003  X
+
+--------------------------------------------------------</code></pre>
+</section>
+<section id="list-all-outputs" class="level1">
+<h1>6 List all outputs</h1>
+<div class="sourceCode" id="cb7"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Load bash variables into memory</span></span>
+<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a><span class="bu">source</span> .bashvars</span>
+<span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-4"><a href="#cb7-4" aria-hidden="true" tabindex="-1"></a><span class="bu">cd</span> <span class="st">"</span><span class="va">${output_dir_top}</span><span class="st">"</span></span>
+<span id="cb7-5"><a href="#cb7-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-6"><a href="#cb7-6" aria-hidden="true" tabindex="-1"></a><span class="fu">ls</span> <span class="at">-lh</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<pre><code>total 93G
+-rw-r--r-- 1 sam sam  21M Nov 26 11:17 CF01-CM01-Zygote_R1_001.fastp-trim.REPAIRED_bismark_bt2_pe.deduplicated.bedGraph.gz
+-rw-r--r-- 1 sam sam 124M Nov 26 11:17 CF01-CM01-Zygote_R1_001.fastp-trim.REPAIRED_bismark_bt2_pe.deduplicated.bedGraph.gz.bismark.zero.cov
+-rw-r--r-- 1 sam sam  18M Nov 26 11:17 CF01-CM01-Zygote_R1_001.fastp-trim.REPAIRED_bismark_bt2_pe.deduplicated.bismark.cov.gz
+-rw-r--r-- 1 sam sam 107M Nov 26 11:27 CF01-CM01-Zygote_R1_001.fastp-trim.REPAIRED_bismark_bt2_pe.deduplicated.CpG_report.txt.gz
+-rw-r--r-- 1 sam sam 1.7K Dec  4 12:17 CF01-CM01-Zygote_R1_001.fastp-trim.REPAIRED_bismark_bt2_pe.deduplicated.cytosine_context_summary.txt
+-rw-r--r-- 1 sam sam  20K Dec  4 12:17 CF01-CM01-Zygote_R1_001.fastp-trim.REPAIRED_bismark_bt2_pe.deduplicated.M-bias.txt
+-rw-r--r-- 1 sam sam  926 Dec  4 12:17 CF01-CM01-Zygote_R1_001.fastp-trim.REPAIRED_bismark_bt2_pe.deduplicated_splitting_report.txt
+-rw-r--r-- 1 sam sam  21M Dec  4 12:17 CF01-CM01-Zygote_R1_001.fastp-trim.REPAIRED.CpG_report.merged_CpG_evidence.cov.gz
+-rw-r--r-- 1 sam sam 107M Nov 27 07:59 CF01-CM01-Zygote_R1_001.fastp-trim.REPAIRED.CpG_report.txt.gz
+-rw-r--r-- 1 sam sam 1.7K Dec  4 12:17 CF01-CM01-Zygote_R1_001.fastp-trim.REPAIRED.cytosine_context_summary.txt
+-rw-r--r-- 1 sam sam  90M Nov 26 11:43 CF01-CM02-Larvae_R1_001.fastp-trim_bismark_bt2_pe.deduplicated.bedGraph.gz
+-rw-r--r-- 1 sam sam 551M Nov 26 11:43 CF01-CM02-Larvae_R1_001.fastp-trim_bismark_bt2_pe.deduplicated.bedGraph.gz.bismark.zero.cov
+-rw-r--r-- 1 sam sam  89M Nov 26 11:43 CF01-CM02-Larvae_R1_001.fastp-trim_bismark_bt2_pe.deduplicated.bismark.cov.gz
+-rw-r--r-- 1 sam sam 126M Nov 26 11:54 CF01-CM02-Larvae_R1_001.fastp-trim_bismark_bt2_pe.deduplicated.CpG_report.txt.gz
+-rw-r--r-- 1 sam sam 1.8K Dec  4 12:17 CF01-CM02-Larvae_R1_001.fastp-trim_bismark_bt2_pe.deduplicated.cytosine_context_summary.txt
+-rw-r--r-- 1 sam sam  23K Dec  4 12:17 CF01-CM02-Larvae_R1_001.fastp-trim_bismark_bt2_pe.deduplicated.M-bias.txt
+-rw-r--r-- 1 sam sam  928 Dec  4 12:17 CF01-CM02-Larvae_R1_001.fastp-trim_bismark_bt2_pe.deduplicated_splitting_report.txt
+-rw-r--r-- 1 sam sam  72M Dec  4 12:17 CF01-CM02-Larvae_R1_001.fastp-trim.CpG_report.merged_CpG_evidence.cov.gz
+-rw-r--r-- 1 sam sam 126M Nov 27 08:11 CF01-CM02-Larvae_R1_001.fastp-trim.CpG_report.txt.gz
+-rw-r--r-- 1 sam sam 1.8K Dec  4 12:17 CF01-CM02-Larvae_R1_001.fastp-trim.cytosine_context_summary.txt
+-rw-r--r-- 1 sam sam  44M Nov 26 12:00 CF02-CM02-Zygote_R1_001.fastp-trim_bismark_bt2_pe.deduplicated.bedGraph.gz
+-rw-r--r-- 1 sam sam 263M Nov 26 12:00 CF02-CM02-Zygote_R1_001.fastp-trim_bismark_bt2_pe.deduplicated.bedGraph.gz.bismark.zero.cov
+-rw-r--r-- 1 sam sam  41M Nov 26 12:00 CF02-CM02-Zygote_R1_001.fastp-trim_bismark_bt2_pe.deduplicated.bismark.cov.gz
+-rw-r--r-- 1 sam sam 113M Nov 26 12:12 CF02-CM02-Zygote_R1_001.fastp-trim_bismark_bt2_pe.deduplicated.CpG_report.txt.gz
+-rw-r--r-- 1 sam sam 1.8K Dec  4 12:17 CF02-CM02-Zygote_R1_001.fastp-trim_bismark_bt2_pe.deduplicated.cytosine_context_summary.txt
+-rw-r--r-- 1 sam sam  21K Dec  4 12:17 CF02-CM02-Zygote_R1_001.fastp-trim_bismark_bt2_pe.deduplicated.M-bias.txt
+-rw-r--r-- 1 sam sam  926 Dec  4 12:17 CF02-CM02-Zygote_R1_001.fastp-trim_bismark_bt2_pe.deduplicated_splitting_report.txt
+-rw-r--r-- 1 sam sam  41M Dec  4 12:17 CF02-CM02-Zygote_R1_001.fastp-trim.CpG_report.merged_CpG_evidence.cov.gz
+-rw-r--r-- 1 sam sam 113M Nov 27 08:22 CF02-CM02-Zygote_R1_001.fastp-trim.CpG_report.txt.gz
+-rw-r--r-- 1 sam sam 1.8K Dec  4 12:17 CF02-CM02-Zygote_R1_001.fastp-trim.cytosine_context_summary.txt
+-rw-r--r-- 1 sam sam  65M Nov 26 12:20 CF03-CM03-Zygote_R1_001.fastp-trim_bismark_bt2_pe.deduplicated.bedGraph.gz
+-rw-r--r-- 1 sam sam 395M Nov 26 12:20 CF03-CM03-Zygote_R1_001.fastp-trim_bismark_bt2_pe.deduplicated.bedGraph.gz.bismark.zero.cov
+-rw-r--r-- 1 sam sam  61M Nov 26 12:20 CF03-CM03-Zygote_R1_001.fastp-trim_bismark_bt2_pe.deduplicated.bismark.cov.gz
+-rw-r--r-- 1 sam sam 118M Nov 26 12:32 CF03-CM03-Zygote_R1_001.fastp-trim_bismark_bt2_pe.deduplicated.CpG_report.txt.gz
+-rw-r--r-- 1 sam sam 1.8K Dec  4 12:17 CF03-CM03-Zygote_R1_001.fastp-trim_bismark_bt2_pe.deduplicated.cytosine_context_summary.txt
+-rw-r--r-- 1 sam sam  22K Dec  4 12:17 CF03-CM03-Zygote_R1_001.fastp-trim_bismark_bt2_pe.deduplicated.M-bias.txt
+-rw-r--r-- 1 sam sam  925 Dec  4 12:17 CF03-CM03-Zygote_R1_001.fastp-trim_bismark_bt2_pe.deduplicated_splitting_report.txt
+-rw-r--r-- 1 sam sam  57M Dec  4 12:17 CF03-CM03-Zygote_R1_001.fastp-trim.CpG_report.merged_CpG_evidence.cov.gz
+-rw-r--r-- 1 sam sam 118M Nov 27 08:33 CF03-CM03-Zygote_R1_001.fastp-trim.CpG_report.txt.gz
+-rw-r--r-- 1 sam sam 1.8K Dec  4 12:17 CF03-CM03-Zygote_R1_001.fastp-trim.cytosine_context_summary.txt
+-rw-r--r-- 1 sam sam  85M Nov 26 12:45 CF03-CM04-Larvae_R1_001.fastp-trim_bismark_bt2_pe.deduplicated.bedGraph.gz
+-rw-r--r-- 1 sam sam 528M Nov 26 12:45 CF03-CM04-Larvae_R1_001.fastp-trim_bismark_bt2_pe.deduplicated.bedGraph.gz.bismark.zero.cov
+-rw-r--r-- 1 sam sam  83M Nov 26 12:45 CF03-CM04-Larvae_R1_001.fastp-trim_bismark_bt2_pe.deduplicated.bismark.cov.gz
+-rw-r--r-- 1 sam sam 123M Nov 26 12:57 CF03-CM04-Larvae_R1_001.fastp-trim_bismark_bt2_pe.deduplicated.CpG_report.txt.gz
+-rw-r--r-- 1 sam sam 1.8K Dec  4 12:17 CF03-CM04-Larvae_R1_001.fastp-trim_bismark_bt2_pe.deduplicated.cytosine_context_summary.txt
+-rw-r--r-- 1 sam sam  23K Dec  4 12:17 CF03-CM04-Larvae_R1_001.fastp-trim_bismark_bt2_pe.deduplicated.M-bias.txt
+-rw-r--r-- 1 sam sam  927 Dec  4 12:17 CF03-CM04-Larvae_R1_001.fastp-trim_bismark_bt2_pe.deduplicated_splitting_report.txt
+-rw-r--r-- 1 sam sam  69M Dec  4 12:17 CF03-CM04-Larvae_R1_001.fastp-trim.CpG_report.merged_CpG_evidence.cov.gz
+-rw-r--r-- 1 sam sam 123M Nov 27 08:45 CF03-CM04-Larvae_R1_001.fastp-trim.CpG_report.txt.gz
+-rw-r--r-- 1 sam sam 1.8K Dec  4 12:17 CF03-CM04-Larvae_R1_001.fastp-trim.cytosine_context_summary.txt
+-rw-r--r-- 1 sam sam  90M Nov 26 13:12 CF03-CM05-Larvae_R1_001.fastp-trim_bismark_bt2_pe.deduplicated.bedGraph.gz
+-rw-r--r-- 1 sam sam 551M Nov 26 13:12 CF03-CM05-Larvae_R1_001.fastp-trim_bismark_bt2_pe.deduplicated.bedGraph.gz.bismark.zero.cov
+-rw-r--r-- 1 sam sam  88M Nov 26 13:12 CF03-CM05-Larvae_R1_001.fastp-trim_bismark_bt2_pe.deduplicated.bismark.cov.gz
+-rw-r--r-- 1 sam sam 125M Nov 26 13:23 CF03-CM05-Larvae_R1_001.fastp-trim_bismark_bt2_pe.deduplicated.CpG_report.txt.gz
+-rw-r--r-- 1 sam sam 1.8K Dec  4 12:17 CF03-CM05-Larvae_R1_001.fastp-trim_bismark_bt2_pe.deduplicated.cytosine_context_summary.txt
+-rw-r--r-- 1 sam sam  23K Dec  4 12:17 CF03-CM05-Larvae_R1_001.fastp-trim_bismark_bt2_pe.deduplicated.M-bias.txt
+-rw-r--r-- 1 sam sam  928 Dec  4 12:17 CF03-CM05-Larvae_R1_001.fastp-trim_bismark_bt2_pe.deduplicated_splitting_report.txt
+-rw-r--r-- 1 sam sam  71M Dec  4 12:17 CF03-CM05-Larvae_R1_001.fastp-trim.CpG_report.merged_CpG_evidence.cov.gz
+-rw-r--r-- 1 sam sam 125M Nov 27 08:57 CF03-CM05-Larvae_R1_001.fastp-trim.CpG_report.txt.gz
+-rw-r--r-- 1 sam sam 1.8K Dec  4 12:17 CF03-CM05-Larvae_R1_001.fastp-trim.cytosine_context_summary.txt
+-rw-r--r-- 1 sam sam  74M Nov 26 13:33 CF04-CM04-Zygote_R1_001.fastp-trim_bismark_bt2_pe.deduplicated.bedGraph.gz
+-rw-r--r-- 1 sam sam 458M Nov 26 13:33 CF04-CM04-Zygote_R1_001.fastp-trim_bismark_bt2_pe.deduplicated.bedGraph.gz.bismark.zero.cov
+-rw-r--r-- 1 sam sam  71M Nov 26 13:33 CF04-CM04-Zygote_R1_001.fastp-trim_bismark_bt2_pe.deduplicated.bismark.cov.gz
+-rw-r--r-- 1 sam sam 120M Nov 26 13:44 CF04-CM04-Zygote_R1_001.fastp-trim_bismark_bt2_pe.deduplicated.CpG_report.txt.gz
+-rw-r--r-- 1 sam sam 1.8K Dec  4 12:17 CF04-CM04-Zygote_R1_001.fastp-trim_bismark_bt2_pe.deduplicated.cytosine_context_summary.txt
+-rw-r--r-- 1 sam sam  22K Dec  4 12:17 CF04-CM04-Zygote_R1_001.fastp-trim_bismark_bt2_pe.deduplicated.M-bias.txt
+-rw-r--r-- 1 sam sam  925 Dec  4 12:17 CF04-CM04-Zygote_R1_001.fastp-trim_bismark_bt2_pe.deduplicated_splitting_report.txt
+-rw-r--r-- 1 sam sam  62M Dec  4 12:17 CF04-CM04-Zygote_R1_001.fastp-trim.CpG_report.merged_CpG_evidence.cov.gz
+-rw-r--r-- 1 sam sam 120M Nov 27 09:09 CF04-CM04-Zygote_R1_001.fastp-trim.CpG_report.txt.gz
+-rw-r--r-- 1 sam sam 1.8K Dec  4 12:17 CF04-CM04-Zygote_R1_001.fastp-trim.cytosine_context_summary.txt
+-rw-r--r-- 1 sam sam  97M Nov 26 14:05 CF05-CM02-Larvae_R1_001.fastp-trim_bismark_bt2_pe.deduplicated.bedGraph.gz
+-rw-r--r-- 1 sam sam 599M Nov 26 14:05 CF05-CM02-Larvae_R1_001.fastp-trim_bismark_bt2_pe.deduplicated.bedGraph.gz.bismark.zero.cov
+-rw-r--r-- 1 sam sam  98M Nov 26 14:05 CF05-CM02-Larvae_R1_001.fastp-trim_bismark_bt2_pe.deduplicated.bismark.cov.gz
+-rw-r--r-- 1 sam sam 128M Nov 26 14:16 CF05-CM02-Larvae_R1_001.fastp-trim_bismark_bt2_pe.deduplicated.CpG_report.txt.gz
+-rw-r--r-- 1 sam sam 1.8K Dec  4 12:17 CF05-CM02-Larvae_R1_001.fastp-trim_bismark_bt2_pe.deduplicated.cytosine_context_summary.txt
+-rw-r--r-- 1 sam sam  23K Dec  4 12:17 CF05-CM02-Larvae_R1_001.fastp-trim_bismark_bt2_pe.deduplicated.M-bias.txt
+-rw-r--r-- 1 sam sam  928 Dec  4 12:17 CF05-CM02-Larvae_R1_001.fastp-trim_bismark_bt2_pe.deduplicated_splitting_report.txt
+-rw-r--r-- 1 sam sam  78M Dec  4 12:17 CF05-CM02-Larvae_R1_001.fastp-trim.CpG_report.merged_CpG_evidence.cov.gz
+-rw-r--r-- 1 sam sam 128M Nov 27 09:20 CF05-CM02-Larvae_R1_001.fastp-trim.CpG_report.txt.gz
+-rw-r--r-- 1 sam sam 1.8K Dec  4 12:17 CF05-CM02-Larvae_R1_001.fastp-trim.cytosine_context_summary.txt
+-rw-r--r-- 1 sam sam  82M Nov 26 14:28 CF05-CM05-Zygote_R1_001.fastp-trim_bismark_bt2_pe.deduplicated.bedGraph.gz
+-rw-r--r-- 1 sam sam 506M Nov 26 14:28 CF05-CM05-Zygote_R1_001.fastp-trim_bismark_bt2_pe.deduplicated.bedGraph.gz.bismark.zero.cov
+-rw-r--r-- 1 sam sam  80M Nov 26 14:28 CF05-CM05-Zygote_R1_001.fastp-trim_bismark_bt2_pe.deduplicated.bismark.cov.gz
+-rw-r--r-- 1 sam sam 122M Nov 26 14:39 CF05-CM05-Zygote_R1_001.fastp-trim_bismark_bt2_pe.deduplicated.CpG_report.txt.gz
+-rw-r--r-- 1 sam sam 1.8K Dec  4 12:17 CF05-CM05-Zygote_R1_001.fastp-trim_bismark_bt2_pe.deduplicated.cytosine_context_summary.txt
+-rw-r--r-- 1 sam sam  23K Dec  4 12:17 CF05-CM05-Zygote_R1_001.fastp-trim_bismark_bt2_pe.deduplicated.M-bias.txt
+-rw-r--r-- 1 sam sam  927 Dec  4 12:17 CF05-CM05-Zygote_R1_001.fastp-trim_bismark_bt2_pe.deduplicated_splitting_report.txt
+-rw-r--r-- 1 sam sam  67M Dec  4 12:17 CF05-CM05-Zygote_R1_001.fastp-trim.CpG_report.merged_CpG_evidence.cov.gz
+-rw-r--r-- 1 sam sam 122M Nov 27 09:32 CF05-CM05-Zygote_R1_001.fastp-trim.CpG_report.txt.gz
+-rw-r--r-- 1 sam sam 1.8K Dec  4 12:17 CF05-CM05-Zygote_R1_001.fastp-trim.cytosine_context_summary.txt
+-rw-r--r-- 1 sam sam  74M Nov 26 14:50 CF06-CM01-Zygote_R1_001.fastp-trim_bismark_bt2_pe.deduplicated.bedGraph.gz
+-rw-r--r-- 1 sam sam 452M Nov 26 14:50 CF06-CM01-Zygote_R1_001.fastp-trim_bismark_bt2_pe.deduplicated.bedGraph.gz.bismark.zero.cov
+-rw-r--r-- 1 sam sam  70M Nov 26 14:50 CF06-CM01-Zygote_R1_001.fastp-trim_bismark_bt2_pe.deduplicated.bismark.cov.gz
+-rw-r--r-- 1 sam sam 120M Nov 26 15:01 CF06-CM01-Zygote_R1_001.fastp-trim_bismark_bt2_pe.deduplicated.CpG_report.txt.gz
+-rw-r--r-- 1 sam sam 1.8K Dec  4 12:17 CF06-CM01-Zygote_R1_001.fastp-trim_bismark_bt2_pe.deduplicated.cytosine_context_summary.txt
+-rw-r--r-- 1 sam sam  22K Dec  4 12:17 CF06-CM01-Zygote_R1_001.fastp-trim_bismark_bt2_pe.deduplicated.M-bias.txt
+-rw-r--r-- 1 sam sam  926 Dec  4 12:17 CF06-CM01-Zygote_R1_001.fastp-trim_bismark_bt2_pe.deduplicated_splitting_report.txt
+-rw-r--r-- 1 sam sam  63M Dec  4 12:17 CF06-CM01-Zygote_R1_001.fastp-trim.CpG_report.merged_CpG_evidence.cov.gz
+-rw-r--r-- 1 sam sam 120M Nov 27 09:44 CF06-CM01-Zygote_R1_001.fastp-trim.CpG_report.txt.gz
+-rw-r--r-- 1 sam sam 1.8K Dec  4 12:17 CF06-CM01-Zygote_R1_001.fastp-trim.cytosine_context_summary.txt
+-rw-r--r-- 1 sam sam  73M Nov 26 15:09 CF06-CM02-Larvae_R1_001.fastp-trim_bismark_bt2_pe.deduplicated.bedGraph.gz
+-rw-r--r-- 1 sam sam 444M Nov 26 15:09 CF06-CM02-Larvae_R1_001.fastp-trim_bismark_bt2_pe.deduplicated.bedGraph.gz.bismark.zero.cov
+-rw-r--r-- 1 sam sam  68M Nov 26 15:09 CF06-CM02-Larvae_R1_001.fastp-trim_bismark_bt2_pe.deduplicated.bismark.cov.gz
+-rw-r--r-- 1 sam sam 119M Nov 26 15:20 CF06-CM02-Larvae_R1_001.fastp-trim_bismark_bt2_pe.deduplicated.CpG_report.txt.gz
+-rw-r--r-- 1 sam sam 1.8K Dec  4 12:17 CF06-CM02-Larvae_R1_001.fastp-trim_bismark_bt2_pe.deduplicated.cytosine_context_summary.txt
+-rw-r--r-- 1 sam sam  23K Dec  4 12:17 CF06-CM02-Larvae_R1_001.fastp-trim_bismark_bt2_pe.deduplicated.M-bias.txt
+-rw-r--r-- 1 sam sam  926 Dec  4 12:17 CF06-CM02-Larvae_R1_001.fastp-trim_bismark_bt2_pe.deduplicated_splitting_report.txt
+-rw-r--r-- 1 sam sam  62M Dec  4 12:17 CF06-CM02-Larvae_R1_001.fastp-trim.CpG_report.merged_CpG_evidence.cov.gz
+-rw-r--r-- 1 sam sam 119M Nov 27 09:56 CF06-CM02-Larvae_R1_001.fastp-trim.CpG_report.txt.gz
+-rw-r--r-- 1 sam sam 1.8K Dec  4 12:17 CF06-CM02-Larvae_R1_001.fastp-trim.cytosine_context_summary.txt
+-rw-r--r-- 1 sam sam  62M Nov 26 15:27 CF07-CM02-Zygote_R1_001.fastp-trim_bismark_bt2_pe.deduplicated.bedGraph.gz
+-rw-r--r-- 1 sam sam 383M Nov 26 15:27 CF07-CM02-Zygote_R1_001.fastp-trim_bismark_bt2_pe.deduplicated.bedGraph.gz.bismark.zero.cov
+-rw-r--r-- 1 sam sam  57M Nov 26 15:27 CF07-CM02-Zygote_R1_001.fastp-trim_bismark_bt2_pe.deduplicated.bismark.cov.gz
+-rw-r--r-- 1 sam sam 116M Nov 26 15:38 CF07-CM02-Zygote_R1_001.fastp-trim_bismark_bt2_pe.deduplicated.CpG_report.txt.gz
+-rw-r--r-- 1 sam sam 1.8K Dec  4 12:17 CF07-CM02-Zygote_R1_001.fastp-trim_bismark_bt2_pe.deduplicated.cytosine_context_summary.txt
+-rw-r--r-- 1 sam sam  22K Dec  4 12:17 CF07-CM02-Zygote_R1_001.fastp-trim_bismark_bt2_pe.deduplicated.M-bias.txt
+-rw-r--r-- 1 sam sam  924 Dec  4 12:17 CF07-CM02-Zygote_R1_001.fastp-trim_bismark_bt2_pe.deduplicated_splitting_report.txt
+-rw-r--r-- 1 sam sam  54M Dec  4 12:17 CF07-CM02-Zygote_R1_001.fastp-trim.CpG_report.merged_CpG_evidence.cov.gz
+-rw-r--r-- 1 sam sam 116M Nov 27 10:07 CF07-CM02-Zygote_R1_001.fastp-trim.CpG_report.txt.gz
+-rw-r--r-- 1 sam sam 1.8K Dec  4 12:17 CF07-CM02-Zygote_R1_001.fastp-trim.cytosine_context_summary.txt
+-rw-r--r-- 1 sam sam  48M Nov 26 15:44 CF08-CM03-Zygote_R1_001.fastp-trim_bismark_bt2_pe.deduplicated.bedGraph.gz
+-rw-r--r-- 1 sam sam 287M Nov 26 15:44 CF08-CM03-Zygote_R1_001.fastp-trim_bismark_bt2_pe.deduplicated.bedGraph.gz.bismark.zero.cov
+-rw-r--r-- 1 sam sam  44M Nov 26 15:44 CF08-CM03-Zygote_R1_001.fastp-trim_bismark_bt2_pe.deduplicated.bismark.cov.gz
+-rw-r--r-- 1 sam sam 114M Nov 26 15:55 CF08-CM03-Zygote_R1_001.fastp-trim_bismark_bt2_pe.deduplicated.CpG_report.txt.gz
+-rw-r--r-- 1 sam sam 1.8K Dec  4 12:17 CF08-CM03-Zygote_R1_001.fastp-trim_bismark_bt2_pe.deduplicated.cytosine_context_summary.txt
+-rw-r--r-- 1 sam sam  22K Dec  4 12:17 CF08-CM03-Zygote_R1_001.fastp-trim_bismark_bt2_pe.deduplicated.M-bias.txt
+-rw-r--r-- 1 sam sam  925 Dec  4 12:17 CF08-CM03-Zygote_R1_001.fastp-trim_bismark_bt2_pe.deduplicated_splitting_report.txt
+-rw-r--r-- 1 sam sam  44M Dec  4 12:17 CF08-CM03-Zygote_R1_001.fastp-trim.CpG_report.merged_CpG_evidence.cov.gz
+-rw-r--r-- 1 sam sam 114M Nov 27 10:18 CF08-CM03-Zygote_R1_001.fastp-trim.CpG_report.txt.gz
+-rw-r--r-- 1 sam sam 1.8K Dec  4 12:17 CF08-CM03-Zygote_R1_001.fastp-trim.cytosine_context_summary.txt
+-rw-r--r-- 1 sam sam 3.8M Nov 26 15:55 CF08-CM04-Larvae_R1_001.fastp-trim.REPAIRED_bismark_bt2_pe.deduplicated.bedGraph.gz
+-rw-r--r-- 1 sam sam  22M Nov 26 15:55 CF08-CM04-Larvae_R1_001.fastp-trim.REPAIRED_bismark_bt2_pe.deduplicated.bedGraph.gz.bismark.zero.cov
+-rw-r--r-- 1 sam sam 3.0M Nov 26 15:55 CF08-CM04-Larvae_R1_001.fastp-trim.REPAIRED_bismark_bt2_pe.deduplicated.bismark.cov.gz
+-rw-r--r-- 1 sam sam 103M Nov 26 16:05 CF08-CM04-Larvae_R1_001.fastp-trim.REPAIRED_bismark_bt2_pe.deduplicated.CpG_report.txt.gz
+-rw-r--r-- 1 sam sam 1.6K Dec  4 12:17 CF08-CM04-Larvae_R1_001.fastp-trim.REPAIRED_bismark_bt2_pe.deduplicated.cytosine_context_summary.txt
+-rw-r--r-- 1 sam sam  19K Dec  4 12:17 CF08-CM04-Larvae_R1_001.fastp-trim.REPAIRED_bismark_bt2_pe.deduplicated.M-bias.txt
+-rw-r--r-- 1 sam sam  919 Dec  4 12:17 CF08-CM04-Larvae_R1_001.fastp-trim.REPAIRED_bismark_bt2_pe.deduplicated_splitting_report.txt
+-rw-r--r-- 1 sam sam 3.8M Dec  4 12:17 CF08-CM04-Larvae_R1_001.fastp-trim.REPAIRED.CpG_report.merged_CpG_evidence.cov.gz
+-rw-r--r-- 1 sam sam 103M Nov 27 10:28 CF08-CM04-Larvae_R1_001.fastp-trim.REPAIRED.CpG_report.txt.gz
+-rw-r--r-- 1 sam sam 1.6K Dec  4 12:17 CF08-CM04-Larvae_R1_001.fastp-trim.REPAIRED.cytosine_context_summary.txt
+-rw-r--r-- 1 sam sam 3.7M Nov 26 16:05 CF08-CM05-Larvae_R1_001.fastp-trim_bismark_bt2_pe.deduplicated.bedGraph.gz
+-rw-r--r-- 1 sam sam  22M Nov 26 16:05 CF08-CM05-Larvae_R1_001.fastp-trim_bismark_bt2_pe.deduplicated.bedGraph.gz.bismark.zero.cov
+-rw-r--r-- 1 sam sam 3.0M Nov 26 16:05 CF08-CM05-Larvae_R1_001.fastp-trim_bismark_bt2_pe.deduplicated.bismark.cov.gz
+-rw-r--r-- 1 sam sam 103M Nov 26 16:15 CF08-CM05-Larvae_R1_001.fastp-trim_bismark_bt2_pe.deduplicated.CpG_report.txt.gz
+-rw-r--r-- 1 sam sam 1.6K Dec  4 12:17 CF08-CM05-Larvae_R1_001.fastp-trim_bismark_bt2_pe.deduplicated.cytosine_context_summary.txt
+-rw-r--r-- 1 sam sam  19K Dec  4 12:17 CF08-CM05-Larvae_R1_001.fastp-trim_bismark_bt2_pe.deduplicated.M-bias.txt
+-rw-r--r-- 1 sam sam  910 Dec  4 12:17 CF08-CM05-Larvae_R1_001.fastp-trim_bismark_bt2_pe.deduplicated_splitting_report.txt
+-rw-r--r-- 1 sam sam 3.8M Dec  4 12:17 CF08-CM05-Larvae_R1_001.fastp-trim.CpG_report.merged_CpG_evidence.cov.gz
+-rw-r--r-- 1 sam sam 103M Nov 27 10:38 CF08-CM05-Larvae_R1_001.fastp-trim.CpG_report.txt.gz
+-rw-r--r-- 1 sam sam 1.6K Dec  4 12:17 CF08-CM05-Larvae_R1_001.fastp-trim.cytosine_context_summary.txt
+-rw-r--r-- 1 sam sam  43K Dec  4 12:17 checksums.md5
+-rw-r--r-- 1 sam sam  45M Nov 26 11:16 CpG_context_CF01-CM01-Zygote_R1_001.fastp-trim.REPAIRED_bismark_bt2_pe.deduplicated.txt.gz
+-rw-r--r-- 1 sam sam 725M Nov 26 11:37 CpG_context_CF01-CM02-Larvae_R1_001.fastp-trim_bismark_bt2_pe.deduplicated.txt.gz
+-rw-r--r-- 1 sam sam 191M Nov 26 11:59 CpG_context_CF02-CM02-Zygote_R1_001.fastp-trim_bismark_bt2_pe.deduplicated.txt.gz
+-rw-r--r-- 1 sam sam 323M Nov 26 12:18 CpG_context_CF03-CM03-Zygote_R1_001.fastp-trim_bismark_bt2_pe.deduplicated.txt.gz
+-rw-r--r-- 1 sam sam 557M Nov 26 12:41 CpG_context_CF03-CM04-Larvae_R1_001.fastp-trim_bismark_bt2_pe.deduplicated.txt.gz
+-rw-r--r-- 1 sam sam 664M Nov 26 13:07 CpG_context_CF03-CM05-Larvae_R1_001.fastp-trim_bismark_bt2_pe.deduplicated.txt.gz
+-rw-r--r-- 1 sam sam 387M Nov 26 13:30 CpG_context_CF04-CM04-Zygote_R1_001.fastp-trim_bismark_bt2_pe.deduplicated.txt.gz
+-rw-r--r-- 1 sam sam 943M Nov 26 13:58 CpG_context_CF05-CM02-Larvae_R1_001.fastp-trim_bismark_bt2_pe.deduplicated.txt.gz
+-rw-r--r-- 1 sam sam 496M Nov 26 14:25 CpG_context_CF05-CM05-Zygote_R1_001.fastp-trim_bismark_bt2_pe.deduplicated.txt.gz
+-rw-r--r-- 1 sam sam 390M Nov 26 14:47 CpG_context_CF06-CM01-Zygote_R1_001.fastp-trim_bismark_bt2_pe.deduplicated.txt.gz
+-rw-r--r-- 1 sam sam 344M Nov 26 15:07 CpG_context_CF06-CM02-Larvae_R1_001.fastp-trim_bismark_bt2_pe.deduplicated.txt.gz
+-rw-r--r-- 1 sam sam 240M Nov 26 15:25 CpG_context_CF07-CM02-Zygote_R1_001.fastp-trim_bismark_bt2_pe.deduplicated.txt.gz
+-rw-r--r-- 1 sam sam 215M Nov 26 15:42 CpG_context_CF08-CM03-Zygote_R1_001.fastp-trim_bismark_bt2_pe.deduplicated.txt.gz
+-rw-r--r-- 1 sam sam 5.7M Nov 26 15:55 CpG_context_CF08-CM04-Larvae_R1_001.fastp-trim.REPAIRED_bismark_bt2_pe.deduplicated.txt.gz
+-rw-r--r-- 1 sam sam 5.8M Nov 26 16:05 CpG_context_CF08-CM05-Larvae_R1_001.fastp-trim_bismark_bt2_pe.deduplicated.txt.gz
+-rw-r--r-- 1 sam sam 368M Nov 26 16:21 CpG_context_EF01-EM01-Zygote_R1_001.fastp-trim_bismark_bt2_pe.deduplicated.txt.gz
+-rw-r--r-- 1 sam sam 427M Nov 26 16:42 CpG_context_EF02-EM02-Zygote_R1_001.fastp-trim_bismark_bt2_pe.deduplicated.txt.gz
+-rw-r--r-- 1 sam sam 211M Nov 26 17:01 CpG_context_EF03-EM03-Zygote_R1_001.fastp-trim.REPAIRED_bismark_bt2_pe.deduplicated.txt.gz
+-rw-r--r-- 1 sam sam 607M Nov 26 17:23 CpG_context_EF03-EM04-Larvae_R1_001.fastp-trim_bismark_bt2_pe.deduplicated.txt.gz
+-rw-r--r-- 1 sam sam 625M Nov 26 17:49 CpG_context_EF03-EM05-Larvae_R1_001.fastp-trim_bismark_bt2_pe.deduplicated.txt.gz
+-rw-r--r-- 1 sam sam 123M Nov 26 18:08 CpG_context_EF04-EM04-Zygote_R1_001.fastp-trim_bismark_bt2_pe.deduplicated.txt.gz
+-rw-r--r-- 1 sam sam 857M Nov 26 18:32 CpG_context_EF04-EM05-Larvae_R1_001.fastp-trim_bismark_bt2_pe.deduplicated.txt.gz
+-rw-r--r-- 1 sam sam 514M Nov 26 18:58 CpG_context_EF05-EM01-Larvae_R1_001.fastp-trim_bismark_bt2_pe.deduplicated.txt.gz
+-rw-r--r-- 1 sam sam  68M Nov 26 19:14 CpG_context_EF05-EM05-Zygote_R1_001.fastp-trim_bismark_bt2_pe.deduplicated.txt.gz
+-rw-r--r-- 1 sam sam 838M Nov 26 19:39 CpG_context_EF05-EM06-Larvae_R1_001.fastp-trim_bismark_bt2_pe.deduplicated.txt.gz
+-rw-r--r-- 1 sam sam 832M Nov 26 20:10 CpG_context_EF06-EM01-Larvae_R1_001.fastp-trim_bismark_bt2_pe.deduplicated.txt.gz
+-rw-r--r-- 1 sam sam 638M Nov 26 20:38 CpG_context_EF06-EM02-Larvae_R1_001.fastp-trim_bismark_bt2_pe.deduplicated.txt.gz
+-rw-r--r-- 1 sam sam 128M Nov 26 20:57 CpG_context_EF06-EM06-Larvae_R1_001.fastp-trim_bismark_bt2_pe.deduplicated.txt.gz
+-rw-r--r-- 1 sam sam 151M Nov 26 21:12 CpG_context_EF07-EM01-Zygote_R1_001.fastp-trim_bismark_bt2_pe.deduplicated.txt.gz
+-rw-r--r-- 1 sam sam 617M Nov 26 21:33 CpG_context_EF07-EM03-Larvae_R1_001.fastp-trim_bismark_bt2_pe.deduplicated.txt.gz
+-rw-r--r-- 1 sam sam 735M Nov 26 22:01 CpG_context_EF08-EM03-Larvae_R1_001.fastp-trim_bismark_bt2_pe.deduplicated.txt.gz
+-rw-r--r-- 1 sam sam 597M Nov 26 22:27 CpG_context_EF08-EM04-Larvae_R1_001.fastp-trim_bismark_bt2_pe.deduplicated.txt.gz
+-rw-r--r-- 1 sam sam  75M Nov 26 16:24 EF01-EM01-Zygote_R1_001.fastp-trim_bismark_bt2_pe.deduplicated.bedGraph.gz
+-rw-r--r-- 1 sam sam 455M Nov 26 16:24 EF01-EM01-Zygote_R1_001.fastp-trim_bismark_bt2_pe.deduplicated.bedGraph.gz.bismark.zero.cov
+-rw-r--r-- 1 sam sam  70M Nov 26 16:24 EF01-EM01-Zygote_R1_001.fastp-trim_bismark_bt2_pe.deduplicated.bismark.cov.gz
+-rw-r--r-- 1 sam sam 120M Nov 26 16:35 EF01-EM01-Zygote_R1_001.fastp-trim_bismark_bt2_pe.deduplicated.CpG_report.txt.gz
+-rw-r--r-- 1 sam sam 1.8K Dec  4 12:17 EF01-EM01-Zygote_R1_001.fastp-trim_bismark_bt2_pe.deduplicated.cytosine_context_summary.txt
+-rw-r--r-- 1 sam sam  23K Dec  4 12:17 EF01-EM01-Zygote_R1_001.fastp-trim_bismark_bt2_pe.deduplicated.M-bias.txt
+-rw-r--r-- 1 sam sam  927 Dec  4 12:17 EF01-EM01-Zygote_R1_001.fastp-trim_bismark_bt2_pe.deduplicated_splitting_report.txt
+-rw-r--r-- 1 sam sam  63M Dec  4 12:17 EF01-EM01-Zygote_R1_001.fastp-trim.CpG_report.merged_CpG_evidence.cov.gz
+-rw-r--r-- 1 sam sam 120M Nov 27 10:49 EF01-EM01-Zygote_R1_001.fastp-trim.CpG_report.txt.gz
+-rw-r--r-- 1 sam sam 1.8K Dec  4 12:17 EF01-EM01-Zygote_R1_001.fastp-trim.cytosine_context_summary.txt
+-rw-r--r-- 1 sam sam  75M Nov 26 16:45 EF02-EM02-Zygote_R1_001.fastp-trim_bismark_bt2_pe.deduplicated.bedGraph.gz
+-rw-r--r-- 1 sam sam 463M Nov 26 16:45 EF02-EM02-Zygote_R1_001.fastp-trim_bismark_bt2_pe.deduplicated.bedGraph.gz.bismark.zero.cov
+-rw-r--r-- 1 sam sam  72M Nov 26 16:45 EF02-EM02-Zygote_R1_001.fastp-trim_bismark_bt2_pe.deduplicated.bismark.cov.gz
+-rw-r--r-- 1 sam sam 120M Nov 26 16:56 EF02-EM02-Zygote_R1_001.fastp-trim_bismark_bt2_pe.deduplicated.CpG_report.txt.gz
+-rw-r--r-- 1 sam sam 1.8K Dec  4 12:17 EF02-EM02-Zygote_R1_001.fastp-trim_bismark_bt2_pe.deduplicated.cytosine_context_summary.txt
+-rw-r--r-- 1 sam sam  22K Dec  4 12:17 EF02-EM02-Zygote_R1_001.fastp-trim_bismark_bt2_pe.deduplicated.M-bias.txt
+-rw-r--r-- 1 sam sam  925 Dec  4 12:17 EF02-EM02-Zygote_R1_001.fastp-trim_bismark_bt2_pe.deduplicated_splitting_report.txt
+-rw-r--r-- 1 sam sam  62M Dec  4 12:17 EF02-EM02-Zygote_R1_001.fastp-trim.CpG_report.merged_CpG_evidence.cov.gz
+-rw-r--r-- 1 sam sam 120M Nov 27 11:01 EF02-EM02-Zygote_R1_001.fastp-trim.CpG_report.txt.gz
+-rw-r--r-- 1 sam sam 1.8K Dec  4 12:17 EF02-EM02-Zygote_R1_001.fastp-trim.cytosine_context_summary.txt
+-rw-r--r-- 1 sam sam  54M Nov 26 17:02 EF03-EM03-Zygote_R1_001.fastp-trim.REPAIRED_bismark_bt2_pe.deduplicated.bedGraph.gz
+-rw-r--r-- 1 sam sam 327M Nov 26 17:02 EF03-EM03-Zygote_R1_001.fastp-trim.REPAIRED_bismark_bt2_pe.deduplicated.bedGraph.gz.bismark.zero.cov
+-rw-r--r-- 1 sam sam  50M Nov 26 17:02 EF03-EM03-Zygote_R1_001.fastp-trim.REPAIRED_bismark_bt2_pe.deduplicated.bismark.cov.gz
+-rw-r--r-- 1 sam sam 115M Nov 26 17:13 EF03-EM03-Zygote_R1_001.fastp-trim.REPAIRED_bismark_bt2_pe.deduplicated.CpG_report.txt.gz
+-rw-r--r-- 1 sam sam 1.8K Dec  4 12:17 EF03-EM03-Zygote_R1_001.fastp-trim.REPAIRED_bismark_bt2_pe.deduplicated.cytosine_context_summary.txt
+-rw-r--r-- 1 sam sam  22K Dec  4 12:17 EF03-EM03-Zygote_R1_001.fastp-trim.REPAIRED_bismark_bt2_pe.deduplicated.M-bias.txt
+-rw-r--r-- 1 sam sam  934 Dec  4 12:17 EF03-EM03-Zygote_R1_001.fastp-trim.REPAIRED_bismark_bt2_pe.deduplicated_splitting_report.txt
+-rw-r--r-- 1 sam sam  49M Dec  4 12:17 EF03-EM03-Zygote_R1_001.fastp-trim.REPAIRED.CpG_report.merged_CpG_evidence.cov.gz
+-rw-r--r-- 1 sam sam 115M Nov 27 11:12 EF03-EM03-Zygote_R1_001.fastp-trim.REPAIRED.CpG_report.txt.gz
+-rw-r--r-- 1 sam sam 1.8K Dec  4 12:17 EF03-EM03-Zygote_R1_001.fastp-trim.REPAIRED.cytosine_context_summary.txt
+-rw-r--r-- 1 sam sam  94M Nov 26 17:28 EF03-EM04-Larvae_R1_001.fastp-trim_bismark_bt2_pe.deduplicated.bedGraph.gz
+-rw-r--r-- 1 sam sam 575M Nov 26 17:28 EF03-EM04-Larvae_R1_001.fastp-trim_bismark_bt2_pe.deduplicated.bedGraph.gz.bismark.zero.cov
+-rw-r--r-- 1 sam sam  91M Nov 26 17:28 EF03-EM04-Larvae_R1_001.fastp-trim_bismark_bt2_pe.deduplicated.bismark.cov.gz
+-rw-r--r-- 1 sam sam 125M Nov 26 17:39 EF03-EM04-Larvae_R1_001.fastp-trim_bismark_bt2_pe.deduplicated.CpG_report.txt.gz
+-rw-r--r-- 1 sam sam 1.8K Dec  4 12:17 EF03-EM04-Larvae_R1_001.fastp-trim_bismark_bt2_pe.deduplicated.cytosine_context_summary.txt
+-rw-r--r-- 1 sam sam  23K Dec  4 12:17 EF03-EM04-Larvae_R1_001.fastp-trim_bismark_bt2_pe.deduplicated.M-bias.txt
+-rw-r--r-- 1 sam sam  928 Dec  4 12:17 EF03-EM04-Larvae_R1_001.fastp-trim_bismark_bt2_pe.deduplicated_splitting_report.txt
+-rw-r--r-- 1 sam sam  73M Dec  4 12:17 EF03-EM04-Larvae_R1_001.fastp-trim.CpG_report.merged_CpG_evidence.cov.gz
+-rw-r--r-- 1 sam sam 125M Nov 27 11:24 EF03-EM04-Larvae_R1_001.fastp-trim.CpG_report.txt.gz
+-rw-r--r-- 1 sam sam 1.8K Dec  4 12:17 EF03-EM04-Larvae_R1_001.fastp-trim.cytosine_context_summary.txt
+-rw-r--r-- 1 sam sam  93M Nov 26 17:54 EF03-EM05-Larvae_R1_001.fastp-trim_bismark_bt2_pe.deduplicated.bedGraph.gz
+-rw-r--r-- 1 sam sam 572M Nov 26 17:54 EF03-EM05-Larvae_R1_001.fastp-trim_bismark_bt2_pe.deduplicated.bedGraph.gz.bismark.zero.cov
+-rw-r--r-- 1 sam sam  91M Nov 26 17:54 EF03-EM05-Larvae_R1_001.fastp-trim_bismark_bt2_pe.deduplicated.bismark.cov.gz
+-rw-r--r-- 1 sam sam 125M Nov 26 18:06 EF03-EM05-Larvae_R1_001.fastp-trim_bismark_bt2_pe.deduplicated.CpG_report.txt.gz
+-rw-r--r-- 1 sam sam 1.8K Dec  4 12:17 EF03-EM05-Larvae_R1_001.fastp-trim_bismark_bt2_pe.deduplicated.cytosine_context_summary.txt
+-rw-r--r-- 1 sam sam  23K Dec  4 12:17 EF03-EM05-Larvae_R1_001.fastp-trim_bismark_bt2_pe.deduplicated.M-bias.txt
+-rw-r--r-- 1 sam sam  928 Dec  4 12:17 EF03-EM05-Larvae_R1_001.fastp-trim_bismark_bt2_pe.deduplicated_splitting_report.txt
+-rw-r--r-- 1 sam sam  73M Dec  4 12:17 EF03-EM05-Larvae_R1_001.fastp-trim.CpG_report.merged_CpG_evidence.cov.gz
+-rw-r--r-- 1 sam sam 125M Nov 27 11:36 EF03-EM05-Larvae_R1_001.fastp-trim.CpG_report.txt.gz
+-rw-r--r-- 1 sam sam 1.8K Dec  4 12:17 EF03-EM05-Larvae_R1_001.fastp-trim.cytosine_context_summary.txt
+-rw-r--r-- 1 sam sam  41M Nov 26 18:09 EF04-EM04-Zygote_R1_001.fastp-trim_bismark_bt2_pe.deduplicated.bedGraph.gz
+-rw-r--r-- 1 sam sam 249M Nov 26 18:09 EF04-EM04-Zygote_R1_001.fastp-trim_bismark_bt2_pe.deduplicated.bedGraph.gz.bismark.zero.cov
+-rw-r--r-- 1 sam sam  37M Nov 26 18:09 EF04-EM04-Zygote_R1_001.fastp-trim_bismark_bt2_pe.deduplicated.bismark.cov.gz
+-rw-r--r-- 1 sam sam 111M Nov 26 18:20 EF04-EM04-Zygote_R1_001.fastp-trim_bismark_bt2_pe.deduplicated.CpG_report.txt.gz
+-rw-r--r-- 1 sam sam 1.8K Dec  4 12:17 EF04-EM04-Zygote_R1_001.fastp-trim_bismark_bt2_pe.deduplicated.cytosine_context_summary.txt
+-rw-r--r-- 1 sam sam  20K Dec  4 12:17 EF04-EM04-Zygote_R1_001.fastp-trim_bismark_bt2_pe.deduplicated.M-bias.txt
+-rw-r--r-- 1 sam sam  921 Dec  4 12:17 EF04-EM04-Zygote_R1_001.fastp-trim_bismark_bt2_pe.deduplicated_splitting_report.txt
+-rw-r--r-- 1 sam sam  38M Dec  4 12:17 EF04-EM04-Zygote_R1_001.fastp-trim.CpG_report.merged_CpG_evidence.cov.gz
+-rw-r--r-- 1 sam sam 111M Nov 27 11:47 EF04-EM04-Zygote_R1_001.fastp-trim.CpG_report.txt.gz
+-rw-r--r-- 1 sam sam 1.8K Dec  4 12:17 EF04-EM04-Zygote_R1_001.fastp-trim.cytosine_context_summary.txt
+-rw-r--r-- 1 sam sam  97M Nov 26 18:39 EF04-EM05-Larvae_R1_001.fastp-trim_bismark_bt2_pe.deduplicated.bedGraph.gz
+-rw-r--r-- 1 sam sam 597M Nov 26 18:39 EF04-EM05-Larvae_R1_001.fastp-trim_bismark_bt2_pe.deduplicated.bedGraph.gz.bismark.zero.cov
+-rw-r--r-- 1 sam sam  97M Nov 26 18:39 EF04-EM05-Larvae_R1_001.fastp-trim_bismark_bt2_pe.deduplicated.bismark.cov.gz
+-rw-r--r-- 1 sam sam 127M Nov 26 18:50 EF04-EM05-Larvae_R1_001.fastp-trim_bismark_bt2_pe.deduplicated.CpG_report.txt.gz
+-rw-r--r-- 1 sam sam 1.8K Dec  4 12:17 EF04-EM05-Larvae_R1_001.fastp-trim_bismark_bt2_pe.deduplicated.cytosine_context_summary.txt
+-rw-r--r-- 1 sam sam  23K Dec  4 12:17 EF04-EM05-Larvae_R1_001.fastp-trim_bismark_bt2_pe.deduplicated.M-bias.txt
+-rw-r--r-- 1 sam sam  927 Dec  4 12:17 EF04-EM05-Larvae_R1_001.fastp-trim_bismark_bt2_pe.deduplicated_splitting_report.txt
+-rw-r--r-- 1 sam sam  77M Dec  4 12:17 EF04-EM05-Larvae_R1_001.fastp-trim.CpG_report.merged_CpG_evidence.cov.gz
+-rw-r--r-- 1 sam sam 127M Nov 27 11:59 EF04-EM05-Larvae_R1_001.fastp-trim.CpG_report.txt.gz
+-rw-r--r-- 1 sam sam 1.8K Dec  4 12:17 EF04-EM05-Larvae_R1_001.fastp-trim.cytosine_context_summary.txt
+-rw-r--r-- 1 sam sam  81M Nov 26 19:02 EF05-EM01-Larvae_R1_001.fastp-trim_bismark_bt2_pe.deduplicated.bedGraph.gz
+-rw-r--r-- 1 sam sam 498M Nov 26 19:02 EF05-EM01-Larvae_R1_001.fastp-trim_bismark_bt2_pe.deduplicated.bedGraph.gz.bismark.zero.cov
+-rw-r--r-- 1 sam sam  78M Nov 26 19:02 EF05-EM01-Larvae_R1_001.fastp-trim_bismark_bt2_pe.deduplicated.bismark.cov.gz
+-rw-r--r-- 1 sam sam 122M Nov 26 19:13 EF05-EM01-Larvae_R1_001.fastp-trim_bismark_bt2_pe.deduplicated.CpG_report.txt.gz
+-rw-r--r-- 1 sam sam 1.8K Dec  4 12:17 EF05-EM01-Larvae_R1_001.fastp-trim_bismark_bt2_pe.deduplicated.cytosine_context_summary.txt
+-rw-r--r-- 1 sam sam  23K Dec  4 12:17 EF05-EM01-Larvae_R1_001.fastp-trim_bismark_bt2_pe.deduplicated.M-bias.txt
+-rw-r--r-- 1 sam sam  926 Dec  4 12:17 EF05-EM01-Larvae_R1_001.fastp-trim_bismark_bt2_pe.deduplicated_splitting_report.txt
+-rw-r--r-- 1 sam sam  66M Dec  4 12:17 EF05-EM01-Larvae_R1_001.fastp-trim.CpG_report.merged_CpG_evidence.cov.gz
+-rw-r--r-- 1 sam sam 122M Nov 27 12:11 EF05-EM01-Larvae_R1_001.fastp-trim.CpG_report.txt.gz
+-rw-r--r-- 1 sam sam 1.8K Dec  4 12:17 EF05-EM01-Larvae_R1_001.fastp-trim.cytosine_context_summary.txt
+-rw-r--r-- 1 sam sam  27M Nov 26 19:15 EF05-EM05-Zygote_R1_001.fastp-trim_bismark_bt2_pe.deduplicated.bedGraph.gz
+-rw-r--r-- 1 sam sam 162M Nov 26 19:15 EF05-EM05-Zygote_R1_001.fastp-trim_bismark_bt2_pe.deduplicated.bedGraph.gz.bismark.zero.cov
+-rw-r--r-- 1 sam sam  23M Nov 26 19:15 EF05-EM05-Zygote_R1_001.fastp-trim_bismark_bt2_pe.deduplicated.bismark.cov.gz
+-rw-r--r-- 1 sam sam 108M Nov 26 19:25 EF05-EM05-Zygote_R1_001.fastp-trim_bismark_bt2_pe.deduplicated.CpG_report.txt.gz
+-rw-r--r-- 1 sam sam 1.7K Dec  4 12:17 EF05-EM05-Zygote_R1_001.fastp-trim_bismark_bt2_pe.deduplicated.cytosine_context_summary.txt
+-rw-r--r-- 1 sam sam  19K Dec  4 12:17 EF05-EM05-Zygote_R1_001.fastp-trim_bismark_bt2_pe.deduplicated.M-bias.txt
+-rw-r--r-- 1 sam sam  918 Dec  4 12:17 EF05-EM05-Zygote_R1_001.fastp-trim_bismark_bt2_pe.deduplicated_splitting_report.txt
+-rw-r--r-- 1 sam sam  26M Dec  4 12:17 EF05-EM05-Zygote_R1_001.fastp-trim.CpG_report.merged_CpG_evidence.cov.gz
+-rw-r--r-- 1 sam sam 108M Nov 27 12:22 EF05-EM05-Zygote_R1_001.fastp-trim.CpG_report.txt.gz
+-rw-r--r-- 1 sam sam 1.7K Dec  4 12:17 EF05-EM05-Zygote_R1_001.fastp-trim.cytosine_context_summary.txt
+-rw-r--r-- 1 sam sam 110M Nov 26 19:46 EF05-EM06-Larvae_R1_001.fastp-trim_bismark_bt2_pe.deduplicated.bedGraph.gz
+-rw-r--r-- 1 sam sam 684M Nov 26 19:46 EF05-EM06-Larvae_R1_001.fastp-trim_bismark_bt2_pe.deduplicated.bedGraph.gz.bismark.zero.cov
+-rw-r--r-- 1 sam sam 108M Nov 26 19:46 EF05-EM06-Larvae_R1_001.fastp-trim_bismark_bt2_pe.deduplicated.bismark.cov.gz
+-rw-r--r-- 1 sam sam 129M Nov 26 19:58 EF05-EM06-Larvae_R1_001.fastp-trim_bismark_bt2_pe.deduplicated.CpG_report.txt.gz
+-rw-r--r-- 1 sam sam 1.8K Dec  4 12:17 EF05-EM06-Larvae_R1_001.fastp-trim_bismark_bt2_pe.deduplicated.cytosine_context_summary.txt
+-rw-r--r-- 1 sam sam  24K Dec  4 12:17 EF05-EM06-Larvae_R1_001.fastp-trim_bismark_bt2_pe.deduplicated.M-bias.txt
+-rw-r--r-- 1 sam sam  928 Dec  4 12:17 EF05-EM06-Larvae_R1_001.fastp-trim_bismark_bt2_pe.deduplicated_splitting_report.txt
+-rw-r--r-- 1 sam sam  83M Dec  4 12:17 EF05-EM06-Larvae_R1_001.fastp-trim.CpG_report.merged_CpG_evidence.cov.gz
+-rw-r--r-- 1 sam sam 129M Nov 27 12:34 EF05-EM06-Larvae_R1_001.fastp-trim.CpG_report.txt.gz
+-rw-r--r-- 1 sam sam 1.8K Dec  4 12:17 EF05-EM06-Larvae_R1_001.fastp-trim.cytosine_context_summary.txt
+-rw-r--r-- 1 sam sam 101M Nov 26 20:17 EF06-EM01-Larvae_R1_001.fastp-trim_bismark_bt2_pe.deduplicated.bedGraph.gz
+-rw-r--r-- 1 sam sam 627M Nov 26 20:17 EF06-EM01-Larvae_R1_001.fastp-trim_bismark_bt2_pe.deduplicated.bedGraph.gz.bismark.zero.cov
+-rw-r--r-- 1 sam sam 101M Nov 26 20:17 EF06-EM01-Larvae_R1_001.fastp-trim_bismark_bt2_pe.deduplicated.bismark.cov.gz
+-rw-r--r-- 1 sam sam 127M Nov 26 20:28 EF06-EM01-Larvae_R1_001.fastp-trim_bismark_bt2_pe.deduplicated.CpG_report.txt.gz
+-rw-r--r-- 1 sam sam 1.8K Dec  4 12:17 EF06-EM01-Larvae_R1_001.fastp-trim_bismark_bt2_pe.deduplicated.cytosine_context_summary.txt
+-rw-r--r-- 1 sam sam  24K Dec  4 12:17 EF06-EM01-Larvae_R1_001.fastp-trim_bismark_bt2_pe.deduplicated.M-bias.txt
+-rw-r--r-- 1 sam sam  928 Dec  4 12:17 EF06-EM01-Larvae_R1_001.fastp-trim_bismark_bt2_pe.deduplicated_splitting_report.txt
+-rw-r--r-- 1 sam sam  79M Dec  4 12:17 EF06-EM01-Larvae_R1_001.fastp-trim.CpG_report.merged_CpG_evidence.cov.gz
+-rw-r--r-- 1 sam sam 127M Nov 27 12:46 EF06-EM01-Larvae_R1_001.fastp-trim.CpG_report.txt.gz
+-rw-r--r-- 1 sam sam 1.8K Dec  4 12:17 EF06-EM01-Larvae_R1_001.fastp-trim.cytosine_context_summary.txt
+-rw-r--r-- 1 sam sam  88M Nov 26 20:43 EF06-EM02-Larvae_R1_001.fastp-trim_bismark_bt2_pe.deduplicated.bedGraph.gz
+-rw-r--r-- 1 sam sam 541M Nov 26 20:43 EF06-EM02-Larvae_R1_001.fastp-trim_bismark_bt2_pe.deduplicated.bedGraph.gz.bismark.zero.cov
+-rw-r--r-- 1 sam sam  86M Nov 26 20:43 EF06-EM02-Larvae_R1_001.fastp-trim_bismark_bt2_pe.deduplicated.bismark.cov.gz
+-rw-r--r-- 1 sam sam 125M Nov 26 20:55 EF06-EM02-Larvae_R1_001.fastp-trim_bismark_bt2_pe.deduplicated.CpG_report.txt.gz
+-rw-r--r-- 1 sam sam 1.8K Dec  4 12:17 EF06-EM02-Larvae_R1_001.fastp-trim_bismark_bt2_pe.deduplicated.cytosine_context_summary.txt
+-rw-r--r-- 1 sam sam  23K Dec  4 12:17 EF06-EM02-Larvae_R1_001.fastp-trim_bismark_bt2_pe.deduplicated.M-bias.txt
+-rw-r--r-- 1 sam sam  928 Dec  4 12:17 EF06-EM02-Larvae_R1_001.fastp-trim_bismark_bt2_pe.deduplicated_splitting_report.txt
+-rw-r--r-- 1 sam sam  71M Dec  4 12:17 EF06-EM02-Larvae_R1_001.fastp-trim.CpG_report.merged_CpG_evidence.cov.gz
+-rw-r--r-- 1 sam sam 125M Nov 27 12:58 EF06-EM02-Larvae_R1_001.fastp-trim.CpG_report.txt.gz
+-rw-r--r-- 1 sam sam 1.8K Dec  4 12:17 EF06-EM02-Larvae_R1_001.fastp-trim.cytosine_context_summary.txt
+-rw-r--r-- 1 sam sam  45M Nov 26 20:58 EF06-EM06-Larvae_R1_001.fastp-trim_bismark_bt2_pe.deduplicated.bedGraph.gz
+-rw-r--r-- 1 sam sam 274M Nov 26 20:58 EF06-EM06-Larvae_R1_001.fastp-trim_bismark_bt2_pe.deduplicated.bedGraph.gz.bismark.zero.cov
+-rw-r--r-- 1 sam sam  40M Nov 26 20:58 EF06-EM06-Larvae_R1_001.fastp-trim_bismark_bt2_pe.deduplicated.bismark.cov.gz
+-rw-r--r-- 1 sam sam 112M Nov 26 21:09 EF06-EM06-Larvae_R1_001.fastp-trim_bismark_bt2_pe.deduplicated.CpG_report.txt.gz
+-rw-r--r-- 1 sam sam 1.7K Dec  4 12:17 EF06-EM06-Larvae_R1_001.fastp-trim_bismark_bt2_pe.deduplicated.cytosine_context_summary.txt
+-rw-r--r-- 1 sam sam  21K Dec  4 12:17 EF06-EM06-Larvae_R1_001.fastp-trim_bismark_bt2_pe.deduplicated.M-bias.txt
+-rw-r--r-- 1 sam sam  922 Dec  4 12:17 EF06-EM06-Larvae_R1_001.fastp-trim_bismark_bt2_pe.deduplicated_splitting_report.txt
+-rw-r--r-- 1 sam sam  42M Dec  4 12:17 EF06-EM06-Larvae_R1_001.fastp-trim.CpG_report.merged_CpG_evidence.cov.gz
+-rw-r--r-- 1 sam sam 112M Nov 27 13:09 EF06-EM06-Larvae_R1_001.fastp-trim.CpG_report.txt.gz
+-rw-r--r-- 1 sam sam 1.7K Dec  4 12:17 EF06-EM06-Larvae_R1_001.fastp-trim.cytosine_context_summary.txt
+-rw-r--r-- 1 sam sam  48M Nov 26 21:13 EF07-EM01-Zygote_R1_001.fastp-trim_bismark_bt2_pe.deduplicated.bedGraph.gz
+-rw-r--r-- 1 sam sam 297M Nov 26 21:13 EF07-EM01-Zygote_R1_001.fastp-trim_bismark_bt2_pe.deduplicated.bedGraph.gz.bismark.zero.cov
+-rw-r--r-- 1 sam sam  44M Nov 26 21:13 EF07-EM01-Zygote_R1_001.fastp-trim_bismark_bt2_pe.deduplicated.bismark.cov.gz
+-rw-r--r-- 1 sam sam 112M Nov 26 21:24 EF07-EM01-Zygote_R1_001.fastp-trim_bismark_bt2_pe.deduplicated.CpG_report.txt.gz
+-rw-r--r-- 1 sam sam 1.7K Dec  4 12:17 EF07-EM01-Zygote_R1_001.fastp-trim_bismark_bt2_pe.deduplicated.cytosine_context_summary.txt
+-rw-r--r-- 1 sam sam  21K Dec  4 12:17 EF07-EM01-Zygote_R1_001.fastp-trim_bismark_bt2_pe.deduplicated.M-bias.txt
+-rw-r--r-- 1 sam sam  923 Dec  4 12:17 EF07-EM01-Zygote_R1_001.fastp-trim_bismark_bt2_pe.deduplicated_splitting_report.txt
+-rw-r--r-- 1 sam sam  44M Dec  4 12:17 EF07-EM01-Zygote_R1_001.fastp-trim.CpG_report.merged_CpG_evidence.cov.gz
+-rw-r--r-- 1 sam sam 112M Nov 27 13:22 EF07-EM01-Zygote_R1_001.fastp-trim.CpG_report.txt.gz
+-rw-r--r-- 1 sam sam 1.7K Dec  4 12:17 EF07-EM01-Zygote_R1_001.fastp-trim.cytosine_context_summary.txt
+-rw-r--r-- 1 sam sam  88M Nov 26 21:38 EF07-EM03-Larvae_R1_001.fastp-trim_bismark_bt2_pe.deduplicated.bedGraph.gz
+-rw-r--r-- 1 sam sam 547M Nov 26 21:38 EF07-EM03-Larvae_R1_001.fastp-trim_bismark_bt2_pe.deduplicated.bedGraph.gz.bismark.zero.cov
+-rw-r--r-- 1 sam sam  87M Nov 26 21:38 EF07-EM03-Larvae_R1_001.fastp-trim_bismark_bt2_pe.deduplicated.bismark.cov.gz
+-rw-r--r-- 1 sam sam 124M Nov 26 21:50 EF07-EM03-Larvae_R1_001.fastp-trim_bismark_bt2_pe.deduplicated.CpG_report.txt.gz
+-rw-r--r-- 1 sam sam 1.8K Dec  4 12:17 EF07-EM03-Larvae_R1_001.fastp-trim_bismark_bt2_pe.deduplicated.cytosine_context_summary.txt
+-rw-r--r-- 1 sam sam  23K Dec  4 12:17 EF07-EM03-Larvae_R1_001.fastp-trim_bismark_bt2_pe.deduplicated.M-bias.txt
+-rw-r--r-- 1 sam sam  927 Dec  4 12:17 EF07-EM03-Larvae_R1_001.fastp-trim_bismark_bt2_pe.deduplicated_splitting_report.txt
+-rw-r--r-- 1 sam sam  71M Dec  4 12:17 EF07-EM03-Larvae_R1_001.fastp-trim.CpG_report.merged_CpG_evidence.cov.gz
+-rw-r--r-- 1 sam sam 124M Nov 27 13:34 EF07-EM03-Larvae_R1_001.fastp-trim.CpG_report.txt.gz
+-rw-r--r-- 1 sam sam 1.8K Dec  4 12:17 EF07-EM03-Larvae_R1_001.fastp-trim.cytosine_context_summary.txt
+-rw-r--r-- 1 sam sam  89M Nov 26 22:06 EF08-EM03-Larvae_R1_001.fastp-trim_bismark_bt2_pe.deduplicated.bedGraph.gz
+-rw-r--r-- 1 sam sam 546M Nov 26 22:06 EF08-EM03-Larvae_R1_001.fastp-trim_bismark_bt2_pe.deduplicated.bedGraph.gz.bismark.zero.cov
+-rw-r--r-- 1 sam sam  88M Nov 26 22:06 EF08-EM03-Larvae_R1_001.fastp-trim_bismark_bt2_pe.deduplicated.bismark.cov.gz
+-rw-r--r-- 1 sam sam 125M Nov 26 22:18 EF08-EM03-Larvae_R1_001.fastp-trim_bismark_bt2_pe.deduplicated.CpG_report.txt.gz
+-rw-r--r-- 1 sam sam 1.8K Dec  4 12:17 EF08-EM03-Larvae_R1_001.fastp-trim_bismark_bt2_pe.deduplicated.cytosine_context_summary.txt
+-rw-r--r-- 1 sam sam  23K Dec  4 12:17 EF08-EM03-Larvae_R1_001.fastp-trim_bismark_bt2_pe.deduplicated.M-bias.txt
+-rw-r--r-- 1 sam sam  927 Dec  4 12:17 EF08-EM03-Larvae_R1_001.fastp-trim_bismark_bt2_pe.deduplicated_splitting_report.txt
+-rw-r--r-- 1 sam sam  72M Dec  4 12:17 EF08-EM03-Larvae_R1_001.fastp-trim.CpG_report.merged_CpG_evidence.cov.gz
+-rw-r--r-- 1 sam sam 125M Nov 27 13:46 EF08-EM03-Larvae_R1_001.fastp-trim.CpG_report.txt.gz
+-rw-r--r-- 1 sam sam 1.8K Dec  4 12:17 EF08-EM03-Larvae_R1_001.fastp-trim.cytosine_context_summary.txt
+-rw-r--r-- 1 sam sam  84M Nov 26 22:31 EF08-EM04-Larvae_R1_001.fastp-trim_bismark_bt2_pe.deduplicated.bedGraph.gz
+-rw-r--r-- 1 sam sam 517M Nov 26 22:31 EF08-EM04-Larvae_R1_001.fastp-trim_bismark_bt2_pe.deduplicated.bedGraph.gz.bismark.zero.cov
+-rw-r--r-- 1 sam sam  82M Nov 26 22:31 EF08-EM04-Larvae_R1_001.fastp-trim_bismark_bt2_pe.deduplicated.bismark.cov.gz
+-rw-r--r-- 1 sam sam 124M Nov 26 22:43 EF08-EM04-Larvae_R1_001.fastp-trim_bismark_bt2_pe.deduplicated.CpG_report.txt.gz
+-rw-r--r-- 1 sam sam 1.8K Dec  4 12:17 EF08-EM04-Larvae_R1_001.fastp-trim_bismark_bt2_pe.deduplicated.cytosine_context_summary.txt
+-rw-r--r-- 1 sam sam  23K Dec  4 12:17 EF08-EM04-Larvae_R1_001.fastp-trim_bismark_bt2_pe.deduplicated.M-bias.txt
+-rw-r--r-- 1 sam sam  928 Dec  4 12:17 EF08-EM04-Larvae_R1_001.fastp-trim_bismark_bt2_pe.deduplicated_splitting_report.txt
+-rw-r--r-- 1 sam sam  68M Dec  4 12:17 EF08-EM04-Larvae_R1_001.fastp-trim.CpG_report.merged_CpG_evidence.cov.gz
+-rw-r--r-- 1 sam sam 124M Nov 27 13:57 EF08-EM04-Larvae_R1_001.fastp-trim.CpG_report.txt.gz
+-rw-r--r-- 1 sam sam 1.8K Dec  4 12:17 EF08-EM04-Larvae_R1_001.fastp-trim.cytosine_context_summary.txt
+drwxr-xr-x 2 sam sam 4.0K Dec  4 12:17 multiqc_data
+-rw-r--r-- 1 sam sam 1.2M Dec  4 12:17 multiqc_report.html
+-rw-r--r-- 1 sam sam 191M Nov 26 11:16 Non_CpG_context_CF01-CM01-Zygote_R1_001.fastp-trim.REPAIRED_bismark_bt2_pe.deduplicated.txt.gz
+-rw-r--r-- 1 sam sam 2.6G Nov 26 11:37 Non_CpG_context_CF01-CM02-Larvae_R1_001.fastp-trim_bismark_bt2_pe.deduplicated.txt.gz
+-rw-r--r-- 1 sam sam 890M Nov 26 11:59 Non_CpG_context_CF02-CM02-Zygote_R1_001.fastp-trim_bismark_bt2_pe.deduplicated.txt.gz
+-rw-r--r-- 1 sam sam 1.3G Nov 26 12:18 Non_CpG_context_CF03-CM03-Zygote_R1_001.fastp-trim_bismark_bt2_pe.deduplicated.txt.gz
+-rw-r--r-- 1 sam sam 2.2G Nov 26 12:41 Non_CpG_context_CF03-CM04-Larvae_R1_001.fastp-trim_bismark_bt2_pe.deduplicated.txt.gz
+-rw-r--r-- 1 sam sam 2.4G Nov 26 13:07 Non_CpG_context_CF03-CM05-Larvae_R1_001.fastp-trim_bismark_bt2_pe.deduplicated.txt.gz
+-rw-r--r-- 1 sam sam 1.6G Nov 26 13:30 Non_CpG_context_CF04-CM04-Zygote_R1_001.fastp-trim_bismark_bt2_pe.deduplicated.txt.gz
+-rw-r--r-- 1 sam sam 3.4G Nov 26 13:58 Non_CpG_context_CF05-CM02-Larvae_R1_001.fastp-trim_bismark_bt2_pe.deduplicated.txt.gz
+-rw-r--r-- 1 sam sam 1.9G Nov 26 14:25 Non_CpG_context_CF05-CM05-Zygote_R1_001.fastp-trim_bismark_bt2_pe.deduplicated.txt.gz
+-rw-r--r-- 1 sam sam 1.6G Nov 26 14:47 Non_CpG_context_CF06-CM01-Zygote_R1_001.fastp-trim_bismark_bt2_pe.deduplicated.txt.gz
+-rw-r--r-- 1 sam sam 1.4G Nov 26 15:07 Non_CpG_context_CF06-CM02-Larvae_R1_001.fastp-trim_bismark_bt2_pe.deduplicated.txt.gz
+-rw-r--r-- 1 sam sam 992M Nov 26 15:25 Non_CpG_context_CF07-CM02-Zygote_R1_001.fastp-trim_bismark_bt2_pe.deduplicated.txt.gz
+-rw-r--r-- 1 sam sam 970M Nov 26 15:42 Non_CpG_context_CF08-CM03-Zygote_R1_001.fastp-trim_bismark_bt2_pe.deduplicated.txt.gz
+-rw-r--r-- 1 sam sam  29M Nov 26 15:55 Non_CpG_context_CF08-CM04-Larvae_R1_001.fastp-trim.REPAIRED_bismark_bt2_pe.deduplicated.txt.gz
+-rw-r--r-- 1 sam sam  27M Nov 26 16:05 Non_CpG_context_CF08-CM05-Larvae_R1_001.fastp-trim_bismark_bt2_pe.deduplicated.txt.gz
+-rw-r--r-- 1 sam sam 1.5G Nov 26 16:21 Non_CpG_context_EF01-EM01-Zygote_R1_001.fastp-trim_bismark_bt2_pe.deduplicated.txt.gz
+-rw-r--r-- 1 sam sam 1.6G Nov 26 16:42 Non_CpG_context_EF02-EM02-Zygote_R1_001.fastp-trim_bismark_bt2_pe.deduplicated.txt.gz
+-rw-r--r-- 1 sam sam 904M Nov 26 17:01 Non_CpG_context_EF03-EM03-Zygote_R1_001.fastp-trim.REPAIRED_bismark_bt2_pe.deduplicated.txt.gz
+-rw-r--r-- 1 sam sam 2.3G Nov 26 17:23 Non_CpG_context_EF03-EM04-Larvae_R1_001.fastp-trim_bismark_bt2_pe.deduplicated.txt.gz
+-rw-r--r-- 1 sam sam 2.4G Nov 26 17:49 Non_CpG_context_EF03-EM05-Larvae_R1_001.fastp-trim_bismark_bt2_pe.deduplicated.txt.gz
+-rw-r--r-- 1 sam sam 485M Nov 26 18:08 Non_CpG_context_EF04-EM04-Zygote_R1_001.fastp-trim_bismark_bt2_pe.deduplicated.txt.gz
+-rw-r--r-- 1 sam sam 3.1G Nov 26 18:32 Non_CpG_context_EF04-EM05-Larvae_R1_001.fastp-trim_bismark_bt2_pe.deduplicated.txt.gz
+-rw-r--r-- 1 sam sam 1.9G Nov 26 18:58 Non_CpG_context_EF05-EM01-Larvae_R1_001.fastp-trim_bismark_bt2_pe.deduplicated.txt.gz
+-rw-r--r-- 1 sam sam 275M Nov 26 19:14 Non_CpG_context_EF05-EM05-Zygote_R1_001.fastp-trim_bismark_bt2_pe.deduplicated.txt.gz
+-rw-r--r-- 1 sam sam 3.4G Nov 26 19:39 Non_CpG_context_EF05-EM06-Larvae_R1_001.fastp-trim_bismark_bt2_pe.deduplicated.txt.gz
+-rw-r--r-- 1 sam sam 3.1G Nov 26 20:10 Non_CpG_context_EF06-EM01-Larvae_R1_001.fastp-trim_bismark_bt2_pe.deduplicated.txt.gz
+-rw-r--r-- 1 sam sam 2.3G Nov 26 20:38 Non_CpG_context_EF06-EM02-Larvae_R1_001.fastp-trim_bismark_bt2_pe.deduplicated.txt.gz
+-rw-r--r-- 1 sam sam 550M Nov 26 20:57 Non_CpG_context_EF06-EM06-Larvae_R1_001.fastp-trim_bismark_bt2_pe.deduplicated.txt.gz
+-rw-r--r-- 1 sam sam 653M Nov 26 21:12 Non_CpG_context_EF07-EM01-Zygote_R1_001.fastp-trim_bismark_bt2_pe.deduplicated.txt.gz
+-rw-r--r-- 1 sam sam 2.4G Nov 26 21:33 Non_CpG_context_EF07-EM03-Larvae_R1_001.fastp-trim_bismark_bt2_pe.deduplicated.txt.gz
+-rw-r--r-- 1 sam sam 2.7G Nov 26 22:01 Non_CpG_context_EF08-EM03-Larvae_R1_001.fastp-trim_bismark_bt2_pe.deduplicated.txt.gz
+-rw-r--r-- 1 sam sam 2.1G Nov 26 22:27 Non_CpG_context_EF08-EM04-Larvae_R1_001.fastp-trim_bismark_bt2_pe.deduplicated.txt.gz</code></pre>
+</section>
+<section id="checksums" class="level1">
+<h1>7 Checksums</h1>
+<div class="sourceCode" id="cb9"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Load bash variables into memory</span></span>
+<span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a><span class="bu">source</span> .bashvars</span>
+<span id="cb9-3"><a href="#cb9-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-4"><a href="#cb9-4" aria-hidden="true" tabindex="-1"></a><span class="bu">cd</span> <span class="st">"</span><span class="va">${output_dir_top}</span><span class="st">"</span></span>
+<span id="cb9-5"><a href="#cb9-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-6"><a href="#cb9-6" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> file <span class="kw">in</span> <span class="pp">*</span><span class="kw">;</span> <span class="cf">do</span></span>
+<span id="cb9-7"><a href="#cb9-7" aria-hidden="true" tabindex="-1"></a>  <span class="cf">if</span> <span class="bu">[</span> <span class="st">"</span><span class="va">${file}</span><span class="st">"</span> <span class="ot">!=</span> <span class="st">"checksums.md5"</span> <span class="bu">]</span><span class="kw">;</span> <span class="cf">then</span></span>
+<span id="cb9-8"><a href="#cb9-8" aria-hidden="true" tabindex="-1"></a>    <span class="fu">md5sum</span> <span class="st">"</span><span class="va">${file}</span><span class="st">"</span> <span class="op">&gt;&gt;</span> checksums.md5</span>
+<span id="cb9-9"><a href="#cb9-9" aria-hidden="true" tabindex="-1"></a>  <span class="cf">fi</span></span>
+<span id="cb9-10"><a href="#cb9-10" aria-hidden="true" tabindex="-1"></a><span class="cf">done</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</section>
+<section id="multiqc" class="level1">
+<h1>8 MultiQC</h1>
+<div class="sourceCode" id="cb10"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Load bash variables into memory</span></span>
+<span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a><span class="bu">source</span> .bashvars</span>
+<span id="cb10-3"><a href="#cb10-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb10-4"><a href="#cb10-4" aria-hidden="true" tabindex="-1"></a><span class="bu">cd</span> <span class="st">"</span><span class="va">${output_dir_top}</span><span class="st">"</span></span>
+<span id="cb10-5"><a href="#cb10-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb10-6"><a href="#cb10-6" aria-hidden="true" tabindex="-1"></a><span class="va">${multiqc}</span> .</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div id="refs" class="references csl-bib-body hanging-indent" role="list">
+<div id="ref-ewels2016" class="csl-entry" role="listitem">
+Ewels, Philip, Måns Magnusson, Sverker Lundin, and Max Käller. 2016. “MultiQC: Summarize Analysis Results for Multiple Tools and Samples in a Single Report.” <em>Bioinformatics</em> 32 (19): 3047–48. <a href="https://doi.org/10.1093/bioinformatics/btw354" class="uri">https://doi.org/10.1093/bioinformatics/btw354</a>.
+</div>
+<div id="ref-krueger2011" class="csl-entry" role="listitem">
+Krueger, Felix, and Simon R. Andrews. 2011. “Bismark: A Flexible Aligner and Methylation Caller for Bisulfite-Seq Applications.” <em>Bioinformatics</em> 27 (11): 1571–72. <a href="https://doi.org/10.1093/bioinformatics/btr167" class="uri">https://doi.org/10.1093/bioinformatics/btr167</a>.
+</div>
+</div>
+
+
+</section>
+
+</main> <!-- /main -->
+<script id="quarto-html-after-body" type="application/javascript">
+window.document.addEventListener("DOMContentLoaded", function (event) {
+  const toggleBodyColorMode = (bsSheetEl) => {
+    const mode = bsSheetEl.getAttribute("data-mode");
+    const bodyEl = window.document.querySelector("body");
+    if (mode === "dark") {
+      bodyEl.classList.add("quarto-dark");
+      bodyEl.classList.remove("quarto-light");
+    } else {
+      bodyEl.classList.add("quarto-light");
+      bodyEl.classList.remove("quarto-dark");
+    }
+  }
+  const toggleBodyColorPrimary = () => {
+    const bsSheetEl = window.document.querySelector("link#quarto-bootstrap");
+    if (bsSheetEl) {
+      toggleBodyColorMode(bsSheetEl);
+    }
+  }
+  toggleBodyColorPrimary();  
+  const icon = "";
+  const anchorJS = new window.AnchorJS();
+  anchorJS.options = {
+    placement: 'right',
+    icon: icon
+  };
+  anchorJS.add('.anchored');
+  const isCodeAnnotation = (el) => {
+    for (const clz of el.classList) {
+      if (clz.startsWith('code-annotation-')) {                     
+        return true;
+      }
+    }
+    return false;
+  }
+  const onCopySuccess = function(e) {
+    // button target
+    const button = e.trigger;
+    // don't keep focus
+    button.blur();
+    // flash "checked"
+    button.classList.add('code-copy-button-checked');
+    var currentTitle = button.getAttribute("title");
+    button.setAttribute("title", "Copied!");
+    let tooltip;
+    if (window.bootstrap) {
+      button.setAttribute("data-bs-toggle", "tooltip");
+      button.setAttribute("data-bs-placement", "left");
+      button.setAttribute("data-bs-title", "Copied!");
+      tooltip = new bootstrap.Tooltip(button, 
+        { trigger: "manual", 
+          customClass: "code-copy-button-tooltip",
+          offset: [0, -8]});
+      tooltip.show();    
+    }
+    setTimeout(function() {
+      if (tooltip) {
+        tooltip.hide();
+        button.removeAttribute("data-bs-title");
+        button.removeAttribute("data-bs-toggle");
+        button.removeAttribute("data-bs-placement");
+      }
+      button.setAttribute("title", currentTitle);
+      button.classList.remove('code-copy-button-checked');
+    }, 1000);
+    // clear code selection
+    e.clearSelection();
+  }
+  const getTextToCopy = function(trigger) {
+      const codeEl = trigger.previousElementSibling.cloneNode(true);
+      for (const childEl of codeEl.children) {
+        if (isCodeAnnotation(childEl)) {
+          childEl.remove();
+        }
+      }
+      return codeEl.innerText;
+  }
+  const clipboard = new window.ClipboardJS('.code-copy-button:not([data-in-quarto-modal])', {
+    text: getTextToCopy
+  });
+  clipboard.on('success', onCopySuccess);
+  if (window.document.getElementById('quarto-embedded-source-code-modal')) {
+    // For code content inside modals, clipBoardJS needs to be initialized with a container option
+    // TODO: Check when it could be a function (https://github.com/zenorocha/clipboard.js/issues/860)
+    const clipboardModal = new window.ClipboardJS('.code-copy-button[data-in-quarto-modal]', {
+      text: getTextToCopy,
+      container: window.document.getElementById('quarto-embedded-source-code-modal')
+    });
+    clipboardModal.on('success', onCopySuccess);
+  }
+    var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
+    var mailtoRegex = new RegExp(/^mailto:/);
+      var filterRegex = new RegExp("https:\/\/robertslab\.github\.io\/sams-notebook");
+    var isInternal = (href) => {
+        return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
+    }
+    // Inspect non-navigation links and adorn them if external
+ 	var links = window.document.querySelectorAll('a[href]:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item):not(.quarto-navigation-tool):not(.about-link)');
+    for (var i=0; i<links.length; i++) {
+      const link = links[i];
+      if (!isInternal(link.href)) {
+        // undo the damage that might have been done by quarto-nav.js in the case of
+        // links that we want to consider external
+        if (link.dataset.originalHref !== undefined) {
+          link.href = link.dataset.originalHref;
+        }
+      }
+    }
+  function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
+    const config = {
+      allowHTML: true,
+      maxWidth: 500,
+      delay: 100,
+      arrow: false,
+      appendTo: function(el) {
+          return el.parentElement;
+      },
+      interactive: true,
+      interactiveBorder: 10,
+      theme: 'quarto',
+      placement: 'bottom-start',
+    };
+    if (contentFn) {
+      config.content = contentFn;
+    }
+    if (onTriggerFn) {
+      config.onTrigger = onTriggerFn;
+    }
+    if (onUntriggerFn) {
+      config.onUntrigger = onUntriggerFn;
+    }
+    window.tippy(el, config); 
+  }
+  const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+  for (var i=0; i<noterefs.length; i++) {
+    const ref = noterefs[i];
+    tippyHover(ref, function() {
+      // use id or data attribute instead here
+      let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+      try { href = new URL(href).hash; } catch {}
+      const id = href.replace(/^#\/?/, "");
+      const note = window.document.getElementById(id);
+      if (note) {
+        return note.innerHTML;
+      } else {
+        return "";
+      }
+    });
+  }
+  const xrefs = window.document.querySelectorAll('a.quarto-xref');
+  const processXRef = (id, note) => {
+    // Strip column container classes
+    const stripColumnClz = (el) => {
+      el.classList.remove("page-full", "page-columns");
+      if (el.children) {
+        for (const child of el.children) {
+          stripColumnClz(child);
+        }
+      }
+    }
+    stripColumnClz(note)
+    if (id === null || id.startsWith('sec-')) {
+      // Special case sections, only their first couple elements
+      const container = document.createElement("div");
+      if (note.children && note.children.length > 2) {
+        container.appendChild(note.children[0].cloneNode(true));
+        for (let i = 1; i < note.children.length; i++) {
+          const child = note.children[i];
+          if (child.tagName === "P" && child.innerText === "") {
+            continue;
+          } else {
+            container.appendChild(child.cloneNode(true));
+            break;
+          }
+        }
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(container);
+        }
+        return container.innerHTML
+      } else {
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(note);
+        }
+        return note.innerHTML;
+      }
+    } else {
+      // Remove any anchor links if they are present
+      const anchorLink = note.querySelector('a.anchorjs-link');
+      if (anchorLink) {
+        anchorLink.remove();
+      }
+      if (window.Quarto?.typesetMath) {
+        window.Quarto.typesetMath(note);
+      }
+      // TODO in 1.5, we should make sure this works without a callout special case
+      if (note.classList.contains("callout")) {
+        return note.outerHTML;
+      } else {
+        return note.innerHTML;
+      }
+    }
+  }
+  for (var i=0; i<xrefs.length; i++) {
+    const xref = xrefs[i];
+    tippyHover(xref, undefined, function(instance) {
+      instance.disable();
+      let url = xref.getAttribute('href');
+      let hash = undefined; 
+      if (url.startsWith('#')) {
+        hash = url;
+      } else {
+        try { hash = new URL(url).hash; } catch {}
+      }
+      if (hash) {
+        const id = hash.replace(/^#\/?/, "");
+        const note = window.document.getElementById(id);
+        if (note !== null) {
+          try {
+            const html = processXRef(id, note.cloneNode(true));
+            instance.setContent(html);
+          } finally {
+            instance.enable();
+            instance.show();
+          }
+        } else {
+          // See if we can fetch this
+          fetch(url.split('#')[0])
+          .then(res => res.text())
+          .then(html => {
+            const parser = new DOMParser();
+            const htmlDoc = parser.parseFromString(html, "text/html");
+            const note = htmlDoc.getElementById(id);
+            if (note !== null) {
+              const html = processXRef(id, note);
+              instance.setContent(html);
+            } 
+          }).finally(() => {
+            instance.enable();
+            instance.show();
+          });
+        }
+      } else {
+        // See if we can fetch a full url (with no hash to target)
+        // This is a special case and we should probably do some content thinning / targeting
+        fetch(url)
+        .then(res => res.text())
+        .then(html => {
+          const parser = new DOMParser();
+          const htmlDoc = parser.parseFromString(html, "text/html");
+          const note = htmlDoc.querySelector('main.content');
+          if (note !== null) {
+            // This should only happen for chapter cross references
+            // (since there is no id in the URL)
+            // remove the first header
+            if (note.children.length > 0 && note.children[0].tagName === "HEADER") {
+              note.children[0].remove();
+            }
+            const html = processXRef(null, note);
+            instance.setContent(html);
+          } 
+        }).finally(() => {
+          instance.enable();
+          instance.show();
+        });
+      }
+    }, function(instance) {
+    });
+  }
+      let selectedAnnoteEl;
+      const selectorForAnnotation = ( cell, annotation) => {
+        let cellAttr = 'data-code-cell="' + cell + '"';
+        let lineAttr = 'data-code-annotation="' +  annotation + '"';
+        const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+        return selector;
+      }
+      const selectCodeLines = (annoteEl) => {
+        const doc = window.document;
+        const targetCell = annoteEl.getAttribute("data-target-cell");
+        const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+        const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+        const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+        const lineIds = lines.map((line) => {
+          return targetCell + "-" + line;
+        })
+        let top = null;
+        let height = null;
+        let parent = null;
+        if (lineIds.length > 0) {
+            //compute the position of the single el (top and bottom and make a div)
+            const el = window.document.getElementById(lineIds[0]);
+            top = el.offsetTop;
+            height = el.offsetHeight;
+            parent = el.parentElement.parentElement;
+          if (lineIds.length > 1) {
+            const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+            const bottom = lastEl.offsetTop + lastEl.offsetHeight;
+            height = bottom - top;
+          }
+          if (top !== null && height !== null && parent !== null) {
+            // cook up a div (if necessary) and position it 
+            let div = window.document.getElementById("code-annotation-line-highlight");
+            if (div === null) {
+              div = window.document.createElement("div");
+              div.setAttribute("id", "code-annotation-line-highlight");
+              div.style.position = 'absolute';
+              parent.appendChild(div);
+            }
+            div.style.top = top - 2 + "px";
+            div.style.height = height + 4 + "px";
+            div.style.left = 0;
+            let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+            if (gutterDiv === null) {
+              gutterDiv = window.document.createElement("div");
+              gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+              gutterDiv.style.position = 'absolute';
+              const codeCell = window.document.getElementById(targetCell);
+              const gutter = codeCell.querySelector('.code-annotation-gutter');
+              gutter.appendChild(gutterDiv);
+            }
+            gutterDiv.style.top = top - 2 + "px";
+            gutterDiv.style.height = height + 4 + "px";
+          }
+          selectedAnnoteEl = annoteEl;
+        }
+      };
+      const unselectCodeLines = () => {
+        const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+        elementsIds.forEach((elId) => {
+          const div = window.document.getElementById(elId);
+          if (div) {
+            div.remove();
+          }
+        });
+        selectedAnnoteEl = undefined;
+      };
+        // Handle positioning of the toggle
+    window.addEventListener(
+      "resize",
+      throttle(() => {
+        elRect = undefined;
+        if (selectedAnnoteEl) {
+          selectCodeLines(selectedAnnoteEl);
+        }
+      }, 10)
+    );
+    function throttle(fn, ms) {
+    let throttle = false;
+    let timer;
+      return (...args) => {
+        if(!throttle) { // first call gets through
+            fn.apply(this, args);
+            throttle = true;
+        } else { // all the others get throttled
+            if(timer) clearTimeout(timer); // cancel #2
+            timer = setTimeout(() => {
+              fn.apply(this, args);
+              timer = throttle = false;
+            }, ms);
+        }
+      };
+    }
+      // Attach click handler to the DT
+      const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
+      for (const annoteDlNode of annoteDls) {
+        annoteDlNode.addEventListener('click', (event) => {
+          const clickedEl = event.target;
+          if (clickedEl !== selectedAnnoteEl) {
+            unselectCodeLines();
+            const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
+            if (activeEl) {
+              activeEl.classList.remove('code-annotation-active');
+            }
+            selectCodeLines(clickedEl);
+            clickedEl.classList.add('code-annotation-active');
+          } else {
+            // Unselect the line
+            unselectCodeLines();
+            clickedEl.classList.remove('code-annotation-active');
+          }
+        });
+      }
+  const findCites = (el) => {
+    const parentEl = el.parentElement;
+    if (parentEl) {
+      const cites = parentEl.dataset.cites;
+      if (cites) {
+        return {
+          el,
+          cites: cites.split(' ')
+        };
+      } else {
+        return findCites(el.parentElement)
+      }
+    } else {
+      return undefined;
+    }
+  };
+  var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+  for (var i=0; i<bibliorefs.length; i++) {
+    const ref = bibliorefs[i];
+    const citeInfo = findCites(ref);
+    if (citeInfo) {
+      tippyHover(citeInfo.el, function() {
+        var popup = window.document.createElement('div');
+        citeInfo.cites.forEach(function(cite) {
+          var citeDiv = window.document.createElement('div');
+          citeDiv.classList.add('hanging-indent');
+          citeDiv.classList.add('csl-entry');
+          var biblioDiv = window.document.getElementById('ref-' + cite);
+          if (biblioDiv) {
+            citeDiv.innerHTML = biblioDiv.innerHTML;
+          }
+          popup.appendChild(citeDiv);
+        });
+        return popup.innerHTML;
+      });
+    }
+  }
+});
+</script>
+</div> <!-- /content -->
+
+
+
+
+</body></html>
