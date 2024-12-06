@@ -274,7 +274,8 @@ gtag('config', 'G-7483T61T11', { 'anonymize_ip': true});
     <h2 id="toc-title">Contents</h2>
    
   <ul>
-  <li><a href="#intro" id="toc-intro" class="nav-link active" data-scroll-target="#intro">1 INTRO</a>
+  <li><a href="#go-to-goslim" id="toc-go-to-goslim" class="nav-link active" data-scroll-target="#go-to-goslim">01-GO-to-GOslim</a></li>
+  <li><a href="#intro" id="toc-intro" class="nav-link" data-scroll-target="#intro">1 INTRO</a>
   <ul>
   <li><a href="#code" id="toc-code" class="nav-link" data-scroll-target="#code">1.1 CODE</a>
   <ul>
@@ -322,9 +323,39 @@ Note
 </div>
 </div>
 <div class="callout-body-container callout-body">
-<p>This notebook consists of a markdown rendering of <a href="https://github.com/RobertsLab/code/blob/351b2ad5a31fac96f48da84c76955cab2c506d28/r_projects/sam/20241030-phel-GO-to-GOslim/code/01-GO-to-GOslim.Rmd">01-GO-to-GOslim.Rmd</a> (commit: <code>351b2ad</code>).</p>
+<p>This notebook consists of a markdown rendering of <a href="https://github.com/RobertsLab/code/blob/1b8c7b6952d06ab91d4c190d99bea088f6a32707/r_projects/sam/20241030-phel-GO-to-GOslim/code/01-GO-to-GOslim.Rmd">01-GO-to-GOslim.Rmd</a> (commit: <code>1b8c7b6</code>).</p>
 </div>
 </div>
+<section id="go-to-goslim" class="level1">
+<h1>01-GO-to-GOslim</h1>
+<p>Sam White 2024-10-30</p>
+<ul>
+<li><a href="#1-intro">1 INTRO</a>
+<ul>
+<li><a href="#11-code">1.1 CODE</a>
+<ul>
+<li><a href="#111-variables">1.1.1 Variables</a></li>
+<li><a href="#112-set-gseabase-location-and-download-goslim_genericobo">1.1.2 Set GSEAbase location and download <code>goslim_generic.obo</code></a></li>
+<li><a href="#113-read-in-genego-file">1.1.3 Read in gene/GO file</a></li>
+<li><a href="#114-remove-rows-with-na-remove-whitespace-in-go-ids-column-and-keep-just-genego-ids-columns">1.1.4 Remove rows with NA, remove whitespace in GO IDs column and keep just gene/GO IDs columns</a></li>
+<li><a href="#115-flatten-gene-and-go-ids">1.1.5 “Flatten” gene and GO IDs</a></li>
+<li><a href="#116-group">1.1.6 Group</a></li>
+<li><a href="#117-map-go-ids-to-goslims">1.1.7 Map GO IDs to GOslims</a></li>
+<li><a href="#118-extract-goslims-from-obo">1.1.8 Extract GOslims from OBO</a></li>
+<li><a href="#119-get-biological-process-bp-goslims-associated-with-provided-go-ids">1.1.9 Get Biological Process (BP) GOslims associated with provided GO IDs.</a></li>
+<li><a href="#1110-map-go-to-goslims">1.1.10 Map GO to GOslims</a></li>
+<li><a href="#1111-flatten-goslims">1.1.11 Flatten GOslims</a></li>
+</ul></li>
+<li><a href="#12-write-slimdf-to-file">1.2 Write slimdf to file</a>
+<ul>
+<li><a href="#121-sort-and-select-slmidf">1.2.1 Sort and select slmidf</a></li>
+<li><a href="#122-write-formatted-slimcountdf-to-file">1.2.2 Write formatted slim.count.df to file</a></li>
+</ul></li>
+<li><a href="#13-count-unique-biological-process-go-ids">1.3 Count unique Biological Process GO IDs</a></li>
+</ul></li>
+<li><a href="#2-references">2 REFERENCES</a></li>
+</ul>
+</section>
 <section id="intro" class="level1">
 <h1>1 INTRO</h1>
 <p>This notebook is setup to <a href="https://github.com/RobertsLab/resources/issues/1989">take GO IDs and categorize them into their corresponding GOslims</a> (GitHub Issue). Specifically, it will use the following tab-delimited input file:</p>
@@ -349,48 +380,49 @@ lipid metabolic process                                 212</code></pre>
 <h2 class="anchored" data-anchor-id="code">1.1 CODE</h2>
 <div class="sourceCode" id="cb2"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(GSEABase)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="sourceCode" id="cb3"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(GO.db)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="sourceCode" id="cb4"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(knitr)</span>
-<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(tidyverse)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="sourceCode" id="cb5"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a>knitr<span class="sc">::</span>opts_chunk<span class="sc">$</span><span class="fu">set</span>(</span>
-<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a>  <span class="at">echo =</span> <span class="cn">TRUE</span>,         <span class="co"># Display code chunks</span></span>
-<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a>  <span class="at">eval =</span> <span class="cn">FALSE</span>,        <span class="co"># Evaluate code chunks</span></span>
-<span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a>  <span class="at">warning =</span> <span class="cn">FALSE</span>,     <span class="co"># Hide warnings</span></span>
-<span id="cb5-5"><a href="#cb5-5" aria-hidden="true" tabindex="-1"></a>  <span class="at">message =</span> <span class="cn">FALSE</span>,     <span class="co"># Hide messages</span></span>
-<span id="cb5-6"><a href="#cb5-6" aria-hidden="true" tabindex="-1"></a>  <span class="at">comment =</span> <span class="st">""</span>         <span class="co"># Prevents appending '##' to beginning of lines in code output</span></span>
-<span id="cb5-7"><a href="#cb5-7" aria-hidden="true" tabindex="-1"></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<pre><code>## </code></pre>
+<div class="sourceCode" id="cb5"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(knitr)</span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(tidyverse)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode" id="cb6"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a>knitr<span class="sc">::</span>opts_chunk<span class="sc">$</span><span class="fu">set</span>(</span>
+<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a>  <span class="at">echo =</span> <span class="cn">TRUE</span>,         <span class="co"># Display code chunks</span></span>
+<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a>  <span class="at">eval =</span> <span class="cn">FALSE</span>,        <span class="co"># Evaluate code chunks</span></span>
+<span id="cb6-4"><a href="#cb6-4" aria-hidden="true" tabindex="-1"></a>  <span class="at">warning =</span> <span class="cn">FALSE</span>,     <span class="co"># Hide warnings</span></span>
+<span id="cb6-5"><a href="#cb6-5" aria-hidden="true" tabindex="-1"></a>  <span class="at">message =</span> <span class="cn">FALSE</span>,     <span class="co"># Hide messages</span></span>
+<span id="cb6-6"><a href="#cb6-6" aria-hidden="true" tabindex="-1"></a>  <span class="at">comment =</span> <span class="st">""</span>         <span class="co"># Prevents appending '##' to beginning of lines in code output</span></span>
+<span id="cb6-7"><a href="#cb6-7" aria-hidden="true" tabindex="-1"></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <section id="variables" class="level3">
 <h3 class="anchored" data-anchor-id="variables">1.1.1 Variables</h3>
-<div class="sourceCode" id="cb6"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Column names corresponding to gene name/ID and GO IDs</span></span>
-<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a>GO.ID.column <span class="ot">&lt;-</span> <span class="st">"Gene.Ontology.IDs"</span></span>
-<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a>gene.ID.column <span class="ot">&lt;-</span> <span class="st">"gene_id"</span></span>
-<span id="cb6-4"><a href="#cb6-4" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb6-5"><a href="#cb6-5" aria-hidden="true" tabindex="-1"></a><span class="co"># Relative path or URL to input file</span></span>
-<span id="cb6-6"><a href="#cb6-6" aria-hidden="true" tabindex="-1"></a>input.file <span class="ot">&lt;-</span> <span class="st">"https://raw.githubusercontent.com/grace-ac/paper-pycno-sswd-2021-2022/d1cdf13c36085868df4ef4b75d2b7de03ef08d1c/analyses/25-compare-2021-2022/DEGlist_same_2021-2022_forGOslim.tab"</span></span>
-<span id="cb6-7"><a href="#cb6-7" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb6-8"><a href="#cb6-8" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb6-9"><a href="#cb6-9" aria-hidden="true" tabindex="-1"></a><span class="do">##### Official GO info - no need to change #####</span></span>
-<span id="cb6-10"><a href="#cb6-10" aria-hidden="true" tabindex="-1"></a>goslims_obo <span class="ot">&lt;-</span> <span class="st">"goslim_generic.obo"</span></span>
-<span id="cb6-11"><a href="#cb6-11" aria-hidden="true" tabindex="-1"></a>goslims_url <span class="ot">&lt;-</span> <span class="st">"http://current.geneontology.org/ontology/subsets/goslim_generic.obo"</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode" id="cb7"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Column names corresponding to gene name/ID and GO IDs</span></span>
+<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a>GO.ID.column <span class="ot">&lt;-</span> <span class="st">"Gene.Ontology.IDs"</span></span>
+<span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a>gene.ID.column <span class="ot">&lt;-</span> <span class="st">"gene_id"</span></span>
+<span id="cb7-4"><a href="#cb7-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-5"><a href="#cb7-5" aria-hidden="true" tabindex="-1"></a><span class="co"># Relative path or URL to input file</span></span>
+<span id="cb7-6"><a href="#cb7-6" aria-hidden="true" tabindex="-1"></a>input.file <span class="ot">&lt;-</span> <span class="st">"https://raw.githubusercontent.com/grace-ac/paper-pycno-sswd-2021-2022/d1cdf13c36085868df4ef4b75d2b7de03ef08d1c/analyses/25-compare-2021-2022/DEGlist_same_2021-2022_forGOslim.tab"</span></span>
+<span id="cb7-7"><a href="#cb7-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-8"><a href="#cb7-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-9"><a href="#cb7-9" aria-hidden="true" tabindex="-1"></a><span class="do">##### Official GO info - no need to change #####</span></span>
+<span id="cb7-10"><a href="#cb7-10" aria-hidden="true" tabindex="-1"></a>goslims_obo <span class="ot">&lt;-</span> <span class="st">"goslim_generic.obo"</span></span>
+<span id="cb7-11"><a href="#cb7-11" aria-hidden="true" tabindex="-1"></a>goslims_url <span class="ot">&lt;-</span> <span class="st">"http://current.geneontology.org/ontology/subsets/goslim_generic.obo"</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </section>
 <section id="set-gseabase-location-and-download-goslim_generic.obo" class="level3">
 <h3 class="anchored" data-anchor-id="set-gseabase-location-and-download-goslim_generic.obo">1.1.2 Set GSEAbase location and download <code>goslim_generic.obo</code></h3>
-<div class="sourceCode" id="cb7"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Find GSEAbase installation location</span></span>
-<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a>gseabase_location <span class="ot">&lt;-</span> <span class="fu">find.package</span>(<span class="st">"GSEABase"</span>)</span>
-<span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb7-4"><a href="#cb7-4" aria-hidden="true" tabindex="-1"></a><span class="co"># Load path to GOslim OBO file</span></span>
-<span id="cb7-5"><a href="#cb7-5" aria-hidden="true" tabindex="-1"></a>goslim_obo_destintation <span class="ot">&lt;-</span> <span class="fu">file.path</span>(gseabase_location, <span class="st">"extdata"</span>, goslims_obo, <span class="at">fsep =</span> <span class="st">"/"</span>)</span>
-<span id="cb7-6"><a href="#cb7-6" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb7-7"><a href="#cb7-7" aria-hidden="true" tabindex="-1"></a><span class="co"># Download the GOslim OBO file</span></span>
-<span id="cb7-8"><a href="#cb7-8" aria-hidden="true" tabindex="-1"></a><span class="fu">download.file</span>(<span class="at">url =</span> goslims_url, <span class="at">destfile =</span> goslim_obo_destintation)</span>
-<span id="cb7-9"><a href="#cb7-9" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb7-10"><a href="#cb7-10" aria-hidden="true" tabindex="-1"></a><span class="co"># Loads package files</span></span>
-<span id="cb7-11"><a href="#cb7-11" aria-hidden="true" tabindex="-1"></a>gseabase_files <span class="ot">&lt;-</span> <span class="fu">system.file</span>(<span class="st">"extdata"</span>, goslims_obo, <span class="at">package=</span><span class="st">"GSEABase"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode" id="cb8"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Find GSEAbase installation location</span></span>
+<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a>gseabase_location <span class="ot">&lt;-</span> <span class="fu">find.package</span>(<span class="st">"GSEABase"</span>)</span>
+<span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb8-4"><a href="#cb8-4" aria-hidden="true" tabindex="-1"></a><span class="co"># Load path to GOslim OBO file</span></span>
+<span id="cb8-5"><a href="#cb8-5" aria-hidden="true" tabindex="-1"></a>goslim_obo_destintation <span class="ot">&lt;-</span> <span class="fu">file.path</span>(gseabase_location, <span class="st">"extdata"</span>, goslims_obo, <span class="at">fsep =</span> <span class="st">"/"</span>)</span>
+<span id="cb8-6"><a href="#cb8-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb8-7"><a href="#cb8-7" aria-hidden="true" tabindex="-1"></a><span class="co"># Download the GOslim OBO file</span></span>
+<span id="cb8-8"><a href="#cb8-8" aria-hidden="true" tabindex="-1"></a><span class="fu">download.file</span>(<span class="at">url =</span> goslims_url, <span class="at">destfile =</span> goslim_obo_destintation)</span>
+<span id="cb8-9"><a href="#cb8-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb8-10"><a href="#cb8-10" aria-hidden="true" tabindex="-1"></a><span class="co"># Loads package files</span></span>
+<span id="cb8-11"><a href="#cb8-11" aria-hidden="true" tabindex="-1"></a>gseabase_files <span class="ot">&lt;-</span> <span class="fu">system.file</span>(<span class="st">"extdata"</span>, goslims_obo, <span class="at">package=</span><span class="st">"GSEABase"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </section>
 <section id="read-in-genego-file" class="level3">
 <h3 class="anchored" data-anchor-id="read-in-genego-file">1.1.3 Read in gene/GO file</h3>
-<div class="sourceCode" id="cb8"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a>full.gene.df <span class="ot">&lt;-</span> <span class="fu">read.csv</span>(<span class="at">file =</span> input.file, <span class="at">header =</span> <span class="cn">TRUE</span>, <span class="at">sep =</span> <span class="st">"</span><span class="sc">\t</span><span class="st">"</span>)</span>
-<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a><span class="fu">str</span>(full.gene.df)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode" id="cb9"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a>full.gene.df <span class="ot">&lt;-</span> <span class="fu">read.csv</span>(<span class="at">file =</span> input.file, <span class="at">header =</span> <span class="cn">TRUE</span>, <span class="at">sep =</span> <span class="st">"</span><span class="sc">\t</span><span class="st">"</span>)</span>
+<span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-3"><a href="#cb9-3" aria-hidden="true" tabindex="-1"></a><span class="fu">str</span>(full.gene.df)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <pre><code>'data.frame':   4114 obs. of  3 variables:
  $ gene_id          : chr  "g21712" "g21713" "g15181" "g15182" ...
  $ uniprot_accession: chr  "P54985" "Q8TDM6" NA NA ...
@@ -398,14 +430,14 @@ lipid metabolic process                                 212</code></pre>
 </section>
 <section id="remove-rows-with-na-remove-whitespace-in-go-ids-column-and-keep-just-genego-ids-columns" class="level3">
 <h3 class="anchored" data-anchor-id="remove-rows-with-na-remove-whitespace-in-go-ids-column-and-keep-just-genego-ids-columns">1.1.4 Remove rows with NA, remove whitespace in GO IDs column and keep just gene/GO IDs columns</h3>
-<div class="sourceCode" id="cb10"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Clean whitespace, filter NA/empty rows, select columns, and split GO terms using column name variables</span></span>
-<span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a>gene.GO.df <span class="ot">&lt;-</span> full.gene.df <span class="sc">%&gt;%</span></span>
-<span id="cb10-3"><a href="#cb10-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="sc">!!</span><span class="at">GO.ID.column :=</span> <span class="fu">str_replace_all</span>(.data[[GO.ID.column]], <span class="st">"</span><span class="sc">\\</span><span class="st">s*;</span><span class="sc">\\</span><span class="st">s*"</span>, <span class="st">";"</span>)) <span class="sc">%&gt;%</span> <span class="co"># Clean up spaces around ";"</span></span>
-<span id="cb10-4"><a href="#cb10-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(<span class="sc">!</span><span class="fu">is.na</span>(.data[[gene.ID.column]]) <span class="sc">&amp;</span> <span class="sc">!</span><span class="fu">is.na</span>(.data[[GO.ID.column]]) <span class="sc">&amp;</span> .data[[GO.ID.column]] <span class="sc">!=</span> <span class="st">""</span>) <span class="sc">%&gt;%</span> </span>
-<span id="cb10-5"><a href="#cb10-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">select</span>(<span class="fu">all_of</span>(<span class="fu">c</span>(gene.ID.column, GO.ID.column)))</span>
-<span id="cb10-6"><a href="#cb10-6" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb10-7"><a href="#cb10-7" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb10-8"><a href="#cb10-8" aria-hidden="true" tabindex="-1"></a><span class="fu">str</span>(gene.GO.df)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode" id="cb11"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Clean whitespace, filter NA/empty rows, select columns, and split GO terms using column name variables</span></span>
+<span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a>gene.GO.df <span class="ot">&lt;-</span> full.gene.df <span class="sc">%&gt;%</span></span>
+<span id="cb11-3"><a href="#cb11-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="sc">!!</span><span class="at">GO.ID.column :=</span> <span class="fu">str_replace_all</span>(.data[[GO.ID.column]], <span class="st">"</span><span class="sc">\\</span><span class="st">s*;</span><span class="sc">\\</span><span class="st">s*"</span>, <span class="st">";"</span>)) <span class="sc">%&gt;%</span> <span class="co"># Clean up spaces around ";"</span></span>
+<span id="cb11-4"><a href="#cb11-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(<span class="sc">!</span><span class="fu">is.na</span>(.data[[gene.ID.column]]) <span class="sc">&amp;</span> <span class="sc">!</span><span class="fu">is.na</span>(.data[[GO.ID.column]]) <span class="sc">&amp;</span> .data[[GO.ID.column]] <span class="sc">!=</span> <span class="st">""</span>) <span class="sc">%&gt;%</span> </span>
+<span id="cb11-5"><a href="#cb11-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">select</span>(<span class="fu">all_of</span>(<span class="fu">c</span>(gene.ID.column, GO.ID.column)))</span>
+<span id="cb11-6"><a href="#cb11-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb11-7"><a href="#cb11-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb11-8"><a href="#cb11-8" aria-hidden="true" tabindex="-1"></a><span class="fu">str</span>(gene.GO.df)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <pre><code>'data.frame':   3295 obs. of  2 variables:
  $ gene_id          : chr  "g21712" "g21713" "g15183" "g7651" ...
  $ Gene.Ontology.IDs: chr  "GO:0003755;GO:0005737;GO:0006457;GO:0043231" "GO:0001837;GO:0005737;GO:0005886;GO:0005912;GO:0007165;GO:0008013;GO:0008092;GO:0008285;GO:0014069;GO:0030011;G"| __truncated__ "GO:0000785;GO:0000978;GO:0000981;GO:0001228;GO:0001657;GO:0001701;GO:0001706;GO:0001707;GO:0003140;GO:0003180;G"| __truncated__ "GO:0005543;GO:0005737;GO:0005768;GO:0005829;GO:0005886;GO:0006897;GO:0007010;GO:0007015;GO:0030100;GO:0030659;G"| __truncated__ ...</code></pre>
@@ -413,9 +445,9 @@ lipid metabolic process                                 212</code></pre>
 <section id="flatten-gene-and-go-ids" class="level3">
 <h3 class="anchored" data-anchor-id="flatten-gene-and-go-ids">1.1.5 “Flatten” gene and GO IDs</h3>
 <p>This flattens the file so all of the GO IDs per gene are separated into one GO ID per gene per row.</p>
-<div class="sourceCode" id="cb12"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a>flat.gene.GO.df <span class="ot">&lt;-</span> gene.GO.df <span class="sc">%&gt;%</span> <span class="fu">separate_rows</span>(<span class="sc">!!</span><span class="fu">sym</span>(GO.ID.column), <span class="at">sep =</span> <span class="st">";"</span>)</span>
-<span id="cb12-2"><a href="#cb12-2" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb12-3"><a href="#cb12-3" aria-hidden="true" tabindex="-1"></a><span class="fu">str</span>(flat.gene.GO.df)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode" id="cb13"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a>flat.gene.GO.df <span class="ot">&lt;-</span> gene.GO.df <span class="sc">%&gt;%</span> <span class="fu">separate_rows</span>(<span class="sc">!!</span><span class="fu">sym</span>(GO.ID.column), <span class="at">sep =</span> <span class="st">";"</span>)</span>
+<span id="cb13-2"><a href="#cb13-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb13-3"><a href="#cb13-3" aria-hidden="true" tabindex="-1"></a><span class="fu">str</span>(flat.gene.GO.df)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <pre><code>tibble [42,028 × 2] (S3: tbl_df/tbl/data.frame)
  $ gene_id          : chr [1:42028] "g21712" "g21712" "g21712" "g21712" ...
  $ Gene.Ontology.IDs: chr [1:42028] "GO:0003755" "GO:0005737" "GO:0006457" "GO:0043231" ...</code></pre>
@@ -423,11 +455,11 @@ lipid metabolic process                                 212</code></pre>
 <section id="group" class="level3">
 <h3 class="anchored" data-anchor-id="group">1.1.6 Group</h3>
 <p>Groups the genes by GO ID (i.e.&nbsp;lists all genes associated with each unique GO ID)</p>
-<div class="sourceCode" id="cb14"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a>grouped.gene.GO.df <span class="ot">&lt;-</span> flat.gene.GO.df <span class="sc">%&gt;%</span></span>
-<span id="cb14-2"><a href="#cb14-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">group_by</span>(<span class="sc">!!</span><span class="fu">sym</span>(GO.ID.column)) <span class="sc">%&gt;%</span></span>
-<span id="cb14-3"><a href="#cb14-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">summarise</span>(<span class="sc">!!</span><span class="at">gene.ID.column :=</span> <span class="fu">paste</span>(.data[[gene.ID.column]], <span class="at">collapse =</span> <span class="st">","</span>))</span>
-<span id="cb14-4"><a href="#cb14-4" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb14-5"><a href="#cb14-5" aria-hidden="true" tabindex="-1"></a><span class="fu">str</span>(grouped.gene.GO.df)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode" id="cb15"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a>grouped.gene.GO.df <span class="ot">&lt;-</span> flat.gene.GO.df <span class="sc">%&gt;%</span></span>
+<span id="cb15-2"><a href="#cb15-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">group_by</span>(<span class="sc">!!</span><span class="fu">sym</span>(GO.ID.column)) <span class="sc">%&gt;%</span></span>
+<span id="cb15-3"><a href="#cb15-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">summarise</span>(<span class="sc">!!</span><span class="at">gene.ID.column :=</span> <span class="fu">paste</span>(.data[[gene.ID.column]], <span class="at">collapse =</span> <span class="st">","</span>))</span>
+<span id="cb15-4"><a href="#cb15-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb15-5"><a href="#cb15-5" aria-hidden="true" tabindex="-1"></a><span class="fu">str</span>(grouped.gene.GO.df)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <pre><code>tibble [8,666 × 2] (S3: tbl_df/tbl/data.frame)
  $ Gene.Ontology.IDs: chr [1:8666] "GO:0000012" "GO:0000014" "GO:0000015" "GO:0000025" ...
  $ gene_id          : chr [1:8666] "g22030,g22031,g16480,g4241" "g13422,g21327" "g12040" "g9214" ...</code></pre>
@@ -435,22 +467,22 @@ lipid metabolic process                                 212</code></pre>
 <section id="map-go-ids-to-goslims" class="level3">
 <h3 class="anchored" data-anchor-id="map-go-ids-to-goslims">1.1.7 Map GO IDs to GOslims</h3>
 <p>The mapping steps were derived from this <a href="https://support.bioconductor.org/p/128407/#128408">bioconductor forum response</a></p>
-<div class="sourceCode" id="cb16"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Vector of GO IDs</span></span>
-<span id="cb16-2"><a href="#cb16-2" aria-hidden="true" tabindex="-1"></a>go_ids <span class="ot">&lt;-</span> grouped.gene.GO.df[[GO.ID.column]]</span>
-<span id="cb16-3"><a href="#cb16-3" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb16-4"><a href="#cb16-4" aria-hidden="true" tabindex="-1"></a><span class="fu">str</span>(go_ids)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode" id="cb17"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Vector of GO IDs</span></span>
+<span id="cb17-2"><a href="#cb17-2" aria-hidden="true" tabindex="-1"></a>go_ids <span class="ot">&lt;-</span> grouped.gene.GO.df[[GO.ID.column]]</span>
+<span id="cb17-3"><a href="#cb17-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb17-4"><a href="#cb17-4" aria-hidden="true" tabindex="-1"></a><span class="fu">str</span>(go_ids)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <pre><code> chr [1:8666] "GO:0000012" "GO:0000014" "GO:0000015" "GO:0000025" ...</code></pre>
 </section>
 <section id="extract-goslims-from-obo" class="level3">
 <h3 class="anchored" data-anchor-id="extract-goslims-from-obo">1.1.8 Extract GOslims from OBO</h3>
 <p>Creates new OBO Collection object of just GOslims, based on provided GO IDs.</p>
-<div class="sourceCode" id="cb18"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb18-1"><a href="#cb18-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Create GSEAbase GOCollection using `go_ids`</span></span>
-<span id="cb18-2"><a href="#cb18-2" aria-hidden="true" tabindex="-1"></a>myCollection <span class="ot">&lt;-</span> <span class="fu">GOCollection</span>(go_ids)</span>
-<span id="cb18-3"><a href="#cb18-3" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb18-4"><a href="#cb18-4" aria-hidden="true" tabindex="-1"></a><span class="co"># Retrieve GOslims from GO OBO file set</span></span>
-<span id="cb18-5"><a href="#cb18-5" aria-hidden="true" tabindex="-1"></a>slim <span class="ot">&lt;-</span> <span class="fu">getOBOCollection</span>(gseabase_files)</span>
-<span id="cb18-6"><a href="#cb18-6" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb18-7"><a href="#cb18-7" aria-hidden="true" tabindex="-1"></a><span class="fu">str</span>(slim)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode" id="cb19"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb19-1"><a href="#cb19-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Create GSEAbase GOCollection using `go_ids`</span></span>
+<span id="cb19-2"><a href="#cb19-2" aria-hidden="true" tabindex="-1"></a>myCollection <span class="ot">&lt;-</span> <span class="fu">GOCollection</span>(go_ids)</span>
+<span id="cb19-3"><a href="#cb19-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb19-4"><a href="#cb19-4" aria-hidden="true" tabindex="-1"></a><span class="co"># Retrieve GOslims from GO OBO file set</span></span>
+<span id="cb19-5"><a href="#cb19-5" aria-hidden="true" tabindex="-1"></a>slim <span class="ot">&lt;-</span> <span class="fu">getOBOCollection</span>(gseabase_files)</span>
+<span id="cb19-6"><a href="#cb19-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb19-7"><a href="#cb19-7" aria-hidden="true" tabindex="-1"></a><span class="fu">str</span>(slim)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <pre><code>Formal class 'OBOCollection' [package "GSEABase"] with 7 slots
   ..@ .stanza     :'data.frame':    153 obs. of  1 variable:
   .. ..$ value: chr [1:153] "Root" "Term" "Term" "Term" ...
@@ -467,9 +499,9 @@ lipid metabolic process                                 212</code></pre>
 </section>
 <section id="get-biological-process-bp-goslims-associated-with-provided-go-ids." class="level3">
 <h3 class="anchored" data-anchor-id="get-biological-process-bp-goslims-associated-with-provided-go-ids.">1.1.9 Get Biological Process (BP) GOslims associated with provided GO IDs.</h3>
-<div class="sourceCode" id="cb20"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb20-1"><a href="#cb20-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Retrieve Biological Process (BP) GOslims</span></span>
-<span id="cb20-2"><a href="#cb20-2" aria-hidden="true" tabindex="-1"></a>slimdf <span class="ot">&lt;-</span> <span class="fu">goSlim</span>(myCollection, slim, <span class="st">"BP"</span>, verbose)</span>
-<span id="cb20-3"><a href="#cb20-3" aria-hidden="true" tabindex="-1"></a><span class="fu">str</span>(slimdf)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode" id="cb21"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb21-1"><a href="#cb21-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Retrieve Biological Process (BP) GOslims</span></span>
+<span id="cb21-2"><a href="#cb21-2" aria-hidden="true" tabindex="-1"></a>slimdf <span class="ot">&lt;-</span> <span class="fu">goSlim</span>(myCollection, slim, <span class="st">"BP"</span>, verbose)</span>
+<span id="cb21-3"><a href="#cb21-3" aria-hidden="true" tabindex="-1"></a><span class="fu">str</span>(slimdf)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <pre><code>'data.frame':   72 obs. of  3 variables:
  $ Count  : int  45 12 8 331 37 51 13 3 58 38 ...
  $ Percent: num  0.793 0.211 0.141 5.834 0.652 ...
@@ -486,38 +518,38 @@ lipid metabolic process                                 212</code></pre>
 <li>Percentage of GO IDs matching to corresponding GOslim</li>
 <li>GOIDs mapped to corresponding GOslim, in a semi-colon delimited format</li>
 </ul>
-<div class="sourceCode" id="cb22"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb22-1"><a href="#cb22-1" aria-hidden="true" tabindex="-1"></a><span class="co"># List of GOslims and all GO IDs from `go_ids`</span></span>
-<span id="cb22-2"><a href="#cb22-2" aria-hidden="true" tabindex="-1"></a>gomap <span class="ot">&lt;-</span> <span class="fu">as.list</span>(GOBPOFFSPRING[<span class="fu">rownames</span>(slimdf)])</span>
-<span id="cb22-3"><a href="#cb22-3" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb22-4"><a href="#cb22-4" aria-hidden="true" tabindex="-1"></a><span class="co"># Maps `go_ids` to matching GOslims</span></span>
-<span id="cb22-5"><a href="#cb22-5" aria-hidden="true" tabindex="-1"></a>mapped <span class="ot">&lt;-</span> <span class="fu">lapply</span>(gomap, intersect, <span class="fu">ids</span>(myCollection))</span>
-<span id="cb22-6"><a href="#cb22-6" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb22-7"><a href="#cb22-7" aria-hidden="true" tabindex="-1"></a><span class="co"># Append all mapped GO IDs to `slimdf`</span></span>
-<span id="cb22-8"><a href="#cb22-8" aria-hidden="true" tabindex="-1"></a><span class="co"># `sapply` needed to apply paste() to create semi-colon delimited values</span></span>
-<span id="cb22-9"><a href="#cb22-9" aria-hidden="true" tabindex="-1"></a>slimdf<span class="sc">$</span>GO.IDs <span class="ot">&lt;-</span> <span class="fu">sapply</span>(<span class="fu">lapply</span>(gomap, intersect, <span class="fu">ids</span>(myCollection)), paste, <span class="at">collapse=</span><span class="st">";"</span>)</span>
-<span id="cb22-10"><a href="#cb22-10" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb22-11"><a href="#cb22-11" aria-hidden="true" tabindex="-1"></a><span class="co"># Remove "character(0) string from "GO.IDs" column</span></span>
-<span id="cb22-12"><a href="#cb22-12" aria-hidden="true" tabindex="-1"></a>slimdf<span class="sc">$</span>GO.IDs[slimdf<span class="sc">$</span>GO.IDs <span class="sc">==</span> <span class="st">"character(0)"</span>] <span class="ot">&lt;-</span> <span class="st">""</span></span>
-<span id="cb22-13"><a href="#cb22-13" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb22-14"><a href="#cb22-14" aria-hidden="true" tabindex="-1"></a><span class="co"># Add self-matching GOIDs to "GO.IDs" column, if not present</span></span>
-<span id="cb22-15"><a href="#cb22-15" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> (go_id <span class="cf">in</span> go_ids) {</span>
-<span id="cb22-16"><a href="#cb22-16" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Check if the go_id is present in the row names</span></span>
-<span id="cb22-17"><a href="#cb22-17" aria-hidden="true" tabindex="-1"></a>  <span class="cf">if</span> (go_id <span class="sc">%in%</span> <span class="fu">rownames</span>(slimdf)) {</span>
-<span id="cb22-18"><a href="#cb22-18" aria-hidden="true" tabindex="-1"></a>    <span class="co"># Check if the go_id is not present in the GO.IDs column</span></span>
-<span id="cb22-19"><a href="#cb22-19" aria-hidden="true" tabindex="-1"></a>    <span class="co"># Also removes white space "trimws()" and converts all to upper case to handle</span></span>
-<span id="cb22-20"><a href="#cb22-20" aria-hidden="true" tabindex="-1"></a>    <span class="co"># any weird, "invisible" formatting issues.</span></span>
-<span id="cb22-21"><a href="#cb22-21" aria-hidden="true" tabindex="-1"></a>    <span class="cf">if</span> (<span class="sc">!</span>go_id <span class="sc">%in%</span> <span class="fu">trimws</span>(<span class="fu">toupper</span>(<span class="fu">strsplit</span>(slimdf[go_id, <span class="st">"GO.IDs"</span>], <span class="st">";"</span>)[[<span class="dv">1</span>]]))) {</span>
-<span id="cb22-22"><a href="#cb22-22" aria-hidden="true" tabindex="-1"></a>      <span class="co"># Append the go_id to the GO.IDs column with a semi-colon separator</span></span>
-<span id="cb22-23"><a href="#cb22-23" aria-hidden="true" tabindex="-1"></a>      <span class="cf">if</span> (<span class="fu">length</span>(slimdf<span class="sc">$</span>GO.IDs) <span class="sc">&gt;</span> <span class="dv">0</span> <span class="sc">&amp;&amp;</span> <span class="fu">nchar</span>(slimdf<span class="sc">$</span>GO.IDs[<span class="fu">nrow</span>(slimdf)]) <span class="sc">&gt;</span> <span class="dv">0</span>) {</span>
-<span id="cb22-24"><a href="#cb22-24" aria-hidden="true" tabindex="-1"></a>        slimdf[go_id, <span class="st">"GO.IDs"</span>] <span class="ot">&lt;-</span> <span class="fu">paste0</span>(slimdf[go_id, <span class="st">"GO.IDs"</span>], <span class="st">"; "</span>, go_id)</span>
-<span id="cb22-25"><a href="#cb22-25" aria-hidden="true" tabindex="-1"></a>      } <span class="cf">else</span> {</span>
-<span id="cb22-26"><a href="#cb22-26" aria-hidden="true" tabindex="-1"></a>        slimdf[go_id, <span class="st">"GO.IDs"</span>] <span class="ot">&lt;-</span> go_id</span>
-<span id="cb22-27"><a href="#cb22-27" aria-hidden="true" tabindex="-1"></a>      }</span>
-<span id="cb22-28"><a href="#cb22-28" aria-hidden="true" tabindex="-1"></a>    }</span>
-<span id="cb22-29"><a href="#cb22-29" aria-hidden="true" tabindex="-1"></a>  }</span>
-<span id="cb22-30"><a href="#cb22-30" aria-hidden="true" tabindex="-1"></a>}</span>
-<span id="cb22-31"><a href="#cb22-31" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb22-32"><a href="#cb22-32" aria-hidden="true" tabindex="-1"></a><span class="fu">str</span>(slimdf)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode" id="cb23"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb23-1"><a href="#cb23-1" aria-hidden="true" tabindex="-1"></a><span class="co"># List of GOslims and all GO IDs from `go_ids`</span></span>
+<span id="cb23-2"><a href="#cb23-2" aria-hidden="true" tabindex="-1"></a>gomap <span class="ot">&lt;-</span> <span class="fu">as.list</span>(GOBPOFFSPRING[<span class="fu">rownames</span>(slimdf)])</span>
+<span id="cb23-3"><a href="#cb23-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb23-4"><a href="#cb23-4" aria-hidden="true" tabindex="-1"></a><span class="co"># Maps `go_ids` to matching GOslims</span></span>
+<span id="cb23-5"><a href="#cb23-5" aria-hidden="true" tabindex="-1"></a>mapped <span class="ot">&lt;-</span> <span class="fu">lapply</span>(gomap, intersect, <span class="fu">ids</span>(myCollection))</span>
+<span id="cb23-6"><a href="#cb23-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb23-7"><a href="#cb23-7" aria-hidden="true" tabindex="-1"></a><span class="co"># Append all mapped GO IDs to `slimdf`</span></span>
+<span id="cb23-8"><a href="#cb23-8" aria-hidden="true" tabindex="-1"></a><span class="co"># `sapply` needed to apply paste() to create semi-colon delimited values</span></span>
+<span id="cb23-9"><a href="#cb23-9" aria-hidden="true" tabindex="-1"></a>slimdf<span class="sc">$</span>GO.IDs <span class="ot">&lt;-</span> <span class="fu">sapply</span>(<span class="fu">lapply</span>(gomap, intersect, <span class="fu">ids</span>(myCollection)), paste, <span class="at">collapse=</span><span class="st">";"</span>)</span>
+<span id="cb23-10"><a href="#cb23-10" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb23-11"><a href="#cb23-11" aria-hidden="true" tabindex="-1"></a><span class="co"># Remove "character(0) string from "GO.IDs" column</span></span>
+<span id="cb23-12"><a href="#cb23-12" aria-hidden="true" tabindex="-1"></a>slimdf<span class="sc">$</span>GO.IDs[slimdf<span class="sc">$</span>GO.IDs <span class="sc">==</span> <span class="st">"character(0)"</span>] <span class="ot">&lt;-</span> <span class="st">""</span></span>
+<span id="cb23-13"><a href="#cb23-13" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb23-14"><a href="#cb23-14" aria-hidden="true" tabindex="-1"></a><span class="co"># Add self-matching GOIDs to "GO.IDs" column, if not present</span></span>
+<span id="cb23-15"><a href="#cb23-15" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> (go_id <span class="cf">in</span> go_ids) {</span>
+<span id="cb23-16"><a href="#cb23-16" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Check if the go_id is present in the row names</span></span>
+<span id="cb23-17"><a href="#cb23-17" aria-hidden="true" tabindex="-1"></a>  <span class="cf">if</span> (go_id <span class="sc">%in%</span> <span class="fu">rownames</span>(slimdf)) {</span>
+<span id="cb23-18"><a href="#cb23-18" aria-hidden="true" tabindex="-1"></a>    <span class="co"># Check if the go_id is not present in the GO.IDs column</span></span>
+<span id="cb23-19"><a href="#cb23-19" aria-hidden="true" tabindex="-1"></a>    <span class="co"># Also removes white space "trimws()" and converts all to upper case to handle</span></span>
+<span id="cb23-20"><a href="#cb23-20" aria-hidden="true" tabindex="-1"></a>    <span class="co"># any weird, "invisible" formatting issues.</span></span>
+<span id="cb23-21"><a href="#cb23-21" aria-hidden="true" tabindex="-1"></a>    <span class="cf">if</span> (<span class="sc">!</span>go_id <span class="sc">%in%</span> <span class="fu">trimws</span>(<span class="fu">toupper</span>(<span class="fu">strsplit</span>(slimdf[go_id, <span class="st">"GO.IDs"</span>], <span class="st">";"</span>)[[<span class="dv">1</span>]]))) {</span>
+<span id="cb23-22"><a href="#cb23-22" aria-hidden="true" tabindex="-1"></a>      <span class="co"># Append the go_id to the GO.IDs column with a semi-colon separator</span></span>
+<span id="cb23-23"><a href="#cb23-23" aria-hidden="true" tabindex="-1"></a>      <span class="cf">if</span> (<span class="fu">length</span>(slimdf<span class="sc">$</span>GO.IDs) <span class="sc">&gt;</span> <span class="dv">0</span> <span class="sc">&amp;&amp;</span> <span class="fu">nchar</span>(slimdf<span class="sc">$</span>GO.IDs[<span class="fu">nrow</span>(slimdf)]) <span class="sc">&gt;</span> <span class="dv">0</span>) {</span>
+<span id="cb23-24"><a href="#cb23-24" aria-hidden="true" tabindex="-1"></a>        slimdf[go_id, <span class="st">"GO.IDs"</span>] <span class="ot">&lt;-</span> <span class="fu">paste0</span>(slimdf[go_id, <span class="st">"GO.IDs"</span>], <span class="st">"; "</span>, go_id)</span>
+<span id="cb23-25"><a href="#cb23-25" aria-hidden="true" tabindex="-1"></a>      } <span class="cf">else</span> {</span>
+<span id="cb23-26"><a href="#cb23-26" aria-hidden="true" tabindex="-1"></a>        slimdf[go_id, <span class="st">"GO.IDs"</span>] <span class="ot">&lt;-</span> go_id</span>
+<span id="cb23-27"><a href="#cb23-27" aria-hidden="true" tabindex="-1"></a>      }</span>
+<span id="cb23-28"><a href="#cb23-28" aria-hidden="true" tabindex="-1"></a>    }</span>
+<span id="cb23-29"><a href="#cb23-29" aria-hidden="true" tabindex="-1"></a>  }</span>
+<span id="cb23-30"><a href="#cb23-30" aria-hidden="true" tabindex="-1"></a>}</span>
+<span id="cb23-31"><a href="#cb23-31" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb23-32"><a href="#cb23-32" aria-hidden="true" tabindex="-1"></a><span class="fu">str</span>(slimdf)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <pre><code>'data.frame':   72 obs. of  4 variables:
  $ Count  : int  45 12 8 331 37 51 13 3 58 38 ...
  $ Percent: num  0.793 0.211 0.141 5.834 0.652 ...
@@ -526,21 +558,21 @@ lipid metabolic process                                 212</code></pre>
 </section>
 <section id="flatten-goslims" class="level3">
 <h3 class="anchored" data-anchor-id="flatten-goslims">1.1.11 Flatten GOslims</h3>
-<div class="sourceCode" id="cb24"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb24-1"><a href="#cb24-1" aria-hidden="true" tabindex="-1"></a><span class="co"># "Flatten" file so each row is single GO ID with corresponding GOslim</span></span>
-<span id="cb24-2"><a href="#cb24-2" aria-hidden="true" tabindex="-1"></a><span class="co"># rownames_to_column needed to retain row name info</span></span>
-<span id="cb24-3"><a href="#cb24-3" aria-hidden="true" tabindex="-1"></a>slimdf_separated <span class="ot">&lt;-</span> <span class="fu">as.data.frame</span>(slimdf <span class="sc">%&gt;%</span></span>
-<span id="cb24-4"><a href="#cb24-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">rownames_to_column</span>(<span class="st">'GOslim'</span>) <span class="sc">%&gt;%</span></span>
-<span id="cb24-5"><a href="#cb24-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">separate_rows</span>(GO.IDs, <span class="at">sep =</span> <span class="st">";"</span>))</span>
-<span id="cb24-6"><a href="#cb24-6" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb24-7"><a href="#cb24-7" aria-hidden="true" tabindex="-1"></a><span class="co"># Group by unique GO ID</span></span>
-<span id="cb24-8"><a href="#cb24-8" aria-hidden="true" tabindex="-1"></a>grouped_slimdf <span class="ot">&lt;-</span> slimdf_separated <span class="sc">%&gt;%</span></span>
-<span id="cb24-9"><a href="#cb24-9" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(<span class="sc">!</span><span class="fu">is.na</span>(GO.IDs) <span class="sc">&amp;</span> GO.IDs <span class="sc">!=</span> <span class="st">""</span>) <span class="sc">%&gt;%</span></span>
-<span id="cb24-10"><a href="#cb24-10" aria-hidden="true" tabindex="-1"></a>  <span class="fu">group_by</span>(GO.IDs) <span class="sc">%&gt;%</span></span>
-<span id="cb24-11"><a href="#cb24-11" aria-hidden="true" tabindex="-1"></a>  <span class="fu">summarize</span>(<span class="at">GOslim =</span> <span class="fu">paste</span>(GOslim, <span class="at">collapse =</span> <span class="st">";"</span>),</span>
-<span id="cb24-12"><a href="#cb24-12" aria-hidden="true" tabindex="-1"></a>            <span class="at">Term =</span> <span class="fu">paste</span>(Term, <span class="at">collapse =</span> <span class="st">";"</span>))</span>
-<span id="cb24-13"><a href="#cb24-13" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb24-14"><a href="#cb24-14" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb24-15"><a href="#cb24-15" aria-hidden="true" tabindex="-1"></a><span class="fu">str</span>(grouped_slimdf)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode" id="cb25"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb25-1"><a href="#cb25-1" aria-hidden="true" tabindex="-1"></a><span class="co"># "Flatten" file so each row is single GO ID with corresponding GOslim</span></span>
+<span id="cb25-2"><a href="#cb25-2" aria-hidden="true" tabindex="-1"></a><span class="co"># rownames_to_column needed to retain row name info</span></span>
+<span id="cb25-3"><a href="#cb25-3" aria-hidden="true" tabindex="-1"></a>slimdf_separated <span class="ot">&lt;-</span> <span class="fu">as.data.frame</span>(slimdf <span class="sc">%&gt;%</span></span>
+<span id="cb25-4"><a href="#cb25-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">rownames_to_column</span>(<span class="st">'GOslim'</span>) <span class="sc">%&gt;%</span></span>
+<span id="cb25-5"><a href="#cb25-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">separate_rows</span>(GO.IDs, <span class="at">sep =</span> <span class="st">";"</span>))</span>
+<span id="cb25-6"><a href="#cb25-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb25-7"><a href="#cb25-7" aria-hidden="true" tabindex="-1"></a><span class="co"># Group by unique GO ID</span></span>
+<span id="cb25-8"><a href="#cb25-8" aria-hidden="true" tabindex="-1"></a>grouped_slimdf <span class="ot">&lt;-</span> slimdf_separated <span class="sc">%&gt;%</span></span>
+<span id="cb25-9"><a href="#cb25-9" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(<span class="sc">!</span><span class="fu">is.na</span>(GO.IDs) <span class="sc">&amp;</span> GO.IDs <span class="sc">!=</span> <span class="st">""</span>) <span class="sc">%&gt;%</span></span>
+<span id="cb25-10"><a href="#cb25-10" aria-hidden="true" tabindex="-1"></a>  <span class="fu">group_by</span>(GO.IDs) <span class="sc">%&gt;%</span></span>
+<span id="cb25-11"><a href="#cb25-11" aria-hidden="true" tabindex="-1"></a>  <span class="fu">summarize</span>(<span class="at">GOslim =</span> <span class="fu">paste</span>(GOslim, <span class="at">collapse =</span> <span class="st">";"</span>),</span>
+<span id="cb25-12"><a href="#cb25-12" aria-hidden="true" tabindex="-1"></a>            <span class="at">Term =</span> <span class="fu">paste</span>(Term, <span class="at">collapse =</span> <span class="st">";"</span>))</span>
+<span id="cb25-13"><a href="#cb25-13" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb25-14"><a href="#cb25-14" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb25-15"><a href="#cb25-15" aria-hidden="true" tabindex="-1"></a><span class="fu">str</span>(grouped_slimdf)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <pre><code>tibble [3,968 × 3] (S3: tbl_df/tbl/data.frame)
  $ GO.IDs: chr [1:3968] " GO:0000278" " GO:0002181" " GO:0002376" " GO:0003014" ...
  $ GOslim: chr [1:3968] "GO:0000278" "GO:0002181" "GO:0002376" "GO:0003014" ...
@@ -552,35 +584,35 @@ lipid metabolic process                                 212</code></pre>
 <section id="sort-and-select-slmidf" class="level3">
 <h3 class="anchored" data-anchor-id="sort-and-select-slmidf">1.2.1 Sort and select slmidf</h3>
 <p>Sorts GOslims by <code>Count</code>, in descending order and then selects just the <code>Term</code> and <code>Count</code> columns.</p>
-<div class="sourceCode" id="cb26"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb26-1"><a href="#cb26-1" aria-hidden="true" tabindex="-1"></a>slimdf.sorted <span class="ot">&lt;-</span> slimdf <span class="sc">%&gt;%</span> <span class="fu">arrange</span>(<span class="fu">desc</span>(Count))</span>
-<span id="cb26-2"><a href="#cb26-2" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb26-3"><a href="#cb26-3" aria-hidden="true" tabindex="-1"></a>slim.count.df <span class="ot">&lt;-</span> slimdf.sorted <span class="sc">%&gt;%</span> </span>
-<span id="cb26-4"><a href="#cb26-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">select</span>(Term, Count)</span>
-<span id="cb26-5"><a href="#cb26-5" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb26-6"><a href="#cb26-6" aria-hidden="true" tabindex="-1"></a><span class="fu">str</span>(slim.count.df)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode" id="cb27"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb27-1"><a href="#cb27-1" aria-hidden="true" tabindex="-1"></a>slimdf.sorted <span class="ot">&lt;-</span> slimdf <span class="sc">%&gt;%</span> <span class="fu">arrange</span>(<span class="fu">desc</span>(Count))</span>
+<span id="cb27-2"><a href="#cb27-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb27-3"><a href="#cb27-3" aria-hidden="true" tabindex="-1"></a>slim.count.df <span class="ot">&lt;-</span> slimdf.sorted <span class="sc">%&gt;%</span> </span>
+<span id="cb27-4"><a href="#cb27-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">select</span>(Term, Count)</span>
+<span id="cb27-5"><a href="#cb27-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb27-6"><a href="#cb27-6" aria-hidden="true" tabindex="-1"></a><span class="fu">str</span>(slim.count.df)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <pre><code>'data.frame':   72 obs. of  2 variables:
  $ Term : chr  "anatomical structure development" "signaling" "cell differentiation" "immune system process" ...
  $ Count: int  1137 600 533 331 212 164 158 158 148 123 ...</code></pre>
 </section>
 <section id="write-formatted-slim.count.df-to-file" class="level3">
 <h3 class="anchored" data-anchor-id="write-formatted-slim.count.df-to-file">1.2.2 Write formatted slim.count.df to file</h3>
-<div class="sourceCode" id="cb28"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb28-1"><a href="#cb28-1" aria-hidden="true" tabindex="-1"></a><span class="fu">write_tsv</span>(slim.count.df, <span class="at">file =</span> <span class="st">"../output/01-GO-to-GOslim/counts.GOID-per-GOslim_term.tab"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode" id="cb29"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb29-1"><a href="#cb29-1" aria-hidden="true" tabindex="-1"></a><span class="fu">write_tsv</span>(slim.count.df, <span class="at">file =</span> <span class="st">"../output/01-GO-to-GOslim/counts.GOID-per-GOslim_term.tab"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </section>
 </section>
 <section id="count-unique-biological-process-go-ids" class="level2">
 <h2 class="anchored" data-anchor-id="count-unique-biological-process-go-ids">1.3 Count unique Biological Process GO IDs</h2>
-<div class="sourceCode" id="cb29"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb29-1"><a href="#cb29-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Flatten the list and count total GO IDs</span></span>
-<span id="cb29-2"><a href="#cb29-2" aria-hidden="true" tabindex="-1"></a>total_go_ids <span class="ot">&lt;-</span> <span class="fu">length</span>(<span class="fu">unlist</span>(gomap))</span>
-<span id="cb29-3"><a href="#cb29-3" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb29-4"><a href="#cb29-4" aria-hidden="true" tabindex="-1"></a><span class="co"># Display the total count</span></span>
-<span id="cb29-5"><a href="#cb29-5" aria-hidden="true" tabindex="-1"></a>total_go_ids</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode" id="cb30"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb30-1"><a href="#cb30-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Flatten the list and count total GO IDs</span></span>
+<span id="cb30-2"><a href="#cb30-2" aria-hidden="true" tabindex="-1"></a>total_go_ids <span class="ot">&lt;-</span> <span class="fu">length</span>(<span class="fu">unlist</span>(gomap))</span>
+<span id="cb30-3"><a href="#cb30-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb30-4"><a href="#cb30-4" aria-hidden="true" tabindex="-1"></a><span class="co"># Display the total count</span></span>
+<span id="cb30-5"><a href="#cb30-5" aria-hidden="true" tabindex="-1"></a>total_go_ids</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <pre><code>[1] 26534</code></pre>
-<div class="sourceCode" id="cb31"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb31-1"><a href="#cb31-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Unlist to extract all GO IDs, then find unique ones and count them</span></span>
-<span id="cb31-2"><a href="#cb31-2" aria-hidden="true" tabindex="-1"></a>unique_go_ids <span class="ot">&lt;-</span> <span class="fu">unique</span>(<span class="fu">unlist</span>(gomap))</span>
-<span id="cb31-3"><a href="#cb31-3" aria-hidden="true" tabindex="-1"></a>total_unique_ids <span class="ot">&lt;-</span> <span class="fu">length</span>(unique_go_ids)</span>
-<span id="cb31-4"><a href="#cb31-4" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb31-5"><a href="#cb31-5" aria-hidden="true" tabindex="-1"></a><span class="co"># Display the total count of unique GO IDs</span></span>
-<span id="cb31-6"><a href="#cb31-6" aria-hidden="true" tabindex="-1"></a>total_unique_ids</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode" id="cb32"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb32-1"><a href="#cb32-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Unlist to extract all GO IDs, then find unique ones and count them</span></span>
+<span id="cb32-2"><a href="#cb32-2" aria-hidden="true" tabindex="-1"></a>unique_go_ids <span class="ot">&lt;-</span> <span class="fu">unique</span>(<span class="fu">unlist</span>(gomap))</span>
+<span id="cb32-3"><a href="#cb32-3" aria-hidden="true" tabindex="-1"></a>total_unique_ids <span class="ot">&lt;-</span> <span class="fu">length</span>(unique_go_ids)</span>
+<span id="cb32-4"><a href="#cb32-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb32-5"><a href="#cb32-5" aria-hidden="true" tabindex="-1"></a><span class="co"># Display the total count of unique GO IDs</span></span>
+<span id="cb32-6"><a href="#cb32-6" aria-hidden="true" tabindex="-1"></a>total_unique_ids</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <pre><code>[1] 17913</code></pre>
 <p>Total starting BP GO IDs: 26534</p>
 <p>Total unique BP GO IDs: 17913</p>

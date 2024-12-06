@@ -76,9 +76,6 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <script src="../../../site_libs/bootstrap/bootstrap.min.js"></script>
 <link href="../../../site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
 <link href="../../../site_libs/bootstrap/bootstrap.min.css" rel="stylesheet" id="quarto-bootstrap" data-mode="dark">
-<script src="../../../site_libs/quarto-contrib/glightbox/glightbox.min.js"></script>
-<link href="../../../site_libs/quarto-contrib/glightbox/glightbox.min.css" rel="stylesheet">
-<link href="../../../site_libs/quarto-contrib/glightbox/lightbox.css" rel="stylesheet">
 <script id="quarto-search-options" type="application/json">{
   "location": "navbar",
   "copy-button": true,
@@ -253,13 +250,7 @@ gtag('config', 'G-7483T61T11', { 'anonymize_ip': true});
     <h2 id="toc-title">Contents</h2>
    
   <ul>
-  <li><a href="#intro" id="toc-intro" class="nav-link active" data-scroll-target="#intro">INTRO</a></li>
-  <li><a href="#procedure" id="toc-procedure" class="nav-link" data-scroll-target="#procedure">PROCEDURE</a>
-  <ul>
-  <li><a href="#combine-drives-into-raid0" id="toc-combine-drives-into-raid0" class="nav-link" data-scroll-target="#combine-drives-into-raid0">Combine drives into RAID0</a></li>
-  <li><a href="#format-hdds" id="toc-format-hdds" class="nav-link" data-scroll-target="#format-hdds">Format HDDs</a></li>
-  </ul></li>
-  <li><a href="#results" id="toc-results" class="nav-link" data-scroll-target="#results">RESULTS</a></li>
+  <li><a href="#format-hdds" id="toc-format-hdds" class="nav-link active" data-scroll-target="#format-hdds">Format HDDs</a></li>
   </ul>
 </nav>
 </nav>
@@ -274,37 +265,6 @@ gtag('config', 'G-7483T61T11', { 'anonymize_ip': true});
 
 
 
-<section id="intro" class="level1">
-<h1>INTRO</h1>
-<p>We recently purchased a 16TB OWC ThunderBlade X8 as additional storage for Raven (Ubuntu 18.04LTS), primarily to be used for Shelly and Emma’s project. Although I thought this would just be “plug and play,” when I plugged it in, Raven recognized each individual SSD as its own drive. Firstly, I didn’t expect there to be mutliple drives (guess I should’ve read the product description more closely) and thought it was just a single, massive SSD drive. Secondly, Raven didn’t automount the drives.</p>
-<p>So, I had to deal with both of those issues. Luckily, it turns out it wasn’t particularly difficult or timeconsuming!</p>
-<div id="fig-ladder" class="lightbox quarto-float quarto-figure quarto-figure-center anchored" alt="New external drive isn't listed (i.e. isn't automounted) after being plugged in.">
-<figure class="quarto-float quarto-float-fig figure">
-<div aria-describedby="fig-ladder-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
-<a href="./20241021-initial-df_output-01.png" class="lightbox" data-gallery="quarto-lightbox-gallery-1" title="Figure&nbsp;1: New external drive isn’t listed (i.e.&nbsp;isn’t automounted) after being plugged in."><img src="./20241021-initial-df_output-01.png" class="img-fluid figure-img" alt="New external drive isn't listed (i.e. isn't automounted) after being plugged in."></a>
-</div>
-<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-ladder-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
-Figure&nbsp;1: New external drive isn’t listed (i.e.&nbsp;isn’t automounted) after being plugged in.
-</figcaption>
-</figure>
-</div>
-<div id="fig-ladder" class="lightbox quarto-float quarto-figure quarto-figure-center anchored" alt="blkid command shows eight nvme drives, corresponding to the Thunderblad X8 SSD drivves.">
-<figure class="quarto-float quarto-float-fig figure">
-<div aria-describedby="fig-ladder-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
-<a href="./20241021-initial-blkid_output-01.png" class="lightbox" data-gallery="quarto-lightbox-gallery-2" title="Figure&nbsp;2: blkid command shows eight nvme drives, corresponding to the Thunderblad X8 SSD drives."><img src="./20241021-initial-blkid_output-01.png" class="img-fluid figure-img" alt="blkid command shows eight nvme drives, corresponding to the Thunderblad X8 SSD drivves."></a>
-</div>
-<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-ladder-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
-Figure&nbsp;2: blkid command shows eight nvme drives, corresponding to the Thunderblad X8 SSD drives.
-</figcaption>
-</figure>
-</div>
-</section>
-<section id="procedure" class="level1">
-<h1>PROCEDURE</h1>
-<section id="combine-drives-into-raid0" class="level2">
-<h2 class="anchored" data-anchor-id="combine-drives-into-raid0">Combine drives into RAID0</h2>
-<p>RAID0 essentially treats all the SSDs of the Thunderblad X8 as a single volume (i.e.&nbsp;drive). This maximizes space, but sacrificies any data redundancy. This is fine, as we purchased this solely to function as additional storage and aren’t concerned about data redundancy (data on Raven should be sync’d to Gannet with regularity, as Gannet <em>does</em> have data redundancy in a RAID6 setup).</p>
-<p>To do this, we use the <a href="https://en.wikipedia.org/wiki/Mdadm"><code>mdadm</code> command</a> (Wikipedia).</p>
 <div class="sourceCode" id="cb1"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="fu">sudo</span> mdadm <span class="dt">\</span></span>
 <span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a>--create <span class="dt">\</span></span>
 <span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a>--verbose <span class="dt">\</span></span>
@@ -319,64 +279,9 @@ Figure&nbsp;2: blkid command shows eight nvme drives, corresponding to the Thund
 <span id="cb1-12"><a href="#cb1-12" aria-hidden="true" tabindex="-1"></a>/dev/nvme5n1 <span class="dt">\</span></span>
 <span id="cb1-13"><a href="#cb1-13" aria-hidden="true" tabindex="-1"></a>/dev/nvme6n1 <span class="dt">\</span></span>
 <span id="cb1-14"><a href="#cb1-14" aria-hidden="true" tabindex="-1"></a>/dev/nvme7n1</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<p>This assigns the combined drive to <code>/dev/md0</code> and then sets the RAID level to <code>0</code>. This is followed by the drive count and the locations of the drives you want to include in the RAID configuration.</p>
-<div id="fig-ladder" class="lightbox quarto-float quarto-figure quarto-figure-center anchored" alt="Screenshot confirming mdadm command and confirming we'd like to proceed.">
-<figure class="quarto-float quarto-float-fig figure">
-<div aria-describedby="fig-ladder-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
-<a href="./20241021-mdadm-confirmation.png" class="lightbox" data-gallery="quarto-lightbox-gallery-3" title="Figure&nbsp;3: Screenshot confirming mdadm command and confirming we’d like to proceed."><img src="./20241021-mdadm-confirmation.png" class="img-fluid figure-img" alt="Screenshot confirming mdadm command and confirming we'd like to proceed."></a>
-</div>
-<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-ladder-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
-Figure&nbsp;3: Screenshot confirming mdadm command and confirming we’d like to proceed.
-</figcaption>
-</figure>
-</div>
-<p>After running the <code>mdadm --create</code> command, we can confirm the details of the command’s process and confirm that things look the way we expected:</p>
-<div id="fig-ladder" class="lightbox quarto-float quarto-figure quarto-figure-center anchored" alt="Screenshot of mdadm --details command confirming the procedure worked as expected.">
-<figure class="quarto-float quarto-float-fig figure">
-<div aria-describedby="fig-ladder-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
-<a href="./20241021-mdadm-detail_output-01.png" class="lightbox" data-gallery="quarto-lightbox-gallery-4" title="Figure&nbsp;4: Screenshot of mdadm –details command confirming the procedure worked as expected."><img src="./20241021-mdadm-detail_output-01.png" class="img-fluid figure-img" alt="Screenshot of mdadm --details command confirming the procedure worked as expected."></a>
-</div>
-<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-ladder-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
-Figure&nbsp;4: Screenshot of mdadm –details command confirming the procedure worked as expected.
-</figcaption>
-</figure>
-</div>
-<div id="fig-ladder" class="lightbox quarto-float quarto-figure quarto-figure-center anchored" alt="Screenshot of blkid now showing all nvme drives associated with md0">
-<figure class="quarto-float quarto-float-fig figure">
-<div aria-describedby="fig-ladder-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
-<a href="./20241021-raid0-blkid_output-01.png" class="lightbox" data-gallery="quarto-lightbox-gallery-5" title="Figure&nbsp;5: Screenshot of blkid now showing all nvme drives associated with md0"><img src="./20241021-raid0-blkid_output-01.png" class="img-fluid figure-img" alt="Screenshot of blkid now showing all nvme drives associated with md0"></a>
-</div>
-<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-ladder-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
-Figure&nbsp;5: Screenshot of blkid now showing all nvme drives associated with md0
-</figcaption>
-</figure>
-</div>
-<p>Next, we need to format the new RAID0 drives with a file system. In this case, we’ll go with <code>ext4</code>, which is a standard file system used in Linux/Ubuntu.</p>
-</section>
 <section id="format-hdds" class="level2">
 <h2 class="anchored" data-anchor-id="format-hdds">Format HDDs</h2>
 <div class="sourceCode" id="cb2"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="fu">sudo</span> mkfs.ext4 /dev/md0</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<p>After that’s done, we need to create a mount point and mount the drive.</p>
-<div class="sourceCode" id="cb3"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="fu">sudo</span> mkdir <span class="at">--parents</span> /home/shared/16TB_HDD_01</span>
-<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a><span class="fu">sudo</span> mount /dev/md0 /home/shared/16TB_HDD_01</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<p>Finally, we want this to automount any time the computer is rebooted, so we add it to <code>/etc/fstab</code>. Since that table contains the unique drive IDs, I think we don’t want them displayed on the open internet. So, if you want to see how that’s set up, you’ll need to look at <code>/etc/fstab</code> on your own.</p>
-</section>
-</section>
-<section id="results" class="level1">
-<h1>RESULTS</h1>
-<p>Now, check to see that the newly RAID’d and formatted drive shows up.</p>
-<div id="fig-ladder" class="lightbox quarto-float quarto-figure quarto-figure-center anchored" alt="Screenshot of df -h now showing a single drive with 14TB of storage mounted at /dev/md0.">
-<figure class="quarto-float quarto-float-fig figure">
-<div aria-describedby="fig-ladder-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
-<a href="./20241021-final-df_output-01.png" class="lightbox" data-gallery="quarto-lightbox-gallery-6" title="Figure&nbsp;6: Screenshot of df -h now showing a single drive with 14TB of storage mounted at /dev/md0."><img src="./20241021-final-df_output-01.png" class="img-fluid figure-img" alt="Screenshot of df -h now showing a single drive with 14TB of storage mounted at /dev/md0."></a>
-</div>
-<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-ladder-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
-Figure&nbsp;6: Screenshot of df -h now showing a single drive with 14TB of storage mounted at /dev/md0.
-</figcaption>
-</figure>
-</div>
-<p>Alrighty, looks great! Easy, peasy!</p>
 
 
 </section>
@@ -803,38 +708,6 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
 });
 </script>
 </div> <!-- /content -->
-<script>var lightboxQuarto = GLightbox({"openEffect":"zoom","closeEffect":"zoom","loop":false,"selector":".lightbox","descPosition":"bottom"});
-(function() {
-  let previousOnload = window.onload;
-  window.onload = () => {
-    if (previousOnload) {
-      previousOnload();
-    }
-    lightboxQuarto.on('slide_before_load', (data) => {
-      const { slideIndex, slideNode, slideConfig, player, trigger } = data;
-      const href = trigger.getAttribute('href');
-      if (href !== null) {
-        const imgEl = window.document.querySelector(`a[href="${href}"] img`);
-        if (imgEl !== null) {
-          const srcAttr = imgEl.getAttribute("src");
-          if (srcAttr && srcAttr.startsWith("data:")) {
-            slideConfig.href = srcAttr;
-          }
-        }
-      } 
-    });
-  
-    lightboxQuarto.on('slide_after_load', (data) => {
-      const { slideIndex, slideNode, slideConfig, player, trigger } = data;
-      if (window.Quarto?.typesetMath) {
-        window.Quarto.typesetMath(slideNode);
-      }
-    });
-  
-  };
-  
-})();
-          </script>
 
 
 
