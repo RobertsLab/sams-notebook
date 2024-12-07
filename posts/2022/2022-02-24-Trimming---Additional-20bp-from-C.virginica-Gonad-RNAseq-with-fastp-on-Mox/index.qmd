@@ -6,20 +6,19 @@ toc-location: left
 layout: post
 title: Trimming - Additional 20bp from C.virginica Gonad RNAseq with fastp on Mox
 date: '2022-02-24 07:26'
-tags: 
+categories: 
   - fastp
   - mox
   - Crassostrea virginica
   - RNAseq
   - trimming
-  - Eastern oyster
-categories: 
+  - Eastern oyster 
   - 2022
   - Miscellaneous
 ---
-When I previously [aligned trimmed RNAseq reads to the NCBI _C.virginica_ genome (GCF_002022765.2) on 20210726](https://robertslab.github.io/sams-notebook/posts/2021/2021-07-26-Transcript-Identification-and-Quantification-C.virginia-RNAseq-With-NCBI-Genome-GCF_002022765.2-Using-StringTie-on-Mox.html), I specifically noted that alignment rates were consistently lower for males than females. However, I let that discrepancy distract me from a the larger issue: low alignment rates. Period! This should have thrown some red flags and it eventually did after Steven asked about overall alignment rate for an alignment of this data that I performed on [20220131 in preparation for genome-guided transcriptome assembly](https://robertslab.github.io/sams-notebook/2022/01/31/RNAseq-Alignment-C.virginica-Adult-OA-Gonad-Data-to-GCF_002022765.2-Genome-Using-HISAT2-on-Mox/). The overall alignment rate (in which I actually used the trimmed reads from [20210714](https://robertslab.github.io/sams-notebook/2021/07/14/Trimming-C.virginica-Gonad-RNAseq-with-FastP-on-Mox/)) was ~67.6%. Realizing this was a on the low side of what one would expect, it prompted me to look into things more and I came across a few things which led me to make the decision to redo the trimming:
+When I previously [aligned trimmed RNAseq reads to the NCBI _C.virginica_ genome (GCF_002022765.2) on 20210726](../../2021/2021-07-26-Transcript-Identification-and-Quantification---C.virginia-RNAseq-With-NCBI-Genome-GCF_002022765.2-Using-StringTie-on-Mox/index.qmd), I specifically noted that alignment rates were consistently lower for males than females. However, I let that discrepancy distract me from a the larger issue: low alignment rates. Period! This should have thrown some red flags and it eventually did after Steven asked about overall alignment rate for an alignment of this data that I performed on [20220131 in preparation for genome-guided transcriptome assembly](../2022-01-31-RNAseq-Alignment---C.virginica-Adult-OA-Gonad-Data-to-GCF_002022765.2-Genome-Using-HISAT2-on-Mox/index.qmd). The overall alignment rate (in which I actually used the trimmed reads from [20210714](../../2021/2021-07-14-Trimming---C.virginica-Gonad-RNAseq-with-FastP-on-Mox/index.qmd)) was ~67.6%. Realizing this was a on the low side of what one would expect, it prompted me to look into things more and I came across a few things which led me to make the decision to redo the trimming:
 
-1. As mentioned, I used _untrimmed_ reads for [original set of RNAseq alignments](https://robertslab.github.io/sams-notebook/posts/2021/2021-07-26-Transcript-Identification-and-Quantification---C.virginia-RNAseq-With-NCBI-Genome-GCF_002022765.2-Using-StringTie-on-Mox/). Although, as [as Steven has pointed out in this GitHub Issue](https://github.com/sr320/ceabigr/issues/50), trimming might not actually have any real impact on alignments as described in this paper: [Read trimming is not required for mapping and quantification of RNA-seq reads at the gene level. Liao and Shi, 2020](https://academic.oup.com/nargab/article/2/3/lqaa068/5901066)!
+1. As mentioned, I used _untrimmed_ reads for [original set of RNAseq alignments](../../2021/2021-07-26-Transcript-Identification-and-Quantification---C.virginia-RNAseq-With-NCBI-Genome-GCF_002022765.2-Using-StringTie-on-Mox/index.qmd). Although, as [as Steven has pointed out in this GitHub Issue](https://github.com/sr320/ceabigr/issues/50), trimming might not actually have any real impact on alignments as described in this paper: [Read trimming is not required for mapping and quantification of RNA-seq reads at the gene level. Liao and Shi, 2020](https://academic.oup.com/nargab/article/2/3/lqaa068/5901066)!
 
 2. I contacted ZymoResearch to see if they had Bioanalyzer electropherograms post-rRNA removal (thinking that a large amount of contaminating rRNA would easily explain the low mapping rates). They did _not_ perform this analysis, but they did point me to a section of the RiboFree Kit they used when preparing the libraries explaining that the R2 reads should have an additional 10bp removed _after_ adapter removal. Here's the section from the manual:
 
@@ -47,7 +46,7 @@ sample.R1.fastq.gz
 sample.R2.fastq.gz
 ```
 
-Considering that we wanted to use these for a transcriptome assembly (which I already performed on [20220207](https://robertslab.github.io/sams-notebook/posts/2022/2022-02-07-Transcriptome-Assembly---Genome-guided-C.virginica-Adult-Gonad-OA-RNAseq-Using-Trinity-on-Mox/)), this residual "low complexity bridge" could lead to some spurious results.
+Considering that we wanted to use these for a transcriptome assembly (which I already performed on [20220207](../2022-02-07-Transcriptome-Assembly---Genome-guided-C.virginica-Adult-Gonad-OA-RNAseq-Using-Trinity-on-Mox/index.qmd)), this residual "low complexity bridge" could lead to some spurious results.
 
 3. Looking at some of the samples from the initial trimming suggested that additional trimming would improve things a bit. Here's an example from the initial `fastp` trimming. View the sections with "After filtering: read1: base contents" and "After filtering: read2: base contents" to see that the first ~20bp ratios are a bit rough.
 
