@@ -298,9 +298,9 @@ gtag('config', 'G-7483T61T11', { 'anonymize_ip': true});
   <ul>
   <li><a href="#split-mulit-fasta-file-in-to-individual-fasta-files-with-pyfaidx" id="toc-split-mulit-fasta-file-in-to-individual-fasta-files-with-pyfaidx" class="nav-link" data-scroll-target="#split-mulit-fasta-file-in-to-individual-fasta-files-with-pyfaidx">7.1 Split mulit-FastA file in to individual FastA files with PyFaidx</a></li>
   </ul></li>
-  <li><a href="#primer-search-with-emobss-primersearch" id="toc-primer-search-with-emobss-primersearch" class="nav-link" data-scroll-target="#primer-search-with-emobss-primersearch">8 PRIMER SEARCH WITH EMOBSS PRIMERSEARCH</a>
+  <li><a href="#primer-search-with-emboss-primersearch" id="toc-primer-search-with-emboss-primersearch" class="nav-link" data-scroll-target="#primer-search-with-emboss-primersearch">8 PRIMER SEARCH WITH EMBOSS PRIMERSEARCH</a>
   <ul>
-  <li><a href="#create-emobss-primersearch-primers-file" id="toc-create-emobss-primersearch-primers-file" class="nav-link" data-scroll-target="#create-emobss-primersearch-primers-file">8.1 Create EMOBSS PrimerSearch Primers File</a></li>
+  <li><a href="#create-emboss-primersearch-primers-file" id="toc-create-emboss-primersearch-primers-file" class="nav-link" data-scroll-target="#create-emboss-primersearch-primers-file">8.1 Create EMBOSS PrimerSearch Primers File</a></li>
   <li><a href="#run-emboss-primersearch" id="toc-run-emboss-primersearch" class="nav-link" data-scroll-target="#run-emboss-primersearch">8.2 Run EMBOSS PrimerSearch</a></li>
   <li><a href="#check-primer-matches" id="toc-check-primer-matches" class="nav-link" data-scroll-target="#check-primer-matches">8.3 Check primer matches</a></li>
   </ul></li>
@@ -323,6 +323,7 @@ gtag('config', 'G-7483T61T11', { 'anonymize_ip': true});
 <p>This notebook describes using <a href="https://github.com/primer3-org/primer3">Primer3</a> (<a href="#ref-untergasser2012">Untergasser et al. 2012</a>; <a href="#ref-koressaar2007">Koressaar and Remm 2007</a>) to reproducibly design primers for sequencing of the <a href="https://en.wikipedia.org/wiki/Lake_trout">lake trout (<em>S.namaycush</em>)</a> (Wikipedia) C1q gene (<a href="https://github.com/RobertsLab/resources/issues/1941#issuecomment-2246548960"><code>LOC120027825</code></a> (GitHub Issue)), after bisulfite treatment.</p>
 <p>This process also utilizes <a href="https://github.com/mdshw5/pyfaidx">pyfaidx</a> (<a href="#ref-shirley2015">Shirley et al.&nbsp;2015</a>).</p>
 <p><a href="https://emboss.sourceforge.net/apps/cvs/emboss/apps/primersearch.html">EMBOSS PrimerSearch</a> (<a href="#ref-rice2000">Rice, Longden, and Bleasby 2000</a>) will be utilized to assess primer specificity across the genome.</p>
+<p>Markdown from this post was rendered from the R Markdown file, <a href="https://github.com/RobertsLab/code/blob/739ea5953e7aef1453c8071a06fe05ce5d824ee0/r_projects/sam/20240726-snam-c1q-bs-primer-design/code/20240726-snam-c1q-bs-primer-design.Rmd">20240726-snam-c1q-bs-primer-design.Rmd</a> (GitHub), commit <code>739ea59</code>.</p>
 <ul>
 <li><a href="#1-create-bash-variables-file" id="toc-1-create-bash-variables-file">1 CREATE BASH VARIABLES FILE</a></li>
 <li><a href="#2-download-ncbi-genome-files" id="toc-2-download-ncbi-genome-files">2 DOWNLOAD NCBI GENOME FILES</a>
@@ -350,9 +351,9 @@ gtag('config', 'G-7483T61T11', { 'anonymize_ip': true});
 <ul>
 <li><a href="#71-split-mulit-fasta-file-in-to-individual-fasta-files-with-pyfaidx" id="toc-71-split-mulit-fasta-file-in-to-individual-fasta-files-with-pyfaidx">7.1 Split mulit-FastA file in to individual FastA files with PyFaidx</a></li>
 </ul></li>
-<li><a href="#8-primer-search-with-emobss-primersearch" id="toc-8-primer-search-with-emobss-primersearch">8 PRIMER SEARCH WITH EMOBSS PRIMERSEARCH</a>
+<li><a href="#8-primer-search-with-emboss-primersearch" id="toc-8-primer-search-with-emboss-primersearch">8 PRIMER SEARCH WITH EMBOSS PRIMERSEARCH</a>
 <ul>
-<li><a href="#81-create-emobss-primersearch-primers-file" id="toc-81-create-emobss-primersearch-primers-file">8.1 Create EMOBSS PrimerSearch Primers File</a></li>
+<li><a href="#81-create-emboss-primersearch-primers-file" id="toc-81-create-emboss-primersearch-primers-file">8.1 Create EMBOSS PrimerSearch Primers File</a></li>
 <li><a href="#82-run-emboss-primersearch" id="toc-82-run-emboss-primersearch">8.2 Run EMBOSS PrimerSearch</a></li>
 <li><a href="#83-check-primer-matches" id="toc-83-check-primer-matches">8.3 Check primer matches</a></li>
 </ul></li>
@@ -475,14 +476,8 @@ export primersearch="/home/shared/EMBOSS-6.6.0/emboss/primersearch"</code></pre>
 <span id="cb3-12"><a href="#cb3-12" aria-hidden="true" tabindex="-1"></a><span class="cf">done</span></span>
 <span id="cb3-13"><a href="#cb3-13" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb3-14"><a href="#cb3-14" aria-hidden="true" tabindex="-1"></a><span class="fu">ls</span> <span class="at">-lh</span> <span class="st">"</span><span class="va">${data_dir}</span><span class="st">"</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<pre><code>total 5.5G
--rw-r--r-- 1 sam sam 2.3G Jul 29 21:18 bisulfite.GCF_016432855.1_SaNama_1.0_genomic.fna
--rw-r--r-- 1 sam sam 154K Jul 30 06:57 bisulfite.GCF_016432855.1_SaNama_1.0_genomic.fna.fai
-drwxr-xr-x 2 sam sam 164K Jul 30 10:57 fasta_splits
--rw-r--r-- 1 sam sam 2.3G Jan 13  2021 GCF_016432855.1_SaNama_1.0_genomic.fna
--rw-r--r-- 1 sam sam 154K Jul 29 16:15 GCF_016432855.1_SaNama_1.0_genomic.fna.fai
+<pre><code>total 660M
 -rw-r--r-- 1 sam sam 642M Jan 13  2021 GCF_016432855.1_SaNama_1.0_genomic.fna.gz
--rw-r--r-- 1 sam sam 373M Sep 28  2022 GCF_016432855.1_SaNama_1.0_genomic.gff
 -rw-r--r-- 1 sam sam  18M Sep 28  2022 GCF_016432855.1_SaNama_1.0_genomic.gff.gz
 -rw-r--r-- 1 sam sam  33K Jul 26 06:11 md5checksums.txt</code></pre>
 </section>
@@ -513,17 +508,9 @@ drwxr-xr-x 2 sam sam 164K Jul 30 10:57 fasta_splits
 <span id="cb7-9"><a href="#cb7-9" aria-hidden="true" tabindex="-1"></a><span class="cf">done</span></span>
 <span id="cb7-10"><a href="#cb7-10" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb7-11"><a href="#cb7-11" aria-hidden="true" tabindex="-1"></a><span class="fu">ls</span> <span class="at">-lh</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<pre><code>gzip: GCF_016432855.1_SaNama_1.0_genomic.fna already exists;    not overwritten
-gzip: GCF_016432855.1_SaNama_1.0_genomic.gff already exists;    not overwritten
-total 5.5G
--rw-r--r-- 1 sam sam 2.3G Jul 29 21:18 bisulfite.GCF_016432855.1_SaNama_1.0_genomic.fna
--rw-r--r-- 1 sam sam 154K Jul 30 06:57 bisulfite.GCF_016432855.1_SaNama_1.0_genomic.fna.fai
-drwxr-xr-x 2 sam sam 164K Jul 30 10:57 fasta_splits
+<pre><code>total 2.6G
 -rw-r--r-- 1 sam sam 2.3G Jan 13  2021 GCF_016432855.1_SaNama_1.0_genomic.fna
--rw-r--r-- 1 sam sam 154K Jul 29 16:15 GCF_016432855.1_SaNama_1.0_genomic.fna.fai
--rw-r--r-- 1 sam sam 642M Jan 13  2021 GCF_016432855.1_SaNama_1.0_genomic.fna.gz
 -rw-r--r-- 1 sam sam 373M Sep 28  2022 GCF_016432855.1_SaNama_1.0_genomic.gff
--rw-r--r-- 1 sam sam  18M Sep 28  2022 GCF_016432855.1_SaNama_1.0_genomic.gff.gz
 -rw-r--r-- 1 sam sam  33K Jul 26 06:11 md5checksums.txt</code></pre>
 </section>
 </section>
@@ -1725,15 +1712,15 @@ NUMBER OF SEQUENCES IN ORIGINAL FASTA
 
 -------------------------------------------------------------------
 NUMBER OF INDIVIDUAL FASTA FILES
-4122
+4121
 -------------------------------------------------------------------</code></pre>
 </section>
 </section>
-<section id="primer-search-with-emobss-primersearch" class="level1">
-<h1>8 PRIMER SEARCH WITH <a href="https://emboss.sourceforge.net/apps/cvs/emboss/apps/primersearch.html">EMOBSS PRIMERSEARCH</a></h1>
-<p>This will run <a href="https://emboss.sourceforge.net/apps/cvs/emboss/apps/primersearch.html">EMOBSS PrimerSearch</a> against the genome to assess primer specificity.</p>
-<section id="create-emobss-primersearch-primers-file" class="level2">
-<h2 class="anchored" data-anchor-id="create-emobss-primersearch-primers-file">8.1 Create EMOBSS PrimerSearch Primers File</h2>
+<section id="primer-search-with-emboss-primersearch" class="level1">
+<h1>8 PRIMER SEARCH WITH <a href="https://emboss.sourceforge.net/apps/cvs/emboss/apps/primersearch.html">EMBOSS PRIMERSEARCH</a></h1>
+<p>This will run <a href="https://emboss.sourceforge.net/apps/cvs/emboss/apps/primersearch.html">EMBOSS PrimerSearch</a> against the genome to assess primer specificity.</p>
+<section id="create-emboss-primersearch-primers-file" class="level2">
+<h2 class="anchored" data-anchor-id="create-emboss-primersearch-primers-file">8.1 Create EMBOSS PrimerSearch Primers File</h2>
 <p>Create a tab-delimited file to use with EMBOSS PrimerSearch.</p>
 <div class="sourceCode" id="cb25"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb25-1"><a href="#cb25-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Load bash variables into memory</span></span>
 <span id="cb25-2"><a href="#cb25-2" aria-hidden="true" tabindex="-1"></a><span class="bu">source</span> .bashvars</span>
@@ -1785,9 +1772,9 @@ NUMBER OF INDIVIDUAL FASTA FILES
 <span id="cb27-30"><a href="#cb27-30" aria-hidden="true" tabindex="-1"></a>    <span class="cf">then</span> <span class="fu">rm</span> <span class="va">${fasta_no_ext_lower}</span>.primersearch</span>
 <span id="cb27-31"><a href="#cb27-31" aria-hidden="true" tabindex="-1"></a>  <span class="cf">fi</span></span>
 <span id="cb27-32"><a href="#cb27-32" aria-hidden="true" tabindex="-1"></a><span class="cf">done</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<pre><code>real    5m28.385s
-user    4m32.584s
-sys 1m14.440s</code></pre>
+<pre><code>real    5m31.589s
+user    4m35.689s
+sys 1m14.992s</code></pre>
 </section>
 <section id="check-primer-matches" class="level2">
 <h2 class="anchored" data-anchor-id="check-primer-matches">8.3 Check primer matches</h2>
