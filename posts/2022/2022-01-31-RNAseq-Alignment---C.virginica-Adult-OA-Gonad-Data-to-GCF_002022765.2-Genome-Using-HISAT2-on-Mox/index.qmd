@@ -6,19 +6,18 @@ toc-location: left
 layout: post
 title: RNAseq Alignment - C.virginica Adult OA Gonad Data to GCF_002022765.2 Genome Using HISAT2 on Mox
 date: '2022-01-31 13:35'
-tags: 
+categories: 
   - HISAT2
   - Crassostrea virginica
   - RNAseq
   - Mox
-  - Eastern oyster
-categories: 
+  - Eastern oyster 
   - 2022
   - Miscellaneous
 ---
-As part of [this project](https://github.com/epigeneticstoocean/2018_L18-adult-methylation), Steven's asked that [I identify long, non-coding RNAs (lncRNAs)](https://github.com/RobertsLab/resources/issues/1375) (GitHub Issue) in the [_Crassostrea virginica_ (Eastern oyster)](https://en.wikipedia.org/wiki/Eastern_oyster) adult OA gonad RNAseq data we have. The initial step for this is to assemble transcriptome. Since there is a [published genome (NCBI RefSeq GCF_002022765.2_C_virginica-3.0)](https://ftp.ncbi.nlm.nih.gov/genomes/all/GCF/002/022/765/GCF_002022765.2_C_virginica-3.0/) for [_Crassostrea virginica_ (Eastern oyster)](https://en.wikipedia.org/wiki/Eastern_oyster), I will perform a genome-guided assembly using [`Trinity`](https://github.com/trinityrnaseq/trinityrnaseq/wiki). That process requires a sorted BAM file as input. In order to generate that file, I used [`HISAT2`](https://daehwankimlab.github.io/hisat2/). I've already generated the necessary [`HISAT2`](https://daehwankimlab.github.io/hisat2/) genome index files ([as of 20210720](https://robertslab.github.io/sams-notebook/posts/2021/2021-07-20-Genome-Annotations---Splice-Site-and-Exon-Extractions-for-C.virginica-GCF_002022765.2-Genome-Using-Hisat2-on-Mox/)), which also identified/incorporated splice sites and exons, which the [`HISAT2`](https://daehwankimlab.github.io/hisat2/) alignment process requires to run.
+As part of this project epigeneticstoocean/2018_L18-adult-methylation (private GitHub repo), Steven's asked that [I identify long, non-coding RNAs (lncRNAs)](https://github.com/RobertsLab/resources/issues/1375) (GitHub Issue) in the [_Crassostrea virginica_ (Eastern oyster)](https://en.wikipedia.org/wiki/Eastern_oyster) adult OA gonad RNAseq data we have. The initial step for this is to assemble transcriptome. Since there is a [published genome (NCBI RefSeq GCF_002022765.2_C_virginica-3.0)](https://ftp.ncbi.nlm.nih.gov/genomes/all/GCF/002/022/765/GCF_002022765.2_C_virginica-3.0/) for [_Crassostrea virginica_ (Eastern oyster)](https://en.wikipedia.org/wiki/Eastern_oyster), I will perform a genome-guided assembly using [`Trinity`](https://github.com/trinityrnaseq/trinityrnaseq/wiki). That process requires a sorted BAM file as input. In order to generate that file, I used [`HISAT2`](https://daehwankimlab.github.io/hisat2/). I've already generated the necessary [`HISAT2`](https://daehwankimlab.github.io/hisat2/) genome index files ([as of 20210720](../../2021/2021-07-20-Genome-Annotations---Splice-Site-and-Exon-Extractions-for-C.virginica-GCF_002022765.2-Genome-Using-Hisat2-on-Mox/index.qmd)), which also identified/incorporated splice sites and exons, which the [`HISAT2`](https://daehwankimlab.github.io/hisat2/) alignment process requires to run.
 
-[`fastp`](https://github.com/OpenGene/fastp)-trimmed RNAseq data from [20210714](https://robertslab.github.io/sams-notebook/posts/2021/2021-07-14-Trimming---C.virginica-Gonad-RNAseq-with-FastP-on-Mox/) was used.
+[`fastp`](https://github.com/OpenGene/fastp)-trimmed RNAseq data from [20210714](../../2021/2021-07-14-Trimming---C.virginica-Gonad-RNAseq-with-FastP-on-Mox/index.qmd) was used.
 
 The [`HISAT2`](https://daehwankimlab.github.io/hisat2/) alignment job was run on Mox.
 
@@ -267,7 +266,7 @@ Output folder:
     ```
 
 
-The overall alignment rate was surprisingly low. For a good set of RNAseq, I'd fully expect >80% of reads to align. I revisted the [`fastp` trimming performed on 20210714](https://robertslab.github.io/sams-notebook/posts/2021/2021-07-14-Trimming-C.virginica-Gonad-RNAseq-with-FastP-on-Mox/) and confirmed that paired-end adaptor trimming was enabled. Additionally, the [MultiQC report from the trimming](https://gannet.fish.washington.edu/Atumefaciens/20210714_cvir_gonad_RNAseq_fastp_trimming/multiqc_report/) shows that the post-trim read quality is good; nothing to be concerned about. Those two variables would've been the easiest things to explain a low alignment rate like this, but they don't seem to be the cause. With that being the case, I'm wondering if there's a lot of residual rRNA in the samples (which wouldn't map due to their highly repetetive nature and the fact that they would end up being mapped to multiple locations throughout the genome - leading them to be discarded when mapping).
+The overall alignment rate was surprisingly low. For a good set of RNAseq, I'd fully expect >80% of reads to align. I revisted the [`fastp` trimming performed on 20210714](../../2021/2021-07-14-Trimming---C.virginica-Gonad-RNAseq-with-FastP-on-Mox/index.qmd) and confirmed that paired-end adaptor trimming was enabled. Additionally, the [MultiQC report from the trimming](https://gannet.fish.washington.edu/Atumefaciens/20210714_cvir_gonad_RNAseq_fastp_trimming/multiqc_report/) shows that the post-trim read quality is good; nothing to be concerned about. Those two variables would've been the easiest things to explain a low alignment rate like this, but they don't seem to be the cause. With that being the case, I'm wondering if there's a lot of residual rRNA in the samples (which wouldn't map due to their highly repetetive nature and the fact that they would end up being mapped to multiple locations throughout the genome - leading them to be discarded when mapping).
 
 After looking into this a bit futher, I'm wondering if [ZymoResearch's modified rRNA removal technique](https://github.com/RobertsLab/project-oyster-comparative-omics/blob/master/metadata/RNA-Seq%20Synopsis_Venkataraman_zr4059.pdf) (PDF of Zymo project summary) still doesn't work for shellfish rRNA (like other kits)... In the future, we should remember to specifically request polyA selection as the means for mRNA enrichment. It's not a huge deal, as we still have a ton of RNAseq data, but it's still a shame that a lot of the sequencing data may have ended up just capturing rRNA...
 
