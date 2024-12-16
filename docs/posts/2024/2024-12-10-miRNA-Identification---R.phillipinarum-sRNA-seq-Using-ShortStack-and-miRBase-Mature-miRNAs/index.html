@@ -1,0 +1,1225 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.5.57">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+<meta name="author" content="Sam White">
+<meta name="dcterms.date" content="2024-12-10">
+
+<title>miRNA Identification - R.phillipinarum sRNA-seq Using ShortStack and miRBase Mature miRNAs – Sam’s Notebook</title>
+<style>
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: min(4vw, 1.5em);}
+div.column{flex: auto; overflow-x: auto;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+  vertical-align: middle;
+}
+/* CSS for syntax highlighting */
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { display: inline-block; text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+/* CSS for citations */
+div.csl-bib-body { }
+div.csl-entry {
+  clear: both;
+}
+.hanging-indent div.csl-entry {
+  margin-left:2em;
+  text-indent:-2em;
+}
+div.csl-left-margin {
+  min-width:2em;
+  float:left;
+}
+div.csl-right-inline {
+  margin-left:2em;
+  padding-left:1em;
+}
+div.csl-indent {
+  margin-left: 2em;
+}</style>
+
+
+<script src="../../../site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="../../../site_libs/quarto-nav/headroom.min.js"></script>
+<script src="../../../site_libs/clipboard/clipboard.min.js"></script>
+<script src="../../../site_libs/quarto-search/autocomplete.umd.js"></script>
+<script src="../../../site_libs/quarto-search/fuse.min.js"></script>
+<script src="../../../site_libs/quarto-search/quarto-search.js"></script>
+<meta name="quarto:offset" content="../../../">
+<link href="../../..//images/favicon.ico" rel="icon">
+<script src="../../../site_libs/quarto-html/quarto.js"></script>
+<script src="../../../site_libs/quarto-html/popper.min.js"></script>
+<script src="../../../site_libs/quarto-html/tippy.umd.min.js"></script>
+<script src="../../../site_libs/quarto-html/anchor.min.js"></script>
+<link href="../../../site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="../../../site_libs/quarto-html/quarto-syntax-highlighting-dark.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="../../../site_libs/bootstrap/bootstrap.min.js"></script>
+<link href="../../../site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="../../../site_libs/bootstrap/bootstrap.min.css" rel="stylesheet" id="quarto-bootstrap" data-mode="dark">
+<script id="quarto-search-options" type="application/json">{
+  "location": "navbar",
+  "copy-button": true,
+  "collapse-after": 2,
+  "panel-placement": "end",
+  "type": "textbox",
+  "limit": 100,
+  "keyboard-shortcut": [
+    "f",
+    "/",
+    "s"
+  ],
+  "language": {
+    "search-no-results-text": "No results",
+    "search-matching-documents-text": "matching documents",
+    "search-copy-link-title": "Copy link to search",
+    "search-hide-matches-text": "Hide additional matches",
+    "search-more-match-text": "more match in this document",
+    "search-more-matches-text": "more matches in this document",
+    "search-clear-button-title": "Clear",
+    "search-text-placeholder": "",
+    "search-detached-cancel-button-title": "Cancel",
+    "search-submit-button-title": "Submit",
+    "search-label": "Search"
+  }
+}</script>
+<script async="" src="https://www.googletagmanager.com/gtag/js?id=G-7483T61T11"></script>
+
+<script type="text/javascript">
+
+window.dataLayer = window.dataLayer || [];
+function gtag(){dataLayer.push(arguments);}
+gtag('js', new Date());
+gtag('config', 'G-7483T61T11', { 'anonymize_ip': true});
+</script>
+
+  <script src="https://cdnjs.cloudflare.com/polyfill/v3/polyfill.min.js?features=es6"></script>
+  <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml-full.js" type="text/javascript"></script>
+
+<script type="text/javascript">
+const typesetMath = (el) => {
+  if (window.MathJax) {
+    // MathJax Typeset
+    window.MathJax.typeset([el]);
+  } else if (window.katex) {
+    // KaTeX Render
+    var mathElements = el.getElementsByClassName("math");
+    var macros = [];
+    for (var i = 0; i < mathElements.length; i++) {
+      var texText = mathElements[i].firstChild;
+      if (mathElements[i].tagName == "SPAN") {
+        window.katex.render(texText.data, mathElements[i], {
+          displayMode: mathElements[i].classList.contains('display'),
+          throwOnError: false,
+          macros: macros,
+          fleqn: false
+        });
+      }
+    }
+  }
+}
+window.Quarto = {
+  typesetMath
+};
+</script>
+
+<link rel="stylesheet" href="../../../styles.css">
+</head>
+
+<body class="floating nav-fixed">
+
+<div id="quarto-search-results"></div>
+  <header id="quarto-header" class="headroom fixed-top quarto-banner">
+    <nav class="navbar navbar-expand-lg " data-bs-theme="dark">
+      <div class="navbar-container container-fluid">
+      <div class="navbar-brand-container mx-auto">
+    <a class="navbar-brand" href="../../../index.html">
+    <span class="navbar-title">Sam’s Notebook</span>
+    </a>
+  </div>
+            <div id="quarto-search" class="" title="Search"></div>
+          <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarCollapse" aria-controls="navbarCollapse" role="menu" aria-expanded="false" aria-label="Toggle navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+  <span class="navbar-toggler-icon"></span>
+</button>
+          <div class="collapse navbar-collapse" id="navbarCollapse">
+            <ul class="navbar-nav navbar-nav-scroll ms-auto">
+  <li class="nav-item dropdown ">
+    <a class="nav-link dropdown-toggle" href="#" id="nav-menu-bi-hdd-network" role="link" data-bs-toggle="dropdown" aria-expanded="false">
+      <i class="bi bi-hdd-network" role="img">
+</i> 
+ <span class="menu-text"></span>
+    </a>
+    <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="nav-menu-bi-hdd-network">    
+        <li>
+    <a class="dropdown-item" href="http://raven.fish.washington.edu:8787" target="_blank">
+ <span class="dropdown-text">Rstudio Server - Raven</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="https://gannet.fish.washington.edu/Atumefaciens/" target="_blank">
+ <span class="dropdown-text">My Gannet Directory</span></a>
+  </li>  
+    </ul>
+  </li>
+  <li class="nav-item dropdown ">
+    <a class="nav-link dropdown-toggle" href="#" id="nav-menu-bi-journal-code" role="link" data-bs-toggle="dropdown" aria-expanded="false">
+      <i class="bi bi-journal-code" role="img">
+</i> 
+ <span class="menu-text"></span>
+    </a>
+    <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="nav-menu-bi-journal-code">    
+        <li>
+    <a class="dropdown-item" href="https://sr320.github.io" target="_blank">
+ <span class="dropdown-text">Steven’s Notebook</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="https://shedurkin.github.io/Roberts-LabNotebook/" target="_blank">
+ <span class="dropdown-text">Kathleen’s Notebook</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="https://meganewing.github.io/mewing-notebook/" target="_blank">
+ <span class="dropdown-text">Megan’s Notebook</span></a>
+  </li>  
+    </ul>
+  </li>
+  <li class="nav-item dropdown ">
+    <a class="nav-link dropdown-toggle" href="#" id="nav-menu-bi-github" role="link" data-bs-toggle="dropdown" aria-expanded="false">
+      <i class="bi bi-github" role="img">
+</i> 
+ <span class="menu-text"></span>
+    </a>
+    <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="nav-menu-bi-github">    
+        <li>
+    <a class="dropdown-item" href="https://github.com/RobertsLab/sams-notebook" target="_blank">
+ <span class="dropdown-text">Notebook repo</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="https://github.com/RobertsLab" target="_blank">
+ <span class="dropdown-text">Lab Organization (GitHub)</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="https://github.com/RobertsLab/lab-website" target="_blank">
+ <span class="dropdown-text">Edit Roberts Lab website</span></a>
+  </li>  
+    </ul>
+  </li>
+  <li class="nav-item compact">
+    <a class="nav-link" href="https://calendar.google.com/calendar/embed?src=mrc305@gmail.com&amp;ctz=America/Vancouver" target="_blank"> <i class="bi bi-calendar-week" role="img">
+</i> 
+<span class="menu-text"></span></a>
+  </li>  
+  <li class="nav-item compact">
+    <a class="nav-link" href="../../../index.xml"> <i class="bi bi-rss" role="img">
+</i> 
+<span class="menu-text"></span></a>
+  </li>  
+</ul>
+          </div> <!-- /navcollapse -->
+            <div class="quarto-navbar-tools">
+</div>
+      </div> <!-- /container-fluid -->
+    </nav>
+</header>
+<!-- content -->
+<header id="title-block-header" class="quarto-title-block default toc-left page-columns page-full">
+  <div class="quarto-title-banner page-columns page-full">
+    <div class="quarto-title column-page-right">
+      <h1 class="title">miRNA Identification - R.phillipinarum sRNA-seq Using ShortStack and miRBase Mature miRNAs</h1>
+                                <div class="quarto-categories">
+                <div class="quarto-category">2024</div>
+                <div class="quarto-category">Ruditapes phillipinarum</div>
+                <div class="quarto-category">Manila clam</div>
+                <div class="quarto-category">sRNA-seq</div>
+                <div class="quarto-category">miRNA</div>
+                <div class="quarto-category">project-clam-oa</div>
+                <div class="quarto-category">ShortStack</div>
+                <div class="quarto-category">miRBase</div>
+              </div>
+                  </div>
+  </div>
+    
+  
+  <div class="quarto-title-meta column-page-right">
+
+      <div>
+      <div class="quarto-title-meta-heading">Author</div>
+      <div class="quarto-title-meta-contents">
+               <p>Sam White </p>
+            </div>
+    </div>
+      
+      <div>
+      <div class="quarto-title-meta-heading">Published</div>
+      <div class="quarto-title-meta-contents">
+        <p class="date">December 10, 2024</p>
+      </div>
+    </div>
+    
+      
+    </div>
+    
+  
+  </header><div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-full page-navbar">
+<!-- sidebar -->
+  <nav id="quarto-sidebar" class="sidebar collapse collapse-horizontal quarto-sidebar-collapse-item sidebar-navigation floating overflow-auto">
+    <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">Contents</h2>
+   
+  <ul>
+  <li><a href="#intro" id="toc-intro" class="nav-link active" data-scroll-target="#intro">INTRO</a></li>
+  <li><a href="#description" id="toc-description" class="nav-link" data-scroll-target="#description">1 Description</a></li>
+  <li><a href="#set-r-variables" id="toc-set-r-variables" class="nav-link" data-scroll-target="#set-r-variables">2 Set R variables</a></li>
+  <li><a href="#create-a-bash-variables-file" id="toc-create-a-bash-variables-file" class="nav-link" data-scroll-target="#create-a-bash-variables-file">3 Create a Bash variables file</a></li>
+  <li><a href="#load-shortstack-conda-environment" id="toc-load-shortstack-conda-environment" class="nav-link" data-scroll-target="#load-shortstack-conda-environment">4 Load ShortStack conda environment</a></li>
+  <li><a href="#run-shortstack" id="toc-run-shortstack" class="nav-link" data-scroll-target="#run-shortstack">5 Run ShortStack</a>
+  <ul>
+  <li><a href="#excecute-shortstack-command" id="toc-excecute-shortstack-command" class="nav-link" data-scroll-target="#excecute-shortstack-command">5.1 Excecute ShortStack command</a></li>
+  <li><a href="#check-runtime" id="toc-check-runtime" class="nav-link" data-scroll-target="#check-runtime">5.2 Check runtime</a></li>
+  </ul></li>
+  <li><a href="#results" id="toc-results" class="nav-link" data-scroll-target="#results">6 Results</a>
+  <ul>
+  <li><a href="#shortstack-synopsis" id="toc-shortstack-synopsis" class="nav-link" data-scroll-target="#shortstack-synopsis">6.1 ShortStack synopsis</a></li>
+  <li><a href="#inspect-results.txt" id="toc-inspect-results.txt" class="nav-link" data-scroll-target="#inspect-results.txt">6.2 Inspect <code>Results.txt</code></a>
+  <ul>
+  <li><a href="#directory-tree-of-all-shortstack-outputs" id="toc-directory-tree-of-all-shortstack-outputs" class="nav-link" data-scroll-target="#directory-tree-of-all-shortstack-outputs">6.2.1 Directory tree of all ShortStack outputs</a></li>
+  </ul></li>
+  </ul></li>
+  </ul>
+</nav>
+</nav>
+<div id="quarto-sidebar-glass" class="quarto-sidebar-collapse-item" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item"></div>
+<!-- margin-sidebar -->
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar zindex-bottom">
+    </div>
+<!-- main -->
+<main class="content quarto-banner-title-block column-page-right" id="quarto-document-content">
+
+
+
+
+
+<section id="intro" class="level1">
+<h1>INTRO</h1>
+<p>This notebook is part of <a href="https://github.com/RobertsLab/project-clam-oa/tree/main">project-clam-oa</a> (GitHub repo).</p>
+<p>Data was originally <a href="../../../posts/2024/2024-12-10-miRNA-Identification---R.phillipinarum-sRNA-seq-Using-ShortStack-and-miRBase-Mature-miRNAs/index.html">trimmed and merged on 20241210</a> (Notebook entry). Next step was to identify miRNAs using <a href="https://github.com/MikeAxtell/ShortStack">ShortStack</a>. The notebook provides a basic count of miRNAs identified, but does not explore them in further detail.</p>
+<div class="callout callout-style-default callout-note callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Note
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>This notebook is copied from knitted markdown from <a href="https://github.com/RobertsLab/project-clam-oa/blob/49e3853e43ec2a0321cfbcbc3128b6fd65ed3edc/code/02.00-ShortStack-31bp-fastp-merged.Rmd"><code>02.00-ShortStack-31bp-fastp-merged.Rmd</code></a> (commit <code>49e3853</code>).</p>
+</div>
+</div>
+</section>
+<section id="description" class="level1">
+<h1>1 Description</h1>
+<p>Use <a href="https://github.com/MikeAxtell/ShortStack">ShortStack</a> (<a href="#ref-Axtell2013-xu"><strong>Axtell2013-xu?</strong></a>; <a href="#ref-johnson2016">Johnson et al. 2016</a>; <a href="#ref-Shahid2014-lx"><strong>Shahid2014-lx?</strong></a>) to perform alignment of sRNAseq data and annotation of sRNA-producing genes.</p>
+<p>Due to large file sizes of some of the input and output files, not all files can be sync’d to GitHub. A full backup of this repo is available here:</p>
+<ul>
+<li><a href="https://gannet.fish.washington.edu/gitrepos/project-clam-oa" class="uri">https://gannet.fish.washington.edu/gitrepos/project-clam-oa</a></li>
+</ul>
+<hr>
+<p>Inputs:</p>
+<ul>
+<li><p>Requires trimmed sRNAseq files generated by <a href="./01.00-trimming-fastp-fastqc.Rmd">01.00-trimming-fastp-fastqc.Rmd</a></p>
+<ul>
+<li>Filenames formatted: <code>*fastp-adapters-polyG-31bp-merged.fq.gz</code></li>
+</ul></li>
+<li><p>Genome FastA: <code>GCF_026571515.1_ASM2657151v2_genomic.fna</code></p></li>
+<li><p>MiRBase v22.1 FastA: <code>mirbase-mature-v22.1.fa</code></p></li>
+</ul>
+<p>Outputs:</p>
+<ul>
+<li>See <a href="https://github.com/MikeAxtell/ShortStack#outputs">ShortStack outputs documentation</a> for full list and detailed descriptions.</li>
+</ul>
+<p>Software requirements:</p>
+<ul>
+<li>Utilizes a <a href="https://github.com/MikeAxtell/ShortStack#installation">ShortStack</a> Conda/Mamba environment, per the installation instructions.</li>
+</ul>
+<p>Replace with name of your ShortStack environment and the path to the corresponding conda installation (find this <em>after</em> you’ve activated the environment).</p>
+<p>E.g.</p>
+<div class="sourceCode" id="cb1"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Activate environment</span></span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="ex">conda</span> activate ShortStack-4.1.1_env</span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a><span class="co"># Find conda path</span></span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a><span class="fu">which</span> conda</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<hr>
+</section>
+<section id="set-r-variables" class="level1">
+<h1>2 Set R variables</h1>
+<div class="sourceCode" id="cb2"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a>shortstack_conda_env_name <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="st">"ShortStack-4.1.1_env"</span>)</span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>shortstack_cond_path <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="st">"/home/sam/programs/mambaforge/condabin/conda"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</section>
+<section id="create-a-bash-variables-file" class="level1">
+<h1>3 Create a Bash variables file</h1>
+<p>This allows usage of Bash variables across R Markdown chunks.</p>
+<div class="sourceCode" id="cb3"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="kw">{</span></span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a><span class="bu">echo</span> <span class="st">"#### Assign Variables ####"</span></span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a><span class="bu">echo</span> <span class="st">""</span></span>
+<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a><span class="bu">echo</span> <span class="st">"# Trimmed FastQ naming pattern"</span></span>
+<span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a><span class="bu">echo</span> <span class="st">"export trimmed_fastqs_pattern='*fastp-adapters-polyG-31bp-merged.fq.gz'"</span></span>
+<span id="cb3-7"><a href="#cb3-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-8"><a href="#cb3-8" aria-hidden="true" tabindex="-1"></a><span class="bu">echo</span> <span class="st">"# Data directories"</span></span>
+<span id="cb3-9"><a href="#cb3-9" aria-hidden="true" tabindex="-1"></a><span class="bu">echo</span> <span class="st">'export repo_dir=/home/shared/8TB_HDD_01/sam/gitrepos/RobertsLab/project-clam-oa'</span></span>
+<span id="cb3-10"><a href="#cb3-10" aria-hidden="true" tabindex="-1"></a><span class="bu">echo</span> <span class="st">'export repo_data_dir="${repo_dir}/data"'</span></span>
+<span id="cb3-11"><a href="#cb3-11" aria-hidden="true" tabindex="-1"></a><span class="bu">echo</span> <span class="st">'export output_dir_top=${repo_dir}/output/02.00-ShortStack-31bp-fastp-merged'</span></span>
+<span id="cb3-12"><a href="#cb3-12" aria-hidden="true" tabindex="-1"></a><span class="bu">echo</span> <span class="st">'export trimmed_fastqs_dir="${repo_dir}/output/01.00-trimming-fastp-fastqc"'</span></span>
+<span id="cb3-13"><a href="#cb3-13" aria-hidden="true" tabindex="-1"></a><span class="bu">echo</span> <span class="st">""</span></span>
+<span id="cb3-14"><a href="#cb3-14" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-15"><a href="#cb3-15" aria-hidden="true" tabindex="-1"></a><span class="bu">echo</span> <span class="st">"# Input/Output files"</span></span>
+<span id="cb3-16"><a href="#cb3-16" aria-hidden="true" tabindex="-1"></a><span class="bu">echo</span> <span class="st">'export genome_fasta_dir=${repo_data_dir}/genome_files'</span></span>
+<span id="cb3-17"><a href="#cb3-17" aria-hidden="true" tabindex="-1"></a><span class="bu">echo</span> <span class="st">'export genome_fasta_name="GCF_026571515.1_ASM2657151v2_genomic.fna"'</span></span>
+<span id="cb3-18"><a href="#cb3-18" aria-hidden="true" tabindex="-1"></a><span class="bu">echo</span> <span class="st">'export shortstack_genome_fasta_name="GCF_026571515.1_ASM2657151v2_genomic.fa"'</span></span>
+<span id="cb3-19"><a href="#cb3-19" aria-hidden="true" tabindex="-1"></a><span class="bu">echo</span> <span class="st">'export mirbase_mature_fasta=mirbase-mature-v22.1.fa'</span></span>
+<span id="cb3-20"><a href="#cb3-20" aria-hidden="true" tabindex="-1"></a><span class="bu">echo</span> <span class="st">'export genome_fasta="${genome_fasta_dir}/${shortstack_genome_fasta_name}"'</span></span>
+<span id="cb3-21"><a href="#cb3-21" aria-hidden="true" tabindex="-1"></a><span class="bu">echo</span> <span class="st">""</span></span>
+<span id="cb3-22"><a href="#cb3-22" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-23"><a href="#cb3-23" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-24"><a href="#cb3-24" aria-hidden="true" tabindex="-1"></a><span class="bu">echo</span> <span class="st">"# Set number of CPUs to use"</span></span>
+<span id="cb3-25"><a href="#cb3-25" aria-hidden="true" tabindex="-1"></a><span class="bu">echo</span> <span class="st">'export threads=40'</span></span>
+<span id="cb3-26"><a href="#cb3-26" aria-hidden="true" tabindex="-1"></a><span class="bu">echo</span> <span class="st">""</span></span>
+<span id="cb3-27"><a href="#cb3-27" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-28"><a href="#cb3-28" aria-hidden="true" tabindex="-1"></a><span class="bu">echo</span> <span class="st">"# Initialize arrays"</span></span>
+<span id="cb3-29"><a href="#cb3-29" aria-hidden="true" tabindex="-1"></a><span class="bu">echo</span> <span class="st">'export trimmed_fastqs_array=()'</span></span>
+<span id="cb3-30"><a href="#cb3-30" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-31"><a href="#cb3-31" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-32"><a href="#cb3-32" aria-hidden="true" tabindex="-1"></a><span class="kw">}</span> <span class="op">&gt;</span> .bashvars</span>
+<span id="cb3-33"><a href="#cb3-33" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-34"><a href="#cb3-34" aria-hidden="true" tabindex="-1"></a><span class="fu">cat</span> .bashvars</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<pre><code>#### Assign Variables ####
+
+# Trimmed FastQ naming pattern
+export trimmed_fastqs_pattern='*fastp-adapters-polyG-31bp-merged.fq.gz'
+# Data directories
+export repo_dir=/home/shared/8TB_HDD_01/sam/gitrepos/RobertsLab/project-clam-oa
+export repo_data_dir="${repo_dir}/data"
+export output_dir_top=${repo_dir}/output/02.00-ShortStack-31bp-fastp-merged
+export trimmed_fastqs_dir="${repo_dir}/output/01.00-trimming-fastp-fastqc"
+
+# Input/Output files
+export genome_fasta_dir=${repo_data_dir}/genome_files
+export genome_fasta_name="GCF_026571515.1_ASM2657151v2_genomic.fna"
+export shortstack_genome_fasta_name="GCF_026571515.1_ASM2657151v2_genomic.fa"
+export mirbase_mature_fasta=mirbase-mature-v22.1.fa
+export genome_fasta="${genome_fasta_dir}/${shortstack_genome_fasta_name}"
+
+# Set number of CPUs to use
+export threads=40
+
+# Initialize arrays
+export trimmed_fastqs_array=()</code></pre>
+</section>
+<section id="load-shortstack-conda-environment" class="level1">
+<h1>4 Load <a href="https://github.com/MikeAxtell/ShortStack">ShortStack</a> conda environment</h1>
+<p>If this is successful, the first line of output should show that the Python being used is the one in your <span class="math display">\[ShortStack\]</span>(<a href="https://github.com/MikeAxtell/ShortStack" class="uri">https://github.com/MikeAxtell/ShortStack</a> conda environment path.</p>
+<p>E.g.</p>
+<p><code>python:         /home/sam/programs/mambaforge/envs/mirmachine_env/bin/python</code></p>
+<div class="sourceCode" id="cb5"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="fu">use_condaenv</span>(<span class="at">condaenv =</span> shortstack_conda_env_name, <span class="at">conda =</span> shortstack_cond_path)</span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a><span class="co"># Check successful env loading</span></span>
+<span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a><span class="fu">py_config</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<pre><code>python:         /home/sam/programs/mambaforge/envs/ShortStack-4.1.1_env/bin/python
+libpython:      /home/sam/programs/mambaforge/envs/ShortStack-4.1.1_env/lib/libpython3.12.so
+pythonhome:     /home/sam/programs/mambaforge/envs/ShortStack-4.1.1_env:/home/sam/programs/mambaforge/envs/ShortStack-4.1.1_env
+version:        3.12.8 | packaged by conda-forge | (main, Dec  5 2024, 14:24:40) [GCC 13.3.0]
+numpy:          /home/sam/programs/mambaforge/envs/ShortStack-4.1.1_env/lib/python3.12/site-packages/numpy
+numpy_version:  2.2.0
+
+NOTE: Python version was forced by use_python() function</code></pre>
+</section>
+<section id="run-shortstack" class="level1">
+<h1>5 Run ShortStack</h1>
+<section id="excecute-shortstack-command" class="level2">
+<h2 class="anchored" data-anchor-id="excecute-shortstack-command">5.1 Excecute ShortStack command</h2>
+<p>Uses the <code>--dn_mirna</code> option to identify miRNAs in the genome, without relying on the <code>--known_miRNAs</code>.</p>
+<p>This part of the code redirects the output of <code>time</code> to the end of <code>shortstack.log</code> file.</p>
+<ul>
+<li><code>; } \ 2&gt;&gt; ${output_dir_top}/shortstack.log</code></li>
+</ul>
+<div class="sourceCode" id="cb7"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Load bash variables into memory</span></span>
+<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a><span class="bu">source</span> .bashvars</span>
+<span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-4"><a href="#cb7-4" aria-hidden="true" tabindex="-1"></a><span class="co"># Make output directory, if it doesn't exist</span></span>
+<span id="cb7-5"><a href="#cb7-5" aria-hidden="true" tabindex="-1"></a><span class="fu">mkdir</span> <span class="at">--parents</span> <span class="st">"</span><span class="va">${output_dir_top}</span><span class="st">"</span></span>
+<span id="cb7-6"><a href="#cb7-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-7"><a href="#cb7-7" aria-hidden="true" tabindex="-1"></a><span class="co"># Create array of trimmed FastQs</span></span>
+<span id="cb7-8"><a href="#cb7-8" aria-hidden="true" tabindex="-1"></a><span class="va">trimmed_fastqs_array</span><span class="op">=</span><span class="va">(${trimmed_fastqs_dir}</span>/<span class="va">${trimmed_fastqs_pattern})</span></span>
+<span id="cb7-9"><a href="#cb7-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-10"><a href="#cb7-10" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-11"><a href="#cb7-11" aria-hidden="true" tabindex="-1"></a><span class="co"># Pass array contents to new variable as space-delimited list</span></span>
+<span id="cb7-12"><a href="#cb7-12" aria-hidden="true" tabindex="-1"></a><span class="va">trimmed_fastqs_list</span><span class="op">=</span><span class="va">$(</span><span class="bu">echo</span> <span class="st">"</span><span class="va">${trimmed_fastqs_array</span><span class="op">[*]</span><span class="va">}</span><span class="st">"</span><span class="va">)</span></span>
+<span id="cb7-13"><a href="#cb7-13" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-14"><a href="#cb7-14" aria-hidden="true" tabindex="-1"></a><span class="co"># Rename genome FastA to ShortStack naming convention</span></span>
+<span id="cb7-15"><a href="#cb7-15" aria-hidden="true" tabindex="-1"></a><span class="fu">cp</span> <span class="st">"</span><span class="va">${genome_fasta_dir}</span><span class="st">"</span>/<span class="st">"</span><span class="va">${genome_fasta_name}</span><span class="st">"</span> <span class="st">"</span><span class="va">${genome_fasta}</span><span class="st">"</span></span>
+<span id="cb7-16"><a href="#cb7-16" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-17"><a href="#cb7-17" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-18"><a href="#cb7-18" aria-hidden="true" tabindex="-1"></a><span class="co">###### Run ShortStack ######</span></span>
+<span id="cb7-19"><a href="#cb7-19" aria-hidden="true" tabindex="-1"></a><span class="kw">{</span> <span class="bu">time</span> <span class="dt">\</span></span>
+<span id="cb7-20"><a href="#cb7-20" aria-hidden="true" tabindex="-1"></a>ShortStack <span class="dt">\</span></span>
+<span id="cb7-21"><a href="#cb7-21" aria-hidden="true" tabindex="-1"></a>--genomefile <span class="st">"</span><span class="va">${genome_fasta}</span><span class="st">"</span> <span class="dt">\</span></span>
+<span id="cb7-22"><a href="#cb7-22" aria-hidden="true" tabindex="-1"></a>--readfile <span class="va">${trimmed_fastqs_list}</span> <span class="dt">\</span></span>
+<span id="cb7-23"><a href="#cb7-23" aria-hidden="true" tabindex="-1"></a>--known_miRNAs <span class="va">${repo_data_dir}</span>/<span class="va">${mirbase_mature_fasta}</span> <span class="dt">\</span></span>
+<span id="cb7-24"><a href="#cb7-24" aria-hidden="true" tabindex="-1"></a>--dn_mirna <span class="dt">\</span></span>
+<span id="cb7-25"><a href="#cb7-25" aria-hidden="true" tabindex="-1"></a>--threads <span class="va">${threads}</span> <span class="dt">\</span></span>
+<span id="cb7-26"><a href="#cb7-26" aria-hidden="true" tabindex="-1"></a>--outdir <span class="va">${output_dir_top}</span>/ShortStack_out <span class="dt">\</span></span>
+<span id="cb7-27"><a href="#cb7-27" aria-hidden="true" tabindex="-1"></a><span class="op">&amp;&gt;</span> <span class="va">${output_dir_top}</span>/shortstack.log <span class="kw">;</span> <span class="kw">}</span> <span class="dt">\</span></span>
+<span id="cb7-28"><a href="#cb7-28" aria-hidden="true" tabindex="-1"></a><span class="dv">2</span><span class="op">&gt;&gt;</span> <span class="va">${output_dir_top}</span>/shortstack.log</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</section>
+<section id="check-runtime" class="level2">
+<h2 class="anchored" data-anchor-id="check-runtime">5.2 Check runtime</h2>
+<div class="sourceCode" id="cb8"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Load bash variables into memory</span></span>
+<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a><span class="bu">source</span> .bashvars</span>
+<span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb8-4"><a href="#cb8-4" aria-hidden="true" tabindex="-1"></a><span class="fu">tail</span> <span class="at">-n</span> 3 <span class="va">${output_dir_top}</span>/shortstack.log <span class="dt">\</span></span>
+<span id="cb8-5"><a href="#cb8-5" aria-hidden="true" tabindex="-1"></a><span class="kw">|</span> <span class="fu">grep</span> <span class="st">"real"</span> <span class="dt">\</span></span>
+<span id="cb8-6"><a href="#cb8-6" aria-hidden="true" tabindex="-1"></a><span class="kw">|</span> <span class="fu">awk</span> <span class="st">'{print "ShortStack runtime:" "\t" $2}'</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<pre><code>ShortStack runtime: 51m17.453s</code></pre>
+</section>
+</section>
+<section id="results" class="level1">
+<h1>6 Results</h1>
+<section id="shortstack-synopsis" class="level2">
+<h2 class="anchored" data-anchor-id="shortstack-synopsis">6.1 ShortStack synopsis</h2>
+<div class="sourceCode" id="cb10"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Load bash variables into memory</span></span>
+<span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a><span class="bu">source</span> .bashvars</span>
+<span id="cb10-3"><a href="#cb10-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb10-4"><a href="#cb10-4" aria-hidden="true" tabindex="-1"></a><span class="fu">tail</span> <span class="at">-n</span> 25 <span class="va">${output_dir_top}</span>/shortstack.log</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<pre><code>Writing final files
+
+Found a total of 37 MIRNA loci
+
+
+Non-MIRNA loci by DicerCall:
+N 33525
+22 60
+21 18
+23 17
+24 9
+
+Creating visualizations of microRNA loci with strucVis
+&lt;&lt;&lt; WARNING &gt;&gt;&gt;
+Do not rely on these results alone to annotate new MIRNA loci!
+The false positive rate for de novo MIRNA identification is low, but NOT ZERO
+Insepct each mirna locus, especially the strucVis output, and see
+https://doi.org/10.1105/tpc.17.00851 , https://doi.org/10.1093/nar/gky1141
+
+Tue 10 Dec 2024 07:29:36 -0800 PST
+Run Completed!
+
+real    51m17.453s
+user    637m12.509s
+sys 184m31.539s</code></pre>
+<p>ShortStack found NN miRNAs.</p>
+</section>
+<section id="inspect-results.txt" class="level2">
+<h2 class="anchored" data-anchor-id="inspect-results.txt">6.2 Inspect <code>Results.txt</code></h2>
+<div class="sourceCode" id="cb12"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Load bash variables into memory</span></span>
+<span id="cb12-2"><a href="#cb12-2" aria-hidden="true" tabindex="-1"></a><span class="bu">source</span> .bashvars</span>
+<span id="cb12-3"><a href="#cb12-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb12-4"><a href="#cb12-4" aria-hidden="true" tabindex="-1"></a><span class="fu">head</span> <span class="va">${output_dir_top}</span>/ShortStack_out/Results.txt</span>
+<span id="cb12-5"><a href="#cb12-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb12-6"><a href="#cb12-6" aria-hidden="true" tabindex="-1"></a><span class="bu">echo</span> <span class="st">""</span></span>
+<span id="cb12-7"><a href="#cb12-7" aria-hidden="true" tabindex="-1"></a><span class="bu">echo</span> <span class="st">"----------------------------------------------------------"</span></span>
+<span id="cb12-8"><a href="#cb12-8" aria-hidden="true" tabindex="-1"></a><span class="bu">echo</span> <span class="st">""</span></span>
+<span id="cb12-9"><a href="#cb12-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb12-10"><a href="#cb12-10" aria-hidden="true" tabindex="-1"></a><span class="bu">echo</span> <span class="st">"Nummber of potential loci:"</span></span>
+<span id="cb12-11"><a href="#cb12-11" aria-hidden="true" tabindex="-1"></a><span class="fu">awk</span> <span class="st">'(NR&gt;1)'</span> <span class="va">${output_dir_top}</span>/ShortStack_out/Results.txt <span class="kw">|</span> <span class="fu">wc</span> <span class="at">-l</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<pre><code>Locus   Name    Chrom   Start   End Length  Reads   DistinctSequences   FracTop Strand  MajorRNA    MajorRNAReads   Short   Long    21  22  23  24  DicerCall   MIRNA   known_miRNAs
+NW_026851514.1:11444-11873  Cluster_1   NW_026851514.1  11444   11873   430 934 210 0.913   +   UUGAAUUCUGCACACUACUUAUGAUAAAAGU 171 8   910 3   0   4   9   N   N   NA
+NW_026851514.1:12401-12830  Cluster_2   NW_026851514.1  12401   12830   430 535 110 0.94    +   UGAUAACUCUUUUAACUGAUUCAUACGAAC  318 1   523 3   2   1   5   N   N   NA
+NW_026851515.1:76365-77030  Cluster_3   NW_026851515.1  76365   77030   666 11653   547 0.003   -   UCCUACGAUCAAAGUUCGGCAACGUUCGAC  3215    5   11536   10  11  54  37  N   N   NA
+NW_026851515.1:77089-77506  Cluster_4   NW_026851515.1  77089   77506   418 798 196 0.044   -   UACUAGUACCUCUUCGAUUGCAUUUU  100 5   732 3   16  22  20  N   N   NA
+NW_026851515.1:77511-78358  Cluster_5   NW_026851515.1  77511   78358   848 5726    946 0.004   -   UAGAUAUGUCACUGUUUAUUUCAUUGUC    661 53  5066    261 114 98  134 N   N   NA
+NW_026851515.1:78386-79090  Cluster_6   NW_026851515.1  78386   79090   705 1240    239 0.011   -   UGUAGUUCUUUGAAUAUAUCUCAGUCAUUG  264 6   1217    1   5   5   6   N   N   NA
+NW_026851515.1:79280-79708  Cluster_7   NW_026851515.1  79280   79708   429 946 115 0.011   -   UUAUAUAUGUUCUUGCUGAUCUUAAUUGG   396 4   927 9   1   2   3   N   N   NA
+NW_026851515.1:79774-80496  Cluster_8   NW_026851515.1  79774   80496   723 7823    1009    0.015   -   UUUGAUCGCUGUUUUUCAAUAUGACUGUGC  848 90  7238    248 71  48  128 N   N   NA
+NW_026851515.1:88853-89546  Cluster_9   NW_026851515.1  88853   89546   694 1600    307 0.036   -   UCUGACUGUUUAUGUGUUUAAUAUAUAACC  221 10  1541    1   11  21  16  N   N   NA
+
+----------------------------------------------------------
+
+Nummber of potential loci:
+33666</code></pre>
+<p>Column 20 of the <code>Results.txt</code> file identifies if a cluster is a miRNA or not (<code>Y</code> or <code>N</code>).</p>
+<div class="sourceCode" id="cb14"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Load bash variables into memory</span></span>
+<span id="cb14-2"><a href="#cb14-2" aria-hidden="true" tabindex="-1"></a><span class="bu">source</span> .bashvars</span>
+<span id="cb14-3"><a href="#cb14-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb14-4"><a href="#cb14-4" aria-hidden="true" tabindex="-1"></a><span class="bu">echo</span> <span class="st">"Number of loci characterized as miRNA:"</span></span>
+<span id="cb14-5"><a href="#cb14-5" aria-hidden="true" tabindex="-1"></a><span class="fu">awk</span> <span class="st">'$20=="Y" {print $0}'</span> <span class="va">${output_dir_top}</span>/ShortStack_out/Results.txt <span class="dt">\</span></span>
+<span id="cb14-6"><a href="#cb14-6" aria-hidden="true" tabindex="-1"></a><span class="kw">|</span> <span class="fu">wc</span> <span class="at">-l</span></span>
+<span id="cb14-7"><a href="#cb14-7" aria-hidden="true" tabindex="-1"></a><span class="bu">echo</span> <span class="st">""</span></span>
+<span id="cb14-8"><a href="#cb14-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb14-9"><a href="#cb14-9" aria-hidden="true" tabindex="-1"></a><span class="bu">echo</span> <span class="st">"----------------------------------------------------------"</span></span>
+<span id="cb14-10"><a href="#cb14-10" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb14-11"><a href="#cb14-11" aria-hidden="true" tabindex="-1"></a><span class="bu">echo</span> <span class="st">""</span></span>
+<span id="cb14-12"><a href="#cb14-12" aria-hidden="true" tabindex="-1"></a><span class="bu">echo</span> <span class="st">"Number of loci _not_ characterized as miRNA:"</span></span>
+<span id="cb14-13"><a href="#cb14-13" aria-hidden="true" tabindex="-1"></a><span class="fu">awk</span> <span class="st">'$20=="N" {print $0}'</span> <span class="va">${output_dir_top}</span>/ShortStack_out/Results.txt <span class="dt">\</span></span>
+<span id="cb14-14"><a href="#cb14-14" aria-hidden="true" tabindex="-1"></a><span class="kw">|</span> <span class="fu">wc</span> <span class="at">-l</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<pre><code>Number of loci characterized as miRNA:
+37
+
+----------------------------------------------------------
+
+Number of loci _not_ characterized as miRNA:
+33629</code></pre>
+<p>Column 21 of the <code>Results.txt</code> file identifies if a cluster aligned to a known miRNA (miRBase) or not (<code>Y</code> or <code>NA</code>).</p>
+<div class="sourceCode" id="cb16"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Load bash variables into memory</span></span>
+<span id="cb16-2"><a href="#cb16-2" aria-hidden="true" tabindex="-1"></a><span class="bu">source</span> .bashvars</span>
+<span id="cb16-3"><a href="#cb16-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb16-4"><a href="#cb16-4" aria-hidden="true" tabindex="-1"></a><span class="bu">echo</span> <span class="st">"Number of loci matching miRBase miRNAs:"</span></span>
+<span id="cb16-5"><a href="#cb16-5" aria-hidden="true" tabindex="-1"></a><span class="fu">awk</span> <span class="st">'$21!="NA" {print $0}'</span> <span class="va">${output_dir_top}</span>/ShortStack_out/Results.txt <span class="dt">\</span></span>
+<span id="cb16-6"><a href="#cb16-6" aria-hidden="true" tabindex="-1"></a><span class="kw">|</span> <span class="fu">wc</span> <span class="at">-l</span></span>
+<span id="cb16-7"><a href="#cb16-7" aria-hidden="true" tabindex="-1"></a><span class="bu">echo</span> <span class="st">""</span></span>
+<span id="cb16-8"><a href="#cb16-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb16-9"><a href="#cb16-9" aria-hidden="true" tabindex="-1"></a><span class="bu">echo</span> <span class="st">"----------------------------------------------------------"</span></span>
+<span id="cb16-10"><a href="#cb16-10" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb16-11"><a href="#cb16-11" aria-hidden="true" tabindex="-1"></a><span class="bu">echo</span> <span class="st">""</span></span>
+<span id="cb16-12"><a href="#cb16-12" aria-hidden="true" tabindex="-1"></a><span class="bu">echo</span> <span class="st">"Number of loci _not_ matching miRBase miRNAs:"</span></span>
+<span id="cb16-13"><a href="#cb16-13" aria-hidden="true" tabindex="-1"></a><span class="fu">awk</span> <span class="st">'$21=="NA" {print $0}'</span> <span class="va">${output_dir_top}</span>/ShortStack_out/Results.txt <span class="dt">\</span></span>
+<span id="cb16-14"><a href="#cb16-14" aria-hidden="true" tabindex="-1"></a><span class="kw">|</span> <span class="fu">wc</span> <span class="at">-l</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<pre><code>Number of loci matching miRBase miRNAs:
+92
+
+----------------------------------------------------------
+
+Number of loci _not_ matching miRBase miRNAs:
+33575</code></pre>
+<p>Although there are 92 loci with matches to miRBase miRNAs, ShortStack did <em>not</em> annotate 55 of these clusters as miRNAs likely <a href="https://github.com/MikeAxtell/ShortStack#mirna-annotation">because they do not <em>also</em> match secondary structure criteria</a>.</p>
+<p>This explains the difference between the 46 and 37 miRNAs.</p>
+<section id="directory-tree-of-all-shortstack-outputs" class="level3">
+<h3 class="anchored" data-anchor-id="directory-tree-of-all-shortstack-outputs">6.2.1 Directory tree of all ShortStack outputs</h3>
+<p>Many of these are large (by GitHub standards) BAM files, so will not be added to the repo.</p>
+<p>Additionally, it’s unlikely we’ll utilize most of the other files (bigwig) generated by ShortStack.</p>
+<div class="sourceCode" id="cb18"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb18-1"><a href="#cb18-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Load bash variables into memory</span></span>
+<span id="cb18-2"><a href="#cb18-2" aria-hidden="true" tabindex="-1"></a><span class="bu">source</span> .bashvars</span>
+<span id="cb18-3"><a href="#cb18-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb18-4"><a href="#cb18-4" aria-hidden="true" tabindex="-1"></a><span class="ex">tree</span> <span class="at">-h</span> <span class="va">${output_dir_top}</span>/</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<pre><code>/home/shared/8TB_HDD_01/sam/gitrepos/RobertsLab/project-clam-oa/output/02.00-ShortStack-31bp-fastp-merged/
+├── [ 27K]  shortstack.log
+└── [432K]  ShortStack_out
+    ├── [ 84M]  196-fastp-adapters-polyG-31bp-merged_condensed.bam
+    ├── [697K]  196-fastp-adapters-polyG-31bp-merged_condensed.bam.csi
+    ├── [270M]  196-fastp-adapters-polyG-31bp-merged_condensed.fa
+    ├── [ 64M]  199-fastp-adapters-polyG-31bp-merged_condensed.bam
+    ├── [642K]  199-fastp-adapters-polyG-31bp-merged_condensed.bam.csi
+    ├── [205M]  199-fastp-adapters-polyG-31bp-merged_condensed.fa
+    ├── [ 76M]  211-fastp-adapters-polyG-31bp-merged_condensed.bam
+    ├── [667K]  211-fastp-adapters-polyG-31bp-merged_condensed.bam.csi
+    ├── [242M]  211-fastp-adapters-polyG-31bp-merged_condensed.fa
+    ├── [ 72M]  24-fastp-adapters-polyG-31bp-merged_condensed.bam
+    ├── [670K]  24-fastp-adapters-polyG-31bp-merged_condensed.bam.csi
+    ├── [223M]  24-fastp-adapters-polyG-31bp-merged_condensed.fa
+    ├── [ 71M]  260-fastp-adapters-polyG-31bp-merged_condensed.bam
+    ├── [672K]  260-fastp-adapters-polyG-31bp-merged_condensed.bam.csi
+    ├── [221M]  260-fastp-adapters-polyG-31bp-merged_condensed.fa
+    ├── [ 61M]  26-fastp-adapters-polyG-31bp-merged_condensed.bam
+    ├── [646K]  26-fastp-adapters-polyG-31bp-merged_condensed.bam.csi
+    ├── [187M]  26-fastp-adapters-polyG-31bp-merged_condensed.fa
+    ├── [ 74M]  30-fastp-adapters-polyG-31bp-merged_condensed.bam
+    ├── [658K]  30-fastp-adapters-polyG-31bp-merged_condensed.bam.csi
+    ├── [235M]  30-fastp-adapters-polyG-31bp-merged_condensed.fa
+    ├── [ 71M]  310-fastp-adapters-polyG-31bp-merged_condensed.bam
+    ├── [667K]  310-fastp-adapters-polyG-31bp-merged_condensed.bam.csi
+    ├── [222M]  310-fastp-adapters-polyG-31bp-merged_condensed.fa
+    ├── [ 72M]  33-fastp-adapters-polyG-31bp-merged_condensed.bam
+    ├── [665K]  33-fastp-adapters-polyG-31bp-merged_condensed.bam.csi
+    ├── [227M]  33-fastp-adapters-polyG-31bp-merged_condensed.fa
+    ├── [ 69M]  341-fastp-adapters-polyG-31bp-merged_condensed.bam
+    ├── [667K]  341-fastp-adapters-polyG-31bp-merged_condensed.bam.csi
+    ├── [213M]  341-fastp-adapters-polyG-31bp-merged_condensed.fa
+    ├── [ 79M]  34-fastp-adapters-polyG-31bp-merged_condensed.bam
+    ├── [669K]  34-fastp-adapters-polyG-31bp-merged_condensed.bam.csi
+    ├── [251M]  34-fastp-adapters-polyG-31bp-merged_condensed.fa
+    ├── [ 64M]  35-fastp-adapters-polyG-31bp-merged_condensed.bam
+    ├── [649K]  35-fastp-adapters-polyG-31bp-merged_condensed.bam.csi
+    ├── [199M]  35-fastp-adapters-polyG-31bp-merged_condensed.fa
+    ├── [ 68M]  363-fastp-adapters-polyG-31bp-merged_condensed.bam
+    ├── [640K]  363-fastp-adapters-polyG-31bp-merged_condensed.bam.csi
+    ├── [216M]  363-fastp-adapters-polyG-31bp-merged_condensed.fa
+    ├── [ 74M]  367-fastp-adapters-polyG-31bp-merged_condensed.bam
+    ├── [673K]  367-fastp-adapters-polyG-31bp-merged_condensed.bam.csi
+    ├── [231M]  367-fastp-adapters-polyG-31bp-merged_condensed.fa
+    ├── [104M]  376-fastp-adapters-polyG-31bp-merged_condensed.bam
+    ├── [703K]  376-fastp-adapters-polyG-31bp-merged_condensed.bam.csi
+    ├── [339M]  376-fastp-adapters-polyG-31bp-merged_condensed.fa
+    ├── [ 72M]  460-fastp-adapters-polyG-31bp-merged_condensed.bam
+    ├── [670K]  460-fastp-adapters-polyG-31bp-merged_condensed.bam.csi
+    ├── [230M]  460-fastp-adapters-polyG-31bp-merged_condensed.fa
+    ├── [ 72M]  485-fastp-adapters-polyG-31bp-merged_condensed.bam
+    ├── [665K]  485-fastp-adapters-polyG-31bp-merged_condensed.bam.csi
+    ├── [228M]  485-fastp-adapters-polyG-31bp-merged_condensed.fa
+    ├── [ 85M]  501-fastp-adapters-polyG-31bp-merged_condensed.bam
+    ├── [697K]  501-fastp-adapters-polyG-31bp-merged_condensed.bam.csi
+    ├── [269M]  501-fastp-adapters-polyG-31bp-merged_condensed.fa
+    ├── [ 99M]  71-fastp-adapters-polyG-31bp-merged_condensed.bam
+    ├── [725K]  71-fastp-adapters-polyG-31bp-merged_condensed.bam.csi
+    ├── [320M]  71-fastp-adapters-polyG-31bp-merged_condensed.fa
+    ├── [ 78M]  88-fastp-adapters-polyG-31bp-merged_condensed.bam
+    ├── [683K]  88-fastp-adapters-polyG-31bp-merged_condensed.bam.csi
+    ├── [250M]  88-fastp-adapters-polyG-31bp-merged_condensed.fa
+    ├── [111K]  alignment_details.tsv
+    ├── [3.4M]  Counts.txt
+    ├── [1.6M]  known_miRNAs.gff3
+    ├── [1.7M]  known_miRNAs_unaligned.fasta
+    ├── [1.3G]  merged_alignments.bam
+    ├── [748K]  merged_alignments.bam.csi
+    ├── [ 11K]  mir.fasta
+    ├── [3.3M]  Results.gff3
+    ├── [4.8M]  Results.txt
+    └── [4.0K]  strucVis
+        ├── [8.0K]  Cluster_11267.ps.pdf
+        ├── [6.7K]  Cluster_11267.txt
+        ├── [ 10K]  Cluster_13141.ps.pdf
+        ├── [ 20K]  Cluster_13141.txt
+        ├── [ 11K]  Cluster_13225.ps.pdf
+        ├── [ 37K]  Cluster_13225.txt
+        ├── [8.2K]  Cluster_13226.ps.pdf
+        ├── [ 17K]  Cluster_13226.txt
+        ├── [9.0K]  Cluster_13708.ps.pdf
+        ├── [ 29K]  Cluster_13708.txt
+        ├── [9.4K]  Cluster_14095.ps.pdf
+        ├── [ 33K]  Cluster_14095.txt
+        ├── [9.3K]  Cluster_14096.ps.pdf
+        ├── [ 52K]  Cluster_14096.txt
+        ├── [8.9K]  Cluster_15325.ps.pdf
+        ├── [5.9K]  Cluster_15325.txt
+        ├── [9.8K]  Cluster_15635.ps.pdf
+        ├── [ 18K]  Cluster_15635.txt
+        ├── [8.3K]  Cluster_15636.ps.pdf
+        ├── [4.8K]  Cluster_15636.txt
+        ├── [ 12K]  Cluster_15637.ps.pdf
+        ├── [ 19K]  Cluster_15637.txt
+        ├── [8.6K]  Cluster_15638.ps.pdf
+        ├── [ 23K]  Cluster_15638.txt
+        ├── [ 11K]  Cluster_15639.ps.pdf
+        ├── [ 37K]  Cluster_15639.txt
+        ├── [9.1K]  Cluster_16249.ps.pdf
+        ├── [4.1K]  Cluster_16249.txt
+        ├── [9.3K]  Cluster_16250.ps.pdf
+        ├── [3.5K]  Cluster_16250.txt
+        ├── [9.1K]  Cluster_17619.ps.pdf
+        ├── [6.1K]  Cluster_17619.txt
+        ├── [9.0K]  Cluster_1785.ps.pdf
+        ├── [ 16K]  Cluster_1785.txt
+        ├── [8.4K]  Cluster_19246.ps.pdf
+        ├── [6.2K]  Cluster_19246.txt
+        ├── [8.5K]  Cluster_20177.ps.pdf
+        ├── [9.0K]  Cluster_20177.txt
+        ├── [ 10K]  Cluster_2042.ps.pdf
+        ├── [ 54K]  Cluster_2042.txt
+        ├── [8.3K]  Cluster_22161.ps.pdf
+        ├── [ 41K]  Cluster_22161.txt
+        ├── [9.4K]  Cluster_22586.ps.pdf
+        ├── [ 44K]  Cluster_22586.txt
+        ├── [7.7K]  Cluster_23993.ps.pdf
+        ├── [ 13K]  Cluster_23993.txt
+        ├── [8.7K]  Cluster_24004.ps.pdf
+        ├── [ 12K]  Cluster_24004.txt
+        ├── [9.0K]  Cluster_24617.ps.pdf
+        ├── [7.5K]  Cluster_24617.txt
+        ├── [8.4K]  Cluster_25443.ps.pdf
+        ├── [ 21K]  Cluster_25443.txt
+        ├── [8.3K]  Cluster_2646.ps.pdf
+        ├── [ 21K]  Cluster_2646.txt
+        ├── [9.2K]  Cluster_29018.ps.pdf
+        ├── [ 29K]  Cluster_29018.txt
+        ├── [ 12K]  Cluster_31844.ps.pdf
+        ├── [ 26K]  Cluster_31844.txt
+        ├── [7.4K]  Cluster_32917.ps.pdf
+        ├── [4.5K]  Cluster_32917.txt
+        ├── [9.3K]  Cluster_32918.ps.pdf
+        ├── [ 25K]  Cluster_32918.txt
+        ├── [7.5K]  Cluster_32919.ps.pdf
+        ├── [3.4K]  Cluster_32919.txt
+        ├── [9.4K]  Cluster_3720.ps.pdf
+        ├── [ 10K]  Cluster_3720.txt
+        ├── [8.2K]  Cluster_4396.ps.pdf
+        ├── [2.2K]  Cluster_4396.txt
+        ├── [8.0K]  Cluster_5150.ps.pdf
+        ├── [2.1K]  Cluster_5150.txt
+        ├── [7.5K]  Cluster_9285.ps.pdf
+        ├── [5.6K]  Cluster_9285.txt
+        ├── [ 11K]  Cluster_9399.ps.pdf
+        └── [5.4K]  Cluster_9399.txt
+
+2 directories, 144 files</code></pre>
+<div id="refs" class="references csl-bib-body hanging-indent" role="list">
+<div id="ref-johnson2016" class="csl-entry" role="listitem">
+Johnson, Nathan R, Jonathan M Yeoh, Ceyda Coruh, and Michael J Axtell. 2016. “Improved Placement of Multi-Mapping Small RNAs.” <em>G3 Genes|Genomes|Genetics</em> 6 (7): 2103–11. <a href="https://doi.org/10.1534/g3.116.030452" class="uri">https://doi.org/10.1534/g3.116.030452</a>.
+</div>
+</div>
+
+
+</section>
+</section>
+</section>
+
+</main> <!-- /main -->
+<script id="quarto-html-after-body" type="application/javascript">
+window.document.addEventListener("DOMContentLoaded", function (event) {
+  const toggleBodyColorMode = (bsSheetEl) => {
+    const mode = bsSheetEl.getAttribute("data-mode");
+    const bodyEl = window.document.querySelector("body");
+    if (mode === "dark") {
+      bodyEl.classList.add("quarto-dark");
+      bodyEl.classList.remove("quarto-light");
+    } else {
+      bodyEl.classList.add("quarto-light");
+      bodyEl.classList.remove("quarto-dark");
+    }
+  }
+  const toggleBodyColorPrimary = () => {
+    const bsSheetEl = window.document.querySelector("link#quarto-bootstrap");
+    if (bsSheetEl) {
+      toggleBodyColorMode(bsSheetEl);
+    }
+  }
+  toggleBodyColorPrimary();  
+  const icon = "";
+  const anchorJS = new window.AnchorJS();
+  anchorJS.options = {
+    placement: 'right',
+    icon: icon
+  };
+  anchorJS.add('.anchored');
+  const isCodeAnnotation = (el) => {
+    for (const clz of el.classList) {
+      if (clz.startsWith('code-annotation-')) {                     
+        return true;
+      }
+    }
+    return false;
+  }
+  const onCopySuccess = function(e) {
+    // button target
+    const button = e.trigger;
+    // don't keep focus
+    button.blur();
+    // flash "checked"
+    button.classList.add('code-copy-button-checked');
+    var currentTitle = button.getAttribute("title");
+    button.setAttribute("title", "Copied!");
+    let tooltip;
+    if (window.bootstrap) {
+      button.setAttribute("data-bs-toggle", "tooltip");
+      button.setAttribute("data-bs-placement", "left");
+      button.setAttribute("data-bs-title", "Copied!");
+      tooltip = new bootstrap.Tooltip(button, 
+        { trigger: "manual", 
+          customClass: "code-copy-button-tooltip",
+          offset: [0, -8]});
+      tooltip.show();    
+    }
+    setTimeout(function() {
+      if (tooltip) {
+        tooltip.hide();
+        button.removeAttribute("data-bs-title");
+        button.removeAttribute("data-bs-toggle");
+        button.removeAttribute("data-bs-placement");
+      }
+      button.setAttribute("title", currentTitle);
+      button.classList.remove('code-copy-button-checked');
+    }, 1000);
+    // clear code selection
+    e.clearSelection();
+  }
+  const getTextToCopy = function(trigger) {
+      const codeEl = trigger.previousElementSibling.cloneNode(true);
+      for (const childEl of codeEl.children) {
+        if (isCodeAnnotation(childEl)) {
+          childEl.remove();
+        }
+      }
+      return codeEl.innerText;
+  }
+  const clipboard = new window.ClipboardJS('.code-copy-button:not([data-in-quarto-modal])', {
+    text: getTextToCopy
+  });
+  clipboard.on('success', onCopySuccess);
+  if (window.document.getElementById('quarto-embedded-source-code-modal')) {
+    // For code content inside modals, clipBoardJS needs to be initialized with a container option
+    // TODO: Check when it could be a function (https://github.com/zenorocha/clipboard.js/issues/860)
+    const clipboardModal = new window.ClipboardJS('.code-copy-button[data-in-quarto-modal]', {
+      text: getTextToCopy,
+      container: window.document.getElementById('quarto-embedded-source-code-modal')
+    });
+    clipboardModal.on('success', onCopySuccess);
+  }
+    var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
+    var mailtoRegex = new RegExp(/^mailto:/);
+      var filterRegex = new RegExp("https:\/\/robertslab\.github\.io\/sams-notebook");
+    var isInternal = (href) => {
+        return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
+    }
+    // Inspect non-navigation links and adorn them if external
+ 	var links = window.document.querySelectorAll('a[href]:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item):not(.quarto-navigation-tool):not(.about-link)');
+    for (var i=0; i<links.length; i++) {
+      const link = links[i];
+      if (!isInternal(link.href)) {
+        // undo the damage that might have been done by quarto-nav.js in the case of
+        // links that we want to consider external
+        if (link.dataset.originalHref !== undefined) {
+          link.href = link.dataset.originalHref;
+        }
+      }
+    }
+  function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
+    const config = {
+      allowHTML: true,
+      maxWidth: 500,
+      delay: 100,
+      arrow: false,
+      appendTo: function(el) {
+          return el.parentElement;
+      },
+      interactive: true,
+      interactiveBorder: 10,
+      theme: 'quarto',
+      placement: 'bottom-start',
+    };
+    if (contentFn) {
+      config.content = contentFn;
+    }
+    if (onTriggerFn) {
+      config.onTrigger = onTriggerFn;
+    }
+    if (onUntriggerFn) {
+      config.onUntrigger = onUntriggerFn;
+    }
+    window.tippy(el, config); 
+  }
+  const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+  for (var i=0; i<noterefs.length; i++) {
+    const ref = noterefs[i];
+    tippyHover(ref, function() {
+      // use id or data attribute instead here
+      let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+      try { href = new URL(href).hash; } catch {}
+      const id = href.replace(/^#\/?/, "");
+      const note = window.document.getElementById(id);
+      if (note) {
+        return note.innerHTML;
+      } else {
+        return "";
+      }
+    });
+  }
+  const xrefs = window.document.querySelectorAll('a.quarto-xref');
+  const processXRef = (id, note) => {
+    // Strip column container classes
+    const stripColumnClz = (el) => {
+      el.classList.remove("page-full", "page-columns");
+      if (el.children) {
+        for (const child of el.children) {
+          stripColumnClz(child);
+        }
+      }
+    }
+    stripColumnClz(note)
+    if (id === null || id.startsWith('sec-')) {
+      // Special case sections, only their first couple elements
+      const container = document.createElement("div");
+      if (note.children && note.children.length > 2) {
+        container.appendChild(note.children[0].cloneNode(true));
+        for (let i = 1; i < note.children.length; i++) {
+          const child = note.children[i];
+          if (child.tagName === "P" && child.innerText === "") {
+            continue;
+          } else {
+            container.appendChild(child.cloneNode(true));
+            break;
+          }
+        }
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(container);
+        }
+        return container.innerHTML
+      } else {
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(note);
+        }
+        return note.innerHTML;
+      }
+    } else {
+      // Remove any anchor links if they are present
+      const anchorLink = note.querySelector('a.anchorjs-link');
+      if (anchorLink) {
+        anchorLink.remove();
+      }
+      if (window.Quarto?.typesetMath) {
+        window.Quarto.typesetMath(note);
+      }
+      // TODO in 1.5, we should make sure this works without a callout special case
+      if (note.classList.contains("callout")) {
+        return note.outerHTML;
+      } else {
+        return note.innerHTML;
+      }
+    }
+  }
+  for (var i=0; i<xrefs.length; i++) {
+    const xref = xrefs[i];
+    tippyHover(xref, undefined, function(instance) {
+      instance.disable();
+      let url = xref.getAttribute('href');
+      let hash = undefined; 
+      if (url.startsWith('#')) {
+        hash = url;
+      } else {
+        try { hash = new URL(url).hash; } catch {}
+      }
+      if (hash) {
+        const id = hash.replace(/^#\/?/, "");
+        const note = window.document.getElementById(id);
+        if (note !== null) {
+          try {
+            const html = processXRef(id, note.cloneNode(true));
+            instance.setContent(html);
+          } finally {
+            instance.enable();
+            instance.show();
+          }
+        } else {
+          // See if we can fetch this
+          fetch(url.split('#')[0])
+          .then(res => res.text())
+          .then(html => {
+            const parser = new DOMParser();
+            const htmlDoc = parser.parseFromString(html, "text/html");
+            const note = htmlDoc.getElementById(id);
+            if (note !== null) {
+              const html = processXRef(id, note);
+              instance.setContent(html);
+            } 
+          }).finally(() => {
+            instance.enable();
+            instance.show();
+          });
+        }
+      } else {
+        // See if we can fetch a full url (with no hash to target)
+        // This is a special case and we should probably do some content thinning / targeting
+        fetch(url)
+        .then(res => res.text())
+        .then(html => {
+          const parser = new DOMParser();
+          const htmlDoc = parser.parseFromString(html, "text/html");
+          const note = htmlDoc.querySelector('main.content');
+          if (note !== null) {
+            // This should only happen for chapter cross references
+            // (since there is no id in the URL)
+            // remove the first header
+            if (note.children.length > 0 && note.children[0].tagName === "HEADER") {
+              note.children[0].remove();
+            }
+            const html = processXRef(null, note);
+            instance.setContent(html);
+          } 
+        }).finally(() => {
+          instance.enable();
+          instance.show();
+        });
+      }
+    }, function(instance) {
+    });
+  }
+      let selectedAnnoteEl;
+      const selectorForAnnotation = ( cell, annotation) => {
+        let cellAttr = 'data-code-cell="' + cell + '"';
+        let lineAttr = 'data-code-annotation="' +  annotation + '"';
+        const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+        return selector;
+      }
+      const selectCodeLines = (annoteEl) => {
+        const doc = window.document;
+        const targetCell = annoteEl.getAttribute("data-target-cell");
+        const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+        const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+        const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+        const lineIds = lines.map((line) => {
+          return targetCell + "-" + line;
+        })
+        let top = null;
+        let height = null;
+        let parent = null;
+        if (lineIds.length > 0) {
+            //compute the position of the single el (top and bottom and make a div)
+            const el = window.document.getElementById(lineIds[0]);
+            top = el.offsetTop;
+            height = el.offsetHeight;
+            parent = el.parentElement.parentElement;
+          if (lineIds.length > 1) {
+            const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+            const bottom = lastEl.offsetTop + lastEl.offsetHeight;
+            height = bottom - top;
+          }
+          if (top !== null && height !== null && parent !== null) {
+            // cook up a div (if necessary) and position it 
+            let div = window.document.getElementById("code-annotation-line-highlight");
+            if (div === null) {
+              div = window.document.createElement("div");
+              div.setAttribute("id", "code-annotation-line-highlight");
+              div.style.position = 'absolute';
+              parent.appendChild(div);
+            }
+            div.style.top = top - 2 + "px";
+            div.style.height = height + 4 + "px";
+            div.style.left = 0;
+            let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+            if (gutterDiv === null) {
+              gutterDiv = window.document.createElement("div");
+              gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+              gutterDiv.style.position = 'absolute';
+              const codeCell = window.document.getElementById(targetCell);
+              const gutter = codeCell.querySelector('.code-annotation-gutter');
+              gutter.appendChild(gutterDiv);
+            }
+            gutterDiv.style.top = top - 2 + "px";
+            gutterDiv.style.height = height + 4 + "px";
+          }
+          selectedAnnoteEl = annoteEl;
+        }
+      };
+      const unselectCodeLines = () => {
+        const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+        elementsIds.forEach((elId) => {
+          const div = window.document.getElementById(elId);
+          if (div) {
+            div.remove();
+          }
+        });
+        selectedAnnoteEl = undefined;
+      };
+        // Handle positioning of the toggle
+    window.addEventListener(
+      "resize",
+      throttle(() => {
+        elRect = undefined;
+        if (selectedAnnoteEl) {
+          selectCodeLines(selectedAnnoteEl);
+        }
+      }, 10)
+    );
+    function throttle(fn, ms) {
+    let throttle = false;
+    let timer;
+      return (...args) => {
+        if(!throttle) { // first call gets through
+            fn.apply(this, args);
+            throttle = true;
+        } else { // all the others get throttled
+            if(timer) clearTimeout(timer); // cancel #2
+            timer = setTimeout(() => {
+              fn.apply(this, args);
+              timer = throttle = false;
+            }, ms);
+        }
+      };
+    }
+      // Attach click handler to the DT
+      const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
+      for (const annoteDlNode of annoteDls) {
+        annoteDlNode.addEventListener('click', (event) => {
+          const clickedEl = event.target;
+          if (clickedEl !== selectedAnnoteEl) {
+            unselectCodeLines();
+            const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
+            if (activeEl) {
+              activeEl.classList.remove('code-annotation-active');
+            }
+            selectCodeLines(clickedEl);
+            clickedEl.classList.add('code-annotation-active');
+          } else {
+            // Unselect the line
+            unselectCodeLines();
+            clickedEl.classList.remove('code-annotation-active');
+          }
+        });
+      }
+  const findCites = (el) => {
+    const parentEl = el.parentElement;
+    if (parentEl) {
+      const cites = parentEl.dataset.cites;
+      if (cites) {
+        return {
+          el,
+          cites: cites.split(' ')
+        };
+      } else {
+        return findCites(el.parentElement)
+      }
+    } else {
+      return undefined;
+    }
+  };
+  var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+  for (var i=0; i<bibliorefs.length; i++) {
+    const ref = bibliorefs[i];
+    const citeInfo = findCites(ref);
+    if (citeInfo) {
+      tippyHover(citeInfo.el, function() {
+        var popup = window.document.createElement('div');
+        citeInfo.cites.forEach(function(cite) {
+          var citeDiv = window.document.createElement('div');
+          citeDiv.classList.add('hanging-indent');
+          citeDiv.classList.add('csl-entry');
+          var biblioDiv = window.document.getElementById('ref-' + cite);
+          if (biblioDiv) {
+            citeDiv.innerHTML = biblioDiv.innerHTML;
+          }
+          popup.appendChild(citeDiv);
+        });
+        return popup.innerHTML;
+      });
+    }
+  }
+});
+</script>
+</div> <!-- /content -->
+
+
+
+
+</body></html>

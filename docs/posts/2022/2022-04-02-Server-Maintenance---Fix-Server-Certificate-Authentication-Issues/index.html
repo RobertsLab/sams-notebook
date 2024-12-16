@@ -181,6 +181,13 @@ gtag('config', 'G-7483T61T11', { 'anonymize_ip': true});
     <div class="quarto-title column-page">
       <h1 class="title">Server Maintenance - Fix Server Certificate Authentication Issues</h1>
                                 <div class="quarto-categories">
+                <div class="quarto-category">github</div>
+                <div class="quarto-category">InCommon</div>
+                <div class="quarto-category">certificate</div>
+                <div class="quarto-category">servers</div>
+                <div class="quarto-category">gannet</div>
+                <div class="quarto-category">owl</div>
+                <div class="quarto-category">eagle</div>
                 <div class="quarto-category">2022</div>
                 <div class="quarto-category">Computer Servicing</div>
               </div>
@@ -222,17 +229,17 @@ gtag('config', 'G-7483T61T11', { 'anonymize_ip': true});
 
 
 
-<p>We had been encounterings issues when linking to images in GitHub (e.g.&nbsp;notebooks, Issues/Discussions) hosted on our servers (primarily Gannet). Images always showed up as broken links and, with some work, we could see an error message related to server authentication. More recently, I also noticed that Jupyter Notebooks hosted on our servers could not be viewed in <a href="">NB Viewer</a>. Attempting to view a Jupyter Notebook hosted on one of our servers results in a 404 error, with a note regarding server certificate problems. Finally, the most annoying issue was encountered when running the shell programs <code>wget</code> to retrieve files from our servers. This program always threw an error regarding our server certificates. The only way to run <code>wget</code> without this error was to add the option <code>--no-check-certificate</code> (which, thankfully, was a suggestion by <code>wget</code> error message).</p>
+<p>We had been encountering issues when linking to images in GitHub (e.g.&nbsp;notebooks, Issues/Discussions) hosted on our servers (primarily Gannet). Images always showed up as broken links and, with some work, we could see an error message related to server authentication. More recently, I also noticed that Jupyter Notebooks hosted on our servers could not be viewed in <a href="">NB Viewer</a>. Attempting to view a Jupyter Notebook hosted on one of our servers results in a 404 error, with a note regarding server certificate problems. Finally, the most annoying issue was encountered when running the shell programs <code>wget</code> to retrieve files from our servers. This program always threw an error regarding our server certificates. The only way to run <code>wget</code> without this error was to add the option <code>--no-check-certificate</code> (which, thankfully, was a suggestion by <code>wget</code> error message).</p>
 <p>The perplexing thing is that we have InCommon CA certificates provided by the University of Washington for each of our servers, so it was confusing that we kept encountering these certificate-related errors. I finally got fed up with the problem and decided to do some sleuthing. I had done so in the past, but never came across anything that could point me to what was wrong. Well, today, I stumbled across the problem:</p>
 <p>We didn’t have an <em>intermediate</em> InCommon certificate!</p>
-<p>I wasn’t previously aware this was a requirement, as this was not mentioned when I initially requested certificates from our department IT group. But, during my (remarkably) bried searching, I stumbled across <a href="https://www.ssl.com/how-to/enable-https-generate-csr-install-ssl-tls-certificate-in-synology-nas/">this guide for installing a certificate on a Synology NAS</a> (which is the brand for all three of our servers) and noticed that the process included an intermediate certificate. The phrasing of the instructions also implied that it was necessary, which is what prompted me to explore this further. Of note, not only did the department IT not mention intermediate certificates, but the Synology “wizard” for guiding the user through the certificate generation/upload process doesn’t <em>require</em> an intermediate certificate; suggesting it’s optional (which, I guess, technically, it is; but it’d be nice if they explained what the impacts might be if one does <em>not</em> procide an intermediate certificate).</p>
-<p>Searching for UW intermediate server certificates led me to <a href="https://wiki.cac.washington.edu/display/infra/InCommon+SSL+Intermediate+Certificates">this page which <em>actually provides the InCommon RSA Server intermediate certficates for UW</em>!</a>. Doing a bit more research, I found the UW page <a href="https://wiki.cac.washington.edu/display/infra/UW+Certificate+Services">describing InCommon CA server certificates</a>. On that page is this crucial piece of information:</p>
+<p>I wasn’t previously aware this was a requirement, as this was not mentioned when I initially requested certificates from our department IT group. But, during my (remarkably) bried searching, I stumbled across <a href="https://www.ssl.com/how-to/enable-https-generate-csr-install-ssl-tls-certificate-in-synology-nas/">this guide for installing a certificate on a Synology NAS</a> (which is the brand for all three of our servers) and noticed that the process included an intermediate certificate. The phrasing of the instructions also implied that it was necessary, which is what prompted me to explore this further. Of note, not only did the department IT not mention intermediate certificates, but the Synology “wizard” for guiding the user through the certificate generation/upload process doesn’t <em>require</em> an intermediate certificate; suggesting it’s optional (which, I guess, technically, it is; but it’d be nice if they explained what the impacts might be if one does <em>not</em> provide an intermediate certificate).</p>
+<p>Searching for UW intermediate server certificates led me to this page which <em>actually provides the InCommon RSA Server intermediate certficates for UW</em>! (dead link). Doing a bit more research, I found the UW page describing InCommon CA server certificates(dead link). On that page is this crucial piece of information:</p>
 <blockquote class="blockquote">
 <p>Server admins must install the InCommon CA intermediate certificate.</p>
 </blockquote>
 <p>Notably, that page <em>doesn’t</em> provide a link to find the InCommon CA intermediate certificate…</p>
 <p>So, seeing those two pages made me realize that the solution was, indeed, installing the InCommon CA intermediate certificate from that UW page! To do so, I generated a new Certificate Signing Request (CSR) for each server via the Synology interface, sent them off to our department IT group, and then used Synology interface to import the updated server certificate <em>and</em> the intermediate certificate.</p>
-<p>And with that, I have managed to resolve all of the issues described in the intial paragraph! It is a great day! Huzzah!</p>
+<p>And with that, I have managed to resolve all of the issues described in the initial paragraph! It is a great day! Huzzah!</p>
 
 
 
