@@ -5,7 +5,7 @@ toc-depth: 5
 toc-location: left
 title: qPCR Analysis - C.gigas Lifestages Carryover
 date: '2024-12-20'
-draft: true
+draft: false
 engine: knitr
 categories: 
   - "2024"
@@ -18,12 +18,157 @@ categories:
 
 # INTRO
 
+This notebook performs pair-wise comparisons of qPCR gene expression,
+normalized to `GAPDH` expression. It calculates delta Cq, delta delta
+Cq, and fold changes in expression. Additionally, it generates box plots
+(delta Cq), and bar plots (fold change expression).
+
+I've provided a summary of the various pair-wise comparisons immediately below, but you might want to just [skip to the plots](#plotting), as the summary _and_ the notebook content is _very_ lengthy.
+
 # SUMMARY
 
+## t-tests (Delta Cq)
 
+### Seed vs. Adult
+
+These genes had p-values <= 0.05:
+
+- VIPERIN
+
+### Seed vs. Juvenile
+
+These genes had p-values <= 0.05:
+
+- citrate synthase
+
+- HSP90
+
+### Seed vs. Spat
+
+These genes had p-values <= 0.05:
+
+- VIPERIN
+
+### Adult vs. Juvenile
+
+The genes had p-values <= 0.05:
+
+- citrate synthase
+
+- VIPERIN
+
+### Adult vs. Spat
+
+No genes had p-values <= 0.05
+
+### Juvenile vs. Spat
+
+The genes had p-values <= 0.05:
+
+- citrate synthase
+
+- VIPERIN
+
+### Seed - Conditioning Treated vs. Control
+
+No genes had p-values <= 0.05
+
+### Adult - Conditioning Treated vs. Control
+
+The genes had p-values <= 0.05:
+
+- HSP90
+
+### Juvenile - Conditioning Treated vs. Control
+
+No genes had p-values <= 0.05
+
+### Spat - Conditioning Treated vs. Control
+
+The genes had p-values <= 0.05:
+
+- citrate synthase
+
+- DNMT1
+
+### Adult - Acute Ambient vs. High
+
+No genes had p-values <= 0.05
+
+### Juvenile - Acute Ambient vs. High
+
+No genes had p-values <= 0.05
+
+### Adult - Conditioning Treated: Acute Ambient vs. High
+
+No genes had p-values <= 0.05
+
+### Adult - Conditioning Control: Acute Ambient vs. High
+
+No genes had p-values <= 0.05
+
+### Juvenile - Conditioning Treated: Acute Ambient vs. High
+
+The genes had p-values <= 0.05:
+
+- HSP70
+
+### Juvenile - Conditioning Control: Acute Ambient vs. High
+
+The genes had p-values <= 0.05:
+
+- VIPERIN
+
+## Gene Expression (delta delta Cq or fold change)
+
+### Adult - Conditioning Treated: Acute High vs. Ambient
+
+- All genes show elevated expression relative to Ambient.
+
+- Fold change is at similar levels across all genes, with DNMT1 and HSP70 being the highest.
+
+### Juvenile - Conditioning Treated: Acute High vs. Ambient
+
+- All genes show elevated expression relative to Ambient.
+
+- HSP70 shows ~4-fold higher fold change in expression compared to most of the other genes.
+
+- DNMT1 exhibits fold change expression ~1/2 that of most of the other genes.
+
+### Adult - Adult vs. Seed
+
+- All genes show elevated expression relative to Seed.
+
+- VIPERIN exhibits fold change in expression >2-fold higher than the other genes.
+
+### Adult - Adult vs. Spat
+
+- All genes show elevated expression relative to Spat.
+
+- All genes have similar fold changes in expression, with ATP synthase and DNMT1 showing the highest levels of fold change in expression.
+
+### Adult - Spat vs. Seed
+
+- All genes show elevated expression relative to Seed.
+
+- Most genes have similar fold changes in expression.
+
+- VIPERIN exhibits fold change in a expression ~2-fold higher than the other genes.
+
+### Conditioning by Target and Lifestage
+
+- All genes show elevated expression relative to Control.
+
+- VIPERIN, citrate synthase, and ATP synthase show an initial increase in fold change expression from seed to spat life stages, declining to juvenile and adult lifestages.
+
+- HSP90 shows level fold changes in expression across seed, spat, and juvenile lifestages, followed by a decrease in the adult stage.
+
+- DNMT1 exhibits a drastic decrease in fold change expression from seed to spat, followed by a substantial increase from spat to adult.
+
+- cGAS and HSP70 exhibit decreases from seed to spat, followed by a sharp increase from spat to juvenile. This is followed by a moderate decrease from juvenile to adult by cGAS and a sharp decrease in HSP70.
 
 ::: {.callout-note}
-The post below is markdown generated from [](https://github.com/RobertsLab/project-gigas-carryover/blob/9a32e40ee9739803a3f5b523c40ffc925d9f7472/lifestage_carryover/scripts/01.01-qPCR.Rmd) (commit `9a32e40`).
+The post below is markdown generated from [01.01-qPCR.Rmd](https://github.com/RobertsLab/project-gigas-carryover/blob/9a32e40ee9739803a3f5b523c40ffc925d9f7472/lifestage_carryover/scripts/01.01-qPCR.Rmd) (commit `9a32e40`).
 :::
 
 
@@ -45,9 +190,12 @@ Groups are named in the following fashion:
 
 This allows for parsing downstream.
 
-NOTE: Below is the full set of groups for the *entire experiment*. For
+::: {.callout-tip}
+Below is the full set of groups for the *entire experiment*. For
 the current qPCR analysis, `seed` and `spat` do *not* have acute
 treatments; just conditioning treatments.
+:::
+
 
 ``` r
 seed.control.ambient=c("29", "40", "55", "63", "69", "101", "119", "122", "155", "164", "187", "202", "209", "214", "233", "236", "275")
