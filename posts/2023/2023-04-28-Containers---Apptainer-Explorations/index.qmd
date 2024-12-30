@@ -6,14 +6,12 @@ toc-location: left
 layout: post
 title: Containers - Apptainer Explorations
 date: '2023-04-28 14:25'
-tags: 
-  - apptainer
-  - singularity
-  - klone
-  - mox
-categories: 
+categories:
+  - "apptainer"
+  - "singularity"
+  - "klone"
+  - "mox"
   - "2023"
-  - "Miscellaneous"
 ---
 At some point, our HPC nodes on Mox will be retired. When that happens, we'll likely purchase new nodes on the newest UW cluster, [Klone](https://www.gutenberg.org/cache/epub/35492/pg35492-images.html). Additionally, the `coenv` nodes are no longer available on Mox. One was decommissioned and one was "migrated" to Klone. The primary issue at hand is that the base operating system for [Klone](https://www.gutenberg.org/cache/epub/35492/pg35492-images.html) appears to be very, very basic. I'd previously attempted to build/install some bioinformatics software on [Klone](https://www.gutenberg.org/cache/epub/35492/pg35492-images.html), but could not due to a variety of missing libraries; these libraries are available by default on Mox... Part of this isn't surprising, as UW IT has been making a concerted effort to get users to switch to containerization - specifically using [Apptainer](https://apptainer.org/) (formerly Singularity) containers.
 
@@ -25,7 +23,7 @@ I've established a [GitHub repo subdirectory](https://github.com/RobertsLab/code
 
 
 
-First, we'll create a "base" image. All subsequent containers will be built using this base image. This helps to keep the subsequent definition files for other containers much shorter, cleaner, and easier to read. The [`ubuntu-22.04-base.def`](https://github.com/RobertsLab/code/blob/master/apptainer_definition_files/ubuntu-22.04-base.def) (GitHub) builds a basic Ubuntu 22.04 image, as well as adds the necessary libraries for building/installing other software later on. It also creates the `/gscratch/srlab/programs` directory. This is to help with the migration from using Mox, to Klone; Roberts Lab users will know where to look for software with the containers, if they need to find it. Although I'm documenting how to build containers, most of the container building will be one-off jobs. After a container is built, it can be used by anyone. There likely won't be many (any) reasons to rebuild a container once it's been built.
+First, we'll create a "base" image. All subsequent containers will be built using this base image. This helps to keep the subsequent definition files for other containers much shorter, cleaner, and easier to read. The [`ubuntu-22.04-base.def`](https://github.com/RobertsLab/code/blob/ffe6fbc49589dc9b2f2d0af56b8623f6301b100a/apptainer_definition_files/ubuntu-22.04-base.def) (GitHub) builds a basic Ubuntu 22.04 image, as well as adds the necessary libraries for building/installing other software later on. It also creates the `/gscratch/srlab/programs` directory. This is to help with the migration from using Mox, to Klone; Roberts Lab users will know where to look for software with the containers, if they need to find it. Although I'm documenting how to build containers, most of the container building will be one-off jobs. After a container is built, it can be used by anyone. There likely won't be many (any) reasons to rebuild a container once it's been built.
 
 There is one shortcoming to our current usage - we don't really have a way to link changes to definition files to container images. E.g. If someone updates a definition file, they may forget to rebuild the image with the updated definition file. Additionally, if they _do_ update the container image, how does one indicate that it is different than it used to be? There are ways to do this (using Docker Hub and/or some other container registry, combined with using GitHub automated builds, but this is likely beyond our technical expertise, as well as a bit of overkill for our use cases).
 
@@ -56,7 +54,7 @@ NOTES:
 
 ### Build `bedtools` container
 
-For a basic example, we'll create a new image, based on the base image above, which installs an additional piece of software: [`bedtools`](https://bedtools.readthedocs.io/). Here're the contents of the [`bedtools-2.31.0.def`](https://github.com/RobertsLab/code/blob/master/apptainer_definition_files/bedtools-2.31.1.def) (GitHub):
+For a basic example, we'll create a new image, based on the base image above, which installs an additional piece of software: [`bedtools`](https://bedtools.readthedocs.io/). Here're the contents of the [`bedtools-2.31.0.def`](https://github.com/RobertsLab/code/blob/ffe6fbc49589dc9b2f2d0af56b8623f6301b100a/apptainer_definition_files/bedtools-2.31.1.def) (GitHub):
 
 
 ```
@@ -80,7 +78,7 @@ From: ubuntu-22.04-base.sif
   This is a definition file for a bedtools-v2.31.0 image.
 ```
 
-It's much, much shorter than the [`ubuntu-22.04-base.def`](https://github.com/RobertsLab/code/blob/master/apptainer_definition_files/ubuntu-22.04-base.def) (GitHub) because it's using all of the stuff that's already been installed in [`ubuntu-22.04-base.def`](https://github.com/RobertsLab/code/blob/master/apptainer_definition_files/ubuntu-22.04-base.def) (GitHub). There're some extraneous lines that are leftover from my initial testing (namely the `echo`, `ls` and `ls -l` commands) which I'll get rid of later, but it should be relatively easy to see what's happening:
+It's much, much shorter than the [`ubuntu-22.04-base.def`](https://github.com/RobertsLab/code/blob/ffe6fbc49589dc9b2f2d0af56b8623f6301b100a/apptainer_definition_files/ubuntu-22.04-base.def) (GitHub) because it's using all of the stuff that's already been installed in [`ubuntu-22.04-base.def`](https://github.com/RobertsLab/code/blob/ffe6fbc49589dc9b2f2d0af56b8623f6301b100a/apptainer_definition_files/ubuntu-22.04-base.def) (GitHub). There're some extraneous lines that are leftover from my initial testing (namely the `echo`, `ls` and `ls -l` commands) which I'll get rid of later, but it should be relatively easy to see what's happening:
 
 - Change to the `/gscratch/srlab/programs` directory.
 
