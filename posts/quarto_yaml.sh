@@ -19,15 +19,13 @@
 # layout: post
 # title: qPCR - C.gigas PolyIC Diploid MgCl2
 # date: '2023-08-17 06:38'
-# tags: 
-#   - qPCR
-#   - CFX Connect
-#   - Crassostrea gigas
-#   - Pacific oyster
-#   - polyIC
-# categories: 
-#   - 2023
-#   - Miscellaneous
+# categories:
+#   - "qPCR"
+#   - "CFX Connect"
+#   - "Crassostrea gigas"
+#   - "Pacific oyster"
+#   - "polyIC" 
+#   - "2023"
 # draft: true
 # ---
 
@@ -85,9 +83,12 @@ printf "%s\n" \
 "${categories}" \
 >> index.qmd
 
-# Adds categories
-printf "  - %s\n" "${categories_array[@]}" >> index.qmd
+# Adds categories, each surrounded by doubled quotes
+for category in "${categories_array[@]}"; do
+    printf "  - \"%s\"\n" "$category" >> index.qmd
+done
 
+# Prints yaml line
 printf "%s\n" "${md_line}" >> index.qmd
 
 # Open file with code text editor.
