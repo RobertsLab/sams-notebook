@@ -1,0 +1,766 @@
+---
+author: Sam White
+toc-title: Contents
+toc-depth: 5
+toc-location: left
+title: FastQC MultiQC - A.pulchra WGBS E5 Timeseries
+date: '2024-12-31'
+draft: false
+engine: knitr
+categories: 
+  - "2024"
+  - "E5"
+  - "timeseries_molecular"
+  - "WGBS"
+  - "Acropora pulchra"
+  - "FastQC"
+  - "MultiQC"
+---
+# INTRO
+
+The notebook entry is part of the coral E5 [molecular_timeseries project](https://github.com/urol-e5/timeseries_molecular) (GitHub repo). I ran [`FastQC`](https://www.bioinformatics.babraham.ac.uk/projects/fastqc/) and [`MultiQC`](https://multiqc.info/) on the _A.pulchra_ WGBS [data received on 20241230](../2024-12-30-Data-Received---Coral-E5-WGBS-Time-Series-from-Azenta-Project-30-1067895835/index.qmd) in preparation for a quick [`Bismark`](https://github.com/FelixKrueger/Bismark) alignment, per [Steven's request](https://github.com/RobertsLab/resources/issues/2063) (GitHub Issue).
+
+Although I didn't _need_ to run [`FastQC`](https://www.bioinformatics.babraham.ac.uk/projects/fastqc/) or [`MultiQC`](https://multiqc.info/), I did so because I used recycled code to download the data. Since [`FastQC`](https://www.bioinformatics.babraham.ac.uk/projects/fastqc/) and [`MultiQC`](https://multiqc.info/) are fast, I just ran the entire R Markdown doc anyway.
+
+::: {.callout-note}
+It is taken from [`00.20-D-Apul-WGBS-reads-FastQC-MultiQC.Rmd`](https://github.com/urol-e5/timeseries_molecular/blob/98ea3d4307f5c373dfa66fa11617d6a29cb24137/D-Apul/code/00.20-D-Apul-WGBS-reads-FastQC-MultiQC.Rmd) (commit `98ea3d4`).
+:::
+
+
+# 1 Create a Bash variables file
+
+This allows usage of Bash variables across R Markdown chunks.
+
+``` bash
+{
+echo "#### Assign Variables ####"
+echo ""
+
+echo "# Data directories"
+echo 'export timeseries_dir=/home/shared/8TB_HDD_01/sam/gitrepos/urol-e5/timeseries_molecular'
+echo 'export output_dir_top=${timeseries_dir}/D-Apul/output/00.20-D-Apul-WGBS-reads-FastQC-MultiQC'
+echo 'export raw_fastqc_dir=${output_dir_top}/raw-fastqc'
+echo 'export raw_reads_dir=${timeseries_dir}/D-Apul/data/wgbs-raw-fastqs'
+echo 'export raw_reads_url="https://owl.fish.washington.edu/nightingales/E5-coral-time-series/30-1067895835/"'
+echo ""
+
+echo "# Paths to programs"
+echo 'export fastqc=/home/shared/FastQC-0.12.1/fastqc'
+echo 'export multiqc=/home/sam/programs/mambaforge/bin/multiqc'
+echo ""
+
+echo "# Set FastQ filename patterns"
+echo "export fastq_pattern='*.fastq.gz'"
+echo "export R1_fastq_pattern='*_R1_*.fastq.gz'"
+echo "export R2_fastq_pattern='*_R2_*.fastq.gz'"
+echo ""
+
+echo "# Set number of CPUs to use"
+echo 'export threads=40'
+echo ""
+
+
+echo "## Inititalize arrays"
+echo 'export fastq_array_R1=()'
+echo 'export fastq_array_R2=()'
+echo 'export raw_fastqs_array=()'
+echo 'export R1_names_array=()'
+echo 'export R2_names_array=()'
+echo ""
+
+echo "# Programs associative array"
+echo "declare -A programs_array"
+echo "programs_array=("
+echo '[fastqc]="${fastqc}" \'
+echo '[multiqc]="${multiqc}" \'
+echo ")"
+echo ""
+
+echo "# Print formatting"
+echo 'export line="--------------------------------------------------------"'
+echo ""
+} > .bashvars
+
+cat .bashvars
+```
+
+    #### Assign Variables ####
+
+    # Data directories
+    export timeseries_dir=/home/shared/8TB_HDD_01/sam/gitrepos/urol-e5/timeseries_molecular
+    export output_dir_top=${timeseries_dir}/D-Apul/output/00.20-D-Apul-WGBS-reads-FastQC-MultiQC
+    export raw_fastqc_dir=${output_dir_top}/raw-fastqc
+    export raw_reads_dir=${timeseries_dir}/D-Apul/data/wgbs-raw-fastqs
+    export raw_reads_url="https://owl.fish.washington.edu/nightingales/E5-coral-time-series/30-1067895835/"
+
+    # Paths to programs
+    export fastqc=/home/shared/FastQC-0.12.1/fastqc
+    export multiqc=/home/sam/programs/mambaforge/bin/multiqc
+
+    # Set FastQ filename patterns
+    export fastq_pattern='*.fastq.gz'
+    export R1_fastq_pattern='*_R1_*.fastq.gz'
+    export R2_fastq_pattern='*_R2_*.fastq.gz'
+
+    # Set number of CPUs to use
+    export threads=40
+
+    ## Inititalize arrays
+    export fastq_array_R1=()
+    export fastq_array_R2=()
+    export raw_fastqs_array=()
+    export R1_names_array=()
+    export R2_names_array=()
+
+    # Programs associative array
+    declare -A programs_array
+    programs_array=(
+    [fastqc]="${fastqc}" \
+    [multiqc]="${multiqc}" \
+    )
+
+    # Print formatting
+    export line="--------------------------------------------------------"
+
+# 2 Download *A.pulchra* WGBS FastQs
+
+## 2.1 Download raw WGBS reads
+
+Reads are downloaded from
+<https://owl.fish.washington.edu/nightingales/E5-coral-time-series/30-1067895835/>
+
+Since sequencing included multiple species, the code will also parse
+only those that are *A.pulchra*.
+
+The `--cut-dirs 3` command cuts the preceding directory structure
+(i.e. `nightingales/E5-coral-time-series/30-1067895835/`) so that we
+just end up with the reads.
+
+``` bash
+# Load bash variables into memory
+source .bashvars
+
+# Make output directory if it doesn't exist
+mkdir --parents ${raw_reads_dir}
+
+# Create list of only A.pulchra sample names
+# Some samples names are preceded by the sample number for some reason,
+# so this handles that formatting.
+sample_list=$(awk -F"," '$11 == "Acropora pulchra" { if ($9 ~ /E/) { print $8 "--" $9 } else { print $9 } }' ${timeseries_dir}/M-multi-species/data/30-1067895835-WGBS-sample-submission-form.csv \
+| sort)
+
+echo ""
+echo "${line}"
+echo ""
+echo "Sample list:"
+echo ""
+echo "${sample_list}"
+echo ""
+echo "${line}"
+echo ""
+
+
+# Use printf to format each item for use in wget
+formatted_list=$(printf "%s_*," ${sample_list})
+
+# Remove the trailing comma
+formatted_list="${formatted_list%,}"
+
+# Output the final wget command
+echo ""
+echo "${line}"
+echo ""
+echo "Formatted wget accept list:"
+echo ""
+echo "wget --accept=\"$formatted_list\""
+echo ""
+echo "${line}"
+echo ""
+
+# Run wget to retrieve FastQs and MD5 files
+wget \
+--directory-prefix ${raw_reads_dir} \
+--recursive \
+--no-check-certificate \
+--continue \
+--cut-dirs 3 \
+--no-host-directories \
+--no-parent \
+--quiet \
+--accept=\"$formatted_list\" ${raw_reads_url}
+
+ls -lh "${raw_reads_dir}"
+```
+
+    --------------------------------------------------------
+
+    Sample list:
+
+    10--1E7
+    1A1
+    1A10
+    1A12
+    1A3
+    1A5
+    1A6
+    1A8
+    1B1
+    1B10
+    1B2
+    1B4
+    1B5
+    1C6
+    1C8
+    1C9
+    1D3
+    1D7
+    1D8
+    1D9
+    1F1
+    1F5
+    1F7
+    1F9
+    1G4
+    1G5
+    1H11
+    1H2
+    1H3
+    1H5
+    1H6
+    1H9
+    2A3
+    2C2
+    2D1
+    2D2
+    2G2
+    2H3
+    39--2E2
+    6--1E3
+
+    --------------------------------------------------------
+
+
+    --------------------------------------------------------
+
+    Formatted wget accept list:
+
+    wget --accept="10--1E7_*,1A1_*,1A10_*,1A12_*,1A3_*,1A5_*,1A6_*,1A8_*,1B1_*,1B10_*,1B2_*,1B4_*,1B5_*,1C6_*,1C8_*,1C9_*,1D3_*,1D7_*,1D8_*,1D9_*,1F1_*,1F5_*,1F7_*,1F9_*,1G4_*,1G5_*,1H11_*,1H2_*,1H3_*,1H5_*,1H6_*,1H9_*,2A3_*,2C2_*,2D1_*,2D2_*,2G2_*,2H3_*,39--2E2_*,6--1E3_*"
+
+    --------------------------------------------------------
+
+    total 213G
+    -rw-r--r-- 1 sam sam 2.6G Dec 30 07:56 10--1E7_R1_001.fastq.gz
+    -rw-r--r-- 1 sam sam   60 Dec 30 07:56 10--1E7_R1_001.fastq.gz.md5
+    -rw-r--r-- 1 sam sam 2.6G Dec 30 07:59 10--1E7_R2_001.fastq.gz
+    -rw-r--r-- 1 sam sam   60 Dec 30 07:59 10--1E7_R2_001.fastq.gz.md5
+    -rw-r--r-- 1 sam sam 2.8G Dec 30 08:22 1A10_R1_001.fastq.gz
+    -rw-r--r-- 1 sam sam   57 Dec 30 08:22 1A10_R1_001.fastq.gz.md5
+    -rw-r--r-- 1 sam sam 2.8G Dec 30 08:25 1A10_R2_001.fastq.gz
+    -rw-r--r-- 1 sam sam   57 Dec 30 08:25 1A10_R2_001.fastq.gz.md5
+    -rw-r--r-- 1 sam sam 2.8G Dec 30 08:33 1A12_R1_001.fastq.gz
+    -rw-r--r-- 1 sam sam   57 Dec 30 08:33 1A12_R1_001.fastq.gz.md5
+    -rw-r--r-- 1 sam sam 2.8G Dec 30 08:35 1A12_R2_001.fastq.gz
+    -rw-r--r-- 1 sam sam   57 Dec 30 08:35 1A12_R2_001.fastq.gz.md5
+    -rw-r--r-- 1 sam sam 2.6G Dec 30 08:38 1A1_R1_001.fastq.gz
+    -rw-r--r-- 1 sam sam   56 Dec 30 08:38 1A1_R1_001.fastq.gz.md5
+    -rw-r--r-- 1 sam sam 2.6G Dec 30 08:41 1A1_R2_001.fastq.gz
+    -rw-r--r-- 1 sam sam   56 Dec 30 08:41 1A1_R2_001.fastq.gz.md5
+    -rw-r--r-- 1 sam sam 3.1G Dec 30 08:51 1A3_R1_001.fastq.gz
+    -rw-r--r-- 1 sam sam   56 Dec 30 08:51 1A3_R1_001.fastq.gz.md5
+    -rw-r--r-- 1 sam sam 3.1G Dec 30 08:54 1A3_R2_001.fastq.gz
+    -rw-r--r-- 1 sam sam   56 Dec 30 08:54 1A3_R2_001.fastq.gz.md5
+    -rw-r--r-- 1 sam sam 2.8G Dec 30 09:02 1A5_R1_001.fastq.gz
+    -rw-r--r-- 1 sam sam   56 Dec 30 09:02 1A5_R1_001.fastq.gz.md5
+    -rw-r--r-- 1 sam sam 2.8G Dec 30 09:05 1A5_R2_001.fastq.gz
+    -rw-r--r-- 1 sam sam   56 Dec 30 09:05 1A5_R2_001.fastq.gz.md5
+    -rw-r--r-- 1 sam sam 2.5G Dec 30 09:07 1A6_R1_001.fastq.gz
+    -rw-r--r-- 1 sam sam   56 Dec 30 09:07 1A6_R1_001.fastq.gz.md5
+    -rw-r--r-- 1 sam sam 2.4G Dec 30 09:10 1A6_R2_001.fastq.gz
+    -rw-r--r-- 1 sam sam   56 Dec 30 09:10 1A6_R2_001.fastq.gz.md5
+    -rw-r--r-- 1 sam sam 3.4G Dec 30 09:18 1A8_R1_001.fastq.gz
+    -rw-r--r-- 1 sam sam   56 Dec 30 09:18 1A8_R1_001.fastq.gz.md5
+    -rw-r--r-- 1 sam sam 3.5G Dec 30 09:21 1A8_R2_001.fastq.gz
+    -rw-r--r-- 1 sam sam   56 Dec 30 09:21 1A8_R2_001.fastq.gz.md5
+    -rw-r--r-- 1 sam sam 3.7G Dec 30 09:32 1B10_R1_001.fastq.gz
+    -rw-r--r-- 1 sam sam   57 Dec 30 09:32 1B10_R1_001.fastq.gz.md5
+    -rw-r--r-- 1 sam sam 3.7G Dec 30 09:35 1B10_R2_001.fastq.gz
+    -rw-r--r-- 1 sam sam   57 Dec 30 09:35 1B10_R2_001.fastq.gz.md5
+    -rw-r--r-- 1 sam sam 2.7G Dec 30 09:48 1B1_R1_001.fastq.gz
+    -rw-r--r-- 1 sam sam   56 Dec 30 09:48 1B1_R1_001.fastq.gz.md5
+    -rw-r--r-- 1 sam sam 2.7G Dec 30 09:51 1B1_R2_001.fastq.gz
+    -rw-r--r-- 1 sam sam   56 Dec 30 09:51 1B1_R2_001.fastq.gz.md5
+    -rw-r--r-- 1 sam sam 3.4G Dec 30 09:54 1B2_R1_001.fastq.gz
+    -rw-r--r-- 1 sam sam   56 Dec 30 09:54 1B2_R1_001.fastq.gz.md5
+    -rw-r--r-- 1 sam sam 3.4G Dec 30 09:57 1B2_R2_001.fastq.gz
+    -rw-r--r-- 1 sam sam   56 Dec 30 09:57 1B2_R2_001.fastq.gz.md5
+    -rw-r--r-- 1 sam sam 3.0G Dec 30 10:05 1B4_R1_001.fastq.gz
+    -rw-r--r-- 1 sam sam   56 Dec 30 10:05 1B4_R1_001.fastq.gz.md5
+    -rw-r--r-- 1 sam sam 3.0G Dec 30 10:08 1B4_R2_001.fastq.gz
+    -rw-r--r-- 1 sam sam   56 Dec 30 10:08 1B4_R2_001.fastq.gz.md5
+    -rw-r--r-- 1 sam sam 2.7G Dec 30 10:10 1B5_R1_001.fastq.gz
+    -rw-r--r-- 1 sam sam   56 Dec 30 10:10 1B5_R1_001.fastq.gz.md5
+    -rw-r--r-- 1 sam sam 2.7G Dec 30 10:13 1B5_R2_001.fastq.gz
+    -rw-r--r-- 1 sam sam   56 Dec 30 10:13 1B5_R2_001.fastq.gz.md5
+    -rw-r--r-- 1 sam sam 2.5G Dec 30 11:15 1C6_R1_001.fastq.gz
+    -rw-r--r-- 1 sam sam   56 Dec 30 11:15 1C6_R1_001.fastq.gz.md5
+    -rw-r--r-- 1 sam sam 2.5G Dec 30 11:18 1C6_R2_001.fastq.gz
+    -rw-r--r-- 1 sam sam   56 Dec 30 11:18 1C6_R2_001.fastq.gz.md5
+    -rw-r--r-- 1 sam sam 2.9G Dec 30 11:26 1C8_R1_001.fastq.gz
+    -rw-r--r-- 1 sam sam   56 Dec 30 11:26 1C8_R1_001.fastq.gz.md5
+    -rw-r--r-- 1 sam sam 2.9G Dec 30 11:29 1C8_R2_001.fastq.gz
+    -rw-r--r-- 1 sam sam   56 Dec 30 11:29 1C8_R2_001.fastq.gz.md5
+    -rw-r--r-- 1 sam sam 2.7G Dec 30 11:31 1C9_R1_001.fastq.gz
+    -rw-r--r-- 1 sam sam   56 Dec 30 11:31 1C9_R1_001.fastq.gz.md5
+    -rw-r--r-- 1 sam sam 2.7G Dec 30 11:34 1C9_R2_001.fastq.gz
+    -rw-r--r-- 1 sam sam   56 Dec 30 11:34 1C9_R2_001.fastq.gz.md5
+    -rw-r--r-- 1 sam sam 2.6G Dec 30 12:00 1D3_R1_001.fastq.gz
+    -rw-r--r-- 1 sam sam   56 Dec 30 12:00 1D3_R1_001.fastq.gz.md5
+    -rw-r--r-- 1 sam sam 2.5G Dec 30 12:03 1D3_R2_001.fastq.gz
+    -rw-r--r-- 1 sam sam   56 Dec 30 12:03 1D3_R2_001.fastq.gz.md5
+    -rw-r--r-- 1 sam sam 2.5G Dec 30 12:21 1D7_R1_001.fastq.gz
+    -rw-r--r-- 1 sam sam   56 Dec 30 12:21 1D7_R1_001.fastq.gz.md5
+    -rw-r--r-- 1 sam sam 2.4G Dec 30 12:23 1D7_R2_001.fastq.gz
+    -rw-r--r-- 1 sam sam   56 Dec 30 12:23 1D7_R2_001.fastq.gz.md5
+    -rw-r--r-- 1 sam sam 2.7G Dec 30 12:26 1D8_R1_001.fastq.gz
+    -rw-r--r-- 1 sam sam   56 Dec 30 12:26 1D8_R1_001.fastq.gz.md5
+    -rw-r--r-- 1 sam sam 2.7G Dec 30 12:28 1D8_R2_001.fastq.gz
+    -rw-r--r-- 1 sam sam   56 Dec 30 12:28 1D8_R2_001.fastq.gz.md5
+    -rw-r--r-- 1 sam sam 3.0G Dec 30 12:31 1D9_R1_001.fastq.gz
+    -rw-r--r-- 1 sam sam   56 Dec 30 12:31 1D9_R1_001.fastq.gz.md5
+    -rw-r--r-- 1 sam sam 3.0G Dec 30 12:34 1D9_R2_001.fastq.gz
+    -rw-r--r-- 1 sam sam   56 Dec 30 12:34 1D9_R2_001.fastq.gz.md5
+    -rw-r--r-- 1 sam sam 3.1G Dec 30 12:51 1F1_R1_001.fastq.gz
+    -rw-r--r-- 1 sam sam   56 Dec 30 12:51 1F1_R1_001.fastq.gz.md5
+    -rw-r--r-- 1 sam sam 3.1G Dec 30 12:54 1F1_R2_001.fastq.gz
+    -rw-r--r-- 1 sam sam   56 Dec 30 12:54 1F1_R2_001.fastq.gz.md5
+    -rw-r--r-- 1 sam sam 3.1G Dec 30 13:10 1F5_R1_001.fastq.gz
+    -rw-r--r-- 1 sam sam   56 Dec 30 13:10 1F5_R1_001.fastq.gz.md5
+    -rw-r--r-- 1 sam sam 3.0G Dec 30 13:13 1F5_R2_001.fastq.gz
+    -rw-r--r-- 1 sam sam   56 Dec 30 13:13 1F5_R2_001.fastq.gz.md5
+    -rw-r--r-- 1 sam sam 2.4G Dec 30 13:19 1F7_R1_001.fastq.gz
+    -rw-r--r-- 1 sam sam   56 Dec 30 13:19 1F7_R1_001.fastq.gz.md5
+    -rw-r--r-- 1 sam sam 2.4G Dec 30 13:21 1F7_R2_001.fastq.gz
+    -rw-r--r-- 1 sam sam   56 Dec 30 13:21 1F7_R2_001.fastq.gz.md5
+    -rw-r--r-- 1 sam sam 2.5G Dec 30 13:28 1F9_R1_001.fastq.gz
+    -rw-r--r-- 1 sam sam   56 Dec 30 13:28 1F9_R1_001.fastq.gz.md5
+    -rw-r--r-- 1 sam sam 2.5G Dec 30 13:30 1F9_R2_001.fastq.gz
+    -rw-r--r-- 1 sam sam   56 Dec 30 13:30 1F9_R2_001.fastq.gz.md5
+    -rw-r--r-- 1 sam sam 2.3G Dec 30 14:01 1G4_R1_001.fastq.gz
+    -rw-r--r-- 1 sam sam   56 Dec 30 14:01 1G4_R1_001.fastq.gz.md5
+    -rw-r--r-- 1 sam sam 2.3G Dec 30 14:03 1G4_R2_001.fastq.gz
+    -rw-r--r-- 1 sam sam   56 Dec 30 14:03 1G4_R2_001.fastq.gz.md5
+    -rw-r--r-- 1 sam sam 2.8G Dec 30 14:06 1G5_R1_001.fastq.gz
+    -rw-r--r-- 1 sam sam   56 Dec 30 14:06 1G5_R1_001.fastq.gz.md5
+    -rw-r--r-- 1 sam sam 2.8G Dec 30 14:09 1G5_R2_001.fastq.gz
+    -rw-r--r-- 1 sam sam   56 Dec 30 14:09 1G5_R2_001.fastq.gz.md5
+    -rw-r--r-- 1 sam sam 2.5G Dec 30 14:35 1H11_R1_001.fastq.gz
+    -rw-r--r-- 1 sam sam   57 Dec 30 14:35 1H11_R1_001.fastq.gz.md5
+    -rw-r--r-- 1 sam sam 2.5G Dec 30 14:38 1H11_R2_001.fastq.gz
+    -rw-r--r-- 1 sam sam   57 Dec 30 14:38 1H11_R2_001.fastq.gz.md5
+    -rw-r--r-- 1 sam sam 2.9G Dec 30 14:51 1H2_R1_001.fastq.gz
+    -rw-r--r-- 1 sam sam   56 Dec 30 14:51 1H2_R1_001.fastq.gz.md5
+    -rw-r--r-- 1 sam sam 3.0G Dec 30 14:54 1H2_R2_001.fastq.gz
+    -rw-r--r-- 1 sam sam   56 Dec 30 14:54 1H2_R2_001.fastq.gz.md5
+    -rw-r--r-- 1 sam sam 2.6G Dec 30 14:56 1H3_R1_001.fastq.gz
+    -rw-r--r-- 1 sam sam   56 Dec 30 14:56 1H3_R1_001.fastq.gz.md5
+    -rw-r--r-- 1 sam sam 2.6G Dec 30 14:59 1H3_R2_001.fastq.gz
+    -rw-r--r-- 1 sam sam   56 Dec 30 14:59 1H3_R2_001.fastq.gz.md5
+    -rw-r--r-- 1 sam sam 2.7G Dec 30 15:07 1H5_R1_001.fastq.gz
+    -rw-r--r-- 1 sam sam   56 Dec 30 15:07 1H5_R1_001.fastq.gz.md5
+    -rw-r--r-- 1 sam sam 2.7G Dec 30 15:10 1H5_R2_001.fastq.gz
+    -rw-r--r-- 1 sam sam   56 Dec 30 15:10 1H5_R2_001.fastq.gz.md5
+    -rw-r--r-- 1 sam sam 2.6G Dec 30 15:13 1H6_R1_001.fastq.gz
+    -rw-r--r-- 1 sam sam   56 Dec 30 15:13 1H6_R1_001.fastq.gz.md5
+    -rw-r--r-- 1 sam sam 2.6G Dec 30 15:16 1H6_R2_001.fastq.gz
+    -rw-r--r-- 1 sam sam   56 Dec 30 15:16 1H6_R2_001.fastq.gz.md5
+    -rw-r--r-- 1 sam sam 2.8G Dec 30 15:30 1H9_R1_001.fastq.gz
+    -rw-r--r-- 1 sam sam   56 Dec 30 15:30 1H9_R1_001.fastq.gz.md5
+    -rw-r--r-- 1 sam sam 2.7G Dec 30 15:33 1H9_R2_001.fastq.gz
+    -rw-r--r-- 1 sam sam   56 Dec 30 15:33 1H9_R2_001.fastq.gz.md5
+    -rw-r--r-- 1 sam sam 2.1G Dec 30 15:45 2A3_R1_001.fastq.gz
+    -rw-r--r-- 1 sam sam   56 Dec 30 15:45 2A3_R1_001.fastq.gz.md5
+    -rw-r--r-- 1 sam sam 2.1G Dec 30 15:47 2A3_R2_001.fastq.gz
+    -rw-r--r-- 1 sam sam   56 Dec 30 15:47 2A3_R2_001.fastq.gz.md5
+    -rw-r--r-- 1 sam sam 2.6G Dec 30 16:11 2C2_R1_001.fastq.gz
+    -rw-r--r-- 1 sam sam   56 Dec 30 16:11 2C2_R1_001.fastq.gz.md5
+    -rw-r--r-- 1 sam sam 2.6G Dec 30 16:14 2C2_R2_001.fastq.gz
+    -rw-r--r-- 1 sam sam   56 Dec 30 16:14 2C2_R2_001.fastq.gz.md5
+    -rw-r--r-- 1 sam sam 2.3G Dec 30 16:23 2D1_R1_001.fastq.gz
+    -rw-r--r-- 1 sam sam   56 Dec 30 16:23 2D1_R1_001.fastq.gz.md5
+    -rw-r--r-- 1 sam sam 2.3G Dec 30 16:26 2D1_R2_001.fastq.gz
+    -rw-r--r-- 1 sam sam   56 Dec 30 16:26 2D1_R2_001.fastq.gz.md5
+    -rw-r--r-- 1 sam sam 1.8G Dec 30 16:28 2D2_R1_001.fastq.gz
+    -rw-r--r-- 1 sam sam   56 Dec 30 16:28 2D2_R1_001.fastq.gz.md5
+    -rw-r--r-- 1 sam sam 1.8G Dec 30 16:30 2D2_R2_001.fastq.gz
+    -rw-r--r-- 1 sam sam   56 Dec 30 16:30 2D2_R2_001.fastq.gz.md5
+    -rw-r--r-- 1 sam sam 2.7G Dec 30 17:00 2G2_R1_001.fastq.gz
+    -rw-r--r-- 1 sam sam   56 Dec 30 17:00 2G2_R1_001.fastq.gz.md5
+    -rw-r--r-- 1 sam sam 2.7G Dec 30 17:03 2G2_R2_001.fastq.gz
+    -rw-r--r-- 1 sam sam   56 Dec 30 17:03 2G2_R2_001.fastq.gz.md5
+    -rw-r--r-- 1 sam sam 1.9G Dec 30 17:22 2H3_R1_001.fastq.gz
+    -rw-r--r-- 1 sam sam   56 Dec 30 17:22 2H3_R1_001.fastq.gz.md5
+    -rw-r--r-- 1 sam sam 1.9G Dec 30 17:24 2H3_R2_001.fastq.gz
+    -rw-r--r-- 1 sam sam   56 Dec 30 17:24 2H3_R2_001.fastq.gz.md5
+    -rw-r--r-- 1 sam sam 2.4G Dec 30 17:27 39--2E2_R1_001.fastq.gz
+    -rw-r--r-- 1 sam sam   60 Dec 30 17:27 39--2E2_R1_001.fastq.gz.md5
+    -rw-r--r-- 1 sam sam 2.4G Dec 30 17:30 39--2E2_R2_001.fastq.gz
+    -rw-r--r-- 1 sam sam   60 Dec 30 17:30 39--2E2_R2_001.fastq.gz.md5
+    -rw-r--r-- 1 sam sam 3.2G Dec 30 17:57 6--1E3_R1_001.fastq.gz
+    -rw-r--r-- 1 sam sam   59 Dec 30 17:57 6--1E3_R1_001.fastq.gz.md5
+    -rw-r--r-- 1 sam sam 3.2G Dec 30 18:00 6--1E3_R2_001.fastq.gz
+    -rw-r--r-- 1 sam sam   59 Dec 30 18:00 6--1E3_R2_001.fastq.gz.md5
+
+## 2.2 Verify raw read checksums
+
+``` bash
+# Load bash variables into memory
+source .bashvars
+
+cd "${raw_reads_dir}"
+
+for file in *.md5
+do
+  md5sum --check "${file}"
+done
+```
+
+    ./10--1E7_R1_001.fastq.gz: OK
+    ./10--1E7_R2_001.fastq.gz: OK
+    ./1A10_R1_001.fastq.gz: OK
+    ./1A10_R2_001.fastq.gz: OK
+    ./1A12_R1_001.fastq.gz: OK
+    ./1A12_R2_001.fastq.gz: OK
+    ./1A1_R1_001.fastq.gz: OK
+    ./1A1_R2_001.fastq.gz: OK
+    ./1A3_R1_001.fastq.gz: OK
+    ./1A3_R2_001.fastq.gz: OK
+    ./1A5_R1_001.fastq.gz: OK
+    ./1A5_R2_001.fastq.gz: OK
+    ./1A6_R1_001.fastq.gz: OK
+    ./1A6_R2_001.fastq.gz: OK
+    ./1A8_R1_001.fastq.gz: OK
+    ./1A8_R2_001.fastq.gz: OK
+    ./1B10_R1_001.fastq.gz: OK
+    ./1B10_R2_001.fastq.gz: OK
+    ./1B1_R1_001.fastq.gz: OK
+    ./1B1_R2_001.fastq.gz: OK
+    ./1B2_R1_001.fastq.gz: OK
+    ./1B2_R2_001.fastq.gz: OK
+    ./1B4_R1_001.fastq.gz: OK
+    ./1B4_R2_001.fastq.gz: OK
+    ./1B5_R1_001.fastq.gz: OK
+    ./1B5_R2_001.fastq.gz: OK
+    ./1C6_R1_001.fastq.gz: OK
+    ./1C6_R2_001.fastq.gz: OK
+    ./1C8_R1_001.fastq.gz: OK
+    ./1C8_R2_001.fastq.gz: OK
+    ./1C9_R1_001.fastq.gz: OK
+    ./1C9_R2_001.fastq.gz: OK
+    ./1D3_R1_001.fastq.gz: OK
+    ./1D3_R2_001.fastq.gz: OK
+    ./1D7_R1_001.fastq.gz: OK
+    ./1D7_R2_001.fastq.gz: OK
+    ./1D8_R1_001.fastq.gz: OK
+    ./1D8_R2_001.fastq.gz: OK
+    ./1D9_R1_001.fastq.gz: OK
+    ./1D9_R2_001.fastq.gz: OK
+    ./1F1_R1_001.fastq.gz: OK
+    ./1F1_R2_001.fastq.gz: OK
+    ./1F5_R1_001.fastq.gz: OK
+    ./1F5_R2_001.fastq.gz: OK
+    ./1F7_R1_001.fastq.gz: OK
+    ./1F7_R2_001.fastq.gz: OK
+    ./1F9_R1_001.fastq.gz: OK
+    ./1F9_R2_001.fastq.gz: OK
+    ./1G4_R1_001.fastq.gz: OK
+    ./1G4_R2_001.fastq.gz: OK
+    ./1G5_R1_001.fastq.gz: OK
+    ./1G5_R2_001.fastq.gz: OK
+    ./1H11_R1_001.fastq.gz: OK
+    ./1H11_R2_001.fastq.gz: OK
+    ./1H2_R1_001.fastq.gz: OK
+    ./1H2_R2_001.fastq.gz: OK
+    ./1H3_R1_001.fastq.gz: OK
+    ./1H3_R2_001.fastq.gz: OK
+    ./1H5_R1_001.fastq.gz: OK
+    ./1H5_R2_001.fastq.gz: OK
+    ./1H6_R1_001.fastq.gz: OK
+    ./1H6_R2_001.fastq.gz: OK
+    ./1H9_R1_001.fastq.gz: OK
+    ./1H9_R2_001.fastq.gz: OK
+    ./2A3_R1_001.fastq.gz: OK
+    ./2A3_R2_001.fastq.gz: OK
+    ./2C2_R1_001.fastq.gz: OK
+    ./2C2_R2_001.fastq.gz: OK
+    ./2D1_R1_001.fastq.gz: OK
+    ./2D1_R2_001.fastq.gz: OK
+    ./2D2_R1_001.fastq.gz: OK
+    ./2D2_R2_001.fastq.gz: OK
+    ./2G2_R1_001.fastq.gz: OK
+    ./2G2_R2_001.fastq.gz: OK
+    ./2H3_R1_001.fastq.gz: OK
+    ./2H3_R2_001.fastq.gz: OK
+    ./39--2E2_R1_001.fastq.gz: OK
+    ./39--2E2_R2_001.fastq.gz: OK
+    ./6--1E3_R1_001.fastq.gz: OK
+    ./6--1E3_R2_001.fastq.gz: OK
+
+# 3 FastQC/MultiQC on raw reads
+
+``` bash
+# Load bash variables into memory
+source .bashvars
+
+# Make output directory if it doesn't exist
+mkdir --parents "${raw_fastqc_dir}"
+
+############ RUN FASTQC ############
+
+
+# Create array of trimmed FastQs
+raw_fastqs_array=(${raw_reads_dir}/${fastq_pattern})
+
+# Pass array contents to new variable as space-delimited list
+raw_fastqc_list=$(echo "${raw_fastqs_array[*]}")
+
+echo "Beginning FastQC on raw reads..."
+echo ""
+
+# Run FastQC
+### NOTE: Do NOT quote raw_fastqc_list
+${programs_array[fastqc]} \
+--threads ${threads} \
+--outdir ${raw_fastqc_dir} \
+--quiet \
+${raw_fastqc_list}
+
+echo "FastQC on raw reads complete!"
+echo ""
+
+############ END FASTQC ############
+
+############ RUN MULTIQC ############
+echo "Beginning MultiQC on raw FastQC..."
+echo ""
+
+${programs_array[multiqc]} \
+${raw_fastqc_dir} \
+--interactive \
+-o ${raw_fastqc_dir}
+
+echo ""
+echo "MultiQC on raw FastQs complete."
+echo ""
+
+############ END MULTIQC ############
+
+echo "Removing FastQC zip files."
+echo ""
+rm ${raw_fastqc_dir}/*.zip
+echo "FastQC zip files removed."
+echo ""
+
+# View directory contents
+ls -lh ${raw_fastqc_dir}
+```
+
+    Beginning FastQC on raw reads...
+
+    application/gzip
+    application/gzip
+    application/gzip
+    application/gzip
+    application/gzip
+    application/gzip
+    application/gzip
+    application/gzip
+    application/gzip
+    application/gzip
+    application/gzip
+    application/gzip
+    application/gzip
+    application/gzip
+    application/gzip
+    application/gzip
+    application/gzip
+    application/gzip
+    application/gzip
+    application/gzip
+    application/gzip
+    application/gzip
+    application/gzip
+    application/gzip
+    application/gzip
+    application/gzip
+    application/gzip
+    application/gzip
+    application/gzip
+    application/gzip
+    application/gzip
+    application/gzip
+    application/gzip
+    application/gzip
+    application/gzip
+    application/gzip
+    application/gzip
+    application/gzip
+    application/gzip
+    application/gzip
+    application/gzip
+    application/gzip
+    application/gzip
+    application/gzip
+    application/gzip
+    application/gzip
+    application/gzip
+    application/gzip
+    application/gzip
+    application/gzip
+    application/gzip
+    application/gzip
+    application/gzip
+    application/gzip
+    application/gzip
+    application/gzip
+    application/gzip
+    application/gzip
+    application/gzip
+    application/gzip
+    application/gzip
+    application/gzip
+    application/gzip
+    application/gzip
+    application/gzip
+    application/gzip
+    application/gzip
+    application/gzip
+    application/gzip
+    application/gzip
+    application/gzip
+    application/gzip
+    application/gzip
+    application/gzip
+    application/gzip
+    application/gzip
+    application/gzip
+    application/gzip
+    application/gzip
+    application/gzip
+    FastQC on raw reads complete!
+
+    Beginning MultiQC on raw FastQC...
+
+
+      /// MultiQC 🔍 | v1.14
+
+    |           multiqc | MultiQC Version v1.26 now available!
+    |           multiqc | Search path : /home/shared/8TB_HDD_01/sam/gitrepos/urol-e5/timeseries_molecular/D-Apul/output/00.20-D-Apul-WGBS-reads-FastQC-MultiQC/raw-fastqc
+    |         searching | ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 100% 160/160  
+    |            fastqc | Found 80 reports
+    |           multiqc | Compressing plot data
+    |           multiqc | Report      : ../output/00.20-D-Apul-WGBS-reads-FastQC-MultiQC/raw-fastqc/multiqc_report.html
+    |           multiqc | Data        : ../output/00.20-D-Apul-WGBS-reads-FastQC-MultiQC/raw-fastqc/multiqc_data
+    |           multiqc | MultiQC complete
+
+    MultiQC on raw FastQs complete.
+
+    Removing FastQC zip files.
+
+    FastQC zip files removed.
+
+    total 49M
+    -rw-r--r-- 1 sam sam 587K Dec 31 17:16 10--1E7_R1_001_fastqc.html
+    -rw-r--r-- 1 sam sam 604K Dec 31 17:15 10--1E7_R2_001_fastqc.html
+    -rw-r--r-- 1 sam sam 585K Dec 31 17:17 1A10_R1_001_fastqc.html
+    -rw-r--r-- 1 sam sam 605K Dec 31 17:16 1A10_R2_001_fastqc.html
+    -rw-r--r-- 1 sam sam 583K Dec 31 17:16 1A12_R1_001_fastqc.html
+    -rw-r--r-- 1 sam sam 610K Dec 31 17:17 1A12_R2_001_fastqc.html
+    -rw-r--r-- 1 sam sam 587K Dec 31 17:17 1A1_R1_001_fastqc.html
+    -rw-r--r-- 1 sam sam 608K Dec 31 17:16 1A1_R2_001_fastqc.html
+    -rw-r--r-- 1 sam sam 594K Dec 31 17:18 1A3_R1_001_fastqc.html
+    -rw-r--r-- 1 sam sam 611K Dec 31 17:18 1A3_R2_001_fastqc.html
+    -rw-r--r-- 1 sam sam 588K Dec 31 17:17 1A5_R1_001_fastqc.html
+    -rw-r--r-- 1 sam sam 606K Dec 31 17:17 1A5_R2_001_fastqc.html
+    -rw-r--r-- 1 sam sam 589K Dec 31 17:15 1A6_R1_001_fastqc.html
+    -rw-r--r-- 1 sam sam 608K Dec 31 17:16 1A6_R2_001_fastqc.html
+    -rw-r--r-- 1 sam sam 599K Dec 31 17:20 1A8_R1_001_fastqc.html
+    -rw-r--r-- 1 sam sam 621K Dec 31 17:20 1A8_R2_001_fastqc.html
+    -rw-r--r-- 1 sam sam 595K Dec 31 17:22 1B10_R1_001_fastqc.html
+    -rw-r--r-- 1 sam sam 616K Dec 31 17:21 1B10_R2_001_fastqc.html
+    -rw-r--r-- 1 sam sam 586K Dec 31 17:16 1B1_R1_001_fastqc.html
+    -rw-r--r-- 1 sam sam 604K Dec 31 17:16 1B1_R2_001_fastqc.html
+    -rw-r--r-- 1 sam sam 588K Dec 31 17:18 1B2_R1_001_fastqc.html
+    -rw-r--r-- 1 sam sam 604K Dec 31 17:19 1B2_R2_001_fastqc.html
+    -rw-r--r-- 1 sam sam 589K Dec 31 17:18 1B4_R1_001_fastqc.html
+    -rw-r--r-- 1 sam sam 606K Dec 31 17:18 1B4_R2_001_fastqc.html
+    -rw-r--r-- 1 sam sam 582K Dec 31 17:17 1B5_R1_001_fastqc.html
+    -rw-r--r-- 1 sam sam 602K Dec 31 17:17 1B5_R2_001_fastqc.html
+    -rw-r--r-- 1 sam sam 591K Dec 31 17:16 1C6_R1_001_fastqc.html
+    -rw-r--r-- 1 sam sam 615K Dec 31 17:16 1C6_R2_001_fastqc.html
+    -rw-r--r-- 1 sam sam 589K Dec 31 17:17 1C8_R1_001_fastqc.html
+    -rw-r--r-- 1 sam sam 608K Dec 31 17:18 1C8_R2_001_fastqc.html
+    -rw-r--r-- 1 sam sam 586K Dec 31 17:17 1C9_R1_001_fastqc.html
+    -rw-r--r-- 1 sam sam 605K Dec 31 17:17 1C9_R2_001_fastqc.html
+    -rw-r--r-- 1 sam sam 589K Dec 31 17:16 1D3_R1_001_fastqc.html
+    -rw-r--r-- 1 sam sam 605K Dec 31 17:16 1D3_R2_001_fastqc.html
+    -rw-r--r-- 1 sam sam 590K Dec 31 17:16 1D7_R1_001_fastqc.html
+    -rw-r--r-- 1 sam sam 608K Dec 31 17:16 1D7_R2_001_fastqc.html
+    -rw-r--r-- 1 sam sam 586K Dec 31 17:16 1D8_R1_001_fastqc.html
+    -rw-r--r-- 1 sam sam 604K Dec 31 17:17 1D8_R2_001_fastqc.html
+    -rw-r--r-- 1 sam sam 591K Dec 31 17:17 1D9_R1_001_fastqc.html
+    -rw-r--r-- 1 sam sam 611K Dec 31 17:17 1D9_R2_001_fastqc.html
+    -rw-r--r-- 1 sam sam 589K Dec 31 17:27 1F1_R1_001_fastqc.html
+    -rw-r--r-- 1 sam sam 611K Dec 31 17:27 1F1_R2_001_fastqc.html
+    -rw-r--r-- 1 sam sam 591K Dec 31 17:27 1F5_R1_001_fastqc.html
+    -rw-r--r-- 1 sam sam 610K Dec 31 17:27 1F5_R2_001_fastqc.html
+    -rw-r--r-- 1 sam sam 592K Dec 31 17:26 1F7_R1_001_fastqc.html
+    -rw-r--r-- 1 sam sam 607K Dec 31 17:26 1F7_R2_001_fastqc.html
+    -rw-r--r-- 1 sam sam 587K Dec 31 17:26 1F9_R1_001_fastqc.html
+    -rw-r--r-- 1 sam sam 606K Dec 31 17:26 1F9_R2_001_fastqc.html
+    -rw-r--r-- 1 sam sam 587K Dec 31 17:26 1G4_R1_001_fastqc.html
+    -rw-r--r-- 1 sam sam 606K Dec 31 17:25 1G4_R2_001_fastqc.html
+    -rw-r--r-- 1 sam sam 597K Dec 31 17:27 1G5_R1_001_fastqc.html
+    -rw-r--r-- 1 sam sam 615K Dec 31 17:27 1G5_R2_001_fastqc.html
+    -rw-r--r-- 1 sam sam 594K Dec 31 17:26 1H11_R1_001_fastqc.html
+    -rw-r--r-- 1 sam sam 615K Dec 31 17:27 1H11_R2_001_fastqc.html
+    -rw-r--r-- 1 sam sam 595K Dec 31 17:27 1H2_R1_001_fastqc.html
+    -rw-r--r-- 1 sam sam 614K Dec 31 17:28 1H2_R2_001_fastqc.html
+    -rw-r--r-- 1 sam sam 587K Dec 31 17:27 1H3_R1_001_fastqc.html
+    -rw-r--r-- 1 sam sam 606K Dec 31 17:27 1H3_R2_001_fastqc.html
+    -rw-r--r-- 1 sam sam 595K Dec 31 17:27 1H5_R1_001_fastqc.html
+    -rw-r--r-- 1 sam sam 618K Dec 31 17:27 1H5_R2_001_fastqc.html
+    -rw-r--r-- 1 sam sam 586K Dec 31 17:27 1H6_R1_001_fastqc.html
+    -rw-r--r-- 1 sam sam 602K Dec 31 17:27 1H6_R2_001_fastqc.html
+    -rw-r--r-- 1 sam sam 594K Dec 31 17:27 1H9_R1_001_fastqc.html
+    -rw-r--r-- 1 sam sam 610K Dec 31 17:27 1H9_R2_001_fastqc.html
+    -rw-r--r-- 1 sam sam 584K Dec 31 17:26 2A3_R1_001_fastqc.html
+    -rw-r--r-- 1 sam sam 592K Dec 31 17:27 2A3_R2_001_fastqc.html
+    -rw-r--r-- 1 sam sam 589K Dec 31 17:27 2C2_R1_001_fastqc.html
+    -rw-r--r-- 1 sam sam 597K Dec 31 17:27 2C2_R2_001_fastqc.html
+    -rw-r--r-- 1 sam sam 583K Dec 31 17:27 2D1_R1_001_fastqc.html
+    -rw-r--r-- 1 sam sam 596K Dec 31 17:27 2D1_R2_001_fastqc.html
+    -rw-r--r-- 1 sam sam 583K Dec 31 17:26 2D2_R1_001_fastqc.html
+    -rw-r--r-- 1 sam sam 590K Dec 31 17:26 2D2_R2_001_fastqc.html
+    -rw-r--r-- 1 sam sam 582K Dec 31 17:28 2G2_R1_001_fastqc.html
+    -rw-r--r-- 1 sam sam 592K Dec 31 17:28 2G2_R2_001_fastqc.html
+    -rw-r--r-- 1 sam sam 582K Dec 31 17:27 2H3_R1_001_fastqc.html
+    -rw-r--r-- 1 sam sam 588K Dec 31 17:27 2H3_R2_001_fastqc.html
+    -rw-r--r-- 1 sam sam 589K Dec 31 17:28 39--2E2_R1_001_fastqc.html
+    -rw-r--r-- 1 sam sam 596K Dec 31 17:28 39--2E2_R2_001_fastqc.html
+    -rw-r--r-- 1 sam sam 586K Dec 31 17:30 6--1E3_R1_001_fastqc.html
+    -rw-r--r-- 1 sam sam 606K Dec 31 17:30 6--1E3_R2_001_fastqc.html
+    drwxr-xr-x 2 sam sam 4.0K Dec 31 17:30 multiqc_data
+    -rw-r--r-- 1 sam sam 2.2M Dec 31 17:30 multiqc_report.html
+
+<div id="refs" class="references csl-bib-body hanging-indent">
+
+<div id="ref-ewels2016" class="csl-entry">
+
+Ewels, Philip, Måns Magnusson, Sverker Lundin, and Max Käller. 2016.
+“MultiQC: Summarize Analysis Results for Multiple Tools and Samples in a
+Single Report.” *Bioinformatics* 32 (19): 3047–48.
+<https://doi.org/10.1093/bioinformatics/btw354>.
+
+</div>
+
+</div>
