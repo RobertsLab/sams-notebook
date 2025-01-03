@@ -10,11 +10,903 @@
 <atom:link href="https://robertslab.github.io/sams-notebook/index.xml" rel="self" type="application/rss+xml"/>
 <description></description>
 <generator>quarto-1.7.5</generator>
-<lastBuildDate>Fri, 03 Jan 2025 08:00:00 GMT</lastBuildDate>
+<lastBuildDate>Thu, 02 Jan 2025 08:00:00 GMT</lastBuildDate>
+<item>
+  <title>Bisulfite Genome - A.pulchra BS Genome Using Bismark</title>
+  <dc:creator>Sam White</dc:creator>
+  <link>https://robertslab.github.io/sams-notebook/posts/2025/2025-01-02-Bisulfite-Genome---A.pulchra-BS-Genome-Using-Bismark/</link>
+  <description><![CDATA[ 
+
+
+
+
+
+<section id="intro" class="level1">
+<h1>INTRO</h1>
+<p>In preparation for a quick <a href="https://github.com/FelixKrueger/Bismark"><code>Bismark</code></a> alignment, per <a href="https://github.com/RobertsLab/resources/issues/2063">Steven’s request</a> (GitHub Issue), I needed to generate a bisulfite-converted genome for <em>A.pulchra</em>, as one did not already exist. Although I’m not entirely sure of the source, I used the <code>Apulchra-genome.fa</code> file provided by Steven in <a href="https://github.com/urol-e5/timeseries_molecular/issues/1#issue-2564344644">this GitHub Issue</a>.</p>
+<p>The resulting output files were added to the <a href="https://robertslab.github.io/resources/Genomic-Resources/">Genomic Resources Handbook page</a>.</p>
+<div class="callout callout-style-default callout-note callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Note
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>The contents below are from markdown knitted from <a href="https://github.com/urol-e5/timeseries_molecular/blob/0fbd6aed0eed0e35926cab13256bbb5c70445de8/D-Apul/code/00.21-D-Apul-BS-genome.Rmd"><code>00.21-D-Apul-BS-genome.Rmd</code></a> (commit <code>0fbd6ae</code>).</p>
+</div>
+</div>
+</section>
+<section id="background" class="level1">
+<h1>1 Background</h1>
+<p>This Rmd file will create a bisulfite-converted genome by, and for, Bismark (Krueger and Andrews 2011) using the <code>Apulchra-genome.fa</code> file. The genome FastA was taken from the <a href="https://github.com/urol-e5/deep-dive-expression/wiki/00-Genomic-Resources#acropora-pulchra">deep-dive-expression Wiki</a> (GitHub Wiki), but I’m not sure of its exact origin.</p>
+<p>Due to large sizes of output files, the files cannot be sync’d to GitHub. As such, the output directories will be gzipped and available here:</p>
+<ul>
+<li><p><a href="https://gannet.fish.washington.edu/gitrepos/urol-e5/timeseries_molecular/D-Apul/data/Apulchra-genome-bisulfite.tar.gz" class="uri">https://gannet.fish.washington.edu/gitrepos/urol-e5/timeseries_molecular/D-Apul/data/Apulchra-genome-bisulfite.tar.gz</a> (1.3GB)</p></li>
+<li><p><a href="https://gannet.fish.washington.edu/gitrepos/urol-e5/timeseries_molecular/D-Apul/data/Apulchra-genome-bisulfite.tar.gz.md5" class="uri">https://gannet.fish.washington.edu/gitrepos/urol-e5/timeseries_molecular/D-Apul/data/Apulchra-genome-bisulfite.tar.gz.md5</a></p>
+<ul>
+<li>MD5: <code>9e1db5875f210007a43e2083f01c2db9</code></li>
+</ul></li>
+</ul>
+</section>
+<section id="inputs" class="level1">
+<h1>2 Inputs</h1>
+<ul>
+<li>Directory containing a FastA file with the file extension: .fa or .fasta (also ending in .gz).</li>
+</ul>
+</section>
+<section id="outputs" class="level1">
+<h1>3 Outputs</h1>
+<ul>
+<li><p>CT Conversion</p>
+<ul>
+<li>Bowtie2 index files.</li>
+<li>CT conversion FastA</li>
+</ul></li>
+<li><p>GA conversion</p>
+<ul>
+<li>Bowtie2 index files.</li>
+<li>GA conversion FastA.</li>
+</ul></li>
+</ul>
+</section>
+<section id="create-a-bash-variables-file" class="level1">
+<h1>4 Create a Bash variables file</h1>
+<p>This allows usage of Bash variables across R Markdown chunks.</p>
+<div class="sourceCode" id="cb1" style="background: #f1f3f5;"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb1-1"><span class="kw" style="color: #003B4F;
+background-color: null;
+font-weight: bold;
+font-style: inherit;">{</span></span>
+<span id="cb1-2"><span class="bu" style="color: null;
+background-color: null;
+font-style: inherit;">echo</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"#### Assign Variables ####"</span></span>
+<span id="cb1-3"><span class="bu" style="color: null;
+background-color: null;
+font-style: inherit;">echo</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">""</span></span>
+<span id="cb1-4"></span>
+<span id="cb1-5"><span class="bu" style="color: null;
+background-color: null;
+font-style: inherit;">echo</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"# Data directories"</span></span>
+<span id="cb1-6"><span class="bu" style="color: null;
+background-color: null;
+font-style: inherit;">echo</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">'export timeseries_dir=/home/shared/8TB_HDD_01/sam/gitrepos/urol-e5/timeseries_molecular'</span></span>
+<span id="cb1-7"><span class="bu" style="color: null;
+background-color: null;
+font-style: inherit;">echo</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">'export output_dir_top=${timeseries_dir}/D-Apul/data'</span></span>
+<span id="cb1-8"><span class="bu" style="color: null;
+background-color: null;
+font-style: inherit;">echo</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">'export genome_dir=${timeseries_dir}/D-Apul/data'</span></span>
+<span id="cb1-9"><span class="bu" style="color: null;
+background-color: null;
+font-style: inherit;">echo</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">""</span></span>
+<span id="cb1-10"></span>
+<span id="cb1-11"><span class="bu" style="color: null;
+background-color: null;
+font-style: inherit;">echo</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"# Paths to programs"</span></span>
+<span id="cb1-12"><span class="bu" style="color: null;
+background-color: null;
+font-style: inherit;">echo</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">'export programs_dir="/home/shared"'</span></span>
+<span id="cb1-13"><span class="bu" style="color: null;
+background-color: null;
+font-style: inherit;">echo</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">'export bismark_dir="${programs_dir}/Bismark-0.24.0"'</span></span>
+<span id="cb1-14"><span class="bu" style="color: null;
+background-color: null;
+font-style: inherit;">echo</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">'export bowtie2_dir="${programs_dir}/bowtie2-2.4.4-linux-x86_64"'</span></span>
+<span id="cb1-15"><span class="bu" style="color: null;
+background-color: null;
+font-style: inherit;">echo</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">""</span></span>
+<span id="cb1-16"></span>
+<span id="cb1-17"><span class="bu" style="color: null;
+background-color: null;
+font-style: inherit;">echo</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"# Set number of CPUs to use"</span></span>
+<span id="cb1-18"><span class="bu" style="color: null;
+background-color: null;
+font-style: inherit;">echo</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">'export threads=20'</span></span>
+<span id="cb1-19"><span class="bu" style="color: null;
+background-color: null;
+font-style: inherit;">echo</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">""</span></span>
+<span id="cb1-20"></span>
+<span id="cb1-21"><span class="bu" style="color: null;
+background-color: null;
+font-style: inherit;">echo</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"# Print formatting"</span></span>
+<span id="cb1-22"><span class="bu" style="color: null;
+background-color: null;
+font-style: inherit;">echo</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">'export line="--------------------------------------------------------"'</span></span>
+<span id="cb1-23"><span class="bu" style="color: null;
+background-color: null;
+font-style: inherit;">echo</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">""</span></span>
+<span id="cb1-24"><span class="kw" style="color: #003B4F;
+background-color: null;
+font-weight: bold;
+font-style: inherit;">}</span> <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">&gt;</span> .bashvars</span>
+<span id="cb1-25"></span>
+<span id="cb1-26"><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">cat</span> .bashvars</span></code></pre></div>
+<pre><code>#### Assign Variables ####
+
+# Data directories
+export timeseries_dir=/home/shared/8TB_HDD_01/sam/gitrepos/urol-e5/timeseries_molecular
+export output_dir_top=${timeseries_dir}/D-Apul/data
+export genome_dir=${timeseries_dir}/D-Apul/data
+
+# Paths to programs
+export programs_dir="/home/shared"
+export bismark_dir="${programs_dir}/Bismark-0.24.0"
+export bowtie2_dir="${programs_dir}/bowtie2-2.4.4-linux-x86_64"
+
+# Set number of CPUs to use
+export threads=20
+
+# Print formatting
+export line="--------------------------------------------------------"</code></pre>
+</section>
+<section id="bisfulite-conversion" class="level1">
+<h1>5 Bisfulite conversion</h1>
+<div class="sourceCode" id="cb3" style="background: #f1f3f5;"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb3-1"><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># Load bash variables into memory</span></span>
+<span id="cb3-2"><span class="bu" style="color: null;
+background-color: null;
+font-style: inherit;">source</span> .bashvars</span>
+<span id="cb3-3"></span>
+<span id="cb3-4"><span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">${bismark_dir}</span><span class="ex" style="color: null;
+background-color: null;
+font-style: inherit;">/bismark_genome_preparation</span> <span class="dt" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">\</span></span>
+<span id="cb3-5"><span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">${genome_dir}</span> <span class="dt" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">\</span></span>
+<span id="cb3-6">--parallel <span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">${threads}</span> <span class="dt" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">\</span></span>
+<span id="cb3-7">--bowtie2 <span class="dt" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">\</span></span>
+<span id="cb3-8">--path_to_aligner <span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">${bowtie2_dir}</span></span></code></pre></div>
+</section>
+<section id="inpect-bs-output" class="level1">
+<h1>6 Inpect BS output</h1>
+<div class="sourceCode" id="cb4" style="background: #f1f3f5;"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb4-1"><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># Load bash variables into memory</span></span>
+<span id="cb4-2"><span class="bu" style="color: null;
+background-color: null;
+font-style: inherit;">source</span> .bashvars</span>
+<span id="cb4-3"></span>
+<span id="cb4-4"><span class="ex" style="color: null;
+background-color: null;
+font-style: inherit;">tree</span> <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">-h</span> <span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">${genome_dir}</span>/Bisulfite_Genome</span></code></pre></div>
+<pre><code>/home/shared/8TB_HDD_01/sam/gitrepos/urol-e5/timeseries_molecular/D-Apul/data/Bisulfite_Genome
+├── [4.0K]  CT_conversion
+│&nbsp;&nbsp; ├── [169M]  BS_CT.1.bt2
+│&nbsp;&nbsp; ├── [124M]  BS_CT.2.bt2
+│&nbsp;&nbsp; ├── [1.5K]  BS_CT.3.bt2
+│&nbsp;&nbsp; ├── [124M]  BS_CT.4.bt2
+│&nbsp;&nbsp; ├── [169M]  BS_CT.rev.1.bt2
+│&nbsp;&nbsp; ├── [124M]  BS_CT.rev.2.bt2
+│&nbsp;&nbsp; └── [504M]  genome_mfa.CT_conversion.fa
+└── [4.0K]  GA_conversion
+    ├── [169M]  BS_GA.1.bt2
+    ├── [124M]  BS_GA.2.bt2
+    ├── [1.5K]  BS_GA.3.bt2
+    ├── [124M]  BS_GA.4.bt2
+    ├── [169M]  BS_GA.rev.1.bt2
+    ├── [124M]  BS_GA.rev.2.bt2
+    └── [504M]  genome_mfa.GA_conversion.fa
+
+2 directories, 14 files</code></pre>
+</section>
+<section id="references" class="level1">
+<h1>7 REFERENCES</h1>
+<div id="refs" class="references csl-bib-body hanging-indent">
+<div id="ref-krueger2011" class="csl-entry">
+Krueger, Felix, and Simon R. Andrews. 2011. “Bismark: A Flexible Aligner and Methylation Caller for Bisulfite-Seq Applications.” <em>Bioinformatics</em> 27 (11): 1571–72. <a href="https://doi.org/10.1093/bioinformatics/btr167" class="uri">https://doi.org/10.1093/bioinformatics/btr167</a>.
+</div>
+</div>
+
+
+</section>
+
+ ]]></description>
+  <category>2025</category>
+  <category>Acropora pulchra</category>
+  <category>bismark</category>
+  <category>bisulfite</category>
+  <category>coral</category>
+  <category>E5</category>
+  <category>timeseries_molecular</category>
+  <guid>https://robertslab.github.io/sams-notebook/posts/2025/2025-01-02-Bisulfite-Genome---A.pulchra-BS-Genome-Using-Bismark/</guid>
+  <pubDate>Thu, 02 Jan 2025 08:00:00 GMT</pubDate>
+</item>
+<item>
+  <title>Bismark Alignments - A.pulchra UNTRIMMED Reads Using Bismark on Hyak</title>
+  <dc:creator>Sam White</dc:creator>
+  <link>https://robertslab.github.io/sams-notebook/posts/2025/2025-01-02-Bismark-Alignments---A.pulchra-UNTRIMMED-Reads-Using-Bismark-on-Hyak/</link>
+  <description><![CDATA[ 
+
+
+
+
+
+<section id="intro" class="level1">
+<h1>INTRO</h1>
+<p>This notebook is part of the coral E5 <a href="https://github.com/urol-e5/timeseries_molecular">timeseries_molecular project</a> (GitHub repo). Due to the desire to have some preliminary data to use for a presentation, <a href="https://github.com/RobertsLab/resources/issues/2063#issue-2764616293">Steven wanted the alignment of <em>A.pulchra</em> UNTRIMMED reads</a>(GitHub Issue) without waiting for trimming to finish. To aid with speed, performed alignments using Bismark on the Hyak computing cluster running an array of nodes on the <code>coenv</code> cluster. This is technically frowned upon, but seeing as this was during a holiday week, it seemed like there was no other activity, so I just went for it!</p>
+</section>
+<section id="methods" class="level1">
+<h1>METHODS</h1>
+<div class="callout callout-style-default callout-important callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Important
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>When launching the SLURM job, you can initiate the array to automatically calculate the appropriate number of nodes by using Bash calculations.</p>
+<p>The file <code>fastq_pairs.txt</code> has to exist before execution!</p>
+<p>Here’s how the array jobs were launched:</p>
+<div class="sourceCode" id="cb1" style="background: #f1f3f5;"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb1-1"><span class="ex" style="color: null;
+background-color: null;
+font-style: inherit;">sbatch</span> <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">--array</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span>1-<span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">$(</span><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">wc</span> <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">-l</span> <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">&lt;</span> ../data/wgbs-raw-fastqs/fastq_pairs.txt<span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">)</span> 02.20-D-Apul-WGBS-alignment-SLURM-job.sh</span></code></pre></div>
+</div>
+</div>
+<p>This approach required two scripts:</p>
+<ul>
+<li><p>Job script</p>
+<ul>
+<li><p><a href="https://github.com/urol-e5/timeseries_molecular/blob/77917d03e21170f5226aae97a21ee872ab9d9045/D-Apul/code/02.20-D-Apul-WGBS-alignment-SLURM_array-bismark.sh">02.20-D-Apul-WGBS-alignment-SLURM_array-bismark.sh</a> (GitHub repo; commit <code>77917d0</code>)</p>
+<ul>
+<li>This script is executed by each node so that each node operates on unique FastQ pairs.</li>
+</ul></li>
+</ul></li>
+</ul>
+<div class="sourceCode" id="cb2" style="background: #f1f3f5;"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb2-1"><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">#!/bin/bash</span></span>
+<span id="cb2-2"></span>
+<span id="cb2-3"><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># This script is designed to be called by a SLURM script which</span></span>
+<span id="cb2-4"><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># runs this script across an array of HPC nodes.</span></span>
+<span id="cb2-5"></span>
+<span id="cb2-6"><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">### IMPORTANT </span><span class="al" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">###</span></span>
+<span id="cb2-7"></span>
+<span id="cb2-8"><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># This was run on UNTRIMMED reads!</span></span>
+<span id="cb2-9"></span>
+<span id="cb2-10"><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># INPUT FILES</span></span>
+<span id="cb2-11"><span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">repo_dir</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"/gscratch/srlab/sam/gitrepos/urol-e5/timeseries_molecular"</span></span>
+<span id="cb2-12"><span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">trimmed_fastqs_dir</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"</span><span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">${repo_dir}</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">/D-Apul/data/wgbs-raw-fastqs"</span></span>
+<span id="cb2-13"><span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">bisulfite_genome_dir</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"</span><span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">${repo_dir}</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">/D-Apul/data"</span></span>
+<span id="cb2-14"></span>
+<span id="cb2-15"><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># OUTPUT FILES</span></span>
+<span id="cb2-16"><span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">output_dir_top</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"</span><span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">${repo_dir}</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">/D-Apul/output/02.20-D-Apul-WGBS-alignment-SLURM_array-bismark"</span></span>
+<span id="cb2-17"></span>
+<span id="cb2-18"><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># PARAMETERS</span></span>
+<span id="cb2-19"><span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">bowtie2_min_score</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"L,0,-0.6"</span></span>
+<span id="cb2-20"></span>
+<span id="cb2-21"><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># CPU threads</span></span>
+<span id="cb2-22"><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># Bismark already spawns multiple instances and additional threads are multiplicative."</span></span>
+<span id="cb2-23"><span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">bismark_threads</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span>4</span>
+<span id="cb2-24"></span>
+<span id="cb2-25"><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">###################################################################################</span></span>
+<span id="cb2-26"></span>
+<span id="cb2-27"></span>
+<span id="cb2-28"><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">## SET ARRAY TASKS ##</span></span>
+<span id="cb2-29"><span class="bu" style="color: null;
+background-color: null;
+font-style: inherit;">cd</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"</span><span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">${output_dir_top}</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"</span></span>
+<span id="cb2-30"></span>
+<span id="cb2-31"><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># Get the FastQ file pair for this task</span></span>
+<span id="cb2-32"><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># the `p` sets the line number to process</span></span>
+<span id="cb2-33"><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># which corresponds to the array task ID</span></span>
+<span id="cb2-34"><span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">pair</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span><span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">$(</span><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">sed</span> <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">-n</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"</span><span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">${SLURM_ARRAY_TASK_ID}</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">p"</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"</span><span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">${output_dir_top}</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">/fastq_pairs.txt"</span><span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">)</span></span>
+<span id="cb2-35"></span>
+<span id="cb2-36"><span class="bu" style="color: null;
+background-color: null;
+font-style: inherit;">echo</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"Contents of pair:"</span></span>
+<span id="cb2-37"><span class="bu" style="color: null;
+background-color: null;
+font-style: inherit;">echo</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"</span><span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">${pair}</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"</span></span>
+<span id="cb2-38"><span class="bu" style="color: null;
+background-color: null;
+font-style: inherit;">echo</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">""</span></span>
+<span id="cb2-39"></span>
+<span id="cb2-40"><span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">R1_file</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span><span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">$(</span><span class="bu" style="color: null;
+background-color: null;
+font-style: inherit;">echo</span> <span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">$pair</span> <span class="kw" style="color: #003B4F;
+background-color: null;
+font-weight: bold;
+font-style: inherit;">|</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">awk</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">'{print $1}'</span><span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">)</span></span>
+<span id="cb2-41"><span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">R2_file</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span><span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">$(</span><span class="bu" style="color: null;
+background-color: null;
+font-style: inherit;">echo</span> <span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">$pair</span> <span class="kw" style="color: #003B4F;
+background-color: null;
+font-weight: bold;
+font-style: inherit;">|</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">awk</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">'{print $2}'</span><span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">)</span></span>
+<span id="cb2-42"></span>
+<span id="cb2-43"><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># Get just the sample name (excludes the _R[12]_001*)</span></span>
+<span id="cb2-44"><span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">sample_name</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span><span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">$(</span><span class="bu" style="color: null;
+background-color: null;
+font-style: inherit;">echo</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"</span><span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">$R1_file</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"</span> <span class="kw" style="color: #003B4F;
+background-color: null;
+font-weight: bold;
+font-style: inherit;">|</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">awk</span> <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">-F</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"_"</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">'{print $1}'</span><span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">)</span></span>
+<span id="cb2-45"></span>
+<span id="cb2-46"><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># Check if R1_file and R2_file are not empty</span></span>
+<span id="cb2-47"><span class="cf" style="color: #003B4F;
+background-color: null;
+font-weight: bold;
+font-style: inherit;">if</span> <span class="bu" style="color: null;
+background-color: null;
+font-style: inherit;">[</span> <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">-z</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"</span><span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">$R1_file</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"</span> <span class="bu" style="color: null;
+background-color: null;
+font-style: inherit;">]</span> <span class="kw" style="color: #003B4F;
+background-color: null;
+font-weight: bold;
+font-style: inherit;">||</span> <span class="bu" style="color: null;
+background-color: null;
+font-style: inherit;">[</span> <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">-z</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"</span><span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">$R2_file</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"</span> <span class="bu" style="color: null;
+background-color: null;
+font-style: inherit;">]</span><span class="kw" style="color: #003B4F;
+background-color: null;
+font-weight: bold;
+font-style: inherit;">;</span> <span class="cf" style="color: #003B4F;
+background-color: null;
+font-weight: bold;
+font-style: inherit;">then</span></span>
+<span id="cb2-48">  <span class="bu" style="color: null;
+background-color: null;
+font-style: inherit;">echo</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"Error: R1_file or R2_file is empty. Exiting."</span></span>
+<span id="cb2-49">  <span class="bu" style="color: null;
+background-color: null;
+font-style: inherit;">exit</span> 1</span>
+<span id="cb2-50"><span class="cf" style="color: #003B4F;
+background-color: null;
+font-weight: bold;
+font-style: inherit;">fi</span></span>
+<span id="cb2-51"></span>
+<span id="cb2-52"><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># Check if sample_name is not empty</span></span>
+<span id="cb2-53"><span class="cf" style="color: #003B4F;
+background-color: null;
+font-weight: bold;
+font-style: inherit;">if</span> <span class="bu" style="color: null;
+background-color: null;
+font-style: inherit;">[</span> <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">-z</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"</span><span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">$sample_name</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"</span> <span class="bu" style="color: null;
+background-color: null;
+font-style: inherit;">]</span><span class="kw" style="color: #003B4F;
+background-color: null;
+font-weight: bold;
+font-style: inherit;">;</span> <span class="cf" style="color: #003B4F;
+background-color: null;
+font-weight: bold;
+font-style: inherit;">then</span></span>
+<span id="cb2-54">  <span class="bu" style="color: null;
+background-color: null;
+font-style: inherit;">echo</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"Error: sample_name is empty. Exiting."</span></span>
+<span id="cb2-55">  <span class="bu" style="color: null;
+background-color: null;
+font-style: inherit;">exit</span> 1</span>
+<span id="cb2-56"><span class="cf" style="color: #003B4F;
+background-color: null;
+font-weight: bold;
+font-style: inherit;">fi</span></span>
+<span id="cb2-57"></span>
+<span id="cb2-58"><span class="bu" style="color: null;
+background-color: null;
+font-style: inherit;">echo</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"Contents of sample_name: </span><span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">${sample_name}</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"</span></span>
+<span id="cb2-59"><span class="bu" style="color: null;
+background-color: null;
+font-style: inherit;">echo</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">""</span></span>
+<span id="cb2-60"></span>
+<span id="cb2-61"></span>
+<span id="cb2-62"><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">## RUN BISMARK ALIGNMENTS ##</span></span>
+<span id="cb2-63"><span class="ex" style="color: null;
+background-color: null;
+font-style: inherit;">bismark</span> <span class="dt" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">\</span></span>
+<span id="cb2-64">--genome <span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">${bisulfite_genome_dir}</span> <span class="dt" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">\</span></span>
+<span id="cb2-65">--score_min <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"</span><span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">${bowtie2_min_score}</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"</span> <span class="dt" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">\</span></span>
+<span id="cb2-66">--parallel <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"</span><span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">${bismark_threads}</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"</span> <span class="dt" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">\</span></span>
+<span id="cb2-67">--non_directional <span class="dt" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">\</span></span>
+<span id="cb2-68">--gzip <span class="dt" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">\</span></span>
+<span id="cb2-69">-p <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"</span><span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">${bismark_threads}</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"</span> <span class="dt" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">\</span></span>
+<span id="cb2-70">-1 <span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">${trimmed_fastqs_dir}</span>/<span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">${R1_file}</span> <span class="dt" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">\</span></span>
+<span id="cb2-71">-2 <span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">${trimmed_fastqs_dir}</span>/<span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">${R2_file}</span> <span class="dt" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">\</span></span>
+<span id="cb2-72">--output_dir <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"</span><span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">${output_dir_top}</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"</span> <span class="dt" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">\</span></span>
+<span id="cb2-73">2<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">&gt;</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"</span><span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">${output_dir_top}</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"</span>/<span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">${sample_name}</span>-<span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">${SLURM_ARRAY_TASK_ID}</span>-bismark_summary.txt</span></code></pre></div>
+<ul>
+<li><p>SLURM script:</p>
+<ul>
+<li><p><a href="https://github.com/urol-e5/timeseries_molecular/blob/0f4fecb3d23315699d8778ff3bae8674a7cbdcb9/D-Apul/code/02.20-D-Apul-WGBS-alignment-SLURM_array-bismark.sh">02.20-D-Apul-WGBS-alignment-SLURM-job.sh</a> (GitHub repo; commit <code>0f4fecb</code>)</p>
+<ul>
+<li>This is the SLURM script which controls the SLURM job parameters.</li>
+</ul></li>
+</ul></li>
+</ul>
+<div class="sourceCode" id="cb3" style="background: #f1f3f5;"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb3-1"><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">#!/bin/bash</span></span>
+<span id="cb3-2"><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">#SBATCH --job-name=bismark_job_array</span></span>
+<span id="cb3-3"><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">#SBATCH --account=coenv</span></span>
+<span id="cb3-4"><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">#SBATCH --partition=cpu-g2</span></span>
+<span id="cb3-5"><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">#SBATCH --output=bismark_job_%A_%a.out</span></span>
+<span id="cb3-6"><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">#SBATCH --error=bismark_job_%A_%a.err</span></span>
+<span id="cb3-7"><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">#SBATCH --ntasks=1</span></span>
+<span id="cb3-8"><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">#SBATCH --cpus-per-task=15</span></span>
+<span id="cb3-9"><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">#SBATCH --mem=100G</span></span>
+<span id="cb3-10"><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">#SBATCH --time=72:00:00</span></span>
+<span id="cb3-11"><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">##turn on e-mail notification</span></span>
+<span id="cb3-12"><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">#SBATCH --mail-type=ALL</span></span>
+<span id="cb3-13"><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">#SBATCH --mail-user=samwhite@uw.edu</span></span>
+<span id="cb3-14"><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">## Specify the working directory for this job</span></span>
+<span id="cb3-15"><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">#SBATCH --chdir=/gscratch/srlab/sam/gitrepos/urol-e5/timeseries_molecular/D-Apul/output/02.20-D-Apul-WGBS-alignment-SLURM_array-bismark/</span></span>
+<span id="cb3-16"></span>
+<span id="cb3-17"><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># Execute Roberts Lab bioinformatics container</span></span>
+<span id="cb3-18"><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># Binds home directory</span></span>
+<span id="cb3-19"><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># Binds /gscratch directory</span></span>
+<span id="cb3-20"><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># Directory bindings allow outputs to be written to the hard drive.</span></span>
+<span id="cb3-21"></span>
+<span id="cb3-22"><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># Executes Bismark alignment using 02.01-bismark-bowtie2-alignment-SLURM-array.sh script.</span></span>
+<span id="cb3-23"></span>
+<span id="cb3-24"><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># To execute this SLURM script as an array, start the script with the following command:</span></span>
+<span id="cb3-25"></span>
+<span id="cb3-26"><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># sbatch --array=1-$(wc -l &lt; ../data/wgbs-raw-fastqs/fastq_pairs.txt) 02.20-D-Apul-WGBS-alignment-SLURM-job.sh</span></span>
+<span id="cb3-27"></span>
+<span id="cb3-28"><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># IMPORTANT: Requires fastq_pairs.txt to exist prior to submission!</span></span>
+<span id="cb3-29"><span class="ex" style="color: null;
+background-color: null;
+font-style: inherit;">apptainer</span> exec <span class="dt" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">\</span></span>
+<span id="cb3-30">--home <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"</span><span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">$PWD</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"</span> <span class="dt" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">\</span></span>
+<span id="cb3-31">--bind /mmfs1/home/ <span class="dt" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">\</span></span>
+<span id="cb3-32">--bind /gscratch <span class="dt" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">\</span></span>
+<span id="cb3-33">/gscratch/srlab/sr320/srlab-bioinformatics-container-586bf21.sif <span class="dt" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">\</span></span>
+<span id="cb3-34">/gscratch/srlab/sam/gitrepos/urol-e5/timeseries_molecular/D-Apul/code/02.20-D-Apul-WGBS-alignment-SLURM_array-bismark.sh</span></code></pre></div>
+
+
+</section>
+
+ ]]></description>
+  <category>2025</category>
+  <category>Bismark</category>
+  <category>Acropora pulchra</category>
+  <category>coral</category>
+  <category>timeseries_molecular</category>
+  <category>E5</category>
+  <category>klone</category>
+  <category>hyak</category>
+  <category>alignment</category>
+  <category>WGBS</category>
+  <guid>https://robertslab.github.io/sams-notebook/posts/2025/2025-01-02-Bismark-Alignments---A.pulchra-UNTRIMMED-Reads-Using-Bismark-on-Hyak/</guid>
+  <pubDate>Thu, 02 Jan 2025 08:00:00 GMT</pubDate>
+  <media:content url="https://robertslab.github.io/sams-notebook/posts/2025/2025-01-02-Bismark-Alignments---A.pulchra-UNTRIMMED-Reads-Using-Bismark-on-Hyak/20250102-apul-bismark-alignments-klone-array-01.png" medium="image" type="image/png" height="84" width="144"/>
+</item>
 <item>
   <title>Trimming - A.pulchra WGBS with fastp FastQC and MultiQC on Raven</title>
   <dc:creator>Sam White</dc:creator>
-  <link>https://robertslab.github.io/sams-notebook/posts/2025/2025-01-03-Trimming---A.pulchra-WGBS-with-fastp-FastQC-and-MultiQC-on-Raven/</link>
+  <link>https://robertslab.github.io/sams-notebook/posts/2025/2025-01-02-Trimming---A.pulchra-WGBS-with-fastp-FastQC-and-MultiQC-on-Raven/</link>
   <description><![CDATA[ 
 
 
@@ -37,21 +929,6 @@ Note
 <p>The contents below are from markdown knitted from <a href="https://github.com/urol-e5/timeseries_molecular/blob/2072811fa090433d42499823611ddeb22e5e66a1/D-Apul/code/01.20-D-Apul-WGBS-trimming-fastp-FastQC-MultiQC.Rmd"><code>01.20-D-Apul-WGBS-trimming-fastp-FastQC-MultiQC.Rmd</code></a> (commit <code>2072811</code>).</p>
 </div>
 </div>
-</section>
-<section id="d-apul-wgbs-trimming-fastp-fastqc-multiqc" class="level1">
-<h1>01.20-D-Apul-WGBS-trimming-fastp-FastQC-MultiQC</h1>
-<p>Sam White 2025-01-02</p>
-<ul>
-<li>1 Background
-<ul>
-<li>1.1 Inputs</li>
-<li>1.2 Outputs</li>
-</ul></li>
-<li>2 Create a Bash variables file</li>
-<li>3 Trimming and Error Repair</li>
-<li>4 FastQC</li>
-<li>5 MultiQC</li>
-</ul>
 </section>
 <section id="background" class="level1">
 <h1>1 Background</h1>
@@ -1331,899 +2208,9 @@ Ewels, Philip, Måns Magnusson, Sverker Lundin, and Max Käller. 2016. “MultiQ
   <category>FastQC</category>
   <category>MultiQC</category>
   <category>Raven</category>
-  <guid>https://robertslab.github.io/sams-notebook/posts/2025/2025-01-03-Trimming---A.pulchra-WGBS-with-fastp-FastQC-and-MultiQC-on-Raven/</guid>
-  <pubDate>Fri, 03 Jan 2025 08:00:00 GMT</pubDate>
-</item>
-<item>
-  <title>Bisulfite Genome - A.pulchra BS Genome Using Bismark</title>
-  <dc:creator>Sam White</dc:creator>
-  <link>https://robertslab.github.io/sams-notebook/posts/2025/2025-01-02-Bisulfite-Genome---A.pulchra-BS-Genome-Using-Bismark/</link>
-  <description><![CDATA[ 
-
-
-
-
-
-<section id="intro" class="level1">
-<h1>INTRO</h1>
-<p>In preparation for a quick <a href="https://github.com/FelixKrueger/Bismark"><code>Bismark</code></a> alignment, per <a href="https://github.com/RobertsLab/resources/issues/2063">Steven’s request</a> (GitHub Issue), I needed to generate a bisulfite-converted genome for <em>A.pulchra</em>, as one did not already exist. Although I’m not entirely sure of the source, I used the <code>Apulchra-genome.fa</code> file provided by Steven in <a href="https://github.com/urol-e5/timeseries_molecular/issues/1#issue-2564344644">this GitHub Issue</a>.</p>
-<p>The resulting output files were added to the <a href="https://robertslab.github.io/resources/Genomic-Resources/">Genomic Resources Handbook page</a>.</p>
-<div class="callout callout-style-default callout-note callout-titled">
-<div class="callout-header d-flex align-content-center">
-<div class="callout-icon-container">
-<i class="callout-icon"></i>
-</div>
-<div class="callout-title-container flex-fill">
-Note
-</div>
-</div>
-<div class="callout-body-container callout-body">
-<p>The contents below are from markdown knitted from <a href="https://github.com/urol-e5/timeseries_molecular/blob/0fbd6aed0eed0e35926cab13256bbb5c70445de8/D-Apul/code/00.21-D-Apul-BS-genome.Rmd"><code>00.21-D-Apul-BS-genome.Rmd</code></a> (commit <code>0fbd6ae</code>).</p>
-</div>
-</div>
-</section>
-<section id="background" class="level1">
-<h1>1 Background</h1>
-<p>This Rmd file will create a bisulfite-converted genome by, and for, Bismark (Krueger and Andrews 2011) using the <code>Apulchra-genome.fa</code> file. The genome FastA was taken from the <a href="https://github.com/urol-e5/deep-dive-expression/wiki/00-Genomic-Resources#acropora-pulchra">deep-dive-expression Wiki</a> (GitHub Wiki), but I’m not sure of its exact origin.</p>
-<p>Due to large sizes of output files, the files cannot be sync’d to GitHub. As such, the output directories will be gzipped and available here:</p>
-<ul>
-<li><p><a href="https://gannet.fish.washington.edu/gitrepos/urol-e5/timeseries_molecular/D-Apul/data/Apulchra-genome-bisulfite.tar.gz" class="uri">https://gannet.fish.washington.edu/gitrepos/urol-e5/timeseries_molecular/D-Apul/data/Apulchra-genome-bisulfite.tar.gz</a> (1.3GB)</p></li>
-<li><p><a href="https://gannet.fish.washington.edu/gitrepos/urol-e5/timeseries_molecular/D-Apul/data/Apulchra-genome-bisulfite.tar.gz.md5" class="uri">https://gannet.fish.washington.edu/gitrepos/urol-e5/timeseries_molecular/D-Apul/data/Apulchra-genome-bisulfite.tar.gz.md5</a></p>
-<ul>
-<li>MD5: <code>9e1db5875f210007a43e2083f01c2db9</code></li>
-</ul></li>
-</ul>
-</section>
-<section id="inputs" class="level1">
-<h1>2 Inputs</h1>
-<ul>
-<li>Directory containing a FastA file with the file extension: .fa or .fasta (also ending in .gz).</li>
-</ul>
-</section>
-<section id="outputs" class="level1">
-<h1>3 Outputs</h1>
-<ul>
-<li><p>CT Conversion</p>
-<ul>
-<li>Bowtie2 index files.</li>
-<li>CT conversion FastA</li>
-</ul></li>
-<li><p>GA conversion</p>
-<ul>
-<li>Bowtie2 index files.</li>
-<li>GA conversion FastA.</li>
-</ul></li>
-</ul>
-</section>
-<section id="create-a-bash-variables-file" class="level1">
-<h1>4 Create a Bash variables file</h1>
-<p>This allows usage of Bash variables across R Markdown chunks.</p>
-<div class="sourceCode" id="cb1" style="background: #f1f3f5;"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb1-1"><span class="kw" style="color: #003B4F;
-background-color: null;
-font-weight: bold;
-font-style: inherit;">{</span></span>
-<span id="cb1-2"><span class="bu" style="color: null;
-background-color: null;
-font-style: inherit;">echo</span> <span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"#### Assign Variables ####"</span></span>
-<span id="cb1-3"><span class="bu" style="color: null;
-background-color: null;
-font-style: inherit;">echo</span> <span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">""</span></span>
-<span id="cb1-4"></span>
-<span id="cb1-5"><span class="bu" style="color: null;
-background-color: null;
-font-style: inherit;">echo</span> <span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"# Data directories"</span></span>
-<span id="cb1-6"><span class="bu" style="color: null;
-background-color: null;
-font-style: inherit;">echo</span> <span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">'export timeseries_dir=/home/shared/8TB_HDD_01/sam/gitrepos/urol-e5/timeseries_molecular'</span></span>
-<span id="cb1-7"><span class="bu" style="color: null;
-background-color: null;
-font-style: inherit;">echo</span> <span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">'export output_dir_top=${timeseries_dir}/D-Apul/data'</span></span>
-<span id="cb1-8"><span class="bu" style="color: null;
-background-color: null;
-font-style: inherit;">echo</span> <span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">'export genome_dir=${timeseries_dir}/D-Apul/data'</span></span>
-<span id="cb1-9"><span class="bu" style="color: null;
-background-color: null;
-font-style: inherit;">echo</span> <span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">""</span></span>
-<span id="cb1-10"></span>
-<span id="cb1-11"><span class="bu" style="color: null;
-background-color: null;
-font-style: inherit;">echo</span> <span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"# Paths to programs"</span></span>
-<span id="cb1-12"><span class="bu" style="color: null;
-background-color: null;
-font-style: inherit;">echo</span> <span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">'export programs_dir="/home/shared"'</span></span>
-<span id="cb1-13"><span class="bu" style="color: null;
-background-color: null;
-font-style: inherit;">echo</span> <span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">'export bismark_dir="${programs_dir}/Bismark-0.24.0"'</span></span>
-<span id="cb1-14"><span class="bu" style="color: null;
-background-color: null;
-font-style: inherit;">echo</span> <span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">'export bowtie2_dir="${programs_dir}/bowtie2-2.4.4-linux-x86_64"'</span></span>
-<span id="cb1-15"><span class="bu" style="color: null;
-background-color: null;
-font-style: inherit;">echo</span> <span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">""</span></span>
-<span id="cb1-16"></span>
-<span id="cb1-17"><span class="bu" style="color: null;
-background-color: null;
-font-style: inherit;">echo</span> <span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"# Set number of CPUs to use"</span></span>
-<span id="cb1-18"><span class="bu" style="color: null;
-background-color: null;
-font-style: inherit;">echo</span> <span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">'export threads=20'</span></span>
-<span id="cb1-19"><span class="bu" style="color: null;
-background-color: null;
-font-style: inherit;">echo</span> <span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">""</span></span>
-<span id="cb1-20"></span>
-<span id="cb1-21"><span class="bu" style="color: null;
-background-color: null;
-font-style: inherit;">echo</span> <span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"# Print formatting"</span></span>
-<span id="cb1-22"><span class="bu" style="color: null;
-background-color: null;
-font-style: inherit;">echo</span> <span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">'export line="--------------------------------------------------------"'</span></span>
-<span id="cb1-23"><span class="bu" style="color: null;
-background-color: null;
-font-style: inherit;">echo</span> <span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">""</span></span>
-<span id="cb1-24"><span class="kw" style="color: #003B4F;
-background-color: null;
-font-weight: bold;
-font-style: inherit;">}</span> <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">&gt;</span> .bashvars</span>
-<span id="cb1-25"></span>
-<span id="cb1-26"><span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">cat</span> .bashvars</span></code></pre></div>
-<pre><code>#### Assign Variables ####
-
-# Data directories
-export timeseries_dir=/home/shared/8TB_HDD_01/sam/gitrepos/urol-e5/timeseries_molecular
-export output_dir_top=${timeseries_dir}/D-Apul/data
-export genome_dir=${timeseries_dir}/D-Apul/data
-
-# Paths to programs
-export programs_dir="/home/shared"
-export bismark_dir="${programs_dir}/Bismark-0.24.0"
-export bowtie2_dir="${programs_dir}/bowtie2-2.4.4-linux-x86_64"
-
-# Set number of CPUs to use
-export threads=20
-
-# Print formatting
-export line="--------------------------------------------------------"</code></pre>
-</section>
-<section id="bisfulite-conversion" class="level1">
-<h1>5 Bisfulite conversion</h1>
-<div class="sourceCode" id="cb3" style="background: #f1f3f5;"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb3-1"><span class="co" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;"># Load bash variables into memory</span></span>
-<span id="cb3-2"><span class="bu" style="color: null;
-background-color: null;
-font-style: inherit;">source</span> .bashvars</span>
-<span id="cb3-3"></span>
-<span id="cb3-4"><span class="va" style="color: #111111;
-background-color: null;
-font-style: inherit;">${bismark_dir}</span><span class="ex" style="color: null;
-background-color: null;
-font-style: inherit;">/bismark_genome_preparation</span> <span class="dt" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">\</span></span>
-<span id="cb3-5"><span class="va" style="color: #111111;
-background-color: null;
-font-style: inherit;">${genome_dir}</span> <span class="dt" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">\</span></span>
-<span id="cb3-6">--parallel <span class="va" style="color: #111111;
-background-color: null;
-font-style: inherit;">${threads}</span> <span class="dt" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">\</span></span>
-<span id="cb3-7">--bowtie2 <span class="dt" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">\</span></span>
-<span id="cb3-8">--path_to_aligner <span class="va" style="color: #111111;
-background-color: null;
-font-style: inherit;">${bowtie2_dir}</span></span></code></pre></div>
-</section>
-<section id="inpect-bs-output" class="level1">
-<h1>6 Inpect BS output</h1>
-<div class="sourceCode" id="cb4" style="background: #f1f3f5;"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb4-1"><span class="co" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;"># Load bash variables into memory</span></span>
-<span id="cb4-2"><span class="bu" style="color: null;
-background-color: null;
-font-style: inherit;">source</span> .bashvars</span>
-<span id="cb4-3"></span>
-<span id="cb4-4"><span class="ex" style="color: null;
-background-color: null;
-font-style: inherit;">tree</span> <span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">-h</span> <span class="va" style="color: #111111;
-background-color: null;
-font-style: inherit;">${genome_dir}</span>/Bisulfite_Genome</span></code></pre></div>
-<pre><code>/home/shared/8TB_HDD_01/sam/gitrepos/urol-e5/timeseries_molecular/D-Apul/data/Bisulfite_Genome
-├── [4.0K]  CT_conversion
-│&nbsp;&nbsp; ├── [169M]  BS_CT.1.bt2
-│&nbsp;&nbsp; ├── [124M]  BS_CT.2.bt2
-│&nbsp;&nbsp; ├── [1.5K]  BS_CT.3.bt2
-│&nbsp;&nbsp; ├── [124M]  BS_CT.4.bt2
-│&nbsp;&nbsp; ├── [169M]  BS_CT.rev.1.bt2
-│&nbsp;&nbsp; ├── [124M]  BS_CT.rev.2.bt2
-│&nbsp;&nbsp; └── [504M]  genome_mfa.CT_conversion.fa
-└── [4.0K]  GA_conversion
-    ├── [169M]  BS_GA.1.bt2
-    ├── [124M]  BS_GA.2.bt2
-    ├── [1.5K]  BS_GA.3.bt2
-    ├── [124M]  BS_GA.4.bt2
-    ├── [169M]  BS_GA.rev.1.bt2
-    ├── [124M]  BS_GA.rev.2.bt2
-    └── [504M]  genome_mfa.GA_conversion.fa
-
-2 directories, 14 files</code></pre>
-</section>
-<section id="references" class="level1">
-<h1>7 REFERENCES</h1>
-<div id="refs" class="references csl-bib-body hanging-indent">
-<div id="ref-krueger2011" class="csl-entry">
-Krueger, Felix, and Simon R. Andrews. 2011. “Bismark: A Flexible Aligner and Methylation Caller for Bisulfite-Seq Applications.” <em>Bioinformatics</em> 27 (11): 1571–72. <a href="https://doi.org/10.1093/bioinformatics/btr167" class="uri">https://doi.org/10.1093/bioinformatics/btr167</a>.
-</div>
-</div>
-
-
-</section>
-
- ]]></description>
-  <category>2025</category>
-  <category>Acropora pulchra</category>
-  <category>bismark</category>
-  <category>bisulfite</category>
-  <category>coral</category>
-  <category>E5</category>
-  <category>timeseries_molecular</category>
-  <guid>https://robertslab.github.io/sams-notebook/posts/2025/2025-01-02-Bisulfite-Genome---A.pulchra-BS-Genome-Using-Bismark/</guid>
+  <guid>https://robertslab.github.io/sams-notebook/posts/2025/2025-01-02-Trimming---A.pulchra-WGBS-with-fastp-FastQC-and-MultiQC-on-Raven/</guid>
   <pubDate>Thu, 02 Jan 2025 08:00:00 GMT</pubDate>
-</item>
-<item>
-  <title>Bismark Alignments - A.pulchra UNTRIMMED Reads Using Bismark on Hyak</title>
-  <dc:creator>Sam White</dc:creator>
-  <link>https://robertslab.github.io/sams-notebook/posts/2025/2025-01-02-Bismark-Alignments---A.pulchra-UNTRIMMED-Reads-Using-Bismark-on-Hyak/</link>
-  <description><![CDATA[ 
-
-
-
-
-
-<section id="intro" class="level1">
-<h1>INTRO</h1>
-<p>This notebook is part of the coral E5 <a href="https://github.com/urol-e5/timeseries_molecular">timeseries_molecular project</a> (GitHub repo). Due to the desire to have some preliminary data to use for a presentation, <a href="https://github.com/RobertsLab/resources/issues/2063#issue-2764616293">Steven wanted the alignment of <em>A.pulchra</em> UNTRIMMED reads</a>(GitHub Issue) without waiting for trimming to finish. To aid with speed, performed alignments using Bismark on the Hyak computing cluster running an array of nodes on the <code>coenv</code> cluster. This is technically frowned upon, but seeing as this was during a holiday week, it seemed like there was no other activity, so I just went for it!</p>
-</section>
-<section id="methods" class="level1">
-<h1>METHODS</h1>
-<div class="callout callout-style-default callout-important callout-titled">
-<div class="callout-header d-flex align-content-center">
-<div class="callout-icon-container">
-<i class="callout-icon"></i>
-</div>
-<div class="callout-title-container flex-fill">
-Important
-</div>
-</div>
-<div class="callout-body-container callout-body">
-<p>When launching the SLURM job, you can initiate the array to automatically calculate the appropriate number of nodes by using Bash calculations.</p>
-<p>The file <code>fastq_pairs.txt</code> has to exist before execution!</p>
-<p>Here’s how the array jobs were launched:</p>
-<div class="sourceCode" id="cb1" style="background: #f1f3f5;"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb1-1"><span class="ex" style="color: null;
-background-color: null;
-font-style: inherit;">sbatch</span> <span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">--array</span><span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">=</span>1-<span class="va" style="color: #111111;
-background-color: null;
-font-style: inherit;">$(</span><span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">wc</span> <span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">-l</span> <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">&lt;</span> ../data/wgbs-raw-fastqs/fastq_pairs.txt<span class="va" style="color: #111111;
-background-color: null;
-font-style: inherit;">)</span> 02.20-D-Apul-WGBS-alignment-SLURM-job.sh</span></code></pre></div>
-</div>
-</div>
-<p>This approach required two scripts:</p>
-<ul>
-<li><p>Job script</p>
-<ul>
-<li><p><a href="https://github.com/urol-e5/timeseries_molecular/blob/77917d03e21170f5226aae97a21ee872ab9d9045/D-Apul/code/02.20-D-Apul-WGBS-alignment-SLURM_array-bismark.sh">02.20-D-Apul-WGBS-alignment-SLURM_array-bismark.sh</a> (GitHub repo; commit <code>77917d0</code>)</p>
-<ul>
-<li>This script is executed by each node so that each node operates on unique FastQ pairs.</li>
-</ul></li>
-</ul></li>
-</ul>
-<div class="sourceCode" id="cb2" style="background: #f1f3f5;"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb2-1"><span class="co" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">#!/bin/bash</span></span>
-<span id="cb2-2"></span>
-<span id="cb2-3"><span class="co" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;"># This script is designed to be called by a SLURM script which</span></span>
-<span id="cb2-4"><span class="co" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;"># runs this script across an array of HPC nodes.</span></span>
-<span id="cb2-5"></span>
-<span id="cb2-6"><span class="co" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">### IMPORTANT </span><span class="al" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">###</span></span>
-<span id="cb2-7"></span>
-<span id="cb2-8"><span class="co" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;"># This was run on UNTRIMMED reads!</span></span>
-<span id="cb2-9"></span>
-<span id="cb2-10"><span class="co" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;"># INPUT FILES</span></span>
-<span id="cb2-11"><span class="va" style="color: #111111;
-background-color: null;
-font-style: inherit;">repo_dir</span><span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">=</span><span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"/gscratch/srlab/sam/gitrepos/urol-e5/timeseries_molecular"</span></span>
-<span id="cb2-12"><span class="va" style="color: #111111;
-background-color: null;
-font-style: inherit;">trimmed_fastqs_dir</span><span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">=</span><span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"</span><span class="va" style="color: #111111;
-background-color: null;
-font-style: inherit;">${repo_dir}</span><span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">/D-Apul/data/wgbs-raw-fastqs"</span></span>
-<span id="cb2-13"><span class="va" style="color: #111111;
-background-color: null;
-font-style: inherit;">bisulfite_genome_dir</span><span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">=</span><span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"</span><span class="va" style="color: #111111;
-background-color: null;
-font-style: inherit;">${repo_dir}</span><span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">/D-Apul/data"</span></span>
-<span id="cb2-14"></span>
-<span id="cb2-15"><span class="co" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;"># OUTPUT FILES</span></span>
-<span id="cb2-16"><span class="va" style="color: #111111;
-background-color: null;
-font-style: inherit;">output_dir_top</span><span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">=</span><span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"</span><span class="va" style="color: #111111;
-background-color: null;
-font-style: inherit;">${repo_dir}</span><span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">/D-Apul/output/02.20-D-Apul-WGBS-alignment-SLURM_array-bismark"</span></span>
-<span id="cb2-17"></span>
-<span id="cb2-18"><span class="co" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;"># PARAMETERS</span></span>
-<span id="cb2-19"><span class="va" style="color: #111111;
-background-color: null;
-font-style: inherit;">bowtie2_min_score</span><span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">=</span><span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"L,0,-0.6"</span></span>
-<span id="cb2-20"></span>
-<span id="cb2-21"><span class="co" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;"># CPU threads</span></span>
-<span id="cb2-22"><span class="co" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;"># Bismark already spawns multiple instances and additional threads are multiplicative."</span></span>
-<span id="cb2-23"><span class="va" style="color: #111111;
-background-color: null;
-font-style: inherit;">bismark_threads</span><span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">=</span>4</span>
-<span id="cb2-24"></span>
-<span id="cb2-25"><span class="co" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">###################################################################################</span></span>
-<span id="cb2-26"></span>
-<span id="cb2-27"></span>
-<span id="cb2-28"><span class="co" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">## SET ARRAY TASKS ##</span></span>
-<span id="cb2-29"><span class="bu" style="color: null;
-background-color: null;
-font-style: inherit;">cd</span> <span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"</span><span class="va" style="color: #111111;
-background-color: null;
-font-style: inherit;">${output_dir_top}</span><span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"</span></span>
-<span id="cb2-30"></span>
-<span id="cb2-31"><span class="co" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;"># Get the FastQ file pair for this task</span></span>
-<span id="cb2-32"><span class="co" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;"># the `p` sets the line number to process</span></span>
-<span id="cb2-33"><span class="co" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;"># which corresponds to the array task ID</span></span>
-<span id="cb2-34"><span class="va" style="color: #111111;
-background-color: null;
-font-style: inherit;">pair</span><span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">=</span><span class="va" style="color: #111111;
-background-color: null;
-font-style: inherit;">$(</span><span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">sed</span> <span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">-n</span> <span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"</span><span class="va" style="color: #111111;
-background-color: null;
-font-style: inherit;">${SLURM_ARRAY_TASK_ID}</span><span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">p"</span> <span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"</span><span class="va" style="color: #111111;
-background-color: null;
-font-style: inherit;">${output_dir_top}</span><span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">/fastq_pairs.txt"</span><span class="va" style="color: #111111;
-background-color: null;
-font-style: inherit;">)</span></span>
-<span id="cb2-35"></span>
-<span id="cb2-36"><span class="bu" style="color: null;
-background-color: null;
-font-style: inherit;">echo</span> <span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"Contents of pair:"</span></span>
-<span id="cb2-37"><span class="bu" style="color: null;
-background-color: null;
-font-style: inherit;">echo</span> <span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"</span><span class="va" style="color: #111111;
-background-color: null;
-font-style: inherit;">${pair}</span><span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"</span></span>
-<span id="cb2-38"><span class="bu" style="color: null;
-background-color: null;
-font-style: inherit;">echo</span> <span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">""</span></span>
-<span id="cb2-39"></span>
-<span id="cb2-40"><span class="va" style="color: #111111;
-background-color: null;
-font-style: inherit;">R1_file</span><span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">=</span><span class="va" style="color: #111111;
-background-color: null;
-font-style: inherit;">$(</span><span class="bu" style="color: null;
-background-color: null;
-font-style: inherit;">echo</span> <span class="va" style="color: #111111;
-background-color: null;
-font-style: inherit;">$pair</span> <span class="kw" style="color: #003B4F;
-background-color: null;
-font-weight: bold;
-font-style: inherit;">|</span> <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">awk</span> <span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">'{print $1}'</span><span class="va" style="color: #111111;
-background-color: null;
-font-style: inherit;">)</span></span>
-<span id="cb2-41"><span class="va" style="color: #111111;
-background-color: null;
-font-style: inherit;">R2_file</span><span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">=</span><span class="va" style="color: #111111;
-background-color: null;
-font-style: inherit;">$(</span><span class="bu" style="color: null;
-background-color: null;
-font-style: inherit;">echo</span> <span class="va" style="color: #111111;
-background-color: null;
-font-style: inherit;">$pair</span> <span class="kw" style="color: #003B4F;
-background-color: null;
-font-weight: bold;
-font-style: inherit;">|</span> <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">awk</span> <span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">'{print $2}'</span><span class="va" style="color: #111111;
-background-color: null;
-font-style: inherit;">)</span></span>
-<span id="cb2-42"></span>
-<span id="cb2-43"><span class="co" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;"># Get just the sample name (excludes the _R[12]_001*)</span></span>
-<span id="cb2-44"><span class="va" style="color: #111111;
-background-color: null;
-font-style: inherit;">sample_name</span><span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">=</span><span class="va" style="color: #111111;
-background-color: null;
-font-style: inherit;">$(</span><span class="bu" style="color: null;
-background-color: null;
-font-style: inherit;">echo</span> <span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"</span><span class="va" style="color: #111111;
-background-color: null;
-font-style: inherit;">$R1_file</span><span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"</span> <span class="kw" style="color: #003B4F;
-background-color: null;
-font-weight: bold;
-font-style: inherit;">|</span> <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">awk</span> <span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">-F</span><span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"_"</span> <span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">'{print $1}'</span><span class="va" style="color: #111111;
-background-color: null;
-font-style: inherit;">)</span></span>
-<span id="cb2-45"></span>
-<span id="cb2-46"><span class="co" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;"># Check if R1_file and R2_file are not empty</span></span>
-<span id="cb2-47"><span class="cf" style="color: #003B4F;
-background-color: null;
-font-weight: bold;
-font-style: inherit;">if</span> <span class="bu" style="color: null;
-background-color: null;
-font-style: inherit;">[</span> <span class="ot" style="color: #003B4F;
-background-color: null;
-font-style: inherit;">-z</span> <span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"</span><span class="va" style="color: #111111;
-background-color: null;
-font-style: inherit;">$R1_file</span><span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"</span> <span class="bu" style="color: null;
-background-color: null;
-font-style: inherit;">]</span> <span class="kw" style="color: #003B4F;
-background-color: null;
-font-weight: bold;
-font-style: inherit;">||</span> <span class="bu" style="color: null;
-background-color: null;
-font-style: inherit;">[</span> <span class="ot" style="color: #003B4F;
-background-color: null;
-font-style: inherit;">-z</span> <span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"</span><span class="va" style="color: #111111;
-background-color: null;
-font-style: inherit;">$R2_file</span><span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"</span> <span class="bu" style="color: null;
-background-color: null;
-font-style: inherit;">]</span><span class="kw" style="color: #003B4F;
-background-color: null;
-font-weight: bold;
-font-style: inherit;">;</span> <span class="cf" style="color: #003B4F;
-background-color: null;
-font-weight: bold;
-font-style: inherit;">then</span></span>
-<span id="cb2-48">  <span class="bu" style="color: null;
-background-color: null;
-font-style: inherit;">echo</span> <span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"Error: R1_file or R2_file is empty. Exiting."</span></span>
-<span id="cb2-49">  <span class="bu" style="color: null;
-background-color: null;
-font-style: inherit;">exit</span> 1</span>
-<span id="cb2-50"><span class="cf" style="color: #003B4F;
-background-color: null;
-font-weight: bold;
-font-style: inherit;">fi</span></span>
-<span id="cb2-51"></span>
-<span id="cb2-52"><span class="co" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;"># Check if sample_name is not empty</span></span>
-<span id="cb2-53"><span class="cf" style="color: #003B4F;
-background-color: null;
-font-weight: bold;
-font-style: inherit;">if</span> <span class="bu" style="color: null;
-background-color: null;
-font-style: inherit;">[</span> <span class="ot" style="color: #003B4F;
-background-color: null;
-font-style: inherit;">-z</span> <span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"</span><span class="va" style="color: #111111;
-background-color: null;
-font-style: inherit;">$sample_name</span><span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"</span> <span class="bu" style="color: null;
-background-color: null;
-font-style: inherit;">]</span><span class="kw" style="color: #003B4F;
-background-color: null;
-font-weight: bold;
-font-style: inherit;">;</span> <span class="cf" style="color: #003B4F;
-background-color: null;
-font-weight: bold;
-font-style: inherit;">then</span></span>
-<span id="cb2-54">  <span class="bu" style="color: null;
-background-color: null;
-font-style: inherit;">echo</span> <span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"Error: sample_name is empty. Exiting."</span></span>
-<span id="cb2-55">  <span class="bu" style="color: null;
-background-color: null;
-font-style: inherit;">exit</span> 1</span>
-<span id="cb2-56"><span class="cf" style="color: #003B4F;
-background-color: null;
-font-weight: bold;
-font-style: inherit;">fi</span></span>
-<span id="cb2-57"></span>
-<span id="cb2-58"><span class="bu" style="color: null;
-background-color: null;
-font-style: inherit;">echo</span> <span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"Contents of sample_name: </span><span class="va" style="color: #111111;
-background-color: null;
-font-style: inherit;">${sample_name}</span><span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"</span></span>
-<span id="cb2-59"><span class="bu" style="color: null;
-background-color: null;
-font-style: inherit;">echo</span> <span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">""</span></span>
-<span id="cb2-60"></span>
-<span id="cb2-61"></span>
-<span id="cb2-62"><span class="co" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">## RUN BISMARK ALIGNMENTS ##</span></span>
-<span id="cb2-63"><span class="ex" style="color: null;
-background-color: null;
-font-style: inherit;">bismark</span> <span class="dt" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">\</span></span>
-<span id="cb2-64">--genome <span class="va" style="color: #111111;
-background-color: null;
-font-style: inherit;">${bisulfite_genome_dir}</span> <span class="dt" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">\</span></span>
-<span id="cb2-65">--score_min <span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"</span><span class="va" style="color: #111111;
-background-color: null;
-font-style: inherit;">${bowtie2_min_score}</span><span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"</span> <span class="dt" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">\</span></span>
-<span id="cb2-66">--parallel <span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"</span><span class="va" style="color: #111111;
-background-color: null;
-font-style: inherit;">${bismark_threads}</span><span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"</span> <span class="dt" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">\</span></span>
-<span id="cb2-67">--non_directional <span class="dt" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">\</span></span>
-<span id="cb2-68">--gzip <span class="dt" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">\</span></span>
-<span id="cb2-69">-p <span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"</span><span class="va" style="color: #111111;
-background-color: null;
-font-style: inherit;">${bismark_threads}</span><span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"</span> <span class="dt" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">\</span></span>
-<span id="cb2-70">-1 <span class="va" style="color: #111111;
-background-color: null;
-font-style: inherit;">${trimmed_fastqs_dir}</span>/<span class="va" style="color: #111111;
-background-color: null;
-font-style: inherit;">${R1_file}</span> <span class="dt" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">\</span></span>
-<span id="cb2-71">-2 <span class="va" style="color: #111111;
-background-color: null;
-font-style: inherit;">${trimmed_fastqs_dir}</span>/<span class="va" style="color: #111111;
-background-color: null;
-font-style: inherit;">${R2_file}</span> <span class="dt" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">\</span></span>
-<span id="cb2-72">--output_dir <span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"</span><span class="va" style="color: #111111;
-background-color: null;
-font-style: inherit;">${output_dir_top}</span><span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"</span> <span class="dt" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">\</span></span>
-<span id="cb2-73">2<span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">&gt;</span> <span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"</span><span class="va" style="color: #111111;
-background-color: null;
-font-style: inherit;">${output_dir_top}</span><span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"</span>/<span class="va" style="color: #111111;
-background-color: null;
-font-style: inherit;">${sample_name}</span>-<span class="va" style="color: #111111;
-background-color: null;
-font-style: inherit;">${SLURM_ARRAY_TASK_ID}</span>-bismark_summary.txt</span></code></pre></div>
-<ul>
-<li><p>SLURM script:</p>
-<ul>
-<li><p><a href="https://github.com/urol-e5/timeseries_molecular/blob/0f4fecb3d23315699d8778ff3bae8674a7cbdcb9/D-Apul/code/02.20-D-Apul-WGBS-alignment-SLURM_array-bismark.sh">02.20-D-Apul-WGBS-alignment-SLURM-job.sh</a> (GitHub repo; commit <code>0f4fecb</code>)</p>
-<ul>
-<li>This is the SLURM script which controls the SLURM job parameters.</li>
-</ul></li>
-</ul></li>
-</ul>
-<div class="sourceCode" id="cb3" style="background: #f1f3f5;"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb3-1"><span class="co" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">#!/bin/bash</span></span>
-<span id="cb3-2"><span class="co" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">#SBATCH --job-name=bismark_job_array</span></span>
-<span id="cb3-3"><span class="co" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">#SBATCH --account=coenv</span></span>
-<span id="cb3-4"><span class="co" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">#SBATCH --partition=cpu-g2</span></span>
-<span id="cb3-5"><span class="co" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">#SBATCH --output=bismark_job_%A_%a.out</span></span>
-<span id="cb3-6"><span class="co" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">#SBATCH --error=bismark_job_%A_%a.err</span></span>
-<span id="cb3-7"><span class="co" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">#SBATCH --ntasks=1</span></span>
-<span id="cb3-8"><span class="co" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">#SBATCH --cpus-per-task=15</span></span>
-<span id="cb3-9"><span class="co" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">#SBATCH --mem=100G</span></span>
-<span id="cb3-10"><span class="co" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">#SBATCH --time=72:00:00</span></span>
-<span id="cb3-11"><span class="co" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">##turn on e-mail notification</span></span>
-<span id="cb3-12"><span class="co" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">#SBATCH --mail-type=ALL</span></span>
-<span id="cb3-13"><span class="co" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">#SBATCH --mail-user=samwhite@uw.edu</span></span>
-<span id="cb3-14"><span class="co" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">## Specify the working directory for this job</span></span>
-<span id="cb3-15"><span class="co" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">#SBATCH --chdir=/gscratch/srlab/sam/gitrepos/urol-e5/timeseries_molecular/D-Apul/output/02.20-D-Apul-WGBS-alignment-SLURM_array-bismark/</span></span>
-<span id="cb3-16"></span>
-<span id="cb3-17"><span class="co" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;"># Execute Roberts Lab bioinformatics container</span></span>
-<span id="cb3-18"><span class="co" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;"># Binds home directory</span></span>
-<span id="cb3-19"><span class="co" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;"># Binds /gscratch directory</span></span>
-<span id="cb3-20"><span class="co" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;"># Directory bindings allow outputs to be written to the hard drive.</span></span>
-<span id="cb3-21"></span>
-<span id="cb3-22"><span class="co" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;"># Executes Bismark alignment using 02.01-bismark-bowtie2-alignment-SLURM-array.sh script.</span></span>
-<span id="cb3-23"></span>
-<span id="cb3-24"><span class="co" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;"># To execute this SLURM script as an array, start the script with the following command:</span></span>
-<span id="cb3-25"></span>
-<span id="cb3-26"><span class="co" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;"># sbatch --array=1-$(wc -l &lt; ../data/wgbs-raw-fastqs/fastq_pairs.txt) 02.20-D-Apul-WGBS-alignment-SLURM-job.sh</span></span>
-<span id="cb3-27"></span>
-<span id="cb3-28"><span class="co" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;"># IMPORTANT: Requires fastq_pairs.txt to exist prior to submission!</span></span>
-<span id="cb3-29"><span class="ex" style="color: null;
-background-color: null;
-font-style: inherit;">apptainer</span> exec <span class="dt" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">\</span></span>
-<span id="cb3-30">--home <span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"</span><span class="va" style="color: #111111;
-background-color: null;
-font-style: inherit;">$PWD</span><span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"</span> <span class="dt" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">\</span></span>
-<span id="cb3-31">--bind /mmfs1/home/ <span class="dt" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">\</span></span>
-<span id="cb3-32">--bind /gscratch <span class="dt" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">\</span></span>
-<span id="cb3-33">/gscratch/srlab/sr320/srlab-bioinformatics-container-586bf21.sif <span class="dt" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">\</span></span>
-<span id="cb3-34">/gscratch/srlab/sam/gitrepos/urol-e5/timeseries_molecular/D-Apul/code/02.20-D-Apul-WGBS-alignment-SLURM_array-bismark.sh</span></code></pre></div>
-
-
-</section>
-
- ]]></description>
-  <category>2025</category>
-  <category>Bismark</category>
-  <category>Acropora pulchra</category>
-  <category>coral</category>
-  <category>timeseries_molecular</category>
-  <category>E5</category>
-  <category>klone</category>
-  <category>hyak</category>
-  <category>alignment</category>
-  <category>WGBS</category>
-  <guid>https://robertslab.github.io/sams-notebook/posts/2025/2025-01-02-Bismark-Alignments---A.pulchra-UNTRIMMED-Reads-Using-Bismark-on-Hyak/</guid>
-  <pubDate>Thu, 02 Jan 2025 08:00:00 GMT</pubDate>
+  <media:content url="https://robertslab.github.io/sams-notebook/posts/2025/2025-01-02-Trimming---A.pulchra-WGBS-with-fastp-FastQC-and-MultiQC-on-Raven/20250102-apul-wgbs-trimmed-per-base-sequence-plot-01.png" medium="image" type="image/png" height="76" width="144"/>
 </item>
 <item>
   <title>FastQC MultiQC - A.pulchra WGBS E5 Timeseries</title>
