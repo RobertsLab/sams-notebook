@@ -3,7 +3,7 @@ author: Sam White
 toc-title: Contents
 toc-depth: 5
 toc-location: left
-title: Bismark Alignments - A.pulchra UNTRIMMED Reads Using Bismark on Hyak
+title: Bismark Alignments - A.pulchra Trimmed Reads Using Bismark on Hyak
 date: '2025-01-02'
 draft: false
 engine: knitr
@@ -18,11 +18,11 @@ categories:
   - "hyak"
   - "alignment"
   - "WGBS"
-image: "/posts/2025/2025-01-02-Bismark-Alignments---A.pulchra-UNTRIMMED-Reads-Using-Bismark-on-Hyak/20250102-apul-bismark-alignments-klone-array-01.png"
+image: "/posts/2025/2025-01-02-Bismark-Alignments---A.pulchra-Trimmed-Reads-Using-Bismark-on-Hyak/20250102-apul-bismark-alignments-klone-array-01.png"
 ---
 # INTRO
 
-This notebook is part of the coral E5 [timeseries_molecular project](https://github.com/urol-e5/timeseries_molecular) (GitHub repo). Due to the desire to have some preliminary data to use for a presentation, [Steven wanted the alignment of _A.pulchra_ UNTRIMMED reads](https://github.com/RobertsLab/resources/issues/2063#issue-2764616293)(GitHub Issue) without waiting for trimming to finish. To aid with speed, performed alignments using Bismark on the Hyak computing cluster running an array of nodes on the `coenv` cluster. This is technically frowned upon, but seeing as this was during a holiday week, it seemed like there was no other activity, so I just went for it!
+This notebook is part of the coral E5 [timeseries_molecular project](https://github.com/urol-e5/timeseries_molecular) (GitHub repo). Due to the desire to have some preliminary data to use for a presentation, [Steven wanted the alignment of _A.pulchra_ UNTRIMMED reads](https://github.com/RobertsLab/resources/issues/2063#issue-2764616293)(GitHub Issue). However, when initially getting code setup/tweaked, I initiated [trimming in the meantime on ](../2025-01-02-Trimming---A.pulchra-WGBS-with-fastp-FastQC-and-MultiQC-on-Raven/index.qmd), so just ended up using the _trimmed_ reads. To aid with speed, performed alignments using Bismark on the Hyak computing cluster running an array of nodes on the `coenv` cluster. This is technically frowned upon, but seeing as this was during a holiday week, it seemed like there was no other activity, so I just went for it!
 
 # METHODS
 
@@ -34,7 +34,7 @@ The file `fastq_pairs.txt` has to exist before execution!
 Here's how the array jobs were launched:
 
 ```bash
-sbatch --array=1-$(wc -l < ../data/wgbs-raw-fastqs/fastq_pairs.txt) 02.20-D-Apul-WGBS-alignment-SLURM-job.sh
+sbatch --array=1-$(wc -l < ../output/01.20-D-Apul-WGBS-trimming-fastp-FastQC-MultiQC/fastq_pairs.txt) 02.20-D-Apul-WGBS-alignment-SLURM-job.sh
 ```
 
 :::
@@ -43,7 +43,7 @@ This approach required two scripts:
 
 - Job script
 
-  - [02.20-D-Apul-WGBS-alignment-SLURM_array-bismark.sh](https://github.com/urol-e5/timeseries_molecular/blob/77917d03e21170f5226aae97a21ee872ab9d9045/D-Apul/code/02.20-D-Apul-WGBS-alignment-SLURM_array-bismark.sh) (GitHub repo; commit `77917d0`)
+  - [02.20-D-Apul-WGBS-alignment-SLURM_array-bismark.sh](https://github.com/urol-e5/timeseries_molecular/blob/04746494c0dad822c683367ec264a7f86875695d/D-Apul/code/02.20-D-Apul-WGBS-alignment-SLURM_array-bismark.sh) (GitHub repo; commit `0474649`)
 
     - This script is executed by each node so that each node operates on unique FastQ pairs.
 
@@ -55,11 +55,9 @@ This approach required two scripts:
 
 ### IMPORTANT ###
 
-# This was run on UNTRIMMED reads!
-
 # INPUT FILES
 repo_dir="/gscratch/srlab/sam/gitrepos/urol-e5/timeseries_molecular"
-trimmed_fastqs_dir="${repo_dir}/D-Apul/data/wgbs-raw-fastqs"
+trimmed_fastqs_dir="${repo_dir}/D-Apul/output/01.20-D-Apul-WGBS-trimming-fastp-FastQC-MultiQC"
 bisulfite_genome_dir="${repo_dir}/D-Apul/data"
 
 # OUTPUT FILES
@@ -70,7 +68,7 @@ bowtie2_min_score="L,0,-0.6"
 
 # CPU threads
 # Bismark already spawns multiple instances and additional threads are multiplicative."
-bismark_threads=4
+bismark_threads=5
 
 ###################################################################################
 
@@ -81,7 +79,7 @@ cd "${output_dir_top}"
 # Get the FastQ file pair for this task
 # the `p` sets the line number to process
 # which corresponds to the array task ID
-pair=$(sed -n "${SLURM_ARRAY_TASK_ID}p" "${output_dir_top}/fastq_pairs.txt")
+pair=$(sed -n "${SLURM_ARRAY_TASK_ID}p" "${trimmed_fastqs_dir}/fastq_pairs.txt")
 
 echo "Contents of pair:"
 echo "${pair}"
@@ -125,7 +123,7 @@ bismark \
 
 - SLURM script:
 
-  - [02.20-D-Apul-WGBS-alignment-SLURM-job.sh](https://github.com/urol-e5/timeseries_molecular/blob/0f4fecb3d23315699d8778ff3bae8674a7cbdcb9/D-Apul/code/02.20-D-Apul-WGBS-alignment-SLURM_array-bismark.sh) (GitHub repo; commit `0f4fecb`)
+  - [02.20-D-Apul-WGBS-alignment-SLURM-job.sh](https://github.com/urol-e5/timeseries_molecular/blob/9d9b9b462074d5dae839a6b22447a0199ddc5b99/D-Apul/code/02.20-D-Apul-WGBS-alignment-SLURM-job.sh) (GitHub repo; commit `9d9b9b4`)
 
     - This is the SLURM script which controls the SLURM job parameters.
 
@@ -137,7 +135,7 @@ bismark \
 #SBATCH --output=bismark_job_%A_%a.out
 #SBATCH --error=bismark_job_%A_%a.err
 #SBATCH --ntasks=1
-#SBATCH --cpus-per-task=15
+#SBATCH --cpus-per-task=20
 #SBATCH --mem=100G
 #SBATCH --time=72:00:00
 ##turn on e-mail notification
@@ -155,7 +153,7 @@ bismark \
 
 # To execute this SLURM script as an array, start the script with the following command:
 
-# sbatch --array=1-$(wc -l < ../data/wgbs-raw-fastqs/fastq_pairs.txt) 02.20-D-Apul-WGBS-alignment-SLURM-job.sh
+# sbatch --array=1-$(wc -l < ../output/01.20-D-Apul-WGBS-trimming-fastp-FastQC-MultiQC/fastq_pairs.txt) 02.20-D-Apul-WGBS-alignment-SLURM-job.sh
 
 # IMPORTANT: Requires fastq_pairs.txt to exist prior to submission!
 apptainer exec \
