@@ -1,0 +1,323 @@
+---
+author: Sam White
+toc-title: Contents
+toc-depth: 5
+toc-location: left
+title: Data Wrangling - Reformat P.evermanni GFF to Valid GFF3 Using awk and genomtools
+date: '2025-01-10'
+draft: false
+engine: knitr
+categories: 
+  - "2025"
+  - "GFF"
+  - "genometools"
+  - "E5"
+  - "timeseries_molecular"
+  - "Porites evermanni"
+  - "coral"
+---
+# INTRO
+
+This notebook is part of the coral E5 [timeseries_molecular project](https://github.com/urol-e5/timeseries_molecular) (GitHub repo).
+
+::: {.callout-note}
+The contents below are from markdown knitted from [`00.00-genome-GFF-formatting.Rmd`](https://github.com/urol-e5/timeseries_molecular/blob/91a747876bdca5c62f15b64ea87f56f2b8fd093b/E-Peve/code/00.00-genome-GFF-formatting.Rmd) (commit `91a7478`).
+:::
+
+---
+
+# 1 Background
+
+This notebook reformats the original *P.evermanni* GFF
+([Porites_evermanni_v1.annot.gff](https://github.com/urol-e5/timeseries_molecular/blob/91a747876bdca5c62f15b64ea87f56f2b8fd093b/E-Peve/data/Porites_evermanni_v1.annot.gff)),
+which is not compliant with [the GFF
+standard](https://github.com/the-sequence-ontology/specifications/blob/master/gff3.md)
+(GitHub page). Additionally, the GFF is lacking the `gene` feature,
+which may (or may not) be needed/useful for downstream processing. This
+notebook adds a `gene` feature.
+
+Finally, despite the naming convention, there aren’t any actual
+annotations in that GFF, beyond the feature designations (i.e. no gene
+ontology, no SwissProt IDs, gene names, etc.). This notebook does *not*
+address those shortcomings.
+
+<div class="callout-note">
+
+Unlike other scripts, this will output to [E-Peve/data](https://github.com/urol-e5/timeseries_molecular/tree/91a747876bdca5c62f15b64ea87f56f2b8fd093b/E-Peve/data),
+instead of an output directory in `../output`.
+
+</div>
+
+## 1.1 Software requirements
+
+Requires [genometools](https://github.com/genometools/genometools)
+(GitHub repo) to be installed and in the system `$PATH`.
+
+## 1.2 Inputs
+
+- [Porites_evermanni_v1.annot.gff](../data/Porites_evermanni_v1.annot.gff)
+
+## 1.3 Outputs
+
+- [Porites_evermanni_validated.gff](../data/Porites_evermanni_validated.gff)
+
+# 2 Create a Bash variables file
+
+This allows usage of Bash variables across R Markdown chunks.
+
+``` bash
+{
+echo "#### Assign Variables ####"
+echo ""
+
+echo "# Data directories"
+echo 'export repo_dir=~/gitrepos/urol-e5/timeseries_molecular/'
+echo 'export data_dir=${repo_dir}/E-Peve/data'
+echo ""
+
+echo "# Input files"
+echo 'export original_gff="Porites_evermanni_v1.annot.gff"'
+echo 'export intermediate_gff="intermediate.gff"'
+echo 'export validated_gff="Porites_evermanni_validated.gff"'
+echo ""
+
+echo "# Print formatting"
+echo 'export line="--------------------------------------------------------"'
+echo ""
+} > .bashvars
+
+cat .bashvars
+```
+
+    #### Assign Variables ####
+
+    # Data directories
+    export repo_dir=~/gitrepos/urol-e5/timeseries_molecular/
+    export data_dir=${repo_dir}/E-Peve/data
+
+    # Input files
+    export original_gff="Porites_evermanni_v1.annot.gff"
+    export intermediate_gff="intermediate.gff"
+    export validated_gff="Porites_evermanni_validated.gff"
+
+    # Print formatting
+    export line="--------------------------------------------------------"
+
+# 3 Peak at original GFF
+
+``` bash
+source .bashvars
+
+head "${data_dir}/${original_gff}"
+```
+
+    Porites_evermani_scaffold_1 Gmove   mRNA    3107    4488    543 -   .   ID=Peve_00000001;Name=Peve_00000001;start=0;stop=1;cds_size=543
+    Porites_evermani_scaffold_1 Gmove   CDS 3107    3444    .   -   .   Parent=Peve_00000001
+    Porites_evermani_scaffold_1 Gmove   CDS 4284    4488    .   -   .   Parent=Peve_00000001
+    Porites_evermani_scaffold_1 Gmove   mRNA    424479  429034  2439.63 -   .   ID=Peve_00000002;Name=Peve_00000002;start=1;stop=1;cds_size=2019
+    Porites_evermani_scaffold_1 Gmove   CDS 424479  425361  .   -   .   Parent=Peve_00000002
+    Porites_evermani_scaffold_1 Gmove   CDS 426181  426735  .   -   .   Parent=Peve_00000002
+    Porites_evermani_scaffold_1 Gmove   CDS 427013  427140  .   -   .   Parent=Peve_00000002
+    Porites_evermani_scaffold_1 Gmove   CDS 427665  427724  .   -   .   Parent=Peve_00000002
+    Porites_evermani_scaffold_1 Gmove   CDS 428642  429034  .   -   .   Parent=Peve_00000002
+    Porites_evermani_scaffold_1 Gmove   mRNA    429394  438909  1570.66 +   .   ID=Peve_00000003;Name=Peve_00000003;start=1;stop=1;cds_size=1458
+
+## 3.1 Check features
+
+``` bash
+source .bashvars
+
+awk '{print $3}' "${data_dir}/${original_gff}" | sort --unique
+```
+
+    CDS
+    mRNA
+    UTR
+
+# 4 Fix GFF
+
+``` bash
+source .bashvars
+
+awk '
+BEGIN { OFS="\t"; mrna_count = 0; utr_count = 0; gene_count = 0; cds_count = 0 }
+{
+    if ($3 == "mRNA") {
+        split($9, attributes, ";")
+        for (i in attributes) {
+            if (attributes[i] ~ /^ID=/) {
+                original_id = substr(attributes[i], 4)
+                gene_id = "ID=gene-" original_id
+                parent_id = "Parent=gene-" original_id
+                break
+            }
+        }
+        
+        # Increment the global mRNA counter
+        mrna_count++
+        
+        new_mrna_id = "ID=mrna-" sprintf("%05d", mrna_count)
+        
+        # Store the mapping of original mRNA ID to new mRNA ID
+        mrna_map[original_id] = "mrna-" sprintf("%05d", mrna_count)
+        
+        # Replace the old ID with the new mRNA ID
+        for (i in attributes) {
+            if (attributes[i] ~ /^ID=/) {
+                attributes[i] = new_mrna_id
+                break
+            }
+        }
+        $9 = attributes[1]
+        for (i = 2; i <= length(attributes); i++) {
+            $9 = $9 ";" attributes[i]
+        }
+        $9 = $9 ";" parent_id
+        print $1, $2, "gene", $4, $5, ".", $7, $8, gene_id
+        
+        # Increment the gene counter and reset the CDS counter for each new gene
+        gene_count++
+        
+        cds_count = gene_count
+    } else if ($3 == "UTR") {
+        utr_count++
+        new_utr_id = "ID=utr-" sprintf("%06d", utr_count)
+        split($9, attributes, ";")
+        for (i in attributes) {
+            if (attributes[i] ~ /^Parent=/) {
+                original_parent_id = substr(attributes[i], 8)
+                if (original_parent_id in mrna_map) {
+                    attributes[i] = "Parent=" mrna_map[original_parent_id]
+                }
+                break
+            }
+        }
+        $9 = new_utr_id
+        for (i = 1; i <= length(attributes); i++) {
+            $9 = $9 ";" attributes[i]
+        }
+    } else if ($3 == "CDS") {
+        new_cds_id = "ID=cds-" sprintf("%06d", cds_count)
+        split($9, attributes, ";")
+        for (i in attributes) {
+            if (attributes[i] ~ /^Parent=/) {
+                original_parent_id = substr(attributes[i], 8)
+                if (original_parent_id in mrna_map) {
+                    attributes[i] = "Parent=" mrna_map[original_parent_id]
+                }
+                break
+            }
+        }
+        $9 = new_cds_id
+        for (i = 1; i <= length(attributes); i++) {
+            $9 = $9 ";" attributes[i]
+        }
+    } else {
+        split($9, attributes, ";")
+        for (i in attributes) {
+            if (attributes[i] ~ /^Parent=/) {
+                original_parent_id = substr(attributes[i], 8)
+                if (original_parent_id in mrna_map) {
+                    attributes[i] = "Parent=" mrna_map[original_parent_id]
+                }
+                break
+            }
+        }
+        $9 = attributes[1]
+        for (i = 2; i <= length(attributes); i++) {
+            $9 = $9 ";" attributes[i]
+        }
+    }
+    print $0
+}' "${data_dir}"/"${original_gff}" > "${data_dir}"/"${intermediate_gff}"
+```
+
+## 4.1 Inspect intermediate GFF
+
+``` bash
+source .bashvars
+
+head "${data_dir}"/"${intermediate_gff}"
+```
+
+    Porites_evermani_scaffold_1 Gmove   gene    3107    4488    .   -   .   ID=gene-Peve_00000001
+    Porites_evermani_scaffold_1 Gmove   mRNA    3107    4488    543 -   .   ID=mrna-00001;Name=Peve_00000001;start=0;stop=1;cds_size=543;Parent=gene-Peve_00000001
+    Porites_evermani_scaffold_1 Gmove   CDS 3107    3444    .   -   .   ID=cds-000001;Parent=mrna-00001
+    Porites_evermani_scaffold_1 Gmove   CDS 4284    4488    .   -   .   ID=cds-000001;Parent=mrna-00001
+    Porites_evermani_scaffold_1 Gmove   gene    424479  429034  .   -   .   ID=gene-Peve_00000002
+    Porites_evermani_scaffold_1 Gmove   mRNA    424479  429034  2439.63 -   .   ID=mrna-00002;Name=Peve_00000002;start=1;stop=1;cds_size=2019;Parent=gene-Peve_00000002
+    Porites_evermani_scaffold_1 Gmove   CDS 424479  425361  .   -   .   ID=cds-000002;Parent=mrna-00002
+    Porites_evermani_scaffold_1 Gmove   CDS 426181  426735  .   -   .   ID=cds-000002;Parent=mrna-00002
+    Porites_evermani_scaffold_1 Gmove   CDS 427013  427140  .   -   .   ID=cds-000002;Parent=mrna-00002
+    Porites_evermani_scaffold_1 Gmove   CDS 427665  427724  .   -   .   ID=cds-000002;Parent=mrna-00002
+
+# 5 Validate GFF
+
+Validate GFF using genometools `gff3`.
+
+- `-tidy`: Attempts to clean/fix any potential issues.
+
+- `-checkids`: Checks IDs.
+
+- `-retainids`: Retains IDs from input GFF instead of assigning new
+  ones.
+
+``` bash
+source .bashvars
+
+gt gff3 \
+-tidy \
+-checkids \
+-retainids \
+"${data_dir}"/"${intermediate_gff}" \
+> "${data_dir}"/"${validated_gff}" \
+2> "${data_dir}"/gt_gff3_validation_errors.log
+```
+
+## 5.1 Check for error(s) in validation
+
+Process would stop if error occurred, so only need to check end of file.
+
+``` bash
+source .bashvars
+
+tail "${data_dir}"/gt_gff3_validation_errors.log
+```
+
+    warning: CDS feature on line 46160 in file "/home/sam/gitrepos/urol-e5/timeseries_molecular//E-Peve/data/intermediate.gff" has the wrong phase . -> correcting it to 0
+    warning: CDS feature on line 46161 in file "/home/sam/gitrepos/urol-e5/timeseries_molecular//E-Peve/data/intermediate.gff" has the wrong phase . -> correcting it to 2
+    warning: CDS feature on line 46162 in file "/home/sam/gitrepos/urol-e5/timeseries_molecular//E-Peve/data/intermediate.gff" has the wrong phase . -> correcting it to 2
+    warning: CDS feature on line 46165 in file "/home/sam/gitrepos/urol-e5/timeseries_molecular//E-Peve/data/intermediate.gff" has the wrong phase . -> correcting it to 0
+    warning: CDS feature on line 46166 in file "/home/sam/gitrepos/urol-e5/timeseries_molecular//E-Peve/data/intermediate.gff" has the wrong phase . -> correcting it to 0
+    warning: CDS feature on line 46169 in file "/home/sam/gitrepos/urol-e5/timeseries_molecular//E-Peve/data/intermediate.gff" has the wrong phase . -> correcting it to 0
+    warning: CDS feature on line 46170 in file "/home/sam/gitrepos/urol-e5/timeseries_molecular//E-Peve/data/intermediate.gff" has the wrong phase . -> correcting it to 0
+    warning: CDS feature on line 46171 in file "/home/sam/gitrepos/urol-e5/timeseries_molecular//E-Peve/data/intermediate.gff" has the wrong phase . -> correcting it to 2
+    warning: CDS feature on line 46172 in file "/home/sam/gitrepos/urol-e5/timeseries_molecular//E-Peve/data/intermediate.gff" has the wrong phase . -> correcting it to 0
+    warning: CDS feature on line 46173 in file "/home/sam/gitrepos/urol-e5/timeseries_molecular//E-Peve/data/intermediate.gff" has the wrong phase . -> correcting it to 0
+
+## 5.2 Inspect Validated GFF
+
+``` bash
+source .bashvars
+
+head "${data_dir}"/"${validated_gff}"
+```
+
+    ##gff-version 3
+    ##sequence-region   Porites_evermani_scaffold_3486 10898 12049
+    Porites_evermani_scaffold_3486  Gmove   gene    10898   12049   .   +   .   ID=gene-Peve_00025828
+    Porites_evermani_scaffold_3486  Gmove   mRNA    10898   12049   115 +   .   ID=mrna-22907;Parent=gene-Peve_00025828;Name=Peve_00025828;start=1;stop=0;cds_size=1152
+    Porites_evermani_scaffold_3486  Gmove   CDS 10898   12049   .   +   0   ID=cds-022907;Parent=mrna-22907
+    ###
+    ##sequence-region   Porites_evermani_scaffold_3485 5941 42299
+    Porites_evermani_scaffold_3485  Gmove   gene    41994   42299   .   -   .   ID=gene-Peve_00025824
+    Porites_evermani_scaffold_3485  Gmove   mRNA    41994   42299   30.6    -   .   ID=mrna-22903;Parent=gene-Peve_00025824;Name=Peve_00025824;start=1;stop=1;cds_size=306
+    Porites_evermani_scaffold_3485  Gmove   CDS 41994   42299   .   -   0   ID=cds-022903;Parent=mrna-22903
+
+# 6 Remove intermediate GFF
+
+``` bash
+source .bashvars
+
+rm "${data_dir}"/"${intermediate_gff}"
+```
