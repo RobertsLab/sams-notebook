@@ -2612,9 +2612,9 @@ Untergasser, Andreas, Ioana Cutcutache, Triinu Koressaar, Jian Ye, Brant C. Fair
   <pubDate>Fri, 17 Jan 2025 08:00:00 GMT</pubDate>
 </item>
 <item>
-  <title>Data Wrangling - Reformat P.evermanni GFF to Valid GFF3 Using awk and genomtools</title>
+  <title>Data Wrangling - Reformat P.evermanni GFF to Valid GFF3 Using awk genometools and AGAT</title>
   <dc:creator>Sam White</dc:creator>
-  <link>https://robertslab.github.io/sams-notebook/posts/2025/2025-01-10-Data-Wrangling---Reformat-P.evermanni-GFF-to-Valid-GFF3-Using-awk-and-genomtools/</link>
+  <link>https://robertslab.github.io/sams-notebook/posts/2025/2025-01-10-Data-Wrangling---Reformat-P.evermanni-GFF-to-Valid-GFF3-Using-awk-genometools-and-AGAT/</link>
   <description><![CDATA[ 
 
 
@@ -2634,14 +2634,14 @@ Note
 </div>
 </div>
 <div class="callout-body-container callout-body">
-<p>The contents below are from markdown knitted from <a href="https://github.com/urol-e5/timeseries_molecular/blob/91a747876bdca5c62f15b64ea87f56f2b8fd093b/E-Peve/code/00.00-genome-GFF-formatting.Rmd"><code>00.00-genome-GFF-formatting.Rmd</code></a> (commit <code>91a7478</code>).</p>
+<p>The contents below are from markdown knitted from <a href="https://github.com/urol-e5/timeseries_molecular/blob/99f0563a067ca9d010cb206dfd44b36d8f77de00/E-Peve/code/00.00-genome-GFF-formatting.Rmd"><code>00.00-genome-GFF-formatting.Rmd</code></a> (commit <code>99f0563</code>).</p>
 </div>
 </div>
 <hr>
 </section>
 <section id="background" class="level1">
 <h1>1 Background</h1>
-<p>This notebook reformats the original <em>P.evermanni</em> GFF (<a href="https://github.com/urol-e5/timeseries_molecular/blob/91a747876bdca5c62f15b64ea87f56f2b8fd093b/E-Peve/data/Porites_evermanni_v1.annot.gff">Porites_evermanni_v1.annot.gff</a>), which is not compliant with <a href="https://github.com/the-sequence-ontology/specifications/blob/master/gff3.md">the GFF standard</a> (GitHub page). Additionally, the GFF is lacking the <code>gene</code> feature, which may (or may not) be needed/useful for downstream processing. This notebook adds a <code>gene</code> feature.</p>
+<p>This notebook reformats the original <em>P.evermanni</em> GFF (<a href="../data/Porites_evermanni_v1.annot.gff">Porites_evermanni_v1.annot.gff</a>), which is not compliant with <a href="https://github.com/the-sequence-ontology/specifications/blob/master/gff3.md">the GFF standard</a> (GitHub page). The GFF is lacking the <code>gene</code> feature, which may (or may not) be needed/useful for downstream processing. This notebook adds a <code>gene</code> feature. Additionally, it is lacking the <code>exon</code> feature. We’ve decided to insert <code>exon</code> features which cover <code>UTR</code> and <code>CDS</code> features.</p>
 <p>Finally, despite the naming convention, there aren’t any actual annotations in that GFF, beyond the feature designations (i.e.&nbsp;no gene ontology, no SwissProt IDs, gene names, etc.). This notebook does <em>not</em> address those shortcomings.</p>
 <div class="callout callout-style-default callout-note callout-titled">
 <div class="callout-header d-flex align-content-center">
@@ -2653,12 +2653,13 @@ Note
 </div>
 </div>
 <div class="callout-body-container callout-body">
-<p>Unlike other scripts, this will output to <a href="https://github.com/urol-e5/timeseries_molecular/tree/91a747876bdca5c62f15b64ea87f56f2b8fd093b/E-Peve/data">E-Peve/data</a>, instead of an output directory in <code>../output</code>.</p>
+<p>Unlike other scripts, this will output to <a href="../data">E-Peve/data</a>, instead of an output directory in <code>../output</code>.</p>
 </div>
 </div>
 <section id="software-requirements" class="level2">
 <h2 class="anchored" data-anchor-id="software-requirements">1.1 Software requirements</h2>
 <p>Requires <a href="https://github.com/genometools/genometools">genometools</a> (GitHub repo) to be installed and in the system <code>$PATH</code>.</p>
+<p>Requires <a href="https://github.com/NBISweden/AGAT">AGAT</a> to be installed via conda/mamba for conversion to GTF.</p>
 </section>
 <section id="inputs" class="level2">
 <h2 class="anchored" data-anchor-id="inputs">1.2 Inputs</h2>
@@ -2669,7 +2670,7 @@ Note
 <section id="outputs" class="level2">
 <h2 class="anchored" data-anchor-id="outputs">1.3 Outputs</h2>
 <ul>
-<li><a href="../data/Porites_evermanni_validated.gff">Porites_evermanni_validated.gff</a></li>
+<li><a href="../data/Porites_evermanni_validated.gff3">Porites_evermanni_validated.gff3</a></li>
 </ul>
 </section>
 </section>
@@ -2700,7 +2701,7 @@ font-style: inherit;">"# Data directories"</span></span>
 background-color: null;
 font-style: inherit;">echo</span> <span class="st" style="color: #20794D;
 background-color: null;
-font-style: inherit;">'export repo_dir=~/gitrepos/urol-e5/timeseries_molecular/'</span></span>
+font-style: inherit;">'export repo_dir=~/gitrepos/urol-e5/timeseries_molecular'</span></span>
 <span id="cb1-7"><span class="bu" style="color: null;
 background-color: null;
 font-style: inherit;">echo</span> <span class="st" style="color: #20794D;
@@ -2731,7 +2732,7 @@ font-style: inherit;">'export intermediate_gff="intermediate.gff"'</span></span>
 background-color: null;
 font-style: inherit;">echo</span> <span class="st" style="color: #20794D;
 background-color: null;
-font-style: inherit;">'export validated_gff="Porites_evermanni_validated.gff"'</span></span>
+font-style: inherit;">'export validated_gff="Porites_evermanni_validated.gff3"'</span></span>
 <span id="cb1-14"><span class="bu" style="color: null;
 background-color: null;
 font-style: inherit;">echo</span> <span class="st" style="color: #20794D;
@@ -2742,37 +2743,81 @@ font-style: inherit;">""</span></span>
 background-color: null;
 font-style: inherit;">echo</span> <span class="st" style="color: #20794D;
 background-color: null;
-font-style: inherit;">"# Print formatting"</span></span>
+font-style: inherit;">"# Output files"</span></span>
 <span id="cb1-17"><span class="bu" style="color: null;
 background-color: null;
 font-style: inherit;">echo</span> <span class="st" style="color: #20794D;
 background-color: null;
-font-style: inherit;">'export line="--------------------------------------------------------"'</span></span>
+font-style: inherit;">'export gtf="Porites_evermanni_validated.gtf"'</span></span>
 <span id="cb1-18"><span class="bu" style="color: null;
 background-color: null;
 font-style: inherit;">echo</span> <span class="st" style="color: #20794D;
 background-color: null;
 font-style: inherit;">""</span></span>
-<span id="cb1-19"><span class="kw" style="color: #003B4F;
+<span id="cb1-19"></span>
+<span id="cb1-20"><span class="bu" style="color: null;
+background-color: null;
+font-style: inherit;">echo</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"# Programs"</span></span>
+<span id="cb1-21"><span class="bu" style="color: null;
+background-color: null;
+font-style: inherit;">echo</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">'export conda_path="/home/sam/programs/miniforge3-24.7.1-0/bin/mamba"'</span></span>
+<span id="cb1-22"><span class="bu" style="color: null;
+background-color: null;
+font-style: inherit;">echo</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">'export conda_env_name="agat_env"'</span></span>
+<span id="cb1-23"><span class="bu" style="color: null;
+background-color: null;
+font-style: inherit;">echo</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">""</span></span>
+<span id="cb1-24"></span>
+<span id="cb1-25"><span class="bu" style="color: null;
+background-color: null;
+font-style: inherit;">echo</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"# Print formatting"</span></span>
+<span id="cb1-26"><span class="bu" style="color: null;
+background-color: null;
+font-style: inherit;">echo</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">'export line="--------------------------------------------------------"'</span></span>
+<span id="cb1-27"><span class="bu" style="color: null;
+background-color: null;
+font-style: inherit;">echo</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">""</span></span>
+<span id="cb1-28"><span class="kw" style="color: #003B4F;
 background-color: null;
 font-weight: bold;
 font-style: inherit;">}</span> <span class="op" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;">&gt;</span> .bashvars</span>
-<span id="cb1-20"></span>
-<span id="cb1-21"><span class="fu" style="color: #4758AB;
+<span id="cb1-29"></span>
+<span id="cb1-30"><span class="fu" style="color: #4758AB;
 background-color: null;
 font-style: inherit;">cat</span> .bashvars</span></code></pre></div>
 <pre><code>#### Assign Variables ####
 
 # Data directories
-export repo_dir=~/gitrepos/urol-e5/timeseries_molecular/
+export repo_dir=~/gitrepos/urol-e5/timeseries_molecular
 export data_dir=${repo_dir}/E-Peve/data
 
 # Input files
 export original_gff="Porites_evermanni_v1.annot.gff"
 export intermediate_gff="intermediate.gff"
-export validated_gff="Porites_evermanni_validated.gff"
+export validated_gff="Porites_evermanni_validated.gff3"
+
+# Output files
+export gtf="Porites_evermanni_validated.gtf"
+
+# Programs
+export conda_path="/home/sam/programs/miniforge3-24.7.1-0/bin/mamba"
+export conda_env_name="agat_env"
 
 # Print formatting
 export line="--------------------------------------------------------"</code></pre>
@@ -2852,7 +2897,7 @@ background-color: null;
 font-style: inherit;">'</span></span>
 <span id="cb7-4"><span class="st" style="color: #20794D;
 background-color: null;
-font-style: inherit;">BEGIN { OFS="\t"; mrna_count = 0; utr_count = 0; gene_count = 0; cds_count = 0 }</span></span>
+font-style: inherit;">BEGIN { OFS="\t"; mrna_count = 0; utr_count = 0; gene_count = 0; cds_count = 0; exon_count = 0 }</span></span>
 <span id="cb7-5"><span class="st" style="color: #20794D;
 background-color: null;
 font-style: inherit;">{</span></span>
@@ -2954,180 +2999,184 @@ background-color: null;
 font-style: inherit;">        print $1, $2, "gene", $4, $5, ".", $7, $8, gene_id</span></span>
 <span id="cb7-38"><span class="st" style="color: #20794D;
 background-color: null;
-font-style: inherit;">        </span></span>
+font-style: inherit;">        print $0  # Print the original mRNA feature</span></span>
 <span id="cb7-39"><span class="st" style="color: #20794D;
 background-color: null;
-font-style: inherit;">        # Increment the gene counter and reset the CDS counter for each new gene</span></span>
+font-style: inherit;">        </span></span>
 <span id="cb7-40"><span class="st" style="color: #20794D;
 background-color: null;
-font-style: inherit;">        gene_count++</span></span>
+font-style: inherit;">        # Increment the gene counter and reset the CDS counter for each new gene</span></span>
 <span id="cb7-41"><span class="st" style="color: #20794D;
 background-color: null;
-font-style: inherit;">        </span></span>
+font-style: inherit;">        gene_count++</span></span>
 <span id="cb7-42"><span class="st" style="color: #20794D;
 background-color: null;
-font-style: inherit;">        cds_count = gene_count</span></span>
+font-style: inherit;">    } else if ($3 == "UTR" || $3 == "CDS") {</span></span>
 <span id="cb7-43"><span class="st" style="color: #20794D;
 background-color: null;
-font-style: inherit;">    } else if ($3 == "UTR") {</span></span>
+font-style: inherit;">        split($9, attributes, ";")</span></span>
 <span id="cb7-44"><span class="st" style="color: #20794D;
 background-color: null;
-font-style: inherit;">        utr_count++</span></span>
+font-style: inherit;">        id_set = 0</span></span>
 <span id="cb7-45"><span class="st" style="color: #20794D;
 background-color: null;
-font-style: inherit;">        new_utr_id = "ID=utr-" sprintf("%06d", utr_count)</span></span>
+font-style: inherit;">        parent_set = 0</span></span>
 <span id="cb7-46"><span class="st" style="color: #20794D;
 background-color: null;
-font-style: inherit;">        split($9, attributes, ";")</span></span>
+font-style: inherit;">        for (i in attributes) {</span></span>
 <span id="cb7-47"><span class="st" style="color: #20794D;
 background-color: null;
-font-style: inherit;">        for (i in attributes) {</span></span>
+font-style: inherit;">            if (attributes[i] ~ /^ID=/) {</span></span>
 <span id="cb7-48"><span class="st" style="color: #20794D;
 background-color: null;
-font-style: inherit;">            if (attributes[i] ~ /^Parent=/) {</span></span>
+font-style: inherit;">                id_set = 1</span></span>
 <span id="cb7-49"><span class="st" style="color: #20794D;
 background-color: null;
-font-style: inherit;">                original_parent_id = substr(attributes[i], 8)</span></span>
+font-style: inherit;">                if ($3 == "UTR") {</span></span>
 <span id="cb7-50"><span class="st" style="color: #20794D;
 background-color: null;
-font-style: inherit;">                if (original_parent_id in mrna_map) {</span></span>
+font-style: inherit;">                    attributes[i] = "ID=utr-" sprintf("%05d", ++utr_count)</span></span>
 <span id="cb7-51"><span class="st" style="color: #20794D;
 background-color: null;
-font-style: inherit;">                    attributes[i] = "Parent=" mrna_map[original_parent_id]</span></span>
+font-style: inherit;">                } else if ($3 == "CDS") {</span></span>
 <span id="cb7-52"><span class="st" style="color: #20794D;
 background-color: null;
-font-style: inherit;">                }</span></span>
+font-style: inherit;">                    attributes[i] = "ID=cds-" sprintf("%05d", ++cds_count)</span></span>
 <span id="cb7-53"><span class="st" style="color: #20794D;
 background-color: null;
-font-style: inherit;">                break</span></span>
+font-style: inherit;">                }</span></span>
 <span id="cb7-54"><span class="st" style="color: #20794D;
 background-color: null;
 font-style: inherit;">            }</span></span>
 <span id="cb7-55"><span class="st" style="color: #20794D;
 background-color: null;
-font-style: inherit;">        }</span></span>
+font-style: inherit;">            if (attributes[i] ~ /^Parent=/) {</span></span>
 <span id="cb7-56"><span class="st" style="color: #20794D;
 background-color: null;
-font-style: inherit;">        $9 = new_utr_id</span></span>
+font-style: inherit;">                parent_set = 1</span></span>
 <span id="cb7-57"><span class="st" style="color: #20794D;
 background-color: null;
-font-style: inherit;">        for (i = 1; i &lt;= length(attributes); i++) {</span></span>
+font-style: inherit;">                original_parent_id = substr(attributes[i], 8)</span></span>
 <span id="cb7-58"><span class="st" style="color: #20794D;
 background-color: null;
-font-style: inherit;">            $9 = $9 ";" attributes[i]</span></span>
+font-style: inherit;">                if (original_parent_id in mrna_map) {</span></span>
 <span id="cb7-59"><span class="st" style="color: #20794D;
 background-color: null;
-font-style: inherit;">        }</span></span>
+font-style: inherit;">                    attributes[i] = "Parent=" mrna_map[original_parent_id]</span></span>
 <span id="cb7-60"><span class="st" style="color: #20794D;
 background-color: null;
-font-style: inherit;">    } else if ($3 == "CDS") {</span></span>
+font-style: inherit;">                }</span></span>
 <span id="cb7-61"><span class="st" style="color: #20794D;
 background-color: null;
-font-style: inherit;">        new_cds_id = "ID=cds-" sprintf("%06d", cds_count)</span></span>
+font-style: inherit;">            }</span></span>
 <span id="cb7-62"><span class="st" style="color: #20794D;
 background-color: null;
-font-style: inherit;">        split($9, attributes, ";")</span></span>
+font-style: inherit;">        }</span></span>
 <span id="cb7-63"><span class="st" style="color: #20794D;
 background-color: null;
-font-style: inherit;">        for (i in attributes) {</span></span>
+font-style: inherit;">        if (id_set == 0) {</span></span>
 <span id="cb7-64"><span class="st" style="color: #20794D;
 background-color: null;
-font-style: inherit;">            if (attributes[i] ~ /^Parent=/) {</span></span>
+font-style: inherit;">            if ($3 == "UTR") {</span></span>
 <span id="cb7-65"><span class="st" style="color: #20794D;
 background-color: null;
-font-style: inherit;">                original_parent_id = substr(attributes[i], 8)</span></span>
+font-style: inherit;">                attributes[1] = "ID=utr-" sprintf("%05d", ++utr_count) ";" attributes[1]</span></span>
 <span id="cb7-66"><span class="st" style="color: #20794D;
 background-color: null;
-font-style: inherit;">                if (original_parent_id in mrna_map) {</span></span>
+font-style: inherit;">            } else if ($3 == "CDS") {</span></span>
 <span id="cb7-67"><span class="st" style="color: #20794D;
 background-color: null;
-font-style: inherit;">                    attributes[i] = "Parent=" mrna_map[original_parent_id]</span></span>
+font-style: inherit;">                attributes[1] = "ID=cds-" sprintf("%05d", ++cds_count) ";" attributes[1]</span></span>
 <span id="cb7-68"><span class="st" style="color: #20794D;
 background-color: null;
-font-style: inherit;">                }</span></span>
+font-style: inherit;">            }</span></span>
 <span id="cb7-69"><span class="st" style="color: #20794D;
 background-color: null;
-font-style: inherit;">                break</span></span>
+font-style: inherit;">        }</span></span>
 <span id="cb7-70"><span class="st" style="color: #20794D;
 background-color: null;
-font-style: inherit;">            }</span></span>
+font-style: inherit;">        if (parent_set == 0) {</span></span>
 <span id="cb7-71"><span class="st" style="color: #20794D;
 background-color: null;
-font-style: inherit;">        }</span></span>
+font-style: inherit;">            attributes[length(attributes) + 1] = "Parent=" mrna_map[original_id]</span></span>
 <span id="cb7-72"><span class="st" style="color: #20794D;
 background-color: null;
-font-style: inherit;">        $9 = new_cds_id</span></span>
+font-style: inherit;">        }</span></span>
 <span id="cb7-73"><span class="st" style="color: #20794D;
 background-color: null;
-font-style: inherit;">        for (i = 1; i &lt;= length(attributes); i++) {</span></span>
+font-style: inherit;">        $9 = attributes[1]</span></span>
 <span id="cb7-74"><span class="st" style="color: #20794D;
 background-color: null;
-font-style: inherit;">            $9 = $9 ";" attributes[i]</span></span>
+font-style: inherit;">        for (i = 2; i &lt;= length(attributes); i++) {</span></span>
 <span id="cb7-75"><span class="st" style="color: #20794D;
 background-color: null;
-font-style: inherit;">        }</span></span>
+font-style: inherit;">            $9 = $9 ";" attributes[i]</span></span>
 <span id="cb7-76"><span class="st" style="color: #20794D;
 background-color: null;
-font-style: inherit;">    } else {</span></span>
+font-style: inherit;">        }</span></span>
 <span id="cb7-77"><span class="st" style="color: #20794D;
 background-color: null;
-font-style: inherit;">        split($9, attributes, ";")</span></span>
+font-style: inherit;">        print $1, $2, $3, $4, $5, $6, $7, $8, $9  # Print the original UTR or CDS feature</span></span>
 <span id="cb7-78"><span class="st" style="color: #20794D;
 background-color: null;
-font-style: inherit;">        for (i in attributes) {</span></span>
+font-style: inherit;">        </span></span>
 <span id="cb7-79"><span class="st" style="color: #20794D;
 background-color: null;
-font-style: inherit;">            if (attributes[i] ~ /^Parent=/) {</span></span>
+font-style: inherit;">        # Add exon feature</span></span>
 <span id="cb7-80"><span class="st" style="color: #20794D;
 background-color: null;
-font-style: inherit;">                original_parent_id = substr(attributes[i], 8)</span></span>
+font-style: inherit;">        exon_count++</span></span>
 <span id="cb7-81"><span class="st" style="color: #20794D;
 background-color: null;
-font-style: inherit;">                if (original_parent_id in mrna_map) {</span></span>
+font-style: inherit;">        new_exon_id = "ID=exon-" sprintf("%06d", exon_count)</span></span>
 <span id="cb7-82"><span class="st" style="color: #20794D;
 background-color: null;
-font-style: inherit;">                    attributes[i] = "Parent=" mrna_map[original_parent_id]</span></span>
+font-style: inherit;">        exon_attributes = new_exon_id</span></span>
 <span id="cb7-83"><span class="st" style="color: #20794D;
 background-color: null;
-font-style: inherit;">                }</span></span>
+font-style: inherit;">        for (i = 1; i &lt;= length(attributes); i++) {</span></span>
 <span id="cb7-84"><span class="st" style="color: #20794D;
 background-color: null;
-font-style: inherit;">                break</span></span>
+font-style: inherit;">            if (attributes[i] !~ /^ID=/) {</span></span>
 <span id="cb7-85"><span class="st" style="color: #20794D;
 background-color: null;
-font-style: inherit;">            }</span></span>
+font-style: inherit;">                exon_attributes = exon_attributes ";" attributes[i]</span></span>
 <span id="cb7-86"><span class="st" style="color: #20794D;
 background-color: null;
-font-style: inherit;">        }</span></span>
+font-style: inherit;">            }</span></span>
 <span id="cb7-87"><span class="st" style="color: #20794D;
 background-color: null;
-font-style: inherit;">        $9 = attributes[1]</span></span>
+font-style: inherit;">        }</span></span>
 <span id="cb7-88"><span class="st" style="color: #20794D;
 background-color: null;
-font-style: inherit;">        for (i = 2; i &lt;= length(attributes); i++) {</span></span>
+font-style: inherit;">        # Ensure Parent attribute is included in exon attributes</span></span>
 <span id="cb7-89"><span class="st" style="color: #20794D;
 background-color: null;
-font-style: inherit;">            $9 = $9 ";" attributes[i]</span></span>
+font-style: inherit;">        if (parent_set == 1) {</span></span>
 <span id="cb7-90"><span class="st" style="color: #20794D;
 background-color: null;
-font-style: inherit;">        }</span></span>
+font-style: inherit;">            exon_attributes = exon_attributes ";Parent=" mrna_map[original_parent_id]</span></span>
 <span id="cb7-91"><span class="st" style="color: #20794D;
 background-color: null;
-font-style: inherit;">    }</span></span>
+font-style: inherit;">        }</span></span>
 <span id="cb7-92"><span class="st" style="color: #20794D;
 background-color: null;
-font-style: inherit;">    print $0</span></span>
+font-style: inherit;">        print $1, $2, "exon", $4, $5, $6, $7, $8, exon_attributes</span></span>
 <span id="cb7-93"><span class="st" style="color: #20794D;
 background-color: null;
-font-style: inherit;">}'</span> <span class="st" style="color: #20794D;
+font-style: inherit;">    }</span></span>
+<span id="cb7-94"><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">}</span></span>
+<span id="cb7-95"><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">'</span> <span class="st" style="color: #20794D;
 background-color: null;
 font-style: inherit;">"</span><span class="va" style="color: #111111;
 background-color: null;
 font-style: inherit;">${data_dir}</span><span class="st" style="color: #20794D;
 background-color: null;
-font-style: inherit;">"</span>/<span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"</span><span class="va" style="color: #111111;
+font-style: inherit;">/</span><span class="va" style="color: #111111;
 background-color: null;
 font-style: inherit;">${original_gff}</span><span class="st" style="color: #20794D;
 background-color: null;
@@ -3139,9 +3188,7 @@ font-style: inherit;">"</span><span class="va" style="color: #111111;
 background-color: null;
 font-style: inherit;">${data_dir}</span><span class="st" style="color: #20794D;
 background-color: null;
-font-style: inherit;">"</span>/<span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"</span><span class="va" style="color: #111111;
+font-style: inherit;">/</span><span class="va" style="color: #111111;
 background-color: null;
 font-style: inherit;">${intermediate_gff}</span><span class="st" style="color: #20794D;
 background-color: null;
@@ -3169,14 +3216,14 @@ background-color: null;
 font-style: inherit;">"</span></span></code></pre></div>
 <pre><code>Porites_evermani_scaffold_1 Gmove   gene    3107    4488    .   -   .   ID=gene-Peve_00000001
 Porites_evermani_scaffold_1 Gmove   mRNA    3107    4488    543 -   .   ID=mrna-00001;Name=Peve_00000001;start=0;stop=1;cds_size=543;Parent=gene-Peve_00000001
-Porites_evermani_scaffold_1 Gmove   CDS 3107    3444    .   -   .   ID=cds-000001;Parent=mrna-00001
-Porites_evermani_scaffold_1 Gmove   CDS 4284    4488    .   -   .   ID=cds-000001;Parent=mrna-00001
+Porites_evermani_scaffold_1 Gmove   CDS 3107    3444    .   -   .   ID=cds-00001;Parent=mrna-00001
+Porites_evermani_scaffold_1 Gmove   exon    3107    3444    .   -   .   ID=exon-000001;Parent=mrna-00001
+Porites_evermani_scaffold_1 Gmove   CDS 4284    4488    .   -   .   ID=cds-00002;Parent=mrna-00001
+Porites_evermani_scaffold_1 Gmove   exon    4284    4488    .   -   .   ID=exon-000002;Parent=mrna-00001
 Porites_evermani_scaffold_1 Gmove   gene    424479  429034  .   -   .   ID=gene-Peve_00000002
 Porites_evermani_scaffold_1 Gmove   mRNA    424479  429034  2439.63 -   .   ID=mrna-00002;Name=Peve_00000002;start=1;stop=1;cds_size=2019;Parent=gene-Peve_00000002
-Porites_evermani_scaffold_1 Gmove   CDS 424479  425361  .   -   .   ID=cds-000002;Parent=mrna-00002
-Porites_evermani_scaffold_1 Gmove   CDS 426181  426735  .   -   .   ID=cds-000002;Parent=mrna-00002
-Porites_evermani_scaffold_1 Gmove   CDS 427013  427140  .   -   .   ID=cds-000002;Parent=mrna-00002
-Porites_evermani_scaffold_1 Gmove   CDS 427665  427724  .   -   .   ID=cds-000002;Parent=mrna-00002</code></pre>
+Porites_evermani_scaffold_1 Gmove   CDS 424479  425361  .   -   .   ID=cds-00003;Parent=mrna-00002
+Porites_evermani_scaffold_1 Gmove   exon    424479  425361  .   -   .   ID=exon-000003;Parent=mrna-00002</code></pre>
 </section>
 </section>
 <section id="validate-gff" class="level1">
@@ -3205,7 +3252,10 @@ font-style: inherit;">\</span></span>
 <span id="cb10-6">-retainids <span class="dt" style="color: #AD0000;
 background-color: null;
 font-style: inherit;">\</span></span>
-<span id="cb10-7"><span class="st" style="color: #20794D;
+<span id="cb10-7">-sort <span class="dt" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">\</span></span>
+<span id="cb10-8"><span class="st" style="color: #20794D;
 background-color: null;
 font-style: inherit;">"</span><span class="va" style="color: #111111;
 background-color: null;
@@ -3220,7 +3270,7 @@ background-color: null;
 font-style: inherit;">"</span> <span class="dt" style="color: #AD0000;
 background-color: null;
 font-style: inherit;">\</span></span>
-<span id="cb10-8"><span class="op" style="color: #5E5E5E;
+<span id="cb10-9"><span class="op" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;">&gt;</span> <span class="st" style="color: #20794D;
 background-color: null;
@@ -3237,7 +3287,7 @@ background-color: null;
 font-style: inherit;">"</span> <span class="dt" style="color: #AD0000;
 background-color: null;
 font-style: inherit;">\</span></span>
-<span id="cb10-9">2<span class="op" style="color: #5E5E5E;
+<span id="cb10-10">2<span class="op" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;">&gt;</span> <span class="st" style="color: #20794D;
 background-color: null;
@@ -3249,6 +3299,19 @@ font-style: inherit;">"</span>/gt_gff3_validation_errors.log</span></code></pre>
 <section id="check-for-errors-in-validation" class="level2">
 <h2 class="anchored" data-anchor-id="check-for-errors-in-validation">5.1 Check for error(s) in validation</h2>
 <p>Process would stop if error occurred, so only need to check end of file.</p>
+<div class="callout callout-style-default callout-note callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Note
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>Warnings are expected, as they generally indicated modifications to the GFF to bring it into compliance.</p>
+</div>
+</div>
 <div class="sourceCode" id="cb11" style="background: #f1f3f5;"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb11-1"><span class="bu" style="color: null;
 background-color: null;
 font-style: inherit;">source</span> .bashvars</span>
@@ -3262,16 +3325,16 @@ background-color: null;
 font-style: inherit;">${data_dir}</span><span class="st" style="color: #20794D;
 background-color: null;
 font-style: inherit;">"</span>/gt_gff3_validation_errors.log</span></code></pre></div>
-<pre><code>warning: CDS feature on line 46160 in file "/home/sam/gitrepos/urol-e5/timeseries_molecular//E-Peve/data/intermediate.gff" has the wrong phase . -&gt; correcting it to 0
-warning: CDS feature on line 46161 in file "/home/sam/gitrepos/urol-e5/timeseries_molecular//E-Peve/data/intermediate.gff" has the wrong phase . -&gt; correcting it to 2
-warning: CDS feature on line 46162 in file "/home/sam/gitrepos/urol-e5/timeseries_molecular//E-Peve/data/intermediate.gff" has the wrong phase . -&gt; correcting it to 2
-warning: CDS feature on line 46165 in file "/home/sam/gitrepos/urol-e5/timeseries_molecular//E-Peve/data/intermediate.gff" has the wrong phase . -&gt; correcting it to 0
-warning: CDS feature on line 46166 in file "/home/sam/gitrepos/urol-e5/timeseries_molecular//E-Peve/data/intermediate.gff" has the wrong phase . -&gt; correcting it to 0
-warning: CDS feature on line 46169 in file "/home/sam/gitrepos/urol-e5/timeseries_molecular//E-Peve/data/intermediate.gff" has the wrong phase . -&gt; correcting it to 0
-warning: CDS feature on line 46170 in file "/home/sam/gitrepos/urol-e5/timeseries_molecular//E-Peve/data/intermediate.gff" has the wrong phase . -&gt; correcting it to 0
-warning: CDS feature on line 46171 in file "/home/sam/gitrepos/urol-e5/timeseries_molecular//E-Peve/data/intermediate.gff" has the wrong phase . -&gt; correcting it to 2
-warning: CDS feature on line 46172 in file "/home/sam/gitrepos/urol-e5/timeseries_molecular//E-Peve/data/intermediate.gff" has the wrong phase . -&gt; correcting it to 0
-warning: CDS feature on line 46173 in file "/home/sam/gitrepos/urol-e5/timeseries_molecular//E-Peve/data/intermediate.gff" has the wrong phase . -&gt; correcting it to 0</code></pre>
+<pre><code>warning: CDS feature on line 81189 in file "/home/sam/gitrepos/urol-e5/timeseries_molecular/E-Peve/data/intermediate.gff" has the wrong phase . -&gt; correcting it to 0
+warning: CDS feature on line 81191 in file "/home/sam/gitrepos/urol-e5/timeseries_molecular/E-Peve/data/intermediate.gff" has the wrong phase . -&gt; correcting it to 2
+warning: CDS feature on line 81193 in file "/home/sam/gitrepos/urol-e5/timeseries_molecular/E-Peve/data/intermediate.gff" has the wrong phase . -&gt; correcting it to 2
+warning: CDS feature on line 81197 in file "/home/sam/gitrepos/urol-e5/timeseries_molecular/E-Peve/data/intermediate.gff" has the wrong phase . -&gt; correcting it to 0
+warning: CDS feature on line 81199 in file "/home/sam/gitrepos/urol-e5/timeseries_molecular/E-Peve/data/intermediate.gff" has the wrong phase . -&gt; correcting it to 0
+warning: CDS feature on line 81203 in file "/home/sam/gitrepos/urol-e5/timeseries_molecular/E-Peve/data/intermediate.gff" has the wrong phase . -&gt; correcting it to 0
+warning: CDS feature on line 81205 in file "/home/sam/gitrepos/urol-e5/timeseries_molecular/E-Peve/data/intermediate.gff" has the wrong phase . -&gt; correcting it to 0
+warning: CDS feature on line 81207 in file "/home/sam/gitrepos/urol-e5/timeseries_molecular/E-Peve/data/intermediate.gff" has the wrong phase . -&gt; correcting it to 2
+warning: CDS feature on line 81209 in file "/home/sam/gitrepos/urol-e5/timeseries_molecular/E-Peve/data/intermediate.gff" has the wrong phase . -&gt; correcting it to 0
+warning: CDS feature on line 81211 in file "/home/sam/gitrepos/urol-e5/timeseries_molecular/E-Peve/data/intermediate.gff" has the wrong phase . -&gt; correcting it to 0</code></pre>
 </section>
 <section id="inspect-validated-gff" class="level2">
 <h2 class="anchored" data-anchor-id="inspect-validated-gff">5.2 Inspect Validated GFF</h2>
@@ -3295,15 +3358,15 @@ font-style: inherit;">${validated_gff}</span><span class="st" style="color: #207
 background-color: null;
 font-style: inherit;">"</span></span></code></pre></div>
 <pre><code>##gff-version 3
-##sequence-region   Porites_evermani_scaffold_3486 10898 12049
-Porites_evermani_scaffold_3486  Gmove   gene    10898   12049   .   +   .   ID=gene-Peve_00025828
-Porites_evermani_scaffold_3486  Gmove   mRNA    10898   12049   115 +   .   ID=mrna-22907;Parent=gene-Peve_00025828;Name=Peve_00025828;start=1;stop=0;cds_size=1152
-Porites_evermani_scaffold_3486  Gmove   CDS 10898   12049   .   +   0   ID=cds-022907;Parent=mrna-22907
-###
-##sequence-region   Porites_evermani_scaffold_3485 5941 42299
-Porites_evermani_scaffold_3485  Gmove   gene    41994   42299   .   -   .   ID=gene-Peve_00025824
-Porites_evermani_scaffold_3485  Gmove   mRNA    41994   42299   30.6    -   .   ID=mrna-22903;Parent=gene-Peve_00025824;Name=Peve_00025824;start=1;stop=1;cds_size=306
-Porites_evermani_scaffold_3485  Gmove   CDS 41994   42299   .   -   0   ID=cds-022903;Parent=mrna-22903</code></pre>
+##sequence-region   Porites_evermani_scaffold_1 3107 1802489
+##sequence-region   Porites_evermani_scaffold_10 16486 1155879
+##sequence-region   Porites_evermani_scaffold_100 2448 527357
+##sequence-region   Porites_evermani_scaffold_1000 5675 163688
+##sequence-region   Porites_evermani_scaffold_1001 5840 151448
+##sequence-region   Porites_evermani_scaffold_1002 3372 125467
+##sequence-region   Porites_evermani_scaffold_1003 139 162450
+##sequence-region   Porites_evermani_scaffold_1004 10061 159112
+##sequence-region   Porites_evermani_scaffold_1005 28090 152503</code></pre>
 </section>
 </section>
 <section id="remove-intermediate-gff" class="level1">
@@ -3327,8 +3390,218 @@ background-color: null;
 font-style: inherit;">${intermediate_gff}</span><span class="st" style="color: #20794D;
 background-color: null;
 font-style: inherit;">"</span></span></code></pre></div>
+</section>
+<section id="convert-to-gtf" class="level1">
+<h1>7 Convert to GTF</h1>
+<div class="sourceCode" id="cb16" style="background: #f1f3f5;"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb16-1"><span class="bu" style="color: null;
+background-color: null;
+font-style: inherit;">source</span> .bashvars</span>
+<span id="cb16-2"></span>
+<span id="cb16-3"><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># Sends progress to /dev/null to avoid crashing Rmd notebook</span></span>
+<span id="cb16-4"><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"</span><span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">${conda_path}</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"</span> run <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">-n</span> <span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">${conda_env_name}</span> <span class="dt" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">\</span></span>
+<span id="cb16-5">agat_convert_sp_gff2gtf.pl <span class="dt" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">\</span></span>
+<span id="cb16-6">--gff <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"</span><span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">${data_dir}</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"</span>/<span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"</span><span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">${validated_gff}</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"</span> <span class="dt" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">\</span></span>
+<span id="cb16-7">--output <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"</span><span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">${data_dir}</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"</span>/<span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">${gtf}</span> <span class="dt" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">\</span></span>
+<span id="cb16-8">1<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">&gt;</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"</span><span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">${data_dir}</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"</span>/agat.log <span class="dt" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">\</span></span>
+<span id="cb16-9">2<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">&gt;</span> /dev/null</span></code></pre></div>
+<section id="check-agat-gtf-log" class="level2">
+<h2 class="anchored" data-anchor-id="check-agat-gtf-log">7.1 Check AGAT GTF Log</h2>
+<div class="sourceCode" id="cb17" style="background: #f1f3f5;"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb17-1"><span class="bu" style="color: null;
+background-color: null;
+font-style: inherit;">source</span> .bashvars</span>
+<span id="cb17-2"></span>
+<span id="cb17-3"><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">cat</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"</span><span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">${data_dir}</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"</span>/agat.log</span></code></pre></div>
+<pre><code>converting to GTF3
+********************************************************************************
+*                              - Start parsing -                               *
+********************************************************************************
+-------------------------- parse options and metadata --------------------------
+=&gt; Accessing the feature level json files
+    Using standard /home/sam/programs/miniforge3-24.7.1-0/envs/agat_env/lib/site_perl/5.26.2/auto/share/dist/AGAT/features_level1.json file
+    Using standard /home/sam/programs/miniforge3-24.7.1-0/envs/agat_env/lib/site_perl/5.26.2/auto/share/dist/AGAT/features_level2.json file
+    Using standard /home/sam/programs/miniforge3-24.7.1-0/envs/agat_env/lib/site_perl/5.26.2/auto/share/dist/AGAT/features_level3.json file
+    Using standard /home/sam/programs/miniforge3-24.7.1-0/envs/agat_env/lib/site_perl/5.26.2/auto/share/dist/AGAT/features_spread.json file
+=&gt; Attribute used to group features when no Parent/ID relationship exists:
+    * locus_tag
+    * gene_id
+=&gt; merge_loci option deactivated
+=&gt; Accessing Ontology
+    No ontology accessible from the gff file header!
+    We use the SOFA ontology distributed with AGAT:
+        /home/sam/programs/miniforge3-24.7.1-0/envs/agat_env/lib/site_perl/5.26.2/auto/share/dist/AGAT/so.obo
+    Read ontology /home/sam/programs/miniforge3-24.7.1-0/envs/agat_env/lib/site_perl/5.26.2/auto/share/dist/AGAT/so.obo:
+        4 root terms, and 2472 total terms, and 1436 leaf terms
+    Filtering ontology:
+        We found 1757 terms that are sequence_feature or is_a child of it.
+-------------------------------- parse features --------------------------------
+=&gt; GFF parser version used: 3
+
+********************************************************************************
+*                               - End parsing -                                *
+*                             done in 113 seconds                              *
+********************************************************************************
+
+********************************************************************************
+*                               - Start checks -                               *
+********************************************************************************
+---------------------------- Check1: feature types -----------------------------
+----------------------------------- ontology -----------------------------------
+All feature types in agreement with the Ontology.
+------------------------------------- agat -------------------------------------
+AGAT can deal with all the encountered feature types (3rd column)
+------------------------------ done in 0 seconds -------------------------------
+
+------------------------------ Check2: duplicates ------------------------------
+None found
+------------------------------ done in 0 seconds -------------------------------
+
+-------------------------- Check3: sequential bucket ---------------------------
+Nothing to check as sequential bucket!
+------------------------------ done in 0 seconds -------------------------------
+
+--------------------------- Check4: l2 linked to l3 ----------------------------
+No problem found
+------------------------------ done in 0 seconds -------------------------------
+
+--------------------------- Check5: l1 linked to l2 ----------------------------
+No problem found
+------------------------------ done in 0 seconds -------------------------------
+
+--------------------------- Check6: remove orphan l1 ---------------------------
+We remove only those not supposed to be orphan
+None found
+------------------------------ done in 1 seconds -------------------------------
+
+------------------------------ Check7: check cds -------------------------------
+No problem found
+------------------------------ done in 0 seconds -------------------------------
+
+----------------------------- Check8: check exons ------------------------------
+No exons created
+No exons locations modified
+10475 exons removed that were supernumerary
+No level2 locations modified
+------------------------------ done in 13 seconds ------------------------------
+
+------------------------------ Check9: check utrs ------------------------------
+No UTRs created
+No UTRs locations modified
+No supernumerary UTRs removed
+------------------------------ done in 7 seconds -------------------------------
+
+------------------------ Check10: all level2 locations -------------------------
+No problem found
+------------------------------ done in 6 seconds -------------------------------
+
+------------------------ Check11: all level1 locations -------------------------
+No problem found
+------------------------------ done in 1 seconds -------------------------------
+
+---------------------- Check12: remove identical isoforms ----------------------
+None found
+------------------------------ done in 0 seconds -------------------------------
+********************************************************************************
+*                                - End checks -                                *
+*                              done in 28 seconds                              *
+********************************************************************************
+
+=&gt; OmniscientI total time: 141 seconds
+Bye Bye</code></pre>
+</section>
+<section id="inspect-gtf" class="level2">
+<h2 class="anchored" data-anchor-id="inspect-gtf">7.2 Inspect GTF</h2>
+<div class="sourceCode" id="cb19" style="background: #f1f3f5;"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb19-1"><span class="bu" style="color: null;
+background-color: null;
+font-style: inherit;">source</span> .bashvars</span>
+<span id="cb19-2"></span>
+<span id="cb19-3"><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">head</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"</span><span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">${data_dir}</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"</span>/<span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"</span><span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">${gtf}</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"</span></span></code></pre></div>
+<pre><code>##gtf-version 3
+##sequence-region   Porites_evermani_scaffold_1 3107 1802489
+##sequence-region   Porites_evermani_scaffold_10 16486 1155879
+##sequence-region   Porites_evermani_scaffold_100 2448 527357
+##sequence-region   Porites_evermani_scaffold_1000 5675 163688
+##sequence-region   Porites_evermani_scaffold_1001 5840 151448
+##sequence-region   Porites_evermani_scaffold_1002 3372 125467
+##sequence-region   Porites_evermani_scaffold_1003 139 162450
+##sequence-region   Porites_evermani_scaffold_1004 10061 159112
+##sequence-region   Porites_evermani_scaffold_1005 28090 152503</code></pre>
 
 
+</section>
 </section>
 
  ]]></description>
@@ -3339,7 +3612,8 @@ font-style: inherit;">"</span></span></code></pre></div>
   <category>timeseries_molecular</category>
   <category>Porites evermanni</category>
   <category>coral</category>
-  <guid>https://robertslab.github.io/sams-notebook/posts/2025/2025-01-10-Data-Wrangling---Reformat-P.evermanni-GFF-to-Valid-GFF3-Using-awk-and-genomtools/</guid>
+  <category>AGAT</category>
+  <guid>https://robertslab.github.io/sams-notebook/posts/2025/2025-01-10-Data-Wrangling---Reformat-P.evermanni-GFF-to-Valid-GFF3-Using-awk-genometools-and-AGAT/</guid>
   <pubDate>Fri, 10 Jan 2025 08:00:00 GMT</pubDate>
 </item>
 <item>

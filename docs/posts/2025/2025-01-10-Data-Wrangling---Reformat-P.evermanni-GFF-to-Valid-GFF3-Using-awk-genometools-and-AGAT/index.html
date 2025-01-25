@@ -9,7 +9,7 @@
 <meta name="author" content="Sam White">
 <meta name="dcterms.date" content="2025-01-10">
 
-<title>Data Wrangling - Reformat P.evermanni GFF to Valid GFF3 Using awk and genomtools – Sam’s Notebook</title>
+<title>Data Wrangling - Reformat P.evermanni GFF to Valid GFF3 Using awk genometools and AGAT – Sam’s Notebook</title>
 <style>
 code{white-space: pre-wrap;}
 span.smallcaps{font-variant: small-caps;}
@@ -213,7 +213,7 @@ gtag('config', 'G-7483T61T11', { 'anonymize_ip': true});
 <header id="title-block-header" class="quarto-title-block default toc-left page-columns page-full">
   <div class="quarto-title-banner page-columns page-full">
     <div class="quarto-title column-page-right">
-      <h1 class="title">Data Wrangling - Reformat P.evermanni GFF to Valid GFF3 Using awk and genomtools</h1>
+      <h1 class="title">Data Wrangling - Reformat P.evermanni GFF to Valid GFF3 Using awk genometools and AGAT</h1>
                                 <div class="quarto-categories">
                 <div class="quarto-category">2025</div>
                 <div class="quarto-category">GFF</div>
@@ -222,6 +222,7 @@ gtag('config', 'G-7483T61T11', { 'anonymize_ip': true});
                 <div class="quarto-category">timeseries_molecular</div>
                 <div class="quarto-category">Porites evermanni</div>
                 <div class="quarto-category">coral</div>
+                <div class="quarto-category">AGAT</div>
               </div>
                   </div>
   </div>
@@ -276,6 +277,11 @@ gtag('config', 'G-7483T61T11', { 'anonymize_ip': true});
   <li><a href="#inspect-validated-gff" id="toc-inspect-validated-gff" class="nav-link" data-scroll-target="#inspect-validated-gff">5.2 Inspect Validated GFF</a></li>
   </ul></li>
   <li><a href="#remove-intermediate-gff" id="toc-remove-intermediate-gff" class="nav-link" data-scroll-target="#remove-intermediate-gff">6 Remove intermediate GFF</a></li>
+  <li><a href="#convert-to-gtf" id="toc-convert-to-gtf" class="nav-link" data-scroll-target="#convert-to-gtf">7 Convert to GTF</a>
+  <ul>
+  <li><a href="#check-agat-gtf-log" id="toc-check-agat-gtf-log" class="nav-link" data-scroll-target="#check-agat-gtf-log">7.1 Check AGAT GTF Log</a></li>
+  <li><a href="#inspect-gtf" id="toc-inspect-gtf" class="nav-link" data-scroll-target="#inspect-gtf">7.2 Inspect GTF</a></li>
+  </ul></li>
   </ul>
 </nav>
 </nav>
@@ -303,7 +309,7 @@ Note
 </div>
 </div>
 <div class="callout-body-container callout-body">
-<p>The contents below are from markdown knitted from <a href="https://github.com/urol-e5/timeseries_molecular/blob/9d289abac23c46786a66a3496f4bab41362c3f2b/E-Peve/code/00.00-genome-GFF-formatting.Rmd"><code>00.00-genome-GFF-formatting.Rmd</code></a> (commit <code>9d289ab</code>).</p>
+<p>The contents below are from markdown knitted from <a href="https://github.com/urol-e5/timeseries_molecular/blob/99f0563a067ca9d010cb206dfd44b36d8f77de00/E-Peve/code/00.00-genome-GFF-formatting.Rmd"><code>00.00-genome-GFF-formatting.Rmd</code></a> (commit <code>99f0563</code>).</p>
 </div>
 </div>
 <hr>
@@ -328,6 +334,7 @@ Note
 <section id="software-requirements" class="level2">
 <h2 class="anchored" data-anchor-id="software-requirements">1.1 Software requirements</h2>
 <p>Requires <a href="https://github.com/genometools/genometools">genometools</a> (GitHub repo) to be installed and in the system <code>$PATH</code>.</p>
+<p>Requires <a href="https://github.com/NBISweden/AGAT">AGAT</a> to be installed via conda/mamba for conversion to GTF.</p>
 </section>
 <section id="inputs" class="level2">
 <h2 class="anchored" data-anchor-id="inputs">1.2 Inputs</h2>
@@ -350,7 +357,7 @@ Note
 <span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="bu">echo</span> <span class="st">""</span></span>
 <span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a><span class="bu">echo</span> <span class="st">"# Data directories"</span></span>
-<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a><span class="bu">echo</span> <span class="st">'export repo_dir=~/gitrepos/urol-e5/timeseries_molecular/'</span></span>
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a><span class="bu">echo</span> <span class="st">'export repo_dir=~/gitrepos/urol-e5/timeseries_molecular'</span></span>
 <span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a><span class="bu">echo</span> <span class="st">'export data_dir=${repo_dir}/E-Peve/data'</span></span>
 <span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a><span class="bu">echo</span> <span class="st">""</span></span>
 <span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a></span>
@@ -360,22 +367,38 @@ Note
 <span id="cb1-13"><a href="#cb1-13" aria-hidden="true" tabindex="-1"></a><span class="bu">echo</span> <span class="st">'export validated_gff="Porites_evermanni_validated.gff3"'</span></span>
 <span id="cb1-14"><a href="#cb1-14" aria-hidden="true" tabindex="-1"></a><span class="bu">echo</span> <span class="st">""</span></span>
 <span id="cb1-15"><a href="#cb1-15" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-16"><a href="#cb1-16" aria-hidden="true" tabindex="-1"></a><span class="bu">echo</span> <span class="st">"# Print formatting"</span></span>
-<span id="cb1-17"><a href="#cb1-17" aria-hidden="true" tabindex="-1"></a><span class="bu">echo</span> <span class="st">'export line="--------------------------------------------------------"'</span></span>
+<span id="cb1-16"><a href="#cb1-16" aria-hidden="true" tabindex="-1"></a><span class="bu">echo</span> <span class="st">"# Output files"</span></span>
+<span id="cb1-17"><a href="#cb1-17" aria-hidden="true" tabindex="-1"></a><span class="bu">echo</span> <span class="st">'export gtf="Porites_evermanni_validated.gtf"'</span></span>
 <span id="cb1-18"><a href="#cb1-18" aria-hidden="true" tabindex="-1"></a><span class="bu">echo</span> <span class="st">""</span></span>
-<span id="cb1-19"><a href="#cb1-19" aria-hidden="true" tabindex="-1"></a><span class="kw">}</span> <span class="op">&gt;</span> .bashvars</span>
-<span id="cb1-20"><a href="#cb1-20" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-21"><a href="#cb1-21" aria-hidden="true" tabindex="-1"></a><span class="fu">cat</span> .bashvars</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span id="cb1-19"><a href="#cb1-19" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-20"><a href="#cb1-20" aria-hidden="true" tabindex="-1"></a><span class="bu">echo</span> <span class="st">"# Programs"</span></span>
+<span id="cb1-21"><a href="#cb1-21" aria-hidden="true" tabindex="-1"></a><span class="bu">echo</span> <span class="st">'export conda_path="/home/sam/programs/miniforge3-24.7.1-0/bin/mamba"'</span></span>
+<span id="cb1-22"><a href="#cb1-22" aria-hidden="true" tabindex="-1"></a><span class="bu">echo</span> <span class="st">'export conda_env_name="agat_env"'</span></span>
+<span id="cb1-23"><a href="#cb1-23" aria-hidden="true" tabindex="-1"></a><span class="bu">echo</span> <span class="st">""</span></span>
+<span id="cb1-24"><a href="#cb1-24" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-25"><a href="#cb1-25" aria-hidden="true" tabindex="-1"></a><span class="bu">echo</span> <span class="st">"# Print formatting"</span></span>
+<span id="cb1-26"><a href="#cb1-26" aria-hidden="true" tabindex="-1"></a><span class="bu">echo</span> <span class="st">'export line="--------------------------------------------------------"'</span></span>
+<span id="cb1-27"><a href="#cb1-27" aria-hidden="true" tabindex="-1"></a><span class="bu">echo</span> <span class="st">""</span></span>
+<span id="cb1-28"><a href="#cb1-28" aria-hidden="true" tabindex="-1"></a><span class="kw">}</span> <span class="op">&gt;</span> .bashvars</span>
+<span id="cb1-29"><a href="#cb1-29" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-30"><a href="#cb1-30" aria-hidden="true" tabindex="-1"></a><span class="fu">cat</span> .bashvars</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <pre><code>#### Assign Variables ####
 
 # Data directories
-export repo_dir=~/gitrepos/urol-e5/timeseries_molecular/
+export repo_dir=~/gitrepos/urol-e5/timeseries_molecular
 export data_dir=${repo_dir}/E-Peve/data
 
 # Input files
 export original_gff="Porites_evermanni_v1.annot.gff"
 export intermediate_gff="intermediate.gff"
 export validated_gff="Porites_evermanni_validated.gff3"
+
+# Output files
+export gtf="Porites_evermanni_validated.gtf"
+
+# Programs
+export conda_path="/home/sam/programs/miniforge3-24.7.1-0/bin/mamba"
+export conda_env_name="agat_env"
 
 # Print formatting
 export line="--------------------------------------------------------"</code></pre>
@@ -533,9 +556,10 @@ Porites_evermani_scaffold_1 Gmove   exon    424479  425361  .   -   .   ID=exon-
 <span id="cb10-4"><a href="#cb10-4" aria-hidden="true" tabindex="-1"></a>-tidy <span class="dt">\</span></span>
 <span id="cb10-5"><a href="#cb10-5" aria-hidden="true" tabindex="-1"></a>-checkids <span class="dt">\</span></span>
 <span id="cb10-6"><a href="#cb10-6" aria-hidden="true" tabindex="-1"></a>-retainids <span class="dt">\</span></span>
-<span id="cb10-7"><a href="#cb10-7" aria-hidden="true" tabindex="-1"></a><span class="st">"</span><span class="va">${data_dir}</span><span class="st">"</span>/<span class="st">"</span><span class="va">${intermediate_gff}</span><span class="st">"</span> <span class="dt">\</span></span>
-<span id="cb10-8"><a href="#cb10-8" aria-hidden="true" tabindex="-1"></a><span class="op">&gt;</span> <span class="st">"</span><span class="va">${data_dir}</span><span class="st">"</span>/<span class="st">"</span><span class="va">${validated_gff}</span><span class="st">"</span> <span class="dt">\</span></span>
-<span id="cb10-9"><a href="#cb10-9" aria-hidden="true" tabindex="-1"></a>2<span class="op">&gt;</span> <span class="st">"</span><span class="va">${data_dir}</span><span class="st">"</span>/gt_gff3_validation_errors.log</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span id="cb10-7"><a href="#cb10-7" aria-hidden="true" tabindex="-1"></a>-sort <span class="dt">\</span></span>
+<span id="cb10-8"><a href="#cb10-8" aria-hidden="true" tabindex="-1"></a><span class="st">"</span><span class="va">${data_dir}</span><span class="st">"</span>/<span class="st">"</span><span class="va">${intermediate_gff}</span><span class="st">"</span> <span class="dt">\</span></span>
+<span id="cb10-9"><a href="#cb10-9" aria-hidden="true" tabindex="-1"></a><span class="op">&gt;</span> <span class="st">"</span><span class="va">${data_dir}</span><span class="st">"</span>/<span class="st">"</span><span class="va">${validated_gff}</span><span class="st">"</span> <span class="dt">\</span></span>
+<span id="cb10-10"><a href="#cb10-10" aria-hidden="true" tabindex="-1"></a>2<span class="op">&gt;</span> <span class="st">"</span><span class="va">${data_dir}</span><span class="st">"</span>/gt_gff3_validation_errors.log</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <section id="check-for-errors-in-validation" class="level2">
 <h2 class="anchored" data-anchor-id="check-for-errors-in-validation">5.1 Check for error(s) in validation</h2>
 <p>Process would stop if error occurred, so only need to check end of file.</p>
@@ -555,16 +579,16 @@ Note
 <div class="sourceCode" id="cb11"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a><span class="bu">source</span> .bashvars</span>
 <span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb11-3"><a href="#cb11-3" aria-hidden="true" tabindex="-1"></a><span class="fu">tail</span> <span class="st">"</span><span class="va">${data_dir}</span><span class="st">"</span>/gt_gff3_validation_errors.log</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<pre><code>warning: CDS feature on line 81189 in file "/home/sam/gitrepos/urol-e5/timeseries_molecular//E-Peve/data/intermediate.gff" has the wrong phase . -&gt; correcting it to 0
-warning: CDS feature on line 81191 in file "/home/sam/gitrepos/urol-e5/timeseries_molecular//E-Peve/data/intermediate.gff" has the wrong phase . -&gt; correcting it to 2
-warning: CDS feature on line 81193 in file "/home/sam/gitrepos/urol-e5/timeseries_molecular//E-Peve/data/intermediate.gff" has the wrong phase . -&gt; correcting it to 2
-warning: CDS feature on line 81197 in file "/home/sam/gitrepos/urol-e5/timeseries_molecular//E-Peve/data/intermediate.gff" has the wrong phase . -&gt; correcting it to 0
-warning: CDS feature on line 81199 in file "/home/sam/gitrepos/urol-e5/timeseries_molecular//E-Peve/data/intermediate.gff" has the wrong phase . -&gt; correcting it to 0
-warning: CDS feature on line 81203 in file "/home/sam/gitrepos/urol-e5/timeseries_molecular//E-Peve/data/intermediate.gff" has the wrong phase . -&gt; correcting it to 0
-warning: CDS feature on line 81205 in file "/home/sam/gitrepos/urol-e5/timeseries_molecular//E-Peve/data/intermediate.gff" has the wrong phase . -&gt; correcting it to 0
-warning: CDS feature on line 81207 in file "/home/sam/gitrepos/urol-e5/timeseries_molecular//E-Peve/data/intermediate.gff" has the wrong phase . -&gt; correcting it to 2
-warning: CDS feature on line 81209 in file "/home/sam/gitrepos/urol-e5/timeseries_molecular//E-Peve/data/intermediate.gff" has the wrong phase . -&gt; correcting it to 0
-warning: CDS feature on line 81211 in file "/home/sam/gitrepos/urol-e5/timeseries_molecular//E-Peve/data/intermediate.gff" has the wrong phase . -&gt; correcting it to 0</code></pre>
+<pre><code>warning: CDS feature on line 81189 in file "/home/sam/gitrepos/urol-e5/timeseries_molecular/E-Peve/data/intermediate.gff" has the wrong phase . -&gt; correcting it to 0
+warning: CDS feature on line 81191 in file "/home/sam/gitrepos/urol-e5/timeseries_molecular/E-Peve/data/intermediate.gff" has the wrong phase . -&gt; correcting it to 2
+warning: CDS feature on line 81193 in file "/home/sam/gitrepos/urol-e5/timeseries_molecular/E-Peve/data/intermediate.gff" has the wrong phase . -&gt; correcting it to 2
+warning: CDS feature on line 81197 in file "/home/sam/gitrepos/urol-e5/timeseries_molecular/E-Peve/data/intermediate.gff" has the wrong phase . -&gt; correcting it to 0
+warning: CDS feature on line 81199 in file "/home/sam/gitrepos/urol-e5/timeseries_molecular/E-Peve/data/intermediate.gff" has the wrong phase . -&gt; correcting it to 0
+warning: CDS feature on line 81203 in file "/home/sam/gitrepos/urol-e5/timeseries_molecular/E-Peve/data/intermediate.gff" has the wrong phase . -&gt; correcting it to 0
+warning: CDS feature on line 81205 in file "/home/sam/gitrepos/urol-e5/timeseries_molecular/E-Peve/data/intermediate.gff" has the wrong phase . -&gt; correcting it to 0
+warning: CDS feature on line 81207 in file "/home/sam/gitrepos/urol-e5/timeseries_molecular/E-Peve/data/intermediate.gff" has the wrong phase . -&gt; correcting it to 2
+warning: CDS feature on line 81209 in file "/home/sam/gitrepos/urol-e5/timeseries_molecular/E-Peve/data/intermediate.gff" has the wrong phase . -&gt; correcting it to 0
+warning: CDS feature on line 81211 in file "/home/sam/gitrepos/urol-e5/timeseries_molecular/E-Peve/data/intermediate.gff" has the wrong phase . -&gt; correcting it to 0</code></pre>
 </section>
 <section id="inspect-validated-gff" class="level2">
 <h2 class="anchored" data-anchor-id="inspect-validated-gff">5.2 Inspect Validated GFF</h2>
@@ -572,15 +596,15 @@ warning: CDS feature on line 81211 in file "/home/sam/gitrepos/urol-e5/timeserie
 <span id="cb13-2"><a href="#cb13-2" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb13-3"><a href="#cb13-3" aria-hidden="true" tabindex="-1"></a><span class="fu">head</span> <span class="st">"</span><span class="va">${data_dir}</span><span class="st">"</span>/<span class="st">"</span><span class="va">${validated_gff}</span><span class="st">"</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <pre><code>##gff-version 3
-##sequence-region   Porites_evermani_scaffold_3486 10898 12049
-Porites_evermani_scaffold_3486  Gmove   gene    10898   12049   .   +   .   ID=gene-Peve_00025828
-Porites_evermani_scaffold_3486  Gmove   mRNA    10898   12049   115 +   .   ID=mrna-22907;Parent=gene-Peve_00025828;Name=Peve_00025828;start=1;stop=0;cds_size=1152
-Porites_evermani_scaffold_3486  Gmove   CDS 10898   12049   .   +   0   ID=cds-132180;Parent=mrna-22907
-Porites_evermani_scaffold_3486  Gmove   exon    10898   12049   .   +   .   ID=exon-140850;Parent=mrna-22907
-###
-##sequence-region   Porites_evermani_scaffold_3485 5941 42299
-Porites_evermani_scaffold_3485  Gmove   gene    41994   42299   .   -   .   ID=gene-Peve_00025824
-Porites_evermani_scaffold_3485  Gmove   mRNA    41994   42299   30.6    -   .   ID=mrna-22903;Parent=gene-Peve_00025824;Name=Peve_00025824;start=1;stop=1;cds_size=306</code></pre>
+##sequence-region   Porites_evermani_scaffold_1 3107 1802489
+##sequence-region   Porites_evermani_scaffold_10 16486 1155879
+##sequence-region   Porites_evermani_scaffold_100 2448 527357
+##sequence-region   Porites_evermani_scaffold_1000 5675 163688
+##sequence-region   Porites_evermani_scaffold_1001 5840 151448
+##sequence-region   Porites_evermani_scaffold_1002 3372 125467
+##sequence-region   Porites_evermani_scaffold_1003 139 162450
+##sequence-region   Porites_evermani_scaffold_1004 10061 159112
+##sequence-region   Porites_evermani_scaffold_1005 28090 152503</code></pre>
 </section>
 </section>
 <section id="remove-intermediate-gff" class="level1">
@@ -588,8 +612,138 @@ Porites_evermani_scaffold_3485  Gmove   mRNA    41994   42299   30.6    -   .   
 <div class="sourceCode" id="cb15"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a><span class="bu">source</span> .bashvars</span>
 <span id="cb15-2"><a href="#cb15-2" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb15-3"><a href="#cb15-3" aria-hidden="true" tabindex="-1"></a><span class="fu">rm</span> <span class="st">"</span><span class="va">${data_dir}</span><span class="st">"</span>/<span class="st">"</span><span class="va">${intermediate_gff}</span><span class="st">"</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</section>
+<section id="convert-to-gtf" class="level1">
+<h1>7 Convert to GTF</h1>
+<div class="sourceCode" id="cb16"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true" tabindex="-1"></a><span class="bu">source</span> .bashvars</span>
+<span id="cb16-2"><a href="#cb16-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb16-3"><a href="#cb16-3" aria-hidden="true" tabindex="-1"></a><span class="co"># Sends progress to /dev/null to avoid crashing Rmd notebook</span></span>
+<span id="cb16-4"><a href="#cb16-4" aria-hidden="true" tabindex="-1"></a><span class="st">"</span><span class="va">${conda_path}</span><span class="st">"</span> run <span class="at">-n</span> <span class="va">${conda_env_name}</span> <span class="dt">\</span></span>
+<span id="cb16-5"><a href="#cb16-5" aria-hidden="true" tabindex="-1"></a>agat_convert_sp_gff2gtf.pl <span class="dt">\</span></span>
+<span id="cb16-6"><a href="#cb16-6" aria-hidden="true" tabindex="-1"></a>--gff <span class="st">"</span><span class="va">${data_dir}</span><span class="st">"</span>/<span class="st">"</span><span class="va">${validated_gff}</span><span class="st">"</span> <span class="dt">\</span></span>
+<span id="cb16-7"><a href="#cb16-7" aria-hidden="true" tabindex="-1"></a>--output <span class="st">"</span><span class="va">${data_dir}</span><span class="st">"</span>/<span class="va">${gtf}</span> <span class="dt">\</span></span>
+<span id="cb16-8"><a href="#cb16-8" aria-hidden="true" tabindex="-1"></a>1<span class="op">&gt;</span> <span class="st">"</span><span class="va">${data_dir}</span><span class="st">"</span>/agat.log <span class="dt">\</span></span>
+<span id="cb16-9"><a href="#cb16-9" aria-hidden="true" tabindex="-1"></a>2<span class="op">&gt;</span> /dev/null</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<section id="check-agat-gtf-log" class="level2">
+<h2 class="anchored" data-anchor-id="check-agat-gtf-log">7.1 Check AGAT GTF Log</h2>
+<div class="sourceCode" id="cb17"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a><span class="bu">source</span> .bashvars</span>
+<span id="cb17-2"><a href="#cb17-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb17-3"><a href="#cb17-3" aria-hidden="true" tabindex="-1"></a><span class="fu">cat</span> <span class="st">"</span><span class="va">${data_dir}</span><span class="st">"</span>/agat.log</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<pre><code>converting to GTF3
+********************************************************************************
+*                              - Start parsing -                               *
+********************************************************************************
+-------------------------- parse options and metadata --------------------------
+=&gt; Accessing the feature level json files
+    Using standard /home/sam/programs/miniforge3-24.7.1-0/envs/agat_env/lib/site_perl/5.26.2/auto/share/dist/AGAT/features_level1.json file
+    Using standard /home/sam/programs/miniforge3-24.7.1-0/envs/agat_env/lib/site_perl/5.26.2/auto/share/dist/AGAT/features_level2.json file
+    Using standard /home/sam/programs/miniforge3-24.7.1-0/envs/agat_env/lib/site_perl/5.26.2/auto/share/dist/AGAT/features_level3.json file
+    Using standard /home/sam/programs/miniforge3-24.7.1-0/envs/agat_env/lib/site_perl/5.26.2/auto/share/dist/AGAT/features_spread.json file
+=&gt; Attribute used to group features when no Parent/ID relationship exists:
+    * locus_tag
+    * gene_id
+=&gt; merge_loci option deactivated
+=&gt; Accessing Ontology
+    No ontology accessible from the gff file header!
+    We use the SOFA ontology distributed with AGAT:
+        /home/sam/programs/miniforge3-24.7.1-0/envs/agat_env/lib/site_perl/5.26.2/auto/share/dist/AGAT/so.obo
+    Read ontology /home/sam/programs/miniforge3-24.7.1-0/envs/agat_env/lib/site_perl/5.26.2/auto/share/dist/AGAT/so.obo:
+        4 root terms, and 2472 total terms, and 1436 leaf terms
+    Filtering ontology:
+        We found 1757 terms that are sequence_feature or is_a child of it.
+-------------------------------- parse features --------------------------------
+=&gt; GFF parser version used: 3
+
+********************************************************************************
+*                               - End parsing -                                *
+*                             done in 113 seconds                              *
+********************************************************************************
+
+********************************************************************************
+*                               - Start checks -                               *
+********************************************************************************
+---------------------------- Check1: feature types -----------------------------
+----------------------------------- ontology -----------------------------------
+All feature types in agreement with the Ontology.
+------------------------------------- agat -------------------------------------
+AGAT can deal with all the encountered feature types (3rd column)
+------------------------------ done in 0 seconds -------------------------------
+
+------------------------------ Check2: duplicates ------------------------------
+None found
+------------------------------ done in 0 seconds -------------------------------
+
+-------------------------- Check3: sequential bucket ---------------------------
+Nothing to check as sequential bucket!
+------------------------------ done in 0 seconds -------------------------------
+
+--------------------------- Check4: l2 linked to l3 ----------------------------
+No problem found
+------------------------------ done in 0 seconds -------------------------------
+
+--------------------------- Check5: l1 linked to l2 ----------------------------
+No problem found
+------------------------------ done in 0 seconds -------------------------------
+
+--------------------------- Check6: remove orphan l1 ---------------------------
+We remove only those not supposed to be orphan
+None found
+------------------------------ done in 1 seconds -------------------------------
+
+------------------------------ Check7: check cds -------------------------------
+No problem found
+------------------------------ done in 0 seconds -------------------------------
+
+----------------------------- Check8: check exons ------------------------------
+No exons created
+No exons locations modified
+10475 exons removed that were supernumerary
+No level2 locations modified
+------------------------------ done in 13 seconds ------------------------------
+
+------------------------------ Check9: check utrs ------------------------------
+No UTRs created
+No UTRs locations modified
+No supernumerary UTRs removed
+------------------------------ done in 7 seconds -------------------------------
+
+------------------------ Check10: all level2 locations -------------------------
+No problem found
+------------------------------ done in 6 seconds -------------------------------
+
+------------------------ Check11: all level1 locations -------------------------
+No problem found
+------------------------------ done in 1 seconds -------------------------------
+
+---------------------- Check12: remove identical isoforms ----------------------
+None found
+------------------------------ done in 0 seconds -------------------------------
+********************************************************************************
+*                                - End checks -                                *
+*                              done in 28 seconds                              *
+********************************************************************************
+
+=&gt; OmniscientI total time: 141 seconds
+Bye Bye</code></pre>
+</section>
+<section id="inspect-gtf" class="level2">
+<h2 class="anchored" data-anchor-id="inspect-gtf">7.2 Inspect GTF</h2>
+<div class="sourceCode" id="cb19"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb19-1"><a href="#cb19-1" aria-hidden="true" tabindex="-1"></a><span class="bu">source</span> .bashvars</span>
+<span id="cb19-2"><a href="#cb19-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb19-3"><a href="#cb19-3" aria-hidden="true" tabindex="-1"></a><span class="fu">head</span> <span class="st">"</span><span class="va">${data_dir}</span><span class="st">"</span>/<span class="st">"</span><span class="va">${gtf}</span><span class="st">"</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<pre><code>##gtf-version 3
+##sequence-region   Porites_evermani_scaffold_1 3107 1802489
+##sequence-region   Porites_evermani_scaffold_10 16486 1155879
+##sequence-region   Porites_evermani_scaffold_100 2448 527357
+##sequence-region   Porites_evermani_scaffold_1000 5675 163688
+##sequence-region   Porites_evermani_scaffold_1001 5840 151448
+##sequence-region   Porites_evermani_scaffold_1002 3372 125467
+##sequence-region   Porites_evermani_scaffold_1003 139 162450
+##sequence-region   Porites_evermani_scaffold_1004 10061 159112
+##sequence-region   Porites_evermani_scaffold_1005 28090 152503</code></pre>
 
 
+</section>
 </section>
 
 </main> <!-- /main -->
