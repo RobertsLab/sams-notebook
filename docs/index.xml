@@ -10,7 +10,369 @@
 <atom:link href="https://robertslab.github.io/sams-notebook/index.xml" rel="self" type="application/rss+xml"/>
 <description></description>
 <generator>quarto-1.7.5</generator>
-<lastBuildDate>Fri, 17 Jan 2025 08:00:00 GMT</lastBuildDate>
+<lastBuildDate>Wed, 29 Jan 2025 08:00:00 GMT</lastBuildDate>
+<item>
+  <title>Bisulfite Genome - P.evermanni BS Genome Using Bismark</title>
+  <dc:creator>Sam White</dc:creator>
+  <link>https://robertslab.github.io/sams-notebook/posts/2025/2025-01-29-Bisulfite-Genome---P.evermanni-BS-Genome-Using-Bismark/</link>
+  <description><![CDATA[ 
+
+
+
+
+
+<section id="intro" class="level1">
+<h1>INTRO</h1>
+<p>In preparation for <a href="https://github.com/FelixKrueger/Bismark"><code>Bismark</code></a> alignments, we needed to generate a bisulfite-converted genome for <em>P.evermanni</em>, as one did not already exist.</p>
+<p>The resulting output files were added to the <a href="https://robertslab.github.io/resources/Genomic-Resources/">Genomic Resources Handbook page</a> and the <a href="https://github.com/urol-e5/timeseries_molecular/wiki/00%E2%80%90Genomic%E2%80%90Resources#bisulfite-genome-1">timeseries_molecular repo Wiki</a>.</p>
+<div class="callout callout-style-default callout-note callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Note
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>The contents below are from markdown knitted from <a href="https://github.com/urol-e5/timeseries_molecular/blob/5b56975e21432f63342965b4abe87a235ec8ee62/E-Peve/code/00.21-E-Peve-BS-genome.Rmd"><code>00.21-E-Peve-BS-genome.Rmd</code></a> (commit <code>5b56975</code>).</p>
+</div>
+</div>
+</section>
+<section id="background" class="level1">
+<h1>1 Background</h1>
+<p>This Rmd file will create a bisulfite-converted genome by, and for, Bismark (Krueger and Andrews 2011) using the <code>Porites_evermanni_v1.fa</code> file. The genome FastA was taken from the <a href="https://www.genoscope.cns.fr/corals/genomes.html">Genoscope corals webpage</a>.</p>
+<p>Due to large sizes of output files, the files cannot be sync’d to GitHub. As such, the output directories will be gzipped and available here:</p>
+<ul>
+<li><p><a href="https://gannet.fish.washington.edu/gitrepos/urol-e5/timeseries_molecular/E-Peve/data/Bisulfite_Genome.tar.gz" class="uri">https://gannet.fish.washington.edu/gitrepos/urol-e5/timeseries_molecular/E-Peve/data/Bisulfite_Genome.tar.gz</a> (1.5GB)</p></li>
+<li><p><a href="https://gannet.fish.washington.edu/gitrepos/urol-e5/timeseries_molecular/E-Peve/data/Bisulfite_Genome.tar.gz.md5" class="uri">https://gannet.fish.washington.edu/gitrepos/urol-e5/timeseries_molecular/E-Peve/data/Bisulfite_Genome.tar.gz.md5</a></p>
+<ul>
+<li>MD5: <code>5a0d4f699d7d46eb9f996e677841582a</code></li>
+</ul></li>
+</ul>
+</section>
+<section id="inputs" class="level1">
+<h1>2 Inputs</h1>
+<ul>
+<li>Directory containing a FastA file with the file extension: .fa or .fasta (also ending in .gz).</li>
+</ul>
+</section>
+<section id="outputs" class="level1">
+<h1>3 Outputs</h1>
+<ul>
+<li><p>CT Conversion</p>
+<ul>
+<li>Bowtie2 index files.</li>
+<li>CT conversion FastA</li>
+</ul></li>
+<li><p>GA conversion</p>
+<ul>
+<li>Bowtie2 index files.</li>
+<li>GA conversion FastA.</li>
+</ul></li>
+</ul>
+</section>
+<section id="create-a-bash-variables-file" class="level1">
+<h1>4 Create a Bash variables file</h1>
+<p>This allows usage of Bash variables across R Markdown chunks.</p>
+<div class="sourceCode" id="cb1" style="background: #f1f3f5;"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb1-1"><span class="kw" style="color: #003B4F;
+background-color: null;
+font-weight: bold;
+font-style: inherit;">{</span></span>
+<span id="cb1-2"><span class="bu" style="color: null;
+background-color: null;
+font-style: inherit;">echo</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"#### Assign Variables ####"</span></span>
+<span id="cb1-3"><span class="bu" style="color: null;
+background-color: null;
+font-style: inherit;">echo</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">""</span></span>
+<span id="cb1-4"></span>
+<span id="cb1-5"><span class="bu" style="color: null;
+background-color: null;
+font-style: inherit;">echo</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"# Data directories"</span></span>
+<span id="cb1-6"><span class="bu" style="color: null;
+background-color: null;
+font-style: inherit;">echo</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">'export timeseries_dir=/home/shared/8TB_HDD_01/sam/gitrepos/urol-e5/timeseries_molecular'</span></span>
+<span id="cb1-7"><span class="bu" style="color: null;
+background-color: null;
+font-style: inherit;">echo</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">'export output_dir_top=${timeseries_dir}/E-Peve/data'</span></span>
+<span id="cb1-8"><span class="bu" style="color: null;
+background-color: null;
+font-style: inherit;">echo</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">'export genome_dir=${timeseries_dir}/E-Peve/data'</span></span>
+<span id="cb1-9"><span class="bu" style="color: null;
+background-color: null;
+font-style: inherit;">echo</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">""</span></span>
+<span id="cb1-10"></span>
+<span id="cb1-11"><span class="bu" style="color: null;
+background-color: null;
+font-style: inherit;">echo</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"# Paths to programs"</span></span>
+<span id="cb1-12"><span class="bu" style="color: null;
+background-color: null;
+font-style: inherit;">echo</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">'export programs_dir="/home/shared"'</span></span>
+<span id="cb1-13"><span class="bu" style="color: null;
+background-color: null;
+font-style: inherit;">echo</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">'export bismark_dir="${programs_dir}/Bismark-0.24.0"'</span></span>
+<span id="cb1-14"><span class="bu" style="color: null;
+background-color: null;
+font-style: inherit;">echo</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">'export bowtie2_dir="${programs_dir}/bowtie2-2.4.4-linux-x86_64"'</span></span>
+<span id="cb1-15"><span class="bu" style="color: null;
+background-color: null;
+font-style: inherit;">echo</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">""</span></span>
+<span id="cb1-16"></span>
+<span id="cb1-17"><span class="bu" style="color: null;
+background-color: null;
+font-style: inherit;">echo</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"# Set number of CPUs to use"</span></span>
+<span id="cb1-18"><span class="bu" style="color: null;
+background-color: null;
+font-style: inherit;">echo</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">'export threads=20'</span></span>
+<span id="cb1-19"><span class="bu" style="color: null;
+background-color: null;
+font-style: inherit;">echo</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">""</span></span>
+<span id="cb1-20"></span>
+<span id="cb1-21"><span class="bu" style="color: null;
+background-color: null;
+font-style: inherit;">echo</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"# Print formatting"</span></span>
+<span id="cb1-22"><span class="bu" style="color: null;
+background-color: null;
+font-style: inherit;">echo</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">'export line="--------------------------------------------------------"'</span></span>
+<span id="cb1-23"><span class="bu" style="color: null;
+background-color: null;
+font-style: inherit;">echo</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">""</span></span>
+<span id="cb1-24"><span class="kw" style="color: #003B4F;
+background-color: null;
+font-weight: bold;
+font-style: inherit;">}</span> <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">&gt;</span> .bashvars</span>
+<span id="cb1-25"></span>
+<span id="cb1-26"><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">cat</span> .bashvars</span></code></pre></div>
+<pre><code>#### Assign Variables ####
+
+# Data directories
+export timeseries_dir=/home/shared/8TB_HDD_01/sam/gitrepos/urol-e5/timeseries_molecular
+export output_dir_top=${timeseries_dir}/E-Peve/data
+export genome_dir=${timeseries_dir}/E-Peve/data
+
+# Paths to programs
+export programs_dir="/home/shared"
+export bismark_dir="${programs_dir}/Bismark-0.24.0"
+export bowtie2_dir="${programs_dir}/bowtie2-2.4.4-linux-x86_64"
+
+# Set number of CPUs to use
+export threads=20
+
+# Print formatting
+export line="--------------------------------------------------------"</code></pre>
+</section>
+<section id="bisfulite-conversion" class="level1">
+<h1>5 Bisfulite conversion</h1>
+<div class="sourceCode" id="cb3" style="background: #f1f3f5;"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb3-1"><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># Load bash variables into memory</span></span>
+<span id="cb3-2"><span class="bu" style="color: null;
+background-color: null;
+font-style: inherit;">source</span> .bashvars</span>
+<span id="cb3-3"></span>
+<span id="cb3-4"><span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">${bismark_dir}</span><span class="ex" style="color: null;
+background-color: null;
+font-style: inherit;">/bismark_genome_preparation</span> <span class="dt" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">\</span></span>
+<span id="cb3-5"><span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">${genome_dir}</span> <span class="dt" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">\</span></span>
+<span id="cb3-6">--parallel <span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">${threads}</span> <span class="dt" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">\</span></span>
+<span id="cb3-7">--bowtie2 <span class="dt" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">\</span></span>
+<span id="cb3-8">--path_to_aligner <span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">${bowtie2_dir}</span> <span class="dt" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">\</span></span>
+<span id="cb3-9">1<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">&gt;</span> <span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">${genome_dir}</span>/Peve-bs-genome.stderr</span></code></pre></div>
+<pre><code>Using 20 threads for the top and bottom strand indexing processes each, so using 40 cores in total
+Writing bisulfite genomes out into a single MFA (multi FastA) file
+
+Bisulfite Genome Indexer version v0.24.0 (last modified: 19 May 2022)
+
+Step I - Prepare genome folders - completed
+
+
+
+Step II - Genome bisulfite conversions - completed
+
+
+Bismark Genome Preparation - Step III: Launching the Bowtie 2 indexer
+Building a SMALL index
+Building a SMALL index
+
+=========================================
+
+Parallel genome indexing complete. Enjoy!</code></pre>
+<section id="inpect-bs-output" class="level2">
+<h2 class="anchored" data-anchor-id="inpect-bs-output">5.1 Inpect BS output</h2>
+<div class="sourceCode" id="cb5" style="background: #f1f3f5;"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb5-1"><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># Load bash variables into memory</span></span>
+<span id="cb5-2"><span class="bu" style="color: null;
+background-color: null;
+font-style: inherit;">source</span> .bashvars</span>
+<span id="cb5-3"></span>
+<span id="cb5-4"><span class="ex" style="color: null;
+background-color: null;
+font-style: inherit;">tree</span> <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">-h</span> <span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">${genome_dir}</span>/Bisulfite_Genome</span></code></pre></div>
+<pre><code>/home/shared/8TB_HDD_01/sam/gitrepos/urol-e5/timeseries_molecular/E-Peve/data/Bisulfite_Genome
+├── [4.0K]  CT_conversion
+│&nbsp;&nbsp; ├── [184M]  BS_CT.1.bt2
+│&nbsp;&nbsp; ├── [134M]  BS_CT.2.bt2
+│&nbsp;&nbsp; ├── [442K]  BS_CT.3.bt2
+│&nbsp;&nbsp; ├── [134M]  BS_CT.4.bt2
+│&nbsp;&nbsp; ├── [184M]  BS_CT.rev.1.bt2
+│&nbsp;&nbsp; ├── [134M]  BS_CT.rev.2.bt2
+│&nbsp;&nbsp; └── [586M]  genome_mfa.CT_conversion.fa
+└── [4.0K]  GA_conversion
+    ├── [184M]  BS_GA.1.bt2
+    ├── [134M]  BS_GA.2.bt2
+    ├── [442K]  BS_GA.3.bt2
+    ├── [134M]  BS_GA.4.bt2
+    ├── [184M]  BS_GA.rev.1.bt2
+    ├── [134M]  BS_GA.rev.2.bt2
+    └── [586M]  genome_mfa.GA_conversion.fa
+
+2 directories, 14 files</code></pre>
+</section>
+<section id="compress-output-folder" class="level2">
+<h2 class="anchored" data-anchor-id="compress-output-folder">5.2 Compress output folder</h2>
+<div class="sourceCode" id="cb7" style="background: #f1f3f5;"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb7-1"><span class="bu" style="color: null;
+background-color: null;
+font-style: inherit;">source</span> .bashvars</span>
+<span id="cb7-2"></span>
+<span id="cb7-3"><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">tar</span> <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">-czvf</span> <span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">${genome_dir}</span>/Bisulfite_Genome.tar.gz <span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">${genome_dir}</span>/Bisulfite_Genome</span></code></pre></div>
+<pre><code>tar: Removing leading `/' from member names
+/home/shared/8TB_HDD_01/sam/gitrepos/urol-e5/timeseries_molecular/E-Peve/data/Bisulfite_Genome/
+/home/shared/8TB_HDD_01/sam/gitrepos/urol-e5/timeseries_molecular/E-Peve/data/Bisulfite_Genome/CT_conversion/
+/home/shared/8TB_HDD_01/sam/gitrepos/urol-e5/timeseries_molecular/E-Peve/data/Bisulfite_Genome/CT_conversion/BS_CT.4.bt2
+/home/shared/8TB_HDD_01/sam/gitrepos/urol-e5/timeseries_molecular/E-Peve/data/Bisulfite_Genome/CT_conversion/BS_CT.rev.1.bt2
+/home/shared/8TB_HDD_01/sam/gitrepos/urol-e5/timeseries_molecular/E-Peve/data/Bisulfite_Genome/CT_conversion/genome_mfa.CT_conversion.fa
+/home/shared/8TB_HDD_01/sam/gitrepos/urol-e5/timeseries_molecular/E-Peve/data/Bisulfite_Genome/CT_conversion/BS_CT.1.bt2
+/home/shared/8TB_HDD_01/sam/gitrepos/urol-e5/timeseries_molecular/E-Peve/data/Bisulfite_Genome/CT_conversion/BS_CT.2.bt2
+/home/shared/8TB_HDD_01/sam/gitrepos/urol-e5/timeseries_molecular/E-Peve/data/Bisulfite_Genome/CT_conversion/BS_CT.3.bt2
+/home/shared/8TB_HDD_01/sam/gitrepos/urol-e5/timeseries_molecular/E-Peve/data/Bisulfite_Genome/CT_conversion/BS_CT.rev.2.bt2
+/home/shared/8TB_HDD_01/sam/gitrepos/urol-e5/timeseries_molecular/E-Peve/data/Bisulfite_Genome/GA_conversion/
+/home/shared/8TB_HDD_01/sam/gitrepos/urol-e5/timeseries_molecular/E-Peve/data/Bisulfite_Genome/GA_conversion/BS_GA.rev.1.bt2
+/home/shared/8TB_HDD_01/sam/gitrepos/urol-e5/timeseries_molecular/E-Peve/data/Bisulfite_Genome/GA_conversion/BS_GA.2.bt2
+/home/shared/8TB_HDD_01/sam/gitrepos/urol-e5/timeseries_molecular/E-Peve/data/Bisulfite_Genome/GA_conversion/BS_GA.4.bt2
+/home/shared/8TB_HDD_01/sam/gitrepos/urol-e5/timeseries_molecular/E-Peve/data/Bisulfite_Genome/GA_conversion/genome_mfa.GA_conversion.fa
+/home/shared/8TB_HDD_01/sam/gitrepos/urol-e5/timeseries_molecular/E-Peve/data/Bisulfite_Genome/GA_conversion/BS_GA.rev.2.bt2
+/home/shared/8TB_HDD_01/sam/gitrepos/urol-e5/timeseries_molecular/E-Peve/data/Bisulfite_Genome/GA_conversion/BS_GA.1.bt2
+/home/shared/8TB_HDD_01/sam/gitrepos/urol-e5/timeseries_molecular/E-Peve/data/Bisulfite_Genome/GA_conversion/BS_GA.3.bt2</code></pre>
+</section>
+<section id="create-md5sum" class="level2">
+<h2 class="anchored" data-anchor-id="create-md5sum">5.3 Create MD5sum</h2>
+<div class="sourceCode" id="cb9" style="background: #f1f3f5;"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb9-1"><span class="bu" style="color: null;
+background-color: null;
+font-style: inherit;">source</span> .bashvars</span>
+<span id="cb9-2"></span>
+<span id="cb9-3"><span class="bu" style="color: null;
+background-color: null;
+font-style: inherit;">cd</span> <span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">${genome_dir}</span></span>
+<span id="cb9-4"></span>
+<span id="cb9-5"><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">md5sum</span> Bisulfite_Genome.tar.gz <span class="kw" style="color: #003B4F;
+background-color: null;
+font-weight: bold;
+font-style: inherit;">|</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">tee</span> Bisulfite_Genome.tar.gz.md5</span></code></pre></div>
+<pre><code>1f65833895ba3c8d50fe27bb8ad5303e  Bisulfite_Genome.tar.gz</code></pre>
+</section>
+</section>
+<section id="references" class="level1">
+<h1>6 REFERENCES</h1>
+<div id="refs" class="references csl-bib-body hanging-indent">
+<div id="ref-krueger2011" class="csl-entry">
+Krueger, Felix, and Simon R. Andrews. 2011. “Bismark: A Flexible Aligner and Methylation Caller for Bisulfite-Seq Applications.” <em>Bioinformatics</em> 27 (11): 1571–72. <a href="https://doi.org/10.1093/bioinformatics/btr167" class="uri">https://doi.org/10.1093/bioinformatics/btr167</a>.
+</div>
+</div>
+
+
+</section>
+
+ ]]></description>
+  <category>2025</category>
+  <category>Porites evermanni</category>
+  <category>E5</category>
+  <category>timeseries_molecular</category>
+  <category>bismark</category>
+  <category>bisulfite genome</category>
+  <guid>https://robertslab.github.io/sams-notebook/posts/2025/2025-01-29-Bisulfite-Genome---P.evermanni-BS-Genome-Using-Bismark/</guid>
+  <pubDate>Wed, 29 Jan 2025 08:00:00 GMT</pubDate>
+</item>
 <item>
   <title>Primer Design - C.gigas Alternative Oxidase AOX Variants Using Primer3</title>
   <dc:creator>Sam White</dc:creator>
@@ -20921,63 +21283,6 @@ Krueger, Felix, and Simon R. Andrews. 2011. “Bismark: A Flexible Aligner and M
   <guid>https://robertslab.github.io/sams-notebook/posts/2024/2024-11-25-Deduplication---C.virginica-CEASMALLR-WGBS-Using-Bismark/</guid>
   <pubDate>Mon, 25 Nov 2024 08:00:00 GMT</pubDate>
   <media:content url="https://robertslab.github.io/sams-notebook/posts/2024/2024-11-25-Deduplication---C.virginica-CEASMALLR-WGBS-Using-Bismark/20241125-cvir-ceasmallr-multiq-bismark_deduplication-plot.png" medium="image" type="image/png" height="96" width="144"/>
-</item>
-<item>
-  <title>Computer Management - Replace Failed Hard Drive on Gannet</title>
-  <dc:creator>Sam White</dc:creator>
-  <link>https://robertslab.github.io/sams-notebook/posts/2024/2024-11-18-Computer-Management---Replace-Failed-Hard-Drive-on-Gannet/</link>
-  <description><![CDATA[ 
-
-
-
-
-
-<p>Gannet was inaccessible, so went into lab to investigate. When I arrived, Gannet appeared to be powered on and the “Status” light was green, but none of the drive light indicators were on.</p>
-<div id="fig-no_lights" class="lightbox quarto-float quarto-figure quarto-figure-center anchored" alt="Blue power indicator is illuminated, however, all drive lights are out.">
-<figure class="quarto-float quarto-float-fig figure">
-<div aria-describedby="fig-no_lights-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
-<a href="./20241118-gannet-hdds-no_lights.jpg" class="lightbox" data-gallery="quarto-lightbox-gallery-1" title="Figure&nbsp;1: Blue power indicator is illuminated, however, all drive lights are out."><img src="https://robertslab.github.io/sams-notebook/posts/2024/2024-11-18-Computer-Management---Replace-Failed-Hard-Drive-on-Gannet/20241118-gannet-hdds-no_lights.jpg" class="img-fluid figure-img" alt="Blue power indicator is illuminated, however, all drive lights are out."></a>
-</div>
-<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-no_lights-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
-Figure&nbsp;1: Blue power indicator is illuminated, however, all drive lights are out.
-</figcaption>
-</figure>
-</div>
-<p>With no other recourse, I powered off Gannet and then powered it back on. All drive lights illuminated, with one of them red, indicating that drive had failed.</p>
-<div id="fig-one_red_light" class="lightbox quarto-float quarto-figure quarto-figure-center anchored" alt="All drive lights are green, except one, which is red.">
-<figure class="quarto-float quarto-float-fig figure">
-<div aria-describedby="fig-one_red_light-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
-<a href="./20241118-gannet-hdds-red_light.jpg" class="lightbox" data-gallery="quarto-lightbox-gallery-2" title="Figure&nbsp;2: All drive lights are green, except one, which is red."><img src="https://robertslab.github.io/sams-notebook/posts/2024/2024-11-18-Computer-Management---Replace-Failed-Hard-Drive-on-Gannet/20241118-gannet-hdds-red_light.jpg" class="img-fluid figure-img" alt="All drive lights are green, except one, which is red."></a>
-</div>
-<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-one_red_light-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
-Figure&nbsp;2: All drive lights are green, except one, which is red.
-</figcaption>
-</figure>
-</div>
-<p>I was then able to access the Synology DSM web interface, removed the bad drive from the storage pool, physically replaced the bad drive, and added the new drive to the storage pool.</p>
-<div id="fig-dsm_repair_mode" class="lightbox quarto-float quarto-figure quarto-figure-center anchored" alt="Screenshot of Synology DSM showing all drives as healthy and pool is in repair mode.">
-<figure class="quarto-float quarto-float-fig figure">
-<div aria-describedby="fig-dsm_repair_mode-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
-<a href="./20241118-gannet-hdd-replacement-repairing-01.png" class="lightbox" data-gallery="quarto-lightbox-gallery-3" title="Figure&nbsp;3: Screenshot of Synology DSM showing all drives as healthy and pool is in repair mode."><img src="https://robertslab.github.io/sams-notebook/posts/2024/2024-11-18-Computer-Management---Replace-Failed-Hard-Drive-on-Gannet/20241118-gannet-hdd-replacement-repairing-01.png" class="img-fluid figure-img" alt="Screenshot of Synology DSM showing all drives as healthy and pool is in repair mode."></a>
-</div>
-<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-dsm_repair_mode-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
-Figure&nbsp;3: Screenshot of Synology DSM showing all drives as healthy and pool is in repair mode.
-</figcaption>
-</figure>
-</div>
-<p>Everything looks good now, but it’s not clear why Synology marked the drive as bad. Quick S.M.A.R.T. tests run on Synology and using Seagate’s <a href="https://www.seagate.com/support/downloads/seatools/">SeaTools</a> indicated the drive was fine…</p>
-<p>I’ll run an extended test using <a href="https://www.seagate.com/support/downloads/seatools/">SeaTools</a> to see if that reports anything different.</p>
-
-
-
- ]]></description>
-  <category>2024</category>
-  <category>Gannet</category>
-  <category>HDD</category>
-  <category>Computer Management</category>
-  <guid>https://robertslab.github.io/sams-notebook/posts/2024/2024-11-18-Computer-Management---Replace-Failed-Hard-Drive-on-Gannet/</guid>
-  <pubDate>Mon, 18 Nov 2024 08:00:00 GMT</pubDate>
-  <media:content url="https://robertslab.github.io/sams-notebook/posts/2024/2024-11-18-Computer-Management---Replace-Failed-Hard-Drive-on-Gannet/20241118-gannet-hdd-replacement-repairing-01.png" medium="image" type="image/png" height="85" width="144"/>
 </item>
 </channel>
 </rss>
