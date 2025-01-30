@@ -1,0 +1,232 @@
+---
+author: Sam White
+toc-title: Contents
+toc-depth: 5
+toc-location: left
+title: Bisulfite Genome - P.tuahiniensis BS Genome Using Bismark
+date: '2025-01-29'
+draft: false
+engine: knitr
+categories: 
+  - "2025"
+  - "Pocillopora tuahiniensis"
+  - "bismark"
+  - "bisulfite"
+  - "coral"
+  - "E5"
+  - "timeseries_molecular"
+---
+# INTRO
+
+In preparation for [`Bismark`](https://github.com/FelixKrueger/Bismark) alignments, we needed to generate a bisulfite-converted genome for _P.tuahiniensis_, as one did not already exist.
+
+The resulting output files were added to the [Genomic Resources Handbook page](https://robertslab.github.io/resources/Genomic-Resources/) and the [timeseries_molecular repo Wiki](https://github.com/urol-e5/timeseries_molecular/wiki/).
+
+::: {.callout-note}
+The contents below are from markdown knitted from [`00.21-F-Ptua-BS-genome.Rmd`](https://github.com/urol-e5/timeseries_molecular/blob/7b0bb87d1c75abce7b1a486b8718f10e43d42bfe/F-Ptua/code/00.21-F-Ptua-BS-genome.Rmd) (commit `7b0bb87`).
+:::
+
+
+
+# 1 Background
+
+This Rmd file will create a bisulfite-converted genome by, and for,
+Bismark (Krueger and Andrews 2011) using the
+`Pocillopora_meandrina_HIv1.assembly.fasta` file. The genome FastA was
+taken from the [Cyanophora
+webpage](http://cyanophora.rutgers.edu/Pocillopora_meandrina/).
+
+Due to large sizes of output files, the files cannot be sync’d to
+GitHub. As such, the output directories will be gzipped and available
+here:
+
+- <https://gannet.fish.washington.edu/gitrepos/urol-e5/timeseries_molecular/F-Ptua/data/Bisulfite_Genome.tar.gz>
+  (972MB)
+
+- <https://gannet.fish.washington.edu/gitrepos/urol-e5/timeseries_molecular/F-Ptua/data/Bisulfite_Genome.tar.gz.md5>
+
+  - MD5: `654a93dacf6a5a72475ac644599f8f8e`
+
+# 2 Inputs
+
+- Directory containing a FastA file with the file extension: .fa or
+  .fasta (also ending in .gz).
+
+# 3 Outputs
+
+- CT Conversion
+
+  - Bowtie2 index files.
+  - CT conversion FastA
+
+- GA conversion
+
+  - Bowtie2 index files.
+  - GA conversion FastA.
+
+# 4 Create a Bash variables file
+
+This allows usage of Bash variables across R Markdown chunks.
+
+``` bash
+{
+echo "#### Assign Variables ####"
+echo ""
+
+echo "# Data directories"
+echo 'export timeseries_dir=/home/shared/8TB_HDD_01/sam/gitrepos/urol-e5/timeseries_molecular'
+echo 'export output_dir_top=${timeseries_dir}/F-Ptua/data'
+echo 'export genome_dir=${timeseries_dir}/F-Ptua/data'
+echo ""
+
+echo "# Paths to programs"
+echo 'export programs_dir="/home/shared"'
+echo 'export bismark_dir="${programs_dir}/Bismark-0.24.0"'
+echo 'export bowtie2_dir="${programs_dir}/bowtie2-2.4.4-linux-x86_64"'
+echo ""
+
+echo "# Set number of CPUs to use"
+echo 'export threads=20'
+echo ""
+
+echo "# Print formatting"
+echo 'export line="--------------------------------------------------------"'
+echo ""
+} > .bashvars
+
+cat .bashvars
+```
+
+    #### Assign Variables ####
+
+    # Data directories
+    export timeseries_dir=/home/shared/8TB_HDD_01/sam/gitrepos/urol-e5/timeseries_molecular
+    export output_dir_top=${timeseries_dir}/F-Ptua/data
+    export genome_dir=${timeseries_dir}/F-Ptua/data
+
+    # Paths to programs
+    export programs_dir="/home/shared"
+    export bismark_dir="${programs_dir}/Bismark-0.24.0"
+    export bowtie2_dir="${programs_dir}/bowtie2-2.4.4-linux-x86_64"
+
+    # Set number of CPUs to use
+    export threads=20
+
+    # Print formatting
+    export line="--------------------------------------------------------"
+
+# 5 Bisfulite conversion
+
+``` bash
+# Load bash variables into memory
+source .bashvars
+
+${bismark_dir}/bismark_genome_preparation \
+${genome_dir} \
+--parallel ${threads} \
+--bowtie2 \
+--path_to_aligner ${bowtie2_dir} \
+1> ${genome_dir}/Ptua-bs-genome.stderr
+```
+
+    Using 20 threads for the top and bottom strand indexing processes each, so using 40 cores in total
+    Writing bisulfite genomes out into a single MFA (multi FastA) file
+
+    Bisulfite Genome Indexer version v0.24.0 (last modified: 19 May 2022)
+
+    Step I - Prepare genome folders - completed
+
+
+
+    Step II - Genome bisulfite conversions - completed
+
+
+    Bismark Genome Preparation - Step III: Launching the Bowtie 2 indexer
+    Building a SMALL index
+    Building a SMALL index
+
+    =========================================
+
+    Parallel genome indexing complete. Enjoy!
+
+## 5.1 Inpect BS output
+
+``` bash
+# Load bash variables into memory
+source .bashvars
+
+tree -h ${genome_dir}/Bisulfite_Genome
+```
+
+    /home/shared/8TB_HDD_01/sam/gitrepos/urol-e5/timeseries_molecular/F-Ptua/data/Bisulfite_Genome
+    ├── [4.0K]  CT_conversion
+    │   ├── [124M]  BS_CT.1.bt2
+    │   ├── [ 90M]  BS_CT.2.bt2
+    │   ├── [1.9K]  BS_CT.3.bt2
+    │   ├── [ 90M]  BS_CT.4.bt2
+    │   ├── [124M]  BS_CT.rev.1.bt2
+    │   ├── [ 90M]  BS_CT.rev.2.bt2
+    │   └── [359M]  genome_mfa.CT_conversion.fa
+    └── [4.0K]  GA_conversion
+        ├── [124M]  BS_GA.1.bt2
+        ├── [ 90M]  BS_GA.2.bt2
+        ├── [1.9K]  BS_GA.3.bt2
+        ├── [ 90M]  BS_GA.4.bt2
+        ├── [124M]  BS_GA.rev.1.bt2
+        ├── [ 90M]  BS_GA.rev.2.bt2
+        └── [359M]  genome_mfa.GA_conversion.fa
+
+    2 directories, 14 files
+
+## 5.2 Compress output folder
+
+``` bash
+source .bashvars
+
+tar -czvf ${genome_dir}/Bisulfite_Genome.tar.gz ${genome_dir}/Bisulfite_Genome
+```
+
+    tar: Removing leading `/' from member names
+    /home/shared/8TB_HDD_01/sam/gitrepos/urol-e5/timeseries_molecular/F-Ptua/data/Bisulfite_Genome/
+    /home/shared/8TB_HDD_01/sam/gitrepos/urol-e5/timeseries_molecular/F-Ptua/data/Bisulfite_Genome/CT_conversion/
+    /home/shared/8TB_HDD_01/sam/gitrepos/urol-e5/timeseries_molecular/F-Ptua/data/Bisulfite_Genome/CT_conversion/BS_CT.4.bt2
+    /home/shared/8TB_HDD_01/sam/gitrepos/urol-e5/timeseries_molecular/F-Ptua/data/Bisulfite_Genome/CT_conversion/BS_CT.rev.1.bt2
+    /home/shared/8TB_HDD_01/sam/gitrepos/urol-e5/timeseries_molecular/F-Ptua/data/Bisulfite_Genome/CT_conversion/genome_mfa.CT_conversion.fa
+    /home/shared/8TB_HDD_01/sam/gitrepos/urol-e5/timeseries_molecular/F-Ptua/data/Bisulfite_Genome/CT_conversion/BS_CT.1.bt2
+    /home/shared/8TB_HDD_01/sam/gitrepos/urol-e5/timeseries_molecular/F-Ptua/data/Bisulfite_Genome/CT_conversion/BS_CT.2.bt2
+    /home/shared/8TB_HDD_01/sam/gitrepos/urol-e5/timeseries_molecular/F-Ptua/data/Bisulfite_Genome/CT_conversion/BS_CT.3.bt2
+    /home/shared/8TB_HDD_01/sam/gitrepos/urol-e5/timeseries_molecular/F-Ptua/data/Bisulfite_Genome/CT_conversion/BS_CT.rev.2.bt2
+    /home/shared/8TB_HDD_01/sam/gitrepos/urol-e5/timeseries_molecular/F-Ptua/data/Bisulfite_Genome/GA_conversion/
+    /home/shared/8TB_HDD_01/sam/gitrepos/urol-e5/timeseries_molecular/F-Ptua/data/Bisulfite_Genome/GA_conversion/BS_GA.rev.1.bt2
+    /home/shared/8TB_HDD_01/sam/gitrepos/urol-e5/timeseries_molecular/F-Ptua/data/Bisulfite_Genome/GA_conversion/BS_GA.2.bt2
+    /home/shared/8TB_HDD_01/sam/gitrepos/urol-e5/timeseries_molecular/F-Ptua/data/Bisulfite_Genome/GA_conversion/BS_GA.4.bt2
+    /home/shared/8TB_HDD_01/sam/gitrepos/urol-e5/timeseries_molecular/F-Ptua/data/Bisulfite_Genome/GA_conversion/genome_mfa.GA_conversion.fa
+    /home/shared/8TB_HDD_01/sam/gitrepos/urol-e5/timeseries_molecular/F-Ptua/data/Bisulfite_Genome/GA_conversion/BS_GA.rev.2.bt2
+    /home/shared/8TB_HDD_01/sam/gitrepos/urol-e5/timeseries_molecular/F-Ptua/data/Bisulfite_Genome/GA_conversion/BS_GA.1.bt2
+    /home/shared/8TB_HDD_01/sam/gitrepos/urol-e5/timeseries_molecular/F-Ptua/data/Bisulfite_Genome/GA_conversion/BS_GA.3.bt2
+
+## 5.3 Create MD5sum
+
+``` bash
+source .bashvars
+
+cd ${genome_dir}
+
+md5sum Bisulfite_Genome.tar.gz | tee Bisulfite_Genome.tar.gz.md5
+```
+
+    3cef8ba7316aa2bb15eafbbb438470f2  Bisulfite_Genome.tar.gz
+
+# 6 REFERENCES
+
+<div id="refs" class="references csl-bib-body hanging-indent">
+
+<div id="ref-krueger2011" class="csl-entry">
+
+Krueger, Felix, and Simon R. Andrews. 2011. “Bismark: A Flexible Aligner
+and Methylation Caller for Bisulfite-Seq Applications.” *Bioinformatics*
+27 (11): 1571–72. <https://doi.org/10.1093/bioinformatics/btr167>.
+
+</div>
+
+</div>
