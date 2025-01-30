@@ -374,6 +374,369 @@ Krueger, Felix, and Simon R. Andrews. 2011. “Bismark: A Flexible Aligner and M
   <pubDate>Wed, 29 Jan 2025 08:00:00 GMT</pubDate>
 </item>
 <item>
+  <title>Bisulfite Genome - P.tuahiniensis BS Genome Using Bismark</title>
+  <dc:creator>Sam White</dc:creator>
+  <link>https://robertslab.github.io/sams-notebook/posts/2025/2025-01-29-Bisulfite-Genome---P.tuahiniensis-BS-Genome-Using-Bismark/</link>
+  <description><![CDATA[ 
+
+
+
+
+
+<section id="intro" class="level1">
+<h1>INTRO</h1>
+<p>In preparation for <a href="https://github.com/FelixKrueger/Bismark"><code>Bismark</code></a> alignments, we needed to generate a bisulfite-converted genome for <em>P.tuahiniensis</em>, as one did not already exist.</p>
+<p>The resulting output files were added to the <a href="https://robertslab.github.io/resources/Genomic-Resources/">Genomic Resources Handbook page</a> and the <a href="https://github.com/urol-e5/timeseries_molecular/wiki/">timeseries_molecular repo Wiki</a>.</p>
+<div class="callout callout-style-default callout-note callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Note
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>The contents below are from markdown knitted from <a href="https://github.com/urol-e5/timeseries_molecular/blob/7b0bb87d1c75abce7b1a486b8718f10e43d42bfe/F-Ptua/code/00.21-F-Ptua-BS-genome.Rmd"><code>00.21-F-Ptua-BS-genome.Rmd</code></a> (commit <code>7b0bb87</code>).</p>
+</div>
+</div>
+</section>
+<section id="background" class="level1">
+<h1>1 Background</h1>
+<p>This Rmd file will create a bisulfite-converted genome by, and for, Bismark (Krueger and Andrews 2011) using the <code>Pocillopora_meandrina_HIv1.assembly.fasta</code> file. The genome FastA was taken from the <a href="http://cyanophora.rutgers.edu/Pocillopora_meandrina/">Cyanophora webpage</a>.</p>
+<p>Due to large sizes of output files, the files cannot be sync’d to GitHub. As such, the output directories will be gzipped and available here:</p>
+<ul>
+<li><p><a href="https://gannet.fish.washington.edu/gitrepos/urol-e5/timeseries_molecular/F-Ptua/data/Bisulfite_Genome.tar.gz" class="uri">https://gannet.fish.washington.edu/gitrepos/urol-e5/timeseries_molecular/F-Ptua/data/Bisulfite_Genome.tar.gz</a> (972MB)</p></li>
+<li><p><a href="https://gannet.fish.washington.edu/gitrepos/urol-e5/timeseries_molecular/F-Ptua/data/Bisulfite_Genome.tar.gz.md5" class="uri">https://gannet.fish.washington.edu/gitrepos/urol-e5/timeseries_molecular/F-Ptua/data/Bisulfite_Genome.tar.gz.md5</a></p>
+<ul>
+<li>MD5: <code>654a93dacf6a5a72475ac644599f8f8e</code></li>
+</ul></li>
+</ul>
+</section>
+<section id="inputs" class="level1">
+<h1>2 Inputs</h1>
+<ul>
+<li>Directory containing a FastA file with the file extension: .fa or .fasta (also ending in .gz).</li>
+</ul>
+</section>
+<section id="outputs" class="level1">
+<h1>3 Outputs</h1>
+<ul>
+<li><p>CT Conversion</p>
+<ul>
+<li>Bowtie2 index files.</li>
+<li>CT conversion FastA</li>
+</ul></li>
+<li><p>GA conversion</p>
+<ul>
+<li>Bowtie2 index files.</li>
+<li>GA conversion FastA.</li>
+</ul></li>
+</ul>
+</section>
+<section id="create-a-bash-variables-file" class="level1">
+<h1>4 Create a Bash variables file</h1>
+<p>This allows usage of Bash variables across R Markdown chunks.</p>
+<div class="sourceCode" id="cb1" style="background: #f1f3f5;"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb1-1"><span class="kw" style="color: #003B4F;
+background-color: null;
+font-weight: bold;
+font-style: inherit;">{</span></span>
+<span id="cb1-2"><span class="bu" style="color: null;
+background-color: null;
+font-style: inherit;">echo</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"#### Assign Variables ####"</span></span>
+<span id="cb1-3"><span class="bu" style="color: null;
+background-color: null;
+font-style: inherit;">echo</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">""</span></span>
+<span id="cb1-4"></span>
+<span id="cb1-5"><span class="bu" style="color: null;
+background-color: null;
+font-style: inherit;">echo</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"# Data directories"</span></span>
+<span id="cb1-6"><span class="bu" style="color: null;
+background-color: null;
+font-style: inherit;">echo</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">'export timeseries_dir=/home/shared/8TB_HDD_01/sam/gitrepos/urol-e5/timeseries_molecular'</span></span>
+<span id="cb1-7"><span class="bu" style="color: null;
+background-color: null;
+font-style: inherit;">echo</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">'export output_dir_top=${timeseries_dir}/F-Ptua/data'</span></span>
+<span id="cb1-8"><span class="bu" style="color: null;
+background-color: null;
+font-style: inherit;">echo</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">'export genome_dir=${timeseries_dir}/F-Ptua/data'</span></span>
+<span id="cb1-9"><span class="bu" style="color: null;
+background-color: null;
+font-style: inherit;">echo</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">""</span></span>
+<span id="cb1-10"></span>
+<span id="cb1-11"><span class="bu" style="color: null;
+background-color: null;
+font-style: inherit;">echo</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"# Paths to programs"</span></span>
+<span id="cb1-12"><span class="bu" style="color: null;
+background-color: null;
+font-style: inherit;">echo</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">'export programs_dir="/home/shared"'</span></span>
+<span id="cb1-13"><span class="bu" style="color: null;
+background-color: null;
+font-style: inherit;">echo</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">'export bismark_dir="${programs_dir}/Bismark-0.24.0"'</span></span>
+<span id="cb1-14"><span class="bu" style="color: null;
+background-color: null;
+font-style: inherit;">echo</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">'export bowtie2_dir="${programs_dir}/bowtie2-2.4.4-linux-x86_64"'</span></span>
+<span id="cb1-15"><span class="bu" style="color: null;
+background-color: null;
+font-style: inherit;">echo</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">""</span></span>
+<span id="cb1-16"></span>
+<span id="cb1-17"><span class="bu" style="color: null;
+background-color: null;
+font-style: inherit;">echo</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"# Set number of CPUs to use"</span></span>
+<span id="cb1-18"><span class="bu" style="color: null;
+background-color: null;
+font-style: inherit;">echo</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">'export threads=20'</span></span>
+<span id="cb1-19"><span class="bu" style="color: null;
+background-color: null;
+font-style: inherit;">echo</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">""</span></span>
+<span id="cb1-20"></span>
+<span id="cb1-21"><span class="bu" style="color: null;
+background-color: null;
+font-style: inherit;">echo</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"# Print formatting"</span></span>
+<span id="cb1-22"><span class="bu" style="color: null;
+background-color: null;
+font-style: inherit;">echo</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">'export line="--------------------------------------------------------"'</span></span>
+<span id="cb1-23"><span class="bu" style="color: null;
+background-color: null;
+font-style: inherit;">echo</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">""</span></span>
+<span id="cb1-24"><span class="kw" style="color: #003B4F;
+background-color: null;
+font-weight: bold;
+font-style: inherit;">}</span> <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">&gt;</span> .bashvars</span>
+<span id="cb1-25"></span>
+<span id="cb1-26"><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">cat</span> .bashvars</span></code></pre></div>
+<pre><code>#### Assign Variables ####
+
+# Data directories
+export timeseries_dir=/home/shared/8TB_HDD_01/sam/gitrepos/urol-e5/timeseries_molecular
+export output_dir_top=${timeseries_dir}/F-Ptua/data
+export genome_dir=${timeseries_dir}/F-Ptua/data
+
+# Paths to programs
+export programs_dir="/home/shared"
+export bismark_dir="${programs_dir}/Bismark-0.24.0"
+export bowtie2_dir="${programs_dir}/bowtie2-2.4.4-linux-x86_64"
+
+# Set number of CPUs to use
+export threads=20
+
+# Print formatting
+export line="--------------------------------------------------------"</code></pre>
+</section>
+<section id="bisfulite-conversion" class="level1">
+<h1>5 Bisfulite conversion</h1>
+<div class="sourceCode" id="cb3" style="background: #f1f3f5;"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb3-1"><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># Load bash variables into memory</span></span>
+<span id="cb3-2"><span class="bu" style="color: null;
+background-color: null;
+font-style: inherit;">source</span> .bashvars</span>
+<span id="cb3-3"></span>
+<span id="cb3-4"><span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">${bismark_dir}</span><span class="ex" style="color: null;
+background-color: null;
+font-style: inherit;">/bismark_genome_preparation</span> <span class="dt" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">\</span></span>
+<span id="cb3-5"><span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">${genome_dir}</span> <span class="dt" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">\</span></span>
+<span id="cb3-6">--parallel <span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">${threads}</span> <span class="dt" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">\</span></span>
+<span id="cb3-7">--bowtie2 <span class="dt" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">\</span></span>
+<span id="cb3-8">--path_to_aligner <span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">${bowtie2_dir}</span> <span class="dt" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">\</span></span>
+<span id="cb3-9">1<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">&gt;</span> <span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">${genome_dir}</span>/Ptua-bs-genome.stderr</span></code></pre></div>
+<pre><code>Using 20 threads for the top and bottom strand indexing processes each, so using 40 cores in total
+Writing bisulfite genomes out into a single MFA (multi FastA) file
+
+Bisulfite Genome Indexer version v0.24.0 (last modified: 19 May 2022)
+
+Step I - Prepare genome folders - completed
+
+
+
+Step II - Genome bisulfite conversions - completed
+
+
+Bismark Genome Preparation - Step III: Launching the Bowtie 2 indexer
+Building a SMALL index
+Building a SMALL index
+
+=========================================
+
+Parallel genome indexing complete. Enjoy!</code></pre>
+<section id="inpect-bs-output" class="level2">
+<h2 class="anchored" data-anchor-id="inpect-bs-output">5.1 Inpect BS output</h2>
+<div class="sourceCode" id="cb5" style="background: #f1f3f5;"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb5-1"><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># Load bash variables into memory</span></span>
+<span id="cb5-2"><span class="bu" style="color: null;
+background-color: null;
+font-style: inherit;">source</span> .bashvars</span>
+<span id="cb5-3"></span>
+<span id="cb5-4"><span class="ex" style="color: null;
+background-color: null;
+font-style: inherit;">tree</span> <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">-h</span> <span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">${genome_dir}</span>/Bisulfite_Genome</span></code></pre></div>
+<pre><code>/home/shared/8TB_HDD_01/sam/gitrepos/urol-e5/timeseries_molecular/F-Ptua/data/Bisulfite_Genome
+├── [4.0K]  CT_conversion
+│&nbsp;&nbsp; ├── [124M]  BS_CT.1.bt2
+│&nbsp;&nbsp; ├── [ 90M]  BS_CT.2.bt2
+│&nbsp;&nbsp; ├── [1.9K]  BS_CT.3.bt2
+│&nbsp;&nbsp; ├── [ 90M]  BS_CT.4.bt2
+│&nbsp;&nbsp; ├── [124M]  BS_CT.rev.1.bt2
+│&nbsp;&nbsp; ├── [ 90M]  BS_CT.rev.2.bt2
+│&nbsp;&nbsp; └── [359M]  genome_mfa.CT_conversion.fa
+└── [4.0K]  GA_conversion
+    ├── [124M]  BS_GA.1.bt2
+    ├── [ 90M]  BS_GA.2.bt2
+    ├── [1.9K]  BS_GA.3.bt2
+    ├── [ 90M]  BS_GA.4.bt2
+    ├── [124M]  BS_GA.rev.1.bt2
+    ├── [ 90M]  BS_GA.rev.2.bt2
+    └── [359M]  genome_mfa.GA_conversion.fa
+
+2 directories, 14 files</code></pre>
+</section>
+<section id="compress-output-folder" class="level2">
+<h2 class="anchored" data-anchor-id="compress-output-folder">5.2 Compress output folder</h2>
+<div class="sourceCode" id="cb7" style="background: #f1f3f5;"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb7-1"><span class="bu" style="color: null;
+background-color: null;
+font-style: inherit;">source</span> .bashvars</span>
+<span id="cb7-2"></span>
+<span id="cb7-3"><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">tar</span> <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">-czvf</span> <span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">${genome_dir}</span>/Bisulfite_Genome.tar.gz <span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">${genome_dir}</span>/Bisulfite_Genome</span></code></pre></div>
+<pre><code>tar: Removing leading `/' from member names
+/home/shared/8TB_HDD_01/sam/gitrepos/urol-e5/timeseries_molecular/F-Ptua/data/Bisulfite_Genome/
+/home/shared/8TB_HDD_01/sam/gitrepos/urol-e5/timeseries_molecular/F-Ptua/data/Bisulfite_Genome/CT_conversion/
+/home/shared/8TB_HDD_01/sam/gitrepos/urol-e5/timeseries_molecular/F-Ptua/data/Bisulfite_Genome/CT_conversion/BS_CT.4.bt2
+/home/shared/8TB_HDD_01/sam/gitrepos/urol-e5/timeseries_molecular/F-Ptua/data/Bisulfite_Genome/CT_conversion/BS_CT.rev.1.bt2
+/home/shared/8TB_HDD_01/sam/gitrepos/urol-e5/timeseries_molecular/F-Ptua/data/Bisulfite_Genome/CT_conversion/genome_mfa.CT_conversion.fa
+/home/shared/8TB_HDD_01/sam/gitrepos/urol-e5/timeseries_molecular/F-Ptua/data/Bisulfite_Genome/CT_conversion/BS_CT.1.bt2
+/home/shared/8TB_HDD_01/sam/gitrepos/urol-e5/timeseries_molecular/F-Ptua/data/Bisulfite_Genome/CT_conversion/BS_CT.2.bt2
+/home/shared/8TB_HDD_01/sam/gitrepos/urol-e5/timeseries_molecular/F-Ptua/data/Bisulfite_Genome/CT_conversion/BS_CT.3.bt2
+/home/shared/8TB_HDD_01/sam/gitrepos/urol-e5/timeseries_molecular/F-Ptua/data/Bisulfite_Genome/CT_conversion/BS_CT.rev.2.bt2
+/home/shared/8TB_HDD_01/sam/gitrepos/urol-e5/timeseries_molecular/F-Ptua/data/Bisulfite_Genome/GA_conversion/
+/home/shared/8TB_HDD_01/sam/gitrepos/urol-e5/timeseries_molecular/F-Ptua/data/Bisulfite_Genome/GA_conversion/BS_GA.rev.1.bt2
+/home/shared/8TB_HDD_01/sam/gitrepos/urol-e5/timeseries_molecular/F-Ptua/data/Bisulfite_Genome/GA_conversion/BS_GA.2.bt2
+/home/shared/8TB_HDD_01/sam/gitrepos/urol-e5/timeseries_molecular/F-Ptua/data/Bisulfite_Genome/GA_conversion/BS_GA.4.bt2
+/home/shared/8TB_HDD_01/sam/gitrepos/urol-e5/timeseries_molecular/F-Ptua/data/Bisulfite_Genome/GA_conversion/genome_mfa.GA_conversion.fa
+/home/shared/8TB_HDD_01/sam/gitrepos/urol-e5/timeseries_molecular/F-Ptua/data/Bisulfite_Genome/GA_conversion/BS_GA.rev.2.bt2
+/home/shared/8TB_HDD_01/sam/gitrepos/urol-e5/timeseries_molecular/F-Ptua/data/Bisulfite_Genome/GA_conversion/BS_GA.1.bt2
+/home/shared/8TB_HDD_01/sam/gitrepos/urol-e5/timeseries_molecular/F-Ptua/data/Bisulfite_Genome/GA_conversion/BS_GA.3.bt2</code></pre>
+</section>
+<section id="create-md5sum" class="level2">
+<h2 class="anchored" data-anchor-id="create-md5sum">5.3 Create MD5sum</h2>
+<div class="sourceCode" id="cb9" style="background: #f1f3f5;"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb9-1"><span class="bu" style="color: null;
+background-color: null;
+font-style: inherit;">source</span> .bashvars</span>
+<span id="cb9-2"></span>
+<span id="cb9-3"><span class="bu" style="color: null;
+background-color: null;
+font-style: inherit;">cd</span> <span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">${genome_dir}</span></span>
+<span id="cb9-4"></span>
+<span id="cb9-5"><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">md5sum</span> Bisulfite_Genome.tar.gz <span class="kw" style="color: #003B4F;
+background-color: null;
+font-weight: bold;
+font-style: inherit;">|</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">tee</span> Bisulfite_Genome.tar.gz.md5</span></code></pre></div>
+<pre><code>3cef8ba7316aa2bb15eafbbb438470f2  Bisulfite_Genome.tar.gz</code></pre>
+</section>
+</section>
+<section id="references" class="level1">
+<h1>6 REFERENCES</h1>
+<div id="refs" class="references csl-bib-body hanging-indent">
+<div id="ref-krueger2011" class="csl-entry">
+Krueger, Felix, and Simon R. Andrews. 2011. “Bismark: A Flexible Aligner and Methylation Caller for Bisulfite-Seq Applications.” <em>Bioinformatics</em> 27 (11): 1571–72. <a href="https://doi.org/10.1093/bioinformatics/btr167" class="uri">https://doi.org/10.1093/bioinformatics/btr167</a>.
+</div>
+</div>
+
+
+</section>
+
+ ]]></description>
+  <category>2025</category>
+  <category>Pocillopora tuahiniensis</category>
+  <category>bismark</category>
+  <category>bisulfite</category>
+  <category>coral</category>
+  <category>E5</category>
+  <category>timeseries_molecular</category>
+  <guid>https://robertslab.github.io/sams-notebook/posts/2025/2025-01-29-Bisulfite-Genome---P.tuahiniensis-BS-Genome-Using-Bismark/</guid>
+  <pubDate>Wed, 29 Jan 2025 08:00:00 GMT</pubDate>
+</item>
+<item>
   <title>Primer Design - C.gigas Alternative Oxidase AOX Variants Using Primer3</title>
   <dc:creator>Sam White</dc:creator>
   <link>https://robertslab.github.io/sams-notebook/posts/2025/2025-01-17-Primer-Design---C.gigas-Alternative-Oxidase-AOX-Variants-Using-Primer3/</link>
@@ -20531,758 +20894,6 @@ Krueger, Felix, and Simon R. Andrews. 2011. “Bismark: A Flexible Aligner and M
   <guid>https://robertslab.github.io/sams-notebook/posts/2024/2024-11-26-Methylation-Extraction---C.virginica-CEASMALLR-WGBS-Using-Bismark/</guid>
   <pubDate>Tue, 26 Nov 2024 08:00:00 GMT</pubDate>
   <media:content url="https://robertslab.github.io/sams-notebook/posts/2024/2024-11-26-Methylation-Extraction---C.virginica-CEASMALLR-WGBS-Using-Bismark/20241126-cvir-ceasmallr-multiqc-cytosine_methylation-plot.png" medium="image" type="image/png" height="28" width="144"/>
-</item>
-<item>
-  <title>Deduplication - C.virginica CEASMALLR WGBS Using Bismark</title>
-  <dc:creator>Sam White</dc:creator>
-  <link>https://robertslab.github.io/sams-notebook/posts/2024/2024-11-25-Deduplication---C.virginica-CEASMALLR-WGBS-Using-Bismark/</link>
-  <description><![CDATA[ 
-
-
-
-
-
-<section id="intro" class="level1">
-<h1>INTRO</h1>
-<p>This notebook is part of the <a href="https://github.com/sr320/ceasmallr">ceasmallr</a> (GitHub repo) project, comparing DNA methylation in <a href="https://en.wikipedia.org/wiki/Eastern_oyster"><em>Crassostrea virginica</em> (Eastern oyster)</a> larvae and zygotes, via whole-genome bisulfite sequencing (WGBS).</p>
-<p>Sequences were <a href="../../../posts/2024/2024-11-18-Alignment---C.virginica-CEASMALLR-WGBS-Using-Bismark-on-Klone-Array/index.html">previously align with Bismark on 20241118</a>.</p>
-<p>Next step was to perform deduplication, using <a href="https://felixkrueger.github.io/Bismark/bismark/deduplication/">Bismark <code>deduplication</code></a> (Bismark manual).</p>
-<div class="callout callout-style-default callout-note callout-titled">
-<div class="callout-header d-flex align-content-center">
-<div class="callout-icon-container">
-<i class="callout-icon"></i>
-</div>
-<div class="callout-title-container flex-fill">
-Note
-</div>
-</div>
-<div class="callout-body-container callout-body">
-<p>This notebook was copied from knitted markdown from <a href="https://github.com/sr320/ceasmallr/blob/1d64c7032df8c961b65cb9914d58b82559229cff/code/02.10-bismark-deduplication.Rmd"><code>02.10-bismark-deduplication.Rmd</code></a> (commit <code>1d64c70</code>)/</p>
-</div>
-</div>
-</section>
-<section id="description" class="level1">
-<h1>1 DESCRIPTION</h1>
-<section id="inputs" class="level2">
-<h2 class="anchored" data-anchor-id="inputs">1.1 Inputs</h2>
-<p>This notebook is a continuation of using <a href="https://felixkrueger.github.io/Bismark/">Bismark</a> (Krueger and Andrews 2011) to perform methylation analysis. Read alignments were run in <a href="./02.00-bismark-bowtie2-alignment.Rmd">02.00-bismark-bowtie2-alignment.Rmd</a>. This step will perform <a href="https://felixkrueger.github.io/Bismark/bismark/deduplication/">deduplication</a> (Bismark manual) of the BAM files generated by alignment. Results will be summarized by <a href="https://github.com/MultiQC/MultiQC">MultiQC</a> (Ewels et al.&nbsp;2016).</p>
-</section>
-<section id="outputs" class="level2">
-<h2 class="anchored" data-anchor-id="outputs">1.2 Outputs</h2>
-<ul>
-<li><p><code>*_dedup.sorted.bam</code>: Deduplicated, sorted BAMs.</p></li>
-<li><p><code>*_dedup.sorted.bam.bai</code>: Deduplicated, sorted BAM index file. Useful for IGV.</p></li>
-<li><p><code>*.deduplicated.bam</code>: Deduplicated BAMs. These are <em>not</em> sorted.</p></li>
-<li><p><code>*.deduplication_report.txt</code>: Individual summary reports for each deduplication process.</p></li>
-<li><p><code>multiqc_report.html</code>: A summary report of the alignment results generated by <a href="https://github.com/MultiQC/MultiQC">MultiQC</a>, in HTML format.</p></li>
-</ul>
-<p>Due to the large file sizes of BAMS, these cannot be hosted in the <a href="https://github.com/sr320/ceasmallr">ceasmallr GitHub repo</a>. As such these files are available for download here:</p>
-<ul>
-<li><a href="https://gannet.fish.washington.edu/gitrepos/ceasmallr/output/02.10-bismark-deduplication/" class="uri">https://gannet.fish.washington.edu/gitrepos/ceasmallr/output/02.10-bismark-deduplication/</a></li>
-</ul>
-</section>
-</section>
-<section id="create-a-bash-variables-file" class="level1">
-<h1>2 Create a Bash variables file</h1>
-<p>This allows usage of Bash variables across R Markdown chunks.</p>
-<div class="sourceCode" id="cb1" style="background: #f1f3f5;"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb1-1"><span class="kw" style="color: #003B4F;
-background-color: null;
-font-weight: bold;
-font-style: inherit;">{</span></span>
-<span id="cb1-2"><span class="bu" style="color: null;
-background-color: null;
-font-style: inherit;">echo</span> <span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"#### Assign Variables ####"</span></span>
-<span id="cb1-3"><span class="bu" style="color: null;
-background-color: null;
-font-style: inherit;">echo</span> <span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">""</span></span>
-<span id="cb1-4"></span>
-<span id="cb1-5"><span class="bu" style="color: null;
-background-color: null;
-font-style: inherit;">echo</span> <span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"# Data directories"</span></span>
-<span id="cb1-6"><span class="bu" style="color: null;
-background-color: null;
-font-style: inherit;">echo</span> <span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">'export repo_dir=/home/shared/8TB_HDD_01/sam/gitrepos/ceasmallr'</span></span>
-<span id="cb1-7"><span class="bu" style="color: null;
-background-color: null;
-font-style: inherit;">echo</span> <span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">'export output_dir_top=${repo_dir}/output/02.10-bismark-deduplication'</span></span>
-<span id="cb1-8"><span class="bu" style="color: null;
-background-color: null;
-font-style: inherit;">echo</span> <span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">'export alignment_dir="${repo_dir}/output/02.00-bismark-bowtie2-alignment"'</span></span>
-<span id="cb1-9"><span class="bu" style="color: null;
-background-color: null;
-font-style: inherit;">echo</span> <span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">""</span></span>
-<span id="cb1-10"></span>
-<span id="cb1-11"></span>
-<span id="cb1-12"><span class="bu" style="color: null;
-background-color: null;
-font-style: inherit;">echo</span> <span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"# Paths to programs"</span></span>
-<span id="cb1-13"><span class="bu" style="color: null;
-background-color: null;
-font-style: inherit;">echo</span> <span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">'export programs_dir="/home/shared"'</span></span>
-<span id="cb1-14"><span class="bu" style="color: null;
-background-color: null;
-font-style: inherit;">echo</span> <span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">'export bismark_dir="${programs_dir}/Bismark-0.24.0"'</span></span>
-<span id="cb1-15"><span class="bu" style="color: null;
-background-color: null;
-font-style: inherit;">echo</span> <span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">'export bowtie2_dir="${programs_dir}/bowtie2-2.4.4-linux-x86_64"'</span></span>
-<span id="cb1-16"><span class="bu" style="color: null;
-background-color: null;
-font-style: inherit;">echo</span> <span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">'export multiqc="/home/sam/programs/mambaforge/bin/multiqc"'</span></span>
-<span id="cb1-17"><span class="bu" style="color: null;
-background-color: null;
-font-style: inherit;">echo</span> <span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">'export samtools_dir="${programs_dir}/samtools-1.12"'</span></span>
-<span id="cb1-18"><span class="bu" style="color: null;
-background-color: null;
-font-style: inherit;">echo</span> <span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">""</span></span>
-<span id="cb1-19"></span>
-<span id="cb1-20"><span class="bu" style="color: null;
-background-color: null;
-font-style: inherit;">echo</span> <span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"# Set number of CPUs to use"</span></span>
-<span id="cb1-21"><span class="bu" style="color: null;
-background-color: null;
-font-style: inherit;">echo</span> <span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">'export threads=40'</span></span>
-<span id="cb1-22"></span>
-<span id="cb1-23"></span>
-<span id="cb1-24"><span class="bu" style="color: null;
-background-color: null;
-font-style: inherit;">echo</span> <span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"# Print formatting"</span></span>
-<span id="cb1-25"><span class="bu" style="color: null;
-background-color: null;
-font-style: inherit;">echo</span> <span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">'export line="--------------------------------------------------------"'</span></span>
-<span id="cb1-26"><span class="bu" style="color: null;
-background-color: null;
-font-style: inherit;">echo</span> <span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">""</span></span>
-<span id="cb1-27"><span class="kw" style="color: #003B4F;
-background-color: null;
-font-weight: bold;
-font-style: inherit;">}</span> <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">&gt;</span> .bashvars</span>
-<span id="cb1-28"></span>
-<span id="cb1-29"><span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">cat</span> .bashvars</span></code></pre></div>
-<pre><code>#### Assign Variables ####
-
-# Data directories
-export repo_dir=/home/shared/8TB_HDD_01/sam/gitrepos/ceasmallr
-export output_dir_top=${repo_dir}/output/02.10-bismark-deduplication
-export alignment_dir="${repo_dir}/output/02.00-bismark-bowtie2-alignment"
-
-# Paths to programs
-export programs_dir="/home/shared"
-export bismark_dir="${programs_dir}/Bismark-0.24.0"
-export bowtie2_dir="${programs_dir}/bowtie2-2.4.4-linux-x86_64"
-export multiqc="/home/sam/programs/mambaforge/bin/multiqc"
-export samtools_dir="${programs_dir}/samtools-1.12"
-
-# Set number of CPUs to use
-export threads=40
-# Print formatting
-export line="--------------------------------------------------------"</code></pre>
-</section>
-<section id="deduplication" class="level1">
-<h1>3 Deduplication</h1>
-<div class="sourceCode" id="cb3" style="background: #f1f3f5;"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb3-1"><span class="co" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;"># Load bash variables into memory</span></span>
-<span id="cb3-2"><span class="bu" style="color: null;
-background-color: null;
-font-style: inherit;">source</span> .bashvars</span>
-<span id="cb3-3"></span>
-<span id="cb3-4"><span class="co" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;"># Make output directory, if it doesn't exist</span></span>
-<span id="cb3-5"><span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">mkdir</span> <span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">--parents</span> <span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"</span><span class="va" style="color: #111111;
-background-color: null;
-font-style: inherit;">${output_dir_top}</span><span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"</span></span>
-<span id="cb3-6"></span>
-<span id="cb3-7"><span class="bu" style="color: null;
-background-color: null;
-font-style: inherit;">cd</span> <span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"</span><span class="va" style="color: #111111;
-background-color: null;
-font-style: inherit;">${alignment_dir}</span><span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"</span></span>
-<span id="cb3-8"></span>
-<span id="cb3-9"><span class="cf" style="color: #003B4F;
-background-color: null;
-font-weight: bold;
-font-style: inherit;">for</span> bam <span class="kw" style="color: #003B4F;
-background-color: null;
-font-weight: bold;
-font-style: inherit;">in</span> <span class="pp" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">*</span>_bismark_bt2_pe.bam</span>
-<span id="cb3-10"><span class="cf" style="color: #003B4F;
-background-color: null;
-font-weight: bold;
-font-style: inherit;">do</span></span>
-<span id="cb3-11">  <span class="co" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;"># Set stderr filename</span></span>
-<span id="cb3-12">  <span class="va" style="color: #111111;
-background-color: null;
-font-style: inherit;">stderr_name</span><span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">=</span><span class="va" style="color: #111111;
-background-color: null;
-font-style: inherit;">$(</span><span class="bu" style="color: null;
-background-color: null;
-font-style: inherit;">echo</span> <span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"</span><span class="va" style="color: #111111;
-background-color: null;
-font-style: inherit;">${bam}</span><span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"</span> <span class="kw" style="color: #003B4F;
-background-color: null;
-font-weight: bold;
-font-style: inherit;">|</span> <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">awk</span> <span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">-F</span><span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"."</span> <span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">'{print $1"."$2"."$3".deduplication.stderr"}'</span><span class="va" style="color: #111111;
-background-color: null;
-font-style: inherit;">)</span></span>
-<span id="cb3-13">  </span>
-<span id="cb3-14">  <span class="co" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;"># Run deduplication</span></span>
-<span id="cb3-15">  <span class="va" style="color: #111111;
-background-color: null;
-font-style: inherit;">${bismark_dir}</span><span class="ex" style="color: null;
-background-color: null;
-font-style: inherit;">/deduplicate_bismark</span> <span class="dt" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">\</span></span>
-<span id="cb3-16">  <span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">--samtools_path</span> <span class="va" style="color: #111111;
-background-color: null;
-font-style: inherit;">${samtools_dir}</span> <span class="dt" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">\</span></span>
-<span id="cb3-17">  <span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">--paired</span> <span class="dt" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">\</span></span>
-<span id="cb3-18">  <span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">--bam</span> <span class="dt" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">\</span></span>
-<span id="cb3-19">  <span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">--output_dir</span> <span class="va" style="color: #111111;
-background-color: null;
-font-style: inherit;">${output_dir_top}</span> <span class="dt" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">\</span></span>
-<span id="cb3-20">  <span class="va" style="color: #111111;
-background-color: null;
-font-style: inherit;">${bam}</span> <span class="dt" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">\</span></span>
-<span id="cb3-21">  <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">&gt;</span> <span class="va" style="color: #111111;
-background-color: null;
-font-style: inherit;">${output_dir_top}</span>/<span class="va" style="color: #111111;
-background-color: null;
-font-style: inherit;">${stderr_name}</span> <span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">2</span><span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">&gt;&amp;</span><span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">1</span></span>
-<span id="cb3-22"><span class="cf" style="color: #003B4F;
-background-color: null;
-font-weight: bold;
-font-style: inherit;">done</span></span></code></pre></div>
-</section>
-<section id="sorting" class="level1">
-<h1>4 Sorting</h1>
-<div class="sourceCode" id="cb4" style="background: #f1f3f5;"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb4-1"><span class="co" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;"># Load bash variables into memory</span></span>
-<span id="cb4-2"><span class="bu" style="color: null;
-background-color: null;
-font-style: inherit;">source</span> .bashvars</span>
-<span id="cb4-3"></span>
-<span id="cb4-4"><span class="bu" style="color: null;
-background-color: null;
-font-style: inherit;">cd</span> <span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"</span><span class="va" style="color: #111111;
-background-color: null;
-font-style: inherit;">${output_dir_top}</span><span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"</span></span>
-<span id="cb4-5"></span>
-<span id="cb4-6"></span>
-<span id="cb4-7"><span class="co" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">#Sorting for Downstream Applications</span></span>
-<span id="cb4-8"><span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">find</span> <span class="pp" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">*</span>deduplicated.bam <span class="dt" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">\</span></span>
-<span id="cb4-9"><span class="kw" style="color: #003B4F;
-background-color: null;
-font-weight: bold;
-font-style: inherit;">|</span> <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">xargs</span> basename <span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">-s</span> _R1_001.fastp-trim.20220827_bismark_bt2_pe.deduplicated.bam <span class="dt" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">\</span></span>
-<span id="cb4-10"><span class="kw" style="color: #003B4F;
-background-color: null;
-font-weight: bold;
-font-style: inherit;">|</span> <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">xargs</span> <span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">-I{}</span> <span class="va" style="color: #111111;
-background-color: null;
-font-style: inherit;">${samtools_dir}</span>/samtools <span class="dt" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">\</span></span>
-<span id="cb4-11">sort {}_R1_001.fastp-trim.20220827_bismark_bt2_pe.deduplicated.bam <span class="dt" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">\</span></span>
-<span id="cb4-12">-@ <span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"</span><span class="va" style="color: #111111;
-background-color: null;
-font-style: inherit;">${threads}</span><span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"</span> <span class="dt" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">\</span></span>
-<span id="cb4-13">-o {}_dedup.sorted.bam</span></code></pre></div>
-</section>
-<section id="indexing-for-downstream-applications" class="level1">
-<h1>5 Indexing for Downstream Applications</h1>
-<div class="sourceCode" id="cb5" style="background: #f1f3f5;"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb5-1"><span class="co" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;"># Load bash variables into memory</span></span>
-<span id="cb5-2"><span class="bu" style="color: null;
-background-color: null;
-font-style: inherit;">source</span> .bashvars</span>
-<span id="cb5-3"></span>
-<span id="cb5-4"><span class="bu" style="color: null;
-background-color: null;
-font-style: inherit;">cd</span> <span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"</span><span class="va" style="color: #111111;
-background-color: null;
-font-style: inherit;">${output_dir_top}</span><span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"</span></span>
-<span id="cb5-5"><span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">find</span> <span class="pp" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">*</span>dedup.sorted.bam <span class="dt" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">\</span></span>
-<span id="cb5-6"><span class="kw" style="color: #003B4F;
-background-color: null;
-font-weight: bold;
-font-style: inherit;">|</span> <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">xargs</span> basename <span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">-s</span> _dedup.sorted.bam <span class="dt" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">\</span></span>
-<span id="cb5-7"><span class="kw" style="color: #003B4F;
-background-color: null;
-font-weight: bold;
-font-style: inherit;">|</span> <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">xargs</span> <span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">-I{}</span> <span class="va" style="color: #111111;
-background-color: null;
-font-style: inherit;">${samtools_dir}</span>/samtools <span class="dt" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">\</span></span>
-<span id="cb5-8">index {}_dedup.sorted.bam</span></code></pre></div>
-</section>
-<section id="multiqc" class="level1">
-<h1>6 MultiQC</h1>
-<div class="sourceCode" id="cb6" style="background: #f1f3f5;"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb6-1"><span class="co" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;"># Load bash variables into memory</span></span>
-<span id="cb6-2"><span class="bu" style="color: null;
-background-color: null;
-font-style: inherit;">source</span> .bashvars</span>
-<span id="cb6-3"></span>
-<span id="cb6-4"><span class="bu" style="color: null;
-background-color: null;
-font-style: inherit;">cd</span> <span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"</span><span class="va" style="color: #111111;
-background-color: null;
-font-style: inherit;">${output_dir_top}</span><span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"</span></span>
-<span id="cb6-5"></span>
-<span id="cb6-6"><span class="va" style="color: #111111;
-background-color: null;
-font-style: inherit;">${multiqc}</span> .</span></code></pre></div>
-</section>
-<section id="checksums" class="level1">
-<h1>7 Checksums</h1>
-<div class="sourceCode" id="cb7" style="background: #f1f3f5;"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb7-1"><span class="co" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;"># Load bash variables into memory</span></span>
-<span id="cb7-2"><span class="bu" style="color: null;
-background-color: null;
-font-style: inherit;">source</span> .bashvars</span>
-<span id="cb7-3"></span>
-<span id="cb7-4"><span class="bu" style="color: null;
-background-color: null;
-font-style: inherit;">cd</span> <span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"</span><span class="va" style="color: #111111;
-background-color: null;
-font-style: inherit;">${output_dir_top}</span><span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"</span></span>
-<span id="cb7-5"></span>
-<span id="cb7-6"><span class="cf" style="color: #003B4F;
-background-color: null;
-font-weight: bold;
-font-style: inherit;">for</span> file <span class="kw" style="color: #003B4F;
-background-color: null;
-font-weight: bold;
-font-style: inherit;">in</span> <span class="pp" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">*</span><span class="kw" style="color: #003B4F;
-background-color: null;
-font-weight: bold;
-font-style: inherit;">;</span> <span class="cf" style="color: #003B4F;
-background-color: null;
-font-weight: bold;
-font-style: inherit;">do</span></span>
-<span id="cb7-7">  <span class="cf" style="color: #003B4F;
-background-color: null;
-font-weight: bold;
-font-style: inherit;">if</span> <span class="bu" style="color: null;
-background-color: null;
-font-style: inherit;">[</span> <span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"</span><span class="va" style="color: #111111;
-background-color: null;
-font-style: inherit;">${file}</span><span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"</span> <span class="ot" style="color: #003B4F;
-background-color: null;
-font-style: inherit;">!=</span> <span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"checksums.md5"</span> <span class="bu" style="color: null;
-background-color: null;
-font-style: inherit;">]</span><span class="kw" style="color: #003B4F;
-background-color: null;
-font-weight: bold;
-font-style: inherit;">;</span> <span class="cf" style="color: #003B4F;
-background-color: null;
-font-weight: bold;
-font-style: inherit;">then</span></span>
-<span id="cb7-8">    <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">md5sum</span> <span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"</span><span class="va" style="color: #111111;
-background-color: null;
-font-style: inherit;">${file}</span><span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"</span> <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">&gt;&gt;</span> checksums.md5</span>
-<span id="cb7-9">  <span class="cf" style="color: #003B4F;
-background-color: null;
-font-weight: bold;
-font-style: inherit;">fi</span></span>
-<span id="cb7-10"><span class="cf" style="color: #003B4F;
-background-color: null;
-font-weight: bold;
-font-style: inherit;">done</span></span></code></pre></div>
-</section>
-<section id="list-output-files" class="level1">
-<h1>8 List output files</h1>
-<div class="sourceCode" id="cb8" style="background: #f1f3f5;"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb8-1"><span class="co" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;"># Load bash variables into memory</span></span>
-<span id="cb8-2"><span class="bu" style="color: null;
-background-color: null;
-font-style: inherit;">source</span> .bashvars</span>
-<span id="cb8-3"></span>
-<span id="cb8-4"><span class="bu" style="color: null;
-background-color: null;
-font-style: inherit;">cd</span> <span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"</span><span class="va" style="color: #111111;
-background-color: null;
-font-style: inherit;">${output_dir_top}</span><span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"</span></span>
-<span id="cb8-5"></span>
-<span id="cb8-6"><span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">ls</span> <span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">-lh</span></span></code></pre></div>
-<pre><code>total 213G
--rw-r--r-- 1 sam sam 455M Nov 14 07:15 CF01-CM01-Zygote_dedup.sorted.bam
--rw-r--r-- 1 sam sam 603K Nov 14 08:30 CF01-CM01-Zygote_dedup.sorted.bam.bai
--rw-r--r-- 1 sam sam 498M Nov 13 13:56 CF01-CM01-Zygote_R1_001.fastp-trim.20220827_bismark_bt2_pe.deduplicated.bam
--rw-r--r-- 1 sam sam  315 Nov 13 13:56 CF01-CM01-Zygote_R1_001.fastp-trim.20220827_bismark_bt2_pe.deduplication_report.txt
--rw-r--r-- 1 sam sam 3.4K Nov 13 13:56 CF01-CM01-Zygote_R1_001.fastp-trim.20220827_bismark_bt2_pe.deduplication.stderr
--rw-r--r-- 1 sam sam 4.4G Nov 14 07:19 CF01-CM02-Larvae_dedup.sorted.bam
--rw-r--r-- 1 sam sam 1.4M Nov 14 08:31 CF01-CM02-Larvae_dedup.sorted.bam.bai
--rw-r--r-- 1 sam sam 5.9G Nov 13 14:12 CF01-CM02-Larvae_R1_001.fastp-trim.20220827_bismark_bt2_pe.deduplicated.bam
--rw-r--r-- 1 sam sam  319 Nov 13 14:12 CF01-CM02-Larvae_R1_001.fastp-trim.20220827_bismark_bt2_pe.deduplication_report.txt
--rw-r--r-- 1 sam sam 3.4K Nov 13 14:12 CF01-CM02-Larvae_R1_001.fastp-trim.20220827_bismark_bt2_pe.deduplication.stderr
--rw-r--r-- 1 sam sam 2.1G Nov 14 07:20 CF02-CM02-Zygote_dedup.sorted.bam
--rw-r--r-- 1 sam sam 921K Nov 14 08:32 CF02-CM02-Zygote_dedup.sorted.bam.bai
--rw-r--r-- 1 sam sam 2.5G Nov 13 14:19 CF02-CM02-Zygote_R1_001.fastp-trim.20220827_bismark_bt2_pe.deduplicated.bam
--rw-r--r-- 1 sam sam  319 Nov 13 14:19 CF02-CM02-Zygote_R1_001.fastp-trim.20220827_bismark_bt2_pe.deduplication_report.txt
--rw-r--r-- 1 sam sam 3.4K Nov 13 14:19 CF02-CM02-Zygote_R1_001.fastp-trim.20220827_bismark_bt2_pe.deduplication.stderr
--rw-r--r-- 1 sam sam 3.0G Nov 14 07:22 CF03-CM03-Zygote_dedup.sorted.bam
--rw-r--r-- 1 sam sam 1.2M Nov 14 08:33 CF03-CM03-Zygote_dedup.sorted.bam.bai
--rw-r--r-- 1 sam sam 3.7G Nov 13 14:29 CF03-CM03-Zygote_R1_001.fastp-trim.20220827_bismark_bt2_pe.deduplicated.bam
--rw-r--r-- 1 sam sam  318 Nov 13 14:29 CF03-CM03-Zygote_R1_001.fastp-trim.20220827_bismark_bt2_pe.deduplication_report.txt
--rw-r--r-- 1 sam sam 3.4K Nov 13 14:29 CF03-CM03-Zygote_R1_001.fastp-trim.20220827_bismark_bt2_pe.deduplication.stderr
--rw-r--r-- 1 sam sam 3.4G Nov 14 07:24 CF03-CM04-Larvae_dedup.sorted.bam
--rw-r--r-- 1 sam sam 1.3M Nov 14 08:34 CF03-CM04-Larvae_dedup.sorted.bam.bai
--rw-r--r-- 1 sam sam 4.6G Nov 13 14:43 CF03-CM04-Larvae_R1_001.fastp-trim.20220827_bismark_bt2_pe.deduplicated.bam
--rw-r--r-- 1 sam sam  320 Nov 13 14:43 CF03-CM04-Larvae_R1_001.fastp-trim.20220827_bismark_bt2_pe.deduplication_report.txt
--rw-r--r-- 1 sam sam 3.4K Nov 13 14:43 CF03-CM04-Larvae_R1_001.fastp-trim.20220827_bismark_bt2_pe.deduplication.stderr
--rw-r--r-- 1 sam sam 4.1G Nov 14 07:26 CF03-CM05-Larvae_dedup.sorted.bam
--rw-r--r-- 1 sam sam 1.4M Nov 14 08:35 CF03-CM05-Larvae_dedup.sorted.bam.bai
--rw-r--r-- 1 sam sam 5.4G Nov 13 14:58 CF03-CM05-Larvae_R1_001.fastp-trim.20220827_bismark_bt2_pe.deduplicated.bam
--rw-r--r-- 1 sam sam  318 Nov 13 14:58 CF03-CM05-Larvae_R1_001.fastp-trim.20220827_bismark_bt2_pe.deduplication_report.txt
--rw-r--r-- 1 sam sam 3.4K Nov 13 14:58 CF03-CM05-Larvae_R1_001.fastp-trim.20220827_bismark_bt2_pe.deduplication.stderr
--rw-r--r-- 1 sam sam 3.0G Nov 14 07:28 CF04-CM04-Zygote_dedup.sorted.bam
--rw-r--r-- 1 sam sam 1.2M Nov 14 08:36 CF04-CM04-Zygote_dedup.sorted.bam.bai
--rw-r--r-- 1 sam sam 3.7G Nov 13 15:08 CF04-CM04-Zygote_R1_001.fastp-trim.20220827_bismark_bt2_pe.deduplicated.bam
--rw-r--r-- 1 sam sam  319 Nov 13 15:08 CF04-CM04-Zygote_R1_001.fastp-trim.20220827_bismark_bt2_pe.deduplication_report.txt
--rw-r--r-- 1 sam sam 3.4K Nov 13 15:08 CF04-CM04-Zygote_R1_001.fastp-trim.20220827_bismark_bt2_pe.deduplication.stderr
--rw-r--r-- 1 sam sam 5.4G Nov 14 07:33 CF05-CM02-Larvae_dedup.sorted.bam
--rw-r--r-- 1 sam sam 1.6M Nov 14 08:38 CF05-CM02-Larvae_dedup.sorted.bam.bai
--rw-r--r-- 1 sam sam 7.5G Nov 13 15:29 CF05-CM02-Larvae_R1_001.fastp-trim.20220827_bismark_bt2_pe.deduplicated.bam
--rw-r--r-- 1 sam sam  320 Nov 13 15:29 CF05-CM02-Larvae_R1_001.fastp-trim.20220827_bismark_bt2_pe.deduplication_report.txt
--rw-r--r-- 1 sam sam 3.4K Nov 13 15:30 CF05-CM02-Larvae_R1_001.fastp-trim.20220827_bismark_bt2_pe.deduplication.stderr
--rw-r--r-- 1 sam sam 3.5G Nov 14 07:35 CF05-CM05-Zygote_dedup.sorted.bam
--rw-r--r-- 1 sam sam 1.3M Nov 14 08:39 CF05-CM05-Zygote_dedup.sorted.bam.bai
--rw-r--r-- 1 sam sam 4.4G Nov 13 15:42 CF05-CM05-Zygote_R1_001.fastp-trim.20220827_bismark_bt2_pe.deduplicated.bam
--rw-r--r-- 1 sam sam  319 Nov 13 15:42 CF05-CM05-Zygote_R1_001.fastp-trim.20220827_bismark_bt2_pe.deduplication_report.txt
--rw-r--r-- 1 sam sam 3.4K Nov 13 15:42 CF05-CM05-Zygote_R1_001.fastp-trim.20220827_bismark_bt2_pe.deduplication.stderr
--rw-r--r-- 1 sam sam 3.3G Nov 14 07:37 CF06-CM01-Zygote_dedup.sorted.bam
--rw-r--r-- 1 sam sam 1.3M Nov 14 08:40 CF06-CM01-Zygote_dedup.sorted.bam.bai
--rw-r--r-- 1 sam sam 4.0G Nov 13 15:52 CF06-CM01-Zygote_R1_001.fastp-trim.20220827_bismark_bt2_pe.deduplicated.bam
--rw-r--r-- 1 sam sam  318 Nov 13 15:52 CF06-CM01-Zygote_R1_001.fastp-trim.20220827_bismark_bt2_pe.deduplication_report.txt
--rw-r--r-- 1 sam sam 3.4K Nov 13 15:53 CF06-CM01-Zygote_R1_001.fastp-trim.20220827_bismark_bt2_pe.deduplication.stderr
--rw-r--r-- 1 sam sam 2.6G Nov 14 07:38 CF06-CM02-Larvae_dedup.sorted.bam
--rw-r--r-- 1 sam sam 1.1M Nov 14 08:41 CF06-CM02-Larvae_dedup.sorted.bam.bai
--rw-r--r-- 1 sam sam 3.1G Nov 13 16:01 CF06-CM02-Larvae_R1_001.fastp-trim.20220827_bismark_bt2_pe.deduplicated.bam
--rw-r--r-- 1 sam sam  318 Nov 13 16:01 CF06-CM02-Larvae_R1_001.fastp-trim.20220827_bismark_bt2_pe.deduplication_report.txt
--rw-r--r-- 1 sam sam 3.4K Nov 13 16:01 CF06-CM02-Larvae_R1_001.fastp-trim.20220827_bismark_bt2_pe.deduplication.stderr
--rw-r--r-- 1 sam sam 2.0G Nov 14 07:39 CF07-CM02-Zygote_dedup.sorted.bam
--rw-r--r-- 1 sam sam 968K Nov 14 08:41 CF07-CM02-Zygote_dedup.sorted.bam.bai
--rw-r--r-- 1 sam sam 2.4G Nov 13 16:08 CF07-CM02-Zygote_R1_001.fastp-trim.20220827_bismark_bt2_pe.deduplicated.bam
--rw-r--r-- 1 sam sam  318 Nov 13 16:08 CF07-CM02-Zygote_R1_001.fastp-trim.20220827_bismark_bt2_pe.deduplication_report.txt
--rw-r--r-- 1 sam sam 3.4K Nov 13 16:08 CF07-CM02-Zygote_R1_001.fastp-trim.20220827_bismark_bt2_pe.deduplication.stderr
--rw-r--r-- 1 sam sam 2.2G Nov 14 07:41 CF08-CM03-Zygote_dedup.sorted.bam
--rw-r--r-- 1 sam sam 950K Nov 14 08:42 CF08-CM03-Zygote_dedup.sorted.bam.bai
--rw-r--r-- 1 sam sam 2.6G Nov 13 16:15 CF08-CM03-Zygote_R1_001.fastp-trim.20220827_bismark_bt2_pe.deduplicated.bam
--rw-r--r-- 1 sam sam  319 Nov 13 16:15 CF08-CM03-Zygote_R1_001.fastp-trim.20220827_bismark_bt2_pe.deduplication_report.txt
--rw-r--r-- 1 sam sam 3.4K Nov 13 16:15 CF08-CM03-Zygote_R1_001.fastp-trim.20220827_bismark_bt2_pe.deduplication.stderr
--rw-r--r-- 1 sam sam  58M Nov 14 07:41 CF08-CM04-Larvae_dedup.sorted.bam
--rw-r--r-- 1 sam sam 1.1M Nov 14 08:42 CF08-CM04-Larvae_dedup.sorted.bam.bai
--rw-r--r-- 1 sam sam  60M Nov 13 16:15 CF08-CM04-Larvae_R1_001.fastp-trim.20220827_bismark_bt2_pe.deduplicated.bam
--rw-r--r-- 1 sam sam  312 Nov 13 16:15 CF08-CM04-Larvae_R1_001.fastp-trim.20220827_bismark_bt2_pe.deduplication_report.txt
--rw-r--r-- 1 sam sam 3.4K Nov 13 16:15 CF08-CM04-Larvae_R1_001.fastp-trim.20220827_bismark_bt2_pe.deduplication.stderr
--rw-r--r-- 1 sam sam  50M Nov 14 07:41 CF08-CM05-Larvae_dedup.sorted.bam
--rw-r--r-- 1 sam sam 1.1M Nov 14 08:42 CF08-CM05-Larvae_dedup.sorted.bam.bai
--rw-r--r-- 1 sam sam  52M Nov 13 16:15 CF08-CM05-Larvae_R1_001.fastp-trim.20220827_bismark_bt2_pe.deduplicated.bam
--rw-r--r-- 1 sam sam  314 Nov 13 16:15 CF08-CM05-Larvae_R1_001.fastp-trim.20220827_bismark_bt2_pe.deduplication_report.txt
--rw-r--r-- 1 sam sam 3.4K Nov 13 16:15 CF08-CM05-Larvae_R1_001.fastp-trim.20220827_bismark_bt2_pe.deduplication.stderr
--rw-r--r-- 1 sam sam  16K Nov 14 09:44 checksums.md5
--rw-r--r-- 1 sam sam 2.8G Nov 14 07:42 EF01-EM01-Zygote_dedup.sorted.bam
--rw-r--r-- 1 sam sam 1.2M Nov 14 08:43 EF01-EM01-Zygote_dedup.sorted.bam.bai
--rw-r--r-- 1 sam sam 3.5G Nov 13 16:25 EF01-EM01-Zygote_R1_001.fastp-trim.20220827_bismark_bt2_pe.deduplicated.bam
--rw-r--r-- 1 sam sam  318 Nov 13 16:25 EF01-EM01-Zygote_R1_001.fastp-trim.20220827_bismark_bt2_pe.deduplication_report.txt
--rw-r--r-- 1 sam sam 3.4K Nov 13 16:25 EF01-EM01-Zygote_R1_001.fastp-trim.20220827_bismark_bt2_pe.deduplication.stderr
--rw-r--r-- 1 sam sam 3.0G Nov 14 07:44 EF02-EM02-Zygote_dedup.sorted.bam
--rw-r--r-- 1 sam sam 1.2M Nov 14 08:44 EF02-EM02-Zygote_dedup.sorted.bam.bai
--rw-r--r-- 1 sam sam 3.7G Nov 13 16:35 EF02-EM02-Zygote_R1_001.fastp-trim.20220827_bismark_bt2_pe.deduplicated.bam
--rw-r--r-- 1 sam sam  318 Nov 13 16:35 EF02-EM02-Zygote_R1_001.fastp-trim.20220827_bismark_bt2_pe.deduplication_report.txt
--rw-r--r-- 1 sam sam 3.4K Nov 13 16:35 EF02-EM02-Zygote_R1_001.fastp-trim.20220827_bismark_bt2_pe.deduplication.stderr
--rw-r--r-- 1 sam sam 2.0G Nov 14 07:45 EF03-EM03-Zygote_dedup.sorted.bam
--rw-r--r-- 1 sam sam 897K Nov 14 08:45 EF03-EM03-Zygote_dedup.sorted.bam.bai
--rw-r--r-- 1 sam sam 2.3G Nov 13 16:41 EF03-EM03-Zygote_R1_001.fastp-trim.20220827_bismark_bt2_pe.deduplicated.bam
--rw-r--r-- 1 sam sam  318 Nov 13 16:41 EF03-EM03-Zygote_R1_001.fastp-trim.20220827_bismark_bt2_pe.deduplication_report.txt
--rw-r--r-- 1 sam sam 3.4K Nov 13 16:41 EF03-EM03-Zygote_R1_001.fastp-trim.20220827_bismark_bt2_pe.deduplication.stderr
--rw-r--r-- 1 sam sam 4.1G Nov 14 07:47 EF03-EM04-Larvae_dedup.sorted.bam
--rw-r--r-- 1 sam sam 1.4M Nov 14 08:46 EF03-EM04-Larvae_dedup.sorted.bam.bai
--rw-r--r-- 1 sam sam 5.1G Nov 13 16:55 EF03-EM04-Larvae_R1_001.fastp-trim.20220827_bismark_bt2_pe.deduplicated.bam
--rw-r--r-- 1 sam sam  319 Nov 13 16:55 EF03-EM04-Larvae_R1_001.fastp-trim.20220827_bismark_bt2_pe.deduplication_report.txt
--rw-r--r-- 1 sam sam 3.4K Nov 13 16:56 EF03-EM04-Larvae_R1_001.fastp-trim.20220827_bismark_bt2_pe.deduplication.stderr
--rw-r--r-- 1 sam sam 4.1G Nov 14 07:50 EF03-EM05-Larvae_dedup.sorted.bam
--rw-r--r-- 1 sam sam 1.5M Nov 14 08:47 EF03-EM05-Larvae_dedup.sorted.bam.bai
--rw-r--r-- 1 sam sam 5.4G Nov 13 17:10 EF03-EM05-Larvae_R1_001.fastp-trim.20220827_bismark_bt2_pe.deduplicated.bam
--rw-r--r-- 1 sam sam  318 Nov 13 17:10 EF03-EM05-Larvae_R1_001.fastp-trim.20220827_bismark_bt2_pe.deduplication_report.txt
--rw-r--r-- 1 sam sam 3.4K Nov 13 17:11 EF03-EM05-Larvae_R1_001.fastp-trim.20220827_bismark_bt2_pe.deduplication.stderr
--rw-r--r-- 1 sam sam 1.1G Nov 14 07:50 EF04-EM04-Zygote_dedup.sorted.bam
--rw-r--r-- 1 sam sam 600K Nov 14 08:47 EF04-EM04-Zygote_dedup.sorted.bam.bai
--rw-r--r-- 1 sam sam 1.2G Nov 13 17:14 EF04-EM04-Zygote_R1_001.fastp-trim.20220827_bismark_bt2_pe.deduplicated.bam
--rw-r--r-- 1 sam sam  317 Nov 13 17:14 EF04-EM04-Zygote_R1_001.fastp-trim.20220827_bismark_bt2_pe.deduplication_report.txt
--rw-r--r-- 1 sam sam 3.4K Nov 13 17:14 EF04-EM04-Zygote_R1_001.fastp-trim.20220827_bismark_bt2_pe.deduplication.stderr
--rw-r--r-- 1 sam sam 4.9G Nov 14 07:55 EF04-EM05-Larvae_dedup.sorted.bam
--rw-r--r-- 1 sam sam 1.5M Nov 14 08:49 EF04-EM05-Larvae_dedup.sorted.bam.bai
--rw-r--r-- 1 sam sam 6.8G Nov 13 17:33 EF04-EM05-Larvae_R1_001.fastp-trim.20220827_bismark_bt2_pe.deduplicated.bam
--rw-r--r-- 1 sam sam  320 Nov 13 17:33 EF04-EM05-Larvae_R1_001.fastp-trim.20220827_bismark_bt2_pe.deduplication_report.txt
--rw-r--r-- 1 sam sam 3.4K Nov 13 17:33 EF04-EM05-Larvae_R1_001.fastp-trim.20220827_bismark_bt2_pe.deduplication.stderr
--rw-r--r-- 1 sam sam 3.1G Nov 14 07:57 EF05-EM01-Larvae_dedup.sorted.bam
--rw-r--r-- 1 sam sam 1.2M Nov 14 08:50 EF05-EM01-Larvae_dedup.sorted.bam.bai
--rw-r--r-- 1 sam sam 4.1G Nov 13 17:45 EF05-EM01-Larvae_R1_001.fastp-trim.20220827_bismark_bt2_pe.deduplicated.bam
--rw-r--r-- 1 sam sam  318 Nov 13 17:45 EF05-EM01-Larvae_R1_001.fastp-trim.20220827_bismark_bt2_pe.deduplication_report.txt
--rw-r--r-- 1 sam sam 3.4K Nov 13 17:45 EF05-EM01-Larvae_R1_001.fastp-trim.20220827_bismark_bt2_pe.deduplication.stderr
--rw-r--r-- 1 sam sam 702M Nov 14 07:57 EF05-EM05-Zygote_dedup.sorted.bam
--rw-r--r-- 1 sam sam 567K Nov 14 08:50 EF05-EM05-Zygote_dedup.sorted.bam.bai
--rw-r--r-- 1 sam sam 756M Nov 13 17:47 EF05-EM05-Zygote_R1_001.fastp-trim.20220827_bismark_bt2_pe.deduplicated.bam
--rw-r--r-- 1 sam sam  316 Nov 13 17:47 EF05-EM05-Zygote_R1_001.fastp-trim.20220827_bismark_bt2_pe.deduplication_report.txt
--rw-r--r-- 1 sam sam 3.4K Nov 13 17:47 EF05-EM05-Zygote_R1_001.fastp-trim.20220827_bismark_bt2_pe.deduplication.stderr
--rw-r--r-- 1 sam sam 5.0G Nov 14 08:02 EF05-EM06-Larvae_dedup.sorted.bam
--rw-r--r-- 1 sam sam 1.6M Nov 14 08:52 EF05-EM06-Larvae_dedup.sorted.bam.bai
--rw-r--r-- 1 sam sam 7.0G Nov 13 18:07 EF05-EM06-Larvae_R1_001.fastp-trim.20220827_bismark_bt2_pe.deduplicated.bam
--rw-r--r-- 1 sam sam  320 Nov 13 18:07 EF05-EM06-Larvae_R1_001.fastp-trim.20220827_bismark_bt2_pe.deduplication_report.txt
--rw-r--r-- 1 sam sam 3.4K Nov 13 18:07 EF05-EM06-Larvae_R1_001.fastp-trim.20220827_bismark_bt2_pe.deduplication.stderr
--rw-r--r-- 1 sam sam 4.9G Nov 14 08:06 EF06-EM01-Larvae_dedup.sorted.bam
--rw-r--r-- 1 sam sam 1.6M Nov 14 08:53 EF06-EM01-Larvae_dedup.sorted.bam.bai
--rw-r--r-- 1 sam sam 6.8G Nov 13 18:26 EF06-EM01-Larvae_R1_001.fastp-trim.20220827_bismark_bt2_pe.deduplicated.bam
--rw-r--r-- 1 sam sam  319 Nov 13 18:26 EF06-EM01-Larvae_R1_001.fastp-trim.20220827_bismark_bt2_pe.deduplication_report.txt
--rw-r--r-- 1 sam sam 3.4K Nov 13 18:26 EF06-EM01-Larvae_R1_001.fastp-trim.20220827_bismark_bt2_pe.deduplication.stderr
--rw-r--r-- 1 sam sam 4.0G Nov 14 08:09 EF06-EM02-Larvae_dedup.sorted.bam
--rw-r--r-- 1 sam sam 1.4M Nov 14 08:55 EF06-EM02-Larvae_dedup.sorted.bam.bai
--rw-r--r-- 1 sam sam 5.2G Nov 13 18:41 EF06-EM02-Larvae_R1_001.fastp-trim.20220827_bismark_bt2_pe.deduplicated.bam
--rw-r--r-- 1 sam sam  319 Nov 13 18:41 EF06-EM02-Larvae_R1_001.fastp-trim.20220827_bismark_bt2_pe.deduplication_report.txt
--rw-r--r-- 1 sam sam 3.4K Nov 13 18:41 EF06-EM02-Larvae_R1_001.fastp-trim.20220827_bismark_bt2_pe.deduplication.stderr
--rw-r--r-- 1 sam sam 1.2G Nov 14 08:09 EF06-EM06-Larvae_dedup.sorted.bam
--rw-r--r-- 1 sam sam 574K Nov 14 08:55 EF06-EM06-Larvae_dedup.sorted.bam.bai
--rw-r--r-- 1 sam sam 1.3G Nov 13 18:48 EF06-EM06-Larvae_R1_001.fastp-trim.20220827_bismark_bt2_pe.deduplicated.bam
--rw-r--r-- 1 sam sam  318 Nov 13 18:48 EF06-EM06-Larvae_R1_001.fastp-trim.20220827_bismark_bt2_pe.deduplication_report.txt
--rw-r--r-- 1 sam sam 3.4K Nov 13 18:48 EF06-EM06-Larvae_R1_001.fastp-trim.20220827_bismark_bt2_pe.deduplication.stderr
--rw-r--r-- 1 sam sam 1.5G Nov 14 08:10 EF07-EM01-Zygote_dedup.sorted.bam
--rw-r--r-- 1 sam sam 730K Nov 14 08:55 EF07-EM01-Zygote_dedup.sorted.bam.bai
--rw-r--r-- 1 sam sam 1.7G Nov 13 18:53 EF07-EM01-Zygote_R1_001.fastp-trim.20220827_bismark_bt2_pe.deduplicated.bam
--rw-r--r-- 1 sam sam  319 Nov 13 18:53 EF07-EM01-Zygote_R1_001.fastp-trim.20220827_bismark_bt2_pe.deduplication_report.txt
--rw-r--r-- 1 sam sam 3.4K Nov 13 18:53 EF07-EM01-Zygote_R1_001.fastp-trim.20220827_bismark_bt2_pe.deduplication.stderr
--rw-r--r-- 1 sam sam 3.8G Nov 14 08:12 EF07-EM03-Larvae_dedup.sorted.bam
--rw-r--r-- 1 sam sam 1.4M Nov 14 08:57 EF07-EM03-Larvae_dedup.sorted.bam.bai
--rw-r--r-- 1 sam sam 5.2G Nov 13 19:08 EF07-EM03-Larvae_R1_001.fastp-trim.20220827_bismark_bt2_pe.deduplicated.bam
--rw-r--r-- 1 sam sam  319 Nov 13 19:08 EF07-EM03-Larvae_R1_001.fastp-trim.20220827_bismark_bt2_pe.deduplication_report.txt
--rw-r--r-- 1 sam sam 3.4K Nov 13 19:08 EF07-EM03-Larvae_R1_001.fastp-trim.20220827_bismark_bt2_pe.deduplication.stderr
--rw-r--r-- 1 sam sam 4.3G Nov 14 08:17 EF08-EM03-Larvae_dedup.sorted.bam
--rw-r--r-- 1 sam sam 1.4M Nov 14 08:58 EF08-EM03-Larvae_dedup.sorted.bam.bai
--rw-r--r-- 1 sam sam 6.0G Nov 13 19:25 EF08-EM03-Larvae_R1_001.fastp-trim.20220827_bismark_bt2_pe.deduplicated.bam
--rw-r--r-- 1 sam sam  320 Nov 13 19:25 EF08-EM03-Larvae_R1_001.fastp-trim.20220827_bismark_bt2_pe.deduplication_report.txt
--rw-r--r-- 1 sam sam 3.4K Nov 13 19:25 EF08-EM03-Larvae_R1_001.fastp-trim.20220827_bismark_bt2_pe.deduplication.stderr
--rw-r--r-- 1 sam sam 3.8G Nov 14 08:19 EF08-EM04-Larvae_dedup.sorted.bam
--rw-r--r-- 1 sam sam 1.3M Nov 14 08:59 EF08-EM04-Larvae_dedup.sorted.bam.bai
--rw-r--r-- 1 sam sam 4.9G Nov 13 19:38 EF08-EM04-Larvae_R1_001.fastp-trim.20220827_bismark_bt2_pe.deduplicated.bam
--rw-r--r-- 1 sam sam  319 Nov 13 19:38 EF08-EM04-Larvae_R1_001.fastp-trim.20220827_bismark_bt2_pe.deduplication_report.txt
--rw-r--r-- 1 sam sam 3.4K Nov 13 19:39 EF08-EM04-Larvae_R1_001.fastp-trim.20220827_bismark_bt2_pe.deduplication.stderr
-drwxr-xr-x 2 sam sam 4.0K Nov 14 09:30 multiqc_data
--rw-r--r-- 1 sam sam 1.1M Nov 14 09:30 multiqc_report.html</code></pre>
-<div id="refs" class="references csl-bib-body hanging-indent">
-<div id="ref-ewels2016" class="csl-entry">
-Ewels, Philip, Måns Magnusson, Sverker Lundin, and Max Käller. 2016. “MultiQC: Summarize Analysis Results for Multiple Tools and Samples in a Single Report.” <em>Bioinformatics</em> 32 (19): 3047–48. <a href="https://doi.org/10.1093/bioinformatics/btw354" class="uri">https://doi.org/10.1093/bioinformatics/btw354</a>.
-</div>
-<div id="ref-krueger2011" class="csl-entry">
-Krueger, Felix, and Simon R. Andrews. 2011. “Bismark: A Flexible Aligner and Methylation Caller for Bisulfite-Seq Applications.” <em>Bioinformatics</em> 27 (11): 1571–72. <a href="https://doi.org/10.1093/bioinformatics/btr167" class="uri">https://doi.org/10.1093/bioinformatics/btr167</a>.
-</div>
-</div>
-
-
-</section>
-
- ]]></description>
-  <category>2024</category>
-  <category>Crassostrea virginica</category>
-  <category>Eastern oyster</category>
-  <category>ceasmallr</category>
-  <category>Bismark</category>
-  <category>WGBS</category>
-  <category>BS-seq</category>
-  <category>deduplication</category>
-  <guid>https://robertslab.github.io/sams-notebook/posts/2024/2024-11-25-Deduplication---C.virginica-CEASMALLR-WGBS-Using-Bismark/</guid>
-  <pubDate>Mon, 25 Nov 2024 08:00:00 GMT</pubDate>
-  <media:content url="https://robertslab.github.io/sams-notebook/posts/2024/2024-11-25-Deduplication---C.virginica-CEASMALLR-WGBS-Using-Bismark/20241125-cvir-ceasmallr-multiq-bismark_deduplication-plot.png" medium="image" type="image/png" height="96" width="144"/>
 </item>
 </channel>
 </rss>
