@@ -5,10 +5,48 @@ toc-depth: 5
 toc-location: left
 title: Computer Management - Fix Most of Raven Boot Issues
 date: '2025-01-30'
-draft: true
+draft: false
 engine: knitr
 categories: 
   - "2025"
   - "raven"
   - "Computer Management"
 ---
+# INTRO
+
+Raven has been experiencing various issues when it comes to rebooting:
+
+1. Doesn't reboot automatically after a power outage.
+
+2. Dell Pre-boot System Performance fan failure message, which prevented the system from booting without manual intervention.
+
+3. Booting into `emergency mode`.
+
+4. Screen doesn't boot into Ubuntu desktop. Instead boot is successful, but just shows a log of boot loading steps on the screen.
+
+Performed the following changes to Raven in order to resolve most of the booting issues we've experienced:
+
+- Installed new monitor (not related to booting, obviously, but we didn't have a monitor for Raven which made troubleshooting some of the following items impossible).
+
+# FIXES 
+
+1. In BIOS, enabled automatic reboot after power outage. Pretty sure this used to be enabled. Maybe a firmware update reset it?
+
+2. In BIOS, unchecked all of the boxes for HDD fan checks. The fans will be checked regardless, _if_ the system detects that a HDD fan is installed. This will eliminate the Dell Pre-boot System Performance fan failure message, which prevented the system from booting without manual intervention. The previous fan error due to the system checking for a fan which _was not installed_.
+
+3. Fixed `/etc/fstab` and commented out a HDD which is no longer installed in the system. This was causing the system to boot into emergency mode due to the system looking for, and not finding, said HDD.
+
+4.
+
+- 4a. Switched desktop manager from `gdm3` to `lightdm` in attempt to get the system to boot to the Ubuntu desktop. This did not work.
+
+- 4b. Edited the grub configuration file (`/etc/default/grub`) to avoid indefinite hang on Ubuntu splash screen:
+
+Changed: `GRUB_CMDLINE_LINUX_DEFAULT="quiet splash"`
+
+To: `GRUB_CMDLINE_LINUX_DEFAULT=""`
+
+# RESULTS
+
+With all of the above changes, Raven now boots successfully, without human intervention directly into a console screen. Although I couldn't figure out how to get this to boot into the desktop, that's really of very little consequence as this is used a "headless" system 99% of the time.
+
