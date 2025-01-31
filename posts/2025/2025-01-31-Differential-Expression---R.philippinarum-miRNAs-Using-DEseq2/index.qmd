@@ -1,0 +1,543 @@
+---
+author: Sam White
+toc-title: Contents
+toc-depth: 5
+toc-location: left
+title: Differential Expression - R.philippinarum miRNAs Using DEseq2
+date: '2025-01-31'
+draft: false
+engine: knitr
+categories: 
+  - "2025"
+  - "Ruditapes philippinarum"
+  - "Manila clam"
+  - "DEseq2"
+  - "sRNA-seq"
+  - "miRNA"
+---
+This analysis was done as part of [`project-clam-oa`](https://github.com/RobertsLab/project-clam-oa) (GitHub repo).
+
+::: {.callout-note}
+The contents below are from markdown knitted from [`03.00-D-sRNAseq-gene-expression-DESeq2.Rmd`](https://github.com/RobertsLab/project-clam-oa/blob/54eb41b32e1245e75f06c3994e9a6f5cf3c119eb/code/03.00-D-sRNAseq-gene-expression-DESeq2.Rmd) (commit `54eb41b`).
+:::
+
+03.00-D-sRNAseq-gene-expression-DESeq2
+================
+Sam White
+2025-01-31
+
+- <a href="#1-background" id="toc-1-background">1 Background</a>
+  - <a href="#11-inputs" id="toc-11-inputs">1.1 Inputs</a>
+  - <a href="#12-outputs" id="toc-12-outputs">1.2 Outputs</a>
+- <a href="#2-set-r-variables" id="toc-2-set-r-variables">2 Set R
+  variables</a>
+- <a href="#3-load-count-data" id="toc-3-load-count-data">3 Load count
+  data</a>
+  - <a href="#31-select-only-mirnas-idd-by-shortstack"
+    id="toc-31-select-only-mirnas-idd-by-shortstack">3.1 Select only miRNAs
+    IDd by ShortStack</a>
+- <a href="#4-create-deseq2-column-data"
+  id="toc-4-create-deseq2-column-data">4 Create DESeq2 Column Data</a>
+  - <a href="#41-read-in-metadata-csv" id="toc-41-read-in-metadata-csv">4.1
+    Read in metadata CSV</a>
+  - <a href="#42-extract-sample-names" id="toc-42-extract-sample-names">4.2
+    Extract sample names</a>
+  - <a href="#43-select-sample-name-and-treatment"
+    id="toc-43-select-sample-name-and-treatment">4.3 Select sample name and
+    treatment</a>
+  - <a href="#44-write-deseq-coldata-to-file"
+    id="toc-44-write-deseq-coldata-to-file">4.4 Write DEseq coldata to
+    file</a>
+- <a href="#5-count-data-munging" id="toc-5-count-data-munging">5 Count
+  data munging</a>
+  - <a href="#51-fix-col-names-and-convert-to-matrix"
+    id="toc-51-fix-col-names-and-convert-to-matrix">5.1 Fix col names and
+    convert to matrix</a>
+  - <a href="#52-take-only-samples-present-in-coldata"
+    id="toc-52-take-only-samples-present-in-coldata">5.2 Take only samples
+    present in coldata</a>
+  - <a href="#53-reorder-matrix-cols-to-match-coldata"
+    id="toc-53-reorder-matrix-cols-to-match-coldata">5.3 Reorder matrix cols
+    to match coldata</a>
+  - <a href="#54-verify-rownames-match"
+    id="toc-54-verify-rownames-match">5.4 Verify rownames match</a>
+- <a href="#6-create-deseq2-data-set" id="toc-6-create-deseq2-data-set">6
+  Create DESeq2 data set</a>
+  - <a href="#61-initialize-deseq2-data-set"
+    id="toc-61-initialize-deseq2-data-set">6.1 Initialize DEseq2 data
+    set</a>
+  - <a href="#62-add-cluster-column-as-gene-feature"
+    id="toc-62-add-cluster-column-as-gene-feature">6.2 Add cluster column as
+    “gene” feature</a>
+  - <a href="#63-set-factor-levels" id="toc-63-set-factor-levels">6.3 Set
+    factor levels</a>
+- <a href="#7-deseq-analysis" id="toc-7-deseq-analysis">7 DESeq
+  analysis</a>
+  - <a href="#71-deseq" id="toc-71-deseq">7.1 DEseq</a>
+  - <a href="#72-deseq-results" id="toc-72-deseq-results">7.2 DEseq
+    Results</a>
+  - <a href="#73-write-dds-results-tables-to-csvs"
+    id="toc-73-write-dds-results-tables-to-csvs">7.3 Write DDS results
+    tables to CSVs</a>
+- <a href="#8-variance-stabilizing-transformations-vst"
+  id="toc-8-variance-stabilizing-transformations-vst">8 Variance
+  stabilizing transformations (VST)</a>
+- <a href="#9-plotting" id="toc-9-plotting">9 Plotting</a>
+  - <a href="#91-sample-distances" id="toc-91-sample-distances">9.1 Sample
+    distances</a>
+  - <a href="#92-pca" id="toc-92-pca">9.2 PCA</a>
+  - <a href="#93-heatmap-top-40" id="toc-93-heatmap-top-40">9.3 Heatmap top
+    40</a>
+- <a href="#10-references" id="toc-10-references">10 REFERENCES</a>
+
+# 1 Background
+
+This will run
+[DEseq2](https://bioconductor.org/packages/release/bioc/vignettes/DESeq2/inst/doc/DESeq2.html)
+(Love, Huber, and Anders 2014) to determine if any of the miRNAs
+identified in
+[02.00-ShortStack-31bp-fastp-merged.md](https://github.com/RobertsLab/project-clam-oa/blob/2616d45a5a0bbef23081c5824bfe5bad6b89d227/code/02.00-ShortStack-31bp-fastp-merged.md)
+analysis are differentially expressed between control/treatment.
+
+<div class="callout-note">
+
+ShortStack identified 37 miRNAs.
+
+</div>
+
+## 1.1 Inputs
+
+- [`Counts.txt`](https://github.com/RobertsLab/project-clam-oa/blob/d380ed9a88c874db5434c9ec74f6ab1de042bad5/output/02.00-ShortStack-31bp-fastp-merged/ShortStack_out/Counts.txt):
+  ShortStack counts matrix. Includes all clusters, including those that
+  were *not* categorized as miRNAs.
+
+- [`DESeq2-coldata.tab`](https://github.com/RobertsLab/project-clam-oa/blob/d380ed9a88c874db5434c9ec74f6ab1de042bad5/output/03.00-D-sRNAseq-gene-expression-DESeq2/DESeq2-coldata.tab):
+  Two column table with sample ID and treatment. This file is also an
+  output from this notebook.
+
+- [ManilaOA2023_shortRNASeq_Meta.csv](https://github.com/RobertsLab/project-clam-oa/blob/d380ed9a88c874db5434c9ec74f6ab1de042bad5/data/ManilaOA2023_shortRNASeq_Meta.csv):
+  Metadata file for this sRNA-seq data.
+
+## 1.2 Outputs
+
+- [`DESeq2-coldata.tab`](https://github.com/RobertsLab/project-clam-oa/blob/d380ed9a88c874db5434c9ec74f6ab1de042bad5/output/03.00-D-sRNAseq-gene-expression-DESeq2/DESeq2-coldata.tab):
+  Two column table with sample ID and treatment. Needed as input to
+  DEseq2.
+
+- [`deseq2.table.csv`](https://github.com/RobertsLab/project-clam-oa/blob/d380ed9a88c874db5434c9ec74f6ab1de042bad5/output/03.00-D-sRNAseq-gene-expression-DESeq2/deseq2.table.csv):
+  DEseq2 output table containing mean expression, fold change in
+  expression, and adjusted p-values for all input samples.
+
+- [deseq2.fdr-0.05.table.csv](https://github.com/RobertsLab/project-clam-oa/blob/d380ed9a88c874db5434c9ec74f6ab1de042bad5/output/03.00-D-sRNAseq-gene-expression-DESeq2/deseq2.fdr-0.05.table.csv):
+  Subset of DEseq2 output table of all miRNA clusters (“genes”) having
+  adjusted p-values (fdr) \<= 0.05.
+
+# 2 Set R variables
+
+``` r
+# Define the output directory path
+output_dir <- "../output/03.00-D-sRNAseq-gene-expression-DESeq2/"
+
+# Set desired false discovery rate threshold (i.e. adjusted p-value, padj)
+fdr <- 0.05
+
+# Set log2 fold change threshold (a value of '1' is equal to a fold change of '2')
+log2fc <- 1
+```
+
+# 3 Load count data
+
+Load in the sRNA count matrix generated using ShortStack 4.1.1. Keep in
+mind this data includes counts of all sRNAs, not just miRNAs.
+
+Counts generated in `02.00-ShortStack-31bp-fastp-merged`.
+
+## 3.1 Select only miRNAs IDd by ShortStack
+
+``` r
+# Read in sRNA counts data
+srna_seq_counts_shortstack <- read_delim("../output/02.00-ShortStack-31bp-fastp-merged/ShortStack_out/Counts.txt", delim="\t")
+
+srna_seq_counts_shortstack <- srna_seq_counts_shortstack %>% filter(MIRNA == "Y")
+
+str(srna_seq_counts_shortstack)
+```
+
+    spc_tbl_ [37 × 23] (S3: spec_tbl_df/tbl_df/tbl/data.frame)
+     $ Coords                                        : chr [1:37] "NW_026852415.1:231396-231495" "NW_026852524.1:285406-285505" "NW_026852815.1:56435-56532" "NW_026853363.1:213466-213568" ...
+     $ Name                                          : chr [1:37] "Cluster_1785" "Cluster_2042" "Cluster_2646" "Cluster_3720" ...
+     $ MIRNA                                         : chr [1:37] "Y" "Y" "Y" "Y" ...
+     $ 196-fastp-adapters-polyG-31bp-merged_condensed: num [1:37] 693 108457 1808 37 9 ...
+     $ 199-fastp-adapters-polyG-31bp-merged_condensed: num [1:37] 503 137906 1592 24 4 ...
+     $ 211-fastp-adapters-polyG-31bp-merged_condensed: num [1:37] 663 154248 2026 23 2 ...
+     $ 24-fastp-adapters-polyG-31bp-merged_condensed : num [1:37] 557 136805 1276 34 8 ...
+     $ 260-fastp-adapters-polyG-31bp-merged_condensed: num [1:37] 1419 120261 1468 178 8 ...
+     $ 26-fastp-adapters-polyG-31bp-merged_condensed : num [1:37] 559 124995 1580 29 0 ...
+     $ 30-fastp-adapters-polyG-31bp-merged_condensed : num [1:37] 780 157279 2265 19 4 ...
+     $ 310-fastp-adapters-polyG-31bp-merged_condensed: num [1:37] 569 154690 1765 15 2 ...
+     $ 33-fastp-adapters-polyG-31bp-merged_condensed : num [1:37] 442 116913 1420 13 9 ...
+     $ 341-fastp-adapters-polyG-31bp-merged_condensed: num [1:37] 728 121161 1344 7 2 ...
+     $ 34-fastp-adapters-polyG-31bp-merged_condensed : num [1:37] 665 143730 1736 14 5 ...
+     $ 35-fastp-adapters-polyG-31bp-merged_condensed : num [1:37] 607 128534 1683 26 1 ...
+     $ 363-fastp-adapters-polyG-31bp-merged_condensed: num [1:37] 538 95266 1408 15 6 ...
+     $ 367-fastp-adapters-polyG-31bp-merged_condensed: num [1:37] 520 119389 1315 7 1 ...
+     $ 376-fastp-adapters-polyG-31bp-merged_condensed: num [1:37] 1029 217736 2833 14 2 ...
+     $ 460-fastp-adapters-polyG-31bp-merged_condensed: num [1:37] 571 139439 1466 9 6 ...
+     $ 485-fastp-adapters-polyG-31bp-merged_condensed: num [1:37] 579 154776 1747 11 4 ...
+     $ 501-fastp-adapters-polyG-31bp-merged_condensed: num [1:37] 1182 167181 2135 174 3 ...
+     $ 71-fastp-adapters-polyG-31bp-merged_condensed : num [1:37] 392 1097 11123 1248 5 ...
+     $ 88-fastp-adapters-polyG-31bp-merged_condensed : num [1:37] 552 136133 1808 9 1 ...
+     - attr(*, "spec")=
+      .. cols(
+      ..   Coords = col_character(),
+      ..   Name = col_character(),
+      ..   MIRNA = col_character(),
+      ..   `196-fastp-adapters-polyG-31bp-merged_condensed` = col_double(),
+      ..   `199-fastp-adapters-polyG-31bp-merged_condensed` = col_double(),
+      ..   `211-fastp-adapters-polyG-31bp-merged_condensed` = col_double(),
+      ..   `24-fastp-adapters-polyG-31bp-merged_condensed` = col_double(),
+      ..   `260-fastp-adapters-polyG-31bp-merged_condensed` = col_double(),
+      ..   `26-fastp-adapters-polyG-31bp-merged_condensed` = col_double(),
+      ..   `30-fastp-adapters-polyG-31bp-merged_condensed` = col_double(),
+      ..   `310-fastp-adapters-polyG-31bp-merged_condensed` = col_double(),
+      ..   `33-fastp-adapters-polyG-31bp-merged_condensed` = col_double(),
+      ..   `341-fastp-adapters-polyG-31bp-merged_condensed` = col_double(),
+      ..   `34-fastp-adapters-polyG-31bp-merged_condensed` = col_double(),
+      ..   `35-fastp-adapters-polyG-31bp-merged_condensed` = col_double(),
+      ..   `363-fastp-adapters-polyG-31bp-merged_condensed` = col_double(),
+      ..   `367-fastp-adapters-polyG-31bp-merged_condensed` = col_double(),
+      ..   `376-fastp-adapters-polyG-31bp-merged_condensed` = col_double(),
+      ..   `460-fastp-adapters-polyG-31bp-merged_condensed` = col_double(),
+      ..   `485-fastp-adapters-polyG-31bp-merged_condensed` = col_double(),
+      ..   `501-fastp-adapters-polyG-31bp-merged_condensed` = col_double(),
+      ..   `71-fastp-adapters-polyG-31bp-merged_condensed` = col_double(),
+      ..   `88-fastp-adapters-polyG-31bp-merged_condensed` = col_double()
+      .. )
+     - attr(*, "problems")=<externalptr> 
+
+# 4 Create DESeq2 Column Data
+
+## 4.1 Read in metadata CSV
+
+``` r
+# Load metadata
+metadata <- read.csv("../data/ManilaOA2023_shortRNASeq_Meta.csv", header = TRUE)
+
+str(metadata)
+```
+
+    'data.frame':   20 obs. of  6 variables:
+     $ ID_simple  : int  196 199 211 310 341 363 367 376 460 485 ...
+     $ treatment  : chr  "control" "control" "control" "control" ...
+     $ Sex        : logi  FALSE FALSE FALSE FALSE FALSE FALSE ...
+     $ MeanEggArea: int  NA 3687 3519 3795 3837 3749 NA 3834 3759 NA ...
+     $ Species    : chr  "Manila clam" "Manila clam" "Manila clam" "Manila clam" ...
+     $ LifeStage  : chr  "Adult" "Adult" "Adult" "Adult" ...
+
+## 4.2 Extract sample names
+
+``` r
+sample_names <- colnames(srna_seq_counts_shortstack) %>%
+  str_subset("^\\d+-") %>%
+  str_extract("^\\d+")
+
+str(sample_names)
+```
+
+     chr [1:20] "196" "199" "211" "24" "260" "26" "30" "310" "33" "341" "34" ...
+
+## 4.3 Select sample name and treatment
+
+``` r
+sample_treatment_df <- metadata %>%
+  select(ID_simple, treatment)
+
+# Set sample names as rownames
+rownames(sample_treatment_df) <- sample_treatment_df$ID_simple
+
+sample_treatment_df$ID_simple <- NULL
+
+str(sample_treatment_df)
+```
+
+    'data.frame':   20 obs. of  1 variable:
+     $ treatment: chr  "control" "control" "control" "control" ...
+
+## 4.4 Write DEseq coldata to file
+
+``` r
+write.table(
+  sample_treatment_df,
+  file = "../output/03.00-D-sRNAseq-gene-expression-DESeq2/DESeq2-coldata.tab",
+  sep = "\t",
+  quote = FALSE,
+  col.names = NA
+)
+```
+
+# 5 Count data munging
+
+## 5.1 Fix col names and convert to matrix
+
+``` r
+coldata <- sample_treatment_df
+
+# Remove excess portions of sample column names to just "sample###"
+colnames(srna_seq_counts_shortstack) <- sub("-fastp-adapters-polyG-31bp-merged_condensed", "", colnames(srna_seq_counts_shortstack))
+
+# Keep just the counts and cluster names as matrix
+srna_seq_counts_matrix <- as.matrix(srna_seq_counts_shortstack %>% select(-Coords, -MIRNA) %>% column_to_rownames(var = "Name"))
+
+str(srna_seq_counts_matrix)
+```
+
+     num [1:37, 1:20] 693 108457 1808 37 9 ...
+     - attr(*, "dimnames")=List of 2
+      ..$ : chr [1:37] "Cluster_1785" "Cluster_2042" "Cluster_2646" "Cluster_3720" ...
+      ..$ : chr [1:20] "196" "199" "211" "24" ...
+
+## 5.2 Take only samples present in coldata
+
+``` r
+common_cols <- intersect(colnames(srna_seq_counts_matrix),
+                         rownames(sample_treatment_df))
+
+srna_seq_counts_matrix <- srna_seq_counts_matrix[, common_cols]
+
+str(srna_seq_counts_matrix)
+```
+
+     num [1:37, 1:20] 693 108457 1808 37 9 ...
+     - attr(*, "dimnames")=List of 2
+      ..$ : chr [1:37] "Cluster_1785" "Cluster_2042" "Cluster_2646" "Cluster_3720" ...
+      ..$ : chr [1:20] "196" "199" "211" "24" ...
+
+## 5.3 Reorder matrix cols to match coldata
+
+``` r
+ord <- match(rownames(sample_treatment_df), colnames(srna_seq_counts_matrix))
+
+srna_seq_counts_matrix_sorted <- srna_seq_counts_matrix[, ord]
+
+str(srna_seq_counts_matrix_sorted)
+```
+
+     num [1:37, 1:20] 693 108457 1808 37 9 ...
+     - attr(*, "dimnames")=List of 2
+      ..$ : chr [1:37] "Cluster_1785" "Cluster_2042" "Cluster_2646" "Cluster_3720" ...
+      ..$ : chr [1:20] "196" "199" "211" "310" ...
+
+## 5.4 Verify rownames match
+
+``` r
+all(rownames(coldata) == colnames(srna_seq_counts_matrix_sorted))
+```
+
+    [1] TRUE
+
+# 6 Create DESeq2 data set
+
+## 6.1 Initialize DEseq2 data set
+
+``` r
+dds <- DESeqDataSetFromMatrix(countData = srna_seq_counts_matrix_sorted,
+                              colData = coldata,
+                              design = ~ treatment)
+dds
+```
+
+    class: DESeqDataSet 
+    dim: 37 20 
+    metadata(1): version
+    assays(1): counts
+    rownames(37): Cluster_1785 Cluster_2042 ... Cluster_32918 Cluster_32919
+    rowData names(0):
+    colnames(20): 196 199 ... 71 260
+    colData names(1): treatment
+
+## 6.2 Add cluster column as “gene” feature
+
+``` r
+featureData <- data.frame(gene=rownames(srna_seq_counts_matrix_sorted))
+mcols(dds) <- DataFrame(mcols(dds), featureData)
+mcols(dds)
+```
+
+    DataFrame with 37 rows and 1 column
+                           gene
+                    <character>
+    Cluster_1785   Cluster_1785
+    Cluster_2042   Cluster_2042
+    Cluster_2646   Cluster_2646
+    Cluster_3720   Cluster_3720
+    Cluster_4396   Cluster_4396
+    ...                     ...
+    Cluster_29018 Cluster_29018
+    Cluster_31844 Cluster_31844
+    Cluster_32917 Cluster_32917
+    Cluster_32918 Cluster_32918
+    Cluster_32919 Cluster_32919
+
+## 6.3 Set factor levels
+
+``` r
+dds$treatment <- factor(dds$treatment, levels = c("control", "treatment"))
+```
+
+# 7 DESeq analysis
+
+## 7.1 DEseq
+
+``` r
+dds <- DESeq(dds)
+```
+
+## 7.2 DEseq Results
+
+``` r
+res <- results(dds, alpha = fdr, lfcThreshold = log2fc)
+
+res
+```
+
+    log2 fold change (MLE): treatment treatment vs control 
+    Wald test p-value: treatment treatment vs control 
+    DataFrame with 37 rows and 6 columns
+                     baseMean log2FoldChange     lfcSE      stat    pvalue
+                    <numeric>      <numeric> <numeric> <numeric> <numeric>
+    Cluster_1785  6.63895e+02      0.0149611 0.2810643   0.00000 1.0000000
+    Cluster_2042  1.35312e+05     -0.1901409 0.4840889   0.00000 1.0000000
+    Cluster_2646  1.76900e+03      0.0185890 0.0902545   0.00000 1.0000000
+    Cluster_3720  4.26842e+01      2.0921221 0.5504186   1.98417 0.0472373
+    Cluster_4396  4.09498e+00      0.0360325 0.5609930   0.00000 1.0000000
+    ...                   ...            ...       ...       ...       ...
+    Cluster_29018   1661.6392      2.4245029  0.683762   2.08333 0.0372209
+    Cluster_31844   1372.1080     -0.0477386  0.146375   0.00000 1.0000000
+    Cluster_32917     14.7573      0.2194667  0.377211   0.00000 1.0000000
+    Cluster_32918   1259.4586      0.5004769  0.370048   0.00000 1.0000000
+    Cluster_32919      4.5894      0.2954022  0.619287   0.00000 1.0000000
+                       padj
+                  <numeric>
+    Cluster_1785   1.000000
+    Cluster_2042   1.000000
+    Cluster_2646   1.000000
+    Cluster_3720   0.436945
+    Cluster_4396   1.000000
+    ...                 ...
+    Cluster_29018  0.436945
+    Cluster_31844  1.000000
+    Cluster_32917  1.000000
+    Cluster_32918  1.000000
+    Cluster_32919  1.000000
+
+``` r
+summary(res)
+```
+
+    out of 37 with nonzero total read count
+    adjusted p-value < 0.05
+    LFC > 1.00 (up)    : 0, 0%
+    LFC < -1.00 (down) : 0, 0%
+    outliers [1]       : 0, 0%
+    low counts [2]     : 0, 0%
+    (mean count < 4)
+    [1] see 'cooksCutoff' argument of ?results
+    [2] see 'independentFiltering' argument of ?results
+
+``` r
+table(res$padj < fdr)
+```
+
+    FALSE 
+       37 
+
+## 7.3 Write DDS results tables to CSVs
+
+``` r
+write.csv(res, file = paste0(output_dir, "deseq2", ".table.csv"), row.names = TRUE, quote = FALSE)
+
+# Subset based on adjusted p-value
+resSig <- subset(res, padj < fdr)
+
+resSig
+```
+
+    log2 fold change (MLE): treatment treatment vs control 
+    Wald test p-value: treatment treatment vs control 
+    DataFrame with 0 rows and 6 columns
+
+``` r
+write.csv(resSig, file = paste0(output_dir, "deseq2",".fdr-", fdr, ".table.csv"), row.names = TRUE, quote = FALSE)
+```
+
+# 8 Variance stabilizing transformations (VST)
+
+- Here we transform counts using a variance stabilizing transformation
+  (VST), since we have many samples.
+
+``` r
+vsd <- varianceStabilizingTransformation(dds, blind=FALSE)
+```
+
+# 9 Plotting
+
+## 9.1 Sample distances
+
+``` r
+sampleDists <- dist(t(assay(vsd)))
+
+sampleDistMatrix <- as.matrix( sampleDists )
+
+rownames(sampleDistMatrix) <- paste( vsd$colony.id, vsd$time.point, sep = " - " )
+
+colnames(sampleDistMatrix) <- NULL
+
+colors <- colorRampPalette( rev(brewer.pal(9, "Blues")) )(255)
+
+pheatmap(sampleDistMatrix,
+         clustering_distance_rows = sampleDists,
+         clustering_distance_cols = sampleDists,
+         col = colors)
+```
+
+## 9.2 PCA
+
+Visualize sample clustering via PCA (after transformation)
+
+``` r
+# PCA with points color coded by time point 
+plotPCA(vsd, intgroup = c("treatment"))
+```
+
+![](03.00-D-sRNAseq-gene-expression-DESeq2_files/figure-gfm/pca-1.png)<!-- -->
+
+## 9.3 Heatmap top 40
+
+``` r
+top40_counts <- order(rowMeans(counts(dds,normalized=TRUE)),
+                decreasing=TRUE)[1:40]
+
+annotation = colData(dds) %>% as.data.frame() %>% select(treatment)
+
+pheatmap(assay(vsd)[top40_counts,], 
+         cluster_rows=FALSE, 
+         show_rownames=TRUE,
+         cluster_cols=TRUE, 
+         annotation_col = annotation)
+```
+
+![](03.00-D-sRNAseq-gene-expression-DESeq2_files/figure-gfm/heatmap-1.png)<!-- -->
+
+# 10 REFERENCES
+
+<div id="refs" class="references csl-bib-body hanging-indent">
+
+<div id="ref-love2014" class="csl-entry">
+
+Love, Michael I, Wolfgang Huber, and Simon Anders. 2014. “Moderated
+Estimation of Fold Change and Dispersion for RNA-Seq Data with DESeq2.”
+*Genome Biology* 15 (12). <https://doi.org/10.1186/s13059-014-0550-8>.
+
+</div>
+
+</div>
