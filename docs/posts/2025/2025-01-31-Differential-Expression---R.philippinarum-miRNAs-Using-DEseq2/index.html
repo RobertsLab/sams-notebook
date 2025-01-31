@@ -1,0 +1,1198 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.7.5">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+<meta name="author" content="Sam White">
+<meta name="dcterms.date" content="2025-01-31">
+
+<title>Differential Expression - R.philippinarum miRNAs Using DEseq2 – Sam’s Notebook</title>
+<style>
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: min(4vw, 1.5em);}
+div.column{flex: auto; overflow-x: auto;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+  vertical-align: middle;
+}
+/* CSS for syntax highlighting */
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { display: inline-block; text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+/* CSS for citations */
+div.csl-bib-body { }
+div.csl-entry {
+  clear: both;
+}
+.hanging-indent div.csl-entry {
+  margin-left:2em;
+  text-indent:-2em;
+}
+div.csl-left-margin {
+  min-width:2em;
+  float:left;
+}
+div.csl-right-inline {
+  margin-left:2em;
+  padding-left:1em;
+}
+div.csl-indent {
+  margin-left: 2em;
+}</style>
+
+
+<script src="../../../site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="../../../site_libs/quarto-nav/headroom.min.js"></script>
+<script src="../../../site_libs/clipboard/clipboard.min.js"></script>
+<script src="../../../site_libs/quarto-search/autocomplete.umd.js"></script>
+<script src="../../../site_libs/quarto-search/fuse.min.js"></script>
+<script src="../../../site_libs/quarto-search/quarto-search.js"></script>
+<meta name="quarto:offset" content="../../../">
+<link href="../../..//images/favicon.ico" rel="icon">
+<script src="../../../site_libs/quarto-html/quarto.js"></script>
+<script src="../../../site_libs/quarto-html/popper.min.js"></script>
+<script src="../../../site_libs/quarto-html/tippy.umd.min.js"></script>
+<script src="../../../site_libs/quarto-html/anchor.min.js"></script>
+<link href="../../../site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="../../../site_libs/quarto-html/quarto-syntax-highlighting-dark-dec4957386d03255e1655963b31d62d3.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="../../../site_libs/bootstrap/bootstrap.min.js"></script>
+<link href="../../../site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="../../../site_libs/bootstrap/bootstrap-d24cc6793ea89e8aa59926ce2f45f698.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="dark">
+<script id="quarto-search-options" type="application/json">{
+  "location": "navbar",
+  "copy-button": true,
+  "collapse-after": 2,
+  "panel-placement": "end",
+  "type": "textbox",
+  "limit": 100,
+  "keyboard-shortcut": [
+    "f",
+    "/",
+    "s"
+  ],
+  "language": {
+    "search-no-results-text": "No results",
+    "search-matching-documents-text": "matching documents",
+    "search-copy-link-title": "Copy link to search",
+    "search-hide-matches-text": "Hide additional matches",
+    "search-more-match-text": "more match in this document",
+    "search-more-matches-text": "more matches in this document",
+    "search-clear-button-title": "Clear",
+    "search-text-placeholder": "",
+    "search-detached-cancel-button-title": "Cancel",
+    "search-submit-button-title": "Submit",
+    "search-label": "Search"
+  }
+}</script>
+<script async="" src="https://www.googletagmanager.com/gtag/js?id=G-7483T61T11"></script>
+
+<script type="text/javascript">
+
+window.dataLayer = window.dataLayer || [];
+function gtag(){dataLayer.push(arguments);}
+gtag('js', new Date());
+gtag('config', 'G-7483T61T11', { 'anonymize_ip': true});
+</script>
+
+
+<link rel="stylesheet" href="../../../styles.css">
+</head>
+
+<body class="floating nav-fixed">
+
+<div id="quarto-search-results"></div>
+  <header id="quarto-header" class="headroom fixed-top quarto-banner">
+    <nav class="navbar navbar-expand-lg " data-bs-theme="dark">
+      <div class="navbar-container container-fluid">
+      <div class="navbar-brand-container mx-auto">
+    <a class="navbar-brand" href="../../../index.html">
+    <span class="navbar-title">Sam’s Notebook</span>
+    </a>
+  </div>
+            <div id="quarto-search" class="" title="Search"></div>
+          <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarCollapse" aria-controls="navbarCollapse" role="menu" aria-expanded="false" aria-label="Toggle navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+  <span class="navbar-toggler-icon"></span>
+</button>
+          <div class="collapse navbar-collapse" id="navbarCollapse">
+            <ul class="navbar-nav navbar-nav-scroll ms-auto">
+  <li class="nav-item dropdown ">
+    <a class="nav-link dropdown-toggle" href="#" id="nav-menu-bi-hdd-network" role="link" data-bs-toggle="dropdown" aria-expanded="false">
+      <i class="bi bi-hdd-network" role="img">
+</i> 
+ <span class="menu-text"></span>
+    </a>
+    <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="nav-menu-bi-hdd-network">    
+        <li>
+    <a class="dropdown-item" href="http://raven.fish.washington.edu:8787" target="_blank">
+ <span class="dropdown-text">Rstudio Server - Raven</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="https://gannet.fish.washington.edu/Atumefaciens/" target="_blank">
+ <span class="dropdown-text">My Gannet Directory</span></a>
+  </li>  
+    </ul>
+  </li>
+  <li class="nav-item dropdown ">
+    <a class="nav-link dropdown-toggle" href="#" id="nav-menu-bi-journal-code" role="link" data-bs-toggle="dropdown" aria-expanded="false">
+      <i class="bi bi-journal-code" role="img">
+</i> 
+ <span class="menu-text"></span>
+    </a>
+    <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="nav-menu-bi-journal-code">    
+        <li>
+    <a class="dropdown-item" href="https://sr320.github.io" target="_blank">
+ <span class="dropdown-text">Steven’s Notebook</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="https://shedurkin.github.io/Roberts-LabNotebook/" target="_blank">
+ <span class="dropdown-text">Kathleen’s Notebook</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="https://meganewing.github.io/mewing-notebook/" target="_blank">
+ <span class="dropdown-text">Megan’s Notebook</span></a>
+  </li>  
+    </ul>
+  </li>
+  <li class="nav-item dropdown ">
+    <a class="nav-link dropdown-toggle" href="#" id="nav-menu-bi-github" role="link" data-bs-toggle="dropdown" aria-expanded="false">
+      <i class="bi bi-github" role="img">
+</i> 
+ <span class="menu-text"></span>
+    </a>
+    <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="nav-menu-bi-github">    
+        <li>
+    <a class="dropdown-item" href="https://github.com/RobertsLab/sams-notebook" target="_blank">
+ <span class="dropdown-text">Notebook repo</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="https://github.com/RobertsLab" target="_blank">
+ <span class="dropdown-text">Lab Organization (GitHub)</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="https://github.com/RobertsLab/lab-website" target="_blank">
+ <span class="dropdown-text">Edit Roberts Lab website</span></a>
+  </li>  
+    </ul>
+  </li>
+  <li class="nav-item compact">
+    <a class="nav-link" href="https://calendar.google.com/calendar/embed?src=mrc305@gmail.com&amp;ctz=America/Vancouver" target="_blank"> <i class="bi bi-calendar-week" role="img">
+</i> 
+<span class="menu-text"></span></a>
+  </li>  
+  <li class="nav-item compact">
+    <a class="nav-link" href="../../../index.xml"> <i class="bi bi-rss" role="img">
+</i> 
+<span class="menu-text"></span></a>
+  </li>  
+</ul>
+          </div> <!-- /navcollapse -->
+            <div class="quarto-navbar-tools">
+</div>
+      </div> <!-- /container-fluid -->
+    </nav>
+</header>
+<!-- content -->
+<header id="title-block-header" class="quarto-title-block default toc-left page-columns page-full">
+  <div class="quarto-title-banner page-columns page-full">
+    <div class="quarto-title column-page-right">
+      <h1 class="title">Differential Expression - R.philippinarum miRNAs Using DEseq2</h1>
+                                <div class="quarto-categories">
+                <div class="quarto-category">2025</div>
+                <div class="quarto-category">Ruditapes philippinarum</div>
+                <div class="quarto-category">Manila clam</div>
+                <div class="quarto-category">DEseq2</div>
+                <div class="quarto-category">sRNA-seq</div>
+                <div class="quarto-category">miRNA</div>
+              </div>
+                  </div>
+  </div>
+    
+  
+  <div class="quarto-title-meta column-page-right">
+
+      <div>
+      <div class="quarto-title-meta-heading">Author</div>
+      <div class="quarto-title-meta-contents">
+               <p>Sam White </p>
+            </div>
+    </div>
+      
+      <div>
+      <div class="quarto-title-meta-heading">Published</div>
+      <div class="quarto-title-meta-contents">
+        <p class="date">January 31, 2025</p>
+      </div>
+    </div>
+    
+      
+    </div>
+    
+  
+  </header><div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-full page-navbar">
+<!-- sidebar -->
+  <nav id="quarto-sidebar" class="sidebar collapse collapse-horizontal quarto-sidebar-collapse-item sidebar-navigation floating overflow-auto">
+    <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">Contents</h2>
+   
+  <ul>
+  <li><a href="#d-srnaseq-gene-expression-deseq2" id="toc-d-srnaseq-gene-expression-deseq2" class="nav-link active" data-scroll-target="#d-srnaseq-gene-expression-deseq2">03.00-D-sRNAseq-gene-expression-DESeq2</a></li>
+  <li><a href="#background" id="toc-background" class="nav-link" data-scroll-target="#background">1 Background</a>
+  <ul>
+  <li><a href="#inputs" id="toc-inputs" class="nav-link" data-scroll-target="#inputs">1.1 Inputs</a></li>
+  <li><a href="#outputs" id="toc-outputs" class="nav-link" data-scroll-target="#outputs">1.2 Outputs</a></li>
+  </ul></li>
+  <li><a href="#set-r-variables" id="toc-set-r-variables" class="nav-link" data-scroll-target="#set-r-variables">2 Set R variables</a></li>
+  <li><a href="#load-count-data" id="toc-load-count-data" class="nav-link" data-scroll-target="#load-count-data">3 Load count data</a>
+  <ul>
+  <li><a href="#select-only-mirnas-idd-by-shortstack" id="toc-select-only-mirnas-idd-by-shortstack" class="nav-link" data-scroll-target="#select-only-mirnas-idd-by-shortstack">3.1 Select only miRNAs IDd by ShortStack</a></li>
+  </ul></li>
+  <li><a href="#create-deseq2-column-data" id="toc-create-deseq2-column-data" class="nav-link" data-scroll-target="#create-deseq2-column-data">4 Create DESeq2 Column Data</a>
+  <ul>
+  <li><a href="#read-in-metadata-csv" id="toc-read-in-metadata-csv" class="nav-link" data-scroll-target="#read-in-metadata-csv">4.1 Read in metadata CSV</a></li>
+  <li><a href="#extract-sample-names" id="toc-extract-sample-names" class="nav-link" data-scroll-target="#extract-sample-names">4.2 Extract sample names</a></li>
+  <li><a href="#select-sample-name-and-treatment" id="toc-select-sample-name-and-treatment" class="nav-link" data-scroll-target="#select-sample-name-and-treatment">4.3 Select sample name and treatment</a></li>
+  <li><a href="#write-deseq-coldata-to-file" id="toc-write-deseq-coldata-to-file" class="nav-link" data-scroll-target="#write-deseq-coldata-to-file">4.4 Write DEseq coldata to file</a></li>
+  </ul></li>
+  <li><a href="#count-data-munging" id="toc-count-data-munging" class="nav-link" data-scroll-target="#count-data-munging">5 Count data munging</a>
+  <ul>
+  <li><a href="#fix-col-names-and-convert-to-matrix" id="toc-fix-col-names-and-convert-to-matrix" class="nav-link" data-scroll-target="#fix-col-names-and-convert-to-matrix">5.1 Fix col names and convert to matrix</a></li>
+  <li><a href="#take-only-samples-present-in-coldata" id="toc-take-only-samples-present-in-coldata" class="nav-link" data-scroll-target="#take-only-samples-present-in-coldata">5.2 Take only samples present in coldata</a></li>
+  <li><a href="#reorder-matrix-cols-to-match-coldata" id="toc-reorder-matrix-cols-to-match-coldata" class="nav-link" data-scroll-target="#reorder-matrix-cols-to-match-coldata">5.3 Reorder matrix cols to match coldata</a></li>
+  <li><a href="#verify-rownames-match" id="toc-verify-rownames-match" class="nav-link" data-scroll-target="#verify-rownames-match">5.4 Verify rownames match</a></li>
+  </ul></li>
+  <li><a href="#create-deseq2-data-set" id="toc-create-deseq2-data-set" class="nav-link" data-scroll-target="#create-deseq2-data-set">6 Create DESeq2 data set</a>
+  <ul>
+  <li><a href="#initialize-deseq2-data-set" id="toc-initialize-deseq2-data-set" class="nav-link" data-scroll-target="#initialize-deseq2-data-set">6.1 Initialize DEseq2 data set</a></li>
+  <li><a href="#add-cluster-column-as-gene-feature" id="toc-add-cluster-column-as-gene-feature" class="nav-link" data-scroll-target="#add-cluster-column-as-gene-feature">6.2 Add cluster column as “gene” feature</a></li>
+  <li><a href="#set-factor-levels" id="toc-set-factor-levels" class="nav-link" data-scroll-target="#set-factor-levels">6.3 Set factor levels</a></li>
+  </ul></li>
+  <li><a href="#deseq-analysis" id="toc-deseq-analysis" class="nav-link" data-scroll-target="#deseq-analysis">7 DESeq analysis</a>
+  <ul>
+  <li><a href="#deseq" id="toc-deseq" class="nav-link" data-scroll-target="#deseq">7.1 DEseq</a></li>
+  <li><a href="#deseq-results" id="toc-deseq-results" class="nav-link" data-scroll-target="#deseq-results">7.2 DEseq Results</a></li>
+  <li><a href="#write-dds-results-tables-to-csvs" id="toc-write-dds-results-tables-to-csvs" class="nav-link" data-scroll-target="#write-dds-results-tables-to-csvs">7.3 Write DDS results tables to CSVs</a></li>
+  </ul></li>
+  <li><a href="#variance-stabilizing-transformations-vst" id="toc-variance-stabilizing-transformations-vst" class="nav-link" data-scroll-target="#variance-stabilizing-transformations-vst">8 Variance stabilizing transformations (VST)</a></li>
+  <li><a href="#plotting" id="toc-plotting" class="nav-link" data-scroll-target="#plotting">9 Plotting</a>
+  <ul>
+  <li><a href="#sample-distances" id="toc-sample-distances" class="nav-link" data-scroll-target="#sample-distances">9.1 Sample distances</a></li>
+  <li><a href="#pca" id="toc-pca" class="nav-link" data-scroll-target="#pca">9.2 PCA</a></li>
+  <li><a href="#heatmap-top-40" id="toc-heatmap-top-40" class="nav-link" data-scroll-target="#heatmap-top-40">9.3 Heatmap top 40</a></li>
+  </ul></li>
+  <li><a href="#references" id="toc-references" class="nav-link" data-scroll-target="#references">10 REFERENCES</a></li>
+  </ul>
+</nav>
+</nav>
+<div id="quarto-sidebar-glass" class="quarto-sidebar-collapse-item" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item"></div>
+<!-- margin-sidebar -->
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar zindex-bottom">
+    </div>
+<!-- main -->
+<main class="content quarto-banner-title-block column-page-right" id="quarto-document-content">
+
+
+
+
+
+<p>This analysis was done as part of <a href="https://github.com/RobertsLab/project-clam-oa"><code>project-clam-oa</code></a> (GitHub repo).</p>
+<div class="callout callout-style-default callout-note callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Note
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>The contents below are from markdown knitted from <a href="https://github.com/RobertsLab/project-clam-oa/blob/54eb41b32e1245e75f06c3994e9a6f5cf3c119eb/code/03.00-D-sRNAseq-gene-expression-DESeq2.Rmd"><code>03.00-D-sRNAseq-gene-expression-DESeq2.Rmd</code></a> (commit <code>54eb41b</code>).</p>
+</div>
+</div>
+<section id="d-srnaseq-gene-expression-deseq2" class="level1">
+<h1>03.00-D-sRNAseq-gene-expression-DESeq2</h1>
+<p>Sam White 2025-01-31</p>
+<ul>
+<li><a href="#1-background" id="toc-1-background">1 Background</a>
+<ul>
+<li><a href="#11-inputs" id="toc-11-inputs">1.1 Inputs</a></li>
+<li><a href="#12-outputs" id="toc-12-outputs">1.2 Outputs</a></li>
+</ul></li>
+<li><a href="#2-set-r-variables" id="toc-2-set-r-variables">2 Set R variables</a></li>
+<li><a href="#3-load-count-data" id="toc-3-load-count-data">3 Load count data</a>
+<ul>
+<li><a href="#31-select-only-mirnas-idd-by-shortstack" id="toc-31-select-only-mirnas-idd-by-shortstack">3.1 Select only miRNAs IDd by ShortStack</a></li>
+</ul></li>
+<li><a href="#4-create-deseq2-column-data" id="toc-4-create-deseq2-column-data">4 Create DESeq2 Column Data</a>
+<ul>
+<li><a href="#41-read-in-metadata-csv" id="toc-41-read-in-metadata-csv">4.1 Read in metadata CSV</a></li>
+<li><a href="#42-extract-sample-names" id="toc-42-extract-sample-names">4.2 Extract sample names</a></li>
+<li><a href="#43-select-sample-name-and-treatment" id="toc-43-select-sample-name-and-treatment">4.3 Select sample name and treatment</a></li>
+<li><a href="#44-write-deseq-coldata-to-file" id="toc-44-write-deseq-coldata-to-file">4.4 Write DEseq coldata to file</a></li>
+</ul></li>
+<li><a href="#5-count-data-munging" id="toc-5-count-data-munging">5 Count data munging</a>
+<ul>
+<li><a href="#51-fix-col-names-and-convert-to-matrix" id="toc-51-fix-col-names-and-convert-to-matrix">5.1 Fix col names and convert to matrix</a></li>
+<li><a href="#52-take-only-samples-present-in-coldata" id="toc-52-take-only-samples-present-in-coldata">5.2 Take only samples present in coldata</a></li>
+<li><a href="#53-reorder-matrix-cols-to-match-coldata" id="toc-53-reorder-matrix-cols-to-match-coldata">5.3 Reorder matrix cols to match coldata</a></li>
+<li><a href="#54-verify-rownames-match" id="toc-54-verify-rownames-match">5.4 Verify rownames match</a></li>
+</ul></li>
+<li><a href="#6-create-deseq2-data-set" id="toc-6-create-deseq2-data-set">6 Create DESeq2 data set</a>
+<ul>
+<li><a href="#61-initialize-deseq2-data-set" id="toc-61-initialize-deseq2-data-set">6.1 Initialize DEseq2 data set</a></li>
+<li><a href="#62-add-cluster-column-as-gene-feature" id="toc-62-add-cluster-column-as-gene-feature">6.2 Add cluster column as “gene” feature</a></li>
+<li><a href="#63-set-factor-levels" id="toc-63-set-factor-levels">6.3 Set factor levels</a></li>
+</ul></li>
+<li><a href="#7-deseq-analysis" id="toc-7-deseq-analysis">7 DESeq analysis</a>
+<ul>
+<li><a href="#71-deseq" id="toc-71-deseq">7.1 DEseq</a></li>
+<li><a href="#72-deseq-results" id="toc-72-deseq-results">7.2 DEseq Results</a></li>
+<li><a href="#73-write-dds-results-tables-to-csvs" id="toc-73-write-dds-results-tables-to-csvs">7.3 Write DDS results tables to CSVs</a></li>
+</ul></li>
+<li><a href="#8-variance-stabilizing-transformations-vst" id="toc-8-variance-stabilizing-transformations-vst">8 Variance stabilizing transformations (VST)</a></li>
+<li><a href="#9-plotting" id="toc-9-plotting">9 Plotting</a>
+<ul>
+<li><a href="#91-sample-distances" id="toc-91-sample-distances">9.1 Sample distances</a></li>
+<li><a href="#92-pca" id="toc-92-pca">9.2 PCA</a></li>
+<li><a href="#93-heatmap-top-40" id="toc-93-heatmap-top-40">9.3 Heatmap top 40</a></li>
+</ul></li>
+<li><a href="#10-references" id="toc-10-references">10 REFERENCES</a></li>
+</ul>
+</section>
+<section id="background" class="level1">
+<h1>1 Background</h1>
+<p>This will run <a href="https://bioconductor.org/packages/release/bioc/vignettes/DESeq2/inst/doc/DESeq2.html">DEseq2</a> (Love, Huber, and Anders 2014) to determine if any of the miRNAs identified in <a href="https://github.com/RobertsLab/project-clam-oa/blob/2616d45a5a0bbef23081c5824bfe5bad6b89d227/code/02.00-ShortStack-31bp-fastp-merged.md">02.00-ShortStack-31bp-fastp-merged.md</a> analysis are differentially expressed between control/treatment.</p>
+<div class="callout callout-style-default callout-note callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Note
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>ShortStack identified 37 miRNAs.</p>
+</div>
+</div>
+<section id="inputs" class="level2">
+<h2 class="anchored" data-anchor-id="inputs">1.1 Inputs</h2>
+<ul>
+<li><p><a href="https://github.com/RobertsLab/project-clam-oa/blob/d380ed9a88c874db5434c9ec74f6ab1de042bad5/output/02.00-ShortStack-31bp-fastp-merged/ShortStack_out/Counts.txt"><code>Counts.txt</code></a>: ShortStack counts matrix. Includes all clusters, including those that were <em>not</em> categorized as miRNAs.</p></li>
+<li><p><a href="https://github.com/RobertsLab/project-clam-oa/blob/d380ed9a88c874db5434c9ec74f6ab1de042bad5/output/03.00-D-sRNAseq-gene-expression-DESeq2/DESeq2-coldata.tab"><code>DESeq2-coldata.tab</code></a>: Two column table with sample ID and treatment. This file is also an output from this notebook.</p></li>
+<li><p><a href="https://github.com/RobertsLab/project-clam-oa/blob/d380ed9a88c874db5434c9ec74f6ab1de042bad5/data/ManilaOA2023_shortRNASeq_Meta.csv">ManilaOA2023_shortRNASeq_Meta.csv</a>: Metadata file for this sRNA-seq data.</p></li>
+</ul>
+</section>
+<section id="outputs" class="level2">
+<h2 class="anchored" data-anchor-id="outputs">1.2 Outputs</h2>
+<ul>
+<li><p><a href="https://github.com/RobertsLab/project-clam-oa/blob/d380ed9a88c874db5434c9ec74f6ab1de042bad5/output/03.00-D-sRNAseq-gene-expression-DESeq2/DESeq2-coldata.tab"><code>DESeq2-coldata.tab</code></a>: Two column table with sample ID and treatment. Needed as input to DEseq2.</p></li>
+<li><p><a href="https://github.com/RobertsLab/project-clam-oa/blob/d380ed9a88c874db5434c9ec74f6ab1de042bad5/output/03.00-D-sRNAseq-gene-expression-DESeq2/deseq2.table.csv"><code>deseq2.table.csv</code></a>: DEseq2 output table containing mean expression, fold change in expression, and adjusted p-values for all input samples.</p></li>
+<li><p><a href="https://github.com/RobertsLab/project-clam-oa/blob/d380ed9a88c874db5434c9ec74f6ab1de042bad5/output/03.00-D-sRNAseq-gene-expression-DESeq2/deseq2.fdr-0.05.table.csv">deseq2.fdr-0.05.table.csv</a>: Subset of DEseq2 output table of all miRNA clusters (“genes”) having adjusted p-values (fdr) &lt;= 0.05.</p></li>
+</ul>
+</section>
+</section>
+<section id="set-r-variables" class="level1">
+<h1>2 Set R variables</h1>
+<div class="sourceCode" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Define the output directory path</span></span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a>output_dir <span class="ot">&lt;-</span> <span class="st">"../output/03.00-D-sRNAseq-gene-expression-DESeq2/"</span></span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a><span class="co"># Set desired false discovery rate threshold (i.e. adjusted p-value, padj)</span></span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a>fdr <span class="ot">&lt;-</span> <span class="fl">0.05</span></span>
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a><span class="co"># Set log2 fold change threshold (a value of '1' is equal to a fold change of '2')</span></span>
+<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a>log2fc <span class="ot">&lt;-</span> <span class="dv">1</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</section>
+<section id="load-count-data" class="level1">
+<h1>3 Load count data</h1>
+<p>Load in the sRNA count matrix generated using ShortStack 4.1.1. Keep in mind this data includes counts of all sRNAs, not just miRNAs.</p>
+<p>Counts generated in <code>02.00-ShortStack-31bp-fastp-merged</code>.</p>
+<section id="select-only-mirnas-idd-by-shortstack" class="level2">
+<h2 class="anchored" data-anchor-id="select-only-mirnas-idd-by-shortstack">3.1 Select only miRNAs IDd by ShortStack</h2>
+<div class="sourceCode" id="cb2"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Read in sRNA counts data</span></span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>srna_seq_counts_shortstack <span class="ot">&lt;-</span> <span class="fu">read_delim</span>(<span class="st">"../output/02.00-ShortStack-31bp-fastp-merged/ShortStack_out/Counts.txt"</span>, <span class="at">delim=</span><span class="st">"</span><span class="sc">\t</span><span class="st">"</span>)</span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a>srna_seq_counts_shortstack <span class="ot">&lt;-</span> srna_seq_counts_shortstack <span class="sc">%&gt;%</span> <span class="fu">filter</span>(MIRNA <span class="sc">==</span> <span class="st">"Y"</span>)</span>
+<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a><span class="fu">str</span>(srna_seq_counts_shortstack)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<pre><code>spc_tbl_ [37 × 23] (S3: spec_tbl_df/tbl_df/tbl/data.frame)
+ $ Coords                                        : chr [1:37] "NW_026852415.1:231396-231495" "NW_026852524.1:285406-285505" "NW_026852815.1:56435-56532" "NW_026853363.1:213466-213568" ...
+ $ Name                                          : chr [1:37] "Cluster_1785" "Cluster_2042" "Cluster_2646" "Cluster_3720" ...
+ $ MIRNA                                         : chr [1:37] "Y" "Y" "Y" "Y" ...
+ $ 196-fastp-adapters-polyG-31bp-merged_condensed: num [1:37] 693 108457 1808 37 9 ...
+ $ 199-fastp-adapters-polyG-31bp-merged_condensed: num [1:37] 503 137906 1592 24 4 ...
+ $ 211-fastp-adapters-polyG-31bp-merged_condensed: num [1:37] 663 154248 2026 23 2 ...
+ $ 24-fastp-adapters-polyG-31bp-merged_condensed : num [1:37] 557 136805 1276 34 8 ...
+ $ 260-fastp-adapters-polyG-31bp-merged_condensed: num [1:37] 1419 120261 1468 178 8 ...
+ $ 26-fastp-adapters-polyG-31bp-merged_condensed : num [1:37] 559 124995 1580 29 0 ...
+ $ 30-fastp-adapters-polyG-31bp-merged_condensed : num [1:37] 780 157279 2265 19 4 ...
+ $ 310-fastp-adapters-polyG-31bp-merged_condensed: num [1:37] 569 154690 1765 15 2 ...
+ $ 33-fastp-adapters-polyG-31bp-merged_condensed : num [1:37] 442 116913 1420 13 9 ...
+ $ 341-fastp-adapters-polyG-31bp-merged_condensed: num [1:37] 728 121161 1344 7 2 ...
+ $ 34-fastp-adapters-polyG-31bp-merged_condensed : num [1:37] 665 143730 1736 14 5 ...
+ $ 35-fastp-adapters-polyG-31bp-merged_condensed : num [1:37] 607 128534 1683 26 1 ...
+ $ 363-fastp-adapters-polyG-31bp-merged_condensed: num [1:37] 538 95266 1408 15 6 ...
+ $ 367-fastp-adapters-polyG-31bp-merged_condensed: num [1:37] 520 119389 1315 7 1 ...
+ $ 376-fastp-adapters-polyG-31bp-merged_condensed: num [1:37] 1029 217736 2833 14 2 ...
+ $ 460-fastp-adapters-polyG-31bp-merged_condensed: num [1:37] 571 139439 1466 9 6 ...
+ $ 485-fastp-adapters-polyG-31bp-merged_condensed: num [1:37] 579 154776 1747 11 4 ...
+ $ 501-fastp-adapters-polyG-31bp-merged_condensed: num [1:37] 1182 167181 2135 174 3 ...
+ $ 71-fastp-adapters-polyG-31bp-merged_condensed : num [1:37] 392 1097 11123 1248 5 ...
+ $ 88-fastp-adapters-polyG-31bp-merged_condensed : num [1:37] 552 136133 1808 9 1 ...
+ - attr(*, "spec")=
+  .. cols(
+  ..   Coords = col_character(),
+  ..   Name = col_character(),
+  ..   MIRNA = col_character(),
+  ..   `196-fastp-adapters-polyG-31bp-merged_condensed` = col_double(),
+  ..   `199-fastp-adapters-polyG-31bp-merged_condensed` = col_double(),
+  ..   `211-fastp-adapters-polyG-31bp-merged_condensed` = col_double(),
+  ..   `24-fastp-adapters-polyG-31bp-merged_condensed` = col_double(),
+  ..   `260-fastp-adapters-polyG-31bp-merged_condensed` = col_double(),
+  ..   `26-fastp-adapters-polyG-31bp-merged_condensed` = col_double(),
+  ..   `30-fastp-adapters-polyG-31bp-merged_condensed` = col_double(),
+  ..   `310-fastp-adapters-polyG-31bp-merged_condensed` = col_double(),
+  ..   `33-fastp-adapters-polyG-31bp-merged_condensed` = col_double(),
+  ..   `341-fastp-adapters-polyG-31bp-merged_condensed` = col_double(),
+  ..   `34-fastp-adapters-polyG-31bp-merged_condensed` = col_double(),
+  ..   `35-fastp-adapters-polyG-31bp-merged_condensed` = col_double(),
+  ..   `363-fastp-adapters-polyG-31bp-merged_condensed` = col_double(),
+  ..   `367-fastp-adapters-polyG-31bp-merged_condensed` = col_double(),
+  ..   `376-fastp-adapters-polyG-31bp-merged_condensed` = col_double(),
+  ..   `460-fastp-adapters-polyG-31bp-merged_condensed` = col_double(),
+  ..   `485-fastp-adapters-polyG-31bp-merged_condensed` = col_double(),
+  ..   `501-fastp-adapters-polyG-31bp-merged_condensed` = col_double(),
+  ..   `71-fastp-adapters-polyG-31bp-merged_condensed` = col_double(),
+  ..   `88-fastp-adapters-polyG-31bp-merged_condensed` = col_double()
+  .. )
+ - attr(*, "problems")=&lt;externalptr&gt; </code></pre>
+</section>
+</section>
+<section id="create-deseq2-column-data" class="level1">
+<h1>4 Create DESeq2 Column Data</h1>
+<section id="read-in-metadata-csv" class="level2">
+<h2 class="anchored" data-anchor-id="read-in-metadata-csv">4.1 Read in metadata CSV</h2>
+<div class="sourceCode" id="cb4"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Load metadata</span></span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a>metadata <span class="ot">&lt;-</span> <span class="fu">read.csv</span>(<span class="st">"../data/ManilaOA2023_shortRNASeq_Meta.csv"</span>, <span class="at">header =</span> <span class="cn">TRUE</span>)</span>
+<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a><span class="fu">str</span>(metadata)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<pre><code>'data.frame':   20 obs. of  6 variables:
+ $ ID_simple  : int  196 199 211 310 341 363 367 376 460 485 ...
+ $ treatment  : chr  "control" "control" "control" "control" ...
+ $ Sex        : logi  FALSE FALSE FALSE FALSE FALSE FALSE ...
+ $ MeanEggArea: int  NA 3687 3519 3795 3837 3749 NA 3834 3759 NA ...
+ $ Species    : chr  "Manila clam" "Manila clam" "Manila clam" "Manila clam" ...
+ $ LifeStage  : chr  "Adult" "Adult" "Adult" "Adult" ...</code></pre>
+</section>
+<section id="extract-sample-names" class="level2">
+<h2 class="anchored" data-anchor-id="extract-sample-names">4.2 Extract sample names</h2>
+<div class="sourceCode" id="cb6"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a>sample_names <span class="ot">&lt;-</span> <span class="fu">colnames</span>(srna_seq_counts_shortstack) <span class="sc">%&gt;%</span></span>
+<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">str_subset</span>(<span class="st">"^</span><span class="sc">\\</span><span class="st">d+-"</span>) <span class="sc">%&gt;%</span></span>
+<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">str_extract</span>(<span class="st">"^</span><span class="sc">\\</span><span class="st">d+"</span>)</span>
+<span id="cb6-4"><a href="#cb6-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-5"><a href="#cb6-5" aria-hidden="true" tabindex="-1"></a><span class="fu">str</span>(sample_names)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<pre><code> chr [1:20] "196" "199" "211" "24" "260" "26" "30" "310" "33" "341" "34" ...</code></pre>
+</section>
+<section id="select-sample-name-and-treatment" class="level2">
+<h2 class="anchored" data-anchor-id="select-sample-name-and-treatment">4.3 Select sample name and treatment</h2>
+<div class="sourceCode" id="cb8"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a>sample_treatment_df <span class="ot">&lt;-</span> metadata <span class="sc">%&gt;%</span></span>
+<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">select</span>(ID_simple, treatment)</span>
+<span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb8-4"><a href="#cb8-4" aria-hidden="true" tabindex="-1"></a><span class="co"># Set sample names as rownames</span></span>
+<span id="cb8-5"><a href="#cb8-5" aria-hidden="true" tabindex="-1"></a><span class="fu">rownames</span>(sample_treatment_df) <span class="ot">&lt;-</span> sample_treatment_df<span class="sc">$</span>ID_simple</span>
+<span id="cb8-6"><a href="#cb8-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb8-7"><a href="#cb8-7" aria-hidden="true" tabindex="-1"></a>sample_treatment_df<span class="sc">$</span>ID_simple <span class="ot">&lt;-</span> <span class="cn">NULL</span></span>
+<span id="cb8-8"><a href="#cb8-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb8-9"><a href="#cb8-9" aria-hidden="true" tabindex="-1"></a><span class="fu">str</span>(sample_treatment_df)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<pre><code>'data.frame':   20 obs. of  1 variable:
+ $ treatment: chr  "control" "control" "control" "control" ...</code></pre>
+</section>
+<section id="write-deseq-coldata-to-file" class="level2">
+<h2 class="anchored" data-anchor-id="write-deseq-coldata-to-file">4.4 Write DEseq coldata to file</h2>
+<div class="sourceCode" id="cb10"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a><span class="fu">write.table</span>(</span>
+<span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a>  sample_treatment_df,</span>
+<span id="cb10-3"><a href="#cb10-3" aria-hidden="true" tabindex="-1"></a>  <span class="at">file =</span> <span class="st">"../output/03.00-D-sRNAseq-gene-expression-DESeq2/DESeq2-coldata.tab"</span>,</span>
+<span id="cb10-4"><a href="#cb10-4" aria-hidden="true" tabindex="-1"></a>  <span class="at">sep =</span> <span class="st">"</span><span class="sc">\t</span><span class="st">"</span>,</span>
+<span id="cb10-5"><a href="#cb10-5" aria-hidden="true" tabindex="-1"></a>  <span class="at">quote =</span> <span class="cn">FALSE</span>,</span>
+<span id="cb10-6"><a href="#cb10-6" aria-hidden="true" tabindex="-1"></a>  <span class="at">col.names =</span> <span class="cn">NA</span></span>
+<span id="cb10-7"><a href="#cb10-7" aria-hidden="true" tabindex="-1"></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</section>
+</section>
+<section id="count-data-munging" class="level1">
+<h1>5 Count data munging</h1>
+<section id="fix-col-names-and-convert-to-matrix" class="level2">
+<h2 class="anchored" data-anchor-id="fix-col-names-and-convert-to-matrix">5.1 Fix col names and convert to matrix</h2>
+<div class="sourceCode" id="cb11"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a>coldata <span class="ot">&lt;-</span> sample_treatment_df</span>
+<span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb11-3"><a href="#cb11-3" aria-hidden="true" tabindex="-1"></a><span class="co"># Remove excess portions of sample column names to just "sample###"</span></span>
+<span id="cb11-4"><a href="#cb11-4" aria-hidden="true" tabindex="-1"></a><span class="fu">colnames</span>(srna_seq_counts_shortstack) <span class="ot">&lt;-</span> <span class="fu">sub</span>(<span class="st">"-fastp-adapters-polyG-31bp-merged_condensed"</span>, <span class="st">""</span>, <span class="fu">colnames</span>(srna_seq_counts_shortstack))</span>
+<span id="cb11-5"><a href="#cb11-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb11-6"><a href="#cb11-6" aria-hidden="true" tabindex="-1"></a><span class="co"># Keep just the counts and cluster names as matrix</span></span>
+<span id="cb11-7"><a href="#cb11-7" aria-hidden="true" tabindex="-1"></a>srna_seq_counts_matrix <span class="ot">&lt;-</span> <span class="fu">as.matrix</span>(srna_seq_counts_shortstack <span class="sc">%&gt;%</span> <span class="fu">select</span>(<span class="sc">-</span>Coords, <span class="sc">-</span>MIRNA) <span class="sc">%&gt;%</span> <span class="fu">column_to_rownames</span>(<span class="at">var =</span> <span class="st">"Name"</span>))</span>
+<span id="cb11-8"><a href="#cb11-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb11-9"><a href="#cb11-9" aria-hidden="true" tabindex="-1"></a><span class="fu">str</span>(srna_seq_counts_matrix)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<pre><code> num [1:37, 1:20] 693 108457 1808 37 9 ...
+ - attr(*, "dimnames")=List of 2
+  ..$ : chr [1:37] "Cluster_1785" "Cluster_2042" "Cluster_2646" "Cluster_3720" ...
+  ..$ : chr [1:20] "196" "199" "211" "24" ...</code></pre>
+</section>
+<section id="take-only-samples-present-in-coldata" class="level2">
+<h2 class="anchored" data-anchor-id="take-only-samples-present-in-coldata">5.2 Take only samples present in coldata</h2>
+<div class="sourceCode" id="cb13"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a>common_cols <span class="ot">&lt;-</span> <span class="fu">intersect</span>(<span class="fu">colnames</span>(srna_seq_counts_matrix),</span>
+<span id="cb13-2"><a href="#cb13-2" aria-hidden="true" tabindex="-1"></a>                         <span class="fu">rownames</span>(sample_treatment_df))</span>
+<span id="cb13-3"><a href="#cb13-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb13-4"><a href="#cb13-4" aria-hidden="true" tabindex="-1"></a>srna_seq_counts_matrix <span class="ot">&lt;-</span> srna_seq_counts_matrix[, common_cols]</span>
+<span id="cb13-5"><a href="#cb13-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb13-6"><a href="#cb13-6" aria-hidden="true" tabindex="-1"></a><span class="fu">str</span>(srna_seq_counts_matrix)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<pre><code> num [1:37, 1:20] 693 108457 1808 37 9 ...
+ - attr(*, "dimnames")=List of 2
+  ..$ : chr [1:37] "Cluster_1785" "Cluster_2042" "Cluster_2646" "Cluster_3720" ...
+  ..$ : chr [1:20] "196" "199" "211" "24" ...</code></pre>
+</section>
+<section id="reorder-matrix-cols-to-match-coldata" class="level2">
+<h2 class="anchored" data-anchor-id="reorder-matrix-cols-to-match-coldata">5.3 Reorder matrix cols to match coldata</h2>
+<div class="sourceCode" id="cb15"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a>ord <span class="ot">&lt;-</span> <span class="fu">match</span>(<span class="fu">rownames</span>(sample_treatment_df), <span class="fu">colnames</span>(srna_seq_counts_matrix))</span>
+<span id="cb15-2"><a href="#cb15-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb15-3"><a href="#cb15-3" aria-hidden="true" tabindex="-1"></a>srna_seq_counts_matrix_sorted <span class="ot">&lt;-</span> srna_seq_counts_matrix[, ord]</span>
+<span id="cb15-4"><a href="#cb15-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb15-5"><a href="#cb15-5" aria-hidden="true" tabindex="-1"></a><span class="fu">str</span>(srna_seq_counts_matrix_sorted)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<pre><code> num [1:37, 1:20] 693 108457 1808 37 9 ...
+ - attr(*, "dimnames")=List of 2
+  ..$ : chr [1:37] "Cluster_1785" "Cluster_2042" "Cluster_2646" "Cluster_3720" ...
+  ..$ : chr [1:20] "196" "199" "211" "310" ...</code></pre>
+</section>
+<section id="verify-rownames-match" class="level2">
+<h2 class="anchored" data-anchor-id="verify-rownames-match">5.4 Verify rownames match</h2>
+<div class="sourceCode" id="cb17"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a><span class="fu">all</span>(<span class="fu">rownames</span>(coldata) <span class="sc">==</span> <span class="fu">colnames</span>(srna_seq_counts_matrix_sorted))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<pre><code>[1] TRUE</code></pre>
+</section>
+</section>
+<section id="create-deseq2-data-set" class="level1">
+<h1>6 Create DESeq2 data set</h1>
+<section id="initialize-deseq2-data-set" class="level2">
+<h2 class="anchored" data-anchor-id="initialize-deseq2-data-set">6.1 Initialize DEseq2 data set</h2>
+<div class="sourceCode" id="cb19"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb19-1"><a href="#cb19-1" aria-hidden="true" tabindex="-1"></a>dds <span class="ot">&lt;-</span> <span class="fu">DESeqDataSetFromMatrix</span>(<span class="at">countData =</span> srna_seq_counts_matrix_sorted,</span>
+<span id="cb19-2"><a href="#cb19-2" aria-hidden="true" tabindex="-1"></a>                              <span class="at">colData =</span> coldata,</span>
+<span id="cb19-3"><a href="#cb19-3" aria-hidden="true" tabindex="-1"></a>                              <span class="at">design =</span> <span class="sc">~</span> treatment)</span>
+<span id="cb19-4"><a href="#cb19-4" aria-hidden="true" tabindex="-1"></a>dds</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<pre><code>class: DESeqDataSet 
+dim: 37 20 
+metadata(1): version
+assays(1): counts
+rownames(37): Cluster_1785 Cluster_2042 ... Cluster_32918 Cluster_32919
+rowData names(0):
+colnames(20): 196 199 ... 71 260
+colData names(1): treatment</code></pre>
+</section>
+<section id="add-cluster-column-as-gene-feature" class="level2">
+<h2 class="anchored" data-anchor-id="add-cluster-column-as-gene-feature">6.2 Add cluster column as “gene” feature</h2>
+<div class="sourceCode" id="cb21"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb21-1"><a href="#cb21-1" aria-hidden="true" tabindex="-1"></a>featureData <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(<span class="at">gene=</span><span class="fu">rownames</span>(srna_seq_counts_matrix_sorted))</span>
+<span id="cb21-2"><a href="#cb21-2" aria-hidden="true" tabindex="-1"></a><span class="fu">mcols</span>(dds) <span class="ot">&lt;-</span> <span class="fu">DataFrame</span>(<span class="fu">mcols</span>(dds), featureData)</span>
+<span id="cb21-3"><a href="#cb21-3" aria-hidden="true" tabindex="-1"></a><span class="fu">mcols</span>(dds)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<pre><code>DataFrame with 37 rows and 1 column
+                       gene
+                &lt;character&gt;
+Cluster_1785   Cluster_1785
+Cluster_2042   Cluster_2042
+Cluster_2646   Cluster_2646
+Cluster_3720   Cluster_3720
+Cluster_4396   Cluster_4396
+...                     ...
+Cluster_29018 Cluster_29018
+Cluster_31844 Cluster_31844
+Cluster_32917 Cluster_32917
+Cluster_32918 Cluster_32918
+Cluster_32919 Cluster_32919</code></pre>
+</section>
+<section id="set-factor-levels" class="level2">
+<h2 class="anchored" data-anchor-id="set-factor-levels">6.3 Set factor levels</h2>
+<div class="sourceCode" id="cb23"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb23-1"><a href="#cb23-1" aria-hidden="true" tabindex="-1"></a>dds<span class="sc">$</span>treatment <span class="ot">&lt;-</span> <span class="fu">factor</span>(dds<span class="sc">$</span>treatment, <span class="at">levels =</span> <span class="fu">c</span>(<span class="st">"control"</span>, <span class="st">"treatment"</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</section>
+</section>
+<section id="deseq-analysis" class="level1">
+<h1>7 DESeq analysis</h1>
+<section id="deseq" class="level2">
+<h2 class="anchored" data-anchor-id="deseq">7.1 DEseq</h2>
+<div class="sourceCode" id="cb24"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb24-1"><a href="#cb24-1" aria-hidden="true" tabindex="-1"></a>dds <span class="ot">&lt;-</span> <span class="fu">DESeq</span>(dds)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</section>
+<section id="deseq-results" class="level2">
+<h2 class="anchored" data-anchor-id="deseq-results">7.2 DEseq Results</h2>
+<div class="sourceCode" id="cb25"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb25-1"><a href="#cb25-1" aria-hidden="true" tabindex="-1"></a>res <span class="ot">&lt;-</span> <span class="fu">results</span>(dds, <span class="at">alpha =</span> fdr, <span class="at">lfcThreshold =</span> log2fc)</span>
+<span id="cb25-2"><a href="#cb25-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb25-3"><a href="#cb25-3" aria-hidden="true" tabindex="-1"></a>res</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<pre><code>log2 fold change (MLE): treatment treatment vs control 
+Wald test p-value: treatment treatment vs control 
+DataFrame with 37 rows and 6 columns
+                 baseMean log2FoldChange     lfcSE      stat    pvalue
+                &lt;numeric&gt;      &lt;numeric&gt; &lt;numeric&gt; &lt;numeric&gt; &lt;numeric&gt;
+Cluster_1785  6.63895e+02      0.0149611 0.2810643   0.00000 1.0000000
+Cluster_2042  1.35312e+05     -0.1901409 0.4840889   0.00000 1.0000000
+Cluster_2646  1.76900e+03      0.0185890 0.0902545   0.00000 1.0000000
+Cluster_3720  4.26842e+01      2.0921221 0.5504186   1.98417 0.0472373
+Cluster_4396  4.09498e+00      0.0360325 0.5609930   0.00000 1.0000000
+...                   ...            ...       ...       ...       ...
+Cluster_29018   1661.6392      2.4245029  0.683762   2.08333 0.0372209
+Cluster_31844   1372.1080     -0.0477386  0.146375   0.00000 1.0000000
+Cluster_32917     14.7573      0.2194667  0.377211   0.00000 1.0000000
+Cluster_32918   1259.4586      0.5004769  0.370048   0.00000 1.0000000
+Cluster_32919      4.5894      0.2954022  0.619287   0.00000 1.0000000
+                   padj
+              &lt;numeric&gt;
+Cluster_1785   1.000000
+Cluster_2042   1.000000
+Cluster_2646   1.000000
+Cluster_3720   0.436945
+Cluster_4396   1.000000
+...                 ...
+Cluster_29018  0.436945
+Cluster_31844  1.000000
+Cluster_32917  1.000000
+Cluster_32918  1.000000
+Cluster_32919  1.000000</code></pre>
+<div class="sourceCode" id="cb27"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb27-1"><a href="#cb27-1" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(res)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<pre><code>out of 37 with nonzero total read count
+adjusted p-value &lt; 0.05
+LFC &gt; 1.00 (up)    : 0, 0%
+LFC &lt; -1.00 (down) : 0, 0%
+outliers [1]       : 0, 0%
+low counts [2]     : 0, 0%
+(mean count &lt; 4)
+[1] see 'cooksCutoff' argument of ?results
+[2] see 'independentFiltering' argument of ?results</code></pre>
+<div class="sourceCode" id="cb29"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb29-1"><a href="#cb29-1" aria-hidden="true" tabindex="-1"></a><span class="fu">table</span>(res<span class="sc">$</span>padj <span class="sc">&lt;</span> fdr)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<pre><code>FALSE 
+   37 </code></pre>
+</section>
+<section id="write-dds-results-tables-to-csvs" class="level2">
+<h2 class="anchored" data-anchor-id="write-dds-results-tables-to-csvs">7.3 Write DDS results tables to CSVs</h2>
+<div class="sourceCode" id="cb31"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb31-1"><a href="#cb31-1" aria-hidden="true" tabindex="-1"></a><span class="fu">write.csv</span>(res, <span class="at">file =</span> <span class="fu">paste0</span>(output_dir, <span class="st">"deseq2"</span>, <span class="st">".table.csv"</span>), <span class="at">row.names =</span> <span class="cn">TRUE</span>, <span class="at">quote =</span> <span class="cn">FALSE</span>)</span>
+<span id="cb31-2"><a href="#cb31-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb31-3"><a href="#cb31-3" aria-hidden="true" tabindex="-1"></a><span class="co"># Subset based on adjusted p-value</span></span>
+<span id="cb31-4"><a href="#cb31-4" aria-hidden="true" tabindex="-1"></a>resSig <span class="ot">&lt;-</span> <span class="fu">subset</span>(res, padj <span class="sc">&lt;</span> fdr)</span>
+<span id="cb31-5"><a href="#cb31-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb31-6"><a href="#cb31-6" aria-hidden="true" tabindex="-1"></a>resSig</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<pre><code>log2 fold change (MLE): treatment treatment vs control 
+Wald test p-value: treatment treatment vs control 
+DataFrame with 0 rows and 6 columns</code></pre>
+<div class="sourceCode" id="cb33"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb33-1"><a href="#cb33-1" aria-hidden="true" tabindex="-1"></a><span class="fu">write.csv</span>(resSig, <span class="at">file =</span> <span class="fu">paste0</span>(output_dir, <span class="st">"deseq2"</span>,<span class="st">".fdr-"</span>, fdr, <span class="st">".table.csv"</span>), <span class="at">row.names =</span> <span class="cn">TRUE</span>, <span class="at">quote =</span> <span class="cn">FALSE</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</section>
+</section>
+<section id="variance-stabilizing-transformations-vst" class="level1">
+<h1>8 Variance stabilizing transformations (VST)</h1>
+<ul>
+<li>Here we transform counts using a variance stabilizing transformation (VST), since we have many samples.</li>
+</ul>
+<div class="sourceCode" id="cb34"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb34-1"><a href="#cb34-1" aria-hidden="true" tabindex="-1"></a>vsd <span class="ot">&lt;-</span> <span class="fu">varianceStabilizingTransformation</span>(dds, <span class="at">blind=</span><span class="cn">FALSE</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</section>
+<section id="plotting" class="level1">
+<h1>9 Plotting</h1>
+<section id="sample-distances" class="level2">
+<h2 class="anchored" data-anchor-id="sample-distances">9.1 Sample distances</h2>
+<div class="sourceCode" id="cb35"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb35-1"><a href="#cb35-1" aria-hidden="true" tabindex="-1"></a>sampleDists <span class="ot">&lt;-</span> <span class="fu">dist</span>(<span class="fu">t</span>(<span class="fu">assay</span>(vsd)))</span>
+<span id="cb35-2"><a href="#cb35-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb35-3"><a href="#cb35-3" aria-hidden="true" tabindex="-1"></a>sampleDistMatrix <span class="ot">&lt;-</span> <span class="fu">as.matrix</span>( sampleDists )</span>
+<span id="cb35-4"><a href="#cb35-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb35-5"><a href="#cb35-5" aria-hidden="true" tabindex="-1"></a><span class="fu">rownames</span>(sampleDistMatrix) <span class="ot">&lt;-</span> <span class="fu">paste</span>( vsd<span class="sc">$</span>colony.id, vsd<span class="sc">$</span>time.point, <span class="at">sep =</span> <span class="st">" - "</span> )</span>
+<span id="cb35-6"><a href="#cb35-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb35-7"><a href="#cb35-7" aria-hidden="true" tabindex="-1"></a><span class="fu">colnames</span>(sampleDistMatrix) <span class="ot">&lt;-</span> <span class="cn">NULL</span></span>
+<span id="cb35-8"><a href="#cb35-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb35-9"><a href="#cb35-9" aria-hidden="true" tabindex="-1"></a>colors <span class="ot">&lt;-</span> <span class="fu">colorRampPalette</span>( <span class="fu">rev</span>(<span class="fu">brewer.pal</span>(<span class="dv">9</span>, <span class="st">"Blues"</span>)) )(<span class="dv">255</span>)</span>
+<span id="cb35-10"><a href="#cb35-10" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb35-11"><a href="#cb35-11" aria-hidden="true" tabindex="-1"></a><span class="fu">pheatmap</span>(sampleDistMatrix,</span>
+<span id="cb35-12"><a href="#cb35-12" aria-hidden="true" tabindex="-1"></a>         <span class="at">clustering_distance_rows =</span> sampleDists,</span>
+<span id="cb35-13"><a href="#cb35-13" aria-hidden="true" tabindex="-1"></a>         <span class="at">clustering_distance_cols =</span> sampleDists,</span>
+<span id="cb35-14"><a href="#cb35-14" aria-hidden="true" tabindex="-1"></a>         <span class="at">col =</span> colors)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</section>
+<section id="pca" class="level2">
+<h2 class="anchored" data-anchor-id="pca">9.2 PCA</h2>
+<p>Visualize sample clustering via PCA (after transformation)</p>
+<div class="sourceCode" id="cb36"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb36-1"><a href="#cb36-1" aria-hidden="true" tabindex="-1"></a><span class="co"># PCA with points color coded by time point </span></span>
+<span id="cb36-2"><a href="#cb36-2" aria-hidden="true" tabindex="-1"></a><span class="fu">plotPCA</span>(vsd, <span class="at">intgroup =</span> <span class="fu">c</span>(<span class="st">"treatment"</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p><img src="03.00-D-sRNAseq-gene-expression-DESeq2_files/figure-gfm/pca-1.png" class="img-fluid"><!-- --></p>
+</section>
+<section id="heatmap-top-40" class="level2">
+<h2 class="anchored" data-anchor-id="heatmap-top-40">9.3 Heatmap top 40</h2>
+<div class="sourceCode" id="cb37"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb37-1"><a href="#cb37-1" aria-hidden="true" tabindex="-1"></a>top40_counts <span class="ot">&lt;-</span> <span class="fu">order</span>(<span class="fu">rowMeans</span>(<span class="fu">counts</span>(dds,<span class="at">normalized=</span><span class="cn">TRUE</span>)),</span>
+<span id="cb37-2"><a href="#cb37-2" aria-hidden="true" tabindex="-1"></a>                <span class="at">decreasing=</span><span class="cn">TRUE</span>)[<span class="dv">1</span><span class="sc">:</span><span class="dv">40</span>]</span>
+<span id="cb37-3"><a href="#cb37-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb37-4"><a href="#cb37-4" aria-hidden="true" tabindex="-1"></a>annotation <span class="ot">=</span> <span class="fu">colData</span>(dds) <span class="sc">%&gt;%</span> <span class="fu">as.data.frame</span>() <span class="sc">%&gt;%</span> <span class="fu">select</span>(treatment)</span>
+<span id="cb37-5"><a href="#cb37-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb37-6"><a href="#cb37-6" aria-hidden="true" tabindex="-1"></a><span class="fu">pheatmap</span>(<span class="fu">assay</span>(vsd)[top40_counts,], </span>
+<span id="cb37-7"><a href="#cb37-7" aria-hidden="true" tabindex="-1"></a>         <span class="at">cluster_rows=</span><span class="cn">FALSE</span>, </span>
+<span id="cb37-8"><a href="#cb37-8" aria-hidden="true" tabindex="-1"></a>         <span class="at">show_rownames=</span><span class="cn">TRUE</span>,</span>
+<span id="cb37-9"><a href="#cb37-9" aria-hidden="true" tabindex="-1"></a>         <span class="at">cluster_cols=</span><span class="cn">TRUE</span>, </span>
+<span id="cb37-10"><a href="#cb37-10" aria-hidden="true" tabindex="-1"></a>         <span class="at">annotation_col =</span> annotation)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p><img src="03.00-D-sRNAseq-gene-expression-DESeq2_files/figure-gfm/heatmap-1.png" class="img-fluid"><!-- --></p>
+</section>
+</section>
+<section id="references" class="level1">
+<h1>10 REFERENCES</h1>
+<div id="refs" class="references csl-bib-body hanging-indent" role="list">
+<div id="ref-love2014" class="csl-entry" role="listitem">
+Love, Michael I, Wolfgang Huber, and Simon Anders. 2014. “Moderated Estimation of Fold Change and Dispersion for RNA-Seq Data with DESeq2.” <em>Genome Biology</em> 15 (12). <a href="https://doi.org/10.1186/s13059-014-0550-8" class="uri">https://doi.org/10.1186/s13059-014-0550-8</a>.
+</div>
+</div>
+
+
+</section>
+
+</main> <!-- /main -->
+<script id="quarto-html-after-body" type="application/javascript">
+window.document.addEventListener("DOMContentLoaded", function (event) {
+  const toggleBodyColorMode = (bsSheetEl) => {
+    const mode = bsSheetEl.getAttribute("data-mode");
+    const bodyEl = window.document.querySelector("body");
+    if (mode === "dark") {
+      bodyEl.classList.add("quarto-dark");
+      bodyEl.classList.remove("quarto-light");
+    } else {
+      bodyEl.classList.add("quarto-light");
+      bodyEl.classList.remove("quarto-dark");
+    }
+  }
+  const toggleBodyColorPrimary = () => {
+    const bsSheetEl = window.document.querySelector("link#quarto-bootstrap");
+    if (bsSheetEl) {
+      toggleBodyColorMode(bsSheetEl);
+    }
+  }
+  toggleBodyColorPrimary();  
+  const icon = "";
+  const anchorJS = new window.AnchorJS();
+  anchorJS.options = {
+    placement: 'right',
+    icon: icon
+  };
+  anchorJS.add('.anchored');
+  const isCodeAnnotation = (el) => {
+    for (const clz of el.classList) {
+      if (clz.startsWith('code-annotation-')) {                     
+        return true;
+      }
+    }
+    return false;
+  }
+  const onCopySuccess = function(e) {
+    // button target
+    const button = e.trigger;
+    // don't keep focus
+    button.blur();
+    // flash "checked"
+    button.classList.add('code-copy-button-checked');
+    var currentTitle = button.getAttribute("title");
+    button.setAttribute("title", "Copied!");
+    let tooltip;
+    if (window.bootstrap) {
+      button.setAttribute("data-bs-toggle", "tooltip");
+      button.setAttribute("data-bs-placement", "left");
+      button.setAttribute("data-bs-title", "Copied!");
+      tooltip = new bootstrap.Tooltip(button, 
+        { trigger: "manual", 
+          customClass: "code-copy-button-tooltip",
+          offset: [0, -8]});
+      tooltip.show();    
+    }
+    setTimeout(function() {
+      if (tooltip) {
+        tooltip.hide();
+        button.removeAttribute("data-bs-title");
+        button.removeAttribute("data-bs-toggle");
+        button.removeAttribute("data-bs-placement");
+      }
+      button.setAttribute("title", currentTitle);
+      button.classList.remove('code-copy-button-checked');
+    }, 1000);
+    // clear code selection
+    e.clearSelection();
+  }
+  const getTextToCopy = function(trigger) {
+      const codeEl = trigger.previousElementSibling.cloneNode(true);
+      for (const childEl of codeEl.children) {
+        if (isCodeAnnotation(childEl)) {
+          childEl.remove();
+        }
+      }
+      return codeEl.innerText;
+  }
+  const clipboard = new window.ClipboardJS('.code-copy-button:not([data-in-quarto-modal])', {
+    text: getTextToCopy
+  });
+  clipboard.on('success', onCopySuccess);
+  if (window.document.getElementById('quarto-embedded-source-code-modal')) {
+    const clipboardModal = new window.ClipboardJS('.code-copy-button[data-in-quarto-modal]', {
+      text: getTextToCopy,
+      container: window.document.getElementById('quarto-embedded-source-code-modal')
+    });
+    clipboardModal.on('success', onCopySuccess);
+  }
+    var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
+    var mailtoRegex = new RegExp(/^mailto:/);
+      var filterRegex = new RegExp("https:\/\/robertslab\.github\.io\/sams-notebook");
+    var isInternal = (href) => {
+        return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
+    }
+    // Inspect non-navigation links and adorn them if external
+ 	var links = window.document.querySelectorAll('a[href]:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item):not(.quarto-navigation-tool):not(.about-link)');
+    for (var i=0; i<links.length; i++) {
+      const link = links[i];
+      if (!isInternal(link.href)) {
+        // undo the damage that might have been done by quarto-nav.js in the case of
+        // links that we want to consider external
+        if (link.dataset.originalHref !== undefined) {
+          link.href = link.dataset.originalHref;
+        }
+      }
+    }
+  function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
+    const config = {
+      allowHTML: true,
+      maxWidth: 500,
+      delay: 100,
+      arrow: false,
+      appendTo: function(el) {
+          return el.parentElement;
+      },
+      interactive: true,
+      interactiveBorder: 10,
+      theme: 'quarto',
+      placement: 'bottom-start',
+    };
+    if (contentFn) {
+      config.content = contentFn;
+    }
+    if (onTriggerFn) {
+      config.onTrigger = onTriggerFn;
+    }
+    if (onUntriggerFn) {
+      config.onUntrigger = onUntriggerFn;
+    }
+    window.tippy(el, config); 
+  }
+  const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+  for (var i=0; i<noterefs.length; i++) {
+    const ref = noterefs[i];
+    tippyHover(ref, function() {
+      // use id or data attribute instead here
+      let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+      try { href = new URL(href).hash; } catch {}
+      const id = href.replace(/^#\/?/, "");
+      const note = window.document.getElementById(id);
+      if (note) {
+        return note.innerHTML;
+      } else {
+        return "";
+      }
+    });
+  }
+  const xrefs = window.document.querySelectorAll('a.quarto-xref');
+  const processXRef = (id, note) => {
+    // Strip column container classes
+    const stripColumnClz = (el) => {
+      el.classList.remove("page-full", "page-columns");
+      if (el.children) {
+        for (const child of el.children) {
+          stripColumnClz(child);
+        }
+      }
+    }
+    stripColumnClz(note)
+    if (id === null || id.startsWith('sec-')) {
+      // Special case sections, only their first couple elements
+      const container = document.createElement("div");
+      if (note.children && note.children.length > 2) {
+        container.appendChild(note.children[0].cloneNode(true));
+        for (let i = 1; i < note.children.length; i++) {
+          const child = note.children[i];
+          if (child.tagName === "P" && child.innerText === "") {
+            continue;
+          } else {
+            container.appendChild(child.cloneNode(true));
+            break;
+          }
+        }
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(container);
+        }
+        return container.innerHTML
+      } else {
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(note);
+        }
+        return note.innerHTML;
+      }
+    } else {
+      // Remove any anchor links if they are present
+      const anchorLink = note.querySelector('a.anchorjs-link');
+      if (anchorLink) {
+        anchorLink.remove();
+      }
+      if (window.Quarto?.typesetMath) {
+        window.Quarto.typesetMath(note);
+      }
+      if (note.classList.contains("callout")) {
+        return note.outerHTML;
+      } else {
+        return note.innerHTML;
+      }
+    }
+  }
+  for (var i=0; i<xrefs.length; i++) {
+    const xref = xrefs[i];
+    tippyHover(xref, undefined, function(instance) {
+      instance.disable();
+      let url = xref.getAttribute('href');
+      let hash = undefined; 
+      if (url.startsWith('#')) {
+        hash = url;
+      } else {
+        try { hash = new URL(url).hash; } catch {}
+      }
+      if (hash) {
+        const id = hash.replace(/^#\/?/, "");
+        const note = window.document.getElementById(id);
+        if (note !== null) {
+          try {
+            const html = processXRef(id, note.cloneNode(true));
+            instance.setContent(html);
+          } finally {
+            instance.enable();
+            instance.show();
+          }
+        } else {
+          // See if we can fetch this
+          fetch(url.split('#')[0])
+          .then(res => res.text())
+          .then(html => {
+            const parser = new DOMParser();
+            const htmlDoc = parser.parseFromString(html, "text/html");
+            const note = htmlDoc.getElementById(id);
+            if (note !== null) {
+              const html = processXRef(id, note);
+              instance.setContent(html);
+            } 
+          }).finally(() => {
+            instance.enable();
+            instance.show();
+          });
+        }
+      } else {
+        // See if we can fetch a full url (with no hash to target)
+        // This is a special case and we should probably do some content thinning / targeting
+        fetch(url)
+        .then(res => res.text())
+        .then(html => {
+          const parser = new DOMParser();
+          const htmlDoc = parser.parseFromString(html, "text/html");
+          const note = htmlDoc.querySelector('main.content');
+          if (note !== null) {
+            // This should only happen for chapter cross references
+            // (since there is no id in the URL)
+            // remove the first header
+            if (note.children.length > 0 && note.children[0].tagName === "HEADER") {
+              note.children[0].remove();
+            }
+            const html = processXRef(null, note);
+            instance.setContent(html);
+          } 
+        }).finally(() => {
+          instance.enable();
+          instance.show();
+        });
+      }
+    }, function(instance) {
+    });
+  }
+      let selectedAnnoteEl;
+      const selectorForAnnotation = ( cell, annotation) => {
+        let cellAttr = 'data-code-cell="' + cell + '"';
+        let lineAttr = 'data-code-annotation="' +  annotation + '"';
+        const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+        return selector;
+      }
+      const selectCodeLines = (annoteEl) => {
+        const doc = window.document;
+        const targetCell = annoteEl.getAttribute("data-target-cell");
+        const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+        const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+        const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+        const lineIds = lines.map((line) => {
+          return targetCell + "-" + line;
+        })
+        let top = null;
+        let height = null;
+        let parent = null;
+        if (lineIds.length > 0) {
+            //compute the position of the single el (top and bottom and make a div)
+            const el = window.document.getElementById(lineIds[0]);
+            top = el.offsetTop;
+            height = el.offsetHeight;
+            parent = el.parentElement.parentElement;
+          if (lineIds.length > 1) {
+            const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+            const bottom = lastEl.offsetTop + lastEl.offsetHeight;
+            height = bottom - top;
+          }
+          if (top !== null && height !== null && parent !== null) {
+            // cook up a div (if necessary) and position it 
+            let div = window.document.getElementById("code-annotation-line-highlight");
+            if (div === null) {
+              div = window.document.createElement("div");
+              div.setAttribute("id", "code-annotation-line-highlight");
+              div.style.position = 'absolute';
+              parent.appendChild(div);
+            }
+            div.style.top = top - 2 + "px";
+            div.style.height = height + 4 + "px";
+            div.style.left = 0;
+            let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+            if (gutterDiv === null) {
+              gutterDiv = window.document.createElement("div");
+              gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+              gutterDiv.style.position = 'absolute';
+              const codeCell = window.document.getElementById(targetCell);
+              const gutter = codeCell.querySelector('.code-annotation-gutter');
+              gutter.appendChild(gutterDiv);
+            }
+            gutterDiv.style.top = top - 2 + "px";
+            gutterDiv.style.height = height + 4 + "px";
+          }
+          selectedAnnoteEl = annoteEl;
+        }
+      };
+      const unselectCodeLines = () => {
+        const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+        elementsIds.forEach((elId) => {
+          const div = window.document.getElementById(elId);
+          if (div) {
+            div.remove();
+          }
+        });
+        selectedAnnoteEl = undefined;
+      };
+        // Handle positioning of the toggle
+    window.addEventListener(
+      "resize",
+      throttle(() => {
+        elRect = undefined;
+        if (selectedAnnoteEl) {
+          selectCodeLines(selectedAnnoteEl);
+        }
+      }, 10)
+    );
+    function throttle(fn, ms) {
+    let throttle = false;
+    let timer;
+      return (...args) => {
+        if(!throttle) { // first call gets through
+            fn.apply(this, args);
+            throttle = true;
+        } else { // all the others get throttled
+            if(timer) clearTimeout(timer); // cancel #2
+            timer = setTimeout(() => {
+              fn.apply(this, args);
+              timer = throttle = false;
+            }, ms);
+        }
+      };
+    }
+      // Attach click handler to the DT
+      const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
+      for (const annoteDlNode of annoteDls) {
+        annoteDlNode.addEventListener('click', (event) => {
+          const clickedEl = event.target;
+          if (clickedEl !== selectedAnnoteEl) {
+            unselectCodeLines();
+            const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
+            if (activeEl) {
+              activeEl.classList.remove('code-annotation-active');
+            }
+            selectCodeLines(clickedEl);
+            clickedEl.classList.add('code-annotation-active');
+          } else {
+            // Unselect the line
+            unselectCodeLines();
+            clickedEl.classList.remove('code-annotation-active');
+          }
+        });
+      }
+  const findCites = (el) => {
+    const parentEl = el.parentElement;
+    if (parentEl) {
+      const cites = parentEl.dataset.cites;
+      if (cites) {
+        return {
+          el,
+          cites: cites.split(' ')
+        };
+      } else {
+        return findCites(el.parentElement)
+      }
+    } else {
+      return undefined;
+    }
+  };
+  var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+  for (var i=0; i<bibliorefs.length; i++) {
+    const ref = bibliorefs[i];
+    const citeInfo = findCites(ref);
+    if (citeInfo) {
+      tippyHover(citeInfo.el, function() {
+        var popup = window.document.createElement('div');
+        citeInfo.cites.forEach(function(cite) {
+          var citeDiv = window.document.createElement('div');
+          citeDiv.classList.add('hanging-indent');
+          citeDiv.classList.add('csl-entry');
+          var biblioDiv = window.document.getElementById('ref-' + cite);
+          if (biblioDiv) {
+            citeDiv.innerHTML = biblioDiv.innerHTML;
+          }
+          popup.appendChild(citeDiv);
+        });
+        return popup.innerHTML;
+      });
+    }
+  }
+});
+</script>
+</div> <!-- /content -->
+
+
+
+
+</body></html>
