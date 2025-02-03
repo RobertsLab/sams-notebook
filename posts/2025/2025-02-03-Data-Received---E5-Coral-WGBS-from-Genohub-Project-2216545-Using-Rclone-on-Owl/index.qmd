@@ -1,0 +1,76 @@
+---
+author: Sam White
+toc-title: Contents
+toc-depth: 5
+toc-location: left
+title: Data Received - E5 Coral WGBS from Genohub Project 2216545 Using Rclone on Owl
+date: '2025-02-03'
+draft: false
+engine: knitr
+categories: 
+  - "2025"
+  - "E5"
+  - "coral"
+  - "WGBS"
+  - "BS-seq"
+  - "bisulfite sequencing"
+  - "Genohub"
+  - "2216545"
+  - "Data Received"
+  - "rclone"
+---
+# INTRO
+
+Whole genome bisulfite sequencing (WGBS) data was received from Genohub for Project 2216545. Genohub provided Amazon AWS S3 credentials for downloading. Installation of the AWS command line interface (CLI) was a bit too involved to try to figure out on Owl (our Synology server), which might be BSD Linux? Instead, I installed and configured [rclone](https://rclone.org/) on Owl.
+
+# METHODS
+
+## Configuring Rclone
+
+Installation was a breeze. SSH'd into and then used the following command provided on the [rclone Downloads page](https://rclone.org/downloads/):
+
+`sudo -v ; curl https://rclone.org/install.sh | sudo bash`
+
+I performed the initial configuration step using the credentials supplied by Genohub.
+
+- `rclone config`
+
+Then, I ran the list command to view the contents of the S3 bucket on AWS:
+
+`rclone ls remote:`
+
+However, this did _not_ work!
+
+```
+2025/02/03 12:57:43 NOTICE: Failed to ls: operation error S3: ListBuckets, https response error StatusCode: 403, RequestID: SH6FBZZSFZVEFBMG, HostID: <redacted>, api error AccessDenied: User: arn:aws:iam::<redacted>:user/remote is not authorized to perform: s3:ListAllMyBuckets because no identity-based policy allows the s3:ListAllMyBuckets action
+```
+
+After some sleuthing in the Genohub documentation for using the AWS CLI, I realized I needed to specify the S3 bucket. In order to specify an S3 bucket with rclone, you need to [create an rclone alias](https://rclone.org/alias/) - you cannot configure S3 to access a bucket directory.
+
+So, I set up an alias with rclone:
+
+1. Run `rclone config`
+
+2. Specify `n) New remote`
+
+3. `name> genohub`
+
+4. ```Type of storage to configure.
+Choose a number from below, or type in your own value
+
+>alias
+```
+
+5. ```remote> remote:genohub_bucket``` 
+
+::: {.callout-note}
+You need to replace `<genohub_bucket>` with the actual bucket ID provided by Genohub.
+:::
+
+6. Save the configuration at the prompt.
+
+Then, you can actually access your data using the alias `genohub`:
+
+`rclone ls genohub:`
+
+# DATA
