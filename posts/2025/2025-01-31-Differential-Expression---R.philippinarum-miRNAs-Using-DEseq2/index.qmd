@@ -18,77 +18,8 @@ categories:
 This analysis was done as part of [`project-clam-oa`](https://github.com/RobertsLab/project-clam-oa) (GitHub repo).
 
 ::: {.callout-note}
-The contents below are from markdown knitted from [`03.00-D-sRNAseq-gene-expression-DESeq2.Rmd`](https://github.com/RobertsLab/project-clam-oa/blob/54eb41b32e1245e75f06c3994e9a6f5cf3c119eb/code/03.00-D-sRNAseq-gene-expression-DESeq2.Rmd) (commit `54eb41b`).
+The contents below are from markdown knitted from [`03.00-D-sRNAseq-gene-expression-DESeq2.Rmd`](https://github.com/RobertsLab/project-clam-oa/blob/af1eb6d98e99a6e3c51d37084f7df143d02c322d/code/03.00-D-sRNAseq-gene-expression-DESeq2.Rmd) (commit `af1eb6d`).
 :::
-
-03.00-D-sRNAseq-gene-expression-DESeq2
-================
-Sam White
-2025-01-31
-
-- <a href="#1-background" id="toc-1-background">1 Background</a>
-  - <a href="#11-inputs" id="toc-11-inputs">1.1 Inputs</a>
-  - <a href="#12-outputs" id="toc-12-outputs">1.2 Outputs</a>
-- <a href="#2-set-r-variables" id="toc-2-set-r-variables">2 Set R
-  variables</a>
-- <a href="#3-load-count-data" id="toc-3-load-count-data">3 Load count
-  data</a>
-  - <a href="#31-select-only-mirnas-idd-by-shortstack"
-    id="toc-31-select-only-mirnas-idd-by-shortstack">3.1 Select only miRNAs
-    IDd by ShortStack</a>
-- <a href="#4-create-deseq2-column-data"
-  id="toc-4-create-deseq2-column-data">4 Create DESeq2 Column Data</a>
-  - <a href="#41-read-in-metadata-csv" id="toc-41-read-in-metadata-csv">4.1
-    Read in metadata CSV</a>
-  - <a href="#42-extract-sample-names" id="toc-42-extract-sample-names">4.2
-    Extract sample names</a>
-  - <a href="#43-select-sample-name-and-treatment"
-    id="toc-43-select-sample-name-and-treatment">4.3 Select sample name and
-    treatment</a>
-  - <a href="#44-write-deseq-coldata-to-file"
-    id="toc-44-write-deseq-coldata-to-file">4.4 Write DEseq coldata to
-    file</a>
-- <a href="#5-count-data-munging" id="toc-5-count-data-munging">5 Count
-  data munging</a>
-  - <a href="#51-fix-col-names-and-convert-to-matrix"
-    id="toc-51-fix-col-names-and-convert-to-matrix">5.1 Fix col names and
-    convert to matrix</a>
-  - <a href="#52-take-only-samples-present-in-coldata"
-    id="toc-52-take-only-samples-present-in-coldata">5.2 Take only samples
-    present in coldata</a>
-  - <a href="#53-reorder-matrix-cols-to-match-coldata"
-    id="toc-53-reorder-matrix-cols-to-match-coldata">5.3 Reorder matrix cols
-    to match coldata</a>
-  - <a href="#54-verify-rownames-match"
-    id="toc-54-verify-rownames-match">5.4 Verify rownames match</a>
-- <a href="#6-create-deseq2-data-set" id="toc-6-create-deseq2-data-set">6
-  Create DESeq2 data set</a>
-  - <a href="#61-initialize-deseq2-data-set"
-    id="toc-61-initialize-deseq2-data-set">6.1 Initialize DEseq2 data
-    set</a>
-  - <a href="#62-add-cluster-column-as-gene-feature"
-    id="toc-62-add-cluster-column-as-gene-feature">6.2 Add cluster column as
-    “gene” feature</a>
-  - <a href="#63-set-factor-levels" id="toc-63-set-factor-levels">6.3 Set
-    factor levels</a>
-- <a href="#7-deseq-analysis" id="toc-7-deseq-analysis">7 DESeq
-  analysis</a>
-  - <a href="#71-deseq" id="toc-71-deseq">7.1 DEseq</a>
-  - <a href="#72-deseq-results" id="toc-72-deseq-results">7.2 DEseq
-    Results</a>
-  - <a href="#73-write-dds-results-tables-to-csvs"
-    id="toc-73-write-dds-results-tables-to-csvs">7.3 Write DDS results
-    tables to CSVs</a>
-- <a href="#8-variance-stabilizing-transformations-vst"
-  id="toc-8-variance-stabilizing-transformations-vst">8 Variance
-  stabilizing transformations (VST)</a>
-- <a href="#9-plotting" id="toc-9-plotting">9 Plotting</a>
-  - <a href="#91-sample-distances" id="toc-91-sample-distances">9.1 Sample
-    distances</a>
-  - <a href="#92-pca" id="toc-92-pca">9.2 PCA</a>
-  - <a href="#93-heatmap-top-40" id="toc-93-heatmap-top-40">9.3 Heatmap top
-    40</a>
-- <a href="#10-references" id="toc-10-references">10 REFERENCES</a>
 
 # 1 Background
 
@@ -98,6 +29,11 @@ This will run
 identified in
 [02.00-ShortStack-31bp-fastp-merged.md](https://github.com/RobertsLab/project-clam-oa/blob/2616d45a5a0bbef23081c5824bfe5bad6b89d227/code/02.00-ShortStack-31bp-fastp-merged.md)
 analysis are differentially expressed between control/treatment.
+
+This was initially run with a log2 fold change threshold set to 1 (which
+is equivalent to a 2-fold change in expression), but that returned 0
+differentially expressed miRNAs. As such, this was run again with the
+log2 fold change threshold set to 0.
 
 <div class="callout-note">
 
@@ -128,9 +64,11 @@ ShortStack identified 37 miRNAs.
   DEseq2 output table containing mean expression, fold change in
   expression, and adjusted p-values for all input samples.
 
-- [deseq2.fdr-0.05.table.csv](https://github.com/RobertsLab/project-clam-oa/blob/d380ed9a88c874db5434c9ec74f6ab1de042bad5/output/03.00-D-sRNAseq-gene-expression-DESeq2/deseq2.fdr-0.05.table.csv):
+- [deseq2.fdr-0.05.lfc-0.table.csv](https://github.com/RobertsLab/project-clam-oa/blob/3b23f7cfcdf9cef627556090518d60d685d881bd/output/03.00-D-sRNAseq-gene-expression-DESeq2/deseq2.fdr-0.05.lfc-0.table.csv):
   Subset of DEseq2 output table of all miRNA clusters (“genes”) having
-  adjusted p-values (fdr) \<= 0.05.
+  adjusted p-values (fdr) \<= 0.05 with log2 fold change cutoff set to
+
+  0.  
 
 # 2 Set R variables
 
@@ -142,7 +80,7 @@ output_dir <- "../output/03.00-D-sRNAseq-gene-expression-DESeq2/"
 fdr <- 0.05
 
 # Set log2 fold change threshold (a value of '1' is equal to a fold change of '2')
-log2fc <- 1
+log2fc <- 0
 ```
 
 # 3 Load count data
@@ -403,32 +341,32 @@ res
     log2 fold change (MLE): treatment treatment vs control 
     Wald test p-value: treatment treatment vs control 
     DataFrame with 37 rows and 6 columns
-                     baseMean log2FoldChange     lfcSE      stat    pvalue
-                    <numeric>      <numeric> <numeric> <numeric> <numeric>
-    Cluster_1785  6.63895e+02      0.0149611 0.2810643   0.00000 1.0000000
-    Cluster_2042  1.35312e+05     -0.1901409 0.4840889   0.00000 1.0000000
-    Cluster_2646  1.76900e+03      0.0185890 0.0902545   0.00000 1.0000000
-    Cluster_3720  4.26842e+01      2.0921221 0.5504186   1.98417 0.0472373
-    Cluster_4396  4.09498e+00      0.0360325 0.5609930   0.00000 1.0000000
-    ...                   ...            ...       ...       ...       ...
-    Cluster_29018   1661.6392      2.4245029  0.683762   2.08333 0.0372209
-    Cluster_31844   1372.1080     -0.0477386  0.146375   0.00000 1.0000000
-    Cluster_32917     14.7573      0.2194667  0.377211   0.00000 1.0000000
-    Cluster_32918   1259.4586      0.5004769  0.370048   0.00000 1.0000000
-    Cluster_32919      4.5894      0.2954022  0.619287   0.00000 1.0000000
-                       padj
-                  <numeric>
-    Cluster_1785   1.000000
-    Cluster_2042   1.000000
-    Cluster_2646   1.000000
-    Cluster_3720   0.436945
-    Cluster_4396   1.000000
-    ...                 ...
-    Cluster_29018  0.436945
-    Cluster_31844  1.000000
-    Cluster_32917  1.000000
-    Cluster_32918  1.000000
-    Cluster_32919  1.000000
+                     baseMean log2FoldChange     lfcSE       stat      pvalue
+                    <numeric>      <numeric> <numeric>  <numeric>   <numeric>
+    Cluster_1785  6.63895e+02      0.0149611 0.2810643  0.0532301 0.957548604
+    Cluster_2042  1.35312e+05     -0.1901409 0.4840889 -0.3927810 0.694481249
+    Cluster_2646  1.76900e+03      0.0185890 0.0902545  0.2059620 0.836820596
+    Cluster_3720  4.26842e+01      2.0921221 0.5504186  3.8009659 0.000144133
+    Cluster_4396  4.09498e+00      0.0360325 0.5609930  0.0642299 0.948787181
+    ...                   ...            ...       ...        ...         ...
+    Cluster_29018   1661.6392      2.4245029  0.683762   3.545830 0.000391378
+    Cluster_31844   1372.1080     -0.0477386  0.146375  -0.326140 0.744318793
+    Cluster_32917     14.7573      0.2194667  0.377211   0.581814 0.560691835
+    Cluster_32918   1259.4586      0.5004769  0.370048   1.352466 0.176226232
+    Cluster_32919      4.5894      0.2954022  0.619287   0.477004 0.633359369
+                        padj
+                   <numeric>
+    Cluster_1785  0.98414718
+    Cluster_2042  0.94314745
+    Cluster_2646  0.96982079
+    Cluster_3720  0.00482699
+    Cluster_4396  0.98414718
+    ...                  ...
+    Cluster_29018 0.00482699
+    Cluster_31844 0.94964812
+    Cluster_32917 0.94314745
+    Cluster_32918 0.57114000
+    Cluster_32919 0.94314745
 
 ``` r
 summary(res)
@@ -436,8 +374,8 @@ summary(res)
 
     out of 37 with nonzero total read count
     adjusted p-value < 0.05
-    LFC > 1.00 (up)    : 0, 0%
-    LFC < -1.00 (down) : 0, 0%
+    LFC > 0 (up)       : 3, 8.1%
+    LFC < 0 (down)     : 1, 2.7%
     outliers [1]       : 0, 0%
     low counts [2]     : 0, 0%
     (mean count < 4)
@@ -448,8 +386,8 @@ summary(res)
 table(res$padj < fdr)
 ```
 
-    FALSE 
-       37 
+    FALSE  TRUE 
+       33     4 
 
 ## 7.3 Write DDS results tables to CSVs
 
@@ -464,11 +402,60 @@ resSig
 
     log2 fold change (MLE): treatment treatment vs control 
     Wald test p-value: treatment treatment vs control 
-    DataFrame with 0 rows and 6 columns
+    DataFrame with 4 rows and 6 columns
+                    baseMean log2FoldChange     lfcSE      stat      pvalue
+                   <numeric>      <numeric> <numeric> <numeric>   <numeric>
+    Cluster_3720    42.68419        2.09212  0.550419   3.80097 0.000144133
+    Cluster_15325   27.20988        4.27878  1.188934   3.59883 0.000319647
+    Cluster_17619    7.68082       -2.71853  0.785237  -3.46205 0.000536073
+    Cluster_29018 1661.63918        2.42450  0.683762   3.54583 0.000391378
+                        padj
+                   <numeric>
+    Cluster_3720  0.00482699
+    Cluster_15325 0.00482699
+    Cluster_17619 0.00495868
+    Cluster_29018 0.00482699
 
 ``` r
-write.csv(resSig, file = paste0(output_dir, "deseq2",".fdr-", fdr, ".table.csv"), row.names = TRUE, quote = FALSE)
+write.csv(resSig, file = paste0(output_dir, "deseq2",".fdr-", fdr, ".lfc-", log2fc, ".table.csv"), row.names = TRUE, quote = FALSE)
 ```
+
+## 7.4 Identify Differentially Expressed miRNAs
+
+``` bash
+
+
+# Extract the first column values (excluding the header)
+clusters=$(cut -d',' -f1 "../output/03.00-D-sRNAseq-gene-expression-DESeq2/deseq2.fdr-0.05.lfc-0.table.csv" | tail -n +2)
+
+# Loop through each cluster and search in the Results.txt file
+for cluster in $clusters; 
+do
+    grep "$cluster" "../output/02.00-ShortStack-31bp-fastp-merged/ShortStack_out/Results.txt"
+done
+
+echo ""
+echo "--------------------------------------------------------------"
+echo ""
+
+for cluster in $clusters; 
+do
+    grep "$cluster" "../output/02.00-ShortStack-31bp-fastp-merged/ShortStack_out/Results.txt" \
+    | awk '{print $21}'
+done
+```
+
+    NW_026853363.1:213466-213568    Cluster_3720    NW_026853363.1  213466  213568  103 1906    84  1.0 +   AGAUAUGUUUGAUAUAUUUGGU  864 9   11  129 1048    458 251 22  Y   cte-miR-190;mle-miR-190-5p
+    NW_026858897.1:43133-43248  Cluster_15325   NW_026858897.1  43133   43248   116 1294    54  0.98    +   UGUUCUACGAGCUGUAGCUGU   685 4   34  796 431 29  0   21  Y   NA
+    NW_026859924.1:190953-191067    Cluster_17619   NW_026859924.1  190953  191067  115 852 54  0.012   -   UGUUCUACGAGCUGUAACUGUC  509 4   70  175 593 10  0   22  Y   NA
+    NW_026865271.1:194028-194125    Cluster_29018   NW_026865271.1  194028  194125  98  66793   264 1.0 +   UCACAACCUGCUUGAAUGAGGAC 31912   323 43  462 5039    38213   22713   23  Y   mle-miR-67-3p
+
+    --------------------------------------------------------------
+
+    cte-miR-190;mle-miR-190-5p
+    NA
+    NA
+    mle-miR-67-3p
 
 # 8 Variance stabilizing transformations (VST)
 
@@ -511,11 +498,11 @@ plotPCA(vsd, intgroup = c("treatment"))
 
 ![](03.00-D-sRNAseq-gene-expression-DESeq2_files/figure-gfm/pca-1.png)<!-- -->
 
-## 9.3 Heatmap top 40
+## 9.3 Heatmap of all 37 ShortStack miRNAs
 
 ``` r
 top40_counts <- order(rowMeans(counts(dds,normalized=TRUE)),
-                decreasing=TRUE)[1:40]
+                decreasing=TRUE)[1:37]
 
 annotation = colData(dds) %>% as.data.frame() %>% select(treatment)
 
