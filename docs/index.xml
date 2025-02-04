@@ -133,62 +133,13 @@ Note
 </div>
 </div>
 <div class="callout-body-container callout-body">
-<p>The contents below are from markdown knitted from <a href="https://github.com/RobertsLab/project-clam-oa/blob/54eb41b32e1245e75f06c3994e9a6f5cf3c119eb/code/03.00-D-sRNAseq-gene-expression-DESeq2.Rmd"><code>03.00-D-sRNAseq-gene-expression-DESeq2.Rmd</code></a> (commit <code>54eb41b</code>).</p>
+<p>The contents below are from markdown knitted from <a href="https://github.com/RobertsLab/project-clam-oa/blob/af1eb6d98e99a6e3c51d37084f7df143d02c322d/code/03.00-D-sRNAseq-gene-expression-DESeq2.Rmd"><code>03.00-D-sRNAseq-gene-expression-DESeq2.Rmd</code></a> (commit <code>af1eb6d</code>).</p>
 </div>
 </div>
-<section id="d-srnaseq-gene-expression-deseq2" class="level1">
-<h1>03.00-D-sRNAseq-gene-expression-DESeq2</h1>
-<p>Sam White 2025-01-31</p>
-<ul>
-<li>1 Background
-<ul>
-<li>1.1 Inputs</li>
-<li>1.2 Outputs</li>
-</ul></li>
-<li>2 Set R variables</li>
-<li>3 Load count data
-<ul>
-<li>3.1 Select only miRNAs IDd by ShortStack</li>
-</ul></li>
-<li>4 Create DESeq2 Column Data
-<ul>
-<li>4.1 Read in metadata CSV</li>
-<li>4.2 Extract sample names</li>
-<li>4.3 Select sample name and treatment</li>
-<li>4.4 Write DEseq coldata to file</li>
-</ul></li>
-<li>5 Count data munging
-<ul>
-<li>5.1 Fix col names and convert to matrix</li>
-<li>5.2 Take only samples present in coldata</li>
-<li>5.3 Reorder matrix cols to match coldata</li>
-<li>5.4 Verify rownames match</li>
-</ul></li>
-<li>6 Create DESeq2 data set
-<ul>
-<li>6.1 Initialize DEseq2 data set</li>
-<li>6.2 Add cluster column as “gene” feature</li>
-<li>6.3 Set factor levels</li>
-</ul></li>
-<li>7 DESeq analysis
-<ul>
-<li>7.1 DEseq</li>
-<li>7.2 DEseq Results</li>
-<li>7.3 Write DDS results tables to CSVs</li>
-</ul></li>
-<li>8 Variance stabilizing transformations (VST)</li>
-<li>9 Plotting
-<ul>
-<li>9.1 Sample distances</li>
-<li>9.2 PCA</li>
-<li>9.3 Heatmap top 40</li>
-</ul></li>
-<li>10 REFERENCES</li>
-</ul>
-</section>
 <section id="background" class="level1">
 <h1>1 Background</h1>
 <p>This will run <a href="https://bioconductor.org/packages/release/bioc/vignettes/DESeq2/inst/doc/DESeq2.html">DEseq2</a> (Love, Huber, and Anders 2014) to determine if any of the miRNAs identified in <a href="https://github.com/RobertsLab/project-clam-oa/blob/2616d45a5a0bbef23081c5824bfe5bad6b89d227/code/02.00-ShortStack-31bp-fastp-merged.md">02.00-ShortStack-31bp-fastp-merged.md</a> analysis are differentially expressed between control/treatment.</p>
+<p>This was initially run with a log2 fold change threshold set to 1 (which is equivalent to a 2-fold change in expression), but that returned 0 differentially expressed miRNAs. As such, this was run again with the log2 fold change threshold set to 0.</p>
 <div class="callout callout-style-default callout-note callout-titled">
 <div class="callout-header d-flex align-content-center">
 <div class="callout-icon-container">
@@ -215,7 +166,10 @@ Note
 <ul>
 <li><p><a href="https://github.com/RobertsLab/project-clam-oa/blob/d380ed9a88c874db5434c9ec74f6ab1de042bad5/output/03.00-D-sRNAseq-gene-expression-DESeq2/DESeq2-coldata.tab"><code>DESeq2-coldata.tab</code></a>: Two column table with sample ID and treatment. Needed as input to DEseq2.</p></li>
 <li><p><a href="https://github.com/RobertsLab/project-clam-oa/blob/d380ed9a88c874db5434c9ec74f6ab1de042bad5/output/03.00-D-sRNAseq-gene-expression-DESeq2/deseq2.table.csv"><code>deseq2.table.csv</code></a>: DEseq2 output table containing mean expression, fold change in expression, and adjusted p-values for all input samples.</p></li>
-<li><p><a href="https://github.com/RobertsLab/project-clam-oa/blob/d380ed9a88c874db5434c9ec74f6ab1de042bad5/output/03.00-D-sRNAseq-gene-expression-DESeq2/deseq2.fdr-0.05.table.csv">deseq2.fdr-0.05.table.csv</a>: Subset of DEseq2 output table of all miRNA clusters (“genes”) having adjusted p-values (fdr) &lt;= 0.05.</p></li>
+<li><p><a href="https://github.com/RobertsLab/project-clam-oa/blob/3b23f7cfcdf9cef627556090518d60d685d881bd/output/03.00-D-sRNAseq-gene-expression-DESeq2/deseq2.fdr-0.05.lfc-0.table.csv">deseq2.fdr-0.05.lfc-0.table.csv</a>: Subset of DEseq2 output table of all miRNA clusters (“genes”) having adjusted p-values (fdr) &lt;= 0.05 with log2 fold change cutoff set to</p>
+<ol start="0" type="1">
+<li></li>
+</ol></li>
 </ul>
 </section>
 </section>
@@ -246,7 +200,7 @@ font-style: inherit;"># Set log2 fold change threshold (a value of '1' is equal 
 background-color: null;
 font-style: inherit;">&lt;-</span> <span class="dv" style="color: #AD0000;
 background-color: null;
-font-style: inherit;">1</span></span></code></pre></div>
+font-style: inherit;">0</span></span></code></pre></div>
 </section>
 <section id="load-count-data" class="level1">
 <h1>3 Load count data</h1>
@@ -710,39 +664,39 @@ font-style: inherit;">lfcThreshold =</span> log2fc)</span>
 <pre><code>log2 fold change (MLE): treatment treatment vs control 
 Wald test p-value: treatment treatment vs control 
 DataFrame with 37 rows and 6 columns
-                 baseMean log2FoldChange     lfcSE      stat    pvalue
-                &lt;numeric&gt;      &lt;numeric&gt; &lt;numeric&gt; &lt;numeric&gt; &lt;numeric&gt;
-Cluster_1785  6.63895e+02      0.0149611 0.2810643   0.00000 1.0000000
-Cluster_2042  1.35312e+05     -0.1901409 0.4840889   0.00000 1.0000000
-Cluster_2646  1.76900e+03      0.0185890 0.0902545   0.00000 1.0000000
-Cluster_3720  4.26842e+01      2.0921221 0.5504186   1.98417 0.0472373
-Cluster_4396  4.09498e+00      0.0360325 0.5609930   0.00000 1.0000000
-...                   ...            ...       ...       ...       ...
-Cluster_29018   1661.6392      2.4245029  0.683762   2.08333 0.0372209
-Cluster_31844   1372.1080     -0.0477386  0.146375   0.00000 1.0000000
-Cluster_32917     14.7573      0.2194667  0.377211   0.00000 1.0000000
-Cluster_32918   1259.4586      0.5004769  0.370048   0.00000 1.0000000
-Cluster_32919      4.5894      0.2954022  0.619287   0.00000 1.0000000
-                   padj
-              &lt;numeric&gt;
-Cluster_1785   1.000000
-Cluster_2042   1.000000
-Cluster_2646   1.000000
-Cluster_3720   0.436945
-Cluster_4396   1.000000
-...                 ...
-Cluster_29018  0.436945
-Cluster_31844  1.000000
-Cluster_32917  1.000000
-Cluster_32918  1.000000
-Cluster_32919  1.000000</code></pre>
+                 baseMean log2FoldChange     lfcSE       stat      pvalue
+                &lt;numeric&gt;      &lt;numeric&gt; &lt;numeric&gt;  &lt;numeric&gt;   &lt;numeric&gt;
+Cluster_1785  6.63895e+02      0.0149611 0.2810643  0.0532301 0.957548604
+Cluster_2042  1.35312e+05     -0.1901409 0.4840889 -0.3927810 0.694481249
+Cluster_2646  1.76900e+03      0.0185890 0.0902545  0.2059620 0.836820596
+Cluster_3720  4.26842e+01      2.0921221 0.5504186  3.8009659 0.000144133
+Cluster_4396  4.09498e+00      0.0360325 0.5609930  0.0642299 0.948787181
+...                   ...            ...       ...        ...         ...
+Cluster_29018   1661.6392      2.4245029  0.683762   3.545830 0.000391378
+Cluster_31844   1372.1080     -0.0477386  0.146375  -0.326140 0.744318793
+Cluster_32917     14.7573      0.2194667  0.377211   0.581814 0.560691835
+Cluster_32918   1259.4586      0.5004769  0.370048   1.352466 0.176226232
+Cluster_32919      4.5894      0.2954022  0.619287   0.477004 0.633359369
+                    padj
+               &lt;numeric&gt;
+Cluster_1785  0.98414718
+Cluster_2042  0.94314745
+Cluster_2646  0.96982079
+Cluster_3720  0.00482699
+Cluster_4396  0.98414718
+...                  ...
+Cluster_29018 0.00482699
+Cluster_31844 0.94964812
+Cluster_32917 0.94314745
+Cluster_32918 0.57114000
+Cluster_32919 0.94314745</code></pre>
 <div class="sourceCode" id="cb27" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb27-1"><span class="fu" style="color: #4758AB;
 background-color: null;
 font-style: inherit;">summary</span>(res)</span></code></pre></div>
 <pre><code>out of 37 with nonzero total read count
 adjusted p-value &lt; 0.05
-LFC &gt; 1.00 (up)    : 0, 0%
-LFC &lt; -1.00 (down) : 0, 0%
+LFC &gt; 0 (up)       : 3, 8.1%
+LFC &lt; 0 (down)     : 1, 2.7%
 outliers [1]       : 0, 0%
 low counts [2]     : 0, 0%
 (mean count &lt; 4)
@@ -755,8 +709,8 @@ background-color: null;
 font-style: inherit;">$</span>padj <span class="sc" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;">&lt;</span> fdr)</span></code></pre></div>
-<pre><code>FALSE 
-   37 </code></pre>
+<pre><code>FALSE  TRUE 
+   33     4 </code></pre>
 </section>
 <section id="write-dds-results-tables-to-csvs" class="level2">
 <h2 class="anchored" data-anchor-id="write-dds-results-tables-to-csvs">7.3 Write DDS results tables to CSVs</h2>
@@ -794,7 +748,19 @@ font-style: inherit;">&lt;</span> fdr)</span>
 <span id="cb31-6">resSig</span></code></pre></div>
 <pre><code>log2 fold change (MLE): treatment treatment vs control 
 Wald test p-value: treatment treatment vs control 
-DataFrame with 0 rows and 6 columns</code></pre>
+DataFrame with 4 rows and 6 columns
+                baseMean log2FoldChange     lfcSE      stat      pvalue
+               &lt;numeric&gt;      &lt;numeric&gt; &lt;numeric&gt; &lt;numeric&gt;   &lt;numeric&gt;
+Cluster_3720    42.68419        2.09212  0.550419   3.80097 0.000144133
+Cluster_15325   27.20988        4.27878  1.188934   3.59883 0.000319647
+Cluster_17619    7.68082       -2.71853  0.785237  -3.46205 0.000536073
+Cluster_29018 1661.63918        2.42450  0.683762   3.54583 0.000391378
+                    padj
+               &lt;numeric&gt;
+Cluster_3720  0.00482699
+Cluster_15325 0.00482699
+Cluster_17619 0.00495868
+Cluster_29018 0.00482699</code></pre>
 <div class="sourceCode" id="cb33" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb33-1"><span class="fu" style="color: #4758AB;
 background-color: null;
 font-style: inherit;">write.csv</span>(resSig, <span class="at" style="color: #657422;
@@ -807,6 +773,8 @@ font-style: inherit;">"deseq2"</span>,<span class="st" style="color: #20794D;
 background-color: null;
 font-style: inherit;">".fdr-"</span>, fdr, <span class="st" style="color: #20794D;
 background-color: null;
+font-style: inherit;">".lfc-"</span>, log2fc, <span class="st" style="color: #20794D;
+background-color: null;
 font-style: inherit;">".table.csv"</span>), <span class="at" style="color: #657422;
 background-color: null;
 font-style: inherit;">row.names =</span> <span class="cn" style="color: #8f5902;
@@ -817,13 +785,151 @@ font-style: inherit;">quote =</span> <span class="cn" style="color: #8f5902;
 background-color: null;
 font-style: inherit;">FALSE</span>)</span></code></pre></div>
 </section>
+<section id="identify-differentially-expressed-mirnas" class="level2">
+<h2 class="anchored" data-anchor-id="identify-differentially-expressed-mirnas">7.4 Identify Differentially Expressed miRNAs</h2>
+<div class="sourceCode" id="cb34" style="background: #f1f3f5;"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb34-1"></span>
+<span id="cb34-2"></span>
+<span id="cb34-3"><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># Extract the first column values (excluding the header)</span></span>
+<span id="cb34-4"><span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">clusters</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span><span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">$(</span><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">cut</span> <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">-d</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">','</span> <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">-f1</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"../output/03.00-D-sRNAseq-gene-expression-DESeq2/deseq2.fdr-0.05.lfc-0.table.csv"</span> <span class="kw" style="color: #003B4F;
+background-color: null;
+font-weight: bold;
+font-style: inherit;">|</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">tail</span> <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">-n</span> +2<span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">)</span></span>
+<span id="cb34-5"></span>
+<span id="cb34-6"><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># Loop through each cluster and search in the Results.txt file</span></span>
+<span id="cb34-7"><span class="cf" style="color: #003B4F;
+background-color: null;
+font-weight: bold;
+font-style: inherit;">for</span> cluster <span class="kw" style="color: #003B4F;
+background-color: null;
+font-weight: bold;
+font-style: inherit;">in</span> <span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">$clusters</span><span class="kw" style="color: #003B4F;
+background-color: null;
+font-weight: bold;
+font-style: inherit;">;</span> </span>
+<span id="cb34-8"><span class="cf" style="color: #003B4F;
+background-color: null;
+font-weight: bold;
+font-style: inherit;">do</span></span>
+<span id="cb34-9">    <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">grep</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"</span><span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">$cluster</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"../output/02.00-ShortStack-31bp-fastp-merged/ShortStack_out/Results.txt"</span></span>
+<span id="cb34-10"><span class="cf" style="color: #003B4F;
+background-color: null;
+font-weight: bold;
+font-style: inherit;">done</span></span>
+<span id="cb34-11"></span>
+<span id="cb34-12"><span class="bu" style="color: null;
+background-color: null;
+font-style: inherit;">echo</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">""</span></span>
+<span id="cb34-13"><span class="bu" style="color: null;
+background-color: null;
+font-style: inherit;">echo</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"--------------------------------------------------------------"</span></span>
+<span id="cb34-14"><span class="bu" style="color: null;
+background-color: null;
+font-style: inherit;">echo</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">""</span></span>
+<span id="cb34-15"></span>
+<span id="cb34-16"><span class="cf" style="color: #003B4F;
+background-color: null;
+font-weight: bold;
+font-style: inherit;">for</span> cluster <span class="kw" style="color: #003B4F;
+background-color: null;
+font-weight: bold;
+font-style: inherit;">in</span> <span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">$clusters</span><span class="kw" style="color: #003B4F;
+background-color: null;
+font-weight: bold;
+font-style: inherit;">;</span> </span>
+<span id="cb34-17"><span class="cf" style="color: #003B4F;
+background-color: null;
+font-weight: bold;
+font-style: inherit;">do</span></span>
+<span id="cb34-18">    <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">grep</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"</span><span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">$cluster</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"../output/02.00-ShortStack-31bp-fastp-merged/ShortStack_out/Results.txt"</span> <span class="dt" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">\</span></span>
+<span id="cb34-19">    <span class="kw" style="color: #003B4F;
+background-color: null;
+font-weight: bold;
+font-style: inherit;">|</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">awk</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">'{print $21}'</span></span>
+<span id="cb34-20"><span class="cf" style="color: #003B4F;
+background-color: null;
+font-weight: bold;
+font-style: inherit;">done</span></span></code></pre></div>
+<pre><code>NW_026853363.1:213466-213568    Cluster_3720    NW_026853363.1  213466  213568  103 1906    84  1.0 +   AGAUAUGUUUGAUAUAUUUGGU  864 9   11  129 1048    458 251 22  Y   cte-miR-190;mle-miR-190-5p
+NW_026858897.1:43133-43248  Cluster_15325   NW_026858897.1  43133   43248   116 1294    54  0.98    +   UGUUCUACGAGCUGUAGCUGU   685 4   34  796 431 29  0   21  Y   NA
+NW_026859924.1:190953-191067    Cluster_17619   NW_026859924.1  190953  191067  115 852 54  0.012   -   UGUUCUACGAGCUGUAACUGUC  509 4   70  175 593 10  0   22  Y   NA
+NW_026865271.1:194028-194125    Cluster_29018   NW_026865271.1  194028  194125  98  66793   264 1.0 +   UCACAACCUGCUUGAAUGAGGAC 31912   323 43  462 5039    38213   22713   23  Y   mle-miR-67-3p
+
+--------------------------------------------------------------
+
+cte-miR-190;mle-miR-190-5p
+NA
+NA
+mle-miR-67-3p</code></pre>
+</section>
 </section>
 <section id="variance-stabilizing-transformations-vst" class="level1">
 <h1>8 Variance stabilizing transformations (VST)</h1>
 <ul>
 <li>Here we transform counts using a variance stabilizing transformation (VST), since we have many samples.</li>
 </ul>
-<div class="sourceCode" id="cb34" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb34-1">vsd <span class="ot" style="color: #003B4F;
+<div class="sourceCode" id="cb36" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb36-1">vsd <span class="ot" style="color: #003B4F;
 background-color: null;
 font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
 background-color: null;
@@ -837,7 +943,7 @@ font-style: inherit;">FALSE</span>)</span></code></pre></div>
 <h1>9 Plotting</h1>
 <section id="sample-distances" class="level2">
 <h2 class="anchored" data-anchor-id="sample-distances">9.1 Sample distances</h2>
-<div class="sourceCode" id="cb35" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb35-1">sampleDists <span class="ot" style="color: #003B4F;
+<div class="sourceCode" id="cb37" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb37-1">sampleDists <span class="ot" style="color: #003B4F;
 background-color: null;
 font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
 background-color: null;
@@ -846,14 +952,14 @@ background-color: null;
 font-style: inherit;">t</span>(<span class="fu" style="color: #4758AB;
 background-color: null;
 font-style: inherit;">assay</span>(vsd)))</span>
-<span id="cb35-2"></span>
-<span id="cb35-3">sampleDistMatrix <span class="ot" style="color: #003B4F;
+<span id="cb37-2"></span>
+<span id="cb37-3">sampleDistMatrix <span class="ot" style="color: #003B4F;
 background-color: null;
 font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
 background-color: null;
 font-style: inherit;">as.matrix</span>( sampleDists )</span>
-<span id="cb35-4"></span>
-<span id="cb35-5"><span class="fu" style="color: #4758AB;
+<span id="cb37-4"></span>
+<span id="cb37-5"><span class="fu" style="color: #4758AB;
 background-color: null;
 font-style: inherit;">rownames</span>(sampleDistMatrix) <span class="ot" style="color: #003B4F;
 background-color: null;
@@ -868,16 +974,16 @@ background-color: null;
 font-style: inherit;">sep =</span> <span class="st" style="color: #20794D;
 background-color: null;
 font-style: inherit;">" - "</span> )</span>
-<span id="cb35-6"></span>
-<span id="cb35-7"><span class="fu" style="color: #4758AB;
+<span id="cb37-6"></span>
+<span id="cb37-7"><span class="fu" style="color: #4758AB;
 background-color: null;
 font-style: inherit;">colnames</span>(sampleDistMatrix) <span class="ot" style="color: #003B4F;
 background-color: null;
 font-style: inherit;">&lt;-</span> <span class="cn" style="color: #8f5902;
 background-color: null;
 font-style: inherit;">NULL</span></span>
-<span id="cb35-8"></span>
-<span id="cb35-9">colors <span class="ot" style="color: #003B4F;
+<span id="cb37-8"></span>
+<span id="cb37-9">colors <span class="ot" style="color: #003B4F;
 background-color: null;
 font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
 background-color: null;
@@ -892,27 +998,27 @@ background-color: null;
 font-style: inherit;">"Blues"</span>)) )(<span class="dv" style="color: #AD0000;
 background-color: null;
 font-style: inherit;">255</span>)</span>
-<span id="cb35-10"></span>
-<span id="cb35-11"><span class="fu" style="color: #4758AB;
+<span id="cb37-10"></span>
+<span id="cb37-11"><span class="fu" style="color: #4758AB;
 background-color: null;
 font-style: inherit;">pheatmap</span>(sampleDistMatrix,</span>
-<span id="cb35-12">         <span class="at" style="color: #657422;
+<span id="cb37-12">         <span class="at" style="color: #657422;
 background-color: null;
 font-style: inherit;">clustering_distance_rows =</span> sampleDists,</span>
-<span id="cb35-13">         <span class="at" style="color: #657422;
+<span id="cb37-13">         <span class="at" style="color: #657422;
 background-color: null;
 font-style: inherit;">clustering_distance_cols =</span> sampleDists,</span>
-<span id="cb35-14">         <span class="at" style="color: #657422;
+<span id="cb37-14">         <span class="at" style="color: #657422;
 background-color: null;
 font-style: inherit;">col =</span> colors)</span></code></pre></div>
 </section>
 <section id="pca" class="level2">
 <h2 class="anchored" data-anchor-id="pca">9.2 PCA</h2>
 <p>Visualize sample clustering via PCA (after transformation)</p>
-<div class="sourceCode" id="cb36" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb36-1"><span class="co" style="color: #5E5E5E;
+<div class="sourceCode" id="cb38" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb38-1"><span class="co" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;"># PCA with points color coded by time point </span></span>
-<span id="cb36-2"><span class="fu" style="color: #4758AB;
+<span id="cb38-2"><span class="fu" style="color: #4758AB;
 background-color: null;
 font-style: inherit;">plotPCA</span>(vsd, <span class="at" style="color: #657422;
 background-color: null;
@@ -923,9 +1029,9 @@ background-color: null;
 font-style: inherit;">"treatment"</span>))</span></code></pre></div>
 <p><img src="https://robertslab.github.io/sams-notebook/posts/2025/2025-01-31-Differential-Expression---R.philippinarum-miRNAs-Using-DEseq2/03.00-D-sRNAseq-gene-expression-DESeq2_files/figure-gfm/pca-1.png" class="img-fluid"><!-- --></p>
 </section>
-<section id="heatmap-top-40" class="level2">
-<h2 class="anchored" data-anchor-id="heatmap-top-40">9.3 Heatmap top 40</h2>
-<div class="sourceCode" id="cb37" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb37-1">top40_counts <span class="ot" style="color: #003B4F;
+<section id="heatmap-of-all-37-shortstack-mirnas" class="level2">
+<h2 class="anchored" data-anchor-id="heatmap-of-all-37-shortstack-mirnas">9.3 Heatmap of all 37 ShortStack miRNAs</h2>
+<div class="sourceCode" id="cb39" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb39-1">top40_counts <span class="ot" style="color: #003B4F;
 background-color: null;
 font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
 background-color: null;
@@ -938,7 +1044,7 @@ background-color: null;
 font-style: inherit;">normalized=</span><span class="cn" style="color: #8f5902;
 background-color: null;
 font-style: inherit;">TRUE</span>)),</span>
-<span id="cb37-2">                <span class="at" style="color: #657422;
+<span id="cb39-2">                <span class="at" style="color: #657422;
 background-color: null;
 font-style: inherit;">decreasing=</span><span class="cn" style="color: #8f5902;
 background-color: null;
@@ -948,9 +1054,9 @@ font-style: inherit;">1</span><span class="sc" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;">:</span><span class="dv" style="color: #AD0000;
 background-color: null;
-font-style: inherit;">40</span>]</span>
-<span id="cb37-3"></span>
-<span id="cb37-4">annotation <span class="ot" style="color: #003B4F;
+font-style: inherit;">37</span>]</span>
+<span id="cb39-3"></span>
+<span id="cb39-4">annotation <span class="ot" style="color: #003B4F;
 background-color: null;
 font-style: inherit;">=</span> <span class="fu" style="color: #4758AB;
 background-color: null;
@@ -963,28 +1069,28 @@ background-color: null;
 font-style: inherit;">%&gt;%</span> <span class="fu" style="color: #4758AB;
 background-color: null;
 font-style: inherit;">select</span>(treatment)</span>
-<span id="cb37-5"></span>
-<span id="cb37-6"><span class="fu" style="color: #4758AB;
+<span id="cb39-5"></span>
+<span id="cb39-6"><span class="fu" style="color: #4758AB;
 background-color: null;
 font-style: inherit;">pheatmap</span>(<span class="fu" style="color: #4758AB;
 background-color: null;
 font-style: inherit;">assay</span>(vsd)[top40_counts,], </span>
-<span id="cb37-7">         <span class="at" style="color: #657422;
+<span id="cb39-7">         <span class="at" style="color: #657422;
 background-color: null;
 font-style: inherit;">cluster_rows=</span><span class="cn" style="color: #8f5902;
 background-color: null;
 font-style: inherit;">FALSE</span>, </span>
-<span id="cb37-8">         <span class="at" style="color: #657422;
+<span id="cb39-8">         <span class="at" style="color: #657422;
 background-color: null;
 font-style: inherit;">show_rownames=</span><span class="cn" style="color: #8f5902;
 background-color: null;
 font-style: inherit;">TRUE</span>,</span>
-<span id="cb37-9">         <span class="at" style="color: #657422;
+<span id="cb39-9">         <span class="at" style="color: #657422;
 background-color: null;
 font-style: inherit;">cluster_cols=</span><span class="cn" style="color: #8f5902;
 background-color: null;
 font-style: inherit;">TRUE</span>, </span>
-<span id="cb37-10">         <span class="at" style="color: #657422;
+<span id="cb39-10">         <span class="at" style="color: #657422;
 background-color: null;
 font-style: inherit;">annotation_col =</span> annotation)</span></code></pre></div>
 <p><img src="https://robertslab.github.io/sams-notebook/posts/2025/2025-01-31-Differential-Expression---R.philippinarum-miRNAs-Using-DEseq2/03.00-D-sRNAseq-gene-expression-DESeq2_files/figure-gfm/heatmap-1.png" class="img-fluid"><!-- --></p>

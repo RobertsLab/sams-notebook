@@ -272,8 +272,7 @@ gtag('config', 'G-7483T61T11', { 'anonymize_ip': true});
     <h2 id="toc-title">Contents</h2>
    
   <ul>
-  <li><a href="#d-srnaseq-gene-expression-deseq2" id="toc-d-srnaseq-gene-expression-deseq2" class="nav-link active" data-scroll-target="#d-srnaseq-gene-expression-deseq2">03.00-D-sRNAseq-gene-expression-DESeq2</a></li>
-  <li><a href="#background" id="toc-background" class="nav-link" data-scroll-target="#background">1 Background</a>
+  <li><a href="#background" id="toc-background" class="nav-link active" data-scroll-target="#background">1 Background</a>
   <ul>
   <li><a href="#inputs" id="toc-inputs" class="nav-link" data-scroll-target="#inputs">1.1 Inputs</a></li>
   <li><a href="#outputs" id="toc-outputs" class="nav-link" data-scroll-target="#outputs">1.2 Outputs</a></li>
@@ -308,13 +307,14 @@ gtag('config', 'G-7483T61T11', { 'anonymize_ip': true});
   <li><a href="#deseq" id="toc-deseq" class="nav-link" data-scroll-target="#deseq">7.1 DEseq</a></li>
   <li><a href="#deseq-results" id="toc-deseq-results" class="nav-link" data-scroll-target="#deseq-results">7.2 DEseq Results</a></li>
   <li><a href="#write-dds-results-tables-to-csvs" id="toc-write-dds-results-tables-to-csvs" class="nav-link" data-scroll-target="#write-dds-results-tables-to-csvs">7.3 Write DDS results tables to CSVs</a></li>
+  <li><a href="#identify-differentially-expressed-mirnas" id="toc-identify-differentially-expressed-mirnas" class="nav-link" data-scroll-target="#identify-differentially-expressed-mirnas">7.4 Identify Differentially Expressed miRNAs</a></li>
   </ul></li>
   <li><a href="#variance-stabilizing-transformations-vst" id="toc-variance-stabilizing-transformations-vst" class="nav-link" data-scroll-target="#variance-stabilizing-transformations-vst">8 Variance stabilizing transformations (VST)</a></li>
   <li><a href="#plotting" id="toc-plotting" class="nav-link" data-scroll-target="#plotting">9 Plotting</a>
   <ul>
   <li><a href="#sample-distances" id="toc-sample-distances" class="nav-link" data-scroll-target="#sample-distances">9.1 Sample distances</a></li>
   <li><a href="#pca" id="toc-pca" class="nav-link" data-scroll-target="#pca">9.2 PCA</a></li>
-  <li><a href="#heatmap-top-40" id="toc-heatmap-top-40" class="nav-link" data-scroll-target="#heatmap-top-40">9.3 Heatmap top 40</a></li>
+  <li><a href="#heatmap-of-all-37-shortstack-mirnas" id="toc-heatmap-of-all-37-shortstack-mirnas" class="nav-link" data-scroll-target="#heatmap-of-all-37-shortstack-mirnas">9.3 Heatmap of all 37 ShortStack miRNAs</a></li>
   </ul></li>
   <li><a href="#references" id="toc-references" class="nav-link" data-scroll-target="#references">10 REFERENCES</a></li>
   </ul>
@@ -342,62 +342,13 @@ Note
 </div>
 </div>
 <div class="callout-body-container callout-body">
-<p>The contents below are from markdown knitted from <a href="https://github.com/RobertsLab/project-clam-oa/blob/54eb41b32e1245e75f06c3994e9a6f5cf3c119eb/code/03.00-D-sRNAseq-gene-expression-DESeq2.Rmd"><code>03.00-D-sRNAseq-gene-expression-DESeq2.Rmd</code></a> (commit <code>54eb41b</code>).</p>
+<p>The contents below are from markdown knitted from <a href="https://github.com/RobertsLab/project-clam-oa/blob/af1eb6d98e99a6e3c51d37084f7df143d02c322d/code/03.00-D-sRNAseq-gene-expression-DESeq2.Rmd"><code>03.00-D-sRNAseq-gene-expression-DESeq2.Rmd</code></a> (commit <code>af1eb6d</code>).</p>
 </div>
 </div>
-<section id="d-srnaseq-gene-expression-deseq2" class="level1">
-<h1>03.00-D-sRNAseq-gene-expression-DESeq2</h1>
-<p>Sam White 2025-01-31</p>
-<ul>
-<li><a href="#1-background" id="toc-1-background">1 Background</a>
-<ul>
-<li><a href="#11-inputs" id="toc-11-inputs">1.1 Inputs</a></li>
-<li><a href="#12-outputs" id="toc-12-outputs">1.2 Outputs</a></li>
-</ul></li>
-<li><a href="#2-set-r-variables" id="toc-2-set-r-variables">2 Set R variables</a></li>
-<li><a href="#3-load-count-data" id="toc-3-load-count-data">3 Load count data</a>
-<ul>
-<li><a href="#31-select-only-mirnas-idd-by-shortstack" id="toc-31-select-only-mirnas-idd-by-shortstack">3.1 Select only miRNAs IDd by ShortStack</a></li>
-</ul></li>
-<li><a href="#4-create-deseq2-column-data" id="toc-4-create-deseq2-column-data">4 Create DESeq2 Column Data</a>
-<ul>
-<li><a href="#41-read-in-metadata-csv" id="toc-41-read-in-metadata-csv">4.1 Read in metadata CSV</a></li>
-<li><a href="#42-extract-sample-names" id="toc-42-extract-sample-names">4.2 Extract sample names</a></li>
-<li><a href="#43-select-sample-name-and-treatment" id="toc-43-select-sample-name-and-treatment">4.3 Select sample name and treatment</a></li>
-<li><a href="#44-write-deseq-coldata-to-file" id="toc-44-write-deseq-coldata-to-file">4.4 Write DEseq coldata to file</a></li>
-</ul></li>
-<li><a href="#5-count-data-munging" id="toc-5-count-data-munging">5 Count data munging</a>
-<ul>
-<li><a href="#51-fix-col-names-and-convert-to-matrix" id="toc-51-fix-col-names-and-convert-to-matrix">5.1 Fix col names and convert to matrix</a></li>
-<li><a href="#52-take-only-samples-present-in-coldata" id="toc-52-take-only-samples-present-in-coldata">5.2 Take only samples present in coldata</a></li>
-<li><a href="#53-reorder-matrix-cols-to-match-coldata" id="toc-53-reorder-matrix-cols-to-match-coldata">5.3 Reorder matrix cols to match coldata</a></li>
-<li><a href="#54-verify-rownames-match" id="toc-54-verify-rownames-match">5.4 Verify rownames match</a></li>
-</ul></li>
-<li><a href="#6-create-deseq2-data-set" id="toc-6-create-deseq2-data-set">6 Create DESeq2 data set</a>
-<ul>
-<li><a href="#61-initialize-deseq2-data-set" id="toc-61-initialize-deseq2-data-set">6.1 Initialize DEseq2 data set</a></li>
-<li><a href="#62-add-cluster-column-as-gene-feature" id="toc-62-add-cluster-column-as-gene-feature">6.2 Add cluster column as “gene” feature</a></li>
-<li><a href="#63-set-factor-levels" id="toc-63-set-factor-levels">6.3 Set factor levels</a></li>
-</ul></li>
-<li><a href="#7-deseq-analysis" id="toc-7-deseq-analysis">7 DESeq analysis</a>
-<ul>
-<li><a href="#71-deseq" id="toc-71-deseq">7.1 DEseq</a></li>
-<li><a href="#72-deseq-results" id="toc-72-deseq-results">7.2 DEseq Results</a></li>
-<li><a href="#73-write-dds-results-tables-to-csvs" id="toc-73-write-dds-results-tables-to-csvs">7.3 Write DDS results tables to CSVs</a></li>
-</ul></li>
-<li><a href="#8-variance-stabilizing-transformations-vst" id="toc-8-variance-stabilizing-transformations-vst">8 Variance stabilizing transformations (VST)</a></li>
-<li><a href="#9-plotting" id="toc-9-plotting">9 Plotting</a>
-<ul>
-<li><a href="#91-sample-distances" id="toc-91-sample-distances">9.1 Sample distances</a></li>
-<li><a href="#92-pca" id="toc-92-pca">9.2 PCA</a></li>
-<li><a href="#93-heatmap-top-40" id="toc-93-heatmap-top-40">9.3 Heatmap top 40</a></li>
-</ul></li>
-<li><a href="#10-references" id="toc-10-references">10 REFERENCES</a></li>
-</ul>
-</section>
 <section id="background" class="level1">
 <h1>1 Background</h1>
 <p>This will run <a href="https://bioconductor.org/packages/release/bioc/vignettes/DESeq2/inst/doc/DESeq2.html">DEseq2</a> (Love, Huber, and Anders 2014) to determine if any of the miRNAs identified in <a href="https://github.com/RobertsLab/project-clam-oa/blob/2616d45a5a0bbef23081c5824bfe5bad6b89d227/code/02.00-ShortStack-31bp-fastp-merged.md">02.00-ShortStack-31bp-fastp-merged.md</a> analysis are differentially expressed between control/treatment.</p>
+<p>This was initially run with a log2 fold change threshold set to 1 (which is equivalent to a 2-fold change in expression), but that returned 0 differentially expressed miRNAs. As such, this was run again with the log2 fold change threshold set to 0.</p>
 <div class="callout callout-style-default callout-note callout-titled">
 <div class="callout-header d-flex align-content-center">
 <div class="callout-icon-container">
@@ -424,7 +375,10 @@ Note
 <ul>
 <li><p><a href="https://github.com/RobertsLab/project-clam-oa/blob/d380ed9a88c874db5434c9ec74f6ab1de042bad5/output/03.00-D-sRNAseq-gene-expression-DESeq2/DESeq2-coldata.tab"><code>DESeq2-coldata.tab</code></a>: Two column table with sample ID and treatment. Needed as input to DEseq2.</p></li>
 <li><p><a href="https://github.com/RobertsLab/project-clam-oa/blob/d380ed9a88c874db5434c9ec74f6ab1de042bad5/output/03.00-D-sRNAseq-gene-expression-DESeq2/deseq2.table.csv"><code>deseq2.table.csv</code></a>: DEseq2 output table containing mean expression, fold change in expression, and adjusted p-values for all input samples.</p></li>
-<li><p><a href="https://github.com/RobertsLab/project-clam-oa/blob/d380ed9a88c874db5434c9ec74f6ab1de042bad5/output/03.00-D-sRNAseq-gene-expression-DESeq2/deseq2.fdr-0.05.table.csv">deseq2.fdr-0.05.table.csv</a>: Subset of DEseq2 output table of all miRNA clusters (“genes”) having adjusted p-values (fdr) &lt;= 0.05.</p></li>
+<li><p><a href="https://github.com/RobertsLab/project-clam-oa/blob/3b23f7cfcdf9cef627556090518d60d685d881bd/output/03.00-D-sRNAseq-gene-expression-DESeq2/deseq2.fdr-0.05.lfc-0.table.csv">deseq2.fdr-0.05.lfc-0.table.csv</a>: Subset of DEseq2 output table of all miRNA clusters (“genes”) having adjusted p-values (fdr) &lt;= 0.05 with log2 fold change cutoff set to</p>
+<ol start="0" type="1">
+<li></li>
+</ol></li>
 </ul>
 </section>
 </section>
@@ -437,7 +391,7 @@ Note
 <span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a>fdr <span class="ot">&lt;-</span> <span class="fl">0.05</span></span>
 <span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a><span class="co"># Set log2 fold change threshold (a value of '1' is equal to a fold change of '2')</span></span>
-<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a>log2fc <span class="ot">&lt;-</span> <span class="dv">1</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a>log2fc <span class="ot">&lt;-</span> <span class="dv">0</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </section>
 <section id="load-count-data" class="level1">
 <h1>3 Load count data</h1>
@@ -659,45 +613,45 @@ Cluster_32919 Cluster_32919</code></pre>
 <pre><code>log2 fold change (MLE): treatment treatment vs control 
 Wald test p-value: treatment treatment vs control 
 DataFrame with 37 rows and 6 columns
-                 baseMean log2FoldChange     lfcSE      stat    pvalue
-                &lt;numeric&gt;      &lt;numeric&gt; &lt;numeric&gt; &lt;numeric&gt; &lt;numeric&gt;
-Cluster_1785  6.63895e+02      0.0149611 0.2810643   0.00000 1.0000000
-Cluster_2042  1.35312e+05     -0.1901409 0.4840889   0.00000 1.0000000
-Cluster_2646  1.76900e+03      0.0185890 0.0902545   0.00000 1.0000000
-Cluster_3720  4.26842e+01      2.0921221 0.5504186   1.98417 0.0472373
-Cluster_4396  4.09498e+00      0.0360325 0.5609930   0.00000 1.0000000
-...                   ...            ...       ...       ...       ...
-Cluster_29018   1661.6392      2.4245029  0.683762   2.08333 0.0372209
-Cluster_31844   1372.1080     -0.0477386  0.146375   0.00000 1.0000000
-Cluster_32917     14.7573      0.2194667  0.377211   0.00000 1.0000000
-Cluster_32918   1259.4586      0.5004769  0.370048   0.00000 1.0000000
-Cluster_32919      4.5894      0.2954022  0.619287   0.00000 1.0000000
-                   padj
-              &lt;numeric&gt;
-Cluster_1785   1.000000
-Cluster_2042   1.000000
-Cluster_2646   1.000000
-Cluster_3720   0.436945
-Cluster_4396   1.000000
-...                 ...
-Cluster_29018  0.436945
-Cluster_31844  1.000000
-Cluster_32917  1.000000
-Cluster_32918  1.000000
-Cluster_32919  1.000000</code></pre>
+                 baseMean log2FoldChange     lfcSE       stat      pvalue
+                &lt;numeric&gt;      &lt;numeric&gt; &lt;numeric&gt;  &lt;numeric&gt;   &lt;numeric&gt;
+Cluster_1785  6.63895e+02      0.0149611 0.2810643  0.0532301 0.957548604
+Cluster_2042  1.35312e+05     -0.1901409 0.4840889 -0.3927810 0.694481249
+Cluster_2646  1.76900e+03      0.0185890 0.0902545  0.2059620 0.836820596
+Cluster_3720  4.26842e+01      2.0921221 0.5504186  3.8009659 0.000144133
+Cluster_4396  4.09498e+00      0.0360325 0.5609930  0.0642299 0.948787181
+...                   ...            ...       ...        ...         ...
+Cluster_29018   1661.6392      2.4245029  0.683762   3.545830 0.000391378
+Cluster_31844   1372.1080     -0.0477386  0.146375  -0.326140 0.744318793
+Cluster_32917     14.7573      0.2194667  0.377211   0.581814 0.560691835
+Cluster_32918   1259.4586      0.5004769  0.370048   1.352466 0.176226232
+Cluster_32919      4.5894      0.2954022  0.619287   0.477004 0.633359369
+                    padj
+               &lt;numeric&gt;
+Cluster_1785  0.98414718
+Cluster_2042  0.94314745
+Cluster_2646  0.96982079
+Cluster_3720  0.00482699
+Cluster_4396  0.98414718
+...                  ...
+Cluster_29018 0.00482699
+Cluster_31844 0.94964812
+Cluster_32917 0.94314745
+Cluster_32918 0.57114000
+Cluster_32919 0.94314745</code></pre>
 <div class="sourceCode" id="cb27"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb27-1"><a href="#cb27-1" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(res)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <pre><code>out of 37 with nonzero total read count
 adjusted p-value &lt; 0.05
-LFC &gt; 1.00 (up)    : 0, 0%
-LFC &lt; -1.00 (down) : 0, 0%
+LFC &gt; 0 (up)       : 3, 8.1%
+LFC &lt; 0 (down)     : 1, 2.7%
 outliers [1]       : 0, 0%
 low counts [2]     : 0, 0%
 (mean count &lt; 4)
 [1] see 'cooksCutoff' argument of ?results
 [2] see 'independentFiltering' argument of ?results</code></pre>
 <div class="sourceCode" id="cb29"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb29-1"><a href="#cb29-1" aria-hidden="true" tabindex="-1"></a><span class="fu">table</span>(res<span class="sc">$</span>padj <span class="sc">&lt;</span> fdr)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<pre><code>FALSE 
-   37 </code></pre>
+<pre><code>FALSE  TRUE 
+   33     4 </code></pre>
 </section>
 <section id="write-dds-results-tables-to-csvs" class="level2">
 <h2 class="anchored" data-anchor-id="write-dds-results-tables-to-csvs">7.3 Write DDS results tables to CSVs</h2>
@@ -709,8 +663,54 @@ low counts [2]     : 0, 0%
 <span id="cb31-6"><a href="#cb31-6" aria-hidden="true" tabindex="-1"></a>resSig</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <pre><code>log2 fold change (MLE): treatment treatment vs control 
 Wald test p-value: treatment treatment vs control 
-DataFrame with 0 rows and 6 columns</code></pre>
-<div class="sourceCode" id="cb33"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb33-1"><a href="#cb33-1" aria-hidden="true" tabindex="-1"></a><span class="fu">write.csv</span>(resSig, <span class="at">file =</span> <span class="fu">paste0</span>(output_dir, <span class="st">"deseq2"</span>,<span class="st">".fdr-"</span>, fdr, <span class="st">".table.csv"</span>), <span class="at">row.names =</span> <span class="cn">TRUE</span>, <span class="at">quote =</span> <span class="cn">FALSE</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+DataFrame with 4 rows and 6 columns
+                baseMean log2FoldChange     lfcSE      stat      pvalue
+               &lt;numeric&gt;      &lt;numeric&gt; &lt;numeric&gt; &lt;numeric&gt;   &lt;numeric&gt;
+Cluster_3720    42.68419        2.09212  0.550419   3.80097 0.000144133
+Cluster_15325   27.20988        4.27878  1.188934   3.59883 0.000319647
+Cluster_17619    7.68082       -2.71853  0.785237  -3.46205 0.000536073
+Cluster_29018 1661.63918        2.42450  0.683762   3.54583 0.000391378
+                    padj
+               &lt;numeric&gt;
+Cluster_3720  0.00482699
+Cluster_15325 0.00482699
+Cluster_17619 0.00495868
+Cluster_29018 0.00482699</code></pre>
+<div class="sourceCode" id="cb33"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb33-1"><a href="#cb33-1" aria-hidden="true" tabindex="-1"></a><span class="fu">write.csv</span>(resSig, <span class="at">file =</span> <span class="fu">paste0</span>(output_dir, <span class="st">"deseq2"</span>,<span class="st">".fdr-"</span>, fdr, <span class="st">".lfc-"</span>, log2fc, <span class="st">".table.csv"</span>), <span class="at">row.names =</span> <span class="cn">TRUE</span>, <span class="at">quote =</span> <span class="cn">FALSE</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</section>
+<section id="identify-differentially-expressed-mirnas" class="level2">
+<h2 class="anchored" data-anchor-id="identify-differentially-expressed-mirnas">7.4 Identify Differentially Expressed miRNAs</h2>
+<div class="sourceCode" id="cb34"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb34-1"><a href="#cb34-1" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb34-2"><a href="#cb34-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb34-3"><a href="#cb34-3" aria-hidden="true" tabindex="-1"></a><span class="co"># Extract the first column values (excluding the header)</span></span>
+<span id="cb34-4"><a href="#cb34-4" aria-hidden="true" tabindex="-1"></a><span class="va">clusters</span><span class="op">=</span><span class="va">$(</span><span class="fu">cut</span> <span class="at">-d</span><span class="st">','</span> <span class="at">-f1</span> <span class="st">"../output/03.00-D-sRNAseq-gene-expression-DESeq2/deseq2.fdr-0.05.lfc-0.table.csv"</span> <span class="kw">|</span> <span class="fu">tail</span> <span class="at">-n</span> +2<span class="va">)</span></span>
+<span id="cb34-5"><a href="#cb34-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb34-6"><a href="#cb34-6" aria-hidden="true" tabindex="-1"></a><span class="co"># Loop through each cluster and search in the Results.txt file</span></span>
+<span id="cb34-7"><a href="#cb34-7" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> cluster <span class="kw">in</span> <span class="va">$clusters</span><span class="kw">;</span> </span>
+<span id="cb34-8"><a href="#cb34-8" aria-hidden="true" tabindex="-1"></a><span class="cf">do</span></span>
+<span id="cb34-9"><a href="#cb34-9" aria-hidden="true" tabindex="-1"></a>    <span class="fu">grep</span> <span class="st">"</span><span class="va">$cluster</span><span class="st">"</span> <span class="st">"../output/02.00-ShortStack-31bp-fastp-merged/ShortStack_out/Results.txt"</span></span>
+<span id="cb34-10"><a href="#cb34-10" aria-hidden="true" tabindex="-1"></a><span class="cf">done</span></span>
+<span id="cb34-11"><a href="#cb34-11" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb34-12"><a href="#cb34-12" aria-hidden="true" tabindex="-1"></a><span class="bu">echo</span> <span class="st">""</span></span>
+<span id="cb34-13"><a href="#cb34-13" aria-hidden="true" tabindex="-1"></a><span class="bu">echo</span> <span class="st">"--------------------------------------------------------------"</span></span>
+<span id="cb34-14"><a href="#cb34-14" aria-hidden="true" tabindex="-1"></a><span class="bu">echo</span> <span class="st">""</span></span>
+<span id="cb34-15"><a href="#cb34-15" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb34-16"><a href="#cb34-16" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> cluster <span class="kw">in</span> <span class="va">$clusters</span><span class="kw">;</span> </span>
+<span id="cb34-17"><a href="#cb34-17" aria-hidden="true" tabindex="-1"></a><span class="cf">do</span></span>
+<span id="cb34-18"><a href="#cb34-18" aria-hidden="true" tabindex="-1"></a>    <span class="fu">grep</span> <span class="st">"</span><span class="va">$cluster</span><span class="st">"</span> <span class="st">"../output/02.00-ShortStack-31bp-fastp-merged/ShortStack_out/Results.txt"</span> <span class="dt">\</span></span>
+<span id="cb34-19"><a href="#cb34-19" aria-hidden="true" tabindex="-1"></a>    <span class="kw">|</span> <span class="fu">awk</span> <span class="st">'{print $21}'</span></span>
+<span id="cb34-20"><a href="#cb34-20" aria-hidden="true" tabindex="-1"></a><span class="cf">done</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<pre><code>NW_026853363.1:213466-213568    Cluster_3720    NW_026853363.1  213466  213568  103 1906    84  1.0 +   AGAUAUGUUUGAUAUAUUUGGU  864 9   11  129 1048    458 251 22  Y   cte-miR-190;mle-miR-190-5p
+NW_026858897.1:43133-43248  Cluster_15325   NW_026858897.1  43133   43248   116 1294    54  0.98    +   UGUUCUACGAGCUGUAGCUGU   685 4   34  796 431 29  0   21  Y   NA
+NW_026859924.1:190953-191067    Cluster_17619   NW_026859924.1  190953  191067  115 852 54  0.012   -   UGUUCUACGAGCUGUAACUGUC  509 4   70  175 593 10  0   22  Y   NA
+NW_026865271.1:194028-194125    Cluster_29018   NW_026865271.1  194028  194125  98  66793   264 1.0 +   UCACAACCUGCUUGAAUGAGGAC 31912   323 43  462 5039    38213   22713   23  Y   mle-miR-67-3p
+
+--------------------------------------------------------------
+
+cte-miR-190;mle-miR-190-5p
+NA
+NA
+mle-miR-67-3p</code></pre>
 </section>
 </section>
 <section id="variance-stabilizing-transformations-vst" class="level1">
@@ -718,46 +718,46 @@ DataFrame with 0 rows and 6 columns</code></pre>
 <ul>
 <li>Here we transform counts using a variance stabilizing transformation (VST), since we have many samples.</li>
 </ul>
-<div class="sourceCode" id="cb34"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb34-1"><a href="#cb34-1" aria-hidden="true" tabindex="-1"></a>vsd <span class="ot">&lt;-</span> <span class="fu">varianceStabilizingTransformation</span>(dds, <span class="at">blind=</span><span class="cn">FALSE</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode" id="cb36"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb36-1"><a href="#cb36-1" aria-hidden="true" tabindex="-1"></a>vsd <span class="ot">&lt;-</span> <span class="fu">varianceStabilizingTransformation</span>(dds, <span class="at">blind=</span><span class="cn">FALSE</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </section>
 <section id="plotting" class="level1">
 <h1>9 Plotting</h1>
 <section id="sample-distances" class="level2">
 <h2 class="anchored" data-anchor-id="sample-distances">9.1 Sample distances</h2>
-<div class="sourceCode" id="cb35"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb35-1"><a href="#cb35-1" aria-hidden="true" tabindex="-1"></a>sampleDists <span class="ot">&lt;-</span> <span class="fu">dist</span>(<span class="fu">t</span>(<span class="fu">assay</span>(vsd)))</span>
-<span id="cb35-2"><a href="#cb35-2" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb35-3"><a href="#cb35-3" aria-hidden="true" tabindex="-1"></a>sampleDistMatrix <span class="ot">&lt;-</span> <span class="fu">as.matrix</span>( sampleDists )</span>
-<span id="cb35-4"><a href="#cb35-4" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb35-5"><a href="#cb35-5" aria-hidden="true" tabindex="-1"></a><span class="fu">rownames</span>(sampleDistMatrix) <span class="ot">&lt;-</span> <span class="fu">paste</span>( vsd<span class="sc">$</span>colony.id, vsd<span class="sc">$</span>time.point, <span class="at">sep =</span> <span class="st">" - "</span> )</span>
-<span id="cb35-6"><a href="#cb35-6" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb35-7"><a href="#cb35-7" aria-hidden="true" tabindex="-1"></a><span class="fu">colnames</span>(sampleDistMatrix) <span class="ot">&lt;-</span> <span class="cn">NULL</span></span>
-<span id="cb35-8"><a href="#cb35-8" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb35-9"><a href="#cb35-9" aria-hidden="true" tabindex="-1"></a>colors <span class="ot">&lt;-</span> <span class="fu">colorRampPalette</span>( <span class="fu">rev</span>(<span class="fu">brewer.pal</span>(<span class="dv">9</span>, <span class="st">"Blues"</span>)) )(<span class="dv">255</span>)</span>
-<span id="cb35-10"><a href="#cb35-10" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb35-11"><a href="#cb35-11" aria-hidden="true" tabindex="-1"></a><span class="fu">pheatmap</span>(sampleDistMatrix,</span>
-<span id="cb35-12"><a href="#cb35-12" aria-hidden="true" tabindex="-1"></a>         <span class="at">clustering_distance_rows =</span> sampleDists,</span>
-<span id="cb35-13"><a href="#cb35-13" aria-hidden="true" tabindex="-1"></a>         <span class="at">clustering_distance_cols =</span> sampleDists,</span>
-<span id="cb35-14"><a href="#cb35-14" aria-hidden="true" tabindex="-1"></a>         <span class="at">col =</span> colors)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode" id="cb37"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb37-1"><a href="#cb37-1" aria-hidden="true" tabindex="-1"></a>sampleDists <span class="ot">&lt;-</span> <span class="fu">dist</span>(<span class="fu">t</span>(<span class="fu">assay</span>(vsd)))</span>
+<span id="cb37-2"><a href="#cb37-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb37-3"><a href="#cb37-3" aria-hidden="true" tabindex="-1"></a>sampleDistMatrix <span class="ot">&lt;-</span> <span class="fu">as.matrix</span>( sampleDists )</span>
+<span id="cb37-4"><a href="#cb37-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb37-5"><a href="#cb37-5" aria-hidden="true" tabindex="-1"></a><span class="fu">rownames</span>(sampleDistMatrix) <span class="ot">&lt;-</span> <span class="fu">paste</span>( vsd<span class="sc">$</span>colony.id, vsd<span class="sc">$</span>time.point, <span class="at">sep =</span> <span class="st">" - "</span> )</span>
+<span id="cb37-6"><a href="#cb37-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb37-7"><a href="#cb37-7" aria-hidden="true" tabindex="-1"></a><span class="fu">colnames</span>(sampleDistMatrix) <span class="ot">&lt;-</span> <span class="cn">NULL</span></span>
+<span id="cb37-8"><a href="#cb37-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb37-9"><a href="#cb37-9" aria-hidden="true" tabindex="-1"></a>colors <span class="ot">&lt;-</span> <span class="fu">colorRampPalette</span>( <span class="fu">rev</span>(<span class="fu">brewer.pal</span>(<span class="dv">9</span>, <span class="st">"Blues"</span>)) )(<span class="dv">255</span>)</span>
+<span id="cb37-10"><a href="#cb37-10" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb37-11"><a href="#cb37-11" aria-hidden="true" tabindex="-1"></a><span class="fu">pheatmap</span>(sampleDistMatrix,</span>
+<span id="cb37-12"><a href="#cb37-12" aria-hidden="true" tabindex="-1"></a>         <span class="at">clustering_distance_rows =</span> sampleDists,</span>
+<span id="cb37-13"><a href="#cb37-13" aria-hidden="true" tabindex="-1"></a>         <span class="at">clustering_distance_cols =</span> sampleDists,</span>
+<span id="cb37-14"><a href="#cb37-14" aria-hidden="true" tabindex="-1"></a>         <span class="at">col =</span> colors)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </section>
 <section id="pca" class="level2">
 <h2 class="anchored" data-anchor-id="pca">9.2 PCA</h2>
 <p>Visualize sample clustering via PCA (after transformation)</p>
-<div class="sourceCode" id="cb36"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb36-1"><a href="#cb36-1" aria-hidden="true" tabindex="-1"></a><span class="co"># PCA with points color coded by time point </span></span>
-<span id="cb36-2"><a href="#cb36-2" aria-hidden="true" tabindex="-1"></a><span class="fu">plotPCA</span>(vsd, <span class="at">intgroup =</span> <span class="fu">c</span>(<span class="st">"treatment"</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode" id="cb38"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb38-1"><a href="#cb38-1" aria-hidden="true" tabindex="-1"></a><span class="co"># PCA with points color coded by time point </span></span>
+<span id="cb38-2"><a href="#cb38-2" aria-hidden="true" tabindex="-1"></a><span class="fu">plotPCA</span>(vsd, <span class="at">intgroup =</span> <span class="fu">c</span>(<span class="st">"treatment"</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <p><img src="03.00-D-sRNAseq-gene-expression-DESeq2_files/figure-gfm/pca-1.png" class="img-fluid"><!-- --></p>
 </section>
-<section id="heatmap-top-40" class="level2">
-<h2 class="anchored" data-anchor-id="heatmap-top-40">9.3 Heatmap top 40</h2>
-<div class="sourceCode" id="cb37"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb37-1"><a href="#cb37-1" aria-hidden="true" tabindex="-1"></a>top40_counts <span class="ot">&lt;-</span> <span class="fu">order</span>(<span class="fu">rowMeans</span>(<span class="fu">counts</span>(dds,<span class="at">normalized=</span><span class="cn">TRUE</span>)),</span>
-<span id="cb37-2"><a href="#cb37-2" aria-hidden="true" tabindex="-1"></a>                <span class="at">decreasing=</span><span class="cn">TRUE</span>)[<span class="dv">1</span><span class="sc">:</span><span class="dv">40</span>]</span>
-<span id="cb37-3"><a href="#cb37-3" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb37-4"><a href="#cb37-4" aria-hidden="true" tabindex="-1"></a>annotation <span class="ot">=</span> <span class="fu">colData</span>(dds) <span class="sc">%&gt;%</span> <span class="fu">as.data.frame</span>() <span class="sc">%&gt;%</span> <span class="fu">select</span>(treatment)</span>
-<span id="cb37-5"><a href="#cb37-5" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb37-6"><a href="#cb37-6" aria-hidden="true" tabindex="-1"></a><span class="fu">pheatmap</span>(<span class="fu">assay</span>(vsd)[top40_counts,], </span>
-<span id="cb37-7"><a href="#cb37-7" aria-hidden="true" tabindex="-1"></a>         <span class="at">cluster_rows=</span><span class="cn">FALSE</span>, </span>
-<span id="cb37-8"><a href="#cb37-8" aria-hidden="true" tabindex="-1"></a>         <span class="at">show_rownames=</span><span class="cn">TRUE</span>,</span>
-<span id="cb37-9"><a href="#cb37-9" aria-hidden="true" tabindex="-1"></a>         <span class="at">cluster_cols=</span><span class="cn">TRUE</span>, </span>
-<span id="cb37-10"><a href="#cb37-10" aria-hidden="true" tabindex="-1"></a>         <span class="at">annotation_col =</span> annotation)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<section id="heatmap-of-all-37-shortstack-mirnas" class="level2">
+<h2 class="anchored" data-anchor-id="heatmap-of-all-37-shortstack-mirnas">9.3 Heatmap of all 37 ShortStack miRNAs</h2>
+<div class="sourceCode" id="cb39"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb39-1"><a href="#cb39-1" aria-hidden="true" tabindex="-1"></a>top40_counts <span class="ot">&lt;-</span> <span class="fu">order</span>(<span class="fu">rowMeans</span>(<span class="fu">counts</span>(dds,<span class="at">normalized=</span><span class="cn">TRUE</span>)),</span>
+<span id="cb39-2"><a href="#cb39-2" aria-hidden="true" tabindex="-1"></a>                <span class="at">decreasing=</span><span class="cn">TRUE</span>)[<span class="dv">1</span><span class="sc">:</span><span class="dv">37</span>]</span>
+<span id="cb39-3"><a href="#cb39-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb39-4"><a href="#cb39-4" aria-hidden="true" tabindex="-1"></a>annotation <span class="ot">=</span> <span class="fu">colData</span>(dds) <span class="sc">%&gt;%</span> <span class="fu">as.data.frame</span>() <span class="sc">%&gt;%</span> <span class="fu">select</span>(treatment)</span>
+<span id="cb39-5"><a href="#cb39-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb39-6"><a href="#cb39-6" aria-hidden="true" tabindex="-1"></a><span class="fu">pheatmap</span>(<span class="fu">assay</span>(vsd)[top40_counts,], </span>
+<span id="cb39-7"><a href="#cb39-7" aria-hidden="true" tabindex="-1"></a>         <span class="at">cluster_rows=</span><span class="cn">FALSE</span>, </span>
+<span id="cb39-8"><a href="#cb39-8" aria-hidden="true" tabindex="-1"></a>         <span class="at">show_rownames=</span><span class="cn">TRUE</span>,</span>
+<span id="cb39-9"><a href="#cb39-9" aria-hidden="true" tabindex="-1"></a>         <span class="at">cluster_cols=</span><span class="cn">TRUE</span>, </span>
+<span id="cb39-10"><a href="#cb39-10" aria-hidden="true" tabindex="-1"></a>         <span class="at">annotation_col =</span> annotation)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <p><img src="03.00-D-sRNAseq-gene-expression-DESeq2_files/figure-gfm/heatmap-1.png" class="img-fluid"><!-- --></p>
 </section>
 </section>
