@@ -18,15 +18,17 @@ categories:
 This analysis was done as part of [`project-clam-oa`](https://github.com/RobertsLab/project-clam-oa) (GitHub repo).
 
 ::: {.callout-note}
-The contents below are from markdown knitted from [`03.00-D-sRNAseq-gene-expression-DESeq2.Rmd`](https://github.com/RobertsLab/project-clam-oa/blob/af1eb6d98e99a6e3c51d37084f7df143d02c322d/code/03.00-D-sRNAseq-gene-expression-DESeq2.Rmd) (commit `af1eb6d`).
+The contents below are from markdown knitted from [`03.00-D-sRNAseq-gene-expression-DESeq2.Rmd`](https://github.com/RobertsLab/project-clam-oa/blob/3eb5caaa2d7906f182450877a4df6bad61e5e14e/code/03.00-sRNAseq-gene-expression-DESeq2.Rmd) (commit `3eb5caa`).
 :::
+
+
 
 # 1 Background
 
 This will run
 [DEseq2](https://bioconductor.org/packages/release/bioc/vignettes/DESeq2/inst/doc/DESeq2.html)
 (Love, Huber, and Anders 2014) to determine if any of the miRNAs
-identified in
+identified by ShortStack in
 [02.00-ShortStack-31bp-fastp-merged.md](https://github.com/RobertsLab/project-clam-oa/blob/2616d45a5a0bbef23081c5824bfe5bad6b89d227/code/02.00-ShortStack-31bp-fastp-merged.md)
 analysis are differentially expressed between control/treatment.
 
@@ -41,13 +43,24 @@ ShortStack identified 37 miRNAs.
 
 </div>
 
+This notebook will also run
+[DEseq2](https://bioconductor.org/packages/release/bioc/vignettes/DESeq2/inst/doc/DESeq2.html)
+(Love, Huber, and Anders 2014) on *all* sRNAs to identify any
+differential expression.
+
+<div class="callout-important">
+
+This includes the 37 miRNAs identified by ShortStack.
+
+</div>
+
 ## 1.1 Inputs
 
 - [`Counts.txt`](https://github.com/RobertsLab/project-clam-oa/blob/d380ed9a88c874db5434c9ec74f6ab1de042bad5/output/02.00-ShortStack-31bp-fastp-merged/ShortStack_out/Counts.txt):
   ShortStack counts matrix. Includes all clusters, including those that
   were *not* categorized as miRNAs.
 
-- [`DESeq2-coldata.tab`](https://github.com/RobertsLab/project-clam-oa/blob/d380ed9a88c874db5434c9ec74f6ab1de042bad5/output/03.00-D-sRNAseq-gene-expression-DESeq2/DESeq2-coldata.tab):
+- [`DESeq2-coldata.tab`](https://github.com/RobertsLab/project-clam-oa/blob/d380ed9a88c874db5434c9ec74f6ab1de042bad5/output/03.00-sRNAseq-gene-expression-DESeq2/DESeq2-coldata.tab):
   Two column table with sample ID and treatment. This file is also an
   output from this notebook.
 
@@ -56,25 +69,42 @@ ShortStack identified 37 miRNAs.
 
 ## 1.2 Outputs
 
-- [`DESeq2-coldata.tab`](https://github.com/RobertsLab/project-clam-oa/blob/d380ed9a88c874db5434c9ec74f6ab1de042bad5/output/03.00-D-sRNAseq-gene-expression-DESeq2/DESeq2-coldata.tab):
+- [`DE-miRNAs.fdr-0.05.lfc-0.tab`](https://github.com/RobertsLab/project-clam-oa/blob/3a9131cc5af82e756990d735b1ad56aecc32008c/output/03.00-sRNAseq-gene-expression-DESeq2/DE-miRNAs.fdr-0.05.lfc-0.tab):
+  Tab-delimited list of differentially expressed miRNA “clusters” from
+  the ShortStack `Results.txt` file.
+
+- [`DE-sRNAs.fdr-0.05.lfc-0.tab`](https://github.com/RobertsLab/project-clam-oa/blob/3a9131cc5af82e756990d735b1ad56aecc32008c/output/03.00-sRNAseq-gene-expression-DESeq2/DE-sRNAs.fdr-0.05.lfc-0.tab):
+  Tab-delimited list of differentially expressed sRNA “clusters” from
+  the ShortStack `Results.txt` file. Since this is any sRNA, results may
+  also include miRNAs identified by ShortStack.
+
+- [`DESeq2-coldata.tab`](https://github.com/RobertsLab/project-clam-oa/blob/3a9131cc5af82e756990d735b1ad56aecc32008c/output/03.00-sRNAseq-gene-expression-DESeq2/DESeq2-coldata.tab):
   Two column table with sample ID and treatment. Needed as input to
   DEseq2.
 
-- [`deseq2.table.csv`](https://github.com/RobertsLab/project-clam-oa/blob/d380ed9a88c874db5434c9ec74f6ab1de042bad5/output/03.00-D-sRNAseq-gene-expression-DESeq2/deseq2.table.csv):
-  DEseq2 output table containing mean expression, fold change in
-  expression, and adjusted p-values for all input samples.
+- [`deseq2.miRNAs.fdr-0.05.lfc-0.table.csv`](https://github.com/RobertsLab/project-clam-oa/blob/3a9131cc5af82e756990d735b1ad56aecc32008c/output/03.00-sRNAseq-gene-expression-DESeq2/deseq2.miRNAs.fdr-0.05.lfc-0.table.csv):
+  DEseq2 miRNA output table of results with adjusted p-value \<= 0.05
+  and a log<sub>2</sub> fold change value = 0.
 
-- [deseq2.fdr-0.05.lfc-0.table.csv](https://github.com/RobertsLab/project-clam-oa/blob/3b23f7cfcdf9cef627556090518d60d685d881bd/output/03.00-D-sRNAseq-gene-expression-DESeq2/deseq2.fdr-0.05.lfc-0.table.csv):
-  Subset of DEseq2 output table of all miRNA clusters (“genes”) having
-  adjusted p-values (fdr) \<= 0.05 with log2 fold change cutoff set to
+- [`deseq2.miRNAs.table.csv`](https://github.com/RobertsLab/project-clam-oa/blob/3a9131cc5af82e756990d735b1ad56aecc32008c/output/03.00-sRNAseq-gene-expression-DESeq2/deseq2.miRNAs.table.csv):
+  Unfiltered DEseq2 miRNA output table containing all results with mean
+  expression, fold change in expression, and adjusted p-values for all
+  input samples.
 
-  0.  
+- [`deseq2.sRNAs.fdr-0.05.lfc-0.table.csv`](https://github.com/RobertsLab/project-clam-oa/blob/3a9131cc5af82e756990d735b1ad56aecc32008c/output/03.00-sRNAseq-gene-expression-DESeq2/deseq2.sRNAs.fdr-0.05.lfc-0.table.csv):
+  DEseq2 sRNA output table of results with adjusted p-value \<= 0.05 and
+  a log<sub>2</sub> fold change value = 0.
+
+- [`deseq2.sRNAs.table.csv`](https://github.com/RobertsLab/project-clam-oa/blob/3a9131cc5af82e756990d735b1ad56aecc32008c/output/03.00-sRNAseq-gene-expression-DESeq2/deseq2.sRNAs.table.csv):
+  Unfiltered DEseq2 sRNA output table containing all results with mean
+  expression, fold change in expression, and adjusted p-values for all
+  input samples.
 
 # 2 Set R variables
 
 ``` r
 # Define the output directory path
-output_dir <- "../output/03.00-D-sRNAseq-gene-expression-DESeq2/"
+output_dir <- "../output/03.00-sRNAseq-gene-expression-DESeq2/"
 
 # Set desired false discovery rate threshold (i.e. adjusted p-value, padj)
 fdr <- 0.05
@@ -94,11 +124,11 @@ Counts generated in `02.00-ShortStack-31bp-fastp-merged`.
 
 ``` r
 # Read in sRNA counts data
-srna_seq_counts_shortstack <- read_delim("../output/02.00-ShortStack-31bp-fastp-merged/ShortStack_out/Counts.txt", delim="\t")
+miRNA_seq_counts_shortstack <- read_delim("../output/02.00-ShortStack-31bp-fastp-merged/ShortStack_out/Counts.txt", delim="\t")
 
-srna_seq_counts_shortstack <- srna_seq_counts_shortstack %>% filter(MIRNA == "Y")
+miRNA_seq_counts_shortstack <- miRNA_seq_counts_shortstack %>% filter(MIRNA == "Y")
 
-str(srna_seq_counts_shortstack)
+str(miRNA_seq_counts_shortstack)
 ```
 
     spc_tbl_ [37 × 23] (S3: spec_tbl_df/tbl_df/tbl/data.frame)
@@ -153,6 +183,67 @@ str(srna_seq_counts_shortstack)
       .. )
      - attr(*, "problems")=<externalptr> 
 
+## 3.2 All sRNA-seq counts
+
+``` r
+# Read in sRNA counts data
+srna_seq_counts_all <- read_delim("../output/02.00-ShortStack-31bp-fastp-merged/ShortStack_out/Counts.txt", delim="\t")
+
+str(srna_seq_counts_all)
+```
+
+    spc_tbl_ [33,666 × 23] (S3: spec_tbl_df/tbl_df/tbl/data.frame)
+     $ Coords                                        : chr [1:33666] "NW_026851514.1:11444-11873" "NW_026851514.1:12401-12830" "NW_026851515.1:76365-77030" "NW_026851515.1:77089-77506" ...
+     $ Name                                          : chr [1:33666] "Cluster_1" "Cluster_2" "Cluster_3" "Cluster_4" ...
+     $ MIRNA                                         : chr [1:33666] "N" "N" "N" "N" ...
+     $ 196-fastp-adapters-polyG-31bp-merged_condensed: num [1:33666] 39 33 179 34 279 68 28 233 40 0 ...
+     $ 199-fastp-adapters-polyG-31bp-merged_condensed: num [1:33666] 14 24 7 0 12 2 0 11 1 1 ...
+     $ 211-fastp-adapters-polyG-31bp-merged_condensed: num [1:33666] 214 40 979 31 401 35 106 492 56 0 ...
+     $ 24-fastp-adapters-polyG-31bp-merged_condensed : num [1:33666] 102 35 311 10 111 16 43 74 15 0 ...
+     $ 260-fastp-adapters-polyG-31bp-merged_condensed: num [1:33666] 39 21 132 1 123 21 5 124 23 2 ...
+     $ 26-fastp-adapters-polyG-31bp-merged_condensed : num [1:33666] 0 0 808 87 388 20 8 827 215 0 ...
+     $ 30-fastp-adapters-polyG-31bp-merged_condensed : num [1:33666] 12 7 448 21 165 26 39 117 38 3 ...
+     $ 310-fastp-adapters-polyG-31bp-merged_condensed: num [1:33666] 43 13 857 25 153 0 5 165 3 2 ...
+     $ 33-fastp-adapters-polyG-31bp-merged_condensed : num [1:33666] 1 1 320 26 225 24 35 177 97 3 ...
+     $ 341-fastp-adapters-polyG-31bp-merged_condensed: num [1:33666] 220 41 671 7 110 19 4 92 32 0 ...
+     $ 34-fastp-adapters-polyG-31bp-merged_condensed : num [1:33666] 34 32 1413 28 795 ...
+     $ 35-fastp-adapters-polyG-31bp-merged_condensed : num [1:33666] 103 40 497 24 126 57 37 116 29 3 ...
+     $ 363-fastp-adapters-polyG-31bp-merged_condensed: num [1:33666] 60 16 833 117 441 89 45 827 200 0 ...
+     $ 367-fastp-adapters-polyG-31bp-merged_condensed: num [1:33666] 40 132 426 6 127 23 19 122 127 0 ...
+     $ 376-fastp-adapters-polyG-31bp-merged_condensed: num [1:33666] 0 16 2409 187 978 ...
+     $ 460-fastp-adapters-polyG-31bp-merged_condensed: num [1:33666] 3 0 331 17 149 40 41 260 28 2 ...
+     $ 485-fastp-adapters-polyG-31bp-merged_condensed: num [1:33666] 5 42 5 0 42 4 4 106 2 0 ...
+     $ 501-fastp-adapters-polyG-31bp-merged_condensed: num [1:33666] 4 1 363 6 76 ...
+     $ 71-fastp-adapters-polyG-31bp-merged_condensed : num [1:33666] 0 0 31 123 671 37 2 691 135 0 ...
+     $ 88-fastp-adapters-polyG-31bp-merged_condensed : num [1:33666] 1 41 633 48 354 45 52 200 77 0 ...
+     - attr(*, "spec")=
+      .. cols(
+      ..   Coords = col_character(),
+      ..   Name = col_character(),
+      ..   MIRNA = col_character(),
+      ..   `196-fastp-adapters-polyG-31bp-merged_condensed` = col_double(),
+      ..   `199-fastp-adapters-polyG-31bp-merged_condensed` = col_double(),
+      ..   `211-fastp-adapters-polyG-31bp-merged_condensed` = col_double(),
+      ..   `24-fastp-adapters-polyG-31bp-merged_condensed` = col_double(),
+      ..   `260-fastp-adapters-polyG-31bp-merged_condensed` = col_double(),
+      ..   `26-fastp-adapters-polyG-31bp-merged_condensed` = col_double(),
+      ..   `30-fastp-adapters-polyG-31bp-merged_condensed` = col_double(),
+      ..   `310-fastp-adapters-polyG-31bp-merged_condensed` = col_double(),
+      ..   `33-fastp-adapters-polyG-31bp-merged_condensed` = col_double(),
+      ..   `341-fastp-adapters-polyG-31bp-merged_condensed` = col_double(),
+      ..   `34-fastp-adapters-polyG-31bp-merged_condensed` = col_double(),
+      ..   `35-fastp-adapters-polyG-31bp-merged_condensed` = col_double(),
+      ..   `363-fastp-adapters-polyG-31bp-merged_condensed` = col_double(),
+      ..   `367-fastp-adapters-polyG-31bp-merged_condensed` = col_double(),
+      ..   `376-fastp-adapters-polyG-31bp-merged_condensed` = col_double(),
+      ..   `460-fastp-adapters-polyG-31bp-merged_condensed` = col_double(),
+      ..   `485-fastp-adapters-polyG-31bp-merged_condensed` = col_double(),
+      ..   `501-fastp-adapters-polyG-31bp-merged_condensed` = col_double(),
+      ..   `71-fastp-adapters-polyG-31bp-merged_condensed` = col_double(),
+      ..   `88-fastp-adapters-polyG-31bp-merged_condensed` = col_double()
+      .. )
+     - attr(*, "problems")=<externalptr> 
+
 # 4 Create DESeq2 Column Data
 
 ## 4.1 Read in metadata CSV
@@ -175,7 +266,7 @@ str(metadata)
 ## 4.2 Extract sample names
 
 ``` r
-sample_names <- colnames(srna_seq_counts_shortstack) %>%
+sample_names <- colnames(miRNA_seq_counts_shortstack) %>%
   str_subset("^\\d+-") %>%
   str_extract("^\\d+")
 
@@ -206,27 +297,29 @@ str(sample_treatment_df)
 ``` r
 write.table(
   sample_treatment_df,
-  file = "../output/03.00-D-sRNAseq-gene-expression-DESeq2/DESeq2-coldata.tab",
+  file = "../output/03.00-sRNAseq-gene-expression-DESeq2/DESeq2-coldata.tab",
   sep = "\t",
   quote = FALSE,
   col.names = NA
 )
 ```
 
-# 5 Count data munging
+# 5 SHORTSTACK miRNAS
 
-## 5.1 Fix col names and convert to matrix
+## 5.1 Count data munging
+
+### 5.1.1 Fix col names and convert to matrix
 
 ``` r
 coldata <- sample_treatment_df
 
 # Remove excess portions of sample column names to just "sample###"
-colnames(srna_seq_counts_shortstack) <- sub("-fastp-adapters-polyG-31bp-merged_condensed", "", colnames(srna_seq_counts_shortstack))
+colnames(miRNA_seq_counts_shortstack) <- sub("-fastp-adapters-polyG-31bp-merged_condensed", "", colnames(miRNA_seq_counts_shortstack))
 
 # Keep just the counts and cluster names as matrix
-srna_seq_counts_matrix <- as.matrix(srna_seq_counts_shortstack %>% select(-Coords, -MIRNA) %>% column_to_rownames(var = "Name"))
+miRNA_seq_counts_matrix <- as.matrix(miRNA_seq_counts_shortstack %>% select(-Coords, -MIRNA) %>% column_to_rownames(var = "Name"))
 
-str(srna_seq_counts_matrix)
+str(miRNA_seq_counts_matrix)
 ```
 
      num [1:37, 1:20] 693 108457 1808 37 9 ...
@@ -234,15 +327,15 @@ str(srna_seq_counts_matrix)
       ..$ : chr [1:37] "Cluster_1785" "Cluster_2042" "Cluster_2646" "Cluster_3720" ...
       ..$ : chr [1:20] "196" "199" "211" "24" ...
 
-## 5.2 Take only samples present in coldata
+### 5.1.2 Take only samples present in coldata
 
 ``` r
-common_cols <- intersect(colnames(srna_seq_counts_matrix),
+miRNA_common_cols <- intersect(colnames(miRNA_seq_counts_matrix),
                          rownames(sample_treatment_df))
 
-srna_seq_counts_matrix <- srna_seq_counts_matrix[, common_cols]
+miRNA_seq_counts_matrix <- miRNA_seq_counts_matrix[, miRNA_common_cols]
 
-str(srna_seq_counts_matrix)
+str(miRNA_seq_counts_matrix)
 ```
 
      num [1:37, 1:20] 693 108457 1808 37 9 ...
@@ -250,14 +343,14 @@ str(srna_seq_counts_matrix)
       ..$ : chr [1:37] "Cluster_1785" "Cluster_2042" "Cluster_2646" "Cluster_3720" ...
       ..$ : chr [1:20] "196" "199" "211" "24" ...
 
-## 5.3 Reorder matrix cols to match coldata
+### 5.1.3 Reorder matrix cols to match coldata
 
 ``` r
-ord <- match(rownames(sample_treatment_df), colnames(srna_seq_counts_matrix))
+miRNA_ord <- match(rownames(sample_treatment_df), colnames(miRNA_seq_counts_matrix))
 
-srna_seq_counts_matrix_sorted <- srna_seq_counts_matrix[, ord]
+miRNA_seq_counts_matrix_sorted <- miRNA_seq_counts_matrix[, miRNA_ord]
 
-str(srna_seq_counts_matrix_sorted)
+str(miRNA_seq_counts_matrix_sorted)
 ```
 
      num [1:37, 1:20] 693 108457 1808 37 9 ...
@@ -265,23 +358,23 @@ str(srna_seq_counts_matrix_sorted)
       ..$ : chr [1:37] "Cluster_1785" "Cluster_2042" "Cluster_2646" "Cluster_3720" ...
       ..$ : chr [1:20] "196" "199" "211" "310" ...
 
-## 5.4 Verify rownames match
+### 5.1.4 Verify rownames match
 
 ``` r
-all(rownames(coldata) == colnames(srna_seq_counts_matrix_sorted))
+all(rownames(coldata) == colnames(miRNA_seq_counts_matrix_sorted))
 ```
 
     [1] TRUE
 
-# 6 Create DESeq2 data set
+## 5.2 Create DESeq2 data set
 
-## 6.1 Initialize DEseq2 data set
+### 5.2.1 Initialize DEseq2 data set
 
 ``` r
-dds <- DESeqDataSetFromMatrix(countData = srna_seq_counts_matrix_sorted,
+miRNA_dds <- DESeqDataSetFromMatrix(countData = miRNA_seq_counts_matrix_sorted,
                               colData = coldata,
                               design = ~ treatment)
-dds
+miRNA_dds
 ```
 
     class: DESeqDataSet 
@@ -293,12 +386,12 @@ dds
     colnames(20): 196 199 ... 71 260
     colData names(1): treatment
 
-## 6.2 Add cluster column as “gene” feature
+### 5.2.2 Add cluster column as “gene” feature
 
 ``` r
-featureData <- data.frame(gene=rownames(srna_seq_counts_matrix_sorted))
-mcols(dds) <- DataFrame(mcols(dds), featureData)
-mcols(dds)
+miRNA_featureData <- data.frame(gene=rownames(miRNA_seq_counts_matrix_sorted))
+mcols(miRNA_dds) <- DataFrame(mcols(miRNA_dds), miRNA_featureData)
+mcols(miRNA_dds)
 ```
 
     DataFrame with 37 rows and 1 column
@@ -316,26 +409,26 @@ mcols(dds)
     Cluster_32918 Cluster_32918
     Cluster_32919 Cluster_32919
 
-## 6.3 Set factor levels
+### 5.2.3 Set factor levels
 
 ``` r
-dds$treatment <- factor(dds$treatment, levels = c("control", "treatment"))
+miRNA_dds$treatment <- factor(miRNA_dds$treatment, levels = c("control", "treatment"))
 ```
 
-# 7 DESeq analysis
+## 5.3 DESeq analysis
 
-## 7.1 DEseq
+### 5.3.1 DEseq
 
 ``` r
-dds <- DESeq(dds)
+miRNA_dds <- DESeq(miRNA_dds)
 ```
 
-## 7.2 DEseq Results
+### 5.3.2 DEseq Results
 
 ``` r
-res <- results(dds, alpha = fdr, lfcThreshold = log2fc)
+miRNA_res <- results(miRNA_dds, alpha = fdr, lfcThreshold = log2fc)
 
-res
+miRNA_res
 ```
 
     log2 fold change (MLE): treatment treatment vs control 
@@ -369,7 +462,7 @@ res
     Cluster_32919 0.94314745
 
 ``` r
-summary(res)
+summary(miRNA_res)
 ```
 
     out of 37 with nonzero total read count
@@ -383,21 +476,21 @@ summary(res)
     [2] see 'independentFiltering' argument of ?results
 
 ``` r
-table(res$padj < fdr)
+table(miRNA_res$padj < fdr)
 ```
 
     FALSE  TRUE 
        33     4 
 
-## 7.3 Write DDS results tables to CSVs
+### 5.3.3 Write DDS results tables to CSVs
 
 ``` r
-write.csv(res, file = paste0(output_dir, "deseq2", ".table.csv"), row.names = TRUE, quote = FALSE)
+write.csv(miRNA_res, file = paste0(output_dir, "deseq2", ".miRNAs", ".table.csv"), row.names = TRUE, quote = FALSE)
 
 # Subset based on adjusted p-value
-resSig <- subset(res, padj < fdr)
+miRNA_resSig <- subset(miRNA_res, padj < fdr)
 
-resSig
+miRNA_resSig
 ```
 
     log2 fold change (MLE): treatment treatment vs control 
@@ -417,22 +510,23 @@ resSig
     Cluster_29018 0.00482699
 
 ``` r
-write.csv(resSig, file = paste0(output_dir, "deseq2",".fdr-", fdr, ".lfc-", log2fc, ".table.csv"), row.names = TRUE, quote = FALSE)
+write.csv(miRNA_resSig, file = paste0(output_dir, "deseq2", ".miRNAs", ".fdr-", fdr, ".lfc-", log2fc, ".table.csv"), row.names = TRUE, quote = FALSE)
 ```
 
-## 7.4 Identify Differentially Expressed miRNAs
+### 5.3.4 Identify Differentially Expressed miRNAs
 
 ``` bash
 
 
 # Extract the first column values (excluding the header)
-clusters=$(cut -d',' -f1 "../output/03.00-D-sRNAseq-gene-expression-DESeq2/deseq2.fdr-0.05.lfc-0.table.csv" | tail -n +2)
+clusters=$(cut -d',' -f1 "../output/03.00-sRNAseq-gene-expression-DESeq2/deseq2.miRNAs.fdr-0.05.lfc-0.table.csv" | tail -n +2)
 
 # Loop through each cluster and search in the Results.txt file
 for cluster in $clusters; 
 do
     grep "$cluster" "../output/02.00-ShortStack-31bp-fastp-merged/ShortStack_out/Results.txt"
-done
+done \
+| tee ../output/03.00-sRNAseq-gene-expression-DESeq2/DE-miRNAs.fdr-0.05.lfc-0.tab
 
 echo ""
 echo "--------------------------------------------------------------"
@@ -457,65 +551,352 @@ done
     NA
     mle-miR-67-3p
 
-# 8 Variance stabilizing transformations (VST)
+## 5.4 Variance stabilizing transformations (VST)
 
 - Here we transform counts using a variance stabilizing transformation
   (VST), since we have many samples.
 
 ``` r
-vsd <- varianceStabilizingTransformation(dds, blind=FALSE)
+miRNA_vsd <- varianceStabilizingTransformation(miRNA_dds, blind=FALSE)
 ```
 
-# 9 Plotting
+## 5.5 Plotting
 
-## 9.1 Sample distances
+### 5.5.1 Sample distances
 
 ``` r
-sampleDists <- dist(t(assay(vsd)))
+miRNA_sampleDists <- dist(t(assay(miRNA_vsd)))
 
-sampleDistMatrix <- as.matrix( sampleDists )
+miRNA_sampleDistMatrix <- as.matrix( miRNA_sampleDists )
 
-rownames(sampleDistMatrix) <- paste( vsd$colony.id, vsd$time.point, sep = " - " )
+rownames(miRNA_sampleDistMatrix) <- paste( miRNA_vsd$colony.id, miRNA_vsd$time.point, sep = " - " )
 
-colnames(sampleDistMatrix) <- NULL
+colnames(miRNA_sampleDistMatrix) <- NULL
 
 colors <- colorRampPalette( rev(brewer.pal(9, "Blues")) )(255)
 
-pheatmap(sampleDistMatrix,
-         clustering_distance_rows = sampleDists,
-         clustering_distance_cols = sampleDists,
+pheatmap(miRNA_sampleDistMatrix,
+         clustering_distance_rows = miRNA_sampleDists,
+         clustering_distance_cols = miRNA_sampleDists,
          col = colors)
 ```
 
-## 9.2 PCA
+![](03.00-sRNAseq-gene-expression-DESeq2_files/figure-gfm/miRNA-plot-sample-distances-1.png)<!-- -->
+
+### 5.5.2 PCA
 
 Visualize sample clustering via PCA (after transformation)
 
 ``` r
 # PCA with points color coded by time point 
-plotPCA(vsd, intgroup = c("treatment"))
+plotPCA(miRNA_vsd, intgroup = c("treatment"))
 ```
 
-![](03.00-D-sRNAseq-gene-expression-DESeq2_files/figure-gfm/pca-1.png)<!-- -->
+![](03.00-sRNAseq-gene-expression-DESeq2_files/figure-gfm/miRNA-pca-1.png)<!-- -->
 
-## 9.3 Heatmap of all 37 ShortStack miRNAs
+### 5.5.3 Heatmap of 37 ShortStack miRNAs
 
 ``` r
-top40_counts <- order(rowMeans(counts(dds,normalized=TRUE)),
+miRNA_counts <- order(rowMeans(counts(miRNA_dds,normalized=TRUE)),
                 decreasing=TRUE)[1:37]
 
-annotation = colData(dds) %>% as.data.frame() %>% select(treatment)
+annotation = colData(miRNA_dds) %>% as.data.frame() %>% select(treatment)
 
-pheatmap(assay(vsd)[top40_counts,], 
+pheatmap(assay(miRNA_vsd)[miRNA_counts,], 
          cluster_rows=FALSE, 
          show_rownames=TRUE,
          cluster_cols=TRUE, 
          annotation_col = annotation)
 ```
 
-![](03.00-D-sRNAseq-gene-expression-DESeq2_files/figure-gfm/heatmap-1.png)<!-- -->
+![](03.00-sRNAseq-gene-expression-DESeq2_files/figure-gfm/miRNA-heatmap-1.png)<!-- -->
 
-# 10 REFERENCES
+# 6 ALL sRNA
+
+## 6.1 Count data munging
+
+### 6.1.1 Fix col names and convert to matrix
+
+``` r
+coldata <- sample_treatment_df
+
+# Remove excess portions of sample column names to just "sample###"
+colnames(srna_seq_counts_all) <- sub("-fastp-adapters-polyG-31bp-merged_condensed", "", colnames(srna_seq_counts_all))
+
+# Keep just the counts and cluster names as matrix
+srna_seq_counts_matrix <- as.matrix(srna_seq_counts_all %>% select(-Coords, -MIRNA) %>% column_to_rownames(var = "Name"))
+
+str(srna_seq_counts_matrix)
+```
+
+     num [1:33666, 1:20] 39 33 179 34 279 68 28 233 40 0 ...
+     - attr(*, "dimnames")=List of 2
+      ..$ : chr [1:33666] "Cluster_1" "Cluster_2" "Cluster_3" "Cluster_4" ...
+      ..$ : chr [1:20] "196" "199" "211" "24" ...
+
+### 6.1.2 Take only samples present in coldata
+
+``` r
+sRNA_common_cols <- intersect(colnames(srna_seq_counts_matrix),
+                         rownames(sample_treatment_df))
+
+srna_seq_counts_matrix <- srna_seq_counts_matrix[, sRNA_common_cols]
+
+str(srna_seq_counts_matrix)
+```
+
+     num [1:33666, 1:20] 39 33 179 34 279 68 28 233 40 0 ...
+     - attr(*, "dimnames")=List of 2
+      ..$ : chr [1:33666] "Cluster_1" "Cluster_2" "Cluster_3" "Cluster_4" ...
+      ..$ : chr [1:20] "196" "199" "211" "24" ...
+
+### 6.1.3 Reorder matrix cols to match coldata
+
+``` r
+sRNA_ord <- match(rownames(sample_treatment_df), colnames(srna_seq_counts_matrix))
+
+srna_seq_counts_matrix_sorted <- srna_seq_counts_matrix[, sRNA_ord]
+
+str(srna_seq_counts_matrix_sorted)
+```
+
+     num [1:33666, 1:20] 39 33 179 34 279 68 28 233 40 0 ...
+     - attr(*, "dimnames")=List of 2
+      ..$ : chr [1:33666] "Cluster_1" "Cluster_2" "Cluster_3" "Cluster_4" ...
+      ..$ : chr [1:20] "196" "199" "211" "310" ...
+
+### 6.1.4 Verify rownames match
+
+``` r
+all(rownames(coldata) == colnames(srna_seq_counts_matrix_sorted))
+```
+
+    [1] TRUE
+
+## 6.2 Create DESeq2 data set
+
+### 6.2.1 Initialize DEseq2 data set
+
+``` r
+sRNA_dds <- DESeqDataSetFromMatrix(countData = srna_seq_counts_matrix_sorted,
+                              colData = coldata,
+                              design = ~ treatment)
+sRNA_dds
+```
+
+    class: DESeqDataSet 
+    dim: 33666 20 
+    metadata(1): version
+    assays(1): counts
+    rownames(33666): Cluster_1 Cluster_2 ... Cluster_33665 Cluster_33666
+    rowData names(0):
+    colnames(20): 196 199 ... 71 260
+    colData names(1): treatment
+
+### 6.2.2 Add cluster column as “gene” feature
+
+``` r
+sRNA_featureData <- data.frame(gene=rownames(srna_seq_counts_matrix_sorted))
+mcols(sRNA_dds) <- DataFrame(mcols(sRNA_dds), sRNA_featureData)
+mcols(sRNA_dds)
+```
+
+    DataFrame with 33666 rows and 1 column
+                           gene
+                    <character>
+    Cluster_1         Cluster_1
+    Cluster_2         Cluster_2
+    Cluster_3         Cluster_3
+    Cluster_4         Cluster_4
+    Cluster_5         Cluster_5
+    ...                     ...
+    Cluster_33662 Cluster_33662
+    Cluster_33663 Cluster_33663
+    Cluster_33664 Cluster_33664
+    Cluster_33665 Cluster_33665
+    Cluster_33666 Cluster_33666
+
+### 6.2.3 Set factor levels
+
+``` r
+sRNA_dds$treatment <- factor(sRNA_dds$treatment, levels = c("control", "treatment"))
+```
+
+## 6.3 DESeq analysis
+
+### 6.3.1 DEseq
+
+``` r
+sRNA_dds <- DESeq(sRNA_dds)
+```
+
+### 6.3.2 DEseq Results
+
+``` r
+sRNA_res <- results(sRNA_dds, alpha = fdr, lfcThreshold = log2fc)
+
+sRNA_res
+```
+
+    log2 fold change (MLE): treatment treatment vs control 
+    Wald test p-value: treatment treatment vs control 
+    DataFrame with 33666 rows and 6 columns
+                   baseMean log2FoldChange     lfcSE      stat    pvalue      padj
+                  <numeric>      <numeric> <numeric> <numeric> <numeric> <numeric>
+    Cluster_1       45.5523      -1.029009  1.046267 -0.983505  0.325359  0.766886
+    Cluster_2       25.3913      -0.974521  0.887134 -1.098505  0.271984  0.722394
+    Cluster_3      500.2432      -0.223463  0.681362 -0.327966  0.742938  0.949341
+    Cluster_4       37.4950       0.372492  0.875715  0.425357  0.670576  0.929611
+    Cluster_5      262.8973       0.528197  0.582344  0.907018  0.364397  0.791723
+    ...                 ...            ...       ...       ...       ...       ...
+    Cluster_33662   73.5380     -1.0047441  0.551679 -1.821247 0.0685693  0.422218
+    Cluster_33663  102.4384     -0.8580087  0.593642 -1.445329 0.1483654  0.582914
+    Cluster_33664  165.7171     -0.5549368  0.511572 -1.084768 0.2780242  0.728123
+    Cluster_33665   57.5813     -0.0529832  0.505219 -0.104872 0.9164777  0.984630
+    Cluster_33666 2721.9794     -0.7353095  0.548616 -1.340298 0.1801484  0.629508
+
+``` r
+summary(sRNA_res)
+```
+
+    out of 33654 with nonzero total read count
+    adjusted p-value < 0.05
+    LFC > 0 (up)       : 335, 1%
+    LFC < 0 (down)     : 373, 1.1%
+    outliers [1]       : 0, 0%
+    low counts [2]     : 665, 2%
+    (mean count < 2)
+    [1] see 'cooksCutoff' argument of ?results
+    [2] see 'independentFiltering' argument of ?results
+
+``` r
+table(sRNA_res$padj < fdr)
+```
+
+    FALSE  TRUE 
+    32293   708 
+
+### 6.3.3 Write DDS results tables to CSVs
+
+``` r
+write.csv(sRNA_res, file = paste0(output_dir, "deseq2", ".sRNAs", ".table.csv"), row.names = TRUE, quote = FALSE)
+
+# Subset based on adjusted p-value
+sRNA_resSig <- subset(sRNA_res, padj < fdr)
+
+sRNA_resSig
+```
+
+    log2 fold change (MLE): treatment treatment vs control 
+    Wald test p-value: treatment treatment vs control 
+    DataFrame with 708 rows and 6 columns
+                    baseMean log2FoldChange     lfcSE      stat      pvalue
+                   <numeric>      <numeric> <numeric> <numeric>   <numeric>
+    Cluster_62      282.1243       -2.31979  0.705223  -3.28945 1.00384e-03
+    Cluster_90       55.2729        3.23430  0.952673   3.39498 6.86343e-04
+    Cluster_137      48.2576       -3.45184  0.869587  -3.96951 7.20196e-05
+    Cluster_139      47.1693       -3.56747  0.880422  -4.05200 5.07822e-05
+    Cluster_140     585.7301       -4.30156  0.957128  -4.49424 6.98204e-06
+    ...                  ...            ...       ...       ...         ...
+    Cluster_33492   83.31701        3.46496  0.799002   4.33661 1.44695e-05
+    Cluster_33496    9.73899       -4.88615  1.469261  -3.32559 8.82330e-04
+    Cluster_33503  633.79425       -6.14324  0.916828  -6.70053 2.07658e-11
+    Cluster_33524    6.02438        6.14925  1.874132   3.28112 1.03396e-03
+    Cluster_33579 1000.14999       -3.54729  0.648113  -5.47326 4.41842e-08
+                         padj
+                    <numeric>
+    Cluster_62     0.04807906
+    Cluster_90     0.03822268
+    Cluster_137    0.01014849
+    Cluster_139    0.00833762
+    Cluster_140    0.00225896
+    ...                   ...
+    Cluster_33492 3.68202e-03
+    Cluster_33496 4.44546e-02
+    Cluster_33503 1.71323e-07
+    Cluster_33524 4.86066e-02
+    Cluster_33579 5.08059e-05
+
+``` r
+write.csv(sRNA_resSig, file = paste0(output_dir, "deseq2", ".sRNAs", ".fdr-", fdr, ".lfc-", log2fc, ".table.csv"), row.names = TRUE, quote = FALSE)
+```
+
+### 6.3.4 Identify Differentially Expressed sRNAs
+
+``` bash
+
+
+# Extract the first column values (excluding the header)
+clusters=$(cut -d',' -f1 "../output/03.00-sRNAseq-gene-expression-DESeq2/deseq2.sRNAs.fdr-0.05.lfc-0.table.csv" | tail -n +2)
+
+# Loop through each cluster and search in the Results.txt file
+for cluster in $clusters; 
+do
+    grep "$cluster" "../output/02.00-ShortStack-31bp-fastp-merged/ShortStack_out/Results.txt"
+done > ../output/03.00-sRNAseq-gene-expression-DESeq2/DE-sRNAs.fdr-0.05.lfc-0.tab
+```
+
+## 6.4 Variance stabilizing transformations (VST)
+
+- Here we transform counts using a variance stabilizing transformation
+  (VST), since we have many samples.
+
+``` r
+sRNA_vsd <- varianceStabilizingTransformation(sRNA_dds, blind=FALSE)
+```
+
+## 6.5 Plotting
+
+### 6.5.1 Sample distances
+
+``` r
+sRNA_sampleDists <- dist(t(assay(sRNA_vsd)))
+
+sRNA_sampleDistMatrix <- as.matrix( sRNA_sampleDists )
+
+rownames(sRNA_sampleDistMatrix) <- paste( sRNA_vsd$colony.id, sRNA_vsd$time.point, sep = " - " )
+
+colnames(sRNA_sampleDistMatrix) <- NULL
+
+colors <- colorRampPalette( rev(brewer.pal(9, "Blues")) )(255)
+
+pheatmap(sRNA_sampleDistMatrix,
+         clustering_distance_rows = sRNA_sampleDists,
+         clustering_distance_cols = sRNA_sampleDists,
+         col = colors)
+```
+
+![](03.00-sRNAseq-gene-expression-DESeq2_files/figure-gfm/sRNA-plot-sample-distances-1.png)<!-- -->
+
+### 6.5.2 PCA
+
+Visualize sample clustering via PCA (after transformation)
+
+``` r
+# PCA with points color coded by time point 
+plotPCA(sRNA_vsd, intgroup = c("treatment"))
+```
+
+![](03.00-sRNAseq-gene-expression-DESeq2_files/figure-gfm/sRNA-pca-1.png)<!-- -->
+
+### 6.5.3 Heatmap of Top 50 sRNAs
+
+``` r
+sRNA_counts_top50 <- order(rowMeans(counts(sRNA_dds,normalized=TRUE)),
+                decreasing=TRUE)[1:50]
+
+annotation = colData(sRNA_dds) %>% as.data.frame() %>% select(treatment)
+
+pheatmap(assay(sRNA_vsd)[sRNA_counts_top50,], 
+         cluster_rows=FALSE, 
+         show_rownames=FALSE,
+         cluster_cols=TRUE, 
+         annotation_col = annotation)
+```
+
+![](03.00-sRNAseq-gene-expression-DESeq2_files/figure-gfm/sRNA-heatmap-1.png)<!-- -->
+
+# 7 REFERENCES
 
 <div id="refs" class="references csl-bib-body hanging-indent">
 
