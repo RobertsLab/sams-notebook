@@ -27918,6 +27918,10 @@ Ewels, Philip, Måns Magnusson, Sverker Lundin, and Max Käller. 2016. “MultiQ
 <h1>INTRO</h1>
 <p>The notebook entry is part of the coral E5 <a href="https://github.com/urol-e5/timeseries_molecular">molecular_timeseries project</a> (GitHub repo). I ran <a href="https://www.bioinformatics.babraham.ac.uk/projects/fastqc/"><code>FastQC</code></a> and <a href="https://multiqc.info/"><code>MultiQC</code></a> on the <em>A.pulchra</em> WGBS <a href="../../../posts/2024/2024-12-30-Data-Received---Coral-E5-WGBS-Time-Series-from-Azenta-Project-30-1067895835/index.html">data received on 20241230</a> in preparation for a quick <a href="https://github.com/FelixKrueger/Bismark"><code>Bismark</code></a> alignment, per <a href="https://github.com/RobertsLab/resources/issues/2063">Steven’s request</a> (GitHub Issue).</p>
 <p>Although I didn’t <em>need</em> to run <a href="https://www.bioinformatics.babraham.ac.uk/projects/fastqc/"><code>FastQC</code></a> or <a href="https://multiqc.info/"><code>MultiQC</code></a>, I did so because I used recycled code to download the data. Since <a href="https://www.bioinformatics.babraham.ac.uk/projects/fastqc/"><code>FastQC</code></a> and <a href="https://multiqc.info/"><code>MultiQC</code></a> are fast, I just ran the entire R Markdown doc anyway.</p>
+<p>The resulting <a href="https://multiqc.info/"><code>MultiQC</code></a> Report is here (HTML):</p>
+<ul>
+<li><a href="https://gannet.fish.washington.edu/gitrepos/urol-e5/timeseries_molecular/D-Apul/data/wgbs-raw-fastqs/multiqc_report.html">https://gannet.fish.washington.edu/gitrepos/urol-e5/timeseries_molecular/D-Apul/data/wgbs-raw-fastqs/multiqc_report.html</a></li>
+</ul>
 <div class="callout callout-style-default callout-note callout-titled">
 <div class="callout-header d-flex align-content-center">
 <div class="callout-icon-container">
@@ -27928,16 +27932,17 @@ Note
 </div>
 </div>
 <div class="callout-body-container callout-body">
-<p>It is taken from <a href="https://github.com/urol-e5/timeseries_molecular/blob/98ea3d4307f5c373dfa66fa11617d6a29cb24137/D-Apul/code/00.20-D-Apul-WGBS-reads-FastQC-MultiQC.Rmd"><code>00.20-D-Apul-WGBS-reads-FastQC-MultiQC.Rmd</code></a> (commit <code>98ea3d4</code>).</p>
+<p>The markdown below was knitted from <a href="https://github.com/urol-e5/timeseries_molecular/blob/e1675941e629293b8255cc56b23c8fedc7024b80/D-Apul/code/00.20-D-Apul-WGBS-reads-FastQC-MultiQC.Rmd"><code>00.20-D-Apul-WGBS-reads-FastQC-MultiQC.Rmd</code></a> (commit <code>e167594</code>).</p>
 </div>
 </div>
-<p>The resulting <a href="https://multiqc.info/"><code>MultiQC</code></a> Report is here:</p>
-<ul>
-<li><a href="https://gannet.fish.washington.edu/gitrepos/urol-e5/timeseries_molecular/D-Apul/output/00.20-D-Apul-WGBS-reads-FastQC-MultiQC/raw-fastqc/multiqc_report.html">https://gannet.fish.washington.edu/gitrepos/urol-e5/timeseries_molecular/D-Apul/output/00.20-D-Apul-WGBS-reads-FastQC-MultiQC/raw-fastqc/multiqc_report.html</a></li>
-</ul>
+</section>
+<section id="background" class="level1">
+<h1>1 Background</h1>
+<p>This Rmd file will download raw WGBS FastQs for <em>A.pulchra</em> and evaluate them using <a href="https://github.com/s-andrews/FastQC">FastQC</a> and <a href="https://multiqc.info/">MultiQC</a>(Ewels et al.&nbsp;2016).</p>
+<p>Additionally, it will rename the files. New naming format will be <code>&lt;colony_id&gt;-&lt;timepoint&gt;</code>. This will make the naming consistent across species, improve sample identification, and improve parsing in downstream analyses.</p>
 </section>
 <section id="create-a-bash-variables-file" class="level1">
-<h1>1 Create a Bash variables file</h1>
+<h1>2 Create a Bash variables file</h1>
 <p>This allows usage of Bash variables across R Markdown chunks.</p>
 <div class="sourceCode" id="cb1" style="background: #f1f3f5;"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb1-1"><span class="kw" style="color: #003B4F;
 background-color: null;
@@ -27973,182 +27978,188 @@ font-style: inherit;">'export output_dir_top=${timeseries_dir}/D-Apul/output/00.
 background-color: null;
 font-style: inherit;">echo</span> <span class="st" style="color: #20794D;
 background-color: null;
-font-style: inherit;">'export raw_fastqc_dir=${output_dir_top}/raw-fastqc'</span></span>
+font-style: inherit;">'export raw_reads_dir=${timeseries_dir}/D-Apul/data/wgbs-raw-fastqs'</span></span>
 <span id="cb1-9"><span class="bu" style="color: null;
 background-color: null;
 font-style: inherit;">echo</span> <span class="st" style="color: #20794D;
 background-color: null;
-font-style: inherit;">'export raw_reads_dir=${timeseries_dir}/D-Apul/data/wgbs-raw-fastqs'</span></span>
+font-style: inherit;">'export raw_reads_url="https://owl.fish.washington.edu/nightingales/E5-coral-time-series/30-1067895835/"'</span></span>
 <span id="cb1-10"><span class="bu" style="color: null;
 background-color: null;
 font-style: inherit;">echo</span> <span class="st" style="color: #20794D;
 background-color: null;
-font-style: inherit;">'export raw_reads_url="https://owl.fish.washington.edu/nightingales/E5-coral-time-series/30-1067895835/"'</span></span>
-<span id="cb1-11"><span class="bu" style="color: null;
+font-style: inherit;">""</span></span>
+<span id="cb1-11"></span>
+<span id="cb1-12"><span class="bu" style="color: null;
 background-color: null;
 font-style: inherit;">echo</span> <span class="st" style="color: #20794D;
 background-color: null;
-font-style: inherit;">""</span></span>
-<span id="cb1-12"></span>
+font-style: inherit;">"# Input files"</span></span>
 <span id="cb1-13"><span class="bu" style="color: null;
 background-color: null;
 font-style: inherit;">echo</span> <span class="st" style="color: #20794D;
 background-color: null;
-font-style: inherit;">"# Paths to programs"</span></span>
-<span id="cb1-14"><span class="bu" style="color: null;
-background-color: null;
-font-style: inherit;">echo</span> <span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">'export fastqc=/home/shared/FastQC-0.12.1/fastqc'</span></span>
+font-style: inherit;">'export metadata_file="${timeseries_dir}/M-multi-species/data/e5_DNA_Azenta_metadata.csv"'</span></span>
+<span id="cb1-14"></span>
 <span id="cb1-15"><span class="bu" style="color: null;
 background-color: null;
 font-style: inherit;">echo</span> <span class="st" style="color: #20794D;
 background-color: null;
-font-style: inherit;">'export multiqc=/home/sam/programs/mambaforge/bin/multiqc'</span></span>
+font-style: inherit;">"# Paths to programs"</span></span>
 <span id="cb1-16"><span class="bu" style="color: null;
 background-color: null;
 font-style: inherit;">echo</span> <span class="st" style="color: #20794D;
 background-color: null;
-font-style: inherit;">""</span></span>
-<span id="cb1-17"></span>
+font-style: inherit;">'export fastqc=/home/shared/FastQC-0.12.1/fastqc'</span></span>
+<span id="cb1-17"><span class="bu" style="color: null;
+background-color: null;
+font-style: inherit;">echo</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">'export multiqc=/home/sam/programs/mambaforge/bin/multiqc'</span></span>
 <span id="cb1-18"><span class="bu" style="color: null;
 background-color: null;
 font-style: inherit;">echo</span> <span class="st" style="color: #20794D;
 background-color: null;
-font-style: inherit;">"# Set FastQ filename patterns"</span></span>
-<span id="cb1-19"><span class="bu" style="color: null;
-background-color: null;
-font-style: inherit;">echo</span> <span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"export fastq_pattern='*.fastq.gz'"</span></span>
+font-style: inherit;">""</span></span>
+<span id="cb1-19"></span>
 <span id="cb1-20"><span class="bu" style="color: null;
 background-color: null;
 font-style: inherit;">echo</span> <span class="st" style="color: #20794D;
 background-color: null;
-font-style: inherit;">"export R1_fastq_pattern='*_R1_*.fastq.gz'"</span></span>
+font-style: inherit;">"# Set FastQ filename patterns"</span></span>
 <span id="cb1-21"><span class="bu" style="color: null;
 background-color: null;
 font-style: inherit;">echo</span> <span class="st" style="color: #20794D;
 background-color: null;
-font-style: inherit;">"export R2_fastq_pattern='*_R2_*.fastq.gz'"</span></span>
+font-style: inherit;">"export fastq_pattern='*.fastq.gz'"</span></span>
 <span id="cb1-22"><span class="bu" style="color: null;
 background-color: null;
 font-style: inherit;">echo</span> <span class="st" style="color: #20794D;
 background-color: null;
-font-style: inherit;">""</span></span>
-<span id="cb1-23"></span>
+font-style: inherit;">"export R1_fastq_pattern='*_R1_*.fastq.gz'"</span></span>
+<span id="cb1-23"><span class="bu" style="color: null;
+background-color: null;
+font-style: inherit;">echo</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"export R2_fastq_pattern='*_R2_*.fastq.gz'"</span></span>
 <span id="cb1-24"><span class="bu" style="color: null;
 background-color: null;
 font-style: inherit;">echo</span> <span class="st" style="color: #20794D;
 background-color: null;
-font-style: inherit;">"# Set number of CPUs to use"</span></span>
-<span id="cb1-25"><span class="bu" style="color: null;
-background-color: null;
-font-style: inherit;">echo</span> <span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">'export threads=40'</span></span>
+font-style: inherit;">""</span></span>
+<span id="cb1-25"></span>
 <span id="cb1-26"><span class="bu" style="color: null;
 background-color: null;
 font-style: inherit;">echo</span> <span class="st" style="color: #20794D;
 background-color: null;
+font-style: inherit;">"# Set number of CPUs to use"</span></span>
+<span id="cb1-27"><span class="bu" style="color: null;
+background-color: null;
+font-style: inherit;">echo</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">'export threads=40'</span></span>
+<span id="cb1-28"><span class="bu" style="color: null;
+background-color: null;
+font-style: inherit;">echo</span> <span class="st" style="color: #20794D;
+background-color: null;
 font-style: inherit;">""</span></span>
-<span id="cb1-27"></span>
-<span id="cb1-28"></span>
-<span id="cb1-29"><span class="bu" style="color: null;
-background-color: null;
-font-style: inherit;">echo</span> <span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"## Inititalize arrays"</span></span>
-<span id="cb1-30"><span class="bu" style="color: null;
-background-color: null;
-font-style: inherit;">echo</span> <span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">'export fastq_array_R1=()'</span></span>
+<span id="cb1-29"></span>
+<span id="cb1-30"></span>
 <span id="cb1-31"><span class="bu" style="color: null;
 background-color: null;
 font-style: inherit;">echo</span> <span class="st" style="color: #20794D;
 background-color: null;
-font-style: inherit;">'export fastq_array_R2=()'</span></span>
+font-style: inherit;">"## Inititalize arrays"</span></span>
 <span id="cb1-32"><span class="bu" style="color: null;
 background-color: null;
 font-style: inherit;">echo</span> <span class="st" style="color: #20794D;
 background-color: null;
-font-style: inherit;">'export raw_fastqs_array=()'</span></span>
+font-style: inherit;">'export fastq_array_R1=()'</span></span>
 <span id="cb1-33"><span class="bu" style="color: null;
 background-color: null;
 font-style: inherit;">echo</span> <span class="st" style="color: #20794D;
 background-color: null;
-font-style: inherit;">'export R1_names_array=()'</span></span>
+font-style: inherit;">'export fastq_array_R2=()'</span></span>
 <span id="cb1-34"><span class="bu" style="color: null;
 background-color: null;
 font-style: inherit;">echo</span> <span class="st" style="color: #20794D;
 background-color: null;
-font-style: inherit;">'export R2_names_array=()'</span></span>
+font-style: inherit;">'export raw_fastqs_array=()'</span></span>
 <span id="cb1-35"><span class="bu" style="color: null;
 background-color: null;
 font-style: inherit;">echo</span> <span class="st" style="color: #20794D;
 background-color: null;
-font-style: inherit;">""</span></span>
-<span id="cb1-36"></span>
+font-style: inherit;">'export R1_names_array=()'</span></span>
+<span id="cb1-36"><span class="bu" style="color: null;
+background-color: null;
+font-style: inherit;">echo</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">'export R2_names_array=()'</span></span>
 <span id="cb1-37"><span class="bu" style="color: null;
 background-color: null;
 font-style: inherit;">echo</span> <span class="st" style="color: #20794D;
 background-color: null;
-font-style: inherit;">"# Programs associative array"</span></span>
-<span id="cb1-38"><span class="bu" style="color: null;
-background-color: null;
-font-style: inherit;">echo</span> <span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"declare -A programs_array"</span></span>
+font-style: inherit;">""</span></span>
+<span id="cb1-38"></span>
 <span id="cb1-39"><span class="bu" style="color: null;
 background-color: null;
 font-style: inherit;">echo</span> <span class="st" style="color: #20794D;
 background-color: null;
-font-style: inherit;">"programs_array=("</span></span>
+font-style: inherit;">"# Programs associative array"</span></span>
 <span id="cb1-40"><span class="bu" style="color: null;
 background-color: null;
 font-style: inherit;">echo</span> <span class="st" style="color: #20794D;
 background-color: null;
-font-style: inherit;">'[fastqc]="${fastqc}" \'</span></span>
+font-style: inherit;">"declare -A programs_array"</span></span>
 <span id="cb1-41"><span class="bu" style="color: null;
 background-color: null;
 font-style: inherit;">echo</span> <span class="st" style="color: #20794D;
 background-color: null;
-font-style: inherit;">'[multiqc]="${multiqc}" \'</span></span>
+font-style: inherit;">"programs_array=("</span></span>
 <span id="cb1-42"><span class="bu" style="color: null;
 background-color: null;
 font-style: inherit;">echo</span> <span class="st" style="color: #20794D;
 background-color: null;
-font-style: inherit;">")"</span></span>
+font-style: inherit;">'[fastqc]="${fastqc}" \'</span></span>
 <span id="cb1-43"><span class="bu" style="color: null;
 background-color: null;
 font-style: inherit;">echo</span> <span class="st" style="color: #20794D;
 background-color: null;
-font-style: inherit;">""</span></span>
-<span id="cb1-44"></span>
+font-style: inherit;">'[multiqc]="${multiqc}" \'</span></span>
+<span id="cb1-44"><span class="bu" style="color: null;
+background-color: null;
+font-style: inherit;">echo</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">")"</span></span>
 <span id="cb1-45"><span class="bu" style="color: null;
 background-color: null;
 font-style: inherit;">echo</span> <span class="st" style="color: #20794D;
 background-color: null;
-font-style: inherit;">"# Print formatting"</span></span>
-<span id="cb1-46"><span class="bu" style="color: null;
-background-color: null;
-font-style: inherit;">echo</span> <span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">'export line="--------------------------------------------------------"'</span></span>
+font-style: inherit;">""</span></span>
+<span id="cb1-46"></span>
 <span id="cb1-47"><span class="bu" style="color: null;
 background-color: null;
 font-style: inherit;">echo</span> <span class="st" style="color: #20794D;
 background-color: null;
+font-style: inherit;">"# Print formatting"</span></span>
+<span id="cb1-48"><span class="bu" style="color: null;
+background-color: null;
+font-style: inherit;">echo</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">'export line="--------------------------------------------------------"'</span></span>
+<span id="cb1-49"><span class="bu" style="color: null;
+background-color: null;
+font-style: inherit;">echo</span> <span class="st" style="color: #20794D;
+background-color: null;
 font-style: inherit;">""</span></span>
-<span id="cb1-48"><span class="kw" style="color: #003B4F;
+<span id="cb1-50"><span class="kw" style="color: #003B4F;
 background-color: null;
 font-weight: bold;
 font-style: inherit;">}</span> <span class="op" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;">&gt;</span> .bashvars</span>
-<span id="cb1-49"></span>
-<span id="cb1-50"><span class="fu" style="color: #4758AB;
+<span id="cb1-51"></span>
+<span id="cb1-52"><span class="fu" style="color: #4758AB;
 background-color: null;
 font-style: inherit;">cat</span> .bashvars</span></code></pre></div>
 <pre><code>#### Assign Variables ####
@@ -28156,10 +28167,11 @@ font-style: inherit;">cat</span> .bashvars</span></code></pre></div>
 # Data directories
 export timeseries_dir=/home/shared/8TB_HDD_01/sam/gitrepos/urol-e5/timeseries_molecular
 export output_dir_top=${timeseries_dir}/D-Apul/output/00.20-D-Apul-WGBS-reads-FastQC-MultiQC
-export raw_fastqc_dir=${output_dir_top}/raw-fastqc
 export raw_reads_dir=${timeseries_dir}/D-Apul/data/wgbs-raw-fastqs
 export raw_reads_url="https://owl.fish.washington.edu/nightingales/E5-coral-time-series/30-1067895835/"
 
+# Input files
+export metadata_file="${timeseries_dir}/M-multi-species/data/e5_DNA_Azenta_metadata.csv"
 # Paths to programs
 export fastqc=/home/shared/FastQC-0.12.1/fastqc
 export multiqc=/home/sam/programs/mambaforge/bin/multiqc
@@ -28190,12 +28202,9 @@ programs_array=(
 export line="--------------------------------------------------------"</code></pre>
 </section>
 <section id="download-a.pulchra-wgbs-fastqs" class="level1">
-<h1>2 Download <em>A.pulchra</em> WGBS FastQs</h1>
-<section id="download-raw-wgbs-reads" class="level2">
-<h2 class="anchored" data-anchor-id="download-raw-wgbs-reads">2.1 Download raw WGBS reads</h2>
-<p>Reads are downloaded from <a href="https://owl.fish.washington.edu/nightingales/E5-coral-time-series/30-1067895835/" class="uri">https://owl.fish.washington.edu/nightingales/E5-coral-time-series/30-1067895835/</a></p>
-<p>Since sequencing included multiple species, the code will also parse only those that are <em>A.pulchra</em>.</p>
-<p>The <code>--cut-dirs 3</code> command cuts the preceding directory structure (i.e.&nbsp;<code>nightingales/E5-coral-time-series/30-1067895835/</code>) so that we just end up with the reads.</p>
+<h1>3 Download <em>A.pulchra</em> WGBS FastQs</h1>
+<section id="inspect-metadata-file" class="level2">
+<h2 class="anchored" data-anchor-id="inspect-metadata-file">3.1 Inspect metadata file</h2>
 <div class="sourceCode" id="cb3" style="background: #f1f3f5;"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb3-1"><span class="co" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;"># Load bash variables into memory</span></span>
@@ -28203,27 +28212,68 @@ font-style: inherit;"># Load bash variables into memory</span></span>
 background-color: null;
 font-style: inherit;">source</span> .bashvars</span>
 <span id="cb3-3"></span>
-<span id="cb3-4"><span class="co" style="color: #5E5E5E;
+<span id="cb3-4"><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">head</span> <span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">${metadata_file}</span> <span class="kw" style="color: #003B4F;
+background-color: null;
+font-weight: bold;
+font-style: inherit;">|</span></span>
+<span id="cb3-5"><span class="ex" style="color: null;
+background-color: null;
+font-style: inherit;">column</span> <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">-t</span> <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">-s</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">","</span></span></code></pre></div>
+<pre><code>Sample Name*  Plate         Well number  Azenta sample name  Colony ID  Timepoint  Sample Type*  Species/Strain*  Sample Buffer*    Total Amount (ng)*    Volume (µL)  Conc (ng/µL)  Purification Method*  Biosafety Level (BSL)            Method Used for Fluorescence  Method Used for Spectrophotometry  Method Used for Electrophoresis  
+1             41            1            G4                  1G4        ACR-225    TP1           Genomic DNA      Acropora pulchra  Tris buffer (8.0 pH)  2064         80            25.8                  Column clean-up (Zymo Miniprep)  None                          Qubit                              NA                               1.5% TAE agarose non-denaturing gel  "Please keep methylation libraries   as we may want to sequence more"
+2             291-20220211  2            A3                  2A3        ACR-225    TP2           Genomic DNA      Acropora pulchra  Tris buffer (8.0 pH)  5064         80            63.3                  Column clean-up (Zymo Miniprep)  None                          Qubit                              NA                               1.5% TAE agarose non-denaturing gel  "Please keep methylation libraries   as we may want to sequence more"
+3             527           1            H5                  1H5        ACR-225    TP3           Genomic DNA      Acropora pulchra  Tris buffer (8.0 pH)  4232         80            52.9                  Column clean-up (Zymo Miniprep)  None                          Qubit                              NA                               1.5% TAE agarose non-denaturing gel  "Please keep methylation libraries   as we may want to sequence more"
+4             911           1            C6                  1C6        ACR-225    TP4           Genomic DNA      Acropora pulchra  Tris buffer (8.0 pH)  4488         80            56.1                  Column clean-up (Zymo Miniprep)  None                          Qubit                              NA                               1.5% TAE agarose non-denaturing gel  "Please keep methylation libraries   as we may want to sequence more"
+5             55            1            B2                  1B2        ACR-229    TP1           Genomic DNA      Acropora pulchra  Tris buffer (8.0 pH)  2432         80            30.4                  Column clean-up (Zymo Miniprep)  None                          Qubit                              NA                               1.5% TAE agarose non-denaturing gel  "Please keep methylation libraries   as we may want to sequence more"
+6             295           1            E3                  1E3        ACR-229    TP2           Genomic DNA      Acropora pulchra  Tris buffer (8.0 pH)  2760         80            34.5                  Column clean-up (Zymo Miniprep)  None                          Qubit                              NA                               1.5% TAE agarose non-denaturing gel  "Please keep methylation libraries   as we may want to sequence more"
+7             531           1            H3                  1H3        ACR-229    TP3           Genomic DNA      Acropora pulchra  Tris buffer (8.0 pH)  5752         80            71.9                  Column clean-up (Zymo Miniprep)  None                          Qubit                              NA                               1.5% TAE agarose non-denaturing gel  "Please keep methylation libraries   as we may want to sequence more"
+8             931           1            F7                  1F7        ACR-229    TP4           Genomic DNA      Acropora pulchra  Tris buffer (8.0 pH)  6008         80            75.1                  Column clean-up (Zymo Miniprep)  None                          Qubit                              NA                               1.5% TAE agarose non-denaturing gel  "Please keep methylation libraries   as we may want to sequence more"
+9             49            1            A1                  1A1        ACR-237    TP1           Genomic DNA      Acropora pulchra  Tris buffer (8.0 pH)  1456         80            18.2                  Column clean-up (Zymo Miniprep)  None                          Qubit                              NA                               1.5% TAE agarose non-denaturing gel  "Please keep methylation libraries   as we may want to sequence more"</code></pre>
+</section>
+<section id="download-raw-wgbs-reads" class="level2">
+<h2 class="anchored" data-anchor-id="download-raw-wgbs-reads">3.2 Download raw WGBS reads</h2>
+<p>Reads are downloaded from <a href="https://owl.fish.washington.edu/nightingales/E5-coral-time-series/30-1067895835/" class="uri">https://owl.fish.washington.edu/nightingales/E5-coral-time-series/30-1067895835/</a></p>
+<p>Since sequencing included multiple species, the code will also parse only those that are <em>A.pulchra</em>.</p>
+<p>Some filenames are preceeded by <code>&lt;sample_number&gt;--</code> for some reason. This formatting is limited to only samples in <code>E</code> wells, so the code below uses that aspect to retrieve those samples as well.</p>
+<p>The <code>--cut-dirs 3</code> command cuts the preceding directory structure (i.e.&nbsp;<code>nightingales/E5-coral-time-series/30-1067895835/</code>) so that we just end up with the reads.</p>
+<div class="sourceCode" id="cb5" style="background: #f1f3f5;"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb5-1"><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># Load bash variables into memory</span></span>
+<span id="cb5-2"><span class="bu" style="color: null;
+background-color: null;
+font-style: inherit;">source</span> .bashvars</span>
+<span id="cb5-3"></span>
+<span id="cb5-4"><span class="co" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;"># Make output directory if it doesn't exist</span></span>
-<span id="cb3-5"><span class="fu" style="color: #4758AB;
+<span id="cb5-5"><span class="fu" style="color: #4758AB;
 background-color: null;
 font-style: inherit;">mkdir</span> <span class="at" style="color: #657422;
 background-color: null;
 font-style: inherit;">--parents</span> <span class="va" style="color: #111111;
 background-color: null;
 font-style: inherit;">${raw_reads_dir}</span></span>
-<span id="cb3-6"></span>
-<span id="cb3-7"><span class="co" style="color: #5E5E5E;
+<span id="cb5-6"></span>
+<span id="cb5-7"><span class="co" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;"># Create list of only A.pulchra sample names</span></span>
-<span id="cb3-8"><span class="co" style="color: #5E5E5E;
+<span id="cb5-8"><span class="co" style="color: #5E5E5E;
 background-color: null;
-font-style: inherit;"># Some samples names are preceded by the sample number for some reason,</span></span>
-<span id="cb3-9"><span class="co" style="color: #5E5E5E;
+font-style: inherit;"># Some samples names are preceded by the Sample Number for some reason,</span></span>
+<span id="cb5-9"><span class="co" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;"># so this handles that formatting.</span></span>
-<span id="cb3-10"><span class="va" style="color: #111111;
+<span id="cb5-10"><span class="va" style="color: #111111;
 background-color: null;
 font-style: inherit;">sample_list</span><span class="op" style="color: #5E5E5E;
 background-color: null;
@@ -28242,7 +28292,7 @@ background-color: null;
 font-style: inherit;">${timeseries_dir}</span>/M-multi-species/data/30-1067895835-WGBS-sample-submission-form.csv <span class="dt" style="color: #AD0000;
 background-color: null;
 font-style: inherit;">\</span></span>
-<span id="cb3-11"><span class="kw" style="color: #003B4F;
+<span id="cb5-11"><span class="kw" style="color: #003B4F;
 background-color: null;
 font-weight: bold;
 font-style: inherit;">|</span> <span class="fu" style="color: #4758AB;
@@ -28250,13 +28300,13 @@ background-color: null;
 font-style: inherit;">sort</span><span class="va" style="color: #111111;
 background-color: null;
 font-style: inherit;">)</span></span>
-<span id="cb3-12"></span>
-<span id="cb3-13"><span class="bu" style="color: null;
+<span id="cb5-12"></span>
+<span id="cb5-13"><span class="bu" style="color: null;
 background-color: null;
 font-style: inherit;">echo</span> <span class="st" style="color: #20794D;
 background-color: null;
 font-style: inherit;">""</span></span>
-<span id="cb3-14"><span class="bu" style="color: null;
+<span id="cb5-14"><span class="bu" style="color: null;
 background-color: null;
 font-style: inherit;">echo</span> <span class="st" style="color: #20794D;
 background-color: null;
@@ -28265,22 +28315,22 @@ background-color: null;
 font-style: inherit;">${line}</span><span class="st" style="color: #20794D;
 background-color: null;
 font-style: inherit;">"</span></span>
-<span id="cb3-15"><span class="bu" style="color: null;
+<span id="cb5-15"><span class="bu" style="color: null;
 background-color: null;
 font-style: inherit;">echo</span> <span class="st" style="color: #20794D;
 background-color: null;
 font-style: inherit;">""</span></span>
-<span id="cb3-16"><span class="bu" style="color: null;
+<span id="cb5-16"><span class="bu" style="color: null;
 background-color: null;
 font-style: inherit;">echo</span> <span class="st" style="color: #20794D;
 background-color: null;
 font-style: inherit;">"Sample list:"</span></span>
-<span id="cb3-17"><span class="bu" style="color: null;
+<span id="cb5-17"><span class="bu" style="color: null;
 background-color: null;
 font-style: inherit;">echo</span> <span class="st" style="color: #20794D;
 background-color: null;
 font-style: inherit;">""</span></span>
-<span id="cb3-18"><span class="bu" style="color: null;
+<span id="cb5-18"><span class="bu" style="color: null;
 background-color: null;
 font-style: inherit;">echo</span> <span class="st" style="color: #20794D;
 background-color: null;
@@ -28289,12 +28339,12 @@ background-color: null;
 font-style: inherit;">${sample_list}</span><span class="st" style="color: #20794D;
 background-color: null;
 font-style: inherit;">"</span></span>
-<span id="cb3-19"><span class="bu" style="color: null;
+<span id="cb5-19"><span class="bu" style="color: null;
 background-color: null;
 font-style: inherit;">echo</span> <span class="st" style="color: #20794D;
 background-color: null;
 font-style: inherit;">""</span></span>
-<span id="cb3-20"><span class="bu" style="color: null;
+<span id="cb5-20"><span class="bu" style="color: null;
 background-color: null;
 font-style: inherit;">echo</span> <span class="st" style="color: #20794D;
 background-color: null;
@@ -28303,17 +28353,17 @@ background-color: null;
 font-style: inherit;">${line}</span><span class="st" style="color: #20794D;
 background-color: null;
 font-style: inherit;">"</span></span>
-<span id="cb3-21"><span class="bu" style="color: null;
+<span id="cb5-21"><span class="bu" style="color: null;
 background-color: null;
 font-style: inherit;">echo</span> <span class="st" style="color: #20794D;
 background-color: null;
 font-style: inherit;">""</span></span>
-<span id="cb3-22"></span>
-<span id="cb3-23"></span>
-<span id="cb3-24"><span class="co" style="color: #5E5E5E;
+<span id="cb5-22"></span>
+<span id="cb5-23"></span>
+<span id="cb5-24"><span class="co" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;"># Use printf to format each item for use in wget</span></span>
-<span id="cb3-25"><span class="va" style="color: #111111;
+<span id="cb5-25"><span class="va" style="color: #111111;
 background-color: null;
 font-style: inherit;">formatted_list</span><span class="op" style="color: #5E5E5E;
 background-color: null;
@@ -28326,11 +28376,11 @@ background-color: null;
 font-style: inherit;">"%s_*,"</span> <span class="va" style="color: #111111;
 background-color: null;
 font-style: inherit;">${sample_list})</span></span>
-<span id="cb3-26"></span>
-<span id="cb3-27"><span class="co" style="color: #5E5E5E;
+<span id="cb5-26"></span>
+<span id="cb5-27"><span class="co" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;"># Remove the trailing comma</span></span>
-<span id="cb3-28"><span class="va" style="color: #111111;
+<span id="cb5-28"><span class="va" style="color: #111111;
 background-color: null;
 font-style: inherit;">formatted_list</span><span class="op" style="color: #5E5E5E;
 background-color: null;
@@ -28345,16 +28395,16 @@ background-color: null;
 font-style: inherit;">}</span><span class="st" style="color: #20794D;
 background-color: null;
 font-style: inherit;">"</span></span>
-<span id="cb3-29"></span>
-<span id="cb3-30"><span class="co" style="color: #5E5E5E;
+<span id="cb5-29"></span>
+<span id="cb5-30"><span class="co" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;"># Output the final wget command</span></span>
-<span id="cb3-31"><span class="bu" style="color: null;
+<span id="cb5-31"><span class="bu" style="color: null;
 background-color: null;
 font-style: inherit;">echo</span> <span class="st" style="color: #20794D;
 background-color: null;
 font-style: inherit;">""</span></span>
-<span id="cb3-32"><span class="bu" style="color: null;
+<span id="cb5-32"><span class="bu" style="color: null;
 background-color: null;
 font-style: inherit;">echo</span> <span class="st" style="color: #20794D;
 background-color: null;
@@ -28363,22 +28413,22 @@ background-color: null;
 font-style: inherit;">${line}</span><span class="st" style="color: #20794D;
 background-color: null;
 font-style: inherit;">"</span></span>
-<span id="cb3-33"><span class="bu" style="color: null;
+<span id="cb5-33"><span class="bu" style="color: null;
 background-color: null;
 font-style: inherit;">echo</span> <span class="st" style="color: #20794D;
 background-color: null;
 font-style: inherit;">""</span></span>
-<span id="cb3-34"><span class="bu" style="color: null;
+<span id="cb5-34"><span class="bu" style="color: null;
 background-color: null;
 font-style: inherit;">echo</span> <span class="st" style="color: #20794D;
 background-color: null;
 font-style: inherit;">"Formatted wget accept list:"</span></span>
-<span id="cb3-35"><span class="bu" style="color: null;
+<span id="cb5-35"><span class="bu" style="color: null;
 background-color: null;
 font-style: inherit;">echo</span> <span class="st" style="color: #20794D;
 background-color: null;
 font-style: inherit;">""</span></span>
-<span id="cb3-36"><span class="bu" style="color: null;
+<span id="cb5-36"><span class="bu" style="color: null;
 background-color: null;
 font-style: inherit;">echo</span> <span class="st" style="color: #20794D;
 background-color: null;
@@ -28391,12 +28441,12 @@ background-color: null;
 font-style: inherit;">\"</span><span class="st" style="color: #20794D;
 background-color: null;
 font-style: inherit;">"</span></span>
-<span id="cb3-37"><span class="bu" style="color: null;
+<span id="cb5-37"><span class="bu" style="color: null;
 background-color: null;
 font-style: inherit;">echo</span> <span class="st" style="color: #20794D;
 background-color: null;
 font-style: inherit;">""</span></span>
-<span id="cb3-38"><span class="bu" style="color: null;
+<span id="cb5-38"><span class="bu" style="color: null;
 background-color: null;
 font-style: inherit;">echo</span> <span class="st" style="color: #20794D;
 background-color: null;
@@ -28405,47 +28455,47 @@ background-color: null;
 font-style: inherit;">${line}</span><span class="st" style="color: #20794D;
 background-color: null;
 font-style: inherit;">"</span></span>
-<span id="cb3-39"><span class="bu" style="color: null;
+<span id="cb5-39"><span class="bu" style="color: null;
 background-color: null;
 font-style: inherit;">echo</span> <span class="st" style="color: #20794D;
 background-color: null;
 font-style: inherit;">""</span></span>
-<span id="cb3-40"></span>
-<span id="cb3-41"><span class="co" style="color: #5E5E5E;
+<span id="cb5-40"></span>
+<span id="cb5-41"><span class="co" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;"># Run wget to retrieve FastQs and MD5 files</span></span>
-<span id="cb3-42"><span class="fu" style="color: #4758AB;
+<span id="cb5-42"><span class="fu" style="color: #4758AB;
 background-color: null;
 font-style: inherit;">wget</span> <span class="dt" style="color: #AD0000;
 background-color: null;
 font-style: inherit;">\</span></span>
-<span id="cb3-43">--directory-prefix <span class="va" style="color: #111111;
+<span id="cb5-43">--directory-prefix <span class="va" style="color: #111111;
 background-color: null;
 font-style: inherit;">${raw_reads_dir}</span> <span class="dt" style="color: #AD0000;
 background-color: null;
 font-style: inherit;">\</span></span>
-<span id="cb3-44">--recursive <span class="dt" style="color: #AD0000;
+<span id="cb5-44">--recursive <span class="dt" style="color: #AD0000;
 background-color: null;
 font-style: inherit;">\</span></span>
-<span id="cb3-45">--no-check-certificate <span class="dt" style="color: #AD0000;
+<span id="cb5-45">--no-check-certificate <span class="dt" style="color: #AD0000;
 background-color: null;
 font-style: inherit;">\</span></span>
-<span id="cb3-46">--continue <span class="dt" style="color: #AD0000;
+<span id="cb5-46">--continue <span class="dt" style="color: #AD0000;
 background-color: null;
 font-style: inherit;">\</span></span>
-<span id="cb3-47">--cut-dirs 3 <span class="dt" style="color: #AD0000;
+<span id="cb5-47">--cut-dirs 3 <span class="dt" style="color: #AD0000;
 background-color: null;
 font-style: inherit;">\</span></span>
-<span id="cb3-48">--no-host-directories <span class="dt" style="color: #AD0000;
+<span id="cb5-48">--no-host-directories <span class="dt" style="color: #AD0000;
 background-color: null;
 font-style: inherit;">\</span></span>
-<span id="cb3-49">--no-parent <span class="dt" style="color: #AD0000;
+<span id="cb5-49">--no-parent <span class="dt" style="color: #AD0000;
 background-color: null;
 font-style: inherit;">\</span></span>
-<span id="cb3-50">--quiet <span class="dt" style="color: #AD0000;
+<span id="cb5-50">--quiet <span class="dt" style="color: #AD0000;
 background-color: null;
 font-style: inherit;">\</span></span>
-<span id="cb3-51">--accept=<span class="dt" style="color: #AD0000;
+<span id="cb5-51">--accept=<span class="dt" style="color: #AD0000;
 background-color: null;
 font-style: inherit;">\"</span><span class="va" style="color: #111111;
 background-color: null;
@@ -28454,8 +28504,8 @@ background-color: null;
 font-style: inherit;">\"</span> <span class="va" style="color: #111111;
 background-color: null;
 font-style: inherit;">${raw_reads_url}</span></span>
-<span id="cb3-52"></span>
-<span id="cb3-53"><span class="fu" style="color: #4758AB;
+<span id="cb5-52"></span>
+<span id="cb5-53"><span class="fu" style="color: #4758AB;
 background-color: null;
 font-style: inherit;">ls</span> <span class="at" style="color: #657422;
 background-color: null;
@@ -28682,18 +28732,19 @@ total 213G
 -rw-r--r-- 1 sam sam 3.2G Dec 30 17:57 6--1E3_R1_001.fastq.gz
 -rw-r--r-- 1 sam sam   59 Dec 30 17:57 6--1E3_R1_001.fastq.gz.md5
 -rw-r--r-- 1 sam sam 3.2G Dec 30 18:00 6--1E3_R2_001.fastq.gz
--rw-r--r-- 1 sam sam   59 Dec 30 18:00 6--1E3_R2_001.fastq.gz.md5</code></pre>
+-rw-r--r-- 1 sam sam   59 Dec 30 18:00 6--1E3_R2_001.fastq.gz.md5
+-rw-rw-r-- 1 sam sam 1.6K Jan  2 11:08 fastq_pairs.txt</code></pre>
 </section>
 <section id="verify-raw-read-checksums" class="level2">
-<h2 class="anchored" data-anchor-id="verify-raw-read-checksums">2.2 Verify raw read checksums</h2>
-<div class="sourceCode" id="cb5" style="background: #f1f3f5;"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb5-1"><span class="co" style="color: #5E5E5E;
+<h2 class="anchored" data-anchor-id="verify-raw-read-checksums">3.3 Verify raw read checksums</h2>
+<div class="sourceCode" id="cb7" style="background: #f1f3f5;"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb7-1"><span class="co" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;"># Load bash variables into memory</span></span>
-<span id="cb5-2"><span class="bu" style="color: null;
+<span id="cb7-2"><span class="bu" style="color: null;
 background-color: null;
 font-style: inherit;">source</span> .bashvars</span>
-<span id="cb5-3"></span>
-<span id="cb5-4"><span class="bu" style="color: null;
+<span id="cb7-3"></span>
+<span id="cb7-4"><span class="bu" style="color: null;
 background-color: null;
 font-style: inherit;">cd</span> <span class="st" style="color: #20794D;
 background-color: null;
@@ -28702,8 +28753,8 @@ background-color: null;
 font-style: inherit;">${raw_reads_dir}</span><span class="st" style="color: #20794D;
 background-color: null;
 font-style: inherit;">"</span></span>
-<span id="cb5-5"></span>
-<span id="cb5-6"><span class="cf" style="color: #003B4F;
+<span id="cb7-5"></span>
+<span id="cb7-6"><span class="cf" style="color: #003B4F;
 background-color: null;
 font-weight: bold;
 font-style: inherit;">for</span> file <span class="kw" style="color: #003B4F;
@@ -28712,11 +28763,11 @@ font-weight: bold;
 font-style: inherit;">in</span> <span class="pp" style="color: #AD0000;
 background-color: null;
 font-style: inherit;">*</span>.md5</span>
-<span id="cb5-7"><span class="cf" style="color: #003B4F;
+<span id="cb7-7"><span class="cf" style="color: #003B4F;
 background-color: null;
 font-weight: bold;
 font-style: inherit;">do</span></span>
-<span id="cb5-8">  <span class="fu" style="color: #4758AB;
+<span id="cb7-8">  <span class="fu" style="color: #4758AB;
 background-color: null;
 font-style: inherit;">md5sum</span> <span class="at" style="color: #657422;
 background-color: null;
@@ -28727,7 +28778,7 @@ background-color: null;
 font-style: inherit;">${file}</span><span class="st" style="color: #20794D;
 background-color: null;
 font-style: inherit;">"</span></span>
-<span id="cb5-9"><span class="cf" style="color: #003B4F;
+<span id="cb7-9"><span class="cf" style="color: #003B4F;
 background-color: null;
 font-weight: bold;
 font-style: inherit;">done</span></span></code></pre></div>
@@ -28813,39 +28864,952 @@ font-style: inherit;">done</span></span></code></pre></div>
 ./6--1E3_R2_001.fastq.gz: OK</code></pre>
 </section>
 </section>
-<section id="fastqcmultiqc-on-raw-reads" class="level1">
-<h1>3 FastQC/MultiQC on raw reads</h1>
-<div class="sourceCode" id="cb7" style="background: #f1f3f5;"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb7-1"><span class="co" style="color: #5E5E5E;
+<section id="rename-fastqs-for-project-consistency" class="level1">
+<h1>4 Rename FastQs for Project Consistency</h1>
+<p>New naming format will be <code>&lt;colony_id&gt;-&lt;timepoint&gt;</code>.</p>
+<p>Use of a temp file, instead of working directory from the metadata file can avoid potential issues with character/text formatting from the input CSV.</p>
+<div class="sourceCode" id="cb9" style="background: #f1f3f5;"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb9-1"><span class="co" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;"># Load bash variables into memory</span></span>
-<span id="cb7-2"><span class="bu" style="color: null;
+<span id="cb9-2"><span class="bu" style="color: null;
 background-color: null;
 font-style: inherit;">source</span> .bashvars</span>
-<span id="cb7-3"></span>
-<span id="cb7-4"><span class="co" style="color: #5E5E5E;
+<span id="cb9-3"></span>
+<span id="cb9-4"><span class="bu" style="color: null;
 background-color: null;
-font-style: inherit;"># Make output directory if it doesn't exist</span></span>
-<span id="cb7-5"><span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">mkdir</span> <span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">--parents</span> <span class="st" style="color: #20794D;
+font-style: inherit;">cd</span> <span class="st" style="color: #20794D;
 background-color: null;
 font-style: inherit;">"</span><span class="va" style="color: #111111;
 background-color: null;
-font-style: inherit;">${raw_fastqc_dir}</span><span class="st" style="color: #20794D;
+font-style: inherit;">${raw_reads_dir}</span><span class="st" style="color: #20794D;
 background-color: null;
 font-style: inherit;">"</span></span>
-<span id="cb7-6"></span>
-<span id="cb7-7"><span class="co" style="color: #5E5E5E;
+<span id="cb9-5"></span>
+<span id="cb9-6"><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># Create an associative array to store the mapping</span></span>
+<span id="cb9-7"><span class="bu" style="color: null;
+background-color: null;
+font-style: inherit;">declare</span> <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">-A</span> <span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">number_to_colony_timepoint</span></span>
+<span id="cb9-8"></span>
+<span id="cb9-9"><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># Create a temporary file to store the mapping</span></span>
+<span id="cb9-10"><span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">temp_mapping_file</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span><span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">$(</span><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">mktemp</span><span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">)</span></span>
+<span id="cb9-11"></span>
+<span id="cb9-12"><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># Read the metadata file and populate the temporary file using awk</span></span>
+<span id="cb9-13"><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># Maps Azenta sample name to colony_id and timepoint.</span></span>
+<span id="cb9-14"><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">awk</span> <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">-F,</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">'NR &gt; 1 { print $5, $6 "-" $7 }'</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"</span><span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">$metadata_file</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"</span> <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">&gt;</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"</span><span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">$temp_mapping_file</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"</span></span>
+<span id="cb9-15"></span>
+<span id="cb9-16"><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># Read the temporary file and populate the associative array</span></span>
+<span id="cb9-17"><span class="cf" style="color: #003B4F;
+background-color: null;
+font-weight: bold;
+font-style: inherit;">while</span> <span class="bu" style="color: null;
+background-color: null;
+font-style: inherit;">read</span> <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">-r</span> <span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">Number</span> <span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">colony_timepoint</span><span class="kw" style="color: #003B4F;
+background-color: null;
+font-weight: bold;
+font-style: inherit;">;</span> <span class="cf" style="color: #003B4F;
+background-color: null;
+font-weight: bold;
+font-style: inherit;">do</span></span>
+<span id="cb9-18">    <span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">number_to_colony_timepoint</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">[</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"</span><span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">$Number</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">]=</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"</span><span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">$colony_timepoint</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"</span></span>
+<span id="cb9-19"><span class="cf" style="color: #003B4F;
+background-color: null;
+font-weight: bold;
+font-style: inherit;">done</span> <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">&lt;</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"</span><span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">$temp_mapping_file</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"</span></span>
+<span id="cb9-20"></span>
+<span id="cb9-21"><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># Remove the temporary file</span></span>
+<span id="cb9-22"><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">rm</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"</span><span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">$temp_mapping_file</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"</span></span>
+<span id="cb9-23"></span>
+<span id="cb9-24"><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># Print the associative array for debugging</span></span>
+<span id="cb9-25"><span class="bu" style="color: null;
+background-color: null;
+font-style: inherit;">echo</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"Number to colony_id-Timepoint mapping:"</span></span>
+<span id="cb9-26"><span class="cf" style="color: #003B4F;
+background-color: null;
+font-weight: bold;
+font-style: inherit;">for</span> key <span class="kw" style="color: #003B4F;
+background-color: null;
+font-weight: bold;
+font-style: inherit;">in</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"</span><span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">${</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">!</span><span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">number_to_colony_timepoint</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">[@]</span><span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">}</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"</span><span class="kw" style="color: #003B4F;
+background-color: null;
+font-weight: bold;
+font-style: inherit;">;</span> <span class="cf" style="color: #003B4F;
+background-color: null;
+font-weight: bold;
+font-style: inherit;">do</span></span>
+<span id="cb9-27">    <span class="bu" style="color: null;
+background-color: null;
+font-style: inherit;">echo</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">""</span></span>
+<span id="cb9-28">    <span class="bu" style="color: null;
+background-color: null;
+font-style: inherit;">echo</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"</span><span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">$key</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;"> -&gt; </span><span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">${number_to_colony_timepoint</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">[</span><span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">$key</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">]</span><span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">}</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"</span></span>
+<span id="cb9-29">    <span class="bu" style="color: null;
+background-color: null;
+font-style: inherit;">echo</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">""</span></span>
+<span id="cb9-30"><span class="cf" style="color: #003B4F;
+background-color: null;
+font-weight: bold;
+font-style: inherit;">done</span></span>
+<span id="cb9-31"></span>
+<span id="cb9-32"><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># Iterate over the FastQ files in the current directory</span></span>
+<span id="cb9-33"><span class="cf" style="color: #003B4F;
+background-color: null;
+font-weight: bold;
+font-style: inherit;">for</span> fastq_file <span class="kw" style="color: #003B4F;
+background-color: null;
+font-weight: bold;
+font-style: inherit;">in</span> <span class="pp" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">*</span>.fastq.gz<span class="kw" style="color: #003B4F;
+background-color: null;
+font-weight: bold;
+font-style: inherit;">;</span> <span class="cf" style="color: #003B4F;
+background-color: null;
+font-weight: bold;
+font-style: inherit;">do</span></span>
+<span id="cb9-34">    <span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># Extract the sample number from the filename</span></span>
+<span id="cb9-35">    <span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">sample_number</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span><span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">$(</span><span class="bu" style="color: null;
+background-color: null;
+font-style: inherit;">echo</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"</span><span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">$fastq_file</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"</span> <span class="kw" style="color: #003B4F;
+background-color: null;
+font-weight: bold;
+font-style: inherit;">|</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">sed</span> <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">-E</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">'s/^([0-9]+--)?([A-Za-z0-9]+).*/\2/'</span><span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">)</span></span>
+<span id="cb9-36">    </span>
+<span id="cb9-37">    <span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># Check if the sample number exists in the associative array</span></span>
+<span id="cb9-38">    <span class="cf" style="color: #003B4F;
+background-color: null;
+font-weight: bold;
+font-style: inherit;">if</span> <span class="kw" style="color: #003B4F;
+background-color: null;
+font-weight: bold;
+font-style: inherit;">[[</span> <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">-n</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"</span><span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">${number_to_colony_timepoint</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">[</span><span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">$sample_number</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">]</span><span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">}</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"</span> <span class="kw" style="color: #003B4F;
+background-color: null;
+font-weight: bold;
+font-style: inherit;">]];</span> <span class="cf" style="color: #003B4F;
+background-color: null;
+font-weight: bold;
+font-style: inherit;">then</span></span>
+<span id="cb9-39">        <span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">new_sample_name</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"</span><span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">${number_to_colony_timepoint</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">[</span><span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">$sample_number</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">]</span><span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">}</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"</span></span>
+<span id="cb9-40">        <span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">new_filename</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span><span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">$(</span><span class="bu" style="color: null;
+background-color: null;
+font-style: inherit;">echo</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"</span><span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">$fastq_file</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"</span> <span class="kw" style="color: #003B4F;
+background-color: null;
+font-weight: bold;
+font-style: inherit;">|</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">sed</span> <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">-E</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"s/^([0-9]+--)?</span><span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">$sample_number</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">/</span><span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">$new_sample_name</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">/"</span><span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">)</span></span>
+<span id="cb9-41">        <span class="cf" style="color: #003B4F;
+background-color: null;
+font-weight: bold;
+font-style: inherit;">if</span> <span class="kw" style="color: #003B4F;
+background-color: null;
+font-weight: bold;
+font-style: inherit;">[[</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"</span><span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">$fastq_file</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"</span> <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">!=</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"</span><span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">$new_filename</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"</span> <span class="kw" style="color: #003B4F;
+background-color: null;
+font-weight: bold;
+font-style: inherit;">]];</span> <span class="cf" style="color: #003B4F;
+background-color: null;
+font-weight: bold;
+font-style: inherit;">then</span></span>
+<span id="cb9-42">            <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">mv</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"</span><span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">$fastq_file</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"</span><span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">$new_filename</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"</span></span>
+<span id="cb9-43">            <span class="bu" style="color: null;
+background-color: null;
+font-style: inherit;">echo</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"Renamed </span><span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">$fastq_file</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;"> to </span><span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">$new_filename</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"</span></span>
+<span id="cb9-44">        <span class="cf" style="color: #003B4F;
+background-color: null;
+font-weight: bold;
+font-style: inherit;">else</span></span>
+<span id="cb9-45">            <span class="bu" style="color: null;
+background-color: null;
+font-style: inherit;">echo</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"No renaming needed for </span><span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">$fastq_file</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"</span></span>
+<span id="cb9-46">        <span class="cf" style="color: #003B4F;
+background-color: null;
+font-weight: bold;
+font-style: inherit;">fi</span></span>
+<span id="cb9-47">    <span class="cf" style="color: #003B4F;
+background-color: null;
+font-weight: bold;
+font-style: inherit;">else</span></span>
+<span id="cb9-48">        <span class="bu" style="color: null;
+background-color: null;
+font-style: inherit;">echo</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"Sample number '</span><span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">$sample_number</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">' not found in metadata."</span></span>
+<span id="cb9-49">        <span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># Debugging: Print all keys in the associative array with quotes</span></span>
+<span id="cb9-50">        <span class="bu" style="color: null;
+background-color: null;
+font-style: inherit;">echo</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"Available keys in the associative array:"</span></span>
+<span id="cb9-51">        <span class="cf" style="color: #003B4F;
+background-color: null;
+font-weight: bold;
+font-style: inherit;">for</span> key <span class="kw" style="color: #003B4F;
+background-color: null;
+font-weight: bold;
+font-style: inherit;">in</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"</span><span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">${</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">!</span><span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">number_to_colony_timepoint</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">[@]</span><span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">}</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"</span><span class="kw" style="color: #003B4F;
+background-color: null;
+font-weight: bold;
+font-style: inherit;">;</span> <span class="cf" style="color: #003B4F;
+background-color: null;
+font-weight: bold;
+font-style: inherit;">do</span></span>
+<span id="cb9-52">            <span class="bu" style="color: null;
+background-color: null;
+font-style: inherit;">echo</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"'</span><span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">$key</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">'"</span></span>
+<span id="cb9-53">        <span class="cf" style="color: #003B4F;
+background-color: null;
+font-weight: bold;
+font-style: inherit;">done</span></span>
+<span id="cb9-54">    <span class="cf" style="color: #003B4F;
+background-color: null;
+font-weight: bold;
+font-style: inherit;">fi</span></span>
+<span id="cb9-55"><span class="cf" style="color: #003B4F;
+background-color: null;
+font-weight: bold;
+font-style: inherit;">done</span></span></code></pre></div>
+<pre><code>Number to colony_id-Timepoint mapping:
+
+1B3 -&gt; SR_1-440-NA
+
+
+1B2 -&gt; ACR-229-TP1
+
+
+1B1 -&gt; ACR-150-TP3
+
+
+1B7 -&gt; POC-40-TP3
+
+
+1B6 -&gt; POR-245-TP2
+
+
+1B5 -&gt; ACR-244-TP2
+
+
+1B4 -&gt; ACR-244-TP4
+
+
+1B9 -&gt; POR-236-TP2
+
+
+1B8 -&gt; POR-69-TP1
+
+
+1D5 -&gt; POC-57-TP1
+
+
+1D4 -&gt; POC-52-TP3
+
+
+1C1 -&gt; POC-222-TP3
+
+
+1C2 -&gt; POR-83-TP4
+
+
+1D7 -&gt; ACR-186-TP4
+
+
+1D6 -&gt; POR-245-TP4
+
+
+1C3 -&gt; POC-53-TP3
+
+
+1D1 -&gt; POR-216-TP2
+
+
+1B12 -&gt; POC-219-TP4
+
+
+1C4 -&gt; POC-201-TP2
+
+
+1C5 -&gt; POC-52-TP4
+
+
+1B10 -&gt; ACR-150-TP1
+
+
+1D3 -&gt; ACR-237-TP4
+
+
+1C6 -&gt; ACR-225-TP4
+
+
+1B11 -&gt; POR-69-TP4
+
+
+1D2 -&gt; POR-260-TP1
+
+
+1C7 -&gt; POC-53-TP1
+
+
+1C8 -&gt; ACR-145-TP2
+
+
+1C9 -&gt; ACR-237-TP3
+
+
+2C3 -&gt; POR-73-TP1
+
+
+1D9 -&gt; ACR-139-TP3
+
+
+2C2 -&gt; ACR-145-TP3
+
+
+1D8 -&gt; ACR-139-TP4
+
+
+2C1 -&gt; POR-216-TP1
+
+
+1E2 -&gt; POC-42-TP3
+
+
+1E3 -&gt; ACR-229-TP2
+
+
+1E1 -&gt; POC-259-TP4
+
+
+1E6 -&gt; POR-83-TP1
+
+
+1E7 -&gt; ACR-237-TP2
+
+
+1E4 -&gt; POR-74-TP2
+
+
+1E5 -&gt; POR-245-TP3
+
+
+1E11 -&gt; POR-260-TP4
+
+
+1E10 -&gt; POC-259-TP3
+
+
+1E8 -&gt; POR-262-TP3
+
+
+1E9 -&gt; POR-73-TP4
+
+
+1E12 -&gt; POC-222-TP2
+
+
+2B1 -&gt; SR_3-440B-NA
+
+
+2B2 -&gt; POC-40-TP2
+
+
+2B3 -&gt; POR-262-TP4
+
+
+2E1 -&gt; POR-74-TP1
+
+
+2E3 -&gt; POC-255-TP4
+
+
+2E2 -&gt; ACR-186-TP3
+
+
+1H1 -&gt; POC-57-TP4
+
+
+1H3 -&gt; ACR-229-TP3
+
+
+1H2 -&gt; ACR-173-TP3
+
+
+2D2 -&gt; ACR-173-TP2
+
+
+1H5 -&gt; ACR-225-TP3
+
+
+2D3 -&gt; POC-52-TP1
+
+
+1H4 -&gt; POC-201-TP1
+
+
+1H7 -&gt; POC-219-TP1
+
+
+1F9 -&gt; ACR-265-TP2
+
+
+1F8 -&gt; POC-53-TP4
+
+
+2D1 -&gt; ACR-150-TP4
+
+
+1H6 -&gt; ACR-150-TP2
+
+
+1H9 -&gt; ACR-173-TP1
+
+
+1F7 -&gt; ACR-229-TP4
+
+
+1H8 -&gt; POR-74-TP4
+
+
+1F6 -&gt; POR-260-TP2
+
+
+1F5 -&gt; ACR-145-TP4
+
+
+1F4 -&gt; POC-255-TP1
+
+
+1F3 -&gt; POR-83-TP3
+
+
+1D10 -&gt; POR-69-TP2
+
+
+1D11 -&gt; SR_2-84-NA
+
+
+1F2 -&gt; POC-57-TP3
+
+
+1D12 -&gt; POR-73-TP3
+
+
+1F1 -&gt; ACR-244-TP1
+
+
+2G3 -&gt; POR-74-TP3
+
+
+2G2 -&gt; ACR-265-TP1
+
+
+2G1 -&gt; POR-245-TP1
+
+
+1G8 -&gt; POC-222-TP1
+
+
+1G9 -&gt; POR-260-TP3
+
+
+1G12 -&gt; POC-40-TP1
+
+
+1G11 -&gt; POR-216-TP3
+
+
+1G10 -&gt; POR-72-TP3
+
+
+1G4 -&gt; ACR-225-TP1
+
+
+1G5 -&gt; ACR-173-TP4
+
+
+1G6 -&gt; POR-236-TP1
+
+
+1G7 -&gt; POC-222-TP4
+
+
+1G1 -&gt; POC-57-TP2
+
+
+1G2 -&gt; POR-216-TP4
+
+
+1G3 -&gt; POC-259-TP1
+
+
+2F1 -&gt; POC-255-TP3
+
+
+2F2 -&gt; POR-83-TP2
+
+
+2F3 -&gt; POR-72-TP4
+
+
+2A1 -&gt; POC-40-TP4
+
+
+1A11 -&gt; POC-201-TP3
+
+
+1A10 -&gt; ACR-139-TP1
+
+
+2A3 -&gt; ACR-225-TP2
+
+
+2A2 -&gt; POR-72-TP2
+
+
+1A12 -&gt; ACR-186-TP2
+
+
+2H2 -&gt; POR-262-TP2
+
+
+2H3 -&gt; ACR-244-TP3
+
+
+2H1 -&gt; POC-42-TP1
+
+
+1H10 -&gt; POC-219-TP2
+
+
+1A6 -&gt; ACR-265-TP3
+
+
+1A7 -&gt; POR-262-TP1
+
+
+1C12 -&gt; POC-52-TP2
+
+
+1H11 -&gt; ACR-265-TP4
+
+
+1H12 -&gt; POR-73-TP2
+
+
+1C11 -&gt; POC-42-TP4
+
+
+1A4 -&gt; POC-259-TP2
+
+
+1C10 -&gt; POC-53-TP2
+
+
+1A5 -&gt; ACR-139-TP2
+
+
+1A2 -&gt; POC-219-TP3
+
+
+1A3 -&gt; ACR-145-TP1
+
+
+1A1 -&gt; ACR-237-TP1
+
+
+1F12 -&gt; POC-255-TP2
+
+
+1F10 -&gt; POR-72-TP1
+
+
+1F11 -&gt; POC-42-TP2
+
+
+1A8 -&gt; ACR-186-TP1
+
+
+1A9 -&gt; POR-69-TP3
+
+Renamed 10--1E7_R1_001.fastq.gz to ACR-237-TP2_R1_001.fastq.gz
+Renamed 10--1E7_R2_001.fastq.gz to ACR-237-TP2_R2_001.fastq.gz
+Renamed 1A10_R1_001.fastq.gz to ACR-139-TP1_R1_001.fastq.gz
+Renamed 1A10_R2_001.fastq.gz to ACR-139-TP1_R2_001.fastq.gz
+Renamed 1A12_R1_001.fastq.gz to ACR-186-TP2_R1_001.fastq.gz
+Renamed 1A12_R2_001.fastq.gz to ACR-186-TP2_R2_001.fastq.gz
+Renamed 1A1_R1_001.fastq.gz to ACR-237-TP1_R1_001.fastq.gz
+Renamed 1A1_R2_001.fastq.gz to ACR-237-TP1_R2_001.fastq.gz
+Renamed 1A3_R1_001.fastq.gz to ACR-145-TP1_R1_001.fastq.gz
+Renamed 1A3_R2_001.fastq.gz to ACR-145-TP1_R2_001.fastq.gz
+Renamed 1A5_R1_001.fastq.gz to ACR-139-TP2_R1_001.fastq.gz
+Renamed 1A5_R2_001.fastq.gz to ACR-139-TP2_R2_001.fastq.gz
+Renamed 1A6_R1_001.fastq.gz to ACR-265-TP3_R1_001.fastq.gz
+Renamed 1A6_R2_001.fastq.gz to ACR-265-TP3_R2_001.fastq.gz
+Renamed 1A8_R1_001.fastq.gz to ACR-186-TP1_R1_001.fastq.gz
+Renamed 1A8_R2_001.fastq.gz to ACR-186-TP1_R2_001.fastq.gz
+Renamed 1B10_R1_001.fastq.gz to ACR-150-TP1_R1_001.fastq.gz
+Renamed 1B10_R2_001.fastq.gz to ACR-150-TP1_R2_001.fastq.gz
+Renamed 1B1_R1_001.fastq.gz to ACR-150-TP3_R1_001.fastq.gz
+Renamed 1B1_R2_001.fastq.gz to ACR-150-TP3_R2_001.fastq.gz
+Renamed 1B2_R1_001.fastq.gz to ACR-229-TP1_R1_001.fastq.gz
+Renamed 1B2_R2_001.fastq.gz to ACR-229-TP1_R2_001.fastq.gz
+Renamed 1B4_R1_001.fastq.gz to ACR-244-TP4_R1_001.fastq.gz
+Renamed 1B4_R2_001.fastq.gz to ACR-244-TP4_R2_001.fastq.gz
+Renamed 1B5_R1_001.fastq.gz to ACR-244-TP2_R1_001.fastq.gz
+Renamed 1B5_R2_001.fastq.gz to ACR-244-TP2_R2_001.fastq.gz
+Renamed 1C6_R1_001.fastq.gz to ACR-225-TP4_R1_001.fastq.gz
+Renamed 1C6_R2_001.fastq.gz to ACR-225-TP4_R2_001.fastq.gz
+Renamed 1C8_R1_001.fastq.gz to ACR-145-TP2_R1_001.fastq.gz
+Renamed 1C8_R2_001.fastq.gz to ACR-145-TP2_R2_001.fastq.gz
+Renamed 1C9_R1_001.fastq.gz to ACR-237-TP3_R1_001.fastq.gz
+Renamed 1C9_R2_001.fastq.gz to ACR-237-TP3_R2_001.fastq.gz
+Renamed 1D3_R1_001.fastq.gz to ACR-237-TP4_R1_001.fastq.gz
+Renamed 1D3_R2_001.fastq.gz to ACR-237-TP4_R2_001.fastq.gz
+Renamed 1D7_R1_001.fastq.gz to ACR-186-TP4_R1_001.fastq.gz
+Renamed 1D7_R2_001.fastq.gz to ACR-186-TP4_R2_001.fastq.gz
+Renamed 1D8_R1_001.fastq.gz to ACR-139-TP4_R1_001.fastq.gz
+Renamed 1D8_R2_001.fastq.gz to ACR-139-TP4_R2_001.fastq.gz
+Renamed 1D9_R1_001.fastq.gz to ACR-139-TP3_R1_001.fastq.gz
+Renamed 1D9_R2_001.fastq.gz to ACR-139-TP3_R2_001.fastq.gz
+Renamed 1F1_R1_001.fastq.gz to ACR-244-TP1_R1_001.fastq.gz
+Renamed 1F1_R2_001.fastq.gz to ACR-244-TP1_R2_001.fastq.gz
+Renamed 1F5_R1_001.fastq.gz to ACR-145-TP4_R1_001.fastq.gz
+Renamed 1F5_R2_001.fastq.gz to ACR-145-TP4_R2_001.fastq.gz
+Renamed 1F7_R1_001.fastq.gz to ACR-229-TP4_R1_001.fastq.gz
+Renamed 1F7_R2_001.fastq.gz to ACR-229-TP4_R2_001.fastq.gz
+Renamed 1F9_R1_001.fastq.gz to ACR-265-TP2_R1_001.fastq.gz
+Renamed 1F9_R2_001.fastq.gz to ACR-265-TP2_R2_001.fastq.gz
+Renamed 1G4_R1_001.fastq.gz to ACR-225-TP1_R1_001.fastq.gz
+Renamed 1G4_R2_001.fastq.gz to ACR-225-TP1_R2_001.fastq.gz
+Renamed 1G5_R1_001.fastq.gz to ACR-173-TP4_R1_001.fastq.gz
+Renamed 1G5_R2_001.fastq.gz to ACR-173-TP4_R2_001.fastq.gz
+Renamed 1H11_R1_001.fastq.gz to ACR-265-TP4_R1_001.fastq.gz
+Renamed 1H11_R2_001.fastq.gz to ACR-265-TP4_R2_001.fastq.gz
+Renamed 1H2_R1_001.fastq.gz to ACR-173-TP3_R1_001.fastq.gz
+Renamed 1H2_R2_001.fastq.gz to ACR-173-TP3_R2_001.fastq.gz
+Renamed 1H3_R1_001.fastq.gz to ACR-229-TP3_R1_001.fastq.gz
+Renamed 1H3_R2_001.fastq.gz to ACR-229-TP3_R2_001.fastq.gz
+Renamed 1H5_R1_001.fastq.gz to ACR-225-TP3_R1_001.fastq.gz
+Renamed 1H5_R2_001.fastq.gz to ACR-225-TP3_R2_001.fastq.gz
+Renamed 1H6_R1_001.fastq.gz to ACR-150-TP2_R1_001.fastq.gz
+Renamed 1H6_R2_001.fastq.gz to ACR-150-TP2_R2_001.fastq.gz
+Renamed 1H9_R1_001.fastq.gz to ACR-173-TP1_R1_001.fastq.gz
+Renamed 1H9_R2_001.fastq.gz to ACR-173-TP1_R2_001.fastq.gz
+Renamed 2A3_R1_001.fastq.gz to ACR-225-TP2_R1_001.fastq.gz
+Renamed 2A3_R2_001.fastq.gz to ACR-225-TP2_R2_001.fastq.gz
+Renamed 2C2_R1_001.fastq.gz to ACR-145-TP3_R1_001.fastq.gz
+Renamed 2C2_R2_001.fastq.gz to ACR-145-TP3_R2_001.fastq.gz
+Renamed 2D1_R1_001.fastq.gz to ACR-150-TP4_R1_001.fastq.gz
+Renamed 2D1_R2_001.fastq.gz to ACR-150-TP4_R2_001.fastq.gz
+Renamed 2D2_R1_001.fastq.gz to ACR-173-TP2_R1_001.fastq.gz
+Renamed 2D2_R2_001.fastq.gz to ACR-173-TP2_R2_001.fastq.gz
+Renamed 2G2_R1_001.fastq.gz to ACR-265-TP1_R1_001.fastq.gz
+Renamed 2G2_R2_001.fastq.gz to ACR-265-TP1_R2_001.fastq.gz
+Renamed 2H3_R1_001.fastq.gz to ACR-244-TP3_R1_001.fastq.gz
+Renamed 2H3_R2_001.fastq.gz to ACR-244-TP3_R2_001.fastq.gz
+Renamed 39--2E2_R1_001.fastq.gz to ACR-186-TP3_R1_001.fastq.gz
+Renamed 39--2E2_R2_001.fastq.gz to ACR-186-TP3_R2_001.fastq.gz
+Renamed 6--1E3_R1_001.fastq.gz to ACR-229-TP2_R1_001.fastq.gz
+Renamed 6--1E3_R2_001.fastq.gz to ACR-229-TP2_R2_001.fastq.gz</code></pre>
+</section>
+<section id="fastqcmultiqc-on-raw-reads" class="level1">
+<h1>5 FastQC/MultiQC on raw reads</h1>
+<div class="sourceCode" id="cb11" style="background: #f1f3f5;"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb11-1"><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># Load bash variables into memory</span></span>
+<span id="cb11-2"><span class="bu" style="color: null;
+background-color: null;
+font-style: inherit;">source</span> .bashvars</span>
+<span id="cb11-3"></span>
+<span id="cb11-4"><span class="co" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;">############ RUN FASTQC ############</span></span>
-<span id="cb7-8"></span>
-<span id="cb7-9"></span>
-<span id="cb7-10"><span class="co" style="color: #5E5E5E;
+<span id="cb11-5"></span>
+<span id="cb11-6"></span>
+<span id="cb11-7"><span class="co" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;"># Create array of trimmed FastQs</span></span>
-<span id="cb7-11"><span class="va" style="color: #111111;
+<span id="cb11-8"><span class="va" style="color: #111111;
 background-color: null;
 font-style: inherit;">raw_fastqs_array</span><span class="op" style="color: #5E5E5E;
 background-color: null;
@@ -28854,11 +29818,11 @@ background-color: null;
 font-style: inherit;">(${raw_reads_dir}</span>/<span class="va" style="color: #111111;
 background-color: null;
 font-style: inherit;">${fastq_pattern})</span></span>
-<span id="cb7-12"></span>
-<span id="cb7-13"><span class="co" style="color: #5E5E5E;
+<span id="cb11-9"></span>
+<span id="cb11-10"><span class="co" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;"># Pass array contents to new variable as space-delimited list</span></span>
-<span id="cb7-14"><span class="va" style="color: #111111;
+<span id="cb11-11"><span class="va" style="color: #111111;
 background-color: null;
 font-style: inherit;">raw_fastqc_list</span><span class="op" style="color: #5E5E5E;
 background-color: null;
@@ -28879,29 +29843,29 @@ background-color: null;
 font-style: inherit;">"</span><span class="va" style="color: #111111;
 background-color: null;
 font-style: inherit;">)</span></span>
-<span id="cb7-15"></span>
-<span id="cb7-16"><span class="bu" style="color: null;
+<span id="cb11-12"></span>
+<span id="cb11-13"><span class="bu" style="color: null;
 background-color: null;
 font-style: inherit;">echo</span> <span class="st" style="color: #20794D;
 background-color: null;
 font-style: inherit;">"Beginning FastQC on raw reads..."</span></span>
-<span id="cb7-17"><span class="bu" style="color: null;
+<span id="cb11-14"><span class="bu" style="color: null;
 background-color: null;
 font-style: inherit;">echo</span> <span class="st" style="color: #20794D;
 background-color: null;
 font-style: inherit;">""</span></span>
-<span id="cb7-18"></span>
-<span id="cb7-19"><span class="co" style="color: #5E5E5E;
+<span id="cb11-15"></span>
+<span id="cb11-16"><span class="co" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;"># Run FastQC</span></span>
-<span id="cb7-20"><span class="co" style="color: #5E5E5E;
+<span id="cb11-17"><span class="co" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;">### </span><span class="al" style="color: #AD0000;
 background-color: null;
 font-style: inherit;">NOTE</span><span class="co" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;">: Do NOT quote raw_fastqc_list</span></span>
-<span id="cb7-21"><span class="va" style="color: #111111;
+<span id="cb11-18"><span class="va" style="color: #111111;
 background-color: null;
 font-style: inherit;">${programs_array</span><span class="op" style="color: #5E5E5E;
 background-color: null;
@@ -28912,55 +29876,55 @@ background-color: null;
 font-style: inherit;">}</span> <span class="dt" style="color: #AD0000;
 background-color: null;
 font-style: inherit;">\</span></span>
-<span id="cb7-22">--threads <span class="va" style="color: #111111;
+<span id="cb11-19">--threads <span class="va" style="color: #111111;
 background-color: null;
 font-style: inherit;">${threads}</span> <span class="dt" style="color: #AD0000;
 background-color: null;
 font-style: inherit;">\</span></span>
-<span id="cb7-23">--outdir <span class="va" style="color: #111111;
+<span id="cb11-20">--outdir <span class="va" style="color: #111111;
 background-color: null;
-font-style: inherit;">${raw_fastqc_dir}</span> <span class="dt" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">\</span></span>
-<span id="cb7-24">--quiet <span class="dt" style="color: #AD0000;
+font-style: inherit;">${raw_reads_dir}</span> <span class="dt" style="color: #AD0000;
 background-color: null;
 font-style: inherit;">\</span></span>
-<span id="cb7-25"><span class="va" style="color: #111111;
+<span id="cb11-21">--quiet <span class="dt" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">\</span></span>
+<span id="cb11-22"><span class="va" style="color: #111111;
 background-color: null;
 font-style: inherit;">${raw_fastqc_list}</span></span>
-<span id="cb7-26"></span>
-<span id="cb7-27"><span class="bu" style="color: null;
+<span id="cb11-23"></span>
+<span id="cb11-24"><span class="bu" style="color: null;
 background-color: null;
 font-style: inherit;">echo</span> <span class="st" style="color: #20794D;
 background-color: null;
 font-style: inherit;">"FastQC on raw reads complete!"</span></span>
-<span id="cb7-28"><span class="bu" style="color: null;
+<span id="cb11-25"><span class="bu" style="color: null;
 background-color: null;
 font-style: inherit;">echo</span> <span class="st" style="color: #20794D;
 background-color: null;
 font-style: inherit;">""</span></span>
-<span id="cb7-29"></span>
-<span id="cb7-30"><span class="co" style="color: #5E5E5E;
+<span id="cb11-26"></span>
+<span id="cb11-27"><span class="co" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;">############ </span><span class="re">END</span><span class="co" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;"> FASTQC ############</span></span>
-<span id="cb7-31"></span>
-<span id="cb7-32"><span class="co" style="color: #5E5E5E;
+<span id="cb11-28"></span>
+<span id="cb11-29"><span class="co" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;">############ RUN MULTIQC ############</span></span>
-<span id="cb7-33"><span class="bu" style="color: null;
+<span id="cb11-30"><span class="bu" style="color: null;
 background-color: null;
 font-style: inherit;">echo</span> <span class="st" style="color: #20794D;
 background-color: null;
 font-style: inherit;">"Beginning MultiQC on raw FastQC..."</span></span>
-<span id="cb7-34"><span class="bu" style="color: null;
+<span id="cb11-31"><span class="bu" style="color: null;
 background-color: null;
 font-style: inherit;">echo</span> <span class="st" style="color: #20794D;
 background-color: null;
 font-style: inherit;">""</span></span>
-<span id="cb7-35"></span>
-<span id="cb7-36"><span class="va" style="color: #111111;
+<span id="cb11-32"></span>
+<span id="cb11-33"><span class="va" style="color: #111111;
 background-color: null;
 font-style: inherit;">${programs_array</span><span class="op" style="color: #5E5E5E;
 background-color: null;
@@ -28971,78 +29935,78 @@ background-color: null;
 font-style: inherit;">}</span> <span class="dt" style="color: #AD0000;
 background-color: null;
 font-style: inherit;">\</span></span>
-<span id="cb7-37"><span class="va" style="color: #111111;
+<span id="cb11-34"><span class="va" style="color: #111111;
 background-color: null;
-font-style: inherit;">${raw_fastqc_dir}</span> <span class="dt" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">\</span></span>
-<span id="cb7-38">--interactive <span class="dt" style="color: #AD0000;
+font-style: inherit;">${raw_reads_dir}</span> <span class="dt" style="color: #AD0000;
 background-color: null;
 font-style: inherit;">\</span></span>
-<span id="cb7-39">-o <span class="va" style="color: #111111;
+<span id="cb11-35">--interactive <span class="dt" style="color: #AD0000;
 background-color: null;
-font-style: inherit;">${raw_fastqc_dir}</span></span>
-<span id="cb7-40"></span>
-<span id="cb7-41"><span class="bu" style="color: null;
+font-style: inherit;">\</span></span>
+<span id="cb11-36">-o <span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">${raw_reads_dir}</span></span>
+<span id="cb11-37"></span>
+<span id="cb11-38"><span class="bu" style="color: null;
 background-color: null;
 font-style: inherit;">echo</span> <span class="st" style="color: #20794D;
 background-color: null;
 font-style: inherit;">""</span></span>
-<span id="cb7-42"><span class="bu" style="color: null;
+<span id="cb11-39"><span class="bu" style="color: null;
 background-color: null;
 font-style: inherit;">echo</span> <span class="st" style="color: #20794D;
 background-color: null;
 font-style: inherit;">"MultiQC on raw FastQs complete."</span></span>
-<span id="cb7-43"><span class="bu" style="color: null;
+<span id="cb11-40"><span class="bu" style="color: null;
 background-color: null;
 font-style: inherit;">echo</span> <span class="st" style="color: #20794D;
 background-color: null;
 font-style: inherit;">""</span></span>
-<span id="cb7-44"></span>
-<span id="cb7-45"><span class="co" style="color: #5E5E5E;
+<span id="cb11-41"></span>
+<span id="cb11-42"><span class="co" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;">############ </span><span class="re">END</span><span class="co" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;"> MULTIQC ############</span></span>
-<span id="cb7-46"></span>
-<span id="cb7-47"><span class="bu" style="color: null;
+<span id="cb11-43"></span>
+<span id="cb11-44"><span class="bu" style="color: null;
 background-color: null;
 font-style: inherit;">echo</span> <span class="st" style="color: #20794D;
 background-color: null;
 font-style: inherit;">"Removing FastQC zip files."</span></span>
-<span id="cb7-48"><span class="bu" style="color: null;
+<span id="cb11-45"><span class="bu" style="color: null;
 background-color: null;
 font-style: inherit;">echo</span> <span class="st" style="color: #20794D;
 background-color: null;
 font-style: inherit;">""</span></span>
-<span id="cb7-49"><span class="fu" style="color: #4758AB;
+<span id="cb11-46"><span class="fu" style="color: #4758AB;
 background-color: null;
 font-style: inherit;">rm</span> <span class="va" style="color: #111111;
 background-color: null;
-font-style: inherit;">${raw_fastqc_dir}</span>/<span class="pp" style="color: #AD0000;
+font-style: inherit;">${raw_reads_dir}</span>/<span class="pp" style="color: #AD0000;
 background-color: null;
 font-style: inherit;">*</span>.zip</span>
-<span id="cb7-50"><span class="bu" style="color: null;
+<span id="cb11-47"><span class="bu" style="color: null;
 background-color: null;
 font-style: inherit;">echo</span> <span class="st" style="color: #20794D;
 background-color: null;
 font-style: inherit;">"FastQC zip files removed."</span></span>
-<span id="cb7-51"><span class="bu" style="color: null;
+<span id="cb11-48"><span class="bu" style="color: null;
 background-color: null;
 font-style: inherit;">echo</span> <span class="st" style="color: #20794D;
 background-color: null;
 font-style: inherit;">""</span></span>
-<span id="cb7-52"></span>
-<span id="cb7-53"><span class="co" style="color: #5E5E5E;
+<span id="cb11-49"></span>
+<span id="cb11-50"><span class="co" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;"># View directory contents</span></span>
-<span id="cb7-54"><span class="fu" style="color: #4758AB;
+<span id="cb11-51"><span class="fu" style="color: #4758AB;
 background-color: null;
 font-style: inherit;">ls</span> <span class="at" style="color: #657422;
 background-color: null;
 font-style: inherit;">-lh</span> <span class="va" style="color: #111111;
 background-color: null;
-font-style: inherit;">${raw_fastqc_dir}</span></span></code></pre></div>
+font-style: inherit;">${raw_reads_dir}</span></span></code></pre></div>
 <pre><code>Beginning FastQC on raw reads...
 
 application/gzip
@@ -29132,13 +30096,13 @@ Beginning MultiQC on raw FastQC...
 
   /// MultiQC 🔍 | v1.14
 
-|           multiqc | MultiQC Version v1.26 now available!
-|           multiqc | Search path : /home/shared/8TB_HDD_01/sam/gitrepos/urol-e5/timeseries_molecular/D-Apul/output/00.20-D-Apul-WGBS-reads-FastQC-MultiQC/raw-fastqc
-|         searching | ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 100% 160/160  
+|           multiqc | MultiQC Version v1.27 now available!
+|           multiqc | Search path : /home/shared/8TB_HDD_01/sam/gitrepos/urol-e5/timeseries_molecular/D-Apul/data/wgbs-raw-fastqs
+|         searching | ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 100% 321/321  
 |            fastqc | Found 80 reports
 |           multiqc | Compressing plot data
-|           multiqc | Report      : ../output/00.20-D-Apul-WGBS-reads-FastQC-MultiQC/raw-fastqc/multiqc_report.html
-|           multiqc | Data        : ../output/00.20-D-Apul-WGBS-reads-FastQC-MultiQC/raw-fastqc/multiqc_data
+|           multiqc | Report      : ../data/wgbs-raw-fastqs/multiqc_report.html
+|           multiqc | Data        : ../data/wgbs-raw-fastqs/multiqc_data
 |           multiqc | MultiQC complete
 
 MultiQC on raw FastQs complete.
@@ -29147,89 +30111,253 @@ Removing FastQC zip files.
 
 FastQC zip files removed.
 
-total 49M
--rw-r--r-- 1 sam sam 587K Dec 31 17:16 10--1E7_R1_001_fastqc.html
--rw-r--r-- 1 sam sam 604K Dec 31 17:15 10--1E7_R2_001_fastqc.html
--rw-r--r-- 1 sam sam 585K Dec 31 17:17 1A10_R1_001_fastqc.html
--rw-r--r-- 1 sam sam 605K Dec 31 17:16 1A10_R2_001_fastqc.html
--rw-r--r-- 1 sam sam 583K Dec 31 17:16 1A12_R1_001_fastqc.html
--rw-r--r-- 1 sam sam 610K Dec 31 17:17 1A12_R2_001_fastqc.html
--rw-r--r-- 1 sam sam 587K Dec 31 17:17 1A1_R1_001_fastqc.html
--rw-r--r-- 1 sam sam 608K Dec 31 17:16 1A1_R2_001_fastqc.html
--rw-r--r-- 1 sam sam 594K Dec 31 17:18 1A3_R1_001_fastqc.html
--rw-r--r-- 1 sam sam 611K Dec 31 17:18 1A3_R2_001_fastqc.html
--rw-r--r-- 1 sam sam 588K Dec 31 17:17 1A5_R1_001_fastqc.html
--rw-r--r-- 1 sam sam 606K Dec 31 17:17 1A5_R2_001_fastqc.html
--rw-r--r-- 1 sam sam 589K Dec 31 17:15 1A6_R1_001_fastqc.html
--rw-r--r-- 1 sam sam 608K Dec 31 17:16 1A6_R2_001_fastqc.html
--rw-r--r-- 1 sam sam 599K Dec 31 17:20 1A8_R1_001_fastqc.html
--rw-r--r-- 1 sam sam 621K Dec 31 17:20 1A8_R2_001_fastqc.html
--rw-r--r-- 1 sam sam 595K Dec 31 17:22 1B10_R1_001_fastqc.html
--rw-r--r-- 1 sam sam 616K Dec 31 17:21 1B10_R2_001_fastqc.html
--rw-r--r-- 1 sam sam 586K Dec 31 17:16 1B1_R1_001_fastqc.html
--rw-r--r-- 1 sam sam 604K Dec 31 17:16 1B1_R2_001_fastqc.html
--rw-r--r-- 1 sam sam 588K Dec 31 17:18 1B2_R1_001_fastqc.html
--rw-r--r-- 1 sam sam 604K Dec 31 17:19 1B2_R2_001_fastqc.html
--rw-r--r-- 1 sam sam 589K Dec 31 17:18 1B4_R1_001_fastqc.html
--rw-r--r-- 1 sam sam 606K Dec 31 17:18 1B4_R2_001_fastqc.html
--rw-r--r-- 1 sam sam 582K Dec 31 17:17 1B5_R1_001_fastqc.html
--rw-r--r-- 1 sam sam 602K Dec 31 17:17 1B5_R2_001_fastqc.html
--rw-r--r-- 1 sam sam 591K Dec 31 17:16 1C6_R1_001_fastqc.html
--rw-r--r-- 1 sam sam 615K Dec 31 17:16 1C6_R2_001_fastqc.html
--rw-r--r-- 1 sam sam 589K Dec 31 17:17 1C8_R1_001_fastqc.html
--rw-r--r-- 1 sam sam 608K Dec 31 17:18 1C8_R2_001_fastqc.html
--rw-r--r-- 1 sam sam 586K Dec 31 17:17 1C9_R1_001_fastqc.html
--rw-r--r-- 1 sam sam 605K Dec 31 17:17 1C9_R2_001_fastqc.html
--rw-r--r-- 1 sam sam 589K Dec 31 17:16 1D3_R1_001_fastqc.html
--rw-r--r-- 1 sam sam 605K Dec 31 17:16 1D3_R2_001_fastqc.html
--rw-r--r-- 1 sam sam 590K Dec 31 17:16 1D7_R1_001_fastqc.html
--rw-r--r-- 1 sam sam 608K Dec 31 17:16 1D7_R2_001_fastqc.html
--rw-r--r-- 1 sam sam 586K Dec 31 17:16 1D8_R1_001_fastqc.html
--rw-r--r-- 1 sam sam 604K Dec 31 17:17 1D8_R2_001_fastqc.html
--rw-r--r-- 1 sam sam 591K Dec 31 17:17 1D9_R1_001_fastqc.html
--rw-r--r-- 1 sam sam 611K Dec 31 17:17 1D9_R2_001_fastqc.html
--rw-r--r-- 1 sam sam 589K Dec 31 17:27 1F1_R1_001_fastqc.html
--rw-r--r-- 1 sam sam 611K Dec 31 17:27 1F1_R2_001_fastqc.html
--rw-r--r-- 1 sam sam 591K Dec 31 17:27 1F5_R1_001_fastqc.html
--rw-r--r-- 1 sam sam 610K Dec 31 17:27 1F5_R2_001_fastqc.html
--rw-r--r-- 1 sam sam 592K Dec 31 17:26 1F7_R1_001_fastqc.html
--rw-r--r-- 1 sam sam 607K Dec 31 17:26 1F7_R2_001_fastqc.html
--rw-r--r-- 1 sam sam 587K Dec 31 17:26 1F9_R1_001_fastqc.html
--rw-r--r-- 1 sam sam 606K Dec 31 17:26 1F9_R2_001_fastqc.html
--rw-r--r-- 1 sam sam 587K Dec 31 17:26 1G4_R1_001_fastqc.html
--rw-r--r-- 1 sam sam 606K Dec 31 17:25 1G4_R2_001_fastqc.html
--rw-r--r-- 1 sam sam 597K Dec 31 17:27 1G5_R1_001_fastqc.html
--rw-r--r-- 1 sam sam 615K Dec 31 17:27 1G5_R2_001_fastqc.html
--rw-r--r-- 1 sam sam 594K Dec 31 17:26 1H11_R1_001_fastqc.html
--rw-r--r-- 1 sam sam 615K Dec 31 17:27 1H11_R2_001_fastqc.html
--rw-r--r-- 1 sam sam 595K Dec 31 17:27 1H2_R1_001_fastqc.html
--rw-r--r-- 1 sam sam 614K Dec 31 17:28 1H2_R2_001_fastqc.html
--rw-r--r-- 1 sam sam 587K Dec 31 17:27 1H3_R1_001_fastqc.html
--rw-r--r-- 1 sam sam 606K Dec 31 17:27 1H3_R2_001_fastqc.html
--rw-r--r-- 1 sam sam 595K Dec 31 17:27 1H5_R1_001_fastqc.html
--rw-r--r-- 1 sam sam 618K Dec 31 17:27 1H5_R2_001_fastqc.html
--rw-r--r-- 1 sam sam 586K Dec 31 17:27 1H6_R1_001_fastqc.html
--rw-r--r-- 1 sam sam 602K Dec 31 17:27 1H6_R2_001_fastqc.html
--rw-r--r-- 1 sam sam 594K Dec 31 17:27 1H9_R1_001_fastqc.html
--rw-r--r-- 1 sam sam 610K Dec 31 17:27 1H9_R2_001_fastqc.html
--rw-r--r-- 1 sam sam 584K Dec 31 17:26 2A3_R1_001_fastqc.html
--rw-r--r-- 1 sam sam 592K Dec 31 17:27 2A3_R2_001_fastqc.html
--rw-r--r-- 1 sam sam 589K Dec 31 17:27 2C2_R1_001_fastqc.html
--rw-r--r-- 1 sam sam 597K Dec 31 17:27 2C2_R2_001_fastqc.html
--rw-r--r-- 1 sam sam 583K Dec 31 17:27 2D1_R1_001_fastqc.html
--rw-r--r-- 1 sam sam 596K Dec 31 17:27 2D1_R2_001_fastqc.html
--rw-r--r-- 1 sam sam 583K Dec 31 17:26 2D2_R1_001_fastqc.html
--rw-r--r-- 1 sam sam 590K Dec 31 17:26 2D2_R2_001_fastqc.html
--rw-r--r-- 1 sam sam 582K Dec 31 17:28 2G2_R1_001_fastqc.html
--rw-r--r-- 1 sam sam 592K Dec 31 17:28 2G2_R2_001_fastqc.html
--rw-r--r-- 1 sam sam 582K Dec 31 17:27 2H3_R1_001_fastqc.html
--rw-r--r-- 1 sam sam 588K Dec 31 17:27 2H3_R2_001_fastqc.html
--rw-r--r-- 1 sam sam 589K Dec 31 17:28 39--2E2_R1_001_fastqc.html
--rw-r--r-- 1 sam sam 596K Dec 31 17:28 39--2E2_R2_001_fastqc.html
--rw-r--r-- 1 sam sam 586K Dec 31 17:30 6--1E3_R1_001_fastqc.html
--rw-r--r-- 1 sam sam 606K Dec 31 17:30 6--1E3_R2_001_fastqc.html
-drwxr-xr-x 2 sam sam 4.0K Dec 31 17:30 multiqc_data
--rw-r--r-- 1 sam sam 2.2M Dec 31 17:30 multiqc_report.html</code></pre>
+total 213G
+-rw-r--r-- 1 sam sam   60 Dec 30 07:56 10--1E7_R1_001.fastq.gz.md5
+-rw-r--r-- 1 sam sam   60 Dec 30 07:59 10--1E7_R2_001.fastq.gz.md5
+-rw-r--r-- 1 sam sam   57 Dec 30 08:22 1A10_R1_001.fastq.gz.md5
+-rw-r--r-- 1 sam sam   57 Dec 30 08:25 1A10_R2_001.fastq.gz.md5
+-rw-r--r-- 1 sam sam   57 Dec 30 08:33 1A12_R1_001.fastq.gz.md5
+-rw-r--r-- 1 sam sam   57 Dec 30 08:35 1A12_R2_001.fastq.gz.md5
+-rw-r--r-- 1 sam sam   56 Dec 30 08:38 1A1_R1_001.fastq.gz.md5
+-rw-r--r-- 1 sam sam   56 Dec 30 08:41 1A1_R2_001.fastq.gz.md5
+-rw-r--r-- 1 sam sam   56 Dec 30 08:51 1A3_R1_001.fastq.gz.md5
+-rw-r--r-- 1 sam sam   56 Dec 30 08:54 1A3_R2_001.fastq.gz.md5
+-rw-r--r-- 1 sam sam   56 Dec 30 09:02 1A5_R1_001.fastq.gz.md5
+-rw-r--r-- 1 sam sam   56 Dec 30 09:05 1A5_R2_001.fastq.gz.md5
+-rw-r--r-- 1 sam sam   56 Dec 30 09:07 1A6_R1_001.fastq.gz.md5
+-rw-r--r-- 1 sam sam   56 Dec 30 09:10 1A6_R2_001.fastq.gz.md5
+-rw-r--r-- 1 sam sam   56 Dec 30 09:18 1A8_R1_001.fastq.gz.md5
+-rw-r--r-- 1 sam sam   56 Dec 30 09:21 1A8_R2_001.fastq.gz.md5
+-rw-r--r-- 1 sam sam   57 Dec 30 09:32 1B10_R1_001.fastq.gz.md5
+-rw-r--r-- 1 sam sam   57 Dec 30 09:35 1B10_R2_001.fastq.gz.md5
+-rw-r--r-- 1 sam sam   56 Dec 30 09:48 1B1_R1_001.fastq.gz.md5
+-rw-r--r-- 1 sam sam   56 Dec 30 09:51 1B1_R2_001.fastq.gz.md5
+-rw-r--r-- 1 sam sam   56 Dec 30 09:54 1B2_R1_001.fastq.gz.md5
+-rw-r--r-- 1 sam sam   56 Dec 30 09:57 1B2_R2_001.fastq.gz.md5
+-rw-r--r-- 1 sam sam   56 Dec 30 10:05 1B4_R1_001.fastq.gz.md5
+-rw-r--r-- 1 sam sam   56 Dec 30 10:08 1B4_R2_001.fastq.gz.md5
+-rw-r--r-- 1 sam sam   56 Dec 30 10:10 1B5_R1_001.fastq.gz.md5
+-rw-r--r-- 1 sam sam   56 Dec 30 10:13 1B5_R2_001.fastq.gz.md5
+-rw-r--r-- 1 sam sam   56 Dec 30 11:15 1C6_R1_001.fastq.gz.md5
+-rw-r--r-- 1 sam sam   56 Dec 30 11:18 1C6_R2_001.fastq.gz.md5
+-rw-r--r-- 1 sam sam   56 Dec 30 11:26 1C8_R1_001.fastq.gz.md5
+-rw-r--r-- 1 sam sam   56 Dec 30 11:29 1C8_R2_001.fastq.gz.md5
+-rw-r--r-- 1 sam sam   56 Dec 30 11:31 1C9_R1_001.fastq.gz.md5
+-rw-r--r-- 1 sam sam   56 Dec 30 11:34 1C9_R2_001.fastq.gz.md5
+-rw-r--r-- 1 sam sam   56 Dec 30 12:00 1D3_R1_001.fastq.gz.md5
+-rw-r--r-- 1 sam sam   56 Dec 30 12:03 1D3_R2_001.fastq.gz.md5
+-rw-r--r-- 1 sam sam   56 Dec 30 12:21 1D7_R1_001.fastq.gz.md5
+-rw-r--r-- 1 sam sam   56 Dec 30 12:23 1D7_R2_001.fastq.gz.md5
+-rw-r--r-- 1 sam sam   56 Dec 30 12:26 1D8_R1_001.fastq.gz.md5
+-rw-r--r-- 1 sam sam   56 Dec 30 12:28 1D8_R2_001.fastq.gz.md5
+-rw-r--r-- 1 sam sam   56 Dec 30 12:31 1D9_R1_001.fastq.gz.md5
+-rw-r--r-- 1 sam sam   56 Dec 30 12:34 1D9_R2_001.fastq.gz.md5
+-rw-r--r-- 1 sam sam   56 Dec 30 12:51 1F1_R1_001.fastq.gz.md5
+-rw-r--r-- 1 sam sam   56 Dec 30 12:54 1F1_R2_001.fastq.gz.md5
+-rw-r--r-- 1 sam sam   56 Dec 30 13:10 1F5_R1_001.fastq.gz.md5
+-rw-r--r-- 1 sam sam   56 Dec 30 13:13 1F5_R2_001.fastq.gz.md5
+-rw-r--r-- 1 sam sam   56 Dec 30 13:19 1F7_R1_001.fastq.gz.md5
+-rw-r--r-- 1 sam sam   56 Dec 30 13:21 1F7_R2_001.fastq.gz.md5
+-rw-r--r-- 1 sam sam   56 Dec 30 13:28 1F9_R1_001.fastq.gz.md5
+-rw-r--r-- 1 sam sam   56 Dec 30 13:30 1F9_R2_001.fastq.gz.md5
+-rw-r--r-- 1 sam sam   56 Dec 30 14:01 1G4_R1_001.fastq.gz.md5
+-rw-r--r-- 1 sam sam   56 Dec 30 14:03 1G4_R2_001.fastq.gz.md5
+-rw-r--r-- 1 sam sam   56 Dec 30 14:06 1G5_R1_001.fastq.gz.md5
+-rw-r--r-- 1 sam sam   56 Dec 30 14:09 1G5_R2_001.fastq.gz.md5
+-rw-r--r-- 1 sam sam   57 Dec 30 14:35 1H11_R1_001.fastq.gz.md5
+-rw-r--r-- 1 sam sam   57 Dec 30 14:38 1H11_R2_001.fastq.gz.md5
+-rw-r--r-- 1 sam sam   56 Dec 30 14:51 1H2_R1_001.fastq.gz.md5
+-rw-r--r-- 1 sam sam   56 Dec 30 14:54 1H2_R2_001.fastq.gz.md5
+-rw-r--r-- 1 sam sam   56 Dec 30 14:56 1H3_R1_001.fastq.gz.md5
+-rw-r--r-- 1 sam sam   56 Dec 30 14:59 1H3_R2_001.fastq.gz.md5
+-rw-r--r-- 1 sam sam   56 Dec 30 15:07 1H5_R1_001.fastq.gz.md5
+-rw-r--r-- 1 sam sam   56 Dec 30 15:10 1H5_R2_001.fastq.gz.md5
+-rw-r--r-- 1 sam sam   56 Dec 30 15:13 1H6_R1_001.fastq.gz.md5
+-rw-r--r-- 1 sam sam   56 Dec 30 15:16 1H6_R2_001.fastq.gz.md5
+-rw-r--r-- 1 sam sam   56 Dec 30 15:30 1H9_R1_001.fastq.gz.md5
+-rw-r--r-- 1 sam sam   56 Dec 30 15:33 1H9_R2_001.fastq.gz.md5
+-rw-r--r-- 1 sam sam   56 Dec 30 15:45 2A3_R1_001.fastq.gz.md5
+-rw-r--r-- 1 sam sam   56 Dec 30 15:47 2A3_R2_001.fastq.gz.md5
+-rw-r--r-- 1 sam sam   56 Dec 30 16:11 2C2_R1_001.fastq.gz.md5
+-rw-r--r-- 1 sam sam   56 Dec 30 16:14 2C2_R2_001.fastq.gz.md5
+-rw-r--r-- 1 sam sam   56 Dec 30 16:23 2D1_R1_001.fastq.gz.md5
+-rw-r--r-- 1 sam sam   56 Dec 30 16:26 2D1_R2_001.fastq.gz.md5
+-rw-r--r-- 1 sam sam   56 Dec 30 16:28 2D2_R1_001.fastq.gz.md5
+-rw-r--r-- 1 sam sam   56 Dec 30 16:30 2D2_R2_001.fastq.gz.md5
+-rw-r--r-- 1 sam sam   56 Dec 30 17:00 2G2_R1_001.fastq.gz.md5
+-rw-r--r-- 1 sam sam   56 Dec 30 17:03 2G2_R2_001.fastq.gz.md5
+-rw-r--r-- 1 sam sam   56 Dec 30 17:22 2H3_R1_001.fastq.gz.md5
+-rw-r--r-- 1 sam sam   56 Dec 30 17:24 2H3_R2_001.fastq.gz.md5
+-rw-r--r-- 1 sam sam   60 Dec 30 17:27 39--2E2_R1_001.fastq.gz.md5
+-rw-r--r-- 1 sam sam   60 Dec 30 17:30 39--2E2_R2_001.fastq.gz.md5
+-rw-r--r-- 1 sam sam   59 Dec 30 17:57 6--1E3_R1_001.fastq.gz.md5
+-rw-r--r-- 1 sam sam   59 Dec 30 18:00 6--1E3_R2_001.fastq.gz.md5
+-rw-r--r-- 1 sam sam 585K Feb 19 09:17 ACR-139-TP1_R1_001_fastqc.html
+-rw-r--r-- 1 sam sam 2.8G Dec 30 08:22 ACR-139-TP1_R1_001.fastq.gz
+-rw-r--r-- 1 sam sam 605K Feb 19 09:17 ACR-139-TP1_R2_001_fastqc.html
+-rw-r--r-- 1 sam sam 2.8G Dec 30 08:25 ACR-139-TP1_R2_001.fastq.gz
+-rw-r--r-- 1 sam sam 589K Feb 19 09:17 ACR-139-TP2_R1_001_fastqc.html
+-rw-r--r-- 1 sam sam 2.8G Dec 30 09:02 ACR-139-TP2_R1_001.fastq.gz
+-rw-r--r-- 1 sam sam 606K Feb 19 09:18 ACR-139-TP2_R2_001_fastqc.html
+-rw-r--r-- 1 sam sam 2.8G Dec 30 09:05 ACR-139-TP2_R2_001.fastq.gz
+-rw-r--r-- 1 sam sam 591K Feb 19 09:18 ACR-139-TP3_R1_001_fastqc.html
+-rw-r--r-- 1 sam sam 3.0G Dec 30 12:31 ACR-139-TP3_R1_001.fastq.gz
+-rw-r--r-- 1 sam sam 611K Feb 19 09:19 ACR-139-TP3_R2_001_fastqc.html
+-rw-r--r-- 1 sam sam 3.0G Dec 30 12:34 ACR-139-TP3_R2_001.fastq.gz
+-rw-r--r-- 1 sam sam 586K Feb 19 09:16 ACR-139-TP4_R1_001_fastqc.html
+-rw-r--r-- 1 sam sam 2.7G Dec 30 12:26 ACR-139-TP4_R1_001.fastq.gz
+-rw-r--r-- 1 sam sam 604K Feb 19 09:17 ACR-139-TP4_R2_001_fastqc.html
+-rw-r--r-- 1 sam sam 2.7G Dec 30 12:28 ACR-139-TP4_R2_001.fastq.gz
+-rw-r--r-- 1 sam sam 594K Feb 19 09:20 ACR-145-TP1_R1_001_fastqc.html
+-rw-r--r-- 1 sam sam 3.1G Dec 30 08:51 ACR-145-TP1_R1_001.fastq.gz
+-rw-r--r-- 1 sam sam 611K Feb 19 09:19 ACR-145-TP1_R2_001_fastqc.html
+-rw-r--r-- 1 sam sam 3.1G Dec 30 08:54 ACR-145-TP1_R2_001.fastq.gz
+-rw-r--r-- 1 sam sam 589K Feb 19 09:18 ACR-145-TP2_R1_001_fastqc.html
+-rw-r--r-- 1 sam sam 2.9G Dec 30 11:26 ACR-145-TP2_R1_001.fastq.gz
+-rw-r--r-- 1 sam sam 608K Feb 19 09:16 ACR-145-TP2_R2_001_fastqc.html
+-rw-r--r-- 1 sam sam 2.9G Dec 30 11:29 ACR-145-TP2_R2_001.fastq.gz
+-rw-r--r-- 1 sam sam 589K Feb 19 09:17 ACR-145-TP3_R1_001_fastqc.html
+-rw-r--r-- 1 sam sam 2.6G Dec 30 16:11 ACR-145-TP3_R1_001.fastq.gz
+-rw-r--r-- 1 sam sam 597K Feb 19 09:16 ACR-145-TP3_R2_001_fastqc.html
+-rw-r--r-- 1 sam sam 2.6G Dec 30 16:14 ACR-145-TP3_R2_001.fastq.gz
+-rw-r--r-- 1 sam sam 591K Feb 19 09:19 ACR-145-TP4_R1_001_fastqc.html
+-rw-r--r-- 1 sam sam 3.1G Dec 30 13:10 ACR-145-TP4_R1_001.fastq.gz
+-rw-r--r-- 1 sam sam 610K Feb 19 09:20 ACR-145-TP4_R2_001_fastqc.html
+-rw-r--r-- 1 sam sam 3.0G Dec 30 13:13 ACR-145-TP4_R2_001.fastq.gz
+-rw-r--r-- 1 sam sam 595K Feb 19 09:24 ACR-150-TP1_R1_001_fastqc.html
+-rw-r--r-- 1 sam sam 3.7G Dec 30 09:32 ACR-150-TP1_R1_001.fastq.gz
+-rw-r--r-- 1 sam sam 616K Feb 19 09:22 ACR-150-TP1_R2_001_fastqc.html
+-rw-r--r-- 1 sam sam 3.7G Dec 30 09:35 ACR-150-TP1_R2_001.fastq.gz
+-rw-r--r-- 1 sam sam 586K Feb 19 09:15 ACR-150-TP2_R1_001_fastqc.html
+-rw-r--r-- 1 sam sam 2.6G Dec 30 15:13 ACR-150-TP2_R1_001.fastq.gz
+-rw-r--r-- 1 sam sam 602K Feb 19 09:16 ACR-150-TP2_R2_001_fastqc.html
+-rw-r--r-- 1 sam sam 2.6G Dec 30 15:16 ACR-150-TP2_R2_001.fastq.gz
+-rw-r--r-- 1 sam sam 586K Feb 19 09:17 ACR-150-TP3_R1_001_fastqc.html
+-rw-r--r-- 1 sam sam 2.7G Dec 30 09:48 ACR-150-TP3_R1_001.fastq.gz
+-rw-r--r-- 1 sam sam 604K Feb 19 09:17 ACR-150-TP3_R2_001_fastqc.html
+-rw-r--r-- 1 sam sam 2.7G Dec 30 09:51 ACR-150-TP3_R2_001.fastq.gz
+-rw-r--r-- 1 sam sam 583K Feb 19 09:14 ACR-150-TP4_R1_001_fastqc.html
+-rw-r--r-- 1 sam sam 2.3G Dec 30 16:23 ACR-150-TP4_R1_001.fastq.gz
+-rw-r--r-- 1 sam sam 596K Feb 19 09:16 ACR-150-TP4_R2_001_fastqc.html
+-rw-r--r-- 1 sam sam 2.3G Dec 30 16:26 ACR-150-TP4_R2_001.fastq.gz
+-rw-r--r-- 1 sam sam 594K Feb 19 09:17 ACR-173-TP1_R1_001_fastqc.html
+-rw-r--r-- 1 sam sam 2.8G Dec 30 15:30 ACR-173-TP1_R1_001.fastq.gz
+-rw-r--r-- 1 sam sam 610K Feb 19 09:17 ACR-173-TP1_R2_001_fastqc.html
+-rw-r--r-- 1 sam sam 2.7G Dec 30 15:33 ACR-173-TP1_R2_001.fastq.gz
+-rw-r--r-- 1 sam sam 583K Feb 19 09:13 ACR-173-TP2_R1_001_fastqc.html
+-rw-r--r-- 1 sam sam 1.8G Dec 30 16:28 ACR-173-TP2_R1_001.fastq.gz
+-rw-r--r-- 1 sam sam 590K Feb 19 09:13 ACR-173-TP2_R2_001_fastqc.html
+-rw-r--r-- 1 sam sam 1.8G Dec 30 16:30 ACR-173-TP2_R2_001.fastq.gz
+-rw-r--r-- 1 sam sam 595K Feb 19 09:18 ACR-173-TP3_R1_001_fastqc.html
+-rw-r--r-- 1 sam sam 2.9G Dec 30 14:51 ACR-173-TP3_R1_001.fastq.gz
+-rw-r--r-- 1 sam sam 614K Feb 19 09:19 ACR-173-TP3_R2_001_fastqc.html
+-rw-r--r-- 1 sam sam 3.0G Dec 30 14:54 ACR-173-TP3_R2_001.fastq.gz
+-rw-r--r-- 1 sam sam 597K Feb 19 09:17 ACR-173-TP4_R1_001_fastqc.html
+-rw-r--r-- 1 sam sam 2.8G Dec 30 14:06 ACR-173-TP4_R1_001.fastq.gz
+-rw-r--r-- 1 sam sam 615K Feb 19 09:17 ACR-173-TP4_R2_001_fastqc.html
+-rw-r--r-- 1 sam sam 2.8G Dec 30 14:09 ACR-173-TP4_R2_001.fastq.gz
+-rw-r--r-- 1 sam sam 599K Feb 19 09:22 ACR-186-TP1_R1_001_fastqc.html
+-rw-r--r-- 1 sam sam 3.4G Dec 30 09:18 ACR-186-TP1_R1_001.fastq.gz
+-rw-r--r-- 1 sam sam 621K Feb 19 09:23 ACR-186-TP1_R2_001_fastqc.html
+-rw-r--r-- 1 sam sam 3.5G Dec 30 09:21 ACR-186-TP1_R2_001.fastq.gz
+-rw-r--r-- 1 sam sam 583K Feb 19 09:18 ACR-186-TP2_R1_001_fastqc.html
+-rw-r--r-- 1 sam sam 2.8G Dec 30 08:33 ACR-186-TP2_R1_001.fastq.gz
+-rw-r--r-- 1 sam sam 610K Feb 19 09:18 ACR-186-TP2_R2_001_fastqc.html
+-rw-r--r-- 1 sam sam 2.8G Dec 30 08:35 ACR-186-TP2_R2_001.fastq.gz
+-rw-r--r-- 1 sam sam 589K Feb 19 09:16 ACR-186-TP3_R1_001_fastqc.html
+-rw-r--r-- 1 sam sam 2.4G Dec 30 17:27 ACR-186-TP3_R1_001.fastq.gz
+-rw-r--r-- 1 sam sam 596K Feb 19 09:17 ACR-186-TP3_R2_001_fastqc.html
+-rw-r--r-- 1 sam sam 2.4G Dec 30 17:30 ACR-186-TP3_R2_001.fastq.gz
+-rw-r--r-- 1 sam sam 590K Feb 19 09:16 ACR-186-TP4_R1_001_fastqc.html
+-rw-r--r-- 1 sam sam 2.5G Dec 30 12:21 ACR-186-TP4_R1_001.fastq.gz
+-rw-r--r-- 1 sam sam 608K Feb 19 09:17 ACR-186-TP4_R2_001_fastqc.html
+-rw-r--r-- 1 sam sam 2.4G Dec 30 12:23 ACR-186-TP4_R2_001.fastq.gz
+-rw-r--r-- 1 sam sam 587K Feb 19 09:25 ACR-225-TP1_R1_001_fastqc.html
+-rw-r--r-- 1 sam sam 2.3G Dec 30 14:01 ACR-225-TP1_R1_001.fastq.gz
+-rw-r--r-- 1 sam sam 606K Feb 19 09:27 ACR-225-TP1_R2_001_fastqc.html
+-rw-r--r-- 1 sam sam 2.3G Dec 30 14:03 ACR-225-TP1_R2_001.fastq.gz
+-rw-r--r-- 1 sam sam 584K Feb 19 09:25 ACR-225-TP2_R1_001_fastqc.html
+-rw-r--r-- 1 sam sam 2.1G Dec 30 15:45 ACR-225-TP2_R1_001.fastq.gz
+-rw-r--r-- 1 sam sam 592K Feb 19 09:26 ACR-225-TP2_R2_001_fastqc.html
+-rw-r--r-- 1 sam sam 2.1G Dec 30 15:47 ACR-225-TP2_R2_001.fastq.gz
+-rw-r--r-- 1 sam sam 595K Feb 19 09:28 ACR-225-TP3_R1_001_fastqc.html
+-rw-r--r-- 1 sam sam 2.7G Dec 30 15:07 ACR-225-TP3_R1_001.fastq.gz
+-rw-r--r-- 1 sam sam 618K Feb 19 09:30 ACR-225-TP3_R2_001_fastqc.html
+-rw-r--r-- 1 sam sam 2.7G Dec 30 15:10 ACR-225-TP3_R2_001.fastq.gz
+-rw-r--r-- 1 sam sam 591K Feb 19 09:29 ACR-225-TP4_R1_001_fastqc.html
+-rw-r--r-- 1 sam sam 2.5G Dec 30 11:15 ACR-225-TP4_R1_001.fastq.gz
+-rw-r--r-- 1 sam sam 615K Feb 19 09:29 ACR-225-TP4_R2_001_fastqc.html
+-rw-r--r-- 1 sam sam 2.5G Dec 30 11:18 ACR-225-TP4_R2_001.fastq.gz
+-rw-r--r-- 1 sam sam 588K Feb 19 09:33 ACR-229-TP1_R1_001_fastqc.html
+-rw-r--r-- 1 sam sam 3.4G Dec 30 09:54 ACR-229-TP1_R1_001.fastq.gz
+-rw-r--r-- 1 sam sam 604K Feb 19 09:33 ACR-229-TP1_R2_001_fastqc.html
+-rw-r--r-- 1 sam sam 3.4G Dec 30 09:57 ACR-229-TP1_R2_001.fastq.gz
+-rw-r--r-- 1 sam sam 586K Feb 19 09:31 ACR-229-TP2_R1_001_fastqc.html
+-rw-r--r-- 1 sam sam 3.2G Dec 30 17:57 ACR-229-TP2_R1_001.fastq.gz
+-rw-r--r-- 1 sam sam 606K Feb 19 09:31 ACR-229-TP2_R2_001_fastqc.html
+-rw-r--r-- 1 sam sam 3.2G Dec 30 18:00 ACR-229-TP2_R2_001.fastq.gz
+-rw-r--r-- 1 sam sam 587K Feb 19 09:29 ACR-229-TP3_R1_001_fastqc.html
+-rw-r--r-- 1 sam sam 2.6G Dec 30 14:56 ACR-229-TP3_R1_001.fastq.gz
+-rw-r--r-- 1 sam sam 606K Feb 19 09:30 ACR-229-TP3_R2_001_fastqc.html
+-rw-r--r-- 1 sam sam 2.6G Dec 30 14:59 ACR-229-TP3_R2_001.fastq.gz
+-rw-r--r-- 1 sam sam 592K Feb 19 09:29 ACR-229-TP4_R1_001_fastqc.html
+-rw-r--r-- 1 sam sam 2.4G Dec 30 13:19 ACR-229-TP4_R1_001.fastq.gz
+-rw-r--r-- 1 sam sam 607K Feb 19 09:29 ACR-229-TP4_R2_001_fastqc.html
+-rw-r--r-- 1 sam sam 2.4G Dec 30 13:21 ACR-229-TP4_R2_001.fastq.gz
+-rw-r--r-- 1 sam sam 587K Feb 19 09:33 ACR-237-TP1_R1_001_fastqc.html
+-rw-r--r-- 1 sam sam 2.6G Dec 30 08:38 ACR-237-TP1_R1_001.fastq.gz
+-rw-r--r-- 1 sam sam 608K Feb 19 09:32 ACR-237-TP1_R2_001_fastqc.html
+-rw-r--r-- 1 sam sam 2.6G Dec 30 08:41 ACR-237-TP1_R2_001.fastq.gz
+-rw-r--r-- 1 sam sam 587K Feb 19 09:32 ACR-237-TP2_R1_001_fastqc.html
+-rw-r--r-- 1 sam sam 2.6G Dec 30 07:56 ACR-237-TP2_R1_001.fastq.gz
+-rw-r--r-- 1 sam sam 604K Feb 19 09:31 ACR-237-TP2_R2_001_fastqc.html
+-rw-r--r-- 1 sam sam 2.6G Dec 30 07:59 ACR-237-TP2_R2_001.fastq.gz
+-rw-r--r-- 1 sam sam 586K Feb 19 09:31 ACR-237-TP3_R1_001_fastqc.html
+-rw-r--r-- 1 sam sam 2.7G Dec 30 11:31 ACR-237-TP3_R1_001.fastq.gz
+-rw-r--r-- 1 sam sam 605K Feb 19 09:32 ACR-237-TP3_R2_001_fastqc.html
+-rw-r--r-- 1 sam sam 2.7G Dec 30 11:34 ACR-237-TP3_R2_001.fastq.gz
+-rw-r--r-- 1 sam sam 589K Feb 19 09:31 ACR-237-TP4_R1_001_fastqc.html
+-rw-r--r-- 1 sam sam 2.6G Dec 30 12:00 ACR-237-TP4_R1_001.fastq.gz
+-rw-r--r-- 1 sam sam 605K Feb 19 09:31 ACR-237-TP4_R2_001_fastqc.html
+-rw-r--r-- 1 sam sam 2.5G Dec 30 12:03 ACR-237-TP4_R2_001.fastq.gz
+-rw-r--r-- 1 sam sam 589K Feb 19 09:33 ACR-244-TP1_R1_001_fastqc.html
+-rw-r--r-- 1 sam sam 3.1G Dec 30 12:51 ACR-244-TP1_R1_001.fastq.gz
+-rw-r--r-- 1 sam sam 611K Feb 19 09:33 ACR-244-TP1_R2_001_fastqc.html
+-rw-r--r-- 1 sam sam 3.1G Dec 30 12:54 ACR-244-TP1_R2_001.fastq.gz
+-rw-r--r-- 1 sam sam 582K Feb 19 09:32 ACR-244-TP2_R1_001_fastqc.html
+-rw-r--r-- 1 sam sam 2.7G Dec 30 10:10 ACR-244-TP2_R1_001.fastq.gz
+-rw-r--r-- 1 sam sam 602K Feb 19 09:33 ACR-244-TP2_R2_001_fastqc.html
+-rw-r--r-- 1 sam sam 2.7G Dec 30 10:13 ACR-244-TP2_R2_001.fastq.gz
+-rw-r--r-- 1 sam sam 582K Feb 19 09:28 ACR-244-TP3_R1_001_fastqc.html
+-rw-r--r-- 1 sam sam 1.9G Dec 30 17:22 ACR-244-TP3_R1_001.fastq.gz
+-rw-r--r-- 1 sam sam 588K Feb 19 09:28 ACR-244-TP3_R2_001_fastqc.html
+-rw-r--r-- 1 sam sam 1.9G Dec 30 17:24 ACR-244-TP3_R2_001.fastq.gz
+-rw-r--r-- 1 sam sam 589K Feb 19 09:33 ACR-244-TP4_R1_001_fastqc.html
+-rw-r--r-- 1 sam sam 3.0G Dec 30 10:05 ACR-244-TP4_R1_001.fastq.gz
+-rw-r--r-- 1 sam sam 606K Feb 19 09:33 ACR-244-TP4_R2_001_fastqc.html
+-rw-r--r-- 1 sam sam 3.0G Dec 30 10:08 ACR-244-TP4_R2_001.fastq.gz
+-rw-r--r-- 1 sam sam 582K Feb 19 09:33 ACR-265-TP1_R1_001_fastqc.html
+-rw-r--r-- 1 sam sam 2.7G Dec 30 17:00 ACR-265-TP1_R1_001.fastq.gz
+-rw-r--r-- 1 sam sam 592K Feb 19 09:33 ACR-265-TP1_R2_001_fastqc.html
+-rw-r--r-- 1 sam sam 2.7G Dec 30 17:03 ACR-265-TP1_R2_001.fastq.gz
+-rw-r--r-- 1 sam sam 587K Feb 19 09:32 ACR-265-TP2_R1_001_fastqc.html
+-rw-r--r-- 1 sam sam 2.5G Dec 30 13:28 ACR-265-TP2_R1_001.fastq.gz
+-rw-r--r-- 1 sam sam 606K Feb 19 09:32 ACR-265-TP2_R2_001_fastqc.html
+-rw-r--r-- 1 sam sam 2.5G Dec 30 13:30 ACR-265-TP2_R2_001.fastq.gz
+-rw-r--r-- 1 sam sam 589K Feb 19 09:33 ACR-265-TP3_R1_001_fastqc.html
+-rw-r--r-- 1 sam sam 2.5G Dec 30 09:07 ACR-265-TP3_R1_001.fastq.gz
+-rw-r--r-- 1 sam sam 608K Feb 19 09:33 ACR-265-TP3_R2_001_fastqc.html
+-rw-r--r-- 1 sam sam 2.4G Dec 30 09:10 ACR-265-TP3_R2_001.fastq.gz
+-rw-r--r-- 1 sam sam 594K Feb 19 09:34 ACR-265-TP4_R1_001_fastqc.html
+-rw-r--r-- 1 sam sam 2.5G Dec 30 14:35 ACR-265-TP4_R1_001.fastq.gz
+-rw-r--r-- 1 sam sam 615K Feb 19 09:34 ACR-265-TP4_R2_001_fastqc.html
+-rw-r--r-- 1 sam sam 2.5G Dec 30 14:38 ACR-265-TP4_R2_001.fastq.gz
+-rw-rw-r-- 1 sam sam 1.6K Jan  2 11:08 fastq_pairs.txt
+drwxr-xr-x 2 sam sam 4.0K Feb 19 09:34 multiqc_data
+-rw-r--r-- 1 sam sam 2.2M Feb 19 09:34 multiqc_report.html</code></pre>
+</section>
+<section id="references" class="level1">
+<h1>References</h1>
 <div id="refs" class="references csl-bib-body hanging-indent">
 <div id="ref-ewels2016" class="csl-entry">
 Ewels, Philip, Måns Magnusson, Sverker Lundin, and Max Käller. 2016. “MultiQC: Summarize Analysis Results for Multiple Tools and Samples in a Single Report.” <em>Bioinformatics</em> 32 (19): 3047–48. <a href="https://doi.org/10.1093/bioinformatics/btw354" class="uri">https://doi.org/10.1093/bioinformatics/btw354</a>.
