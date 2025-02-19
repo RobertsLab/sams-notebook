@@ -22,15 +22,26 @@ The notebook entry is part of the coral E5 [molecular_timeseries project](https:
 
 Although I didn't _need_ to run [`FastQC`](https://www.bioinformatics.babraham.ac.uk/projects/fastqc/) or [`MultiQC`](https://multiqc.info/), I did so because I used recycled code to download the data. Since [`FastQC`](https://www.bioinformatics.babraham.ac.uk/projects/fastqc/) and [`MultiQC`](https://multiqc.info/) are fast, I just ran the entire R Markdown doc anyway.
 
+The resulting [`MultiQC`](https://multiqc.info/) Report is here (HTML):
+
+- [https://gannet.fish.washington.edu/gitrepos/urol-e5/timeseries_molecular/D-Apul/data/wgbs-raw-fastqs/multiqc_report.html](https://gannet.fish.washington.edu/gitrepos/urol-e5/timeseries_molecular/D-Apul/data/wgbs-raw-fastqs/multiqc_report.html)
+
 ::: {.callout-note}
-It is taken from [`00.20-D-Apul-WGBS-reads-FastQC-MultiQC.Rmd`](https://github.com/urol-e5/timeseries_molecular/blob/98ea3d4307f5c373dfa66fa11617d6a29cb24137/D-Apul/code/00.20-D-Apul-WGBS-reads-FastQC-MultiQC.Rmd) (commit `98ea3d4`).
+The markdown below was knitted from [`00.20-D-Apul-WGBS-reads-FastQC-MultiQC.Rmd`](https://github.com/urol-e5/timeseries_molecular/blob/e1675941e629293b8255cc56b23c8fedc7024b80/D-Apul/code/00.20-D-Apul-WGBS-reads-FastQC-MultiQC.Rmd) (commit `e167594`).
 :::
 
-The resulting [`MultiQC`](https://multiqc.info/) Report is here:
+# 1 Background
 
-- [https://gannet.fish.washington.edu/gitrepos/urol-e5/timeseries_molecular/D-Apul/output/00.20-D-Apul-WGBS-reads-FastQC-MultiQC/raw-fastqc/multiqc_report.html](https://gannet.fish.washington.edu/gitrepos/urol-e5/timeseries_molecular/D-Apul/output/00.20-D-Apul-WGBS-reads-FastQC-MultiQC/raw-fastqc/multiqc_report.html)
+This Rmd file will download raw WGBS FastQs for *A.pulchra* and evaluate
+them using [FastQC](https://github.com/s-andrews/FastQC) and
+[MultiQC](https://multiqc.info/)(Ewels et al. 2016).
 
-# 1 Create a Bash variables file
+Additionally, it will rename the files. New naming format will be
+`<colony_id>-<timepoint>`. This will make the naming consistent across
+species, improve sample identification, and improve parsing in
+downstream analyses.
+
+# 2 Create a Bash variables file
 
 This allows usage of Bash variables across R Markdown chunks.
 
@@ -42,10 +53,12 @@ echo ""
 echo "# Data directories"
 echo 'export timeseries_dir=/home/shared/8TB_HDD_01/sam/gitrepos/urol-e5/timeseries_molecular'
 echo 'export output_dir_top=${timeseries_dir}/D-Apul/output/00.20-D-Apul-WGBS-reads-FastQC-MultiQC'
-echo 'export raw_fastqc_dir=${output_dir_top}/raw-fastqc'
 echo 'export raw_reads_dir=${timeseries_dir}/D-Apul/data/wgbs-raw-fastqs'
 echo 'export raw_reads_url="https://owl.fish.washington.edu/nightingales/E5-coral-time-series/30-1067895835/"'
 echo ""
+
+echo "# Input files"
+echo 'export metadata_file="${timeseries_dir}/M-multi-species/data/e5_DNA_Azenta_metadata.csv"'
 
 echo "# Paths to programs"
 echo 'export fastqc=/home/shared/FastQC-0.12.1/fastqc'
@@ -92,10 +105,11 @@ cat .bashvars
     # Data directories
     export timeseries_dir=/home/shared/8TB_HDD_01/sam/gitrepos/urol-e5/timeseries_molecular
     export output_dir_top=${timeseries_dir}/D-Apul/output/00.20-D-Apul-WGBS-reads-FastQC-MultiQC
-    export raw_fastqc_dir=${output_dir_top}/raw-fastqc
     export raw_reads_dir=${timeseries_dir}/D-Apul/data/wgbs-raw-fastqs
     export raw_reads_url="https://owl.fish.washington.edu/nightingales/E5-coral-time-series/30-1067895835/"
 
+    # Input files
+    export metadata_file="${timeseries_dir}/M-multi-species/data/e5_DNA_Azenta_metadata.csv"
     # Paths to programs
     export fastqc=/home/shared/FastQC-0.12.1/fastqc
     export multiqc=/home/sam/programs/mambaforge/bin/multiqc
@@ -125,15 +139,40 @@ cat .bashvars
     # Print formatting
     export line="--------------------------------------------------------"
 
-# 2 Download *A.pulchra* WGBS FastQs
+# 3 Download *A.pulchra* WGBS FastQs
 
-## 2.1 Download raw WGBS reads
+## 3.1 Inspect metadata file
+
+``` bash
+# Load bash variables into memory
+source .bashvars
+
+head ${metadata_file} |
+column -t -s","
+```
+
+    Sample Name*  Plate         Well number  Azenta sample name  Colony ID  Timepoint  Sample Type*  Species/Strain*  Sample Buffer*    Total Amount (ng)*    Volume (µL)  Conc (ng/µL)  Purification Method*  Biosafety Level (BSL)            Method Used for Fluorescence  Method Used for Spectrophotometry  Method Used for Electrophoresis  
+    1             41            1            G4                  1G4        ACR-225    TP1           Genomic DNA      Acropora pulchra  Tris buffer (8.0 pH)  2064         80            25.8                  Column clean-up (Zymo Miniprep)  None                          Qubit                              NA                               1.5% TAE agarose non-denaturing gel  "Please keep methylation libraries   as we may want to sequence more"
+    2             291-20220211  2            A3                  2A3        ACR-225    TP2           Genomic DNA      Acropora pulchra  Tris buffer (8.0 pH)  5064         80            63.3                  Column clean-up (Zymo Miniprep)  None                          Qubit                              NA                               1.5% TAE agarose non-denaturing gel  "Please keep methylation libraries   as we may want to sequence more"
+    3             527           1            H5                  1H5        ACR-225    TP3           Genomic DNA      Acropora pulchra  Tris buffer (8.0 pH)  4232         80            52.9                  Column clean-up (Zymo Miniprep)  None                          Qubit                              NA                               1.5% TAE agarose non-denaturing gel  "Please keep methylation libraries   as we may want to sequence more"
+    4             911           1            C6                  1C6        ACR-225    TP4           Genomic DNA      Acropora pulchra  Tris buffer (8.0 pH)  4488         80            56.1                  Column clean-up (Zymo Miniprep)  None                          Qubit                              NA                               1.5% TAE agarose non-denaturing gel  "Please keep methylation libraries   as we may want to sequence more"
+    5             55            1            B2                  1B2        ACR-229    TP1           Genomic DNA      Acropora pulchra  Tris buffer (8.0 pH)  2432         80            30.4                  Column clean-up (Zymo Miniprep)  None                          Qubit                              NA                               1.5% TAE agarose non-denaturing gel  "Please keep methylation libraries   as we may want to sequence more"
+    6             295           1            E3                  1E3        ACR-229    TP2           Genomic DNA      Acropora pulchra  Tris buffer (8.0 pH)  2760         80            34.5                  Column clean-up (Zymo Miniprep)  None                          Qubit                              NA                               1.5% TAE agarose non-denaturing gel  "Please keep methylation libraries   as we may want to sequence more"
+    7             531           1            H3                  1H3        ACR-229    TP3           Genomic DNA      Acropora pulchra  Tris buffer (8.0 pH)  5752         80            71.9                  Column clean-up (Zymo Miniprep)  None                          Qubit                              NA                               1.5% TAE agarose non-denaturing gel  "Please keep methylation libraries   as we may want to sequence more"
+    8             931           1            F7                  1F7        ACR-229    TP4           Genomic DNA      Acropora pulchra  Tris buffer (8.0 pH)  6008         80            75.1                  Column clean-up (Zymo Miniprep)  None                          Qubit                              NA                               1.5% TAE agarose non-denaturing gel  "Please keep methylation libraries   as we may want to sequence more"
+    9             49            1            A1                  1A1        ACR-237    TP1           Genomic DNA      Acropora pulchra  Tris buffer (8.0 pH)  1456         80            18.2                  Column clean-up (Zymo Miniprep)  None                          Qubit                              NA                               1.5% TAE agarose non-denaturing gel  "Please keep methylation libraries   as we may want to sequence more"
+
+## 3.2 Download raw WGBS reads
 
 Reads are downloaded from
 <https://owl.fish.washington.edu/nightingales/E5-coral-time-series/30-1067895835/>
 
 Since sequencing included multiple species, the code will also parse
 only those that are *A.pulchra*.
+
+Some filenames are preceeded by `<sample_number>--` for some reason.
+This formatting is limited to only samples in `E` wells, so the code
+below uses that aspect to retrieve those samples as well.
 
 The `--cut-dirs 3` command cuts the preceding directory structure
 (i.e. `nightingales/E5-coral-time-series/30-1067895835/`) so that we
@@ -147,7 +186,7 @@ source .bashvars
 mkdir --parents ${raw_reads_dir}
 
 # Create list of only A.pulchra sample names
-# Some samples names are preceded by the sample number for some reason,
+# Some samples names are preceded by the Sample Number for some reason,
 # so this handles that formatting.
 sample_list=$(awk -F"," '$11 == "Acropora pulchra" { if ($9 ~ /E/) { print $8 "--" $9 } else { print $9 } }' ${timeseries_dir}/M-multi-species/data/30-1067895835-WGBS-sample-submission-form.csv \
 | sort)
@@ -412,8 +451,9 @@ ls -lh "${raw_reads_dir}"
     -rw-r--r-- 1 sam sam   59 Dec 30 17:57 6--1E3_R1_001.fastq.gz.md5
     -rw-r--r-- 1 sam sam 3.2G Dec 30 18:00 6--1E3_R2_001.fastq.gz
     -rw-r--r-- 1 sam sam   59 Dec 30 18:00 6--1E3_R2_001.fastq.gz.md5
+    -rw-rw-r-- 1 sam sam 1.6K Jan  2 11:08 fastq_pairs.txt
 
-## 2.2 Verify raw read checksums
+## 3.3 Verify raw read checksums
 
 ``` bash
 # Load bash variables into memory
@@ -508,14 +548,519 @@ done
     ./6--1E3_R1_001.fastq.gz: OK
     ./6--1E3_R2_001.fastq.gz: OK
 
-# 3 FastQC/MultiQC on raw reads
+# 4 Rename FastQs for Project Consistency
+
+New naming format will be `<colony_id>-<timepoint>`.
+
+Use of a temp file, instead of working directory from the metadata file
+can avoid potential issues with character/text formatting from the input
+CSV.
 
 ``` bash
 # Load bash variables into memory
 source .bashvars
 
-# Make output directory if it doesn't exist
-mkdir --parents "${raw_fastqc_dir}"
+cd "${raw_reads_dir}"
+
+# Create an associative array to store the mapping
+declare -A number_to_colony_timepoint
+
+# Create a temporary file to store the mapping
+temp_mapping_file=$(mktemp)
+
+# Read the metadata file and populate the temporary file using awk
+# Maps Azenta sample name to colony_id and timepoint.
+awk -F, 'NR > 1 { print $5, $6 "-" $7 }' "$metadata_file" > "$temp_mapping_file"
+
+# Read the temporary file and populate the associative array
+while read -r Number colony_timepoint; do
+    number_to_colony_timepoint["$Number"]="$colony_timepoint"
+done < "$temp_mapping_file"
+
+# Remove the temporary file
+rm "$temp_mapping_file"
+
+# Print the associative array for debugging
+echo "Number to colony_id-Timepoint mapping:"
+for key in "${!number_to_colony_timepoint[@]}"; do
+    echo ""
+    echo "$key -> ${number_to_colony_timepoint[$key]}"
+    echo ""
+done
+
+# Iterate over the FastQ files in the current directory
+for fastq_file in *.fastq.gz; do
+    # Extract the sample number from the filename
+    sample_number=$(echo "$fastq_file" | sed -E 's/^([0-9]+--)?([A-Za-z0-9]+).*/\2/')
+    
+    # Check if the sample number exists in the associative array
+    if [[ -n "${number_to_colony_timepoint[$sample_number]}" ]]; then
+        new_sample_name="${number_to_colony_timepoint[$sample_number]}"
+        new_filename=$(echo "$fastq_file" | sed -E "s/^([0-9]+--)?$sample_number/$new_sample_name/")
+        if [[ "$fastq_file" != "$new_filename" ]]; then
+            mv "$fastq_file" "$new_filename"
+            echo "Renamed $fastq_file to $new_filename"
+        else
+            echo "No renaming needed for $fastq_file"
+        fi
+    else
+        echo "Sample number '$sample_number' not found in metadata."
+        # Debugging: Print all keys in the associative array with quotes
+        echo "Available keys in the associative array:"
+        for key in "${!number_to_colony_timepoint[@]}"; do
+            echo "'$key'"
+        done
+    fi
+done
+```
+
+    Number to colony_id-Timepoint mapping:
+
+    1B3 -> SR_1-440-NA
+
+
+    1B2 -> ACR-229-TP1
+
+
+    1B1 -> ACR-150-TP3
+
+
+    1B7 -> POC-40-TP3
+
+
+    1B6 -> POR-245-TP2
+
+
+    1B5 -> ACR-244-TP2
+
+
+    1B4 -> ACR-244-TP4
+
+
+    1B9 -> POR-236-TP2
+
+
+    1B8 -> POR-69-TP1
+
+
+    1D5 -> POC-57-TP1
+
+
+    1D4 -> POC-52-TP3
+
+
+    1C1 -> POC-222-TP3
+
+
+    1C2 -> POR-83-TP4
+
+
+    1D7 -> ACR-186-TP4
+
+
+    1D6 -> POR-245-TP4
+
+
+    1C3 -> POC-53-TP3
+
+
+    1D1 -> POR-216-TP2
+
+
+    1B12 -> POC-219-TP4
+
+
+    1C4 -> POC-201-TP2
+
+
+    1C5 -> POC-52-TP4
+
+
+    1B10 -> ACR-150-TP1
+
+
+    1D3 -> ACR-237-TP4
+
+
+    1C6 -> ACR-225-TP4
+
+
+    1B11 -> POR-69-TP4
+
+
+    1D2 -> POR-260-TP1
+
+
+    1C7 -> POC-53-TP1
+
+
+    1C8 -> ACR-145-TP2
+
+
+    1C9 -> ACR-237-TP3
+
+
+    2C3 -> POR-73-TP1
+
+
+    1D9 -> ACR-139-TP3
+
+
+    2C2 -> ACR-145-TP3
+
+
+    1D8 -> ACR-139-TP4
+
+
+    2C1 -> POR-216-TP1
+
+
+    1E2 -> POC-42-TP3
+
+
+    1E3 -> ACR-229-TP2
+
+
+    1E1 -> POC-259-TP4
+
+
+    1E6 -> POR-83-TP1
+
+
+    1E7 -> ACR-237-TP2
+
+
+    1E4 -> POR-74-TP2
+
+
+    1E5 -> POR-245-TP3
+
+
+    1E11 -> POR-260-TP4
+
+
+    1E10 -> POC-259-TP3
+
+
+    1E8 -> POR-262-TP3
+
+
+    1E9 -> POR-73-TP4
+
+
+    1E12 -> POC-222-TP2
+
+
+    2B1 -> SR_3-440B-NA
+
+
+    2B2 -> POC-40-TP2
+
+
+    2B3 -> POR-262-TP4
+
+
+    2E1 -> POR-74-TP1
+
+
+    2E3 -> POC-255-TP4
+
+
+    2E2 -> ACR-186-TP3
+
+
+    1H1 -> POC-57-TP4
+
+
+    1H3 -> ACR-229-TP3
+
+
+    1H2 -> ACR-173-TP3
+
+
+    2D2 -> ACR-173-TP2
+
+
+    1H5 -> ACR-225-TP3
+
+
+    2D3 -> POC-52-TP1
+
+
+    1H4 -> POC-201-TP1
+
+
+    1H7 -> POC-219-TP1
+
+
+    1F9 -> ACR-265-TP2
+
+
+    1F8 -> POC-53-TP4
+
+
+    2D1 -> ACR-150-TP4
+
+
+    1H6 -> ACR-150-TP2
+
+
+    1H9 -> ACR-173-TP1
+
+
+    1F7 -> ACR-229-TP4
+
+
+    1H8 -> POR-74-TP4
+
+
+    1F6 -> POR-260-TP2
+
+
+    1F5 -> ACR-145-TP4
+
+
+    1F4 -> POC-255-TP1
+
+
+    1F3 -> POR-83-TP3
+
+
+    1D10 -> POR-69-TP2
+
+
+    1D11 -> SR_2-84-NA
+
+
+    1F2 -> POC-57-TP3
+
+
+    1D12 -> POR-73-TP3
+
+
+    1F1 -> ACR-244-TP1
+
+
+    2G3 -> POR-74-TP3
+
+
+    2G2 -> ACR-265-TP1
+
+
+    2G1 -> POR-245-TP1
+
+
+    1G8 -> POC-222-TP1
+
+
+    1G9 -> POR-260-TP3
+
+
+    1G12 -> POC-40-TP1
+
+
+    1G11 -> POR-216-TP3
+
+
+    1G10 -> POR-72-TP3
+
+
+    1G4 -> ACR-225-TP1
+
+
+    1G5 -> ACR-173-TP4
+
+
+    1G6 -> POR-236-TP1
+
+
+    1G7 -> POC-222-TP4
+
+
+    1G1 -> POC-57-TP2
+
+
+    1G2 -> POR-216-TP4
+
+
+    1G3 -> POC-259-TP1
+
+
+    2F1 -> POC-255-TP3
+
+
+    2F2 -> POR-83-TP2
+
+
+    2F3 -> POR-72-TP4
+
+
+    2A1 -> POC-40-TP4
+
+
+    1A11 -> POC-201-TP3
+
+
+    1A10 -> ACR-139-TP1
+
+
+    2A3 -> ACR-225-TP2
+
+
+    2A2 -> POR-72-TP2
+
+
+    1A12 -> ACR-186-TP2
+
+
+    2H2 -> POR-262-TP2
+
+
+    2H3 -> ACR-244-TP3
+
+
+    2H1 -> POC-42-TP1
+
+
+    1H10 -> POC-219-TP2
+
+
+    1A6 -> ACR-265-TP3
+
+
+    1A7 -> POR-262-TP1
+
+
+    1C12 -> POC-52-TP2
+
+
+    1H11 -> ACR-265-TP4
+
+
+    1H12 -> POR-73-TP2
+
+
+    1C11 -> POC-42-TP4
+
+
+    1A4 -> POC-259-TP2
+
+
+    1C10 -> POC-53-TP2
+
+
+    1A5 -> ACR-139-TP2
+
+
+    1A2 -> POC-219-TP3
+
+
+    1A3 -> ACR-145-TP1
+
+
+    1A1 -> ACR-237-TP1
+
+
+    1F12 -> POC-255-TP2
+
+
+    1F10 -> POR-72-TP1
+
+
+    1F11 -> POC-42-TP2
+
+
+    1A8 -> ACR-186-TP1
+
+
+    1A9 -> POR-69-TP3
+
+    Renamed 10--1E7_R1_001.fastq.gz to ACR-237-TP2_R1_001.fastq.gz
+    Renamed 10--1E7_R2_001.fastq.gz to ACR-237-TP2_R2_001.fastq.gz
+    Renamed 1A10_R1_001.fastq.gz to ACR-139-TP1_R1_001.fastq.gz
+    Renamed 1A10_R2_001.fastq.gz to ACR-139-TP1_R2_001.fastq.gz
+    Renamed 1A12_R1_001.fastq.gz to ACR-186-TP2_R1_001.fastq.gz
+    Renamed 1A12_R2_001.fastq.gz to ACR-186-TP2_R2_001.fastq.gz
+    Renamed 1A1_R1_001.fastq.gz to ACR-237-TP1_R1_001.fastq.gz
+    Renamed 1A1_R2_001.fastq.gz to ACR-237-TP1_R2_001.fastq.gz
+    Renamed 1A3_R1_001.fastq.gz to ACR-145-TP1_R1_001.fastq.gz
+    Renamed 1A3_R2_001.fastq.gz to ACR-145-TP1_R2_001.fastq.gz
+    Renamed 1A5_R1_001.fastq.gz to ACR-139-TP2_R1_001.fastq.gz
+    Renamed 1A5_R2_001.fastq.gz to ACR-139-TP2_R2_001.fastq.gz
+    Renamed 1A6_R1_001.fastq.gz to ACR-265-TP3_R1_001.fastq.gz
+    Renamed 1A6_R2_001.fastq.gz to ACR-265-TP3_R2_001.fastq.gz
+    Renamed 1A8_R1_001.fastq.gz to ACR-186-TP1_R1_001.fastq.gz
+    Renamed 1A8_R2_001.fastq.gz to ACR-186-TP1_R2_001.fastq.gz
+    Renamed 1B10_R1_001.fastq.gz to ACR-150-TP1_R1_001.fastq.gz
+    Renamed 1B10_R2_001.fastq.gz to ACR-150-TP1_R2_001.fastq.gz
+    Renamed 1B1_R1_001.fastq.gz to ACR-150-TP3_R1_001.fastq.gz
+    Renamed 1B1_R2_001.fastq.gz to ACR-150-TP3_R2_001.fastq.gz
+    Renamed 1B2_R1_001.fastq.gz to ACR-229-TP1_R1_001.fastq.gz
+    Renamed 1B2_R2_001.fastq.gz to ACR-229-TP1_R2_001.fastq.gz
+    Renamed 1B4_R1_001.fastq.gz to ACR-244-TP4_R1_001.fastq.gz
+    Renamed 1B4_R2_001.fastq.gz to ACR-244-TP4_R2_001.fastq.gz
+    Renamed 1B5_R1_001.fastq.gz to ACR-244-TP2_R1_001.fastq.gz
+    Renamed 1B5_R2_001.fastq.gz to ACR-244-TP2_R2_001.fastq.gz
+    Renamed 1C6_R1_001.fastq.gz to ACR-225-TP4_R1_001.fastq.gz
+    Renamed 1C6_R2_001.fastq.gz to ACR-225-TP4_R2_001.fastq.gz
+    Renamed 1C8_R1_001.fastq.gz to ACR-145-TP2_R1_001.fastq.gz
+    Renamed 1C8_R2_001.fastq.gz to ACR-145-TP2_R2_001.fastq.gz
+    Renamed 1C9_R1_001.fastq.gz to ACR-237-TP3_R1_001.fastq.gz
+    Renamed 1C9_R2_001.fastq.gz to ACR-237-TP3_R2_001.fastq.gz
+    Renamed 1D3_R1_001.fastq.gz to ACR-237-TP4_R1_001.fastq.gz
+    Renamed 1D3_R2_001.fastq.gz to ACR-237-TP4_R2_001.fastq.gz
+    Renamed 1D7_R1_001.fastq.gz to ACR-186-TP4_R1_001.fastq.gz
+    Renamed 1D7_R2_001.fastq.gz to ACR-186-TP4_R2_001.fastq.gz
+    Renamed 1D8_R1_001.fastq.gz to ACR-139-TP4_R1_001.fastq.gz
+    Renamed 1D8_R2_001.fastq.gz to ACR-139-TP4_R2_001.fastq.gz
+    Renamed 1D9_R1_001.fastq.gz to ACR-139-TP3_R1_001.fastq.gz
+    Renamed 1D9_R2_001.fastq.gz to ACR-139-TP3_R2_001.fastq.gz
+    Renamed 1F1_R1_001.fastq.gz to ACR-244-TP1_R1_001.fastq.gz
+    Renamed 1F1_R2_001.fastq.gz to ACR-244-TP1_R2_001.fastq.gz
+    Renamed 1F5_R1_001.fastq.gz to ACR-145-TP4_R1_001.fastq.gz
+    Renamed 1F5_R2_001.fastq.gz to ACR-145-TP4_R2_001.fastq.gz
+    Renamed 1F7_R1_001.fastq.gz to ACR-229-TP4_R1_001.fastq.gz
+    Renamed 1F7_R2_001.fastq.gz to ACR-229-TP4_R2_001.fastq.gz
+    Renamed 1F9_R1_001.fastq.gz to ACR-265-TP2_R1_001.fastq.gz
+    Renamed 1F9_R2_001.fastq.gz to ACR-265-TP2_R2_001.fastq.gz
+    Renamed 1G4_R1_001.fastq.gz to ACR-225-TP1_R1_001.fastq.gz
+    Renamed 1G4_R2_001.fastq.gz to ACR-225-TP1_R2_001.fastq.gz
+    Renamed 1G5_R1_001.fastq.gz to ACR-173-TP4_R1_001.fastq.gz
+    Renamed 1G5_R2_001.fastq.gz to ACR-173-TP4_R2_001.fastq.gz
+    Renamed 1H11_R1_001.fastq.gz to ACR-265-TP4_R1_001.fastq.gz
+    Renamed 1H11_R2_001.fastq.gz to ACR-265-TP4_R2_001.fastq.gz
+    Renamed 1H2_R1_001.fastq.gz to ACR-173-TP3_R1_001.fastq.gz
+    Renamed 1H2_R2_001.fastq.gz to ACR-173-TP3_R2_001.fastq.gz
+    Renamed 1H3_R1_001.fastq.gz to ACR-229-TP3_R1_001.fastq.gz
+    Renamed 1H3_R2_001.fastq.gz to ACR-229-TP3_R2_001.fastq.gz
+    Renamed 1H5_R1_001.fastq.gz to ACR-225-TP3_R1_001.fastq.gz
+    Renamed 1H5_R2_001.fastq.gz to ACR-225-TP3_R2_001.fastq.gz
+    Renamed 1H6_R1_001.fastq.gz to ACR-150-TP2_R1_001.fastq.gz
+    Renamed 1H6_R2_001.fastq.gz to ACR-150-TP2_R2_001.fastq.gz
+    Renamed 1H9_R1_001.fastq.gz to ACR-173-TP1_R1_001.fastq.gz
+    Renamed 1H9_R2_001.fastq.gz to ACR-173-TP1_R2_001.fastq.gz
+    Renamed 2A3_R1_001.fastq.gz to ACR-225-TP2_R1_001.fastq.gz
+    Renamed 2A3_R2_001.fastq.gz to ACR-225-TP2_R2_001.fastq.gz
+    Renamed 2C2_R1_001.fastq.gz to ACR-145-TP3_R1_001.fastq.gz
+    Renamed 2C2_R2_001.fastq.gz to ACR-145-TP3_R2_001.fastq.gz
+    Renamed 2D1_R1_001.fastq.gz to ACR-150-TP4_R1_001.fastq.gz
+    Renamed 2D1_R2_001.fastq.gz to ACR-150-TP4_R2_001.fastq.gz
+    Renamed 2D2_R1_001.fastq.gz to ACR-173-TP2_R1_001.fastq.gz
+    Renamed 2D2_R2_001.fastq.gz to ACR-173-TP2_R2_001.fastq.gz
+    Renamed 2G2_R1_001.fastq.gz to ACR-265-TP1_R1_001.fastq.gz
+    Renamed 2G2_R2_001.fastq.gz to ACR-265-TP1_R2_001.fastq.gz
+    Renamed 2H3_R1_001.fastq.gz to ACR-244-TP3_R1_001.fastq.gz
+    Renamed 2H3_R2_001.fastq.gz to ACR-244-TP3_R2_001.fastq.gz
+    Renamed 39--2E2_R1_001.fastq.gz to ACR-186-TP3_R1_001.fastq.gz
+    Renamed 39--2E2_R2_001.fastq.gz to ACR-186-TP3_R2_001.fastq.gz
+    Renamed 6--1E3_R1_001.fastq.gz to ACR-229-TP2_R1_001.fastq.gz
+    Renamed 6--1E3_R2_001.fastq.gz to ACR-229-TP2_R2_001.fastq.gz
+
+# 5 FastQC/MultiQC on raw reads
+
+``` bash
+# Load bash variables into memory
+source .bashvars
 
 ############ RUN FASTQC ############
 
@@ -533,7 +1078,7 @@ echo ""
 ### NOTE: Do NOT quote raw_fastqc_list
 ${programs_array[fastqc]} \
 --threads ${threads} \
---outdir ${raw_fastqc_dir} \
+--outdir ${raw_reads_dir} \
 --quiet \
 ${raw_fastqc_list}
 
@@ -547,9 +1092,9 @@ echo "Beginning MultiQC on raw FastQC..."
 echo ""
 
 ${programs_array[multiqc]} \
-${raw_fastqc_dir} \
+${raw_reads_dir} \
 --interactive \
--o ${raw_fastqc_dir}
+-o ${raw_reads_dir}
 
 echo ""
 echo "MultiQC on raw FastQs complete."
@@ -559,12 +1104,12 @@ echo ""
 
 echo "Removing FastQC zip files."
 echo ""
-rm ${raw_fastqc_dir}/*.zip
+rm ${raw_reads_dir}/*.zip
 echo "FastQC zip files removed."
 echo ""
 
 # View directory contents
-ls -lh ${raw_fastqc_dir}
+ls -lh ${raw_reads_dir}
 ```
 
     Beginning FastQC on raw reads...
@@ -656,13 +1201,13 @@ ls -lh ${raw_fastqc_dir}
 
       /// MultiQC 🔍 | v1.14
 
-    |           multiqc | MultiQC Version v1.26 now available!
-    |           multiqc | Search path : /home/shared/8TB_HDD_01/sam/gitrepos/urol-e5/timeseries_molecular/D-Apul/output/00.20-D-Apul-WGBS-reads-FastQC-MultiQC/raw-fastqc
-    |         searching | ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 100% 160/160  
+    |           multiqc | MultiQC Version v1.27 now available!
+    |           multiqc | Search path : /home/shared/8TB_HDD_01/sam/gitrepos/urol-e5/timeseries_molecular/D-Apul/data/wgbs-raw-fastqs
+    |         searching | ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 100% 321/321  
     |            fastqc | Found 80 reports
     |           multiqc | Compressing plot data
-    |           multiqc | Report      : ../output/00.20-D-Apul-WGBS-reads-FastQC-MultiQC/raw-fastqc/multiqc_report.html
-    |           multiqc | Data        : ../output/00.20-D-Apul-WGBS-reads-FastQC-MultiQC/raw-fastqc/multiqc_data
+    |           multiqc | Report      : ../data/wgbs-raw-fastqs/multiqc_report.html
+    |           multiqc | Data        : ../data/wgbs-raw-fastqs/multiqc_data
     |           multiqc | MultiQC complete
 
     MultiQC on raw FastQs complete.
@@ -671,89 +1216,252 @@ ls -lh ${raw_fastqc_dir}
 
     FastQC zip files removed.
 
-    total 49M
-    -rw-r--r-- 1 sam sam 587K Dec 31 17:16 10--1E7_R1_001_fastqc.html
-    -rw-r--r-- 1 sam sam 604K Dec 31 17:15 10--1E7_R2_001_fastqc.html
-    -rw-r--r-- 1 sam sam 585K Dec 31 17:17 1A10_R1_001_fastqc.html
-    -rw-r--r-- 1 sam sam 605K Dec 31 17:16 1A10_R2_001_fastqc.html
-    -rw-r--r-- 1 sam sam 583K Dec 31 17:16 1A12_R1_001_fastqc.html
-    -rw-r--r-- 1 sam sam 610K Dec 31 17:17 1A12_R2_001_fastqc.html
-    -rw-r--r-- 1 sam sam 587K Dec 31 17:17 1A1_R1_001_fastqc.html
-    -rw-r--r-- 1 sam sam 608K Dec 31 17:16 1A1_R2_001_fastqc.html
-    -rw-r--r-- 1 sam sam 594K Dec 31 17:18 1A3_R1_001_fastqc.html
-    -rw-r--r-- 1 sam sam 611K Dec 31 17:18 1A3_R2_001_fastqc.html
-    -rw-r--r-- 1 sam sam 588K Dec 31 17:17 1A5_R1_001_fastqc.html
-    -rw-r--r-- 1 sam sam 606K Dec 31 17:17 1A5_R2_001_fastqc.html
-    -rw-r--r-- 1 sam sam 589K Dec 31 17:15 1A6_R1_001_fastqc.html
-    -rw-r--r-- 1 sam sam 608K Dec 31 17:16 1A6_R2_001_fastqc.html
-    -rw-r--r-- 1 sam sam 599K Dec 31 17:20 1A8_R1_001_fastqc.html
-    -rw-r--r-- 1 sam sam 621K Dec 31 17:20 1A8_R2_001_fastqc.html
-    -rw-r--r-- 1 sam sam 595K Dec 31 17:22 1B10_R1_001_fastqc.html
-    -rw-r--r-- 1 sam sam 616K Dec 31 17:21 1B10_R2_001_fastqc.html
-    -rw-r--r-- 1 sam sam 586K Dec 31 17:16 1B1_R1_001_fastqc.html
-    -rw-r--r-- 1 sam sam 604K Dec 31 17:16 1B1_R2_001_fastqc.html
-    -rw-r--r-- 1 sam sam 588K Dec 31 17:18 1B2_R1_001_fastqc.html
-    -rw-r--r-- 1 sam sam 604K Dec 31 17:19 1B2_R2_001_fastqc.html
-    -rw-r--r-- 1 sam sam 589K Dec 31 17:18 1B4_R1_001_fastqc.html
-    -rw-r--r-- 1 sam sam 606K Dec 31 17:18 1B4_R2_001_fastqc.html
-    -rw-r--r-- 1 sam sam 582K Dec 31 17:17 1B5_R1_001_fastqc.html
-    -rw-r--r-- 1 sam sam 602K Dec 31 17:17 1B5_R2_001_fastqc.html
-    -rw-r--r-- 1 sam sam 591K Dec 31 17:16 1C6_R1_001_fastqc.html
-    -rw-r--r-- 1 sam sam 615K Dec 31 17:16 1C6_R2_001_fastqc.html
-    -rw-r--r-- 1 sam sam 589K Dec 31 17:17 1C8_R1_001_fastqc.html
-    -rw-r--r-- 1 sam sam 608K Dec 31 17:18 1C8_R2_001_fastqc.html
-    -rw-r--r-- 1 sam sam 586K Dec 31 17:17 1C9_R1_001_fastqc.html
-    -rw-r--r-- 1 sam sam 605K Dec 31 17:17 1C9_R2_001_fastqc.html
-    -rw-r--r-- 1 sam sam 589K Dec 31 17:16 1D3_R1_001_fastqc.html
-    -rw-r--r-- 1 sam sam 605K Dec 31 17:16 1D3_R2_001_fastqc.html
-    -rw-r--r-- 1 sam sam 590K Dec 31 17:16 1D7_R1_001_fastqc.html
-    -rw-r--r-- 1 sam sam 608K Dec 31 17:16 1D7_R2_001_fastqc.html
-    -rw-r--r-- 1 sam sam 586K Dec 31 17:16 1D8_R1_001_fastqc.html
-    -rw-r--r-- 1 sam sam 604K Dec 31 17:17 1D8_R2_001_fastqc.html
-    -rw-r--r-- 1 sam sam 591K Dec 31 17:17 1D9_R1_001_fastqc.html
-    -rw-r--r-- 1 sam sam 611K Dec 31 17:17 1D9_R2_001_fastqc.html
-    -rw-r--r-- 1 sam sam 589K Dec 31 17:27 1F1_R1_001_fastqc.html
-    -rw-r--r-- 1 sam sam 611K Dec 31 17:27 1F1_R2_001_fastqc.html
-    -rw-r--r-- 1 sam sam 591K Dec 31 17:27 1F5_R1_001_fastqc.html
-    -rw-r--r-- 1 sam sam 610K Dec 31 17:27 1F5_R2_001_fastqc.html
-    -rw-r--r-- 1 sam sam 592K Dec 31 17:26 1F7_R1_001_fastqc.html
-    -rw-r--r-- 1 sam sam 607K Dec 31 17:26 1F7_R2_001_fastqc.html
-    -rw-r--r-- 1 sam sam 587K Dec 31 17:26 1F9_R1_001_fastqc.html
-    -rw-r--r-- 1 sam sam 606K Dec 31 17:26 1F9_R2_001_fastqc.html
-    -rw-r--r-- 1 sam sam 587K Dec 31 17:26 1G4_R1_001_fastqc.html
-    -rw-r--r-- 1 sam sam 606K Dec 31 17:25 1G4_R2_001_fastqc.html
-    -rw-r--r-- 1 sam sam 597K Dec 31 17:27 1G5_R1_001_fastqc.html
-    -rw-r--r-- 1 sam sam 615K Dec 31 17:27 1G5_R2_001_fastqc.html
-    -rw-r--r-- 1 sam sam 594K Dec 31 17:26 1H11_R1_001_fastqc.html
-    -rw-r--r-- 1 sam sam 615K Dec 31 17:27 1H11_R2_001_fastqc.html
-    -rw-r--r-- 1 sam sam 595K Dec 31 17:27 1H2_R1_001_fastqc.html
-    -rw-r--r-- 1 sam sam 614K Dec 31 17:28 1H2_R2_001_fastqc.html
-    -rw-r--r-- 1 sam sam 587K Dec 31 17:27 1H3_R1_001_fastqc.html
-    -rw-r--r-- 1 sam sam 606K Dec 31 17:27 1H3_R2_001_fastqc.html
-    -rw-r--r-- 1 sam sam 595K Dec 31 17:27 1H5_R1_001_fastqc.html
-    -rw-r--r-- 1 sam sam 618K Dec 31 17:27 1H5_R2_001_fastqc.html
-    -rw-r--r-- 1 sam sam 586K Dec 31 17:27 1H6_R1_001_fastqc.html
-    -rw-r--r-- 1 sam sam 602K Dec 31 17:27 1H6_R2_001_fastqc.html
-    -rw-r--r-- 1 sam sam 594K Dec 31 17:27 1H9_R1_001_fastqc.html
-    -rw-r--r-- 1 sam sam 610K Dec 31 17:27 1H9_R2_001_fastqc.html
-    -rw-r--r-- 1 sam sam 584K Dec 31 17:26 2A3_R1_001_fastqc.html
-    -rw-r--r-- 1 sam sam 592K Dec 31 17:27 2A3_R2_001_fastqc.html
-    -rw-r--r-- 1 sam sam 589K Dec 31 17:27 2C2_R1_001_fastqc.html
-    -rw-r--r-- 1 sam sam 597K Dec 31 17:27 2C2_R2_001_fastqc.html
-    -rw-r--r-- 1 sam sam 583K Dec 31 17:27 2D1_R1_001_fastqc.html
-    -rw-r--r-- 1 sam sam 596K Dec 31 17:27 2D1_R2_001_fastqc.html
-    -rw-r--r-- 1 sam sam 583K Dec 31 17:26 2D2_R1_001_fastqc.html
-    -rw-r--r-- 1 sam sam 590K Dec 31 17:26 2D2_R2_001_fastqc.html
-    -rw-r--r-- 1 sam sam 582K Dec 31 17:28 2G2_R1_001_fastqc.html
-    -rw-r--r-- 1 sam sam 592K Dec 31 17:28 2G2_R2_001_fastqc.html
-    -rw-r--r-- 1 sam sam 582K Dec 31 17:27 2H3_R1_001_fastqc.html
-    -rw-r--r-- 1 sam sam 588K Dec 31 17:27 2H3_R2_001_fastqc.html
-    -rw-r--r-- 1 sam sam 589K Dec 31 17:28 39--2E2_R1_001_fastqc.html
-    -rw-r--r-- 1 sam sam 596K Dec 31 17:28 39--2E2_R2_001_fastqc.html
-    -rw-r--r-- 1 sam sam 586K Dec 31 17:30 6--1E3_R1_001_fastqc.html
-    -rw-r--r-- 1 sam sam 606K Dec 31 17:30 6--1E3_R2_001_fastqc.html
-    drwxr-xr-x 2 sam sam 4.0K Dec 31 17:30 multiqc_data
-    -rw-r--r-- 1 sam sam 2.2M Dec 31 17:30 multiqc_report.html
+    total 213G
+    -rw-r--r-- 1 sam sam   60 Dec 30 07:56 10--1E7_R1_001.fastq.gz.md5
+    -rw-r--r-- 1 sam sam   60 Dec 30 07:59 10--1E7_R2_001.fastq.gz.md5
+    -rw-r--r-- 1 sam sam   57 Dec 30 08:22 1A10_R1_001.fastq.gz.md5
+    -rw-r--r-- 1 sam sam   57 Dec 30 08:25 1A10_R2_001.fastq.gz.md5
+    -rw-r--r-- 1 sam sam   57 Dec 30 08:33 1A12_R1_001.fastq.gz.md5
+    -rw-r--r-- 1 sam sam   57 Dec 30 08:35 1A12_R2_001.fastq.gz.md5
+    -rw-r--r-- 1 sam sam   56 Dec 30 08:38 1A1_R1_001.fastq.gz.md5
+    -rw-r--r-- 1 sam sam   56 Dec 30 08:41 1A1_R2_001.fastq.gz.md5
+    -rw-r--r-- 1 sam sam   56 Dec 30 08:51 1A3_R1_001.fastq.gz.md5
+    -rw-r--r-- 1 sam sam   56 Dec 30 08:54 1A3_R2_001.fastq.gz.md5
+    -rw-r--r-- 1 sam sam   56 Dec 30 09:02 1A5_R1_001.fastq.gz.md5
+    -rw-r--r-- 1 sam sam   56 Dec 30 09:05 1A5_R2_001.fastq.gz.md5
+    -rw-r--r-- 1 sam sam   56 Dec 30 09:07 1A6_R1_001.fastq.gz.md5
+    -rw-r--r-- 1 sam sam   56 Dec 30 09:10 1A6_R2_001.fastq.gz.md5
+    -rw-r--r-- 1 sam sam   56 Dec 30 09:18 1A8_R1_001.fastq.gz.md5
+    -rw-r--r-- 1 sam sam   56 Dec 30 09:21 1A8_R2_001.fastq.gz.md5
+    -rw-r--r-- 1 sam sam   57 Dec 30 09:32 1B10_R1_001.fastq.gz.md5
+    -rw-r--r-- 1 sam sam   57 Dec 30 09:35 1B10_R2_001.fastq.gz.md5
+    -rw-r--r-- 1 sam sam   56 Dec 30 09:48 1B1_R1_001.fastq.gz.md5
+    -rw-r--r-- 1 sam sam   56 Dec 30 09:51 1B1_R2_001.fastq.gz.md5
+    -rw-r--r-- 1 sam sam   56 Dec 30 09:54 1B2_R1_001.fastq.gz.md5
+    -rw-r--r-- 1 sam sam   56 Dec 30 09:57 1B2_R2_001.fastq.gz.md5
+    -rw-r--r-- 1 sam sam   56 Dec 30 10:05 1B4_R1_001.fastq.gz.md5
+    -rw-r--r-- 1 sam sam   56 Dec 30 10:08 1B4_R2_001.fastq.gz.md5
+    -rw-r--r-- 1 sam sam   56 Dec 30 10:10 1B5_R1_001.fastq.gz.md5
+    -rw-r--r-- 1 sam sam   56 Dec 30 10:13 1B5_R2_001.fastq.gz.md5
+    -rw-r--r-- 1 sam sam   56 Dec 30 11:15 1C6_R1_001.fastq.gz.md5
+    -rw-r--r-- 1 sam sam   56 Dec 30 11:18 1C6_R2_001.fastq.gz.md5
+    -rw-r--r-- 1 sam sam   56 Dec 30 11:26 1C8_R1_001.fastq.gz.md5
+    -rw-r--r-- 1 sam sam   56 Dec 30 11:29 1C8_R2_001.fastq.gz.md5
+    -rw-r--r-- 1 sam sam   56 Dec 30 11:31 1C9_R1_001.fastq.gz.md5
+    -rw-r--r-- 1 sam sam   56 Dec 30 11:34 1C9_R2_001.fastq.gz.md5
+    -rw-r--r-- 1 sam sam   56 Dec 30 12:00 1D3_R1_001.fastq.gz.md5
+    -rw-r--r-- 1 sam sam   56 Dec 30 12:03 1D3_R2_001.fastq.gz.md5
+    -rw-r--r-- 1 sam sam   56 Dec 30 12:21 1D7_R1_001.fastq.gz.md5
+    -rw-r--r-- 1 sam sam   56 Dec 30 12:23 1D7_R2_001.fastq.gz.md5
+    -rw-r--r-- 1 sam sam   56 Dec 30 12:26 1D8_R1_001.fastq.gz.md5
+    -rw-r--r-- 1 sam sam   56 Dec 30 12:28 1D8_R2_001.fastq.gz.md5
+    -rw-r--r-- 1 sam sam   56 Dec 30 12:31 1D9_R1_001.fastq.gz.md5
+    -rw-r--r-- 1 sam sam   56 Dec 30 12:34 1D9_R2_001.fastq.gz.md5
+    -rw-r--r-- 1 sam sam   56 Dec 30 12:51 1F1_R1_001.fastq.gz.md5
+    -rw-r--r-- 1 sam sam   56 Dec 30 12:54 1F1_R2_001.fastq.gz.md5
+    -rw-r--r-- 1 sam sam   56 Dec 30 13:10 1F5_R1_001.fastq.gz.md5
+    -rw-r--r-- 1 sam sam   56 Dec 30 13:13 1F5_R2_001.fastq.gz.md5
+    -rw-r--r-- 1 sam sam   56 Dec 30 13:19 1F7_R1_001.fastq.gz.md5
+    -rw-r--r-- 1 sam sam   56 Dec 30 13:21 1F7_R2_001.fastq.gz.md5
+    -rw-r--r-- 1 sam sam   56 Dec 30 13:28 1F9_R1_001.fastq.gz.md5
+    -rw-r--r-- 1 sam sam   56 Dec 30 13:30 1F9_R2_001.fastq.gz.md5
+    -rw-r--r-- 1 sam sam   56 Dec 30 14:01 1G4_R1_001.fastq.gz.md5
+    -rw-r--r-- 1 sam sam   56 Dec 30 14:03 1G4_R2_001.fastq.gz.md5
+    -rw-r--r-- 1 sam sam   56 Dec 30 14:06 1G5_R1_001.fastq.gz.md5
+    -rw-r--r-- 1 sam sam   56 Dec 30 14:09 1G5_R2_001.fastq.gz.md5
+    -rw-r--r-- 1 sam sam   57 Dec 30 14:35 1H11_R1_001.fastq.gz.md5
+    -rw-r--r-- 1 sam sam   57 Dec 30 14:38 1H11_R2_001.fastq.gz.md5
+    -rw-r--r-- 1 sam sam   56 Dec 30 14:51 1H2_R1_001.fastq.gz.md5
+    -rw-r--r-- 1 sam sam   56 Dec 30 14:54 1H2_R2_001.fastq.gz.md5
+    -rw-r--r-- 1 sam sam   56 Dec 30 14:56 1H3_R1_001.fastq.gz.md5
+    -rw-r--r-- 1 sam sam   56 Dec 30 14:59 1H3_R2_001.fastq.gz.md5
+    -rw-r--r-- 1 sam sam   56 Dec 30 15:07 1H5_R1_001.fastq.gz.md5
+    -rw-r--r-- 1 sam sam   56 Dec 30 15:10 1H5_R2_001.fastq.gz.md5
+    -rw-r--r-- 1 sam sam   56 Dec 30 15:13 1H6_R1_001.fastq.gz.md5
+    -rw-r--r-- 1 sam sam   56 Dec 30 15:16 1H6_R2_001.fastq.gz.md5
+    -rw-r--r-- 1 sam sam   56 Dec 30 15:30 1H9_R1_001.fastq.gz.md5
+    -rw-r--r-- 1 sam sam   56 Dec 30 15:33 1H9_R2_001.fastq.gz.md5
+    -rw-r--r-- 1 sam sam   56 Dec 30 15:45 2A3_R1_001.fastq.gz.md5
+    -rw-r--r-- 1 sam sam   56 Dec 30 15:47 2A3_R2_001.fastq.gz.md5
+    -rw-r--r-- 1 sam sam   56 Dec 30 16:11 2C2_R1_001.fastq.gz.md5
+    -rw-r--r-- 1 sam sam   56 Dec 30 16:14 2C2_R2_001.fastq.gz.md5
+    -rw-r--r-- 1 sam sam   56 Dec 30 16:23 2D1_R1_001.fastq.gz.md5
+    -rw-r--r-- 1 sam sam   56 Dec 30 16:26 2D1_R2_001.fastq.gz.md5
+    -rw-r--r-- 1 sam sam   56 Dec 30 16:28 2D2_R1_001.fastq.gz.md5
+    -rw-r--r-- 1 sam sam   56 Dec 30 16:30 2D2_R2_001.fastq.gz.md5
+    -rw-r--r-- 1 sam sam   56 Dec 30 17:00 2G2_R1_001.fastq.gz.md5
+    -rw-r--r-- 1 sam sam   56 Dec 30 17:03 2G2_R2_001.fastq.gz.md5
+    -rw-r--r-- 1 sam sam   56 Dec 30 17:22 2H3_R1_001.fastq.gz.md5
+    -rw-r--r-- 1 sam sam   56 Dec 30 17:24 2H3_R2_001.fastq.gz.md5
+    -rw-r--r-- 1 sam sam   60 Dec 30 17:27 39--2E2_R1_001.fastq.gz.md5
+    -rw-r--r-- 1 sam sam   60 Dec 30 17:30 39--2E2_R2_001.fastq.gz.md5
+    -rw-r--r-- 1 sam sam   59 Dec 30 17:57 6--1E3_R1_001.fastq.gz.md5
+    -rw-r--r-- 1 sam sam   59 Dec 30 18:00 6--1E3_R2_001.fastq.gz.md5
+    -rw-r--r-- 1 sam sam 585K Feb 19 09:17 ACR-139-TP1_R1_001_fastqc.html
+    -rw-r--r-- 1 sam sam 2.8G Dec 30 08:22 ACR-139-TP1_R1_001.fastq.gz
+    -rw-r--r-- 1 sam sam 605K Feb 19 09:17 ACR-139-TP1_R2_001_fastqc.html
+    -rw-r--r-- 1 sam sam 2.8G Dec 30 08:25 ACR-139-TP1_R2_001.fastq.gz
+    -rw-r--r-- 1 sam sam 589K Feb 19 09:17 ACR-139-TP2_R1_001_fastqc.html
+    -rw-r--r-- 1 sam sam 2.8G Dec 30 09:02 ACR-139-TP2_R1_001.fastq.gz
+    -rw-r--r-- 1 sam sam 606K Feb 19 09:18 ACR-139-TP2_R2_001_fastqc.html
+    -rw-r--r-- 1 sam sam 2.8G Dec 30 09:05 ACR-139-TP2_R2_001.fastq.gz
+    -rw-r--r-- 1 sam sam 591K Feb 19 09:18 ACR-139-TP3_R1_001_fastqc.html
+    -rw-r--r-- 1 sam sam 3.0G Dec 30 12:31 ACR-139-TP3_R1_001.fastq.gz
+    -rw-r--r-- 1 sam sam 611K Feb 19 09:19 ACR-139-TP3_R2_001_fastqc.html
+    -rw-r--r-- 1 sam sam 3.0G Dec 30 12:34 ACR-139-TP3_R2_001.fastq.gz
+    -rw-r--r-- 1 sam sam 586K Feb 19 09:16 ACR-139-TP4_R1_001_fastqc.html
+    -rw-r--r-- 1 sam sam 2.7G Dec 30 12:26 ACR-139-TP4_R1_001.fastq.gz
+    -rw-r--r-- 1 sam sam 604K Feb 19 09:17 ACR-139-TP4_R2_001_fastqc.html
+    -rw-r--r-- 1 sam sam 2.7G Dec 30 12:28 ACR-139-TP4_R2_001.fastq.gz
+    -rw-r--r-- 1 sam sam 594K Feb 19 09:20 ACR-145-TP1_R1_001_fastqc.html
+    -rw-r--r-- 1 sam sam 3.1G Dec 30 08:51 ACR-145-TP1_R1_001.fastq.gz
+    -rw-r--r-- 1 sam sam 611K Feb 19 09:19 ACR-145-TP1_R2_001_fastqc.html
+    -rw-r--r-- 1 sam sam 3.1G Dec 30 08:54 ACR-145-TP1_R2_001.fastq.gz
+    -rw-r--r-- 1 sam sam 589K Feb 19 09:18 ACR-145-TP2_R1_001_fastqc.html
+    -rw-r--r-- 1 sam sam 2.9G Dec 30 11:26 ACR-145-TP2_R1_001.fastq.gz
+    -rw-r--r-- 1 sam sam 608K Feb 19 09:16 ACR-145-TP2_R2_001_fastqc.html
+    -rw-r--r-- 1 sam sam 2.9G Dec 30 11:29 ACR-145-TP2_R2_001.fastq.gz
+    -rw-r--r-- 1 sam sam 589K Feb 19 09:17 ACR-145-TP3_R1_001_fastqc.html
+    -rw-r--r-- 1 sam sam 2.6G Dec 30 16:11 ACR-145-TP3_R1_001.fastq.gz
+    -rw-r--r-- 1 sam sam 597K Feb 19 09:16 ACR-145-TP3_R2_001_fastqc.html
+    -rw-r--r-- 1 sam sam 2.6G Dec 30 16:14 ACR-145-TP3_R2_001.fastq.gz
+    -rw-r--r-- 1 sam sam 591K Feb 19 09:19 ACR-145-TP4_R1_001_fastqc.html
+    -rw-r--r-- 1 sam sam 3.1G Dec 30 13:10 ACR-145-TP4_R1_001.fastq.gz
+    -rw-r--r-- 1 sam sam 610K Feb 19 09:20 ACR-145-TP4_R2_001_fastqc.html
+    -rw-r--r-- 1 sam sam 3.0G Dec 30 13:13 ACR-145-TP4_R2_001.fastq.gz
+    -rw-r--r-- 1 sam sam 595K Feb 19 09:24 ACR-150-TP1_R1_001_fastqc.html
+    -rw-r--r-- 1 sam sam 3.7G Dec 30 09:32 ACR-150-TP1_R1_001.fastq.gz
+    -rw-r--r-- 1 sam sam 616K Feb 19 09:22 ACR-150-TP1_R2_001_fastqc.html
+    -rw-r--r-- 1 sam sam 3.7G Dec 30 09:35 ACR-150-TP1_R2_001.fastq.gz
+    -rw-r--r-- 1 sam sam 586K Feb 19 09:15 ACR-150-TP2_R1_001_fastqc.html
+    -rw-r--r-- 1 sam sam 2.6G Dec 30 15:13 ACR-150-TP2_R1_001.fastq.gz
+    -rw-r--r-- 1 sam sam 602K Feb 19 09:16 ACR-150-TP2_R2_001_fastqc.html
+    -rw-r--r-- 1 sam sam 2.6G Dec 30 15:16 ACR-150-TP2_R2_001.fastq.gz
+    -rw-r--r-- 1 sam sam 586K Feb 19 09:17 ACR-150-TP3_R1_001_fastqc.html
+    -rw-r--r-- 1 sam sam 2.7G Dec 30 09:48 ACR-150-TP3_R1_001.fastq.gz
+    -rw-r--r-- 1 sam sam 604K Feb 19 09:17 ACR-150-TP3_R2_001_fastqc.html
+    -rw-r--r-- 1 sam sam 2.7G Dec 30 09:51 ACR-150-TP3_R2_001.fastq.gz
+    -rw-r--r-- 1 sam sam 583K Feb 19 09:14 ACR-150-TP4_R1_001_fastqc.html
+    -rw-r--r-- 1 sam sam 2.3G Dec 30 16:23 ACR-150-TP4_R1_001.fastq.gz
+    -rw-r--r-- 1 sam sam 596K Feb 19 09:16 ACR-150-TP4_R2_001_fastqc.html
+    -rw-r--r-- 1 sam sam 2.3G Dec 30 16:26 ACR-150-TP4_R2_001.fastq.gz
+    -rw-r--r-- 1 sam sam 594K Feb 19 09:17 ACR-173-TP1_R1_001_fastqc.html
+    -rw-r--r-- 1 sam sam 2.8G Dec 30 15:30 ACR-173-TP1_R1_001.fastq.gz
+    -rw-r--r-- 1 sam sam 610K Feb 19 09:17 ACR-173-TP1_R2_001_fastqc.html
+    -rw-r--r-- 1 sam sam 2.7G Dec 30 15:33 ACR-173-TP1_R2_001.fastq.gz
+    -rw-r--r-- 1 sam sam 583K Feb 19 09:13 ACR-173-TP2_R1_001_fastqc.html
+    -rw-r--r-- 1 sam sam 1.8G Dec 30 16:28 ACR-173-TP2_R1_001.fastq.gz
+    -rw-r--r-- 1 sam sam 590K Feb 19 09:13 ACR-173-TP2_R2_001_fastqc.html
+    -rw-r--r-- 1 sam sam 1.8G Dec 30 16:30 ACR-173-TP2_R2_001.fastq.gz
+    -rw-r--r-- 1 sam sam 595K Feb 19 09:18 ACR-173-TP3_R1_001_fastqc.html
+    -rw-r--r-- 1 sam sam 2.9G Dec 30 14:51 ACR-173-TP3_R1_001.fastq.gz
+    -rw-r--r-- 1 sam sam 614K Feb 19 09:19 ACR-173-TP3_R2_001_fastqc.html
+    -rw-r--r-- 1 sam sam 3.0G Dec 30 14:54 ACR-173-TP3_R2_001.fastq.gz
+    -rw-r--r-- 1 sam sam 597K Feb 19 09:17 ACR-173-TP4_R1_001_fastqc.html
+    -rw-r--r-- 1 sam sam 2.8G Dec 30 14:06 ACR-173-TP4_R1_001.fastq.gz
+    -rw-r--r-- 1 sam sam 615K Feb 19 09:17 ACR-173-TP4_R2_001_fastqc.html
+    -rw-r--r-- 1 sam sam 2.8G Dec 30 14:09 ACR-173-TP4_R2_001.fastq.gz
+    -rw-r--r-- 1 sam sam 599K Feb 19 09:22 ACR-186-TP1_R1_001_fastqc.html
+    -rw-r--r-- 1 sam sam 3.4G Dec 30 09:18 ACR-186-TP1_R1_001.fastq.gz
+    -rw-r--r-- 1 sam sam 621K Feb 19 09:23 ACR-186-TP1_R2_001_fastqc.html
+    -rw-r--r-- 1 sam sam 3.5G Dec 30 09:21 ACR-186-TP1_R2_001.fastq.gz
+    -rw-r--r-- 1 sam sam 583K Feb 19 09:18 ACR-186-TP2_R1_001_fastqc.html
+    -rw-r--r-- 1 sam sam 2.8G Dec 30 08:33 ACR-186-TP2_R1_001.fastq.gz
+    -rw-r--r-- 1 sam sam 610K Feb 19 09:18 ACR-186-TP2_R2_001_fastqc.html
+    -rw-r--r-- 1 sam sam 2.8G Dec 30 08:35 ACR-186-TP2_R2_001.fastq.gz
+    -rw-r--r-- 1 sam sam 589K Feb 19 09:16 ACR-186-TP3_R1_001_fastqc.html
+    -rw-r--r-- 1 sam sam 2.4G Dec 30 17:27 ACR-186-TP3_R1_001.fastq.gz
+    -rw-r--r-- 1 sam sam 596K Feb 19 09:17 ACR-186-TP3_R2_001_fastqc.html
+    -rw-r--r-- 1 sam sam 2.4G Dec 30 17:30 ACR-186-TP3_R2_001.fastq.gz
+    -rw-r--r-- 1 sam sam 590K Feb 19 09:16 ACR-186-TP4_R1_001_fastqc.html
+    -rw-r--r-- 1 sam sam 2.5G Dec 30 12:21 ACR-186-TP4_R1_001.fastq.gz
+    -rw-r--r-- 1 sam sam 608K Feb 19 09:17 ACR-186-TP4_R2_001_fastqc.html
+    -rw-r--r-- 1 sam sam 2.4G Dec 30 12:23 ACR-186-TP4_R2_001.fastq.gz
+    -rw-r--r-- 1 sam sam 587K Feb 19 09:25 ACR-225-TP1_R1_001_fastqc.html
+    -rw-r--r-- 1 sam sam 2.3G Dec 30 14:01 ACR-225-TP1_R1_001.fastq.gz
+    -rw-r--r-- 1 sam sam 606K Feb 19 09:27 ACR-225-TP1_R2_001_fastqc.html
+    -rw-r--r-- 1 sam sam 2.3G Dec 30 14:03 ACR-225-TP1_R2_001.fastq.gz
+    -rw-r--r-- 1 sam sam 584K Feb 19 09:25 ACR-225-TP2_R1_001_fastqc.html
+    -rw-r--r-- 1 sam sam 2.1G Dec 30 15:45 ACR-225-TP2_R1_001.fastq.gz
+    -rw-r--r-- 1 sam sam 592K Feb 19 09:26 ACR-225-TP2_R2_001_fastqc.html
+    -rw-r--r-- 1 sam sam 2.1G Dec 30 15:47 ACR-225-TP2_R2_001.fastq.gz
+    -rw-r--r-- 1 sam sam 595K Feb 19 09:28 ACR-225-TP3_R1_001_fastqc.html
+    -rw-r--r-- 1 sam sam 2.7G Dec 30 15:07 ACR-225-TP3_R1_001.fastq.gz
+    -rw-r--r-- 1 sam sam 618K Feb 19 09:30 ACR-225-TP3_R2_001_fastqc.html
+    -rw-r--r-- 1 sam sam 2.7G Dec 30 15:10 ACR-225-TP3_R2_001.fastq.gz
+    -rw-r--r-- 1 sam sam 591K Feb 19 09:29 ACR-225-TP4_R1_001_fastqc.html
+    -rw-r--r-- 1 sam sam 2.5G Dec 30 11:15 ACR-225-TP4_R1_001.fastq.gz
+    -rw-r--r-- 1 sam sam 615K Feb 19 09:29 ACR-225-TP4_R2_001_fastqc.html
+    -rw-r--r-- 1 sam sam 2.5G Dec 30 11:18 ACR-225-TP4_R2_001.fastq.gz
+    -rw-r--r-- 1 sam sam 588K Feb 19 09:33 ACR-229-TP1_R1_001_fastqc.html
+    -rw-r--r-- 1 sam sam 3.4G Dec 30 09:54 ACR-229-TP1_R1_001.fastq.gz
+    -rw-r--r-- 1 sam sam 604K Feb 19 09:33 ACR-229-TP1_R2_001_fastqc.html
+    -rw-r--r-- 1 sam sam 3.4G Dec 30 09:57 ACR-229-TP1_R2_001.fastq.gz
+    -rw-r--r-- 1 sam sam 586K Feb 19 09:31 ACR-229-TP2_R1_001_fastqc.html
+    -rw-r--r-- 1 sam sam 3.2G Dec 30 17:57 ACR-229-TP2_R1_001.fastq.gz
+    -rw-r--r-- 1 sam sam 606K Feb 19 09:31 ACR-229-TP2_R2_001_fastqc.html
+    -rw-r--r-- 1 sam sam 3.2G Dec 30 18:00 ACR-229-TP2_R2_001.fastq.gz
+    -rw-r--r-- 1 sam sam 587K Feb 19 09:29 ACR-229-TP3_R1_001_fastqc.html
+    -rw-r--r-- 1 sam sam 2.6G Dec 30 14:56 ACR-229-TP3_R1_001.fastq.gz
+    -rw-r--r-- 1 sam sam 606K Feb 19 09:30 ACR-229-TP3_R2_001_fastqc.html
+    -rw-r--r-- 1 sam sam 2.6G Dec 30 14:59 ACR-229-TP3_R2_001.fastq.gz
+    -rw-r--r-- 1 sam sam 592K Feb 19 09:29 ACR-229-TP4_R1_001_fastqc.html
+    -rw-r--r-- 1 sam sam 2.4G Dec 30 13:19 ACR-229-TP4_R1_001.fastq.gz
+    -rw-r--r-- 1 sam sam 607K Feb 19 09:29 ACR-229-TP4_R2_001_fastqc.html
+    -rw-r--r-- 1 sam sam 2.4G Dec 30 13:21 ACR-229-TP4_R2_001.fastq.gz
+    -rw-r--r-- 1 sam sam 587K Feb 19 09:33 ACR-237-TP1_R1_001_fastqc.html
+    -rw-r--r-- 1 sam sam 2.6G Dec 30 08:38 ACR-237-TP1_R1_001.fastq.gz
+    -rw-r--r-- 1 sam sam 608K Feb 19 09:32 ACR-237-TP1_R2_001_fastqc.html
+    -rw-r--r-- 1 sam sam 2.6G Dec 30 08:41 ACR-237-TP1_R2_001.fastq.gz
+    -rw-r--r-- 1 sam sam 587K Feb 19 09:32 ACR-237-TP2_R1_001_fastqc.html
+    -rw-r--r-- 1 sam sam 2.6G Dec 30 07:56 ACR-237-TP2_R1_001.fastq.gz
+    -rw-r--r-- 1 sam sam 604K Feb 19 09:31 ACR-237-TP2_R2_001_fastqc.html
+    -rw-r--r-- 1 sam sam 2.6G Dec 30 07:59 ACR-237-TP2_R2_001.fastq.gz
+    -rw-r--r-- 1 sam sam 586K Feb 19 09:31 ACR-237-TP3_R1_001_fastqc.html
+    -rw-r--r-- 1 sam sam 2.7G Dec 30 11:31 ACR-237-TP3_R1_001.fastq.gz
+    -rw-r--r-- 1 sam sam 605K Feb 19 09:32 ACR-237-TP3_R2_001_fastqc.html
+    -rw-r--r-- 1 sam sam 2.7G Dec 30 11:34 ACR-237-TP3_R2_001.fastq.gz
+    -rw-r--r-- 1 sam sam 589K Feb 19 09:31 ACR-237-TP4_R1_001_fastqc.html
+    -rw-r--r-- 1 sam sam 2.6G Dec 30 12:00 ACR-237-TP4_R1_001.fastq.gz
+    -rw-r--r-- 1 sam sam 605K Feb 19 09:31 ACR-237-TP4_R2_001_fastqc.html
+    -rw-r--r-- 1 sam sam 2.5G Dec 30 12:03 ACR-237-TP4_R2_001.fastq.gz
+    -rw-r--r-- 1 sam sam 589K Feb 19 09:33 ACR-244-TP1_R1_001_fastqc.html
+    -rw-r--r-- 1 sam sam 3.1G Dec 30 12:51 ACR-244-TP1_R1_001.fastq.gz
+    -rw-r--r-- 1 sam sam 611K Feb 19 09:33 ACR-244-TP1_R2_001_fastqc.html
+    -rw-r--r-- 1 sam sam 3.1G Dec 30 12:54 ACR-244-TP1_R2_001.fastq.gz
+    -rw-r--r-- 1 sam sam 582K Feb 19 09:32 ACR-244-TP2_R1_001_fastqc.html
+    -rw-r--r-- 1 sam sam 2.7G Dec 30 10:10 ACR-244-TP2_R1_001.fastq.gz
+    -rw-r--r-- 1 sam sam 602K Feb 19 09:33 ACR-244-TP2_R2_001_fastqc.html
+    -rw-r--r-- 1 sam sam 2.7G Dec 30 10:13 ACR-244-TP2_R2_001.fastq.gz
+    -rw-r--r-- 1 sam sam 582K Feb 19 09:28 ACR-244-TP3_R1_001_fastqc.html
+    -rw-r--r-- 1 sam sam 1.9G Dec 30 17:22 ACR-244-TP3_R1_001.fastq.gz
+    -rw-r--r-- 1 sam sam 588K Feb 19 09:28 ACR-244-TP3_R2_001_fastqc.html
+    -rw-r--r-- 1 sam sam 1.9G Dec 30 17:24 ACR-244-TP3_R2_001.fastq.gz
+    -rw-r--r-- 1 sam sam 589K Feb 19 09:33 ACR-244-TP4_R1_001_fastqc.html
+    -rw-r--r-- 1 sam sam 3.0G Dec 30 10:05 ACR-244-TP4_R1_001.fastq.gz
+    -rw-r--r-- 1 sam sam 606K Feb 19 09:33 ACR-244-TP4_R2_001_fastqc.html
+    -rw-r--r-- 1 sam sam 3.0G Dec 30 10:08 ACR-244-TP4_R2_001.fastq.gz
+    -rw-r--r-- 1 sam sam 582K Feb 19 09:33 ACR-265-TP1_R1_001_fastqc.html
+    -rw-r--r-- 1 sam sam 2.7G Dec 30 17:00 ACR-265-TP1_R1_001.fastq.gz
+    -rw-r--r-- 1 sam sam 592K Feb 19 09:33 ACR-265-TP1_R2_001_fastqc.html
+    -rw-r--r-- 1 sam sam 2.7G Dec 30 17:03 ACR-265-TP1_R2_001.fastq.gz
+    -rw-r--r-- 1 sam sam 587K Feb 19 09:32 ACR-265-TP2_R1_001_fastqc.html
+    -rw-r--r-- 1 sam sam 2.5G Dec 30 13:28 ACR-265-TP2_R1_001.fastq.gz
+    -rw-r--r-- 1 sam sam 606K Feb 19 09:32 ACR-265-TP2_R2_001_fastqc.html
+    -rw-r--r-- 1 sam sam 2.5G Dec 30 13:30 ACR-265-TP2_R2_001.fastq.gz
+    -rw-r--r-- 1 sam sam 589K Feb 19 09:33 ACR-265-TP3_R1_001_fastqc.html
+    -rw-r--r-- 1 sam sam 2.5G Dec 30 09:07 ACR-265-TP3_R1_001.fastq.gz
+    -rw-r--r-- 1 sam sam 608K Feb 19 09:33 ACR-265-TP3_R2_001_fastqc.html
+    -rw-r--r-- 1 sam sam 2.4G Dec 30 09:10 ACR-265-TP3_R2_001.fastq.gz
+    -rw-r--r-- 1 sam sam 594K Feb 19 09:34 ACR-265-TP4_R1_001_fastqc.html
+    -rw-r--r-- 1 sam sam 2.5G Dec 30 14:35 ACR-265-TP4_R1_001.fastq.gz
+    -rw-r--r-- 1 sam sam 615K Feb 19 09:34 ACR-265-TP4_R2_001_fastqc.html
+    -rw-r--r-- 1 sam sam 2.5G Dec 30 14:38 ACR-265-TP4_R2_001.fastq.gz
+    -rw-rw-r-- 1 sam sam 1.6K Jan  2 11:08 fastq_pairs.txt
+    drwxr-xr-x 2 sam sam 4.0K Feb 19 09:34 multiqc_data
+    -rw-r--r-- 1 sam sam 2.2M Feb 19 09:34 multiqc_report.html
+
+# References
 
 <div id="refs" class="references csl-bib-body hanging-indent">
 
