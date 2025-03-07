@@ -1,0 +1,491 @@
+---
+author: Sam White
+toc-title: Contents
+toc-depth: 5
+toc-location: left
+title: Data Wrangling - Reformat P.tuahiniensis GFF to Valid GFF3 Using awk genometools and AGAT
+date: '2025-01-14'
+draft: false
+engine: knitr
+categories:
+  - "2025"
+  - "GFF"
+  - "genometools"
+  - "E5"
+  - "timeseries_molecular"
+  - "Porites tuahiniensis"
+  - "coral"
+  - "AGAT"
+---
+# INTRO
+
+This notebook is part of the coral E5 [timeseries_molecular project](https://github.com/urol-e5/timeseries_molecular) (GitHub repo).
+
+::: {.callout-note}
+The contents below are from markdown knitted from [`00.00-genome-GFF-formatting.Rmd`](https://github.com/urol-e5/timeseries_molecular/blob/e4361d794b8a6887bc80a979491cb931e93f3e2a/F-Ptua/code/00.00-genome-GFF-formatting.Rmd) (commit `e4361d7`).
+:::
+
+
+# 1 Background
+
+This notebook reformats the original *P.tuahiniensis* GFF
+([Pocillopora_meandrina_HIv1.genes.gff3](../data/Pocillopora_meandrina_HIv1.genes.gff3)),
+to be compliant with the GFF3 standard. The genome was originally
+downloaded from here:
+
+- <http://cyanophora.rutgers.edu/Pocillopora_meandrina/> (Stephens et
+  al. 2022)
+
+Despite the naming convention of the file, there are no designated
+`gene` regions. The reformatting will add a `gene` feature, based solely
+on the `transcript` coordinates. There aren’t any other features beyoned
+`CDS` and `exon`, so adding `gene` features which match the `transcript`
+regions is primarily just to meet the GFF3 standard.
+
+Additionally, this notebook will generate a GTF for downstream use with
+HiSat2 for creating a genome index which incorporates exon/intron
+junctions and splice sites.
+
+<div class="callout-note">
+
+Unlike other scripts, this will output to [`F-Ptua/data`](../data),
+instead of an output directory in `../output`.
+
+</div>
+
+## 1.1 Software requirements
+
+Requires [genometools](https://github.com/genometools/genometools)
+(GitHub repo) to be installed and in the system `$PATH` and is used for
+GFF3 validation/formatting.
+
+Requires
+[gffread](https://ccb.jhu.edu/software/stringtie/gff.shtml#gffread)
+(Pertea and Pertea 2020) which is used for GFF3-to-GTF conversion.
+
+## 1.2 Inputs
+
+- [`Pocillopora_meandrina_HIv1.genes.gff3`](../data/Pocillopora_meandrina_HIv1.genes.gff3)
+
+## 1.3 Outputs
+
+- [`Pocillopora_meandrina_HIv1.genes-validated.gff3`](../data/Pocillopora_meandrina_HIv1.genes-validated.gff3)
+
+- [`Pocillopora_meandrina_HIv1.genes-validated.gtf`](../data/Pocillopora_meandrina_HIv1.genes-validated.gtf)
+
+# 2 Load libraries
+
+``` r
+library(tidyverse)
+```
+
+# 3 Create a Bash variables file
+
+This allows usage of Bash variables across R Markdown chunks.
+
+``` bash
+{
+echo "#### Assign Variables ####"
+echo ""
+
+echo "# Programs"
+echo 'export gffread=~/programs/gffread/gffread'
+
+echo "# Data directories"
+echo 'export repo_dir=~/gitrepos/urol-e5/timeseries_molecular'
+echo 'export data_dir=${repo_dir}/F-Ptua/data'
+echo ""
+
+echo "# Input files"
+echo 'export original_gff="Pocillopora_meandrina_HIv1.genes.gff3"'
+echo 'export intermediate_gff="intermediate.gff3"'
+echo 'export validated_gff="Pocillopora_meandrina_HIv1.genes-validated.gff3"'
+echo 'export gtf="Pocillopora_meandrina_HIv1.genes-validated.gtf"'
+echo ""
+
+echo "# Print formatting"
+echo 'export line="--------------------------------------------------------"'
+echo ""
+} > .bashvars
+
+cat .bashvars
+```
+
+    #### Assign Variables ####
+
+    # Programs
+    export gffread=~/programs/gffread/gffread
+    # Data directories
+    export repo_dir=~/gitrepos/urol-e5/timeseries_molecular
+    export data_dir=${repo_dir}/F-Ptua/data
+
+    # Input files
+    export original_gff="Pocillopora_meandrina_HIv1.genes.gff3"
+    export intermediate_gff="intermediate.gff3"
+    export validated_gff="Pocillopora_meandrina_HIv1.genes-validated.gff3"
+    export gtf="Pocillopora_meandrina_HIv1.genes-validated.gtf"
+
+    # Print formatting
+    export line="--------------------------------------------------------"
+
+# 4 Read GFF3 file
+
+``` r
+gff <- read_delim("../data/Pocillopora_meandrina_HIv1.genes.gff3", 
+                  delim="\t", 
+                  col_names=c("seqid", "source", "type", "start", "end", 
+                            "score", "strand", "phase", "attributes"),
+                  show_col_types = FALSE)
+str(gff)
+```
+
+    spc_tbl_ [448,910 × 9] (S3: spec_tbl_df/tbl_df/tbl/data.frame)
+     $ seqid     : chr [1:448910] "Pocillopora_meandrina_HIv1___Sc0000007" "Pocillopora_meandrina_HIv1___Sc0000007" "Pocillopora_meandrina_HIv1___Sc0000007" "Pocillopora_meandrina_HIv1___Sc0000007" ...
+     $ source    : chr [1:448910] "AUGUSTUS" "AUGUSTUS" "AUGUSTUS" "AUGUSTUS" ...
+     $ type      : chr [1:448910] "transcript" "CDS" "exon" "CDS" ...
+     $ start     : num [1:448910] 9649 9649 9649 10225 10225 ...
+     $ end       : num [1:448910] 18299 9706 9706 10352 10352 ...
+     $ score     : chr [1:448910] "." "." "." "." ...
+     $ strand    : chr [1:448910] "-" "-" "-" "-" ...
+     $ phase     : chr [1:448910] "." "1" "1" "0" ...
+     $ attributes: chr [1:448910] "ID=Pocillopora_meandrina_HIv1___TS.g23774.t1" "Parent=Pocillopora_meandrina_HIv1___TS.g23774.t1" "Parent=Pocillopora_meandrina_HIv1___TS.g23774.t1" "Parent=Pocillopora_meandrina_HIv1___TS.g23774.t1" ...
+     - attr(*, "spec")=
+      .. cols(
+      ..   seqid = col_character(),
+      ..   source = col_character(),
+      ..   type = col_character(),
+      ..   start = col_double(),
+      ..   end = col_double(),
+      ..   score = col_character(),
+      ..   strand = col_character(),
+      ..   phase = col_character(),
+      ..   attributes = col_character()
+      .. )
+     - attr(*, "problems")=<externalptr> 
+
+# 5 Get unique types
+
+``` r
+# Get and print unique types, one per line
+cat("Unique feature types in original GFF3:\n")
+```
+
+    Unique feature types in original GFF3:
+
+``` r
+gff %>%
+  distinct(type) %>%
+  pull(type) %>%
+  walk(~cat("-", .x, "\n"))
+```
+
+    - transcript 
+    - CDS 
+    - exon 
+
+# 6 Create gene entries from transcript entries
+
+``` r
+# Create gene entries
+gene_entries <- gff %>%
+  filter(type == "transcript") %>%
+  mutate(
+    type = "gene",
+    attributes = paste0("ID=gene-", str_remove(attributes, "^ID="))
+  )
+
+str(gene_entries)
+```
+
+    tibble [31,840 × 9] (S3: tbl_df/tbl/data.frame)
+     $ seqid     : chr [1:31840] "Pocillopora_meandrina_HIv1___Sc0000007" "Pocillopora_meandrina_HIv1___Sc0000007" "Pocillopora_meandrina_HIv1___Sc0000007" "Pocillopora_meandrina_HIv1___Sc0000007" ...
+     $ source    : chr [1:31840] "AUGUSTUS" "AUGUSTUS" "AUGUSTUS" "AUGUSTUS" ...
+     $ type      : chr [1:31840] "gene" "gene" "gene" "gene" ...
+     $ start     : num [1:31840] 9649 36139 58831 73152 93651 ...
+     $ end       : num [1:31840] 18299 36387 71330 87762 96614 ...
+     $ score     : chr [1:31840] "." "." "." "." ...
+     $ strand    : chr [1:31840] "-" "+" "+" "+" ...
+     $ phase     : chr [1:31840] "." "." "." "." ...
+     $ attributes: chr [1:31840] "ID=gene-Pocillopora_meandrina_HIv1___TS.g23774.t1" "ID=gene-Pocillopora_meandrina_HIv1___RNAseq.g5056.t1" "ID=gene-Pocillopora_meandrina_HIv1___RNAseq.g5057.t1" "ID=gene-Pocillopora_meandrina_HIv1___RNAseq.g5058.t1" ...
+
+# 7 Create mRNA features
+
+``` r
+# Create mRNA entries
+mrna_entries <- gff %>%
+  filter(type == "transcript") %>%
+  mutate(
+    type = "mRNA",
+    gene_id = paste0("gene-", str_remove(attributes, "^ID=")),
+    attributes = paste0("ID=mrna-", str_remove(attributes, "^ID="), 
+                       ";Parent=", gene_id)
+  ) %>%
+  select(-gene_id)
+
+str(mrna_entries)
+```
+
+    tibble [31,840 × 9] (S3: tbl_df/tbl/data.frame)
+     $ seqid     : chr [1:31840] "Pocillopora_meandrina_HIv1___Sc0000007" "Pocillopora_meandrina_HIv1___Sc0000007" "Pocillopora_meandrina_HIv1___Sc0000007" "Pocillopora_meandrina_HIv1___Sc0000007" ...
+     $ source    : chr [1:31840] "AUGUSTUS" "AUGUSTUS" "AUGUSTUS" "AUGUSTUS" ...
+     $ type      : chr [1:31840] "mRNA" "mRNA" "mRNA" "mRNA" ...
+     $ start     : num [1:31840] 9649 36139 58831 73152 93651 ...
+     $ end       : num [1:31840] 18299 36387 71330 87762 96614 ...
+     $ score     : chr [1:31840] "." "." "." "." ...
+     $ strand    : chr [1:31840] "-" "+" "+" "+" ...
+     $ phase     : chr [1:31840] "." "." "." "." ...
+     $ attributes: chr [1:31840] "ID=mrna-Pocillopora_meandrina_HIv1___TS.g23774.t1;Parent=gene-Pocillopora_meandrina_HIv1___TS.g23774.t1" "ID=mrna-Pocillopora_meandrina_HIv1___RNAseq.g5056.t1;Parent=gene-Pocillopora_meandrina_HIv1___RNAseq.g5056.t1" "ID=mrna-Pocillopora_meandrina_HIv1___RNAseq.g5057.t1;Parent=gene-Pocillopora_meandrina_HIv1___RNAseq.g5057.t1" "ID=mrna-Pocillopora_meandrina_HIv1___RNAseq.g5058.t1;Parent=gene-Pocillopora_meandrina_HIv1___RNAseq.g5058.t1" ...
+
+# 8 Other features
+
+Prepends a feature ID (e.g. `cds-`) to the corresponding attribute ID.
+
+Also increments each `exon` feature type within each mRNA, starting at
+\`.
+
+``` r
+# Process remaining features
+other_features <- gff %>%
+  group_by(seqid, group_id = cumsum(type == "transcript")) %>%
+  mutate(
+    mrna_id = first(if_else(type == "transcript", 
+                           paste0("mrna-", str_remove(attributes, "^ID=")), 
+                           NA_character_)),
+    # Calculate exon number within each group
+    exon_num = if_else(type == "exon",
+                      dense_rank(if_else(type == "exon", row_number(), NA_real_)),
+                      NA_real_),
+    # Format attributes
+    attributes = if_else(
+      type != "transcript",
+      paste0(
+        "ID=", tolower(type), "-", str_remove(first(if_else(type == "transcript", 
+                                                           attributes, 
+                                                           NA_character_)), "^ID="),
+        if_else(!is.na(exon_num),
+                paste0("-", exon_num), ""),
+        ";Parent=", mrna_id
+      ),
+      attributes
+    )
+  ) %>%
+  ungroup() %>%
+  filter(type != "transcript") %>%
+  select(-group_id, -mrna_id, -exon_num)
+
+str(other_features)
+```
+
+    tibble [417,070 × 9] (S3: tbl_df/tbl/data.frame)
+     $ seqid     : chr [1:417070] "Pocillopora_meandrina_HIv1___Sc0000007" "Pocillopora_meandrina_HIv1___Sc0000007" "Pocillopora_meandrina_HIv1___Sc0000007" "Pocillopora_meandrina_HIv1___Sc0000007" ...
+     $ source    : chr [1:417070] "AUGUSTUS" "AUGUSTUS" "AUGUSTUS" "AUGUSTUS" ...
+     $ type      : chr [1:417070] "CDS" "exon" "CDS" "exon" ...
+     $ start     : num [1:417070] 9649 9649 10225 10225 11330 ...
+     $ end       : num [1:417070] 9706 9706 10352 10352 11655 ...
+     $ score     : chr [1:417070] "." "." "." "." ...
+     $ strand    : chr [1:417070] "-" "-" "-" "-" ...
+     $ phase     : chr [1:417070] "1" "1" "0" "0" ...
+     $ attributes: chr [1:417070] "ID=cds-Pocillopora_meandrina_HIv1___TS.g23774.t1;Parent=mrna-Pocillopora_meandrina_HIv1___TS.g23774.t1" "ID=exon-Pocillopora_meandrina_HIv1___TS.g23774.t1-1;Parent=mrna-Pocillopora_meandrina_HIv1___TS.g23774.t1" "ID=cds-Pocillopora_meandrina_HIv1___TS.g23774.t1;Parent=mrna-Pocillopora_meandrina_HIv1___TS.g23774.t1" "ID=exon-Pocillopora_meandrina_HIv1___TS.g23774.t1-2;Parent=mrna-Pocillopora_meandrina_HIv1___TS.g23774.t1" ...
+
+# 9 Combine and sort
+
+``` r
+intermediate_gff <- bind_rows(
+  gene_entries,
+  mrna_entries,
+  other_features
+) %>%
+  arrange(seqid, start)
+
+str(intermediate_gff)
+```
+
+    tibble [480,750 × 9] (S3: tbl_df/tbl/data.frame)
+     $ seqid     : chr [1:480750] "Pocillopora_meandrina_HIv1___Sc0000000" "Pocillopora_meandrina_HIv1___Sc0000000" "Pocillopora_meandrina_HIv1___Sc0000000" "Pocillopora_meandrina_HIv1___Sc0000000" ...
+     $ source    : chr [1:480750] "AUGUSTUS" "AUGUSTUS" "AUGUSTUS" "AUGUSTUS" ...
+     $ type      : chr [1:480750] "gene" "mRNA" "CDS" "exon" ...
+     $ start     : num [1:480750] 10771 10771 10771 10771 12784 ...
+     $ end       : num [1:480750] 23652 23652 11117 11117 12875 ...
+     $ score     : chr [1:480750] "." "." "." "." ...
+     $ strand    : chr [1:480750] "+" "+" "+" "+" ...
+     $ phase     : chr [1:480750] "." "." "0" "0" ...
+     $ attributes: chr [1:480750] "ID=gene-Pocillopora_meandrina_HIv1___RNAseq.g20902.t1" "ID=mrna-Pocillopora_meandrina_HIv1___RNAseq.g20902.t1;Parent=gene-Pocillopora_meandrina_HIv1___RNAseq.g20902.t1" "ID=cds-Pocillopora_meandrina_HIv1___RNAseq.g20902.t1;Parent=mrna-Pocillopora_meandrina_HIv1___RNAseq.g20902.t1" "ID=exon-Pocillopora_meandrina_HIv1___RNAseq.g20902.t1-1;Parent=mrna-Pocillopora_meandrina_HIv1___RNAseq.g20902.t1" ...
+
+# 10 Unique features
+
+``` r
+# Get and print unique types, one per line
+cat("Unique feature types in final GFF3:\n")
+```
+
+    Unique feature types in final GFF3:
+
+``` r
+intermediate_gff %>%
+  distinct(type) %>%
+  pull(type) %>%
+  walk(~cat("-", .x, "\n"))
+```
+
+    - gene 
+    - mRNA 
+    - CDS 
+    - exon 
+
+# 11 Write output
+
+``` r
+write_delim(intermediate_gff, 
+            "../data/intermediate.gff3", 
+            delim="\t",
+            col_names=FALSE)
+```
+
+# 12 Validate GFF
+
+Validate GFF using genometools `gff3`.
+
+- `-tidy`: Attempts to clean/fix any potential issues.
+
+- `-checkids`: Checks IDs.
+
+- `-retainids`: Retains IDs from input GFF instead of assigning new
+  ones.
+
+``` bash
+source .bashvars
+
+gt gff3 \
+-tidy \
+-checkids \
+-retainids \
+"${data_dir}"/"${intermediate_gff}" \
+> "${data_dir}"/"${validated_gff}" \
+2> "${data_dir}"/gt_gff3_validation_errors.log
+```
+
+## 12.1 Check for error(s) in validation
+
+Process would stop if error occurred, so only need to check end of file.
+
+<div class="callout-note">
+
+Warnings are expected, as this program warns the user when it is
+inserting text.
+
+In this instance, when it is inserting GFF3-compliant comment lines
+denoting regions.
+
+</div>
+
+``` bash
+source .bashvars
+
+tail "${data_dir}"/gt_gff3_validation_errors.log
+```
+
+    warning: seqid "Pocillopora_meandrina_HIv1___xfSc0001231" on line 480507 in file "/home/sam/gitrepos/urol-e5/timeseries_molecular/F-Ptua/data/intermediate.gff3" has not been previously introduced with a "##sequence-region" line, create such a line automatically
+    warning: seqid "Pocillopora_meandrina_HIv1___xpSc0001273" on line 480513 in file "/home/sam/gitrepos/urol-e5/timeseries_molecular/F-Ptua/data/intermediate.gff3" has not been previously introduced with a "##sequence-region" line, create such a line automatically
+    warning: seqid "Pocillopora_meandrina_HIv1___xpSc0001275" on line 480595 in file "/home/sam/gitrepos/urol-e5/timeseries_molecular/F-Ptua/data/intermediate.gff3" has not been previously introduced with a "##sequence-region" line, create such a line automatically
+    warning: seqid "Pocillopora_meandrina_HIv1___xpSc0001276" on line 480599 in file "/home/sam/gitrepos/urol-e5/timeseries_molecular/F-Ptua/data/intermediate.gff3" has not been previously introduced with a "##sequence-region" line, create such a line automatically
+    warning: seqid "Pocillopora_meandrina_HIv1___xpSc0001280" on line 480627 in file "/home/sam/gitrepos/urol-e5/timeseries_molecular/F-Ptua/data/intermediate.gff3" has not been previously introduced with a "##sequence-region" line, create such a line automatically
+    warning: seqid "Pocillopora_meandrina_HIv1___xpSc0001281" on line 480643 in file "/home/sam/gitrepos/urol-e5/timeseries_molecular/F-Ptua/data/intermediate.gff3" has not been previously introduced with a "##sequence-region" line, create such a line automatically
+    warning: seqid "Pocillopora_meandrina_HIv1___xpSc0001290" on line 480673 in file "/home/sam/gitrepos/urol-e5/timeseries_molecular/F-Ptua/data/intermediate.gff3" has not been previously introduced with a "##sequence-region" line, create such a line automatically
+    warning: seqid "Pocillopora_meandrina_HIv1___xpSc0001321" on line 480725 in file "/home/sam/gitrepos/urol-e5/timeseries_molecular/F-Ptua/data/intermediate.gff3" has not been previously introduced with a "##sequence-region" line, create such a line automatically
+    warning: seqid "Pocillopora_meandrina_HIv1___xpSc0001331" on line 480737 in file "/home/sam/gitrepos/urol-e5/timeseries_molecular/F-Ptua/data/intermediate.gff3" has not been previously introduced with a "##sequence-region" line, create such a line automatically
+    warning: seqid "Pocillopora_meandrina_HIv1___xpSc0001355" on line 480747 in file "/home/sam/gitrepos/urol-e5/timeseries_molecular/F-Ptua/data/intermediate.gff3" has not been previously introduced with a "##sequence-region" line, create such a line automatically
+
+## 12.2 Inspect Validated GFF
+
+``` bash
+source .bashvars
+
+head "${data_dir}"/"${validated_gff}"
+```
+
+    ##gff-version 3
+    ##sequence-region   Pocillopora_meandrina_HIv1___xfSc0000716 887 39392
+    Pocillopora_meandrina_HIv1___xfSc0000716    AUGUSTUS    gene    887 6811    .   -   .   ID=gene-Pocillopora_meandrina_HIv1___RNAseq.g29951.t1
+    Pocillopora_meandrina_HIv1___xfSc0000716    AUGUSTUS    mRNA    887 6811    .   -   .   ID=mrna-Pocillopora_meandrina_HIv1___RNAseq.g29951.t1;Parent=gene-Pocillopora_meandrina_HIv1___RNAseq.g29951.t1
+    Pocillopora_meandrina_HIv1___xfSc0000716    AUGUSTUS    CDS 887 973 .   -   0   ID=cds-Pocillopora_meandrina_HIv1___RNAseq.g29951.t1;Parent=mrna-Pocillopora_meandrina_HIv1___RNAseq.g29951.t1
+    Pocillopora_meandrina_HIv1___xfSc0000716    AUGUSTUS    exon    887 973 .   -   0   ID=exon-Pocillopora_meandrina_HIv1___RNAseq.g29951.t1-1;Parent=mrna-Pocillopora_meandrina_HIv1___RNAseq.g29951.t1
+    Pocillopora_meandrina_HIv1___xfSc0000716    AUGUSTUS    CDS 1828    1882    .   -   1   ID=cds-Pocillopora_meandrina_HIv1___RNAseq.g29951.t1;Parent=mrna-Pocillopora_meandrina_HIv1___RNAseq.g29951.t1
+    Pocillopora_meandrina_HIv1___xfSc0000716    AUGUSTUS    exon    1828    1882    .   -   1   ID=exon-Pocillopora_meandrina_HIv1___RNAseq.g29951.t1-2;Parent=mrna-Pocillopora_meandrina_HIv1___RNAseq.g29951.t1
+    Pocillopora_meandrina_HIv1___xfSc0000716    AUGUSTUS    CDS 2308    2371    .   -   2   ID=cds-Pocillopora_meandrina_HIv1___RNAseq.g29951.t1;Parent=mrna-Pocillopora_meandrina_HIv1___RNAseq.g29951.t1
+    Pocillopora_meandrina_HIv1___xfSc0000716    AUGUSTUS    exon    2308    2371    .   -   2   ID=exon-Pocillopora_meandrina_HIv1___RNAseq.g29951.t1-3;Parent=mrna-Pocillopora_meandrina_HIv1___RNAseq.g29951.t1
+
+## 12.3 Remove intermediate GFF
+
+``` bash
+source .bashvars
+
+rm "${data_dir}"/"${intermediate_gff}"
+```
+
+# 13 Convert to GTF
+
+``` bash
+source .bashvars
+
+${gffread} \
+-E \
+-T \
+"${data_dir}"/"${validated_gff}" \
+> "${data_dir}"/"${gtf}" \
+2> "${data_dir}"/gffread-gtf.log
+```
+
+## 13.1 Inspect GTF
+
+``` bash
+source .bashvars
+
+head "${data_dir}"/"${gtf}"
+```
+
+    Pocillopora_meandrina_HIv1___xfSc0000716    AUGUSTUS    transcript  887 6811    .   -   .   transcript_id "mrna-Pocillopora_meandrina_HIv1___RNAseq.g29951.t1"; gene_id "gene-Pocillopora_meandrina_HIv1___RNAseq.g29951.t1"
+    Pocillopora_meandrina_HIv1___xfSc0000716    AUGUSTUS    exon    887 973 .   -   .   transcript_id "mrna-Pocillopora_meandrina_HIv1___RNAseq.g29951.t1"; gene_id "gene-Pocillopora_meandrina_HIv1___RNAseq.g29951.t1";
+    Pocillopora_meandrina_HIv1___xfSc0000716    AUGUSTUS    exon    1828    1882    .   -   .   transcript_id "mrna-Pocillopora_meandrina_HIv1___RNAseq.g29951.t1"; gene_id "gene-Pocillopora_meandrina_HIv1___RNAseq.g29951.t1";
+    Pocillopora_meandrina_HIv1___xfSc0000716    AUGUSTUS    exon    2308    2371    .   -   .   transcript_id "mrna-Pocillopora_meandrina_HIv1___RNAseq.g29951.t1"; gene_id "gene-Pocillopora_meandrina_HIv1___RNAseq.g29951.t1";
+    Pocillopora_meandrina_HIv1___xfSc0000716    AUGUSTUS    exon    2891    2920    .   -   .   transcript_id "mrna-Pocillopora_meandrina_HIv1___RNAseq.g29951.t1"; gene_id "gene-Pocillopora_meandrina_HIv1___RNAseq.g29951.t1";
+    Pocillopora_meandrina_HIv1___xfSc0000716    AUGUSTUS    exon    3013    3067    .   -   .   transcript_id "mrna-Pocillopora_meandrina_HIv1___RNAseq.g29951.t1"; gene_id "gene-Pocillopora_meandrina_HIv1___RNAseq.g29951.t1";
+    Pocillopora_meandrina_HIv1___xfSc0000716    AUGUSTUS    exon    3369    3425    .   -   .   transcript_id "mrna-Pocillopora_meandrina_HIv1___RNAseq.g29951.t1"; gene_id "gene-Pocillopora_meandrina_HIv1___RNAseq.g29951.t1";
+    Pocillopora_meandrina_HIv1___xfSc0000716    AUGUSTUS    exon    3790    3855    .   -   .   transcript_id "mrna-Pocillopora_meandrina_HIv1___RNAseq.g29951.t1"; gene_id "gene-Pocillopora_meandrina_HIv1___RNAseq.g29951.t1";
+    Pocillopora_meandrina_HIv1___xfSc0000716    AUGUSTUS    exon    4639    4737    .   -   .   transcript_id "mrna-Pocillopora_meandrina_HIv1___RNAseq.g29951.t1"; gene_id "gene-Pocillopora_meandrina_HIv1___RNAseq.g29951.t1";
+    Pocillopora_meandrina_HIv1___xfSc0000716    AUGUSTUS    exon    4985    5020    .   -   .   transcript_id "mrna-Pocillopora_meandrina_HIv1___RNAseq.g29951.t1"; gene_id "gene-Pocillopora_meandrina_HIv1___RNAseq.g29951.t1";
+
+## 13.2 Check GTF Log
+
+``` bash
+source .bashvars
+
+head "${data_dir}"/gffread-gtf.log
+```
+
+    Command line was:
+    /home/sam/programs/gffread/gffread -E -T /home/sam/gitrepos/urol-e5/timeseries_molecular/F-Ptua/data/Pocillopora_meandrina_HIv1.genes-validated.gff3
+       .. loaded 31840 genomic features from /home/sam/gitrepos/urol-e5/timeseries_molecular/F-Ptua/data/Pocillopora_meandrina_HIv1.genes-validated.gff3
+
+# 14 REFERENCES
+
+<div id="refs" class="references csl-bib-body hanging-indent"
+entry-spacing="0">
+
+<div id="ref-pertea2020" class="csl-entry">
+
+Pertea, Geo, and Mihaela Pertea. 2020. “GFF Utilities: GffRead and
+GffCompare.” *F1000Research* 9 (September): 304.
+<https://doi.org/10.12688/f1000research.23297.2>.
+
+</div>
+
+<div id="ref-stephens2022" class="csl-entry">
+
+Stephens, Timothy G, JunMo Lee, YuJin Jeong, Hwan Su Yoon, Hollie M
+Putnam, Eva Majerová, and Debashish Bhattacharya. 2022. “High-Quality
+Genome Assembles from Key Hawaiian Coral Species.” *GigaScience* 11.
+<https://doi.org/10.1093/gigascience/giac098>.
+
+</div>
+
+</div>
