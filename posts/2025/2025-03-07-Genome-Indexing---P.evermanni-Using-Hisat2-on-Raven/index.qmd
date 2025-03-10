@@ -19,5 +19,239 @@ categories:
 In preparation for RNA-seq analysis for [urol-e5/timeseries_molecular](https://github.com/urol-e5/timeseries_molecular) (GitHub repo) project, we needed to index the genome using [`HISAT2`](https://daehwankimlab.github.io/hisat2/). I had [previously fixed the GFF and prepared a corresponding GTF on 20250110](../2025-01-10-Data-Wrangling---Reformat-P.evermanni-GFF-to-Valid-GFF3-Using-awk-genometools-and-AGAT/index.qmd) so that we could identify exons splice sites - both of which are useful during genome indexing to identify alternative isoforms in downstream applications.
 
 ::: {.callout-note}
-The contents below are from markdown knitted from [``]() (commit ``).
+The contents below are from markdown knitted from [`02.10-E-Peve-RNAseq-genome-index-HiSat2.Rmd`](https://github.com/urol-e5/timeseries_molecular/blob/0babff03673c6c021b7652d3e3adb56c6fe0ee4a/E-Peve/code/02.10-E-Peve-RNAseq-genome-index-HiSat2.Rmd) (commit `0babff0`).
 :::
+
+
+# 1 Background
+
+This notebook will build an index of the *P.evermanni* genome using
+[HISAT2](https://github.com/DaehwanKimLab/hisat2) (Kim et al. 2019). It
+utilizes the GTF file created in
+[`00-genome-GFF-formatting.Rmd`](https://github.com/urol-e5/timeseries_molecular/blob/99f0563a067ca9d010cb206dfd44b36d8f77de00/E-Peve/code/00.00-genome-GFF-formatting.Rmd).
+
+Due to the large file sizes of the outputs HISAT2 index files (`*.ht2`),
+they cannot be added to GitHub. As such, they are available for download
+from here:
+
+- <https://gannet.fish.washington.edu/gitrepos/urol-e5/timeseries_molecular/E-Peve/output/02.10-E-Peve-RNAseq-genome-index-HiSat2>
+
+# 2 Create a Bash variables file
+
+This allows usage of Bash variables across R Markdown chunks.
+
+``` bash
+{
+echo "#### Assign Variables ####"
+echo ""
+
+echo "# Data directories"
+echo 'export timeseries_dir=/home/shared/8TB_HDD_01/sam/gitrepos/urol-e5/timeseries_molecular'
+echo 'export genome_dir="${timeseries_dir}/E-Peve/data"'
+echo 'export output_dir_top=${timeseries_dir}/E-Peve/output/02.10-E-Peve-RNAseq-genome-index-HiSat2'
+echo ""
+
+echo "# Input/output files"
+echo 'export genome_index_name="Porites_evermanni_v1"'
+echo 'export exons="${output_dir_top}/Porites_evermanni_v1_hisat2_exons.tab"'
+echo 'export genome_gff="${genome_dir}/Porites_evermanni_validated.gff3"'
+echo 'export genome_fasta="${genome_dir}/Porites_evermanni_v1.fa"'
+echo 'export splice_sites="${output_dir_top}/Porites_evermanni_v1_hisat2_splice_sites.tab"'
+echo 'export transcripts_gtf="${genome_dir}/Porites_evermanni_validated.gtf"'
+
+echo "# Paths to programs"
+echo 'export programs_dir="/home/shared"'
+echo 'export hisat2_dir="${programs_dir}/hisat2-2.2.1"'
+echo ""
+echo 'export hisat2_build="${hisat2_dir}/hisat2-build"'
+echo 'export hisat2_exons="${hisat2_dir}/hisat2_extract_exons.py"'
+echo 'export hisat2_splice_sites="${hisat2_dir}/hisat2_extract_splice_sites.py"'
+echo ""
+
+echo "# Set number of CPUs to use"
+echo 'export threads=40'
+echo ""
+
+echo "# Programs associative array"
+echo "declare -A programs_array"
+echo "programs_array=("
+echo '[hisat2]="${hisat2}" \'
+echo '[hisat2_build]="${hisat2_build}" \'
+echo '[hisat2_exons]="${hisat2_exons}" \'
+echo '[hisat2_splice_sites]="${hisat2_splice_sites}" \'
+echo ")"
+echo ""
+
+echo "# Print formatting"
+echo 'export line="--------------------------------------------------------"'
+echo ""
+} > .bashvars
+
+cat .bashvars
+```
+
+    #### Assign Variables ####
+
+    # Data directories
+    export timeseries_dir=/home/shared/8TB_HDD_01/sam/gitrepos/urol-e5/timeseries_molecular
+    export genome_dir="${timeseries_dir}/E-Peve/data"
+    export output_dir_top=${timeseries_dir}/E-Peve/output/02.10-E-Peve-RNAseq-genome-index-HiSat2
+
+    # Input/output files
+    export genome_index_name="Porites_evermanni_v1"
+    export exons="${output_dir_top}/Porites_evermanni_v1_hisat2_exons.tab"
+    export genome_gff="${genome_dir}/Porites_evermanni_validated.gff3"
+    export genome_fasta="${genome_dir}/Porites_evermanni_v1.fa"
+    export splice_sites="${output_dir_top}/Porites_evermanni_v1_hisat2_splice_sites.tab"
+    export transcripts_gtf="${genome_dir}/Porites_evermanni_validated.gtf"
+    # Paths to programs
+    export programs_dir="/home/shared"
+    export hisat2_dir="${programs_dir}/hisat2-2.2.1"
+
+    export hisat2_build="${hisat2_dir}/hisat2-build"
+    export hisat2_exons="${hisat2_dir}/hisat2_extract_exons.py"
+    export hisat2_splice_sites="${hisat2_dir}/hisat2_extract_splice_sites.py"
+
+    # Set number of CPUs to use
+    export threads=40
+
+    # Programs associative array
+    declare -A programs_array
+    programs_array=(
+    [hisat2]="${hisat2}" \
+    [hisat2_build]="${hisat2_build}" \
+    [hisat2_exons]="${hisat2_exons}" \
+    [hisat2_splice_sites]="${hisat2_splice_sites}" \
+    )
+
+    # Print formatting
+    export line="--------------------------------------------------------"
+
+# 3 Identify exons
+
+``` bash
+# Load bash variables into memory
+source .bashvars
+
+# Make directories, if they don't exist
+mkdir --parents "${output_dir_top}"
+
+# Create Hisat2 exons tab file
+"${programs_array[hisat2_exons]}" \
+"${transcripts_gtf}" \
+> "${exons}"
+
+head "${exons}"
+```
+
+    Porites_evermani_scaffold_1 3106    3443    -
+    Porites_evermani_scaffold_1 4283    4487    -
+    Porites_evermani_scaffold_1 8491    8619    +
+    Porites_evermani_scaffold_1 9235    9319    +
+    Porites_evermani_scaffold_1 9553    9747    +
+    Porites_evermani_scaffold_1 10688   11025   +
+    Porites_evermani_scaffold_1 26133   26317   +
+    Porites_evermani_scaffold_1 26328   26403   +
+    Porites_evermani_scaffold_1 30312   30358   +
+    Porites_evermani_scaffold_1 31438   31564   +
+
+# 4 Identify splice sites
+
+``` bash
+# Load bash variables into memory
+source .bashvars
+
+# Create Hisat2 splice sites tab file
+"${programs_array[hisat2_splice_sites]}" \
+"${transcripts_gtf}" \
+> "${splice_sites}"
+
+head "${splice_sites}"
+```
+
+    Porites_evermani_scaffold_1 3443    4283    -
+    Porites_evermani_scaffold_1 8619    9235    +
+    Porites_evermani_scaffold_1 9319    9553    +
+    Porites_evermani_scaffold_1 9747    10688   +
+    Porites_evermani_scaffold_1 26317   26328   +
+    Porites_evermani_scaffold_1 30358   31438   +
+    Porites_evermani_scaffold_1 31564   31641   +
+    Porites_evermani_scaffold_1 31709   32255   +
+    Porites_evermani_scaffold_1 32335   33010   +
+    Porites_evermani_scaffold_1 32739   45074   -
+
+# 5 Build HISAT2 genome index
+
+``` bash
+# Load bash variables into memory
+source .bashvars
+
+# Change to working directory
+cd "${output_dir_top}"
+
+# Build Hisat2 reference index using splice sites and exons
+"${programs_array[hisat2_build]}" \
+"${genome_fasta}" \
+"${genome_index_name}" \
+--exon "${exons}" \
+--ss "${splice_sites}" \
+-p "${threads}" \
+2> "${genome_index_name}"-hisat2_build.err
+
+ls -lh
+```
+
+    total 1.2G
+    -rw-r--r-- 1 sam sam 339M Mar  6 15:47 Porites_evermanni_v1.1.ht2
+    -rw-r--r-- 1 sam sam 136M Mar  6 15:47 Porites_evermanni_v1.2.ht2
+    -rw-r--r-- 1 sam sam 442K Mar  6 15:37 Porites_evermanni_v1.3.ht2
+    -rw-r--r-- 1 sam sam 135M Mar  6 15:37 Porites_evermanni_v1.4.ht2
+    -rw-r--r-- 1 sam sam 419M Mar  6 15:55 Porites_evermanni_v1.5.ht2
+    -rw-r--r-- 1 sam sam 137M Mar  6 15:55 Porites_evermanni_v1.6.ht2
+    -rw-r--r-- 1 sam sam 8.0M Mar  6 15:38 Porites_evermanni_v1.7.ht2
+    -rw-r--r-- 1 sam sam 1.7M Mar  6 15:38 Porites_evermanni_v1.8.ht2
+    -rw-r--r-- 1 sam sam  16K Mar  6 15:55 Porites_evermanni_v1-hisat2_build.err
+    -rw-r--r-- 1 sam sam  11M Mar  6 15:37 Porites_evermanni_v1_hisat2_exons.tab
+    -rw-r--r-- 1 sam sam 8.4M Mar  6 15:37 Porites_evermanni_v1_hisat2_splice_sites.tab
+
+# 6 List Hisat2 index files
+
+``` bash
+# Load bash variables into memory
+source .bashvars
+
+for index in "${output_dir_top}"/*.ht2
+do
+  cp ${index} ${genome_dir}
+done
+
+ls -lh "${output_dir_top}"
+```
+
+    total 1.2G
+    -rw-r--r-- 1 sam sam 339M Mar  6 15:47 Porites_evermanni_v1.1.ht2
+    -rw-r--r-- 1 sam sam 136M Mar  6 15:47 Porites_evermanni_v1.2.ht2
+    -rw-r--r-- 1 sam sam 442K Mar  6 15:37 Porites_evermanni_v1.3.ht2
+    -rw-r--r-- 1 sam sam 135M Mar  6 15:37 Porites_evermanni_v1.4.ht2
+    -rw-r--r-- 1 sam sam 419M Mar  6 15:55 Porites_evermanni_v1.5.ht2
+    -rw-r--r-- 1 sam sam 137M Mar  6 15:55 Porites_evermanni_v1.6.ht2
+    -rw-r--r-- 1 sam sam 8.0M Mar  6 15:38 Porites_evermanni_v1.7.ht2
+    -rw-r--r-- 1 sam sam 1.7M Mar  6 15:38 Porites_evermanni_v1.8.ht2
+    -rw-r--r-- 1 sam sam  16K Mar  6 15:55 Porites_evermanni_v1-hisat2_build.err
+    -rw-r--r-- 1 sam sam  11M Mar  6 15:37 Porites_evermanni_v1_hisat2_exons.tab
+    -rw-r--r-- 1 sam sam 8.4M Mar  6 15:37 Porites_evermanni_v1_hisat2_splice_sites.tab
+
+# References
+
+<div id="refs" class="references csl-bib-body hanging-indent">
+
+<div id="ref-kim2019" class="csl-entry">
+
+Kim, Daehwan, Joseph M. Paggi, Chanhee Park, Christopher Bennett, and
+Steven L. Salzberg. 2019. “Graph-Based Genome Alignment and Genotyping
+with HISAT2 and HISAT-Genotype.” *Nature Biotechnology* 37 (8): 907–15.
+<https://doi.org/10.1038/s41587-019-0201-4>.
+
+</div>
+
+</div>
