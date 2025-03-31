@@ -10,7 +10,52 @@
 <atom:link href="https://robertslab.github.io/sams-notebook/index.xml" rel="self" type="application/rss+xml"/>
 <description></description>
 <generator>quarto-1.5.57</generator>
-<lastBuildDate>Tue, 25 Mar 2025 07:00:00 GMT</lastBuildDate>
+<lastBuildDate>Fri, 28 Mar 2025 07:00:00 GMT</lastBuildDate>
+<item>
+  <title>Computer Management - Install Synology Expansion Unit RX1217 for Gannet</title>
+  <dc:creator>Sam White</dc:creator>
+  <link>https://robertslab.github.io/sams-notebook/posts/2025/2025-03-28-Computer-Management---Install-Synology-Expansion-Unit-RX1217-for-Gannet/</link>
+  <description><![CDATA[ 
+
+
+
+
+
+<p>Gannet, our Synology storage system, required additional capacity to accommodate growing data needs. To address this, I installed the Synology Expansion Unit RX1217. This was the second, and final, expansion unit. Additionally, I installed server rack rails to allow for easier access and maintenance of the unit. Previously, all of the units had been physically stacked on one another. This made inserting/removing the hard drive sleds nearly impossible in some casees.</p>
+<p>I also discarded one of the dead UPS to make room for the expansion unit.</p>
+<p>After installing the rails, expansion unit and HDDs, I started Gannet and the expansion units and waited for data scrubbing to take place. It turns out that the maximum volume size is 200TB, which meant that in order to have access to space on the newly installed expansion unit, I needed to create a new volume.</p>
+<p>navigating to the “Storage Manager” section, selecting the newly installed expansion unit, and creating a new volume. The DSM software guided me through the process, including selecting the RAID type and configuring the volume settings. Once the new volume was created, I was able to utilize the additional storage space.</p>
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="https://robertslab.github.io/sams-notebook/posts/2025/2025-03-28-Computer-Management---Install-Synology-Expansion-Unit-RX1217-for-Gannet/20250328-synology-storage-pool.png" class="img-fluid figure-img" alt="Screenshot showing storage pool with two volumes, instead of just a single volume."></p>
+<figcaption>Screenshot showing storage pool with two volumes, instead of just a single volume.</figcaption>
+</figure>
+</div>
+<p>Unfortunately, that means our data will eventually be split betwee the two volumes; almost as if we have the data on an entirely new NAS. This means that our utilization of the <code>/volume2/web</code> directory won’t be as seamless as it has been. To address this, I created a symlink (<code>v1_web</code>) in an attempt to make using/accessing data in <code>v1_web</code> as easy as possible:</p>
+<div class="sourceCode" id="cb1" style="background: #f1f3f5;"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb1-1"><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># Create a symlink for /volume2/web to /volume1/web/v1_web</span></span>
+<span id="cb1-2"><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">ln</span> <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">-s</span> /volume1/web/v1_web /volume2/web</span></code></pre></div>
+<p>That means this volume/directory is now available to browser here:</p>
+<p>https://gannet.fish.washington.edu/v1_web/</p>
+<p>I’ll add a short guide to the lab handbook.</p>
+
+
+
+ ]]></description>
+  <category>2025</category>
+  <category>Computer Management</category>
+  <category>Synology</category>
+  <category>RX1217</category>
+  <category>expansion</category>
+  <guid>https://robertslab.github.io/sams-notebook/posts/2025/2025-03-28-Computer-Management---Install-Synology-Expansion-Unit-RX1217-for-Gannet/</guid>
+  <pubDate>Fri, 28 Mar 2025 07:00:00 GMT</pubDate>
+  <media:content url="https://robertslab.github.io/sams-notebook/posts/2025/2025-03-28-Computer-Management---Install-Synology-Expansion-Unit-RX1217-for-Gannet/20250328-synology-expansion.jpg" medium="image" type="image/jpeg"/>
+</item>
 <item>
   <title>DNA and RNA Isolations and Quantification - G.macrocephalus Blood Using Zymo Quick-RNA RNA MiniPrep Plus Kit</title>
   <dc:creator>Sam White</dc:creator>
@@ -33964,107 +34009,6 @@ Ewels, Philip, Måns Magnusson, Sverker Lundin, and Max Käller. 2016. “MultiQ
   <guid>https://robertslab.github.io/sams-notebook/posts/2025/2025-02-06-FastQC-MultiQC---A.pulchra-WGBS-E5-Deep-Dive-Expression/</guid>
   <pubDate>Thu, 06 Feb 2025 08:00:00 GMT</pubDate>
   <media:content url="https://robertslab.github.io/sams-notebook/posts/2025/2025-02-06-FastQC-MultiQC---A.pulchra-WGBS-E5-Deep-Dive-Expression/20250206-apul-multiqc-plot-01.png" medium="image" type="image/png" height="67" width="144"/>
-</item>
-<item>
-  <title>Data Received - E5 Coral WGBS from Genohub Project 2216545 Using Rclone on Owl</title>
-  <dc:creator>Sam White</dc:creator>
-  <link>https://robertslab.github.io/sams-notebook/posts/2025/2025-02-03-Data-Received---E5-Coral-WGBS-from-Genohub-Project-2216545-Using-Rclone-on-Owl/</link>
-  <description><![CDATA[ 
-
-
-
-
-
-<section id="intro" class="level1">
-<h1>INTRO</h1>
-<p>Whole genome bisulfite sequencing (WGBS) data was received from Genohub for Project 2216545, as part of <a href="https://github.com/urol-e5/deep-dive-expression">urol-e5/deep-dive-expression</a>. Genohub provided Amazon AWS S3 credentials for downloading. Installation of the AWS command line interface (CLI) was a bit too involved to try to figure out on Owl (our Synology server), which might be BSD Linux? Instead, I installed and configured <a href="https://rclone.org/">rclone</a> on Owl.</p>
-</section>
-<section id="methods" class="level1">
-<h1>METHODS</h1>
-<section id="configuring-rclone" class="level2">
-<h2 class="anchored" data-anchor-id="configuring-rclone">Configuring Rclone</h2>
-<p>Installation was a breeze. SSH’d into and then used the following command provided on the <a href="https://rclone.org/downloads/">rclone Downloads page</a>:</p>
-<p><code>sudo -v ; curl https://rclone.org/install.sh | sudo bash</code></p>
-<p>I performed the initial configuration step using the credentials supplied by Genohub.</p>
-<ul>
-<li><code>rclone config</code></li>
-</ul>
-<p>Then, I ran the list command to view the contents of the S3 bucket on AWS:</p>
-<p><code>rclone ls remote:</code></p>
-<p>However, this did <em>not</em> work!</p>
-<pre><code>2025/02/03 12:57:43 NOTICE: Failed to ls: operation error S3: ListBuckets, https response error StatusCode: 403, RequestID: SH6FBZZSFZVEFBMG, HostID: &lt;redacted&gt;, api error AccessDenied: User: arn:aws:iam::&lt;redacted&gt;:user/remote is not authorized to perform: s3:ListAllMyBuckets because no identity-based policy allows the s3:ListAllMyBuckets action</code></pre>
-<p>After some sleuthing in the Genohub documentation for using the AWS CLI, I realized I needed to specify the S3 bucket. In order to specify an S3 bucket with rclone, you need to <a href="https://rclone.org/alias/">create an rclone alias</a> - you cannot configure S3 to access a bucket directory.</p>
-<p>So, I set up an alias with rclone:</p>
-<ol type="1">
-<li><p>Run <code>rclone config</code></p></li>
-<li><p>Specify <code>n) New remote</code></p></li>
-<li><p><code>name&gt; genohub</code></p></li>
-<li><p>Specify <code>alias</code> as storage type:</p>
-<pre><code>Type of storage to configure.
-Choose a number from below, or type in your own value
-
-&gt;alias</code></pre></li>
-<li><p><code>remote&gt; remote:genohub_bucket</code></p></li>
-</ol>
-<div class="callout callout-style-default callout-note callout-titled">
-<div class="callout-header d-flex align-content-center">
-<div class="callout-icon-container">
-<i class="callout-icon"></i>
-</div>
-<div class="callout-title-container flex-fill">
-Note
-</div>
-</div>
-<div class="callout-body-container callout-body">
-<p>You need to replace <code>&lt;genohub_bucket&gt;</code> with the actual bucket ID provided by Genohub.</p>
-</div>
-</div>
-<ol start="6" type="1">
-<li>Save the configuration at the prompt.</li>
-</ol>
-<p>Then, you can actually access your data using the alias <code>genohub</code>:</p>
-<p><code>rclone ls genohub:</code></p>
-</section>
-</section>
-<section id="data" class="level1">
-<h1>DATA</h1>
-<p>All files were downloaded to <code>owl:/volume1/web/nightingales/E5-coral-deep-dive-expression/genohub2216545</code> and MD5 checksums verified:</p>
-<div class="callout callout-style-default callout-note callout-titled">
-<div class="callout-header d-flex align-content-center">
-<div class="callout-icon-container">
-<i class="callout-icon"></i>
-</div>
-<div class="callout-title-container flex-fill">
-Note
-</div>
-</div>
-<div class="callout-body-container callout-body">
-<p>An astute reader might notice that the screenshot below shows a different directory than that listed above. At the time of downloading, I wasn’t sure which project this belonged to. I have since updated and moved the data to the correct directory.</p>
-</div>
-</div>
-<div class="quarto-figure quarto-figure-center">
-<figure class="figure">
-<p><img src="https://robertslab.github.io/sams-notebook/posts/2025/2025-02-03-Data-Received---E5-Coral-WGBS-from-Genohub-Project-2216545-Using-Rclone-on-Owl/20250203-e5-wgbs-genohub-md5-verification-01.png" class="img-fluid figure-img"></p>
-<figcaption>Screenshot of MD5 checksum verifications.</figcaption>
-</figure>
-</div>
-
-
-</section>
-
- ]]></description>
-  <category>2025</category>
-  <category>E5</category>
-  <category>coral</category>
-  <category>WGBS</category>
-  <category>BS-seq</category>
-  <category>bisulfite sequencing</category>
-  <category>Genohub</category>
-  <category>2216545</category>
-  <category>Data Received</category>
-  <category>rclone</category>
-  <guid>https://robertslab.github.io/sams-notebook/posts/2025/2025-02-03-Data-Received---E5-Coral-WGBS-from-Genohub-Project-2216545-Using-Rclone-on-Owl/</guid>
-  <pubDate>Mon, 03 Feb 2025 08:00:00 GMT</pubDate>
 </item>
 </channel>
 </rss>
