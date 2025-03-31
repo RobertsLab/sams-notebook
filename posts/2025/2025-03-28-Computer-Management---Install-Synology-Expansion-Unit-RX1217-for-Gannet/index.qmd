@@ -5,7 +5,7 @@ toc-depth: 5
 toc-location: left
 title: Computer Management - Install Synology Expansion Unit RX1217 for Gannet
 date: '2025-03-28'
-draft: true
+draft: false
 engine: knitr
 categories: 
   - "2025"
@@ -13,7 +13,24 @@ categories:
   - "Synology"
   - "RX1217"
   - "expansion"
-image: "/posts/2025/
+image: "/posts/2025/2025-03-28-Computer-Management---Install-Synology-Expansion-Unit-RX1217-for-Gannet/20250328-synology-expansion.jpg"
 ---
-# INTRO
 
+Gannet, our Synology storage system, required additional capacity to accommodate growing data needs. To address this, I installed the Synology Expansion Unit RX1217. This was the second, and final, expansion unit. Additionally, I installed server rack rails to allow for easier access and maintenance of the unit. Previously, all of the units had been physically stacked on one another. This made inserting/removing the hard drive sleds nearly impossible in some casees.
+
+I also discarded one of the dead UPS to make room for the expansion unit.
+
+After installing the rails, expansion unit and HDDs, I started Gannet and the expansion units and waited for data scrubbing to take place. It turns out that the maximum volume size is 200TB, which meant that in order to have access to space on the newly installed expansion unit, I needed to create a new volume.
+
+navigating to the "Storage Manager" section, selecting the newly installed expansion unit, and creating a new volume. The DSM software guided me through the process, including selecting the RAID type and configuring the volume settings. Once the new volume was created, I was able to utilize the additional storage space.
+
+![Screenshot showing storage pool with two volumes, instead of just a single volume.](./20250328-synology-storage-pool.png){fig-alt="Screenshot showing storage pool with two volumes, instead of just a single volume."}
+
+Unfortunately, that means our data will eventually be split betwee the two volumes; almost as if we have the data on an entirely new NAS. This means that our utilization of the `/volume2/web` directory won't be as seamless as it has been. To address this, I created a symlink (`v1_web`) in an attempt to make using/accessing data in `v1_web` as easy as possible:
+
+```bash
+# Create a symlink for /volume2/web to /volume1/web/v1_web
+ln -s /volume1/web/v1_web /volume2/web
+```
+
+I'll add a short guide to the lab handbook.
