@@ -285,7 +285,6 @@ gtag('config', 'G-7483T61T11', { 'anonymize_ip': true});
   <li><a href="#run-fastqcmultiqc" id="toc-run-fastqcmultiqc" class="nav-link" data-scroll-target="#run-fastqcmultiqc">4.2 Run FastQC/MultiQC</a></li>
   <li><a href="#list-output-files" id="toc-list-output-files" class="nav-link" data-scroll-target="#list-output-files">4.3 List output files</a></li>
   </ul></li>
-  <li><a href="#results" id="toc-results" class="nav-link" data-scroll-target="#results">RESULTS</a></li>
   <li><a href="#references" id="toc-references" class="nav-link" data-scroll-target="#references">REFERENCES</a></li>
   </ul>
 </nav>
@@ -314,7 +313,7 @@ Note
 </div>
 </div>
 <div class="callout-body-container callout-body">
-<p>The contents below are from markdown knitted from <a href="https://github.com/RobertsLab/project-eDNA-yellow/blob/9d2b4a6a77820edb0c3b7a78878a8c7ef6a61f61/code/01.00-trimming-fastp-fastqc-multiqc.Rmd"><code>01.00-trimming-fastp-fastqc-multiqc.Rmd</code></a> (commit <code>9d2b4a6</code>).</p>
+<p>The contents below are from markdown knitted from <a href="https://github.com/RobertsLab/project-eDNA-yellow/blob/13bdbbec60b0da23266af2e0b409c2b09f3d38fa/code/01.00-trimming-fastp-fastqc-multiqc.Rmd"><code>01.00-trimming-fastp-fastqc-multiqc.Rmd</code></a> (commit <code>13bdbbe</code>).</p>
 </div>
 </div>
 </section>
@@ -345,7 +344,7 @@ Note
 <ul>
 <li><p>Trimmed FastQs.</p>
 <ul>
-<li>Example filename format: <code>Yell_July18_Site1f_S92_L001_R1.fastp-trim.fastq.gz</code></li>
+<li>Example filename format: <code>fastp-Yell-July18-Site1z_S129_L001_R1_001.fastq.gz</code></li>
 </ul></li>
 <li><p>fastp JSON files.</p></li>
 <li><p>FastQC HTML files.</p></li>
@@ -361,34 +360,35 @@ Note
 <section id="set-r-variables" class="level1">
 <h1>2 Set R variables</h1>
 <div class="sourceCode" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Data directories</span></span>
-<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a>data_dir <span class="ot">&lt;-</span> <span class="st">"/home/sam/gitrepos/RobertsLab/project-eDNA-yellow/data/"</span></span>
-<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a>raw_reads_dir <span class="ot">&lt;-</span> <span class="st">"/home/sam/gitrepos/RobertsLab/project-eDNA-yellow/data/raw-fastqs"</span></span>
-<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a>output_dir <span class="ot">&lt;-</span> <span class="st">"/home/sam/gitrepos/RobertsLab/project-eDNA-yellow/output/01.00-trimming-fastp-fastqc-multiqc"</span></span>
-<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a><span class="co"># PROGRAMS</span></span>
-<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a>fastp <span class="ot">&lt;-</span> <span class="st">"/home/sam/programs/fastp"</span></span>
-<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a>fastqc <span class="ot">&lt;-</span> <span class="st">"/home/sam/programs/FastQC-0.12.1/fastqc"</span></span>
-<span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a>multiqc <span class="ot">&lt;-</span> <span class="st">"/home/sam/programs/miniforge3/bin/multiqc"</span></span>
-<span id="cb1-10"><a href="#cb1-10" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-11"><a href="#cb1-11" aria-hidden="true" tabindex="-1"></a><span class="co"># CPUs</span></span>
-<span id="cb1-12"><a href="#cb1-12" aria-hidden="true" tabindex="-1"></a>threads <span class="ot">&lt;-</span> <span class="dv">4</span></span>
-<span id="cb1-13"><a href="#cb1-13" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-14"><a href="#cb1-14" aria-hidden="true" tabindex="-1"></a><span class="co"># Define file patterns</span></span>
-<span id="cb1-15"><a href="#cb1-15" aria-hidden="true" tabindex="-1"></a>R1_fastq_pattern <span class="ot">&lt;-</span> <span class="st">"*_R1_001.fastq.gz"</span></span>
-<span id="cb1-16"><a href="#cb1-16" aria-hidden="true" tabindex="-1"></a>R2_fastq_pattern <span class="ot">&lt;-</span> <span class="st">"*_R2_001.fastq.gz"</span></span>
-<span id="cb1-17"><a href="#cb1-17" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-18"><a href="#cb1-18" aria-hidden="true" tabindex="-1"></a><span class="co"># Export these as environment variables for bash chunks.</span></span>
-<span id="cb1-19"><a href="#cb1-19" aria-hidden="true" tabindex="-1"></a><span class="fu">Sys.setenv</span>(</span>
-<span id="cb1-20"><a href="#cb1-20" aria-hidden="true" tabindex="-1"></a>  <span class="at">fastp =</span> fastp,</span>
-<span id="cb1-21"><a href="#cb1-21" aria-hidden="true" tabindex="-1"></a>  <span class="at">fastqc =</span> fastqc,</span>
-<span id="cb1-22"><a href="#cb1-22" aria-hidden="true" tabindex="-1"></a>  <span class="at">data_dir =</span> data_dir,</span>
-<span id="cb1-23"><a href="#cb1-23" aria-hidden="true" tabindex="-1"></a>  <span class="at">multiqc =</span> multiqc,</span>
-<span id="cb1-24"><a href="#cb1-24" aria-hidden="true" tabindex="-1"></a>  <span class="at">raw_reads_dir =</span> raw_reads_dir,</span>
-<span id="cb1-25"><a href="#cb1-25" aria-hidden="true" tabindex="-1"></a>  <span class="at">threads =</span> threads,</span>
-<span id="cb1-26"><a href="#cb1-26" aria-hidden="true" tabindex="-1"></a>  <span class="at">R1_fastq_pattern =</span> R1_fastq_pattern,</span>
-<span id="cb1-27"><a href="#cb1-27" aria-hidden="true" tabindex="-1"></a>  <span class="at">R2_fastq_pattern =</span> R2_fastq_pattern,</span>
-<span id="cb1-28"><a href="#cb1-28" aria-hidden="true" tabindex="-1"></a>  <span class="at">output_dir =</span> output_dir</span>
-<span id="cb1-29"><a href="#cb1-29" aria-hidden="true" tabindex="-1"></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a>repo_dir <span class="ot">&lt;-</span> <span class="st">"/home/sam/gitrepos/RobertsLab/project-eDNA-yellow"</span></span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a>data_dir <span class="ot">&lt;-</span> <span class="fu">file.path</span>(repo_dir, <span class="st">"data"</span>)</span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a>raw_reads_dir <span class="ot">&lt;-</span> <span class="fu">file.path</span>(data_dir, <span class="st">"raw-fastqs"</span>)</span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a>output_dir <span class="ot">&lt;-</span> <span class="fu">file.path</span>(repo_dir, <span class="st">"output"</span>, <span class="st">"01.00-trimming-fastp-fastqc-multiqc"</span>)</span>
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a><span class="co"># PROGRAMS</span></span>
+<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a>fastp <span class="ot">&lt;-</span> <span class="st">"/home/sam/programs/fastp"</span></span>
+<span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a>fastqc <span class="ot">&lt;-</span> <span class="st">"/home/sam/programs/FastQC-0.12.1/fastqc"</span></span>
+<span id="cb1-10"><a href="#cb1-10" aria-hidden="true" tabindex="-1"></a>multiqc <span class="ot">&lt;-</span> <span class="st">"/home/sam/programs/miniforge3/bin/multiqc"</span></span>
+<span id="cb1-11"><a href="#cb1-11" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-12"><a href="#cb1-12" aria-hidden="true" tabindex="-1"></a><span class="co"># CPUs</span></span>
+<span id="cb1-13"><a href="#cb1-13" aria-hidden="true" tabindex="-1"></a>threads <span class="ot">&lt;-</span> <span class="dv">4</span></span>
+<span id="cb1-14"><a href="#cb1-14" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-15"><a href="#cb1-15" aria-hidden="true" tabindex="-1"></a><span class="co"># Define file patterns</span></span>
+<span id="cb1-16"><a href="#cb1-16" aria-hidden="true" tabindex="-1"></a>R1_fastq_pattern <span class="ot">&lt;-</span> <span class="st">"*_R1_001.fastq.gz"</span></span>
+<span id="cb1-17"><a href="#cb1-17" aria-hidden="true" tabindex="-1"></a>R2_fastq_pattern <span class="ot">&lt;-</span> <span class="st">"*_R2_001.fastq.gz"</span></span>
+<span id="cb1-18"><a href="#cb1-18" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-19"><a href="#cb1-19" aria-hidden="true" tabindex="-1"></a><span class="co"># Export these as environment variables for bash chunks.</span></span>
+<span id="cb1-20"><a href="#cb1-20" aria-hidden="true" tabindex="-1"></a><span class="fu">Sys.setenv</span>(</span>
+<span id="cb1-21"><a href="#cb1-21" aria-hidden="true" tabindex="-1"></a>  <span class="at">fastp =</span> fastp,</span>
+<span id="cb1-22"><a href="#cb1-22" aria-hidden="true" tabindex="-1"></a>  <span class="at">fastqc =</span> fastqc,</span>
+<span id="cb1-23"><a href="#cb1-23" aria-hidden="true" tabindex="-1"></a>  <span class="at">data_dir =</span> data_dir,</span>
+<span id="cb1-24"><a href="#cb1-24" aria-hidden="true" tabindex="-1"></a>  <span class="at">multiqc =</span> multiqc,</span>
+<span id="cb1-25"><a href="#cb1-25" aria-hidden="true" tabindex="-1"></a>  <span class="at">raw_reads_dir =</span> raw_reads_dir,</span>
+<span id="cb1-26"><a href="#cb1-26" aria-hidden="true" tabindex="-1"></a>  <span class="at">threads =</span> threads,</span>
+<span id="cb1-27"><a href="#cb1-27" aria-hidden="true" tabindex="-1"></a>  <span class="at">R1_fastq_pattern =</span> R1_fastq_pattern,</span>
+<span id="cb1-28"><a href="#cb1-28" aria-hidden="true" tabindex="-1"></a>  <span class="at">R2_fastq_pattern =</span> R2_fastq_pattern,</span>
+<span id="cb1-29"><a href="#cb1-29" aria-hidden="true" tabindex="-1"></a>  <span class="at">output_dir =</span> output_dir</span>
+<span id="cb1-30"><a href="#cb1-30" aria-hidden="true" tabindex="-1"></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </section>
 <section id="fastp-trimming" class="level1">
 <h1>3 Fastp Trimming</h1>
@@ -414,169 +414,171 @@ Note
 <span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a><span class="bu">cd</span> <span class="st">"</span><span class="va">${raw_reads_dir}</span><span class="st">"</span></span>
 <span id="cb2-7"><a href="#cb2-7" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb2-8"><a href="#cb2-8" aria-hidden="true" tabindex="-1"></a><span class="co"># Create arrays of fastq R1 files and sample names</span></span>
-<span id="cb2-9"><a href="#cb2-9" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> fastq <span class="kw">in</span> <span class="va">${R1_fastq_pattern}</span></span>
-<span id="cb2-10"><a href="#cb2-10" aria-hidden="true" tabindex="-1"></a><span class="cf">do</span></span>
-<span id="cb2-11"><a href="#cb2-11" aria-hidden="true" tabindex="-1"></a>  <span class="va">fastq_array_R1</span><span class="op">+=</span><span class="va">(</span><span class="st">"</span><span class="va">${fastq}</span><span class="st">"</span><span class="va">)</span></span>
-<span id="cb2-12"><a href="#cb2-12" aria-hidden="true" tabindex="-1"></a>  <span class="va">R1_names_array</span><span class="op">+=</span><span class="va">(</span><span class="st">"</span><span class="va">$(</span><span class="bu">echo</span> <span class="st">"</span><span class="va">${fastq}</span><span class="st">"</span> <span class="kw">|</span> <span class="fu">awk</span> <span class="at">-F</span><span class="st">'_'</span> <span class="st">'{print $1"_"$2"_"$3"_"$4"_L001"}'</span><span class="va">)</span><span class="st">"</span><span class="va">)</span></span>
-<span id="cb2-13"><a href="#cb2-13" aria-hidden="true" tabindex="-1"></a><span class="cf">done</span></span>
-<span id="cb2-14"><a href="#cb2-14" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-9"><a href="#cb2-9" aria-hidden="true" tabindex="-1"></a><span class="co"># Renames to match QIIME2 regex</span></span>
+<span id="cb2-10"><a href="#cb2-10" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> fastq <span class="kw">in</span> <span class="va">${R1_fastq_pattern}</span></span>
+<span id="cb2-11"><a href="#cb2-11" aria-hidden="true" tabindex="-1"></a><span class="cf">do</span></span>
+<span id="cb2-12"><a href="#cb2-12" aria-hidden="true" tabindex="-1"></a>  <span class="va">fastq_array_R1</span><span class="op">+=</span><span class="va">(</span><span class="st">"</span><span class="va">${fastq}</span><span class="st">"</span><span class="va">)</span></span>
+<span id="cb2-13"><a href="#cb2-13" aria-hidden="true" tabindex="-1"></a>  <span class="va">R1_names_array</span><span class="op">+=</span><span class="va">(</span><span class="st">"</span><span class="va">$(</span><span class="bu">echo</span> <span class="st">"</span><span class="va">${fastq}</span><span class="st">"</span> <span class="kw">|</span> <span class="fu">awk</span> <span class="at">-F</span><span class="st">'_'</span> <span class="st">'{print "fastp-"$1"-"$2"-"$3"_"$4"_L001"}'</span><span class="va">)</span><span class="st">"</span><span class="va">)</span></span>
+<span id="cb2-14"><a href="#cb2-14" aria-hidden="true" tabindex="-1"></a><span class="cf">done</span></span>
 <span id="cb2-15"><a href="#cb2-15" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb2-16"><a href="#cb2-16" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb2-17"><a href="#cb2-17" aria-hidden="true" tabindex="-1"></a><span class="co"># Create array of fastq R2 files</span></span>
-<span id="cb2-18"><a href="#cb2-18" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> fastq <span class="kw">in</span> <span class="va">${R2_fastq_pattern}</span></span>
-<span id="cb2-19"><a href="#cb2-19" aria-hidden="true" tabindex="-1"></a><span class="cf">do</span></span>
-<span id="cb2-20"><a href="#cb2-20" aria-hidden="true" tabindex="-1"></a>  <span class="va">fastq_array_R2</span><span class="op">+=</span><span class="va">(</span><span class="st">"</span><span class="va">${fastq}</span><span class="st">"</span><span class="va">)</span></span>
-<span id="cb2-21"><a href="#cb2-21" aria-hidden="true" tabindex="-1"></a>  <span class="va">R2_names_array</span><span class="op">+=</span><span class="va">(</span><span class="st">"</span><span class="va">$(</span><span class="bu">echo</span> <span class="st">"</span><span class="va">${fastq}</span><span class="st">"</span> <span class="kw">|</span> <span class="fu">awk</span> <span class="at">-F</span><span class="st">"_"</span> <span class="st">'{print $1"_"$2"_"$3"_"$4"_L001"}'</span><span class="va">)</span><span class="st">"</span><span class="va">)</span></span>
-<span id="cb2-22"><a href="#cb2-22" aria-hidden="true" tabindex="-1"></a><span class="cf">done</span></span>
-<span id="cb2-23"><a href="#cb2-23" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb2-24"><a href="#cb2-24" aria-hidden="true" tabindex="-1"></a><span class="co"># Create list of fastq files used in analysis</span></span>
-<span id="cb2-25"><a href="#cb2-25" aria-hidden="true" tabindex="-1"></a><span class="co"># Create MD5 checksum for reference</span></span>
-<span id="cb2-26"><a href="#cb2-26" aria-hidden="true" tabindex="-1"></a><span class="cf">if</span> <span class="bu">[</span> <span class="ot">!</span> <span class="ot">-f</span> <span class="st">"</span><span class="va">${output_dir}</span><span class="st">"</span>/raw-fastq-checksums.md5 <span class="bu">]</span><span class="kw">;</span> <span class="cf">then</span></span>
-<span id="cb2-27"><a href="#cb2-27" aria-hidden="true" tabindex="-1"></a>  <span class="cf">for</span> fastq <span class="kw">in</span> <span class="pp">*</span>.gz</span>
-<span id="cb2-28"><a href="#cb2-28" aria-hidden="true" tabindex="-1"></a>    <span class="cf">do</span></span>
-<span id="cb2-29"><a href="#cb2-29" aria-hidden="true" tabindex="-1"></a>      <span class="fu">md5sum</span> <span class="st">"</span><span class="va">${fastq}</span><span class="st">"</span> <span class="op">&gt;&gt;</span><span class="st">"</span><span class="va">${output_dir}</span><span class="st">"</span>/raw-fastq-checksums.md5</span>
-<span id="cb2-30"><a href="#cb2-30" aria-hidden="true" tabindex="-1"></a>  <span class="cf">done</span></span>
-<span id="cb2-31"><a href="#cb2-31" aria-hidden="true" tabindex="-1"></a><span class="cf">fi</span></span>
-<span id="cb2-32"><a href="#cb2-32" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb2-33"><a href="#cb2-33" aria-hidden="true" tabindex="-1"></a><span class="co"># Run fastp on files</span></span>
-<span id="cb2-34"><a href="#cb2-34" aria-hidden="true" tabindex="-1"></a><span class="co"># Adds JSON report output for downstream usage by MultiQC</span></span>
-<span id="cb2-35"><a href="#cb2-35" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> index <span class="kw">in</span> <span class="st">"</span><span class="va">${</span><span class="op">!</span><span class="va">fastq_array_R1</span><span class="op">[@]</span><span class="va">}</span><span class="st">"</span></span>
-<span id="cb2-36"><a href="#cb2-36" aria-hidden="true" tabindex="-1"></a><span class="cf">do</span></span>
-<span id="cb2-37"><a href="#cb2-37" aria-hidden="true" tabindex="-1"></a>  <span class="va">R1_sample_name</span><span class="op">=</span><span class="va">$(</span><span class="bu">echo</span> <span class="st">"</span><span class="va">${R1_names_array</span><span class="op">[</span>index<span class="op">]</span><span class="va">}</span><span class="st">"</span><span class="va">)</span></span>
-<span id="cb2-38"><a href="#cb2-38" aria-hidden="true" tabindex="-1"></a>  <span class="va">R2_sample_name</span><span class="op">=</span><span class="va">$(</span><span class="bu">echo</span> <span class="st">"</span><span class="va">${R2_names_array</span><span class="op">[</span>index<span class="op">]</span><span class="va">}</span><span class="st">"</span><span class="va">)</span></span>
-<span id="cb2-39"><a href="#cb2-39" aria-hidden="true" tabindex="-1"></a>  </span>
-<span id="cb2-40"><a href="#cb2-40" aria-hidden="true" tabindex="-1"></a>  </span>
-<span id="cb2-41"><a href="#cb2-41" aria-hidden="true" tabindex="-1"></a>  <span class="va">${fastp}</span> <span class="dt">\</span></span>
-<span id="cb2-42"><a href="#cb2-42" aria-hidden="true" tabindex="-1"></a>  <span class="at">--in1</span> <span class="va">${fastq_array_R1</span><span class="op">[</span>index<span class="op">]</span><span class="va">}</span> <span class="dt">\</span></span>
-<span id="cb2-43"><a href="#cb2-43" aria-hidden="true" tabindex="-1"></a>  <span class="at">--in2</span> <span class="va">${fastq_array_R2</span><span class="op">[</span>index<span class="op">]</span><span class="va">}</span> <span class="dt">\</span></span>
-<span id="cb2-44"><a href="#cb2-44" aria-hidden="true" tabindex="-1"></a>  <span class="at">--detect_adapter_for_pe</span> <span class="dt">\</span></span>
-<span id="cb2-45"><a href="#cb2-45" aria-hidden="true" tabindex="-1"></a>  <span class="at">--trim_front1</span> 20 <span class="dt">\</span></span>
-<span id="cb2-46"><a href="#cb2-46" aria-hidden="true" tabindex="-1"></a>  <span class="at">--trim_front2</span> 20 <span class="dt">\</span></span>
-<span id="cb2-47"><a href="#cb2-47" aria-hidden="true" tabindex="-1"></a>  <span class="at">--trim_poly_g</span> <span class="dt">\</span></span>
-<span id="cb2-48"><a href="#cb2-48" aria-hidden="true" tabindex="-1"></a>  <span class="at">--thread</span> <span class="va">${threads}</span> <span class="dt">\</span></span>
-<span id="cb2-49"><a href="#cb2-49" aria-hidden="true" tabindex="-1"></a>  <span class="at">--html</span> <span class="st">"</span><span class="va">${output_dir}</span><span class="st">"</span>/<span class="st">"</span><span class="va">${R1_sample_name}</span><span class="st">"</span>.fastp-trim.report.html <span class="dt">\</span></span>
-<span id="cb2-50"><a href="#cb2-50" aria-hidden="true" tabindex="-1"></a>  <span class="at">--json</span> <span class="st">"</span><span class="va">${output_dir}</span><span class="st">"</span>/<span class="st">"</span><span class="va">${R1_sample_name}</span><span class="st">"</span>.fastp-trim.report.json <span class="dt">\</span></span>
-<span id="cb2-51"><a href="#cb2-51" aria-hidden="true" tabindex="-1"></a>  <span class="at">--out1</span> <span class="st">"</span><span class="va">${output_dir}</span><span class="st">"</span>/<span class="st">"</span><span class="va">${R1_sample_name}</span><span class="st">"</span>_R1.fastp-trim.fastq.gz <span class="dt">\</span></span>
-<span id="cb2-52"><a href="#cb2-52" aria-hidden="true" tabindex="-1"></a>  <span class="at">--out2</span> <span class="st">"</span><span class="va">${output_dir}</span><span class="st">"</span>/<span class="st">"</span><span class="va">${R2_sample_name}</span><span class="st">"</span>_R2.fastp-trim.fastq.gz <span class="dt">\</span></span>
-<span id="cb2-53"><a href="#cb2-53" aria-hidden="true" tabindex="-1"></a>  <span class="dv">2</span><span class="op">&gt;&gt;</span> <span class="st">"</span><span class="va">${output_dir}</span><span class="st">"</span>/<span class="st">"</span><span class="va">${R1_sample_name}</span><span class="st">"</span>-fastp.stderr</span>
-<span id="cb2-54"><a href="#cb2-54" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb2-55"><a href="#cb2-55" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Generate md5 checksums for newly trimmed files</span></span>
-<span id="cb2-56"><a href="#cb2-56" aria-hidden="true" tabindex="-1"></a>  <span class="bu">cd</span> <span class="st">"</span><span class="va">${output_dir}</span><span class="st">"</span></span>
-<span id="cb2-57"><a href="#cb2-57" aria-hidden="true" tabindex="-1"></a>  <span class="fu">md5sum</span> <span class="st">"</span><span class="va">${R1_sample_name}</span><span class="st">"</span>_R1.fastp-trim.fastq.gz <span class="kw">|</span> <span class="fu">tee</span> <span class="st">"</span><span class="va">${R1_sample_name}</span><span class="st">"</span>_R1.fastp-trim.fastq.gz.md5</span>
-<span id="cb2-58"><a href="#cb2-58" aria-hidden="true" tabindex="-1"></a>  <span class="fu">md5sum</span> <span class="st">"</span><span class="va">${R2_sample_name}</span><span class="st">"</span>_R2.fastp-trim.fastq.gz <span class="kw">|</span> <span class="fu">tee</span> <span class="st">"</span><span class="va">${R2_sample_name}</span><span class="st">"</span>_R2.fastp-trim.fastq.gz.md5</span>
-<span id="cb2-59"><a href="#cb2-59" aria-hidden="true" tabindex="-1"></a>  </span>
-<span id="cb2-60"><a href="#cb2-60" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Change back to previous directory</span></span>
-<span id="cb2-61"><a href="#cb2-61" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Directing to /dev/null prevents printing directory each time.</span></span>
-<span id="cb2-62"><a href="#cb2-62" aria-hidden="true" tabindex="-1"></a>  <span class="bu">cd</span> <span class="at">-</span> <span class="op">&gt;</span> /dev/null</span>
-<span id="cb2-63"><a href="#cb2-63" aria-hidden="true" tabindex="-1"></a><span class="cf">done</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<pre><code>8aaf71fac78f18293155870a5ad785b3  Yell_July18_Site1a_S83_L001_R1.fastp-trim.fastq.gz
-97674b5c315b18b1d65dd703301f0cf8  Yell_July18_Site1a_S83_L001_R2.fastp-trim.fastq.gz
-8581bbf93dbe9a7c6a6443568b11eaf2  Yell_July18_Site1bb_S139_L001_R1.fastp-trim.fastq.gz
-9cac6084d18a18fdd2344a9a57b10403  Yell_July18_Site1bb_S139_L001_R2.fastp-trim.fastq.gz
-1246b72b4824c37e054859390148991e  Yell_July18_Site1b_S84_L001_R1.fastp-trim.fastq.gz
-1bb8c2f3a716a93e126b963ea4cace7a  Yell_July18_Site1b_S84_L001_R2.fastp-trim.fastq.gz
-e1d79f610c9d4ab430fa87164682cd5d  Yell_July18_Site1cc_S140_L001_R1.fastp-trim.fastq.gz
-0b639417f1e158661096cd2b22de528d  Yell_July18_Site1cc_S140_L001_R2.fastp-trim.fastq.gz
-ee1d281b609e1d0ba856594379cce5ab  Yell_July18_Site1c_S85_L001_R1.fastp-trim.fastq.gz
-206313466fc3767486648dd9389461d9  Yell_July18_Site1c_S85_L001_R2.fastp-trim.fastq.gz
-9541e0f8ef84c5e84f6ea651f6791b58  Yell_July18_Site1dd_S141_L001_R1.fastp-trim.fastq.gz
-f47df7e27b542984de111c8cd7723bc0  Yell_July18_Site1dd_S141_L001_R2.fastp-trim.fastq.gz
-53387ef241a3e8c0143841871ca9dfd2  Yell_July18_Site1d_S86_L001_R1.fastp-trim.fastq.gz
-97ada736a1c7a8443f3767735a3f4af2  Yell_July18_Site1d_S86_L001_R2.fastp-trim.fastq.gz
-be2502232114fbb0e8d90566e19eb3bd  Yell_July18_Site1ee_S142_L001_R1.fastp-trim.fastq.gz
-5261ca016825c7b5d450dfbe01c60768  Yell_July18_Site1ee_S142_L001_R2.fastp-trim.fastq.gz
-25a8c59b65537de78c48631eb06b510e  Yell_July18_Site1e_S91_L001_R1.fastp-trim.fastq.gz
-4e822610766ef7ba0edff4b006a2399a  Yell_July18_Site1e_S91_L001_R2.fastp-trim.fastq.gz
-515a2c77896fcd68ab258ac0cd8eab2a  Yell_July18_Site1f_S92_L001_R1.fastp-trim.fastq.gz
-f2698536a899157de64bdd209c1da4e1  Yell_July18_Site1f_S92_L001_R2.fastp-trim.fastq.gz
-dbf74d130be8e07cd002098f37a035fe  Yell_July18_Site1g_S93_L001_R1.fastp-trim.fastq.gz
-0c3ce2ce7409f9336ca794235d11bda3  Yell_July18_Site1g_S93_L001_R2.fastp-trim.fastq.gz
-6f0cf41ff0621d8cf3e0b8c556b77e50  Yell_July18_Site1h_S94_L001_R1.fastp-trim.fastq.gz
-a4d6e23c32fb28b0498f0b244ee91a79  Yell_July18_Site1h_S94_L001_R2.fastp-trim.fastq.gz
-4829027bca04743495259631a1b1eca3  Yell_July18_Site1J_S99_L001_R1.fastp-trim.fastq.gz
-4cadf419f24f0a2c0f3233372e6ea64e  Yell_July18_Site1J_S99_L001_R2.fastp-trim.fastq.gz
-a83ad57c90291aa2017d2537635e66f8  Yell_July18_Site1k_S100_L001_R1.fastp-trim.fastq.gz
-7454d28afadb600434f4496ad632e12c  Yell_July18_Site1k_S100_L001_R2.fastp-trim.fastq.gz
-06acae67aeb668d5b4fec20beb69c98a  Yell_July18_Site1L_S101_L001_R1.fastp-trim.fastq.gz
-5a50bf8f326a11caa43bc70730faa1c5  Yell_July18_Site1L_S101_L001_R2.fastp-trim.fastq.gz
-ba80095123abce2ab4663f0764512615  Yell_July18_Site1m_S102_L001_R1.fastp-trim.fastq.gz
-5bf93acb6681d64c8d72217fc296c379  Yell_July18_Site1m_S102_L001_R2.fastp-trim.fastq.gz
-a75988d7ceb2c2b45961b758b45beb31  Yell_July18_Site1n_S103_L001_R1.fastp-trim.fastq.gz
-6429f9f4b270c45a235f3c9692046de9  Yell_July18_Site1n_S103_L001_R2.fastp-trim.fastq.gz
-b0caaeb57060745075c54435aee49ac5  Yell_July18_Site1o_S104_L001_R1.fastp-trim.fastq.gz
-d22783c7530a0fdf873e872e07094746  Yell_July18_Site1o_S104_L001_R2.fastp-trim.fastq.gz
-f523c3b03f8812df8761f790ba623eac  Yell_July18_Site1p_S105_L001_R1.fastp-trim.fastq.gz
-03aea60308b0a2cff891b89eff355d2f  Yell_July18_Site1p_S105_L001_R2.fastp-trim.fastq.gz
-8f2eb5db49a151fe276fe171c542d047  Yell_July18_Site1q_S106_L001_R1.fastp-trim.fastq.gz
-0cf20078b76b4347c94c3ae77b2661d7  Yell_July18_Site1q_S106_L001_R2.fastp-trim.fastq.gz
-09732612243841b02949b81277d8c773  Yell_July18_Site1r_S111_L001_R1.fastp-trim.fastq.gz
-38f855e73282ca882fdcee1403472e5d  Yell_July18_Site1r_S111_L001_R2.fastp-trim.fastq.gz
-593e0e7cfba4e5a68559b825b977242d  Yell_July18_Site1s_S112_L001_R1.fastp-trim.fastq.gz
-12d0370983ede990ddf2ac07b0cf758c  Yell_July18_Site1s_S112_L001_R2.fastp-trim.fastq.gz
-8f52b61eda289215c89485eec951e44f  Yell_July18_Site1t_S113_L001_R1.fastp-trim.fastq.gz
-dc0fac87a5a4f5566dffa6613d53deb2  Yell_July18_Site1t_S113_L001_R2.fastp-trim.fastq.gz
-30956b911fd2e2f24ab4ccc0c573731e  Yell_July18_Site1U_S114_L001_R1.fastp-trim.fastq.gz
-cd55f7443d273282fa708a100178441f  Yell_July18_Site1U_S114_L001_R2.fastp-trim.fastq.gz
-c4a3a5562592217bd7e8d00afef68aca  Yell_July18_Site1v_S117_L001_R1.fastp-trim.fastq.gz
-9045dec9d94aa7abae62f87c6aedf887  Yell_July18_Site1v_S117_L001_R2.fastp-trim.fastq.gz
-c5cf4558d20d7eb11005822f840fe5e9  Yell_July18_Site1w_S118_L001_R1.fastp-trim.fastq.gz
-659fdc3781371ce4633158f3715b146d  Yell_July18_Site1w_S118_L001_R2.fastp-trim.fastq.gz
-ffa9195d6deefec0c68545eb2414cc1e  Yell_July18_Site1y_S120_L001_R1.fastp-trim.fastq.gz
-6b4807441251796f88bfc296a5deca6b  Yell_July18_Site1y_S120_L001_R2.fastp-trim.fastq.gz
-9315432c107813a21c7957f2c0d08ed0  Yell_July18_Site1z_S129_L001_R1.fastp-trim.fastq.gz
-10b325405136f1aed3f2893875c69f18  Yell_July18_Site1z_S129_L001_R2.fastp-trim.fastq.gz
-5762e0cf30216d3e24d1c243f2558513  Yell_July18_Site5aa_S132_L001_R1.fastp-trim.fastq.gz
-f0953177a84c0f501415add9c873012f  Yell_July18_Site5aa_S132_L001_R2.fastp-trim.fastq.gz
-a1930e5eb162b0ded2f02ce626ce6242  Yell_July18_Site5a_S87_L001_R1.fastp-trim.fastq.gz
-a89ee788797cb710e3ab81678aa960d2  Yell_July18_Site5a_S87_L001_R2.fastp-trim.fastq.gz
-ee7c34fc56c2792ad55c73e7f693460c  Yell_July18_Site5bb_S133_L001_R1.fastp-trim.fastq.gz
-e7b8a722ed5f771772d31ce46d74e64f  Yell_July18_Site5bb_S133_L001_R2.fastp-trim.fastq.gz
-12fff50ad0731eb524d1f2201a247a64  Yell_July18_Site5b_S88_L001_R1.fastp-trim.fastq.gz
-04740ff92fbe6ec1f4c16d52edfa410d  Yell_July18_Site5b_S88_L001_R2.fastp-trim.fastq.gz
-87a5ac12247a4f5c4e0638d031317bb9  Yell_July18_Site5cc_S134_L001_R1.fastp-trim.fastq.gz
-80958be5b5221a1381db5fcdf05ba034  Yell_July18_Site5cc_S134_L001_R2.fastp-trim.fastq.gz
-f194b5e2f3e75418ed77679138f59837  Yell_July18_Site5c_S89_L001_R1.fastp-trim.fastq.gz
-5ba8d21028e58b80c3e46cea97205877  Yell_July18_Site5c_S89_L001_R2.fastp-trim.fastq.gz
-9a965e2bfb8749d21a1061d7e64771c8  Yell_July18_Site5ee_S136_L001_R1.fastp-trim.fastq.gz
-721f85fe480672e7592133a4d844910e  Yell_July18_Site5ee_S136_L001_R2.fastp-trim.fastq.gz
-d35dfb11147f6704f7ba8f2c51405497  Yell_July18_Site5e_S95_L001_R1.fastp-trim.fastq.gz
-59b45bdec09b28dcbba42d2a5efbe3f9  Yell_July18_Site5e_S95_L001_R2.fastp-trim.fastq.gz
-4d923a5e87234327ee4b75541e6753ee  Yell_July18_Site5ff_S137_L001_R1.fastp-trim.fastq.gz
-44bd520d27855eca3710239f1903b510  Yell_July18_Site5ff_S137_L001_R2.fastp-trim.fastq.gz
-5d904b2b63cc83ee889e576dc2c31c34  Yell_July18_Site5f_S96_L001_R1.fastp-trim.fastq.gz
-c5214749a8a7350d94a569745eb4796d  Yell_July18_Site5f_S96_L001_R2.fastp-trim.fastq.gz
-3c3de33d88a1458ef44d1575cc7c0bc1  Yell_July18_Site5g_S97_L001_R1.fastp-trim.fastq.gz
-faafeab62cdcea2fa18e45c0d07eb39e  Yell_July18_Site5g_S97_L001_R2.fastp-trim.fastq.gz
-8189dd5b62d3bc273d44d3ecdbf2a30b  Yell_July18_Site5h_S98_L001_R1.fastp-trim.fastq.gz
-b0a04485cd47f593d21bab691881526b  Yell_July18_Site5h_S98_L001_R2.fastp-trim.fastq.gz
-391361dbbea6ea843444d039e956281f  Yell_July18_Site5J_S107_L001_R1.fastp-trim.fastq.gz
-f40eb23d525bbca759d4fdc4570e4ec7  Yell_July18_Site5J_S107_L001_R2.fastp-trim.fastq.gz
-c3da677478056c52a22cbe8d82ed549e  Yell_July18_Site5k_S108_L001_R1.fastp-trim.fastq.gz
-49b642aedc0ab037165e1f4d30deb3e6  Yell_July18_Site5k_S108_L001_R2.fastp-trim.fastq.gz
-a9990b1563964cd92cedd096fbae374c  Yell_July18_Site5L_S109_L001_R1.fastp-trim.fastq.gz
-3a373edc3a42fef99ff8cb2af598b083  Yell_July18_Site5L_S109_L001_R2.fastp-trim.fastq.gz
-1ea2789de747a68f172b17b8a92ac9aa  Yell_July18_Site5m_S110_L001_R1.fastp-trim.fastq.gz
-3b09623221c7feee3ae437ed98daa793  Yell_July18_Site5m_S110_L001_R2.fastp-trim.fastq.gz
-d3dd601918da9a53e01652f55be56c9e  Yell_July18_Site5n_S115_L001_R1.fastp-trim.fastq.gz
-7a96bba9597b49560b217dc66dc4f7d1  Yell_July18_Site5n_S115_L001_R2.fastp-trim.fastq.gz
-3742ec5d5da634361de9be32bbdac133  Yell_July18_Site5o_S116_L001_R1.fastp-trim.fastq.gz
-5aa0261b0ba53542abe1e807cf3d7400  Yell_July18_Site5o_S116_L001_R2.fastp-trim.fastq.gz
-c3cb63e4427b5c701a09dc4c97ffde8f  Yell_July18_Site5p_S121_L001_R1.fastp-trim.fastq.gz
-5f5536f37eab281541d78f3474c6d7ae  Yell_July18_Site5p_S121_L001_R2.fastp-trim.fastq.gz
-b647652678efc16348e43e911d73eca3  Yell_July18_Site5q_S122_L001_R1.fastp-trim.fastq.gz
-58316f0b3d5422a97fd79e3710b60141  Yell_July18_Site5q_S122_L001_R2.fastp-trim.fastq.gz
-bc79ce422d33a70047caea95f20fb564  Yell_July18_Site5r_S123_L001_R1.fastp-trim.fastq.gz
-0cbab3f554b88283f8221622fe7d90aa  Yell_July18_Site5r_S123_L001_R2.fastp-trim.fastq.gz
-0d20bf34943af844bfed49169993a818  Yell_July18_Site5s_S124_L001_R1.fastp-trim.fastq.gz
-f3c40f4d927c7a51d15cf05274be99fa  Yell_July18_Site5s_S124_L001_R2.fastp-trim.fastq.gz
-803db24bd314cd7e3d314b1b8f0b84b2  Yell_July18_Site5u_S126_L001_R1.fastp-trim.fastq.gz
-2bc8d78ff999dd579c3753ade627c795  Yell_July18_Site5u_S126_L001_R2.fastp-trim.fastq.gz
-a24082a508d3d14c817e98a35eaf2130  Yell_July18_Site5v_S127_L001_R1.fastp-trim.fastq.gz
-39ae4d0f9ea80fbd21ef798c9dd38086  Yell_July18_Site5v_S127_L001_R2.fastp-trim.fastq.gz
-de061e7ba1fe7e7f7b83bfc0912b0d02  Yell_July18_Site5w_S128_L001_R1.fastp-trim.fastq.gz
-4c79dec89144623496dbab6c9dfa0252  Yell_July18_Site5w_S128_L001_R2.fastp-trim.fastq.gz
-dc899975947bf512f6402d888b59980b  Yell_July18_Site5z_S131_L001_R1.fastp-trim.fastq.gz
-73a4e01e0ef5b883e5529244bb7100bd  Yell_July18_Site5z_S131_L001_R2.fastp-trim.fastq.gz</code></pre>
+<span id="cb2-17"><a href="#cb2-17" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-18"><a href="#cb2-18" aria-hidden="true" tabindex="-1"></a><span class="co"># Create array of fastq R2 files</span></span>
+<span id="cb2-19"><a href="#cb2-19" aria-hidden="true" tabindex="-1"></a><span class="co"># Renames to match QIIME2 regex</span></span>
+<span id="cb2-20"><a href="#cb2-20" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> fastq <span class="kw">in</span> <span class="va">${R2_fastq_pattern}</span></span>
+<span id="cb2-21"><a href="#cb2-21" aria-hidden="true" tabindex="-1"></a><span class="cf">do</span></span>
+<span id="cb2-22"><a href="#cb2-22" aria-hidden="true" tabindex="-1"></a>  <span class="va">fastq_array_R2</span><span class="op">+=</span><span class="va">(</span><span class="st">"</span><span class="va">${fastq}</span><span class="st">"</span><span class="va">)</span></span>
+<span id="cb2-23"><a href="#cb2-23" aria-hidden="true" tabindex="-1"></a>  <span class="va">R2_names_array</span><span class="op">+=</span><span class="va">(</span><span class="st">"</span><span class="va">$(</span><span class="bu">echo</span> <span class="st">"</span><span class="va">${fastq}</span><span class="st">"</span> <span class="kw">|</span> <span class="fu">awk</span> <span class="at">-F</span><span class="st">"_"</span> <span class="st">'{print "fastp-"$1"-"$2"-"$3"_"$4"_L001"}'</span><span class="va">)</span><span class="st">"</span><span class="va">)</span></span>
+<span id="cb2-24"><a href="#cb2-24" aria-hidden="true" tabindex="-1"></a><span class="cf">done</span></span>
+<span id="cb2-25"><a href="#cb2-25" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-26"><a href="#cb2-26" aria-hidden="true" tabindex="-1"></a><span class="co"># Create list of fastq files used in analysis</span></span>
+<span id="cb2-27"><a href="#cb2-27" aria-hidden="true" tabindex="-1"></a><span class="co"># Create MD5 checksum for reference</span></span>
+<span id="cb2-28"><a href="#cb2-28" aria-hidden="true" tabindex="-1"></a><span class="cf">if</span> <span class="bu">[</span> <span class="ot">!</span> <span class="ot">-f</span> <span class="st">"</span><span class="va">${output_dir}</span><span class="st">"</span>/raw-fastq-checksums.md5 <span class="bu">]</span><span class="kw">;</span> <span class="cf">then</span></span>
+<span id="cb2-29"><a href="#cb2-29" aria-hidden="true" tabindex="-1"></a>  <span class="cf">for</span> fastq <span class="kw">in</span> <span class="pp">*</span>.gz</span>
+<span id="cb2-30"><a href="#cb2-30" aria-hidden="true" tabindex="-1"></a>    <span class="cf">do</span></span>
+<span id="cb2-31"><a href="#cb2-31" aria-hidden="true" tabindex="-1"></a>      <span class="fu">md5sum</span> <span class="st">"</span><span class="va">${fastq}</span><span class="st">"</span> <span class="op">&gt;&gt;</span><span class="st">"</span><span class="va">${output_dir}</span><span class="st">"</span>/raw-fastq-checksums.md5</span>
+<span id="cb2-32"><a href="#cb2-32" aria-hidden="true" tabindex="-1"></a>  <span class="cf">done</span></span>
+<span id="cb2-33"><a href="#cb2-33" aria-hidden="true" tabindex="-1"></a><span class="cf">fi</span></span>
+<span id="cb2-34"><a href="#cb2-34" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-35"><a href="#cb2-35" aria-hidden="true" tabindex="-1"></a><span class="co"># Run fastp on files</span></span>
+<span id="cb2-36"><a href="#cb2-36" aria-hidden="true" tabindex="-1"></a><span class="co"># Adds JSON report output for downstream usage by MultiQC</span></span>
+<span id="cb2-37"><a href="#cb2-37" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> index <span class="kw">in</span> <span class="st">"</span><span class="va">${</span><span class="op">!</span><span class="va">fastq_array_R1</span><span class="op">[@]</span><span class="va">}</span><span class="st">"</span></span>
+<span id="cb2-38"><a href="#cb2-38" aria-hidden="true" tabindex="-1"></a><span class="cf">do</span></span>
+<span id="cb2-39"><a href="#cb2-39" aria-hidden="true" tabindex="-1"></a>  <span class="va">R1_sample_name</span><span class="op">=</span><span class="va">$(</span><span class="bu">echo</span> <span class="st">"</span><span class="va">${R1_names_array</span><span class="op">[</span>index<span class="op">]</span><span class="va">}</span><span class="st">"</span><span class="va">)</span></span>
+<span id="cb2-40"><a href="#cb2-40" aria-hidden="true" tabindex="-1"></a>  <span class="va">R2_sample_name</span><span class="op">=</span><span class="va">$(</span><span class="bu">echo</span> <span class="st">"</span><span class="va">${R2_names_array</span><span class="op">[</span>index<span class="op">]</span><span class="va">}</span><span class="st">"</span><span class="va">)</span></span>
+<span id="cb2-41"><a href="#cb2-41" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb2-42"><a href="#cb2-42" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb2-43"><a href="#cb2-43" aria-hidden="true" tabindex="-1"></a>  <span class="va">${fastp}</span> <span class="dt">\</span></span>
+<span id="cb2-44"><a href="#cb2-44" aria-hidden="true" tabindex="-1"></a>  <span class="at">--in1</span> <span class="va">${fastq_array_R1</span><span class="op">[</span>index<span class="op">]</span><span class="va">}</span> <span class="dt">\</span></span>
+<span id="cb2-45"><a href="#cb2-45" aria-hidden="true" tabindex="-1"></a>  <span class="at">--in2</span> <span class="va">${fastq_array_R2</span><span class="op">[</span>index<span class="op">]</span><span class="va">}</span> <span class="dt">\</span></span>
+<span id="cb2-46"><a href="#cb2-46" aria-hidden="true" tabindex="-1"></a>  <span class="at">--detect_adapter_for_pe</span> <span class="dt">\</span></span>
+<span id="cb2-47"><a href="#cb2-47" aria-hidden="true" tabindex="-1"></a>  <span class="at">--trim_front1</span> 20 <span class="dt">\</span></span>
+<span id="cb2-48"><a href="#cb2-48" aria-hidden="true" tabindex="-1"></a>  <span class="at">--trim_front2</span> 20 <span class="dt">\</span></span>
+<span id="cb2-49"><a href="#cb2-49" aria-hidden="true" tabindex="-1"></a>  <span class="at">--trim_poly_g</span> <span class="dt">\</span></span>
+<span id="cb2-50"><a href="#cb2-50" aria-hidden="true" tabindex="-1"></a>  <span class="at">--thread</span> <span class="va">${threads}</span> <span class="dt">\</span></span>
+<span id="cb2-51"><a href="#cb2-51" aria-hidden="true" tabindex="-1"></a>  <span class="at">--html</span> <span class="st">"</span><span class="va">${output_dir}</span><span class="st">"</span>/<span class="st">"</span><span class="va">${R1_sample_name}</span><span class="st">"</span>.fastp-trim.report.html <span class="dt">\</span></span>
+<span id="cb2-52"><a href="#cb2-52" aria-hidden="true" tabindex="-1"></a>  <span class="at">--json</span> <span class="st">"</span><span class="va">${output_dir}</span><span class="st">"</span>/<span class="st">"</span><span class="va">${R1_sample_name}</span><span class="st">"</span>.fastp-trim.report.json <span class="dt">\</span></span>
+<span id="cb2-53"><a href="#cb2-53" aria-hidden="true" tabindex="-1"></a>  <span class="at">--out1</span> <span class="st">"</span><span class="va">${output_dir}</span><span class="st">"</span>/<span class="st">"</span><span class="va">${R1_sample_name}</span><span class="st">"</span>_R1_001.fastq.gz <span class="dt">\</span></span>
+<span id="cb2-54"><a href="#cb2-54" aria-hidden="true" tabindex="-1"></a>  <span class="at">--out2</span> <span class="st">"</span><span class="va">${output_dir}</span><span class="st">"</span>/<span class="st">"</span><span class="va">${R2_sample_name}</span><span class="st">"</span>_R2_001.fastq.gz <span class="dt">\</span></span>
+<span id="cb2-55"><a href="#cb2-55" aria-hidden="true" tabindex="-1"></a>  <span class="dv">2</span><span class="op">&gt;&gt;</span> <span class="st">"</span><span class="va">${output_dir}</span><span class="st">"</span>/<span class="st">"</span><span class="va">${R1_sample_name}</span><span class="st">"</span>-fastp.stderr</span>
+<span id="cb2-56"><a href="#cb2-56" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-57"><a href="#cb2-57" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Generate md5 checksums for newly trimmed files</span></span>
+<span id="cb2-58"><a href="#cb2-58" aria-hidden="true" tabindex="-1"></a>  <span class="bu">cd</span> <span class="st">"</span><span class="va">${output_dir}</span><span class="st">"</span></span>
+<span id="cb2-59"><a href="#cb2-59" aria-hidden="true" tabindex="-1"></a>  <span class="fu">md5sum</span> <span class="st">"</span><span class="va">${R1_sample_name}</span><span class="st">"</span>_R1_001.fastq.gz <span class="kw">|</span> <span class="fu">tee</span> <span class="st">"</span><span class="va">${R1_sample_name}</span><span class="st">"</span>_R1_001.fastq.gz.md5</span>
+<span id="cb2-60"><a href="#cb2-60" aria-hidden="true" tabindex="-1"></a>  <span class="fu">md5sum</span> <span class="st">"</span><span class="va">${R2_sample_name}</span><span class="st">"</span>_R2_001.fastq.gz <span class="kw">|</span> <span class="fu">tee</span> <span class="st">"</span><span class="va">${R2_sample_name}</span><span class="st">"</span>_R2_001.fastq.gz.md5</span>
+<span id="cb2-61"><a href="#cb2-61" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb2-62"><a href="#cb2-62" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Change back to previous directory</span></span>
+<span id="cb2-63"><a href="#cb2-63" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Directing to /dev/null prevents printing directory each time.</span></span>
+<span id="cb2-64"><a href="#cb2-64" aria-hidden="true" tabindex="-1"></a>  <span class="bu">cd</span> <span class="at">-</span> <span class="op">&gt;</span> /dev/null</span>
+<span id="cb2-65"><a href="#cb2-65" aria-hidden="true" tabindex="-1"></a><span class="cf">done</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<pre><code>8aaf71fac78f18293155870a5ad785b3  fastp-Yell-July18-Site1a_S83_L001_R1_001.fastq.gz
+97674b5c315b18b1d65dd703301f0cf8  fastp-Yell-July18-Site1a_S83_L001_R2_001.fastq.gz
+8581bbf93dbe9a7c6a6443568b11eaf2  fastp-Yell-July18-Site1bb_S139_L001_R1_001.fastq.gz
+9cac6084d18a18fdd2344a9a57b10403  fastp-Yell-July18-Site1bb_S139_L001_R2_001.fastq.gz
+1246b72b4824c37e054859390148991e  fastp-Yell-July18-Site1b_S84_L001_R1_001.fastq.gz
+1bb8c2f3a716a93e126b963ea4cace7a  fastp-Yell-July18-Site1b_S84_L001_R2_001.fastq.gz
+e1d79f610c9d4ab430fa87164682cd5d  fastp-Yell-July18-Site1cc_S140_L001_R1_001.fastq.gz
+0b639417f1e158661096cd2b22de528d  fastp-Yell-July18-Site1cc_S140_L001_R2_001.fastq.gz
+ee1d281b609e1d0ba856594379cce5ab  fastp-Yell-July18-Site1c_S85_L001_R1_001.fastq.gz
+206313466fc3767486648dd9389461d9  fastp-Yell-July18-Site1c_S85_L001_R2_001.fastq.gz
+9541e0f8ef84c5e84f6ea651f6791b58  fastp-Yell-July18-Site1dd_S141_L001_R1_001.fastq.gz
+f47df7e27b542984de111c8cd7723bc0  fastp-Yell-July18-Site1dd_S141_L001_R2_001.fastq.gz
+53387ef241a3e8c0143841871ca9dfd2  fastp-Yell-July18-Site1d_S86_L001_R1_001.fastq.gz
+97ada736a1c7a8443f3767735a3f4af2  fastp-Yell-July18-Site1d_S86_L001_R2_001.fastq.gz
+be2502232114fbb0e8d90566e19eb3bd  fastp-Yell-July18-Site1ee_S142_L001_R1_001.fastq.gz
+5261ca016825c7b5d450dfbe01c60768  fastp-Yell-July18-Site1ee_S142_L001_R2_001.fastq.gz
+25a8c59b65537de78c48631eb06b510e  fastp-Yell-July18-Site1e_S91_L001_R1_001.fastq.gz
+4e822610766ef7ba0edff4b006a2399a  fastp-Yell-July18-Site1e_S91_L001_R2_001.fastq.gz
+515a2c77896fcd68ab258ac0cd8eab2a  fastp-Yell-July18-Site1f_S92_L001_R1_001.fastq.gz
+f2698536a899157de64bdd209c1da4e1  fastp-Yell-July18-Site1f_S92_L001_R2_001.fastq.gz
+dbf74d130be8e07cd002098f37a035fe  fastp-Yell-July18-Site1g_S93_L001_R1_001.fastq.gz
+0c3ce2ce7409f9336ca794235d11bda3  fastp-Yell-July18-Site1g_S93_L001_R2_001.fastq.gz
+6f0cf41ff0621d8cf3e0b8c556b77e50  fastp-Yell-July18-Site1h_S94_L001_R1_001.fastq.gz
+a4d6e23c32fb28b0498f0b244ee91a79  fastp-Yell-July18-Site1h_S94_L001_R2_001.fastq.gz
+4829027bca04743495259631a1b1eca3  fastp-Yell-July18-Site1J_S99_L001_R1_001.fastq.gz
+4cadf419f24f0a2c0f3233372e6ea64e  fastp-Yell-July18-Site1J_S99_L001_R2_001.fastq.gz
+a83ad57c90291aa2017d2537635e66f8  fastp-Yell-July18-Site1k_S100_L001_R1_001.fastq.gz
+7454d28afadb600434f4496ad632e12c  fastp-Yell-July18-Site1k_S100_L001_R2_001.fastq.gz
+06acae67aeb668d5b4fec20beb69c98a  fastp-Yell-July18-Site1L_S101_L001_R1_001.fastq.gz
+5a50bf8f326a11caa43bc70730faa1c5  fastp-Yell-July18-Site1L_S101_L001_R2_001.fastq.gz
+ba80095123abce2ab4663f0764512615  fastp-Yell-July18-Site1m_S102_L001_R1_001.fastq.gz
+5bf93acb6681d64c8d72217fc296c379  fastp-Yell-July18-Site1m_S102_L001_R2_001.fastq.gz
+a75988d7ceb2c2b45961b758b45beb31  fastp-Yell-July18-Site1n_S103_L001_R1_001.fastq.gz
+6429f9f4b270c45a235f3c9692046de9  fastp-Yell-July18-Site1n_S103_L001_R2_001.fastq.gz
+b0caaeb57060745075c54435aee49ac5  fastp-Yell-July18-Site1o_S104_L001_R1_001.fastq.gz
+d22783c7530a0fdf873e872e07094746  fastp-Yell-July18-Site1o_S104_L001_R2_001.fastq.gz
+f523c3b03f8812df8761f790ba623eac  fastp-Yell-July18-Site1p_S105_L001_R1_001.fastq.gz
+03aea60308b0a2cff891b89eff355d2f  fastp-Yell-July18-Site1p_S105_L001_R2_001.fastq.gz
+8f2eb5db49a151fe276fe171c542d047  fastp-Yell-July18-Site1q_S106_L001_R1_001.fastq.gz
+0cf20078b76b4347c94c3ae77b2661d7  fastp-Yell-July18-Site1q_S106_L001_R2_001.fastq.gz
+09732612243841b02949b81277d8c773  fastp-Yell-July18-Site1r_S111_L001_R1_001.fastq.gz
+38f855e73282ca882fdcee1403472e5d  fastp-Yell-July18-Site1r_S111_L001_R2_001.fastq.gz
+593e0e7cfba4e5a68559b825b977242d  fastp-Yell-July18-Site1s_S112_L001_R1_001.fastq.gz
+12d0370983ede990ddf2ac07b0cf758c  fastp-Yell-July18-Site1s_S112_L001_R2_001.fastq.gz
+8f52b61eda289215c89485eec951e44f  fastp-Yell-July18-Site1t_S113_L001_R1_001.fastq.gz
+dc0fac87a5a4f5566dffa6613d53deb2  fastp-Yell-July18-Site1t_S113_L001_R2_001.fastq.gz
+30956b911fd2e2f24ab4ccc0c573731e  fastp-Yell-July18-Site1U_S114_L001_R1_001.fastq.gz
+cd55f7443d273282fa708a100178441f  fastp-Yell-July18-Site1U_S114_L001_R2_001.fastq.gz
+c4a3a5562592217bd7e8d00afef68aca  fastp-Yell-July18-Site1v_S117_L001_R1_001.fastq.gz
+9045dec9d94aa7abae62f87c6aedf887  fastp-Yell-July18-Site1v_S117_L001_R2_001.fastq.gz
+c5cf4558d20d7eb11005822f840fe5e9  fastp-Yell-July18-Site1w_S118_L001_R1_001.fastq.gz
+659fdc3781371ce4633158f3715b146d  fastp-Yell-July18-Site1w_S118_L001_R2_001.fastq.gz
+ffa9195d6deefec0c68545eb2414cc1e  fastp-Yell-July18-Site1y_S120_L001_R1_001.fastq.gz
+6b4807441251796f88bfc296a5deca6b  fastp-Yell-July18-Site1y_S120_L001_R2_001.fastq.gz
+9315432c107813a21c7957f2c0d08ed0  fastp-Yell-July18-Site1z_S129_L001_R1_001.fastq.gz
+10b325405136f1aed3f2893875c69f18  fastp-Yell-July18-Site1z_S129_L001_R2_001.fastq.gz
+5762e0cf30216d3e24d1c243f2558513  fastp-Yell-July18-Site5aa_S132_L001_R1_001.fastq.gz
+f0953177a84c0f501415add9c873012f  fastp-Yell-July18-Site5aa_S132_L001_R2_001.fastq.gz
+a1930e5eb162b0ded2f02ce626ce6242  fastp-Yell-July18-Site5a_S87_L001_R1_001.fastq.gz
+a89ee788797cb710e3ab81678aa960d2  fastp-Yell-July18-Site5a_S87_L001_R2_001.fastq.gz
+ee7c34fc56c2792ad55c73e7f693460c  fastp-Yell-July18-Site5bb_S133_L001_R1_001.fastq.gz
+e7b8a722ed5f771772d31ce46d74e64f  fastp-Yell-July18-Site5bb_S133_L001_R2_001.fastq.gz
+12fff50ad0731eb524d1f2201a247a64  fastp-Yell-July18-Site5b_S88_L001_R1_001.fastq.gz
+04740ff92fbe6ec1f4c16d52edfa410d  fastp-Yell-July18-Site5b_S88_L001_R2_001.fastq.gz
+87a5ac12247a4f5c4e0638d031317bb9  fastp-Yell-July18-Site5cc_S134_L001_R1_001.fastq.gz
+80958be5b5221a1381db5fcdf05ba034  fastp-Yell-July18-Site5cc_S134_L001_R2_001.fastq.gz
+f194b5e2f3e75418ed77679138f59837  fastp-Yell-July18-Site5c_S89_L001_R1_001.fastq.gz
+5ba8d21028e58b80c3e46cea97205877  fastp-Yell-July18-Site5c_S89_L001_R2_001.fastq.gz
+9a965e2bfb8749d21a1061d7e64771c8  fastp-Yell-July18-Site5ee_S136_L001_R1_001.fastq.gz
+721f85fe480672e7592133a4d844910e  fastp-Yell-July18-Site5ee_S136_L001_R2_001.fastq.gz
+d35dfb11147f6704f7ba8f2c51405497  fastp-Yell-July18-Site5e_S95_L001_R1_001.fastq.gz
+59b45bdec09b28dcbba42d2a5efbe3f9  fastp-Yell-July18-Site5e_S95_L001_R2_001.fastq.gz
+4d923a5e87234327ee4b75541e6753ee  fastp-Yell-July18-Site5ff_S137_L001_R1_001.fastq.gz
+44bd520d27855eca3710239f1903b510  fastp-Yell-July18-Site5ff_S137_L001_R2_001.fastq.gz
+5d904b2b63cc83ee889e576dc2c31c34  fastp-Yell-July18-Site5f_S96_L001_R1_001.fastq.gz
+c5214749a8a7350d94a569745eb4796d  fastp-Yell-July18-Site5f_S96_L001_R2_001.fastq.gz
+3c3de33d88a1458ef44d1575cc7c0bc1  fastp-Yell-July18-Site5g_S97_L001_R1_001.fastq.gz
+faafeab62cdcea2fa18e45c0d07eb39e  fastp-Yell-July18-Site5g_S97_L001_R2_001.fastq.gz
+8189dd5b62d3bc273d44d3ecdbf2a30b  fastp-Yell-July18-Site5h_S98_L001_R1_001.fastq.gz
+b0a04485cd47f593d21bab691881526b  fastp-Yell-July18-Site5h_S98_L001_R2_001.fastq.gz
+391361dbbea6ea843444d039e956281f  fastp-Yell-July18-Site5J_S107_L001_R1_001.fastq.gz
+f40eb23d525bbca759d4fdc4570e4ec7  fastp-Yell-July18-Site5J_S107_L001_R2_001.fastq.gz
+c3da677478056c52a22cbe8d82ed549e  fastp-Yell-July18-Site5k_S108_L001_R1_001.fastq.gz
+49b642aedc0ab037165e1f4d30deb3e6  fastp-Yell-July18-Site5k_S108_L001_R2_001.fastq.gz
+a9990b1563964cd92cedd096fbae374c  fastp-Yell-July18-Site5L_S109_L001_R1_001.fastq.gz
+3a373edc3a42fef99ff8cb2af598b083  fastp-Yell-July18-Site5L_S109_L001_R2_001.fastq.gz
+1ea2789de747a68f172b17b8a92ac9aa  fastp-Yell-July18-Site5m_S110_L001_R1_001.fastq.gz
+3b09623221c7feee3ae437ed98daa793  fastp-Yell-July18-Site5m_S110_L001_R2_001.fastq.gz
+d3dd601918da9a53e01652f55be56c9e  fastp-Yell-July18-Site5n_S115_L001_R1_001.fastq.gz
+7a96bba9597b49560b217dc66dc4f7d1  fastp-Yell-July18-Site5n_S115_L001_R2_001.fastq.gz
+3742ec5d5da634361de9be32bbdac133  fastp-Yell-July18-Site5o_S116_L001_R1_001.fastq.gz
+5aa0261b0ba53542abe1e807cf3d7400  fastp-Yell-July18-Site5o_S116_L001_R2_001.fastq.gz
+c3cb63e4427b5c701a09dc4c97ffde8f  fastp-Yell-July18-Site5p_S121_L001_R1_001.fastq.gz
+5f5536f37eab281541d78f3474c6d7ae  fastp-Yell-July18-Site5p_S121_L001_R2_001.fastq.gz
+b647652678efc16348e43e911d73eca3  fastp-Yell-July18-Site5q_S122_L001_R1_001.fastq.gz
+58316f0b3d5422a97fd79e3710b60141  fastp-Yell-July18-Site5q_S122_L001_R2_001.fastq.gz
+bc79ce422d33a70047caea95f20fb564  fastp-Yell-July18-Site5r_S123_L001_R1_001.fastq.gz
+0cbab3f554b88283f8221622fe7d90aa  fastp-Yell-July18-Site5r_S123_L001_R2_001.fastq.gz
+0d20bf34943af844bfed49169993a818  fastp-Yell-July18-Site5s_S124_L001_R1_001.fastq.gz
+f3c40f4d927c7a51d15cf05274be99fa  fastp-Yell-July18-Site5s_S124_L001_R2_001.fastq.gz
+803db24bd314cd7e3d314b1b8f0b84b2  fastp-Yell-July18-Site5u_S126_L001_R1_001.fastq.gz
+2bc8d78ff999dd579c3753ade627c795  fastp-Yell-July18-Site5u_S126_L001_R2_001.fastq.gz
+a24082a508d3d14c817e98a35eaf2130  fastp-Yell-July18-Site5v_S127_L001_R1_001.fastq.gz
+39ae4d0f9ea80fbd21ef798c9dd38086  fastp-Yell-July18-Site5v_S127_L001_R2_001.fastq.gz
+de061e7ba1fe7e7f7b83bfc0912b0d02  fastp-Yell-July18-Site5w_S128_L001_R1_001.fastq.gz
+4c79dec89144623496dbab6c9dfa0252  fastp-Yell-July18-Site5w_S128_L001_R2_001.fastq.gz
+dc899975947bf512f6402d888b59980b  fastp-Yell-July18-Site5z_S131_L001_R1_001.fastq.gz
+73a4e01e0ef5b883e5529244bb7100bd  fastp-Yell-July18-Site5z_S131_L001_R2_001.fastq.gz</code></pre>
 </section>
 <section id="fastqcmultiqc-on-trimmed-reads" class="level1">
 <h1>4 FastQC/MultiQC on trimmed reads</h1>
@@ -781,506 +783,496 @@ FastQC zip files removed.</code></pre>
 <span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a><span class="fu">ls</span> <span class="at">-lh</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <pre><code>total 1.3G
-drwxrwxr-x 2 sam sam 4.0K Apr 18 12:48 multiqc_data
--rw-rw-r-- 1 sam sam 8.0M Apr 18 12:48 multiqc_report.html
--rw-rw-r-- 1 sam sam 7.8K Apr 18 12:26 raw-fastq-checksums.md5
--rw-rw-r-- 1 sam sam 2.1K Apr 18 12:27 Yell_July18_Site1a_S83_L001-fastp.stderr
--rw-rw-r-- 1 sam sam 489K Apr 18 12:27 Yell_July18_Site1a_S83_L001.fastp-trim.report.html
--rw-rw-r-- 1 sam sam 174K Apr 18 12:27 Yell_July18_Site1a_S83_L001.fastp-trim.report.json
--rw-rw-r-- 1 sam sam 922K Apr 18 12:46 Yell_July18_Site1a_S83_L001_R1.fastp-trim_fastqc.html
--rw-rw-r-- 1 sam sam 9.7M Apr 18 12:27 Yell_July18_Site1a_S83_L001_R1.fastp-trim.fastq.gz
--rw-rw-r-- 1 sam sam   85 Apr 18 12:27 Yell_July18_Site1a_S83_L001_R1.fastp-trim.fastq.gz.md5
--rw-rw-r-- 1 sam sam 915K Apr 18 12:46 Yell_July18_Site1a_S83_L001_R2.fastp-trim_fastqc.html
--rw-rw-r-- 1 sam sam  11M Apr 18 12:27 Yell_July18_Site1a_S83_L001_R2.fastp-trim.fastq.gz
--rw-rw-r-- 1 sam sam   85 Apr 18 12:27 Yell_July18_Site1a_S83_L001_R2.fastp-trim.fastq.gz.md5
--rw-rw-r-- 1 sam sam 2.1K Apr 18 12:27 Yell_July18_Site1bb_S139_L001-fastp.stderr
--rw-rw-r-- 1 sam sam 488K Apr 18 12:27 Yell_July18_Site1bb_S139_L001.fastp-trim.report.html
--rw-rw-r-- 1 sam sam 174K Apr 18 12:27 Yell_July18_Site1bb_S139_L001.fastp-trim.report.json
--rw-rw-r-- 1 sam sam 922K Apr 18 12:46 Yell_July18_Site1bb_S139_L001_R1.fastp-trim_fastqc.html
--rw-rw-r-- 1 sam sam 7.0M Apr 18 12:27 Yell_July18_Site1bb_S139_L001_R1.fastp-trim.fastq.gz
--rw-rw-r-- 1 sam sam   87 Apr 18 12:27 Yell_July18_Site1bb_S139_L001_R1.fastp-trim.fastq.gz.md5
--rw-rw-r-- 1 sam sam 932K Apr 18 12:46 Yell_July18_Site1bb_S139_L001_R2.fastp-trim_fastqc.html
--rw-rw-r-- 1 sam sam 7.5M Apr 18 12:27 Yell_July18_Site1bb_S139_L001_R2.fastp-trim.fastq.gz
--rw-rw-r-- 1 sam sam   87 Apr 18 12:27 Yell_July18_Site1bb_S139_L001_R2.fastp-trim.fastq.gz.md5
--rw-rw-r-- 1 sam sam 2.1K Apr 18 12:28 Yell_July18_Site1b_S84_L001-fastp.stderr
--rw-rw-r-- 1 sam sam 488K Apr 18 12:28 Yell_July18_Site1b_S84_L001.fastp-trim.report.html
--rw-rw-r-- 1 sam sam 173K Apr 18 12:28 Yell_July18_Site1b_S84_L001.fastp-trim.report.json
--rw-rw-r-- 1 sam sam 919K Apr 18 12:46 Yell_July18_Site1b_S84_L001_R1.fastp-trim_fastqc.html
--rw-rw-r-- 1 sam sam 9.2M Apr 18 12:28 Yell_July18_Site1b_S84_L001_R1.fastp-trim.fastq.gz
--rw-rw-r-- 1 sam sam   85 Apr 18 12:28 Yell_July18_Site1b_S84_L001_R1.fastp-trim.fastq.gz.md5
--rw-rw-r-- 1 sam sam 910K Apr 18 12:46 Yell_July18_Site1b_S84_L001_R2.fastp-trim_fastqc.html
--rw-rw-r-- 1 sam sam  10M Apr 18 12:28 Yell_July18_Site1b_S84_L001_R2.fastp-trim.fastq.gz
--rw-rw-r-- 1 sam sam   85 Apr 18 12:28 Yell_July18_Site1b_S84_L001_R2.fastp-trim.fastq.gz.md5
--rw-rw-r-- 1 sam sam 2.1K Apr 18 12:28 Yell_July18_Site1cc_S140_L001-fastp.stderr
--rw-rw-r-- 1 sam sam 490K Apr 18 12:28 Yell_July18_Site1cc_S140_L001.fastp-trim.report.html
--rw-rw-r-- 1 sam sam 175K Apr 18 12:28 Yell_July18_Site1cc_S140_L001.fastp-trim.report.json
--rw-rw-r-- 1 sam sam 924K Apr 18 12:46 Yell_July18_Site1cc_S140_L001_R1.fastp-trim_fastqc.html
--rw-rw-r-- 1 sam sam  17M Apr 18 12:28 Yell_July18_Site1cc_S140_L001_R1.fastp-trim.fastq.gz
--rw-rw-r-- 1 sam sam   87 Apr 18 12:28 Yell_July18_Site1cc_S140_L001_R1.fastp-trim.fastq.gz.md5
--rw-rw-r-- 1 sam sam 914K Apr 18 12:46 Yell_July18_Site1cc_S140_L001_R2.fastp-trim_fastqc.html
--rw-rw-r-- 1 sam sam  19M Apr 18 12:28 Yell_July18_Site1cc_S140_L001_R2.fastp-trim.fastq.gz
--rw-rw-r-- 1 sam sam   87 Apr 18 12:28 Yell_July18_Site1cc_S140_L001_R2.fastp-trim.fastq.gz.md5
--rw-rw-r-- 1 sam sam 2.1K Apr 18 12:29 Yell_July18_Site1c_S85_L001-fastp.stderr
--rw-rw-r-- 1 sam sam 487K Apr 18 12:29 Yell_July18_Site1c_S85_L001.fastp-trim.report.html
--rw-rw-r-- 1 sam sam 173K Apr 18 12:29 Yell_July18_Site1c_S85_L001.fastp-trim.report.json
--rw-rw-r-- 1 sam sam 932K Apr 18 12:46 Yell_July18_Site1c_S85_L001_R1.fastp-trim_fastqc.html
--rw-rw-r-- 1 sam sam 6.8M Apr 18 12:29 Yell_July18_Site1c_S85_L001_R1.fastp-trim.fastq.gz
--rw-rw-r-- 1 sam sam   85 Apr 18 12:29 Yell_July18_Site1c_S85_L001_R1.fastp-trim.fastq.gz.md5
--rw-rw-r-- 1 sam sam 937K Apr 18 12:46 Yell_July18_Site1c_S85_L001_R2.fastp-trim_fastqc.html
--rw-rw-r-- 1 sam sam 7.4M Apr 18 12:29 Yell_July18_Site1c_S85_L001_R2.fastp-trim.fastq.gz
--rw-rw-r-- 1 sam sam   85 Apr 18 12:29 Yell_July18_Site1c_S85_L001_R2.fastp-trim.fastq.gz.md5
--rw-rw-r-- 1 sam sam 2.1K Apr 18 12:29 Yell_July18_Site1dd_S141_L001-fastp.stderr
--rw-rw-r-- 1 sam sam 489K Apr 18 12:29 Yell_July18_Site1dd_S141_L001.fastp-trim.report.html
--rw-rw-r-- 1 sam sam 175K Apr 18 12:29 Yell_July18_Site1dd_S141_L001.fastp-trim.report.json
--rw-rw-r-- 1 sam sam 931K Apr 18 12:46 Yell_July18_Site1dd_S141_L001_R1.fastp-trim_fastqc.html
--rw-rw-r-- 1 sam sam  19M Apr 18 12:29 Yell_July18_Site1dd_S141_L001_R1.fastp-trim.fastq.gz
--rw-rw-r-- 1 sam sam   87 Apr 18 12:29 Yell_July18_Site1dd_S141_L001_R1.fastp-trim.fastq.gz.md5
--rw-rw-r-- 1 sam sam 936K Apr 18 12:46 Yell_July18_Site1dd_S141_L001_R2.fastp-trim_fastqc.html
--rw-rw-r-- 1 sam sam  19M Apr 18 12:29 Yell_July18_Site1dd_S141_L001_R2.fastp-trim.fastq.gz
--rw-rw-r-- 1 sam sam   87 Apr 18 12:29 Yell_July18_Site1dd_S141_L001_R2.fastp-trim.fastq.gz.md5
--rw-rw-r-- 1 sam sam 2.1K Apr 18 12:29 Yell_July18_Site1d_S86_L001-fastp.stderr
--rw-rw-r-- 1 sam sam 488K Apr 18 12:29 Yell_July18_Site1d_S86_L001.fastp-trim.report.html
--rw-rw-r-- 1 sam sam 174K Apr 18 12:29 Yell_July18_Site1d_S86_L001.fastp-trim.report.json
--rw-rw-r-- 1 sam sam 922K Apr 18 12:46 Yell_July18_Site1d_S86_L001_R1.fastp-trim_fastqc.html
--rw-rw-r-- 1 sam sam 9.5M Apr 18 12:29 Yell_July18_Site1d_S86_L001_R1.fastp-trim.fastq.gz
--rw-rw-r-- 1 sam sam   85 Apr 18 12:29 Yell_July18_Site1d_S86_L001_R1.fastp-trim.fastq.gz.md5
--rw-rw-r-- 1 sam sam 935K Apr 18 12:46 Yell_July18_Site1d_S86_L001_R2.fastp-trim_fastqc.html
--rw-rw-r-- 1 sam sam  11M Apr 18 12:29 Yell_July18_Site1d_S86_L001_R2.fastp-trim.fastq.gz
--rw-rw-r-- 1 sam sam   85 Apr 18 12:29 Yell_July18_Site1d_S86_L001_R2.fastp-trim.fastq.gz.md5
--rw-rw-r-- 1 sam sam 2.1K Apr 18 12:30 Yell_July18_Site1ee_S142_L001-fastp.stderr
--rw-rw-r-- 1 sam sam 489K Apr 18 12:30 Yell_July18_Site1ee_S142_L001.fastp-trim.report.html
--rw-rw-r-- 1 sam sam 174K Apr 18 12:30 Yell_July18_Site1ee_S142_L001.fastp-trim.report.json
--rw-rw-r-- 1 sam sam 944K Apr 18 12:46 Yell_July18_Site1ee_S142_L001_R1.fastp-trim_fastqc.html
--rw-rw-r-- 1 sam sam  12M Apr 18 12:30 Yell_July18_Site1ee_S142_L001_R1.fastp-trim.fastq.gz
--rw-rw-r-- 1 sam sam   87 Apr 18 12:30 Yell_July18_Site1ee_S142_L001_R1.fastp-trim.fastq.gz.md5
--rw-rw-r-- 1 sam sam 952K Apr 18 12:46 Yell_July18_Site1ee_S142_L001_R2.fastp-trim_fastqc.html
--rw-rw-r-- 1 sam sam  11M Apr 18 12:30 Yell_July18_Site1ee_S142_L001_R2.fastp-trim.fastq.gz
--rw-rw-r-- 1 sam sam   87 Apr 18 12:30 Yell_July18_Site1ee_S142_L001_R2.fastp-trim.fastq.gz.md5
--rw-rw-r-- 1 sam sam 2.1K Apr 18 12:30 Yell_July18_Site1e_S91_L001-fastp.stderr
--rw-rw-r-- 1 sam sam 484K Apr 18 12:30 Yell_July18_Site1e_S91_L001.fastp-trim.report.html
--rw-rw-r-- 1 sam sam 170K Apr 18 12:30 Yell_July18_Site1e_S91_L001.fastp-trim.report.json
--rw-rw-r-- 1 sam sam 921K Apr 18 12:46 Yell_July18_Site1e_S91_L001_R1.fastp-trim_fastqc.html
--rw-rw-r-- 1 sam sam 1.6M Apr 18 12:30 Yell_July18_Site1e_S91_L001_R1.fastp-trim.fastq.gz
--rw-rw-r-- 1 sam sam   85 Apr 18 12:30 Yell_July18_Site1e_S91_L001_R1.fastp-trim.fastq.gz.md5
--rw-rw-r-- 1 sam sam 930K Apr 18 12:46 Yell_July18_Site1e_S91_L001_R2.fastp-trim_fastqc.html
--rw-rw-r-- 1 sam sam 1.7M Apr 18 12:30 Yell_July18_Site1e_S91_L001_R2.fastp-trim.fastq.gz
--rw-rw-r-- 1 sam sam   85 Apr 18 12:30 Yell_July18_Site1e_S91_L001_R2.fastp-trim.fastq.gz.md5
--rw-rw-r-- 1 sam sam 2.1K Apr 18 12:30 Yell_July18_Site1f_S92_L001-fastp.stderr
--rw-rw-r-- 1 sam sam 489K Apr 18 12:30 Yell_July18_Site1f_S92_L001.fastp-trim.report.html
--rw-rw-r-- 1 sam sam 175K Apr 18 12:30 Yell_July18_Site1f_S92_L001.fastp-trim.report.json
--rw-rw-r-- 1 sam sam 904K Apr 18 12:46 Yell_July18_Site1f_S92_L001_R1.fastp-trim_fastqc.html
--rw-rw-r-- 1 sam sam  11M Apr 18 12:30 Yell_July18_Site1f_S92_L001_R1.fastp-trim.fastq.gz
--rw-rw-r-- 1 sam sam   85 Apr 18 12:30 Yell_July18_Site1f_S92_L001_R1.fastp-trim.fastq.gz.md5
--rw-rw-r-- 1 sam sam 918K Apr 18 12:46 Yell_July18_Site1f_S92_L001_R2.fastp-trim_fastqc.html
--rw-rw-r-- 1 sam sam  12M Apr 18 12:30 Yell_July18_Site1f_S92_L001_R2.fastp-trim.fastq.gz
--rw-rw-r-- 1 sam sam   85 Apr 18 12:30 Yell_July18_Site1f_S92_L001_R2.fastp-trim.fastq.gz.md5
--rw-rw-r-- 1 sam sam 2.1K Apr 18 12:31 Yell_July18_Site1g_S93_L001-fastp.stderr
--rw-rw-r-- 1 sam sam 488K Apr 18 12:31 Yell_July18_Site1g_S93_L001.fastp-trim.report.html
--rw-rw-r-- 1 sam sam 174K Apr 18 12:31 Yell_July18_Site1g_S93_L001.fastp-trim.report.json
--rw-rw-r-- 1 sam sam 914K Apr 18 12:46 Yell_July18_Site1g_S93_L001_R1.fastp-trim_fastqc.html
--rw-rw-r-- 1 sam sam 9.7M Apr 18 12:31 Yell_July18_Site1g_S93_L001_R1.fastp-trim.fastq.gz
--rw-rw-r-- 1 sam sam   85 Apr 18 12:31 Yell_July18_Site1g_S93_L001_R1.fastp-trim.fastq.gz.md5
--rw-rw-r-- 1 sam sam 921K Apr 18 12:46 Yell_July18_Site1g_S93_L001_R2.fastp-trim_fastqc.html
--rw-rw-r-- 1 sam sam  11M Apr 18 12:31 Yell_July18_Site1g_S93_L001_R2.fastp-trim.fastq.gz
--rw-rw-r-- 1 sam sam   85 Apr 18 12:31 Yell_July18_Site1g_S93_L001_R2.fastp-trim.fastq.gz.md5
--rw-rw-r-- 1 sam sam 2.1K Apr 18 12:31 Yell_July18_Site1h_S94_L001-fastp.stderr
--rw-rw-r-- 1 sam sam 486K Apr 18 12:31 Yell_July18_Site1h_S94_L001.fastp-trim.report.html
--rw-rw-r-- 1 sam sam 172K Apr 18 12:31 Yell_July18_Site1h_S94_L001.fastp-trim.report.json
--rw-rw-r-- 1 sam sam 916K Apr 18 12:46 Yell_July18_Site1h_S94_L001_R1.fastp-trim_fastqc.html
--rw-rw-r-- 1 sam sam 3.5M Apr 18 12:31 Yell_July18_Site1h_S94_L001_R1.fastp-trim.fastq.gz
--rw-rw-r-- 1 sam sam   85 Apr 18 12:31 Yell_July18_Site1h_S94_L001_R1.fastp-trim.fastq.gz.md5
--rw-rw-r-- 1 sam sam 932K Apr 18 12:46 Yell_July18_Site1h_S94_L001_R2.fastp-trim_fastqc.html
--rw-rw-r-- 1 sam sam 3.8M Apr 18 12:31 Yell_July18_Site1h_S94_L001_R2.fastp-trim.fastq.gz
--rw-rw-r-- 1 sam sam   85 Apr 18 12:31 Yell_July18_Site1h_S94_L001_R2.fastp-trim.fastq.gz.md5
--rw-rw-r-- 1 sam sam 2.1K Apr 18 12:31 Yell_July18_Site1J_S99_L001-fastp.stderr
--rw-rw-r-- 1 sam sam 482K Apr 18 12:31 Yell_July18_Site1J_S99_L001.fastp-trim.report.html
--rw-rw-r-- 1 sam sam 169K Apr 18 12:31 Yell_July18_Site1J_S99_L001.fastp-trim.report.json
--rw-rw-r-- 1 sam sam 909K Apr 18 12:46 Yell_July18_Site1J_S99_L001_R1.fastp-trim_fastqc.html
--rw-rw-r-- 1 sam sam 1.1M Apr 18 12:31 Yell_July18_Site1J_S99_L001_R1.fastp-trim.fastq.gz
--rw-rw-r-- 1 sam sam   85 Apr 18 12:31 Yell_July18_Site1J_S99_L001_R1.fastp-trim.fastq.gz.md5
--rw-rw-r-- 1 sam sam 930K Apr 18 12:46 Yell_July18_Site1J_S99_L001_R2.fastp-trim_fastqc.html
--rw-rw-r-- 1 sam sam 851K Apr 18 12:31 Yell_July18_Site1J_S99_L001_R2.fastp-trim.fastq.gz
--rw-rw-r-- 1 sam sam   85 Apr 18 12:31 Yell_July18_Site1J_S99_L001_R2.fastp-trim.fastq.gz.md5
--rw-rw-r-- 1 sam sam 2.1K Apr 18 12:31 Yell_July18_Site1k_S100_L001-fastp.stderr
--rw-rw-r-- 1 sam sam 487K Apr 18 12:31 Yell_July18_Site1k_S100_L001.fastp-trim.report.html
--rw-rw-r-- 1 sam sam 173K Apr 18 12:31 Yell_July18_Site1k_S100_L001.fastp-trim.report.json
--rw-rw-r-- 1 sam sam 919K Apr 18 12:46 Yell_July18_Site1k_S100_L001_R1.fastp-trim_fastqc.html
--rw-rw-r-- 1 sam sam 7.1M Apr 18 12:31 Yell_July18_Site1k_S100_L001_R1.fastp-trim.fastq.gz
--rw-rw-r-- 1 sam sam   86 Apr 18 12:31 Yell_July18_Site1k_S100_L001_R1.fastp-trim.fastq.gz.md5
--rw-rw-r-- 1 sam sam 929K Apr 18 12:46 Yell_July18_Site1k_S100_L001_R2.fastp-trim_fastqc.html
--rw-rw-r-- 1 sam sam 7.0M Apr 18 12:31 Yell_July18_Site1k_S100_L001_R2.fastp-trim.fastq.gz
--rw-rw-r-- 1 sam sam   86 Apr 18 12:31 Yell_July18_Site1k_S100_L001_R2.fastp-trim.fastq.gz.md5
--rw-rw-r-- 1 sam sam 2.1K Apr 18 12:32 Yell_July18_Site1L_S101_L001-fastp.stderr
--rw-rw-r-- 1 sam sam 486K Apr 18 12:32 Yell_July18_Site1L_S101_L001.fastp-trim.report.html
--rw-rw-r-- 1 sam sam 171K Apr 18 12:32 Yell_July18_Site1L_S101_L001.fastp-trim.report.json
--rw-rw-r-- 1 sam sam 921K Apr 18 12:46 Yell_July18_Site1L_S101_L001_R1.fastp-trim_fastqc.html
--rw-rw-r-- 1 sam sam 2.6M Apr 18 12:32 Yell_July18_Site1L_S101_L001_R1.fastp-trim.fastq.gz
--rw-rw-r-- 1 sam sam   86 Apr 18 12:32 Yell_July18_Site1L_S101_L001_R1.fastp-trim.fastq.gz.md5
--rw-rw-r-- 1 sam sam 931K Apr 18 12:46 Yell_July18_Site1L_S101_L001_R2.fastp-trim_fastqc.html
--rw-rw-r-- 1 sam sam 3.0M Apr 18 12:32 Yell_July18_Site1L_S101_L001_R2.fastp-trim.fastq.gz
--rw-rw-r-- 1 sam sam   86 Apr 18 12:32 Yell_July18_Site1L_S101_L001_R2.fastp-trim.fastq.gz.md5
--rw-rw-r-- 1 sam sam 2.1K Apr 18 12:32 Yell_July18_Site1m_S102_L001-fastp.stderr
--rw-rw-r-- 1 sam sam 488K Apr 18 12:32 Yell_July18_Site1m_S102_L001.fastp-trim.report.html
--rw-rw-r-- 1 sam sam 174K Apr 18 12:32 Yell_July18_Site1m_S102_L001.fastp-trim.report.json
--rw-rw-r-- 1 sam sam 916K Apr 18 12:46 Yell_July18_Site1m_S102_L001_R1.fastp-trim_fastqc.html
--rw-rw-r-- 1 sam sam 9.9M Apr 18 12:32 Yell_July18_Site1m_S102_L001_R1.fastp-trim.fastq.gz
--rw-rw-r-- 1 sam sam   86 Apr 18 12:32 Yell_July18_Site1m_S102_L001_R1.fastp-trim.fastq.gz.md5
--rw-rw-r-- 1 sam sam 930K Apr 18 12:46 Yell_July18_Site1m_S102_L001_R2.fastp-trim_fastqc.html
--rw-rw-r-- 1 sam sam  11M Apr 18 12:32 Yell_July18_Site1m_S102_L001_R2.fastp-trim.fastq.gz
--rw-rw-r-- 1 sam sam   86 Apr 18 12:32 Yell_July18_Site1m_S102_L001_R2.fastp-trim.fastq.gz.md5
--rw-rw-r-- 1 sam sam 2.1K Apr 18 12:32 Yell_July18_Site1n_S103_L001-fastp.stderr
--rw-rw-r-- 1 sam sam 490K Apr 18 12:32 Yell_July18_Site1n_S103_L001.fastp-trim.report.html
--rw-rw-r-- 1 sam sam 175K Apr 18 12:32 Yell_July18_Site1n_S103_L001.fastp-trim.report.json
--rw-rw-r-- 1 sam sam 919K Apr 18 12:46 Yell_July18_Site1n_S103_L001_R1.fastp-trim_fastqc.html
--rw-rw-r-- 1 sam sam  14M Apr 18 12:32 Yell_July18_Site1n_S103_L001_R1.fastp-trim.fastq.gz
--rw-rw-r-- 1 sam sam   86 Apr 18 12:32 Yell_July18_Site1n_S103_L001_R1.fastp-trim.fastq.gz.md5
--rw-rw-r-- 1 sam sam 906K Apr 18 12:46 Yell_July18_Site1n_S103_L001_R2.fastp-trim_fastqc.html
--rw-rw-r-- 1 sam sam  15M Apr 18 12:32 Yell_July18_Site1n_S103_L001_R2.fastp-trim.fastq.gz
--rw-rw-r-- 1 sam sam   86 Apr 18 12:32 Yell_July18_Site1n_S103_L001_R2.fastp-trim.fastq.gz.md5
--rw-rw-r-- 1 sam sam 2.1K Apr 18 12:33 Yell_July18_Site1o_S104_L001-fastp.stderr
--rw-rw-r-- 1 sam sam 489K Apr 18 12:33 Yell_July18_Site1o_S104_L001.fastp-trim.report.html
--rw-rw-r-- 1 sam sam 174K Apr 18 12:33 Yell_July18_Site1o_S104_L001.fastp-trim.report.json
--rw-rw-r-- 1 sam sam 917K Apr 18 12:46 Yell_July18_Site1o_S104_L001_R1.fastp-trim_fastqc.html
--rw-rw-r-- 1 sam sam  12M Apr 18 12:33 Yell_July18_Site1o_S104_L001_R1.fastp-trim.fastq.gz
--rw-rw-r-- 1 sam sam   86 Apr 18 12:33 Yell_July18_Site1o_S104_L001_R1.fastp-trim.fastq.gz.md5
--rw-rw-r-- 1 sam sam 924K Apr 18 12:46 Yell_July18_Site1o_S104_L001_R2.fastp-trim_fastqc.html
--rw-rw-r-- 1 sam sam  13M Apr 18 12:33 Yell_July18_Site1o_S104_L001_R2.fastp-trim.fastq.gz
--rw-rw-r-- 1 sam sam   86 Apr 18 12:33 Yell_July18_Site1o_S104_L001_R2.fastp-trim.fastq.gz.md5
--rw-rw-r-- 1 sam sam 2.1K Apr 18 12:33 Yell_July18_Site1p_S105_L001-fastp.stderr
--rw-rw-r-- 1 sam sam 491K Apr 18 12:33 Yell_July18_Site1p_S105_L001.fastp-trim.report.html
--rw-rw-r-- 1 sam sam 177K Apr 18 12:33 Yell_July18_Site1p_S105_L001.fastp-trim.report.json
--rw-rw-r-- 1 sam sam 916K Apr 18 12:47 Yell_July18_Site1p_S105_L001_R1.fastp-trim_fastqc.html
--rw-rw-r-- 1 sam sam  55M Apr 18 12:33 Yell_July18_Site1p_S105_L001_R1.fastp-trim.fastq.gz
--rw-rw-r-- 1 sam sam   86 Apr 18 12:33 Yell_July18_Site1p_S105_L001_R1.fastp-trim.fastq.gz.md5
--rw-rw-r-- 1 sam sam 901K Apr 18 12:47 Yell_July18_Site1p_S105_L001_R2.fastp-trim_fastqc.html
--rw-rw-r-- 1 sam sam  56M Apr 18 12:33 Yell_July18_Site1p_S105_L001_R2.fastp-trim.fastq.gz
--rw-rw-r-- 1 sam sam   86 Apr 18 12:33 Yell_July18_Site1p_S105_L001_R2.fastp-trim.fastq.gz.md5
--rw-rw-r-- 1 sam sam 2.1K Apr 18 12:34 Yell_July18_Site1q_S106_L001-fastp.stderr
--rw-rw-r-- 1 sam sam 489K Apr 18 12:34 Yell_July18_Site1q_S106_L001.fastp-trim.report.html
--rw-rw-r-- 1 sam sam 173K Apr 18 12:34 Yell_July18_Site1q_S106_L001.fastp-trim.report.json
--rw-rw-r-- 1 sam sam 931K Apr 18 12:47 Yell_July18_Site1q_S106_L001_R1.fastp-trim_fastqc.html
--rw-rw-r-- 1 sam sam 5.8M Apr 18 12:34 Yell_July18_Site1q_S106_L001_R1.fastp-trim.fastq.gz
--rw-rw-r-- 1 sam sam   86 Apr 18 12:34 Yell_July18_Site1q_S106_L001_R1.fastp-trim.fastq.gz.md5
--rw-rw-r-- 1 sam sam 935K Apr 18 12:47 Yell_July18_Site1q_S106_L001_R2.fastp-trim_fastqc.html
--rw-rw-r-- 1 sam sam 6.2M Apr 18 12:34 Yell_July18_Site1q_S106_L001_R2.fastp-trim.fastq.gz
--rw-rw-r-- 1 sam sam   86 Apr 18 12:34 Yell_July18_Site1q_S106_L001_R2.fastp-trim.fastq.gz.md5
--rw-rw-r-- 1 sam sam 2.1K Apr 18 12:34 Yell_July18_Site1r_S111_L001-fastp.stderr
--rw-rw-r-- 1 sam sam 488K Apr 18 12:34 Yell_July18_Site1r_S111_L001.fastp-trim.report.html
--rw-rw-r-- 1 sam sam 174K Apr 18 12:34 Yell_July18_Site1r_S111_L001.fastp-trim.report.json
--rw-rw-r-- 1 sam sam 921K Apr 18 12:47 Yell_July18_Site1r_S111_L001_R1.fastp-trim_fastqc.html
--rw-rw-r-- 1 sam sam 8.5M Apr 18 12:34 Yell_July18_Site1r_S111_L001_R1.fastp-trim.fastq.gz
--rw-rw-r-- 1 sam sam   86 Apr 18 12:34 Yell_July18_Site1r_S111_L001_R1.fastp-trim.fastq.gz.md5
--rw-rw-r-- 1 sam sam 942K Apr 18 12:47 Yell_July18_Site1r_S111_L001_R2.fastp-trim_fastqc.html
--rw-rw-r-- 1 sam sam 9.6M Apr 18 12:34 Yell_July18_Site1r_S111_L001_R2.fastp-trim.fastq.gz
--rw-rw-r-- 1 sam sam   86 Apr 18 12:34 Yell_July18_Site1r_S111_L001_R2.fastp-trim.fastq.gz.md5
--rw-rw-r-- 1 sam sam 2.1K Apr 18 12:35 Yell_July18_Site1s_S112_L001-fastp.stderr
--rw-rw-r-- 1 sam sam 489K Apr 18 12:35 Yell_July18_Site1s_S112_L001.fastp-trim.report.html
--rw-rw-r-- 1 sam sam 174K Apr 18 12:35 Yell_July18_Site1s_S112_L001.fastp-trim.report.json
--rw-rw-r-- 1 sam sam 916K Apr 18 12:47 Yell_July18_Site1s_S112_L001_R1.fastp-trim_fastqc.html
--rw-rw-r-- 1 sam sam  12M Apr 18 12:35 Yell_July18_Site1s_S112_L001_R1.fastp-trim.fastq.gz
--rw-rw-r-- 1 sam sam   86 Apr 18 12:35 Yell_July18_Site1s_S112_L001_R1.fastp-trim.fastq.gz.md5
--rw-rw-r-- 1 sam sam 929K Apr 18 12:47 Yell_July18_Site1s_S112_L001_R2.fastp-trim_fastqc.html
--rw-rw-r-- 1 sam sam  13M Apr 18 12:35 Yell_July18_Site1s_S112_L001_R2.fastp-trim.fastq.gz
--rw-rw-r-- 1 sam sam   86 Apr 18 12:35 Yell_July18_Site1s_S112_L001_R2.fastp-trim.fastq.gz.md5
--rw-rw-r-- 1 sam sam 2.1K Apr 18 12:35 Yell_July18_Site1t_S113_L001-fastp.stderr
--rw-rw-r-- 1 sam sam 488K Apr 18 12:35 Yell_July18_Site1t_S113_L001.fastp-trim.report.html
--rw-rw-r-- 1 sam sam 174K Apr 18 12:35 Yell_July18_Site1t_S113_L001.fastp-trim.report.json
--rw-rw-r-- 1 sam sam 913K Apr 18 12:47 Yell_July18_Site1t_S113_L001_R1.fastp-trim_fastqc.html
--rw-rw-r-- 1 sam sam  12M Apr 18 12:35 Yell_July18_Site1t_S113_L001_R1.fastp-trim.fastq.gz
--rw-rw-r-- 1 sam sam   86 Apr 18 12:35 Yell_July18_Site1t_S113_L001_R1.fastp-trim.fastq.gz.md5
--rw-rw-r-- 1 sam sam 900K Apr 18 12:47 Yell_July18_Site1t_S113_L001_R2.fastp-trim_fastqc.html
--rw-rw-r-- 1 sam sam  13M Apr 18 12:35 Yell_July18_Site1t_S113_L001_R2.fastp-trim.fastq.gz
--rw-rw-r-- 1 sam sam   86 Apr 18 12:35 Yell_July18_Site1t_S113_L001_R2.fastp-trim.fastq.gz.md5
--rw-rw-r-- 1 sam sam 2.1K Apr 18 12:35 Yell_July18_Site1U_S114_L001-fastp.stderr
--rw-rw-r-- 1 sam sam 487K Apr 18 12:35 Yell_July18_Site1U_S114_L001.fastp-trim.report.html
--rw-rw-r-- 1 sam sam 171K Apr 18 12:35 Yell_July18_Site1U_S114_L001.fastp-trim.report.json
--rw-rw-r-- 1 sam sam 890K Apr 18 12:47 Yell_July18_Site1U_S114_L001_R1.fastp-trim_fastqc.html
--rw-rw-r-- 1 sam sam 3.2M Apr 18 12:35 Yell_July18_Site1U_S114_L001_R1.fastp-trim.fastq.gz
--rw-rw-r-- 1 sam sam   86 Apr 18 12:35 Yell_July18_Site1U_S114_L001_R1.fastp-trim.fastq.gz.md5
--rw-rw-r-- 1 sam sam 916K Apr 18 12:47 Yell_July18_Site1U_S114_L001_R2.fastp-trim_fastqc.html
--rw-rw-r-- 1 sam sam 3.6M Apr 18 12:35 Yell_July18_Site1U_S114_L001_R2.fastp-trim.fastq.gz
--rw-rw-r-- 1 sam sam   86 Apr 18 12:35 Yell_July18_Site1U_S114_L001_R2.fastp-trim.fastq.gz.md5
--rw-rw-r-- 1 sam sam 2.1K Apr 18 12:36 Yell_July18_Site1v_S117_L001-fastp.stderr
--rw-rw-r-- 1 sam sam 488K Apr 18 12:36 Yell_July18_Site1v_S117_L001.fastp-trim.report.html
--rw-rw-r-- 1 sam sam 174K Apr 18 12:36 Yell_July18_Site1v_S117_L001.fastp-trim.report.json
--rw-rw-r-- 1 sam sam 915K Apr 18 12:47 Yell_July18_Site1v_S117_L001_R1.fastp-trim_fastqc.html
--rw-rw-r-- 1 sam sam 9.0M Apr 18 12:36 Yell_July18_Site1v_S117_L001_R1.fastp-trim.fastq.gz
--rw-rw-r-- 1 sam sam   86 Apr 18 12:36 Yell_July18_Site1v_S117_L001_R1.fastp-trim.fastq.gz.md5
--rw-rw-r-- 1 sam sam 910K Apr 18 12:47 Yell_July18_Site1v_S117_L001_R2.fastp-trim_fastqc.html
--rw-rw-r-- 1 sam sam 9.9M Apr 18 12:36 Yell_July18_Site1v_S117_L001_R2.fastp-trim.fastq.gz
--rw-rw-r-- 1 sam sam   86 Apr 18 12:36 Yell_July18_Site1v_S117_L001_R2.fastp-trim.fastq.gz.md5
--rw-rw-r-- 1 sam sam 2.1K Apr 18 12:36 Yell_July18_Site1w_S118_L001-fastp.stderr
--rw-rw-r-- 1 sam sam 488K Apr 18 12:36 Yell_July18_Site1w_S118_L001.fastp-trim.report.html
--rw-rw-r-- 1 sam sam 174K Apr 18 12:36 Yell_July18_Site1w_S118_L001.fastp-trim.report.json
--rw-rw-r-- 1 sam sam 922K Apr 18 12:47 Yell_July18_Site1w_S118_L001_R1.fastp-trim_fastqc.html
--rw-rw-r-- 1 sam sam 9.6M Apr 18 12:36 Yell_July18_Site1w_S118_L001_R1.fastp-trim.fastq.gz
--rw-rw-r-- 1 sam sam   86 Apr 18 12:36 Yell_July18_Site1w_S118_L001_R1.fastp-trim.fastq.gz.md5
--rw-rw-r-- 1 sam sam 937K Apr 18 12:47 Yell_July18_Site1w_S118_L001_R2.fastp-trim_fastqc.html
--rw-rw-r-- 1 sam sam  11M Apr 18 12:36 Yell_July18_Site1w_S118_L001_R2.fastp-trim.fastq.gz
--rw-rw-r-- 1 sam sam   86 Apr 18 12:36 Yell_July18_Site1w_S118_L001_R2.fastp-trim.fastq.gz.md5
--rw-rw-r-- 1 sam sam 2.1K Apr 18 12:37 Yell_July18_Site1y_S120_L001-fastp.stderr
--rw-rw-r-- 1 sam sam 488K Apr 18 12:37 Yell_July18_Site1y_S120_L001.fastp-trim.report.html
--rw-rw-r-- 1 sam sam 174K Apr 18 12:37 Yell_July18_Site1y_S120_L001.fastp-trim.report.json
--rw-rw-r-- 1 sam sam 930K Apr 18 12:47 Yell_July18_Site1y_S120_L001_R1.fastp-trim_fastqc.html
--rw-rw-r-- 1 sam sam 8.3M Apr 18 12:37 Yell_July18_Site1y_S120_L001_R1.fastp-trim.fastq.gz
--rw-rw-r-- 1 sam sam   86 Apr 18 12:37 Yell_July18_Site1y_S120_L001_R1.fastp-trim.fastq.gz.md5
--rw-rw-r-- 1 sam sam 944K Apr 18 12:47 Yell_July18_Site1y_S120_L001_R2.fastp-trim_fastqc.html
--rw-rw-r-- 1 sam sam 9.3M Apr 18 12:37 Yell_July18_Site1y_S120_L001_R2.fastp-trim.fastq.gz
--rw-rw-r-- 1 sam sam   86 Apr 18 12:37 Yell_July18_Site1y_S120_L001_R2.fastp-trim.fastq.gz.md5
--rw-rw-r-- 1 sam sam 2.1K Apr 18 12:37 Yell_July18_Site1z_S129_L001-fastp.stderr
--rw-rw-r-- 1 sam sam 488K Apr 18 12:37 Yell_July18_Site1z_S129_L001.fastp-trim.report.html
--rw-rw-r-- 1 sam sam 174K Apr 18 12:37 Yell_July18_Site1z_S129_L001.fastp-trim.report.json
--rw-rw-r-- 1 sam sam 928K Apr 18 12:47 Yell_July18_Site1z_S129_L001_R1.fastp-trim_fastqc.html
--rw-rw-r-- 1 sam sam 6.6M Apr 18 12:37 Yell_July18_Site1z_S129_L001_R1.fastp-trim.fastq.gz
--rw-rw-r-- 1 sam sam   86 Apr 18 12:37 Yell_July18_Site1z_S129_L001_R1.fastp-trim.fastq.gz.md5
--rw-rw-r-- 1 sam sam 940K Apr 18 12:47 Yell_July18_Site1z_S129_L001_R2.fastp-trim_fastqc.html
--rw-rw-r-- 1 sam sam 7.3M Apr 18 12:37 Yell_July18_Site1z_S129_L001_R2.fastp-trim.fastq.gz
--rw-rw-r-- 1 sam sam   86 Apr 18 12:37 Yell_July18_Site1z_S129_L001_R2.fastp-trim.fastq.gz.md5
--rw-rw-r-- 1 sam sam 2.1K Apr 18 12:38 Yell_July18_Site5aa_S132_L001-fastp.stderr
--rw-rw-r-- 1 sam sam 489K Apr 18 12:38 Yell_July18_Site5aa_S132_L001.fastp-trim.report.html
--rw-rw-r-- 1 sam sam 175K Apr 18 12:38 Yell_July18_Site5aa_S132_L001.fastp-trim.report.json
--rw-rw-r-- 1 sam sam 927K Apr 18 12:47 Yell_July18_Site5aa_S132_L001_R1.fastp-trim_fastqc.html
--rw-rw-r-- 1 sam sam  17M Apr 18 12:38 Yell_July18_Site5aa_S132_L001_R1.fastp-trim.fastq.gz
--rw-rw-r-- 1 sam sam   87 Apr 18 12:38 Yell_July18_Site5aa_S132_L001_R1.fastp-trim.fastq.gz.md5
--rw-rw-r-- 1 sam sam 925K Apr 18 12:47 Yell_July18_Site5aa_S132_L001_R2.fastp-trim_fastqc.html
--rw-rw-r-- 1 sam sam  18M Apr 18 12:38 Yell_July18_Site5aa_S132_L001_R2.fastp-trim.fastq.gz
--rw-rw-r-- 1 sam sam   87 Apr 18 12:38 Yell_July18_Site5aa_S132_L001_R2.fastp-trim.fastq.gz.md5
--rw-rw-r-- 1 sam sam 2.1K Apr 18 12:38 Yell_July18_Site5a_S87_L001-fastp.stderr
--rw-rw-r-- 1 sam sam 488K Apr 18 12:38 Yell_July18_Site5a_S87_L001.fastp-trim.report.html
--rw-rw-r-- 1 sam sam 174K Apr 18 12:38 Yell_July18_Site5a_S87_L001.fastp-trim.report.json
--rw-rw-r-- 1 sam sam 932K Apr 18 12:47 Yell_July18_Site5a_S87_L001_R1.fastp-trim_fastqc.html
--rw-rw-r-- 1 sam sam 5.5M Apr 18 12:38 Yell_July18_Site5a_S87_L001_R1.fastp-trim.fastq.gz
--rw-rw-r-- 1 sam sam   85 Apr 18 12:38 Yell_July18_Site5a_S87_L001_R1.fastp-trim.fastq.gz.md5
--rw-rw-r-- 1 sam sam 942K Apr 18 12:47 Yell_July18_Site5a_S87_L001_R2.fastp-trim_fastqc.html
--rw-rw-r-- 1 sam sam 6.5M Apr 18 12:38 Yell_July18_Site5a_S87_L001_R2.fastp-trim.fastq.gz
--rw-rw-r-- 1 sam sam   85 Apr 18 12:38 Yell_July18_Site5a_S87_L001_R2.fastp-trim.fastq.gz.md5
--rw-rw-r-- 1 sam sam 2.1K Apr 18 12:38 Yell_July18_Site5bb_S133_L001-fastp.stderr
--rw-rw-r-- 1 sam sam 491K Apr 18 12:38 Yell_July18_Site5bb_S133_L001.fastp-trim.report.html
--rw-rw-r-- 1 sam sam 176K Apr 18 12:38 Yell_July18_Site5bb_S133_L001.fastp-trim.report.json
--rw-rw-r-- 1 sam sam 927K Apr 18 12:47 Yell_July18_Site5bb_S133_L001_R1.fastp-trim_fastqc.html
--rw-rw-r-- 1 sam sam  21M Apr 18 12:38 Yell_July18_Site5bb_S133_L001_R1.fastp-trim.fastq.gz
--rw-rw-r-- 1 sam sam   87 Apr 18 12:38 Yell_July18_Site5bb_S133_L001_R1.fastp-trim.fastq.gz.md5
--rw-rw-r-- 1 sam sam 929K Apr 18 12:47 Yell_July18_Site5bb_S133_L001_R2.fastp-trim_fastqc.html
--rw-rw-r-- 1 sam sam  23M Apr 18 12:38 Yell_July18_Site5bb_S133_L001_R2.fastp-trim.fastq.gz
--rw-rw-r-- 1 sam sam   87 Apr 18 12:38 Yell_July18_Site5bb_S133_L001_R2.fastp-trim.fastq.gz.md5
--rw-rw-r-- 1 sam sam 2.1K Apr 18 12:39 Yell_July18_Site5b_S88_L001-fastp.stderr
--rw-rw-r-- 1 sam sam 489K Apr 18 12:39 Yell_July18_Site5b_S88_L001.fastp-trim.report.html
--rw-rw-r-- 1 sam sam 174K Apr 18 12:39 Yell_July18_Site5b_S88_L001.fastp-trim.report.json
--rw-rw-r-- 1 sam sam 911K Apr 18 12:47 Yell_July18_Site5b_S88_L001_R1.fastp-trim_fastqc.html
--rw-rw-r-- 1 sam sam 8.7M Apr 18 12:39 Yell_July18_Site5b_S88_L001_R1.fastp-trim.fastq.gz
--rw-rw-r-- 1 sam sam   85 Apr 18 12:39 Yell_July18_Site5b_S88_L001_R1.fastp-trim.fastq.gz.md5
--rw-rw-r-- 1 sam sam 916K Apr 18 12:47 Yell_July18_Site5b_S88_L001_R2.fastp-trim_fastqc.html
--rw-rw-r-- 1 sam sam  11M Apr 18 12:39 Yell_July18_Site5b_S88_L001_R2.fastp-trim.fastq.gz
--rw-rw-r-- 1 sam sam   85 Apr 18 12:39 Yell_July18_Site5b_S88_L001_R2.fastp-trim.fastq.gz.md5
--rw-rw-r-- 1 sam sam 2.1K Apr 18 12:39 Yell_July18_Site5cc_S134_L001-fastp.stderr
--rw-rw-r-- 1 sam sam 490K Apr 18 12:39 Yell_July18_Site5cc_S134_L001.fastp-trim.report.html
--rw-rw-r-- 1 sam sam 175K Apr 18 12:39 Yell_July18_Site5cc_S134_L001.fastp-trim.report.json
--rw-rw-r-- 1 sam sam 912K Apr 18 12:47 Yell_July18_Site5cc_S134_L001_R1.fastp-trim_fastqc.html
--rw-rw-r-- 1 sam sam  22M Apr 18 12:39 Yell_July18_Site5cc_S134_L001_R1.fastp-trim.fastq.gz
--rw-rw-r-- 1 sam sam   87 Apr 18 12:39 Yell_July18_Site5cc_S134_L001_R1.fastp-trim.fastq.gz.md5
--rw-rw-r-- 1 sam sam 911K Apr 18 12:47 Yell_July18_Site5cc_S134_L001_R2.fastp-trim_fastqc.html
--rw-rw-r-- 1 sam sam  27M Apr 18 12:39 Yell_July18_Site5cc_S134_L001_R2.fastp-trim.fastq.gz
--rw-rw-r-- 1 sam sam   87 Apr 18 12:39 Yell_July18_Site5cc_S134_L001_R2.fastp-trim.fastq.gz.md5
--rw-rw-r-- 1 sam sam 2.1K Apr 18 12:39 Yell_July18_Site5c_S89_L001-fastp.stderr
--rw-rw-r-- 1 sam sam 486K Apr 18 12:39 Yell_July18_Site5c_S89_L001.fastp-trim.report.html
--rw-rw-r-- 1 sam sam 172K Apr 18 12:39 Yell_July18_Site5c_S89_L001.fastp-trim.report.json
--rw-rw-r-- 1 sam sam 927K Apr 18 12:47 Yell_July18_Site5c_S89_L001_R1.fastp-trim_fastqc.html
--rw-rw-r-- 1 sam sam 3.7M Apr 18 12:39 Yell_July18_Site5c_S89_L001_R1.fastp-trim.fastq.gz
--rw-rw-r-- 1 sam sam   85 Apr 18 12:39 Yell_July18_Site5c_S89_L001_R1.fastp-trim.fastq.gz.md5
--rw-rw-r-- 1 sam sam 930K Apr 18 12:47 Yell_July18_Site5c_S89_L001_R2.fastp-trim_fastqc.html
--rw-rw-r-- 1 sam sam 3.9M Apr 18 12:39 Yell_July18_Site5c_S89_L001_R2.fastp-trim.fastq.gz
--rw-rw-r-- 1 sam sam   85 Apr 18 12:39 Yell_July18_Site5c_S89_L001_R2.fastp-trim.fastq.gz.md5
--rw-rw-r-- 1 sam sam 2.1K Apr 18 12:40 Yell_July18_Site5ee_S136_L001-fastp.stderr
--rw-rw-r-- 1 sam sam 489K Apr 18 12:40 Yell_July18_Site5ee_S136_L001.fastp-trim.report.html
--rw-rw-r-- 1 sam sam 175K Apr 18 12:40 Yell_July18_Site5ee_S136_L001.fastp-trim.report.json
--rw-rw-r-- 1 sam sam 920K Apr 18 12:47 Yell_July18_Site5ee_S136_L001_R1.fastp-trim_fastqc.html
--rw-rw-r-- 1 sam sam  14M Apr 18 12:40 Yell_July18_Site5ee_S136_L001_R1.fastp-trim.fastq.gz
--rw-rw-r-- 1 sam sam   87 Apr 18 12:40 Yell_July18_Site5ee_S136_L001_R1.fastp-trim.fastq.gz.md5
--rw-rw-r-- 1 sam sam 916K Apr 18 12:47 Yell_July18_Site5ee_S136_L001_R2.fastp-trim_fastqc.html
--rw-rw-r-- 1 sam sam  16M Apr 18 12:40 Yell_July18_Site5ee_S136_L001_R2.fastp-trim.fastq.gz
--rw-rw-r-- 1 sam sam   87 Apr 18 12:40 Yell_July18_Site5ee_S136_L001_R2.fastp-trim.fastq.gz.md5
--rw-rw-r-- 1 sam sam 2.1K Apr 18 12:40 Yell_July18_Site5e_S95_L001-fastp.stderr
--rw-rw-r-- 1 sam sam 490K Apr 18 12:40 Yell_July18_Site5e_S95_L001.fastp-trim.report.html
--rw-rw-r-- 1 sam sam 175K Apr 18 12:40 Yell_July18_Site5e_S95_L001.fastp-trim.report.json
--rw-rw-r-- 1 sam sam 911K Apr 18 12:47 Yell_July18_Site5e_S95_L001_R1.fastp-trim_fastqc.html
--rw-rw-r-- 1 sam sam  13M Apr 18 12:40 Yell_July18_Site5e_S95_L001_R1.fastp-trim.fastq.gz
--rw-rw-r-- 1 sam sam   85 Apr 18 12:40 Yell_July18_Site5e_S95_L001_R1.fastp-trim.fastq.gz.md5
--rw-rw-r-- 1 sam sam 905K Apr 18 12:47 Yell_July18_Site5e_S95_L001_R2.fastp-trim_fastqc.html
--rw-rw-r-- 1 sam sam  13M Apr 18 12:40 Yell_July18_Site5e_S95_L001_R2.fastp-trim.fastq.gz
--rw-rw-r-- 1 sam sam   85 Apr 18 12:40 Yell_July18_Site5e_S95_L001_R2.fastp-trim.fastq.gz.md5
--rw-rw-r-- 1 sam sam 2.1K Apr 18 12:41 Yell_July18_Site5ff_S137_L001-fastp.stderr
--rw-rw-r-- 1 sam sam 490K Apr 18 12:41 Yell_July18_Site5ff_S137_L001.fastp-trim.report.html
--rw-rw-r-- 1 sam sam 176K Apr 18 12:41 Yell_July18_Site5ff_S137_L001.fastp-trim.report.json
--rw-rw-r-- 1 sam sam 905K Apr 18 12:47 Yell_July18_Site5ff_S137_L001_R1.fastp-trim_fastqc.html
--rw-rw-r-- 1 sam sam  25M Apr 18 12:41 Yell_July18_Site5ff_S137_L001_R1.fastp-trim.fastq.gz
--rw-rw-r-- 1 sam sam   87 Apr 18 12:41 Yell_July18_Site5ff_S137_L001_R1.fastp-trim.fastq.gz.md5
--rw-rw-r-- 1 sam sam 905K Apr 18 12:47 Yell_July18_Site5ff_S137_L001_R2.fastp-trim_fastqc.html
--rw-rw-r-- 1 sam sam  28M Apr 18 12:41 Yell_July18_Site5ff_S137_L001_R2.fastp-trim.fastq.gz
--rw-rw-r-- 1 sam sam   87 Apr 18 12:41 Yell_July18_Site5ff_S137_L001_R2.fastp-trim.fastq.gz.md5
--rw-rw-r-- 1 sam sam 2.1K Apr 18 12:41 Yell_July18_Site5f_S96_L001-fastp.stderr
--rw-rw-r-- 1 sam sam 482K Apr 18 12:41 Yell_July18_Site5f_S96_L001.fastp-trim.report.html
--rw-rw-r-- 1 sam sam 168K Apr 18 12:41 Yell_July18_Site5f_S96_L001.fastp-trim.report.json
--rw-rw-r-- 1 sam sam 913K Apr 18 12:47 Yell_July18_Site5f_S96_L001_R1.fastp-trim_fastqc.html
--rw-rw-r-- 1 sam sam 672K Apr 18 12:41 Yell_July18_Site5f_S96_L001_R1.fastp-trim.fastq.gz
--rw-rw-r-- 1 sam sam   85 Apr 18 12:41 Yell_July18_Site5f_S96_L001_R1.fastp-trim.fastq.gz.md5
--rw-rw-r-- 1 sam sam 911K Apr 18 12:47 Yell_July18_Site5f_S96_L001_R2.fastp-trim_fastqc.html
--rw-rw-r-- 1 sam sam 573K Apr 18 12:41 Yell_July18_Site5f_S96_L001_R2.fastp-trim.fastq.gz
--rw-rw-r-- 1 sam sam   85 Apr 18 12:41 Yell_July18_Site5f_S96_L001_R2.fastp-trim.fastq.gz.md5
--rw-rw-r-- 1 sam sam 2.1K Apr 18 12:41 Yell_July18_Site5g_S97_L001-fastp.stderr
--rw-rw-r-- 1 sam sam 489K Apr 18 12:41 Yell_July18_Site5g_S97_L001.fastp-trim.report.html
--rw-rw-r-- 1 sam sam 174K Apr 18 12:41 Yell_July18_Site5g_S97_L001.fastp-trim.report.json
--rw-rw-r-- 1 sam sam 911K Apr 18 12:47 Yell_July18_Site5g_S97_L001_R1.fastp-trim_fastqc.html
--rw-rw-r-- 1 sam sam 8.8M Apr 18 12:41 Yell_July18_Site5g_S97_L001_R1.fastp-trim.fastq.gz
--rw-rw-r-- 1 sam sam   85 Apr 18 12:41 Yell_July18_Site5g_S97_L001_R1.fastp-trim.fastq.gz.md5
--rw-rw-r-- 1 sam sam 940K Apr 18 12:47 Yell_July18_Site5g_S97_L001_R2.fastp-trim_fastqc.html
--rw-rw-r-- 1 sam sam 9.8M Apr 18 12:41 Yell_July18_Site5g_S97_L001_R2.fastp-trim.fastq.gz
--rw-rw-r-- 1 sam sam   85 Apr 18 12:41 Yell_July18_Site5g_S97_L001_R2.fastp-trim.fastq.gz.md5
--rw-rw-r-- 1 sam sam 2.1K Apr 18 12:42 Yell_July18_Site5h_S98_L001-fastp.stderr
--rw-rw-r-- 1 sam sam 490K Apr 18 12:42 Yell_July18_Site5h_S98_L001.fastp-trim.report.html
--rw-rw-r-- 1 sam sam 175K Apr 18 12:42 Yell_July18_Site5h_S98_L001.fastp-trim.report.json
--rw-rw-r-- 1 sam sam 913K Apr 18 12:47 Yell_July18_Site5h_S98_L001_R1.fastp-trim_fastqc.html
--rw-rw-r-- 1 sam sam  13M Apr 18 12:42 Yell_July18_Site5h_S98_L001_R1.fastp-trim.fastq.gz
--rw-rw-r-- 1 sam sam   85 Apr 18 12:42 Yell_July18_Site5h_S98_L001_R1.fastp-trim.fastq.gz.md5
--rw-rw-r-- 1 sam sam 904K Apr 18 12:47 Yell_July18_Site5h_S98_L001_R2.fastp-trim_fastqc.html
--rw-rw-r-- 1 sam sam  13M Apr 18 12:42 Yell_July18_Site5h_S98_L001_R2.fastp-trim.fastq.gz
--rw-rw-r-- 1 sam sam   85 Apr 18 12:42 Yell_July18_Site5h_S98_L001_R2.fastp-trim.fastq.gz.md5
--rw-rw-r-- 1 sam sam 2.1K Apr 18 12:42 Yell_July18_Site5J_S107_L001-fastp.stderr
--rw-rw-r-- 1 sam sam 456K Apr 18 12:42 Yell_July18_Site5J_S107_L001.fastp-trim.report.html
--rw-rw-r-- 1 sam sam 136K Apr 18 12:42 Yell_July18_Site5J_S107_L001.fastp-trim.report.json
--rw-rw-r-- 1 sam sam 951K Apr 18 12:47 Yell_July18_Site5J_S107_L001_R1.fastp-trim_fastqc.html
--rw-rw-r-- 1 sam sam 3.1K Apr 18 12:42 Yell_July18_Site5J_S107_L001_R1.fastp-trim.fastq.gz
--rw-rw-r-- 1 sam sam   86 Apr 18 12:42 Yell_July18_Site5J_S107_L001_R1.fastp-trim.fastq.gz.md5
--rw-rw-r-- 1 sam sam 956K Apr 18 12:47 Yell_July18_Site5J_S107_L001_R2.fastp-trim_fastqc.html
--rw-rw-r-- 1 sam sam 3.2K Apr 18 12:42 Yell_July18_Site5J_S107_L001_R2.fastp-trim.fastq.gz
--rw-rw-r-- 1 sam sam   86 Apr 18 12:42 Yell_July18_Site5J_S107_L001_R2.fastp-trim.fastq.gz.md5
--rw-rw-r-- 1 sam sam 2.1K Apr 18 12:42 Yell_July18_Site5k_S108_L001-fastp.stderr
--rw-rw-r-- 1 sam sam 486K Apr 18 12:42 Yell_July18_Site5k_S108_L001.fastp-trim.report.html
--rw-rw-r-- 1 sam sam 172K Apr 18 12:42 Yell_July18_Site5k_S108_L001.fastp-trim.report.json
--rw-rw-r-- 1 sam sam 919K Apr 18 12:47 Yell_July18_Site5k_S108_L001_R1.fastp-trim_fastqc.html
--rw-rw-r-- 1 sam sam 3.4M Apr 18 12:42 Yell_July18_Site5k_S108_L001_R1.fastp-trim.fastq.gz
--rw-rw-r-- 1 sam sam   86 Apr 18 12:42 Yell_July18_Site5k_S108_L001_R1.fastp-trim.fastq.gz.md5
--rw-rw-r-- 1 sam sam 918K Apr 18 12:47 Yell_July18_Site5k_S108_L001_R2.fastp-trim_fastqc.html
--rw-rw-r-- 1 sam sam 4.2M Apr 18 12:42 Yell_July18_Site5k_S108_L001_R2.fastp-trim.fastq.gz
--rw-rw-r-- 1 sam sam   86 Apr 18 12:42 Yell_July18_Site5k_S108_L001_R2.fastp-trim.fastq.gz.md5
--rw-rw-r-- 1 sam sam 2.1K Apr 18 12:42 Yell_July18_Site5L_S109_L001-fastp.stderr
--rw-rw-r-- 1 sam sam 488K Apr 18 12:42 Yell_July18_Site5L_S109_L001.fastp-trim.report.html
--rw-rw-r-- 1 sam sam 174K Apr 18 12:42 Yell_July18_Site5L_S109_L001.fastp-trim.report.json
--rw-rw-r-- 1 sam sam 913K Apr 18 12:47 Yell_July18_Site5L_S109_L001_R1.fastp-trim_fastqc.html
--rw-rw-r-- 1 sam sam  11M Apr 18 12:42 Yell_July18_Site5L_S109_L001_R1.fastp-trim.fastq.gz
--rw-rw-r-- 1 sam sam   86 Apr 18 12:42 Yell_July18_Site5L_S109_L001_R1.fastp-trim.fastq.gz.md5
--rw-rw-r-- 1 sam sam 919K Apr 18 12:47 Yell_July18_Site5L_S109_L001_R2.fastp-trim_fastqc.html
--rw-rw-r-- 1 sam sam  12M Apr 18 12:42 Yell_July18_Site5L_S109_L001_R2.fastp-trim.fastq.gz
--rw-rw-r-- 1 sam sam   86 Apr 18 12:42 Yell_July18_Site5L_S109_L001_R2.fastp-trim.fastq.gz.md5
--rw-rw-r-- 1 sam sam 2.1K Apr 18 12:42 Yell_July18_Site5m_S110_L001-fastp.stderr
--rw-rw-r-- 1 sam sam 488K Apr 18 12:42 Yell_July18_Site5m_S110_L001.fastp-trim.report.html
--rw-rw-r-- 1 sam sam 173K Apr 18 12:42 Yell_July18_Site5m_S110_L001.fastp-trim.report.json
--rw-rw-r-- 1 sam sam 914K Apr 18 12:47 Yell_July18_Site5m_S110_L001_R1.fastp-trim_fastqc.html
--rw-rw-r-- 1 sam sam 6.1M Apr 18 12:42 Yell_July18_Site5m_S110_L001_R1.fastp-trim.fastq.gz
--rw-rw-r-- 1 sam sam   86 Apr 18 12:42 Yell_July18_Site5m_S110_L001_R1.fastp-trim.fastq.gz.md5
--rw-rw-r-- 1 sam sam 927K Apr 18 12:47 Yell_July18_Site5m_S110_L001_R2.fastp-trim_fastqc.html
--rw-rw-r-- 1 sam sam 7.0M Apr 18 12:42 Yell_July18_Site5m_S110_L001_R2.fastp-trim.fastq.gz
--rw-rw-r-- 1 sam sam   86 Apr 18 12:42 Yell_July18_Site5m_S110_L001_R2.fastp-trim.fastq.gz.md5
--rw-rw-r-- 1 sam sam 2.1K Apr 18 12:43 Yell_July18_Site5n_S115_L001-fastp.stderr
--rw-rw-r-- 1 sam sam 487K Apr 18 12:43 Yell_July18_Site5n_S115_L001.fastp-trim.report.html
--rw-rw-r-- 1 sam sam 173K Apr 18 12:43 Yell_July18_Site5n_S115_L001.fastp-trim.report.json
--rw-rw-r-- 1 sam sam 925K Apr 18 12:47 Yell_July18_Site5n_S115_L001_R1.fastp-trim_fastqc.html
--rw-rw-r-- 1 sam sam 6.1M Apr 18 12:43 Yell_July18_Site5n_S115_L001_R1.fastp-trim.fastq.gz
--rw-rw-r-- 1 sam sam   86 Apr 18 12:43 Yell_July18_Site5n_S115_L001_R1.fastp-trim.fastq.gz.md5
--rw-rw-r-- 1 sam sam 936K Apr 18 12:47 Yell_July18_Site5n_S115_L001_R2.fastp-trim_fastqc.html
--rw-rw-r-- 1 sam sam 6.6M Apr 18 12:43 Yell_July18_Site5n_S115_L001_R2.fastp-trim.fastq.gz
--rw-rw-r-- 1 sam sam   86 Apr 18 12:43 Yell_July18_Site5n_S115_L001_R2.fastp-trim.fastq.gz.md5
--rw-rw-r-- 1 sam sam 2.1K Apr 18 12:43 Yell_July18_Site5o_S116_L001-fastp.stderr
--rw-rw-r-- 1 sam sam 487K Apr 18 12:43 Yell_July18_Site5o_S116_L001.fastp-trim.report.html
--rw-rw-r-- 1 sam sam 173K Apr 18 12:43 Yell_July18_Site5o_S116_L001.fastp-trim.report.json
--rw-rw-r-- 1 sam sam 932K Apr 18 12:47 Yell_July18_Site5o_S116_L001_R1.fastp-trim_fastqc.html
--rw-rw-r-- 1 sam sam 5.8M Apr 18 12:43 Yell_July18_Site5o_S116_L001_R1.fastp-trim.fastq.gz
--rw-rw-r-- 1 sam sam   86 Apr 18 12:43 Yell_July18_Site5o_S116_L001_R1.fastp-trim.fastq.gz.md5
--rw-rw-r-- 1 sam sam 939K Apr 18 12:47 Yell_July18_Site5o_S116_L001_R2.fastp-trim_fastqc.html
--rw-rw-r-- 1 sam sam 6.4M Apr 18 12:43 Yell_July18_Site5o_S116_L001_R2.fastp-trim.fastq.gz
--rw-rw-r-- 1 sam sam   86 Apr 18 12:43 Yell_July18_Site5o_S116_L001_R2.fastp-trim.fastq.gz.md5
--rw-rw-r-- 1 sam sam 2.1K Apr 18 12:44 Yell_July18_Site5p_S121_L001-fastp.stderr
--rw-rw-r-- 1 sam sam 488K Apr 18 12:44 Yell_July18_Site5p_S121_L001.fastp-trim.report.html
--rw-rw-r-- 1 sam sam 174K Apr 18 12:44 Yell_July18_Site5p_S121_L001.fastp-trim.report.json
--rw-rw-r-- 1 sam sam 921K Apr 18 12:47 Yell_July18_Site5p_S121_L001_R1.fastp-trim_fastqc.html
--rw-rw-r-- 1 sam sam 7.7M Apr 18 12:44 Yell_July18_Site5p_S121_L001_R1.fastp-trim.fastq.gz
--rw-rw-r-- 1 sam sam   86 Apr 18 12:44 Yell_July18_Site5p_S121_L001_R1.fastp-trim.fastq.gz.md5
--rw-rw-r-- 1 sam sam 924K Apr 18 12:47 Yell_July18_Site5p_S121_L001_R2.fastp-trim_fastqc.html
--rw-rw-r-- 1 sam sam 8.8M Apr 18 12:44 Yell_July18_Site5p_S121_L001_R2.fastp-trim.fastq.gz
--rw-rw-r-- 1 sam sam   86 Apr 18 12:44 Yell_July18_Site5p_S121_L001_R2.fastp-trim.fastq.gz.md5
--rw-rw-r-- 1 sam sam 2.1K Apr 18 12:44 Yell_July18_Site5q_S122_L001-fastp.stderr
--rw-rw-r-- 1 sam sam 490K Apr 18 12:44 Yell_July18_Site5q_S122_L001.fastp-trim.report.html
--rw-rw-r-- 1 sam sam 174K Apr 18 12:44 Yell_July18_Site5q_S122_L001.fastp-trim.report.json
--rw-rw-r-- 1 sam sam 901K Apr 18 12:47 Yell_July18_Site5q_S122_L001_R1.fastp-trim_fastqc.html
--rw-rw-r-- 1 sam sam  15M Apr 18 12:44 Yell_July18_Site5q_S122_L001_R1.fastp-trim.fastq.gz
--rw-rw-r-- 1 sam sam   86 Apr 18 12:44 Yell_July18_Site5q_S122_L001_R1.fastp-trim.fastq.gz.md5
--rw-rw-r-- 1 sam sam 916K Apr 18 12:47 Yell_July18_Site5q_S122_L001_R2.fastp-trim_fastqc.html
--rw-rw-r-- 1 sam sam  16M Apr 18 12:44 Yell_July18_Site5q_S122_L001_R2.fastp-trim.fastq.gz
--rw-rw-r-- 1 sam sam   86 Apr 18 12:44 Yell_July18_Site5q_S122_L001_R2.fastp-trim.fastq.gz.md5
--rw-rw-r-- 1 sam sam 2.1K Apr 18 12:44 Yell_July18_Site5r_S123_L001-fastp.stderr
--rw-rw-r-- 1 sam sam 489K Apr 18 12:44 Yell_July18_Site5r_S123_L001.fastp-trim.report.html
--rw-rw-r-- 1 sam sam 174K Apr 18 12:44 Yell_July18_Site5r_S123_L001.fastp-trim.report.json
--rw-rw-r-- 1 sam sam 927K Apr 18 12:47 Yell_July18_Site5r_S123_L001_R1.fastp-trim_fastqc.html
--rw-rw-r-- 1 sam sam 9.3M Apr 18 12:44 Yell_July18_Site5r_S123_L001_R1.fastp-trim.fastq.gz
--rw-rw-r-- 1 sam sam   86 Apr 18 12:44 Yell_July18_Site5r_S123_L001_R1.fastp-trim.fastq.gz.md5
--rw-rw-r-- 1 sam sam 930K Apr 18 12:47 Yell_July18_Site5r_S123_L001_R2.fastp-trim_fastqc.html
--rw-rw-r-- 1 sam sam  11M Apr 18 12:44 Yell_July18_Site5r_S123_L001_R2.fastp-trim.fastq.gz
--rw-rw-r-- 1 sam sam   86 Apr 18 12:44 Yell_July18_Site5r_S123_L001_R2.fastp-trim.fastq.gz.md5
--rw-rw-r-- 1 sam sam 2.1K Apr 18 12:45 Yell_July18_Site5s_S124_L001-fastp.stderr
--rw-rw-r-- 1 sam sam 487K Apr 18 12:45 Yell_July18_Site5s_S124_L001.fastp-trim.report.html
--rw-rw-r-- 1 sam sam 173K Apr 18 12:45 Yell_July18_Site5s_S124_L001.fastp-trim.report.json
--rw-rw-r-- 1 sam sam 906K Apr 18 12:47 Yell_July18_Site5s_S124_L001_R1.fastp-trim_fastqc.html
--rw-rw-r-- 1 sam sam 7.1M Apr 18 12:45 Yell_July18_Site5s_S124_L001_R1.fastp-trim.fastq.gz
--rw-rw-r-- 1 sam sam   86 Apr 18 12:45 Yell_July18_Site5s_S124_L001_R1.fastp-trim.fastq.gz.md5
--rw-rw-r-- 1 sam sam 916K Apr 18 12:47 Yell_July18_Site5s_S124_L001_R2.fastp-trim_fastqc.html
--rw-rw-r-- 1 sam sam 8.4M Apr 18 12:45 Yell_July18_Site5s_S124_L001_R2.fastp-trim.fastq.gz
--rw-rw-r-- 1 sam sam   86 Apr 18 12:45 Yell_July18_Site5s_S124_L001_R2.fastp-trim.fastq.gz.md5
--rw-rw-r-- 1 sam sam 2.1K Apr 18 12:45 Yell_July18_Site5u_S126_L001-fastp.stderr
--rw-rw-r-- 1 sam sam 487K Apr 18 12:45 Yell_July18_Site5u_S126_L001.fastp-trim.report.html
--rw-rw-r-- 1 sam sam 173K Apr 18 12:45 Yell_July18_Site5u_S126_L001.fastp-trim.report.json
--rw-rw-r-- 1 sam sam 922K Apr 18 12:47 Yell_July18_Site5u_S126_L001_R1.fastp-trim_fastqc.html
--rw-rw-r-- 1 sam sam 4.8M Apr 18 12:45 Yell_July18_Site5u_S126_L001_R1.fastp-trim.fastq.gz
--rw-rw-r-- 1 sam sam   86 Apr 18 12:45 Yell_July18_Site5u_S126_L001_R1.fastp-trim.fastq.gz.md5
--rw-rw-r-- 1 sam sam 926K Apr 18 12:47 Yell_July18_Site5u_S126_L001_R2.fastp-trim_fastqc.html
--rw-rw-r-- 1 sam sam 5.4M Apr 18 12:45 Yell_July18_Site5u_S126_L001_R2.fastp-trim.fastq.gz
--rw-rw-r-- 1 sam sam   86 Apr 18 12:45 Yell_July18_Site5u_S126_L001_R2.fastp-trim.fastq.gz.md5
--rw-rw-r-- 1 sam sam 2.1K Apr 18 12:45 Yell_July18_Site5v_S127_L001-fastp.stderr
--rw-rw-r-- 1 sam sam 487K Apr 18 12:45 Yell_July18_Site5v_S127_L001.fastp-trim.report.html
--rw-rw-r-- 1 sam sam 172K Apr 18 12:45 Yell_July18_Site5v_S127_L001.fastp-trim.report.json
--rw-rw-r-- 1 sam sam 940K Apr 18 12:47 Yell_July18_Site5v_S127_L001_R1.fastp-trim_fastqc.html
--rw-rw-r-- 1 sam sam 4.2M Apr 18 12:45 Yell_July18_Site5v_S127_L001_R1.fastp-trim.fastq.gz
--rw-rw-r-- 1 sam sam   86 Apr 18 12:45 Yell_July18_Site5v_S127_L001_R1.fastp-trim.fastq.gz.md5
--rw-rw-r-- 1 sam sam 946K Apr 18 12:47 Yell_July18_Site5v_S127_L001_R2.fastp-trim_fastqc.html
--rw-rw-r-- 1 sam sam 4.6M Apr 18 12:45 Yell_July18_Site5v_S127_L001_R2.fastp-trim.fastq.gz
--rw-rw-r-- 1 sam sam   86 Apr 18 12:45 Yell_July18_Site5v_S127_L001_R2.fastp-trim.fastq.gz.md5
--rw-rw-r-- 1 sam sam 2.0K Apr 18 12:45 Yell_July18_Site5w_S128_L001-fastp.stderr
--rw-rw-r-- 1 sam sam 437K Apr 18 12:45 Yell_July18_Site5w_S128_L001.fastp-trim.report.html
--rw-rw-r-- 1 sam sam 120K Apr 18 12:45 Yell_July18_Site5w_S128_L001.fastp-trim.report.json
--rw-rw-r-- 1 sam sam 833K Apr 18 12:47 Yell_July18_Site5w_S128_L001_R1.fastp-trim_fastqc.html
--rw-rw-r-- 1 sam sam 1.2K Apr 18 12:45 Yell_July18_Site5w_S128_L001_R1.fastp-trim.fastq.gz
--rw-rw-r-- 1 sam sam   86 Apr 18 12:45 Yell_July18_Site5w_S128_L001_R1.fastp-trim.fastq.gz.md5
--rw-rw-r-- 1 sam sam 857K Apr 18 12:47 Yell_July18_Site5w_S128_L001_R2.fastp-trim_fastqc.html
--rw-rw-r-- 1 sam sam 1.3K Apr 18 12:45 Yell_July18_Site5w_S128_L001_R2.fastp-trim.fastq.gz
--rw-rw-r-- 1 sam sam   86 Apr 18 12:45 Yell_July18_Site5w_S128_L001_R2.fastp-trim.fastq.gz.md5
--rw-rw-r-- 1 sam sam 2.1K Apr 18 12:46 Yell_July18_Site5z_S131_L001-fastp.stderr
--rw-rw-r-- 1 sam sam 492K Apr 18 12:46 Yell_July18_Site5z_S131_L001.fastp-trim.report.html
--rw-rw-r-- 1 sam sam 177K Apr 18 12:46 Yell_July18_Site5z_S131_L001.fastp-trim.report.json
--rw-rw-r-- 1 sam sam 894K Apr 18 12:48 Yell_July18_Site5z_S131_L001_R1.fastp-trim_fastqc.html
--rw-rw-r-- 1 sam sam  33M Apr 18 12:46 Yell_July18_Site5z_S131_L001_R1.fastp-trim.fastq.gz
--rw-rw-r-- 1 sam sam   86 Apr 18 12:46 Yell_July18_Site5z_S131_L001_R1.fastp-trim.fastq.gz.md5
--rw-rw-r-- 1 sam sam 909K Apr 18 12:48 Yell_July18_Site5z_S131_L001_R2.fastp-trim_fastqc.html
--rw-rw-r-- 1 sam sam  37M Apr 18 12:46 Yell_July18_Site5z_S131_L001_R2.fastp-trim.fastq.gz
--rw-rw-r-- 1 sam sam   86 Apr 18 12:46 Yell_July18_Site5z_S131_L001_R2.fastp-trim.fastq.gz.md5</code></pre>
+-rw-rw-r-- 1 sam sam 2.1K Apr 21 10:54 fastp-Yell-July18-Site1a_S83_L001-fastp.stderr
+-rw-rw-r-- 1 sam sam 489K Apr 21 10:54 fastp-Yell-July18-Site1a_S83_L001.fastp-trim.report.html
+-rw-rw-r-- 1 sam sam 174K Apr 21 10:54 fastp-Yell-July18-Site1a_S83_L001.fastp-trim.report.json
+-rw-rw-r-- 1 sam sam 922K Apr 21 11:17 fastp-Yell-July18-Site1a_S83_L001_R1_001_fastqc.html
+-rw-rw-r-- 1 sam sam 9.7M Apr 21 10:54 fastp-Yell-July18-Site1a_S83_L001_R1_001.fastq.gz
+-rw-rw-r-- 1 sam sam   84 Apr 21 10:54 fastp-Yell-July18-Site1a_S83_L001_R1_001.fastq.gz.md5
+-rw-rw-r-- 1 sam sam 915K Apr 21 11:17 fastp-Yell-July18-Site1a_S83_L001_R2_001_fastqc.html
+-rw-rw-r-- 1 sam sam  11M Apr 21 10:54 fastp-Yell-July18-Site1a_S83_L001_R2_001.fastq.gz
+-rw-rw-r-- 1 sam sam   84 Apr 21 10:54 fastp-Yell-July18-Site1a_S83_L001_R2_001.fastq.gz.md5
+-rw-rw-r-- 1 sam sam 2.2K Apr 21 10:55 fastp-Yell-July18-Site1bb_S139_L001-fastp.stderr
+-rw-rw-r-- 1 sam sam 488K Apr 21 10:55 fastp-Yell-July18-Site1bb_S139_L001.fastp-trim.report.html
+-rw-rw-r-- 1 sam sam 174K Apr 21 10:55 fastp-Yell-July18-Site1bb_S139_L001.fastp-trim.report.json
+-rw-rw-r-- 1 sam sam 922K Apr 21 11:17 fastp-Yell-July18-Site1bb_S139_L001_R1_001_fastqc.html
+-rw-rw-r-- 1 sam sam 7.0M Apr 21 10:55 fastp-Yell-July18-Site1bb_S139_L001_R1_001.fastq.gz
+-rw-rw-r-- 1 sam sam   86 Apr 21 10:55 fastp-Yell-July18-Site1bb_S139_L001_R1_001.fastq.gz.md5
+-rw-rw-r-- 1 sam sam 932K Apr 21 11:17 fastp-Yell-July18-Site1bb_S139_L001_R2_001_fastqc.html
+-rw-rw-r-- 1 sam sam 7.5M Apr 21 10:55 fastp-Yell-July18-Site1bb_S139_L001_R2_001.fastq.gz
+-rw-rw-r-- 1 sam sam   86 Apr 21 10:55 fastp-Yell-July18-Site1bb_S139_L001_R2_001.fastq.gz.md5
+-rw-rw-r-- 1 sam sam 2.1K Apr 21 10:55 fastp-Yell-July18-Site1b_S84_L001-fastp.stderr
+-rw-rw-r-- 1 sam sam 488K Apr 21 10:55 fastp-Yell-July18-Site1b_S84_L001.fastp-trim.report.html
+-rw-rw-r-- 1 sam sam 173K Apr 21 10:55 fastp-Yell-July18-Site1b_S84_L001.fastp-trim.report.json
+-rw-rw-r-- 1 sam sam 919K Apr 21 11:17 fastp-Yell-July18-Site1b_S84_L001_R1_001_fastqc.html
+-rw-rw-r-- 1 sam sam 9.2M Apr 21 10:55 fastp-Yell-July18-Site1b_S84_L001_R1_001.fastq.gz
+-rw-rw-r-- 1 sam sam   84 Apr 21 10:55 fastp-Yell-July18-Site1b_S84_L001_R1_001.fastq.gz.md5
+-rw-rw-r-- 1 sam sam 910K Apr 21 11:17 fastp-Yell-July18-Site1b_S84_L001_R2_001_fastqc.html
+-rw-rw-r-- 1 sam sam  10M Apr 21 10:55 fastp-Yell-July18-Site1b_S84_L001_R2_001.fastq.gz
+-rw-rw-r-- 1 sam sam   84 Apr 21 10:55 fastp-Yell-July18-Site1b_S84_L001_R2_001.fastq.gz.md5
+-rw-rw-r-- 1 sam sam 2.2K Apr 21 10:56 fastp-Yell-July18-Site1cc_S140_L001-fastp.stderr
+-rw-rw-r-- 1 sam sam 490K Apr 21 10:56 fastp-Yell-July18-Site1cc_S140_L001.fastp-trim.report.html
+-rw-rw-r-- 1 sam sam 175K Apr 21 10:56 fastp-Yell-July18-Site1cc_S140_L001.fastp-trim.report.json
+-rw-rw-r-- 1 sam sam 924K Apr 21 11:17 fastp-Yell-July18-Site1cc_S140_L001_R1_001_fastqc.html
+-rw-rw-r-- 1 sam sam  17M Apr 21 10:56 fastp-Yell-July18-Site1cc_S140_L001_R1_001.fastq.gz
+-rw-rw-r-- 1 sam sam   86 Apr 21 10:56 fastp-Yell-July18-Site1cc_S140_L001_R1_001.fastq.gz.md5
+-rw-rw-r-- 1 sam sam 914K Apr 21 11:17 fastp-Yell-July18-Site1cc_S140_L001_R2_001_fastqc.html
+-rw-rw-r-- 1 sam sam  19M Apr 21 10:56 fastp-Yell-July18-Site1cc_S140_L001_R2_001.fastq.gz
+-rw-rw-r-- 1 sam sam   86 Apr 21 10:56 fastp-Yell-July18-Site1cc_S140_L001_R2_001.fastq.gz.md5
+-rw-rw-r-- 1 sam sam 2.1K Apr 21 10:57 fastp-Yell-July18-Site1c_S85_L001-fastp.stderr
+-rw-rw-r-- 1 sam sam 487K Apr 21 10:57 fastp-Yell-July18-Site1c_S85_L001.fastp-trim.report.html
+-rw-rw-r-- 1 sam sam 173K Apr 21 10:57 fastp-Yell-July18-Site1c_S85_L001.fastp-trim.report.json
+-rw-rw-r-- 1 sam sam 932K Apr 21 11:17 fastp-Yell-July18-Site1c_S85_L001_R1_001_fastqc.html
+-rw-rw-r-- 1 sam sam 6.8M Apr 21 10:57 fastp-Yell-July18-Site1c_S85_L001_R1_001.fastq.gz
+-rw-rw-r-- 1 sam sam   84 Apr 21 10:57 fastp-Yell-July18-Site1c_S85_L001_R1_001.fastq.gz.md5
+-rw-rw-r-- 1 sam sam 937K Apr 21 11:17 fastp-Yell-July18-Site1c_S85_L001_R2_001_fastqc.html
+-rw-rw-r-- 1 sam sam 7.4M Apr 21 10:57 fastp-Yell-July18-Site1c_S85_L001_R2_001.fastq.gz
+-rw-rw-r-- 1 sam sam   84 Apr 21 10:57 fastp-Yell-July18-Site1c_S85_L001_R2_001.fastq.gz.md5
+-rw-rw-r-- 1 sam sam 2.2K Apr 21 10:57 fastp-Yell-July18-Site1dd_S141_L001-fastp.stderr
+-rw-rw-r-- 1 sam sam 489K Apr 21 10:57 fastp-Yell-July18-Site1dd_S141_L001.fastp-trim.report.html
+-rw-rw-r-- 1 sam sam 175K Apr 21 10:57 fastp-Yell-July18-Site1dd_S141_L001.fastp-trim.report.json
+-rw-rw-r-- 1 sam sam 931K Apr 21 11:17 fastp-Yell-July18-Site1dd_S141_L001_R1_001_fastqc.html
+-rw-rw-r-- 1 sam sam  19M Apr 21 10:57 fastp-Yell-July18-Site1dd_S141_L001_R1_001.fastq.gz
+-rw-rw-r-- 1 sam sam   86 Apr 21 10:57 fastp-Yell-July18-Site1dd_S141_L001_R1_001.fastq.gz.md5
+-rw-rw-r-- 1 sam sam 936K Apr 21 11:17 fastp-Yell-July18-Site1dd_S141_L001_R2_001_fastqc.html
+-rw-rw-r-- 1 sam sam  19M Apr 21 10:57 fastp-Yell-July18-Site1dd_S141_L001_R2_001.fastq.gz
+-rw-rw-r-- 1 sam sam   86 Apr 21 10:57 fastp-Yell-July18-Site1dd_S141_L001_R2_001.fastq.gz.md5
+-rw-rw-r-- 1 sam sam 2.1K Apr 21 10:58 fastp-Yell-July18-Site1d_S86_L001-fastp.stderr
+-rw-rw-r-- 1 sam sam 488K Apr 21 10:58 fastp-Yell-July18-Site1d_S86_L001.fastp-trim.report.html
+-rw-rw-r-- 1 sam sam 174K Apr 21 10:58 fastp-Yell-July18-Site1d_S86_L001.fastp-trim.report.json
+-rw-rw-r-- 1 sam sam 922K Apr 21 11:17 fastp-Yell-July18-Site1d_S86_L001_R1_001_fastqc.html
+-rw-rw-r-- 1 sam sam 9.5M Apr 21 10:58 fastp-Yell-July18-Site1d_S86_L001_R1_001.fastq.gz
+-rw-rw-r-- 1 sam sam   84 Apr 21 10:58 fastp-Yell-July18-Site1d_S86_L001_R1_001.fastq.gz.md5
+-rw-rw-r-- 1 sam sam 935K Apr 21 11:17 fastp-Yell-July18-Site1d_S86_L001_R2_001_fastqc.html
+-rw-rw-r-- 1 sam sam  11M Apr 21 10:58 fastp-Yell-July18-Site1d_S86_L001_R2_001.fastq.gz
+-rw-rw-r-- 1 sam sam   84 Apr 21 10:58 fastp-Yell-July18-Site1d_S86_L001_R2_001.fastq.gz.md5
+-rw-rw-r-- 1 sam sam 2.1K Apr 21 10:58 fastp-Yell-July18-Site1ee_S142_L001-fastp.stderr
+-rw-rw-r-- 1 sam sam 489K Apr 21 10:58 fastp-Yell-July18-Site1ee_S142_L001.fastp-trim.report.html
+-rw-rw-r-- 1 sam sam 174K Apr 21 10:58 fastp-Yell-July18-Site1ee_S142_L001.fastp-trim.report.json
+-rw-rw-r-- 1 sam sam 944K Apr 21 11:17 fastp-Yell-July18-Site1ee_S142_L001_R1_001_fastqc.html
+-rw-rw-r-- 1 sam sam  12M Apr 21 10:58 fastp-Yell-July18-Site1ee_S142_L001_R1_001.fastq.gz
+-rw-rw-r-- 1 sam sam   86 Apr 21 10:58 fastp-Yell-July18-Site1ee_S142_L001_R1_001.fastq.gz.md5
+-rw-rw-r-- 1 sam sam 952K Apr 21 11:17 fastp-Yell-July18-Site1ee_S142_L001_R2_001_fastqc.html
+-rw-rw-r-- 1 sam sam  11M Apr 21 10:58 fastp-Yell-July18-Site1ee_S142_L001_R2_001.fastq.gz
+-rw-rw-r-- 1 sam sam   86 Apr 21 10:58 fastp-Yell-July18-Site1ee_S142_L001_R2_001.fastq.gz.md5
+-rw-rw-r-- 1 sam sam 2.1K Apr 21 10:58 fastp-Yell-July18-Site1e_S91_L001-fastp.stderr
+-rw-rw-r-- 1 sam sam 484K Apr 21 10:58 fastp-Yell-July18-Site1e_S91_L001.fastp-trim.report.html
+-rw-rw-r-- 1 sam sam 170K Apr 21 10:58 fastp-Yell-July18-Site1e_S91_L001.fastp-trim.report.json
+-rw-rw-r-- 1 sam sam 921K Apr 21 11:17 fastp-Yell-July18-Site1e_S91_L001_R1_001_fastqc.html
+-rw-rw-r-- 1 sam sam 1.6M Apr 21 10:58 fastp-Yell-July18-Site1e_S91_L001_R1_001.fastq.gz
+-rw-rw-r-- 1 sam sam   84 Apr 21 10:58 fastp-Yell-July18-Site1e_S91_L001_R1_001.fastq.gz.md5
+-rw-rw-r-- 1 sam sam 930K Apr 21 11:17 fastp-Yell-July18-Site1e_S91_L001_R2_001_fastqc.html
+-rw-rw-r-- 1 sam sam 1.7M Apr 21 10:58 fastp-Yell-July18-Site1e_S91_L001_R2_001.fastq.gz
+-rw-rw-r-- 1 sam sam   84 Apr 21 10:58 fastp-Yell-July18-Site1e_S91_L001_R2_001.fastq.gz.md5
+-rw-rw-r-- 1 sam sam 2.1K Apr 21 10:59 fastp-Yell-July18-Site1f_S92_L001-fastp.stderr
+-rw-rw-r-- 1 sam sam 489K Apr 21 10:59 fastp-Yell-July18-Site1f_S92_L001.fastp-trim.report.html
+-rw-rw-r-- 1 sam sam 175K Apr 21 10:59 fastp-Yell-July18-Site1f_S92_L001.fastp-trim.report.json
+-rw-rw-r-- 1 sam sam 904K Apr 21 11:17 fastp-Yell-July18-Site1f_S92_L001_R1_001_fastqc.html
+-rw-rw-r-- 1 sam sam  11M Apr 21 10:59 fastp-Yell-July18-Site1f_S92_L001_R1_001.fastq.gz
+-rw-rw-r-- 1 sam sam   84 Apr 21 10:59 fastp-Yell-July18-Site1f_S92_L001_R1_001.fastq.gz.md5
+-rw-rw-r-- 1 sam sam 918K Apr 21 11:17 fastp-Yell-July18-Site1f_S92_L001_R2_001_fastqc.html
+-rw-rw-r-- 1 sam sam  12M Apr 21 10:59 fastp-Yell-July18-Site1f_S92_L001_R2_001.fastq.gz
+-rw-rw-r-- 1 sam sam   84 Apr 21 10:59 fastp-Yell-July18-Site1f_S92_L001_R2_001.fastq.gz.md5
+-rw-rw-r-- 1 sam sam 2.1K Apr 21 10:59 fastp-Yell-July18-Site1g_S93_L001-fastp.stderr
+-rw-rw-r-- 1 sam sam 488K Apr 21 10:59 fastp-Yell-July18-Site1g_S93_L001.fastp-trim.report.html
+-rw-rw-r-- 1 sam sam 174K Apr 21 10:59 fastp-Yell-July18-Site1g_S93_L001.fastp-trim.report.json
+-rw-rw-r-- 1 sam sam 914K Apr 21 11:17 fastp-Yell-July18-Site1g_S93_L001_R1_001_fastqc.html
+-rw-rw-r-- 1 sam sam 9.7M Apr 21 10:59 fastp-Yell-July18-Site1g_S93_L001_R1_001.fastq.gz
+-rw-rw-r-- 1 sam sam   84 Apr 21 10:59 fastp-Yell-July18-Site1g_S93_L001_R1_001.fastq.gz.md5
+-rw-rw-r-- 1 sam sam 921K Apr 21 11:17 fastp-Yell-July18-Site1g_S93_L001_R2_001_fastqc.html
+-rw-rw-r-- 1 sam sam  11M Apr 21 10:59 fastp-Yell-July18-Site1g_S93_L001_R2_001.fastq.gz
+-rw-rw-r-- 1 sam sam   84 Apr 21 10:59 fastp-Yell-July18-Site1g_S93_L001_R2_001.fastq.gz.md5
+-rw-rw-r-- 1 sam sam 2.1K Apr 21 11:00 fastp-Yell-July18-Site1h_S94_L001-fastp.stderr
+-rw-rw-r-- 1 sam sam 486K Apr 21 11:00 fastp-Yell-July18-Site1h_S94_L001.fastp-trim.report.html
+-rw-rw-r-- 1 sam sam 172K Apr 21 11:00 fastp-Yell-July18-Site1h_S94_L001.fastp-trim.report.json
+-rw-rw-r-- 1 sam sam 916K Apr 21 11:17 fastp-Yell-July18-Site1h_S94_L001_R1_001_fastqc.html
+-rw-rw-r-- 1 sam sam 3.5M Apr 21 11:00 fastp-Yell-July18-Site1h_S94_L001_R1_001.fastq.gz
+-rw-rw-r-- 1 sam sam   84 Apr 21 11:00 fastp-Yell-July18-Site1h_S94_L001_R1_001.fastq.gz.md5
+-rw-rw-r-- 1 sam sam 932K Apr 21 11:17 fastp-Yell-July18-Site1h_S94_L001_R2_001_fastqc.html
+-rw-rw-r-- 1 sam sam 3.8M Apr 21 11:00 fastp-Yell-July18-Site1h_S94_L001_R2_001.fastq.gz
+-rw-rw-r-- 1 sam sam   84 Apr 21 11:00 fastp-Yell-July18-Site1h_S94_L001_R2_001.fastq.gz.md5
+-rw-rw-r-- 1 sam sam 2.1K Apr 21 11:00 fastp-Yell-July18-Site1J_S99_L001-fastp.stderr
+-rw-rw-r-- 1 sam sam 482K Apr 21 11:00 fastp-Yell-July18-Site1J_S99_L001.fastp-trim.report.html
+-rw-rw-r-- 1 sam sam 169K Apr 21 11:00 fastp-Yell-July18-Site1J_S99_L001.fastp-trim.report.json
+-rw-rw-r-- 1 sam sam 909K Apr 21 11:17 fastp-Yell-July18-Site1J_S99_L001_R1_001_fastqc.html
+-rw-rw-r-- 1 sam sam 1.1M Apr 21 11:00 fastp-Yell-July18-Site1J_S99_L001_R1_001.fastq.gz
+-rw-rw-r-- 1 sam sam   84 Apr 21 11:00 fastp-Yell-July18-Site1J_S99_L001_R1_001.fastq.gz.md5
+-rw-rw-r-- 1 sam sam 930K Apr 21 11:17 fastp-Yell-July18-Site1J_S99_L001_R2_001_fastqc.html
+-rw-rw-r-- 1 sam sam 851K Apr 21 11:00 fastp-Yell-July18-Site1J_S99_L001_R2_001.fastq.gz
+-rw-rw-r-- 1 sam sam   84 Apr 21 11:00 fastp-Yell-July18-Site1J_S99_L001_R2_001.fastq.gz.md5
+-rw-rw-r-- 1 sam sam 2.1K Apr 21 11:00 fastp-Yell-July18-Site1k_S100_L001-fastp.stderr
+-rw-rw-r-- 1 sam sam 487K Apr 21 11:00 fastp-Yell-July18-Site1k_S100_L001.fastp-trim.report.html
+-rw-rw-r-- 1 sam sam 173K Apr 21 11:00 fastp-Yell-July18-Site1k_S100_L001.fastp-trim.report.json
+-rw-rw-r-- 1 sam sam 919K Apr 21 11:17 fastp-Yell-July18-Site1k_S100_L001_R1_001_fastqc.html
+-rw-rw-r-- 1 sam sam 7.1M Apr 21 11:00 fastp-Yell-July18-Site1k_S100_L001_R1_001.fastq.gz
+-rw-rw-r-- 1 sam sam   85 Apr 21 11:00 fastp-Yell-July18-Site1k_S100_L001_R1_001.fastq.gz.md5
+-rw-rw-r-- 1 sam sam 929K Apr 21 11:17 fastp-Yell-July18-Site1k_S100_L001_R2_001_fastqc.html
+-rw-rw-r-- 1 sam sam 7.0M Apr 21 11:00 fastp-Yell-July18-Site1k_S100_L001_R2_001.fastq.gz
+-rw-rw-r-- 1 sam sam   85 Apr 21 11:00 fastp-Yell-July18-Site1k_S100_L001_R2_001.fastq.gz.md5
+-rw-rw-r-- 1 sam sam 2.1K Apr 21 11:00 fastp-Yell-July18-Site1L_S101_L001-fastp.stderr
+-rw-rw-r-- 1 sam sam 486K Apr 21 11:00 fastp-Yell-July18-Site1L_S101_L001.fastp-trim.report.html
+-rw-rw-r-- 1 sam sam 171K Apr 21 11:00 fastp-Yell-July18-Site1L_S101_L001.fastp-trim.report.json
+-rw-rw-r-- 1 sam sam 921K Apr 21 11:17 fastp-Yell-July18-Site1L_S101_L001_R1_001_fastqc.html
+-rw-rw-r-- 1 sam sam 2.6M Apr 21 11:00 fastp-Yell-July18-Site1L_S101_L001_R1_001.fastq.gz
+-rw-rw-r-- 1 sam sam   85 Apr 21 11:00 fastp-Yell-July18-Site1L_S101_L001_R1_001.fastq.gz.md5
+-rw-rw-r-- 1 sam sam 931K Apr 21 11:17 fastp-Yell-July18-Site1L_S101_L001_R2_001_fastqc.html
+-rw-rw-r-- 1 sam sam 3.0M Apr 21 11:00 fastp-Yell-July18-Site1L_S101_L001_R2_001.fastq.gz
+-rw-rw-r-- 1 sam sam   85 Apr 21 11:00 fastp-Yell-July18-Site1L_S101_L001_R2_001.fastq.gz.md5
+-rw-rw-r-- 1 sam sam 2.1K Apr 21 11:01 fastp-Yell-July18-Site1m_S102_L001-fastp.stderr
+-rw-rw-r-- 1 sam sam 488K Apr 21 11:01 fastp-Yell-July18-Site1m_S102_L001.fastp-trim.report.html
+-rw-rw-r-- 1 sam sam 174K Apr 21 11:01 fastp-Yell-July18-Site1m_S102_L001.fastp-trim.report.json
+-rw-rw-r-- 1 sam sam 916K Apr 21 11:17 fastp-Yell-July18-Site1m_S102_L001_R1_001_fastqc.html
+-rw-rw-r-- 1 sam sam 9.9M Apr 21 11:01 fastp-Yell-July18-Site1m_S102_L001_R1_001.fastq.gz
+-rw-rw-r-- 1 sam sam   85 Apr 21 11:01 fastp-Yell-July18-Site1m_S102_L001_R1_001.fastq.gz.md5
+-rw-rw-r-- 1 sam sam 930K Apr 21 11:17 fastp-Yell-July18-Site1m_S102_L001_R2_001_fastqc.html
+-rw-rw-r-- 1 sam sam  11M Apr 21 11:01 fastp-Yell-July18-Site1m_S102_L001_R2_001.fastq.gz
+-rw-rw-r-- 1 sam sam   85 Apr 21 11:01 fastp-Yell-July18-Site1m_S102_L001_R2_001.fastq.gz.md5
+-rw-rw-r-- 1 sam sam 2.1K Apr 21 11:01 fastp-Yell-July18-Site1n_S103_L001-fastp.stderr
+-rw-rw-r-- 1 sam sam 490K Apr 21 11:01 fastp-Yell-July18-Site1n_S103_L001.fastp-trim.report.html
+-rw-rw-r-- 1 sam sam 175K Apr 21 11:01 fastp-Yell-July18-Site1n_S103_L001.fastp-trim.report.json
+-rw-rw-r-- 1 sam sam 919K Apr 21 11:17 fastp-Yell-July18-Site1n_S103_L001_R1_001_fastqc.html
+-rw-rw-r-- 1 sam sam  14M Apr 21 11:01 fastp-Yell-July18-Site1n_S103_L001_R1_001.fastq.gz
+-rw-rw-r-- 1 sam sam   85 Apr 21 11:01 fastp-Yell-July18-Site1n_S103_L001_R1_001.fastq.gz.md5
+-rw-rw-r-- 1 sam sam 906K Apr 21 11:17 fastp-Yell-July18-Site1n_S103_L001_R2_001_fastqc.html
+-rw-rw-r-- 1 sam sam  15M Apr 21 11:01 fastp-Yell-July18-Site1n_S103_L001_R2_001.fastq.gz
+-rw-rw-r-- 1 sam sam   85 Apr 21 11:01 fastp-Yell-July18-Site1n_S103_L001_R2_001.fastq.gz.md5
+-rw-rw-r-- 1 sam sam 2.1K Apr 21 11:01 fastp-Yell-July18-Site1o_S104_L001-fastp.stderr
+-rw-rw-r-- 1 sam sam 489K Apr 21 11:01 fastp-Yell-July18-Site1o_S104_L001.fastp-trim.report.html
+-rw-rw-r-- 1 sam sam 174K Apr 21 11:01 fastp-Yell-July18-Site1o_S104_L001.fastp-trim.report.json
+-rw-rw-r-- 1 sam sam 917K Apr 21 11:17 fastp-Yell-July18-Site1o_S104_L001_R1_001_fastqc.html
+-rw-rw-r-- 1 sam sam  12M Apr 21 11:01 fastp-Yell-July18-Site1o_S104_L001_R1_001.fastq.gz
+-rw-rw-r-- 1 sam sam   85 Apr 21 11:02 fastp-Yell-July18-Site1o_S104_L001_R1_001.fastq.gz.md5
+-rw-rw-r-- 1 sam sam 924K Apr 21 11:17 fastp-Yell-July18-Site1o_S104_L001_R2_001_fastqc.html
+-rw-rw-r-- 1 sam sam  13M Apr 21 11:01 fastp-Yell-July18-Site1o_S104_L001_R2_001.fastq.gz
+-rw-rw-r-- 1 sam sam   85 Apr 21 11:02 fastp-Yell-July18-Site1o_S104_L001_R2_001.fastq.gz.md5
+-rw-rw-r-- 1 sam sam 2.2K Apr 21 11:02 fastp-Yell-July18-Site1p_S105_L001-fastp.stderr
+-rw-rw-r-- 1 sam sam 491K Apr 21 11:02 fastp-Yell-July18-Site1p_S105_L001.fastp-trim.report.html
+-rw-rw-r-- 1 sam sam 177K Apr 21 11:02 fastp-Yell-July18-Site1p_S105_L001.fastp-trim.report.json
+-rw-rw-r-- 1 sam sam 916K Apr 21 11:18 fastp-Yell-July18-Site1p_S105_L001_R1_001_fastqc.html
+-rw-rw-r-- 1 sam sam  55M Apr 21 11:02 fastp-Yell-July18-Site1p_S105_L001_R1_001.fastq.gz
+-rw-rw-r-- 1 sam sam   85 Apr 21 11:02 fastp-Yell-July18-Site1p_S105_L001_R1_001.fastq.gz.md5
+-rw-rw-r-- 1 sam sam 901K Apr 21 11:18 fastp-Yell-July18-Site1p_S105_L001_R2_001_fastqc.html
+-rw-rw-r-- 1 sam sam  56M Apr 21 11:02 fastp-Yell-July18-Site1p_S105_L001_R2_001.fastq.gz
+-rw-rw-r-- 1 sam sam   85 Apr 21 11:02 fastp-Yell-July18-Site1p_S105_L001_R2_001.fastq.gz.md5
+-rw-rw-r-- 1 sam sam 2.1K Apr 21 11:03 fastp-Yell-July18-Site1q_S106_L001-fastp.stderr
+-rw-rw-r-- 1 sam sam 489K Apr 21 11:03 fastp-Yell-July18-Site1q_S106_L001.fastp-trim.report.html
+-rw-rw-r-- 1 sam sam 173K Apr 21 11:03 fastp-Yell-July18-Site1q_S106_L001.fastp-trim.report.json
+-rw-rw-r-- 1 sam sam 931K Apr 21 11:17 fastp-Yell-July18-Site1q_S106_L001_R1_001_fastqc.html
+-rw-rw-r-- 1 sam sam 5.8M Apr 21 11:03 fastp-Yell-July18-Site1q_S106_L001_R1_001.fastq.gz
+-rw-rw-r-- 1 sam sam   85 Apr 21 11:03 fastp-Yell-July18-Site1q_S106_L001_R1_001.fastq.gz.md5
+-rw-rw-r-- 1 sam sam 935K Apr 21 11:18 fastp-Yell-July18-Site1q_S106_L001_R2_001_fastqc.html
+-rw-rw-r-- 1 sam sam 6.2M Apr 21 11:03 fastp-Yell-July18-Site1q_S106_L001_R2_001.fastq.gz
+-rw-rw-r-- 1 sam sam   85 Apr 21 11:03 fastp-Yell-July18-Site1q_S106_L001_R2_001.fastq.gz.md5
+-rw-rw-r-- 1 sam sam 2.1K Apr 21 11:03 fastp-Yell-July18-Site1r_S111_L001-fastp.stderr
+-rw-rw-r-- 1 sam sam 488K Apr 21 11:03 fastp-Yell-July18-Site1r_S111_L001.fastp-trim.report.html
+-rw-rw-r-- 1 sam sam 174K Apr 21 11:03 fastp-Yell-July18-Site1r_S111_L001.fastp-trim.report.json
+-rw-rw-r-- 1 sam sam 921K Apr 21 11:18 fastp-Yell-July18-Site1r_S111_L001_R1_001_fastqc.html
+-rw-rw-r-- 1 sam sam 8.5M Apr 21 11:03 fastp-Yell-July18-Site1r_S111_L001_R1_001.fastq.gz
+-rw-rw-r-- 1 sam sam   85 Apr 21 11:03 fastp-Yell-July18-Site1r_S111_L001_R1_001.fastq.gz.md5
+-rw-rw-r-- 1 sam sam 942K Apr 21 11:18 fastp-Yell-July18-Site1r_S111_L001_R2_001_fastqc.html
+-rw-rw-r-- 1 sam sam 9.6M Apr 21 11:03 fastp-Yell-July18-Site1r_S111_L001_R2_001.fastq.gz
+-rw-rw-r-- 1 sam sam   85 Apr 21 11:03 fastp-Yell-July18-Site1r_S111_L001_R2_001.fastq.gz.md5
+-rw-rw-r-- 1 sam sam 2.1K Apr 21 11:04 fastp-Yell-July18-Site1s_S112_L001-fastp.stderr
+-rw-rw-r-- 1 sam sam 489K Apr 21 11:04 fastp-Yell-July18-Site1s_S112_L001.fastp-trim.report.html
+-rw-rw-r-- 1 sam sam 174K Apr 21 11:04 fastp-Yell-July18-Site1s_S112_L001.fastp-trim.report.json
+-rw-rw-r-- 1 sam sam 916K Apr 21 11:18 fastp-Yell-July18-Site1s_S112_L001_R1_001_fastqc.html
+-rw-rw-r-- 1 sam sam  12M Apr 21 11:04 fastp-Yell-July18-Site1s_S112_L001_R1_001.fastq.gz
+-rw-rw-r-- 1 sam sam   85 Apr 21 11:04 fastp-Yell-July18-Site1s_S112_L001_R1_001.fastq.gz.md5
+-rw-rw-r-- 1 sam sam 929K Apr 21 11:18 fastp-Yell-July18-Site1s_S112_L001_R2_001_fastqc.html
+-rw-rw-r-- 1 sam sam  13M Apr 21 11:04 fastp-Yell-July18-Site1s_S112_L001_R2_001.fastq.gz
+-rw-rw-r-- 1 sam sam   85 Apr 21 11:04 fastp-Yell-July18-Site1s_S112_L001_R2_001.fastq.gz.md5
+-rw-rw-r-- 1 sam sam 2.1K Apr 21 11:04 fastp-Yell-July18-Site1t_S113_L001-fastp.stderr
+-rw-rw-r-- 1 sam sam 488K Apr 21 11:04 fastp-Yell-July18-Site1t_S113_L001.fastp-trim.report.html
+-rw-rw-r-- 1 sam sam 174K Apr 21 11:04 fastp-Yell-July18-Site1t_S113_L001.fastp-trim.report.json
+-rw-rw-r-- 1 sam sam 913K Apr 21 11:18 fastp-Yell-July18-Site1t_S113_L001_R1_001_fastqc.html
+-rw-rw-r-- 1 sam sam  12M Apr 21 11:04 fastp-Yell-July18-Site1t_S113_L001_R1_001.fastq.gz
+-rw-rw-r-- 1 sam sam   85 Apr 21 11:04 fastp-Yell-July18-Site1t_S113_L001_R1_001.fastq.gz.md5
+-rw-rw-r-- 1 sam sam 900K Apr 21 11:18 fastp-Yell-July18-Site1t_S113_L001_R2_001_fastqc.html
+-rw-rw-r-- 1 sam sam  13M Apr 21 11:04 fastp-Yell-July18-Site1t_S113_L001_R2_001.fastq.gz
+-rw-rw-r-- 1 sam sam   85 Apr 21 11:04 fastp-Yell-July18-Site1t_S113_L001_R2_001.fastq.gz.md5
+-rw-rw-r-- 1 sam sam 2.1K Apr 21 11:04 fastp-Yell-July18-Site1U_S114_L001-fastp.stderr
+-rw-rw-r-- 1 sam sam 487K Apr 21 11:04 fastp-Yell-July18-Site1U_S114_L001.fastp-trim.report.html
+-rw-rw-r-- 1 sam sam 171K Apr 21 11:04 fastp-Yell-July18-Site1U_S114_L001.fastp-trim.report.json
+-rw-rw-r-- 1 sam sam 890K Apr 21 11:18 fastp-Yell-July18-Site1U_S114_L001_R1_001_fastqc.html
+-rw-rw-r-- 1 sam sam 3.2M Apr 21 11:04 fastp-Yell-July18-Site1U_S114_L001_R1_001.fastq.gz
+-rw-rw-r-- 1 sam sam   85 Apr 21 11:04 fastp-Yell-July18-Site1U_S114_L001_R1_001.fastq.gz.md5
+-rw-rw-r-- 1 sam sam 916K Apr 21 11:18 fastp-Yell-July18-Site1U_S114_L001_R2_001_fastqc.html
+-rw-rw-r-- 1 sam sam 3.6M Apr 21 11:04 fastp-Yell-July18-Site1U_S114_L001_R2_001.fastq.gz
+-rw-rw-r-- 1 sam sam   85 Apr 21 11:04 fastp-Yell-July18-Site1U_S114_L001_R2_001.fastq.gz.md5
+-rw-rw-r-- 1 sam sam 2.1K Apr 21 11:05 fastp-Yell-July18-Site1v_S117_L001-fastp.stderr
+-rw-rw-r-- 1 sam sam 488K Apr 21 11:05 fastp-Yell-July18-Site1v_S117_L001.fastp-trim.report.html
+-rw-rw-r-- 1 sam sam 174K Apr 21 11:05 fastp-Yell-July18-Site1v_S117_L001.fastp-trim.report.json
+-rw-rw-r-- 1 sam sam 915K Apr 21 11:18 fastp-Yell-July18-Site1v_S117_L001_R1_001_fastqc.html
+-rw-rw-r-- 1 sam sam 9.0M Apr 21 11:05 fastp-Yell-July18-Site1v_S117_L001_R1_001.fastq.gz
+-rw-rw-r-- 1 sam sam   85 Apr 21 11:05 fastp-Yell-July18-Site1v_S117_L001_R1_001.fastq.gz.md5
+-rw-rw-r-- 1 sam sam 910K Apr 21 11:18 fastp-Yell-July18-Site1v_S117_L001_R2_001_fastqc.html
+-rw-rw-r-- 1 sam sam 9.9M Apr 21 11:05 fastp-Yell-July18-Site1v_S117_L001_R2_001.fastq.gz
+-rw-rw-r-- 1 sam sam   85 Apr 21 11:05 fastp-Yell-July18-Site1v_S117_L001_R2_001.fastq.gz.md5
+-rw-rw-r-- 1 sam sam 2.1K Apr 21 11:06 fastp-Yell-July18-Site1w_S118_L001-fastp.stderr
+-rw-rw-r-- 1 sam sam 488K Apr 21 11:06 fastp-Yell-July18-Site1w_S118_L001.fastp-trim.report.html
+-rw-rw-r-- 1 sam sam 174K Apr 21 11:06 fastp-Yell-July18-Site1w_S118_L001.fastp-trim.report.json
+-rw-rw-r-- 1 sam sam 922K Apr 21 11:18 fastp-Yell-July18-Site1w_S118_L001_R1_001_fastqc.html
+-rw-rw-r-- 1 sam sam 9.6M Apr 21 11:06 fastp-Yell-July18-Site1w_S118_L001_R1_001.fastq.gz
+-rw-rw-r-- 1 sam sam   85 Apr 21 11:06 fastp-Yell-July18-Site1w_S118_L001_R1_001.fastq.gz.md5
+-rw-rw-r-- 1 sam sam 937K Apr 21 11:18 fastp-Yell-July18-Site1w_S118_L001_R2_001_fastqc.html
+-rw-rw-r-- 1 sam sam  11M Apr 21 11:06 fastp-Yell-July18-Site1w_S118_L001_R2_001.fastq.gz
+-rw-rw-r-- 1 sam sam   85 Apr 21 11:06 fastp-Yell-July18-Site1w_S118_L001_R2_001.fastq.gz.md5
+-rw-rw-r-- 1 sam sam 2.1K Apr 21 11:06 fastp-Yell-July18-Site1y_S120_L001-fastp.stderr
+-rw-rw-r-- 1 sam sam 488K Apr 21 11:06 fastp-Yell-July18-Site1y_S120_L001.fastp-trim.report.html
+-rw-rw-r-- 1 sam sam 174K Apr 21 11:06 fastp-Yell-July18-Site1y_S120_L001.fastp-trim.report.json
+-rw-rw-r-- 1 sam sam 930K Apr 21 11:18 fastp-Yell-July18-Site1y_S120_L001_R1_001_fastqc.html
+-rw-rw-r-- 1 sam sam 8.3M Apr 21 11:06 fastp-Yell-July18-Site1y_S120_L001_R1_001.fastq.gz
+-rw-rw-r-- 1 sam sam   85 Apr 21 11:06 fastp-Yell-July18-Site1y_S120_L001_R1_001.fastq.gz.md5
+-rw-rw-r-- 1 sam sam 944K Apr 21 11:18 fastp-Yell-July18-Site1y_S120_L001_R2_001_fastqc.html
+-rw-rw-r-- 1 sam sam 9.3M Apr 21 11:06 fastp-Yell-July18-Site1y_S120_L001_R2_001.fastq.gz
+-rw-rw-r-- 1 sam sam   85 Apr 21 11:06 fastp-Yell-July18-Site1y_S120_L001_R2_001.fastq.gz.md5
+-rw-rw-r-- 1 sam sam 2.1K Apr 21 11:07 fastp-Yell-July18-Site1z_S129_L001-fastp.stderr
+-rw-rw-r-- 1 sam sam 488K Apr 21 11:07 fastp-Yell-July18-Site1z_S129_L001.fastp-trim.report.html
+-rw-rw-r-- 1 sam sam 174K Apr 21 11:07 fastp-Yell-July18-Site1z_S129_L001.fastp-trim.report.json
+-rw-rw-r-- 1 sam sam 928K Apr 21 11:18 fastp-Yell-July18-Site1z_S129_L001_R1_001_fastqc.html
+-rw-rw-r-- 1 sam sam 6.6M Apr 21 11:07 fastp-Yell-July18-Site1z_S129_L001_R1_001.fastq.gz
+-rw-rw-r-- 1 sam sam   85 Apr 21 11:07 fastp-Yell-July18-Site1z_S129_L001_R1_001.fastq.gz.md5
+-rw-rw-r-- 1 sam sam 940K Apr 21 11:18 fastp-Yell-July18-Site1z_S129_L001_R2_001_fastqc.html
+-rw-rw-r-- 1 sam sam 7.3M Apr 21 11:07 fastp-Yell-July18-Site1z_S129_L001_R2_001.fastq.gz
+-rw-rw-r-- 1 sam sam   85 Apr 21 11:07 fastp-Yell-July18-Site1z_S129_L001_R2_001.fastq.gz.md5
+-rw-rw-r-- 1 sam sam 2.2K Apr 21 11:07 fastp-Yell-July18-Site5aa_S132_L001-fastp.stderr
+-rw-rw-r-- 1 sam sam 489K Apr 21 11:07 fastp-Yell-July18-Site5aa_S132_L001.fastp-trim.report.html
+-rw-rw-r-- 1 sam sam 175K Apr 21 11:07 fastp-Yell-July18-Site5aa_S132_L001.fastp-trim.report.json
+-rw-rw-r-- 1 sam sam 927K Apr 21 11:18 fastp-Yell-July18-Site5aa_S132_L001_R1_001_fastqc.html
+-rw-rw-r-- 1 sam sam  17M Apr 21 11:07 fastp-Yell-July18-Site5aa_S132_L001_R1_001.fastq.gz
+-rw-rw-r-- 1 sam sam   86 Apr 21 11:07 fastp-Yell-July18-Site5aa_S132_L001_R1_001.fastq.gz.md5
+-rw-rw-r-- 1 sam sam 925K Apr 21 11:18 fastp-Yell-July18-Site5aa_S132_L001_R2_001_fastqc.html
+-rw-rw-r-- 1 sam sam  18M Apr 21 11:07 fastp-Yell-July18-Site5aa_S132_L001_R2_001.fastq.gz
+-rw-rw-r-- 1 sam sam   86 Apr 21 11:07 fastp-Yell-July18-Site5aa_S132_L001_R2_001.fastq.gz.md5
+-rw-rw-r-- 1 sam sam 2.1K Apr 21 11:08 fastp-Yell-July18-Site5a_S87_L001-fastp.stderr
+-rw-rw-r-- 1 sam sam 488K Apr 21 11:08 fastp-Yell-July18-Site5a_S87_L001.fastp-trim.report.html
+-rw-rw-r-- 1 sam sam 174K Apr 21 11:08 fastp-Yell-July18-Site5a_S87_L001.fastp-trim.report.json
+-rw-rw-r-- 1 sam sam 932K Apr 21 11:18 fastp-Yell-July18-Site5a_S87_L001_R1_001_fastqc.html
+-rw-rw-r-- 1 sam sam 5.5M Apr 21 11:08 fastp-Yell-July18-Site5a_S87_L001_R1_001.fastq.gz
+-rw-rw-r-- 1 sam sam   84 Apr 21 11:08 fastp-Yell-July18-Site5a_S87_L001_R1_001.fastq.gz.md5
+-rw-rw-r-- 1 sam sam 942K Apr 21 11:18 fastp-Yell-July18-Site5a_S87_L001_R2_001_fastqc.html
+-rw-rw-r-- 1 sam sam 6.5M Apr 21 11:08 fastp-Yell-July18-Site5a_S87_L001_R2_001.fastq.gz
+-rw-rw-r-- 1 sam sam   84 Apr 21 11:08 fastp-Yell-July18-Site5a_S87_L001_R2_001.fastq.gz.md5
+-rw-rw-r-- 1 sam sam 2.2K Apr 21 11:08 fastp-Yell-July18-Site5bb_S133_L001-fastp.stderr
+-rw-rw-r-- 1 sam sam 491K Apr 21 11:08 fastp-Yell-July18-Site5bb_S133_L001.fastp-trim.report.html
+-rw-rw-r-- 1 sam sam 176K Apr 21 11:08 fastp-Yell-July18-Site5bb_S133_L001.fastp-trim.report.json
+-rw-rw-r-- 1 sam sam 927K Apr 21 11:18 fastp-Yell-July18-Site5bb_S133_L001_R1_001_fastqc.html
+-rw-rw-r-- 1 sam sam  21M Apr 21 11:08 fastp-Yell-July18-Site5bb_S133_L001_R1_001.fastq.gz
+-rw-rw-r-- 1 sam sam   86 Apr 21 11:08 fastp-Yell-July18-Site5bb_S133_L001_R1_001.fastq.gz.md5
+-rw-rw-r-- 1 sam sam 929K Apr 21 11:18 fastp-Yell-July18-Site5bb_S133_L001_R2_001_fastqc.html
+-rw-rw-r-- 1 sam sam  23M Apr 21 11:08 fastp-Yell-July18-Site5bb_S133_L001_R2_001.fastq.gz
+-rw-rw-r-- 1 sam sam   86 Apr 21 11:08 fastp-Yell-July18-Site5bb_S133_L001_R2_001.fastq.gz.md5
+-rw-rw-r-- 1 sam sam 2.1K Apr 21 11:09 fastp-Yell-July18-Site5b_S88_L001-fastp.stderr
+-rw-rw-r-- 1 sam sam 489K Apr 21 11:09 fastp-Yell-July18-Site5b_S88_L001.fastp-trim.report.html
+-rw-rw-r-- 1 sam sam 174K Apr 21 11:09 fastp-Yell-July18-Site5b_S88_L001.fastp-trim.report.json
+-rw-rw-r-- 1 sam sam 911K Apr 21 11:18 fastp-Yell-July18-Site5b_S88_L001_R1_001_fastqc.html
+-rw-rw-r-- 1 sam sam 8.7M Apr 21 11:09 fastp-Yell-July18-Site5b_S88_L001_R1_001.fastq.gz
+-rw-rw-r-- 1 sam sam   84 Apr 21 11:09 fastp-Yell-July18-Site5b_S88_L001_R1_001.fastq.gz.md5
+-rw-rw-r-- 1 sam sam 916K Apr 21 11:18 fastp-Yell-July18-Site5b_S88_L001_R2_001_fastqc.html
+-rw-rw-r-- 1 sam sam  11M Apr 21 11:09 fastp-Yell-July18-Site5b_S88_L001_R2_001.fastq.gz
+-rw-rw-r-- 1 sam sam   84 Apr 21 11:09 fastp-Yell-July18-Site5b_S88_L001_R2_001.fastq.gz.md5
+-rw-rw-r-- 1 sam sam 2.2K Apr 21 11:09 fastp-Yell-July18-Site5cc_S134_L001-fastp.stderr
+-rw-rw-r-- 1 sam sam 490K Apr 21 11:09 fastp-Yell-July18-Site5cc_S134_L001.fastp-trim.report.html
+-rw-rw-r-- 1 sam sam 175K Apr 21 11:09 fastp-Yell-July18-Site5cc_S134_L001.fastp-trim.report.json
+-rw-rw-r-- 1 sam sam 912K Apr 21 11:18 fastp-Yell-July18-Site5cc_S134_L001_R1_001_fastqc.html
+-rw-rw-r-- 1 sam sam  22M Apr 21 11:09 fastp-Yell-July18-Site5cc_S134_L001_R1_001.fastq.gz
+-rw-rw-r-- 1 sam sam   86 Apr 21 11:09 fastp-Yell-July18-Site5cc_S134_L001_R1_001.fastq.gz.md5
+-rw-rw-r-- 1 sam sam 911K Apr 21 11:18 fastp-Yell-July18-Site5cc_S134_L001_R2_001_fastqc.html
+-rw-rw-r-- 1 sam sam  27M Apr 21 11:09 fastp-Yell-July18-Site5cc_S134_L001_R2_001.fastq.gz
+-rw-rw-r-- 1 sam sam   86 Apr 21 11:09 fastp-Yell-July18-Site5cc_S134_L001_R2_001.fastq.gz.md5
+-rw-rw-r-- 1 sam sam 2.1K Apr 21 11:10 fastp-Yell-July18-Site5c_S89_L001-fastp.stderr
+-rw-rw-r-- 1 sam sam 486K Apr 21 11:09 fastp-Yell-July18-Site5c_S89_L001.fastp-trim.report.html
+-rw-rw-r-- 1 sam sam 172K Apr 21 11:09 fastp-Yell-July18-Site5c_S89_L001.fastp-trim.report.json
+-rw-rw-r-- 1 sam sam 927K Apr 21 11:18 fastp-Yell-July18-Site5c_S89_L001_R1_001_fastqc.html
+-rw-rw-r-- 1 sam sam 3.7M Apr 21 11:09 fastp-Yell-July18-Site5c_S89_L001_R1_001.fastq.gz
+-rw-rw-r-- 1 sam sam   84 Apr 21 11:10 fastp-Yell-July18-Site5c_S89_L001_R1_001.fastq.gz.md5
+-rw-rw-r-- 1 sam sam 930K Apr 21 11:18 fastp-Yell-July18-Site5c_S89_L001_R2_001_fastqc.html
+-rw-rw-r-- 1 sam sam 3.9M Apr 21 11:09 fastp-Yell-July18-Site5c_S89_L001_R2_001.fastq.gz
+-rw-rw-r-- 1 sam sam   84 Apr 21 11:10 fastp-Yell-July18-Site5c_S89_L001_R2_001.fastq.gz.md5
+-rw-rw-r-- 1 sam sam 2.2K Apr 21 11:10 fastp-Yell-July18-Site5ee_S136_L001-fastp.stderr
+-rw-rw-r-- 1 sam sam 489K Apr 21 11:10 fastp-Yell-July18-Site5ee_S136_L001.fastp-trim.report.html
+-rw-rw-r-- 1 sam sam 175K Apr 21 11:10 fastp-Yell-July18-Site5ee_S136_L001.fastp-trim.report.json
+-rw-rw-r-- 1 sam sam 920K Apr 21 11:18 fastp-Yell-July18-Site5ee_S136_L001_R1_001_fastqc.html
+-rw-rw-r-- 1 sam sam  14M Apr 21 11:10 fastp-Yell-July18-Site5ee_S136_L001_R1_001.fastq.gz
+-rw-rw-r-- 1 sam sam   86 Apr 21 11:10 fastp-Yell-July18-Site5ee_S136_L001_R1_001.fastq.gz.md5
+-rw-rw-r-- 1 sam sam 916K Apr 21 11:18 fastp-Yell-July18-Site5ee_S136_L001_R2_001_fastqc.html
+-rw-rw-r-- 1 sam sam  16M Apr 21 11:10 fastp-Yell-July18-Site5ee_S136_L001_R2_001.fastq.gz
+-rw-rw-r-- 1 sam sam   86 Apr 21 11:10 fastp-Yell-July18-Site5ee_S136_L001_R2_001.fastq.gz.md5
+-rw-rw-r-- 1 sam sam 2.1K Apr 21 11:11 fastp-Yell-July18-Site5e_S95_L001-fastp.stderr
+-rw-rw-r-- 1 sam sam 490K Apr 21 11:11 fastp-Yell-July18-Site5e_S95_L001.fastp-trim.report.html
+-rw-rw-r-- 1 sam sam 175K Apr 21 11:11 fastp-Yell-July18-Site5e_S95_L001.fastp-trim.report.json
+-rw-rw-r-- 1 sam sam 911K Apr 21 11:18 fastp-Yell-July18-Site5e_S95_L001_R1_001_fastqc.html
+-rw-rw-r-- 1 sam sam  13M Apr 21 11:11 fastp-Yell-July18-Site5e_S95_L001_R1_001.fastq.gz
+-rw-rw-r-- 1 sam sam   84 Apr 21 11:11 fastp-Yell-July18-Site5e_S95_L001_R1_001.fastq.gz.md5
+-rw-rw-r-- 1 sam sam 905K Apr 21 11:18 fastp-Yell-July18-Site5e_S95_L001_R2_001_fastqc.html
+-rw-rw-r-- 1 sam sam  13M Apr 21 11:11 fastp-Yell-July18-Site5e_S95_L001_R2_001.fastq.gz
+-rw-rw-r-- 1 sam sam   84 Apr 21 11:11 fastp-Yell-July18-Site5e_S95_L001_R2_001.fastq.gz.md5
+-rw-rw-r-- 1 sam sam 2.2K Apr 21 11:11 fastp-Yell-July18-Site5ff_S137_L001-fastp.stderr
+-rw-rw-r-- 1 sam sam 490K Apr 21 11:11 fastp-Yell-July18-Site5ff_S137_L001.fastp-trim.report.html
+-rw-rw-r-- 1 sam sam 176K Apr 21 11:11 fastp-Yell-July18-Site5ff_S137_L001.fastp-trim.report.json
+-rw-rw-r-- 1 sam sam 905K Apr 21 11:18 fastp-Yell-July18-Site5ff_S137_L001_R1_001_fastqc.html
+-rw-rw-r-- 1 sam sam  25M Apr 21 11:11 fastp-Yell-July18-Site5ff_S137_L001_R1_001.fastq.gz
+-rw-rw-r-- 1 sam sam   86 Apr 21 11:11 fastp-Yell-July18-Site5ff_S137_L001_R1_001.fastq.gz.md5
+-rw-rw-r-- 1 sam sam 905K Apr 21 11:18 fastp-Yell-July18-Site5ff_S137_L001_R2_001_fastqc.html
+-rw-rw-r-- 1 sam sam  28M Apr 21 11:11 fastp-Yell-July18-Site5ff_S137_L001_R2_001.fastq.gz
+-rw-rw-r-- 1 sam sam   86 Apr 21 11:11 fastp-Yell-July18-Site5ff_S137_L001_R2_001.fastq.gz.md5
+-rw-rw-r-- 1 sam sam 2.1K Apr 21 11:11 fastp-Yell-July18-Site5f_S96_L001-fastp.stderr
+-rw-rw-r-- 1 sam sam 482K Apr 21 11:11 fastp-Yell-July18-Site5f_S96_L001.fastp-trim.report.html
+-rw-rw-r-- 1 sam sam 168K Apr 21 11:11 fastp-Yell-July18-Site5f_S96_L001.fastp-trim.report.json
+-rw-rw-r-- 1 sam sam 913K Apr 21 11:18 fastp-Yell-July18-Site5f_S96_L001_R1_001_fastqc.html
+-rw-rw-r-- 1 sam sam 672K Apr 21 11:11 fastp-Yell-July18-Site5f_S96_L001_R1_001.fastq.gz
+-rw-rw-r-- 1 sam sam   84 Apr 21 11:11 fastp-Yell-July18-Site5f_S96_L001_R1_001.fastq.gz.md5
+-rw-rw-r-- 1 sam sam 911K Apr 21 11:18 fastp-Yell-July18-Site5f_S96_L001_R2_001_fastqc.html
+-rw-rw-r-- 1 sam sam 573K Apr 21 11:11 fastp-Yell-July18-Site5f_S96_L001_R2_001.fastq.gz
+-rw-rw-r-- 1 sam sam   84 Apr 21 11:11 fastp-Yell-July18-Site5f_S96_L001_R2_001.fastq.gz.md5
+-rw-rw-r-- 1 sam sam 2.1K Apr 21 11:12 fastp-Yell-July18-Site5g_S97_L001-fastp.stderr
+-rw-rw-r-- 1 sam sam 489K Apr 21 11:12 fastp-Yell-July18-Site5g_S97_L001.fastp-trim.report.html
+-rw-rw-r-- 1 sam sam 174K Apr 21 11:12 fastp-Yell-July18-Site5g_S97_L001.fastp-trim.report.json
+-rw-rw-r-- 1 sam sam 911K Apr 21 11:18 fastp-Yell-July18-Site5g_S97_L001_R1_001_fastqc.html
+-rw-rw-r-- 1 sam sam 8.8M Apr 21 11:12 fastp-Yell-July18-Site5g_S97_L001_R1_001.fastq.gz
+-rw-rw-r-- 1 sam sam   84 Apr 21 11:12 fastp-Yell-July18-Site5g_S97_L001_R1_001.fastq.gz.md5
+-rw-rw-r-- 1 sam sam 940K Apr 21 11:18 fastp-Yell-July18-Site5g_S97_L001_R2_001_fastqc.html
+-rw-rw-r-- 1 sam sam 9.8M Apr 21 11:12 fastp-Yell-July18-Site5g_S97_L001_R2_001.fastq.gz
+-rw-rw-r-- 1 sam sam   84 Apr 21 11:12 fastp-Yell-July18-Site5g_S97_L001_R2_001.fastq.gz.md5
+-rw-rw-r-- 1 sam sam 2.1K Apr 21 11:12 fastp-Yell-July18-Site5h_S98_L001-fastp.stderr
+-rw-rw-r-- 1 sam sam 490K Apr 21 11:12 fastp-Yell-July18-Site5h_S98_L001.fastp-trim.report.html
+-rw-rw-r-- 1 sam sam 175K Apr 21 11:12 fastp-Yell-July18-Site5h_S98_L001.fastp-trim.report.json
+-rw-rw-r-- 1 sam sam 913K Apr 21 11:18 fastp-Yell-July18-Site5h_S98_L001_R1_001_fastqc.html
+-rw-rw-r-- 1 sam sam  13M Apr 21 11:12 fastp-Yell-July18-Site5h_S98_L001_R1_001.fastq.gz
+-rw-rw-r-- 1 sam sam   84 Apr 21 11:12 fastp-Yell-July18-Site5h_S98_L001_R1_001.fastq.gz.md5
+-rw-rw-r-- 1 sam sam 904K Apr 21 11:18 fastp-Yell-July18-Site5h_S98_L001_R2_001_fastqc.html
+-rw-rw-r-- 1 sam sam  13M Apr 21 11:12 fastp-Yell-July18-Site5h_S98_L001_R2_001.fastq.gz
+-rw-rw-r-- 1 sam sam   84 Apr 21 11:12 fastp-Yell-July18-Site5h_S98_L001_R2_001.fastq.gz.md5
+-rw-rw-r-- 1 sam sam 2.1K Apr 21 11:12 fastp-Yell-July18-Site5J_S107_L001-fastp.stderr
+-rw-rw-r-- 1 sam sam 456K Apr 21 11:12 fastp-Yell-July18-Site5J_S107_L001.fastp-trim.report.html
+-rw-rw-r-- 1 sam sam 136K Apr 21 11:12 fastp-Yell-July18-Site5J_S107_L001.fastp-trim.report.json
+-rw-rw-r-- 1 sam sam 951K Apr 21 11:18 fastp-Yell-July18-Site5J_S107_L001_R1_001_fastqc.html
+-rw-rw-r-- 1 sam sam 3.1K Apr 21 11:12 fastp-Yell-July18-Site5J_S107_L001_R1_001.fastq.gz
+-rw-rw-r-- 1 sam sam   85 Apr 21 11:12 fastp-Yell-July18-Site5J_S107_L001_R1_001.fastq.gz.md5
+-rw-rw-r-- 1 sam sam 956K Apr 21 11:18 fastp-Yell-July18-Site5J_S107_L001_R2_001_fastqc.html
+-rw-rw-r-- 1 sam sam 3.2K Apr 21 11:12 fastp-Yell-July18-Site5J_S107_L001_R2_001.fastq.gz
+-rw-rw-r-- 1 sam sam   85 Apr 21 11:12 fastp-Yell-July18-Site5J_S107_L001_R2_001.fastq.gz.md5
+-rw-rw-r-- 1 sam sam 2.1K Apr 21 11:12 fastp-Yell-July18-Site5k_S108_L001-fastp.stderr
+-rw-rw-r-- 1 sam sam 486K Apr 21 11:12 fastp-Yell-July18-Site5k_S108_L001.fastp-trim.report.html
+-rw-rw-r-- 1 sam sam 172K Apr 21 11:12 fastp-Yell-July18-Site5k_S108_L001.fastp-trim.report.json
+-rw-rw-r-- 1 sam sam 919K Apr 21 11:18 fastp-Yell-July18-Site5k_S108_L001_R1_001_fastqc.html
+-rw-rw-r-- 1 sam sam 3.4M Apr 21 11:12 fastp-Yell-July18-Site5k_S108_L001_R1_001.fastq.gz
+-rw-rw-r-- 1 sam sam   85 Apr 21 11:12 fastp-Yell-July18-Site5k_S108_L001_R1_001.fastq.gz.md5
+-rw-rw-r-- 1 sam sam 918K Apr 21 11:18 fastp-Yell-July18-Site5k_S108_L001_R2_001_fastqc.html
+-rw-rw-r-- 1 sam sam 4.2M Apr 21 11:12 fastp-Yell-July18-Site5k_S108_L001_R2_001.fastq.gz
+-rw-rw-r-- 1 sam sam   85 Apr 21 11:12 fastp-Yell-July18-Site5k_S108_L001_R2_001.fastq.gz.md5
+-rw-rw-r-- 1 sam sam 2.1K Apr 21 11:13 fastp-Yell-July18-Site5L_S109_L001-fastp.stderr
+-rw-rw-r-- 1 sam sam 488K Apr 21 11:13 fastp-Yell-July18-Site5L_S109_L001.fastp-trim.report.html
+-rw-rw-r-- 1 sam sam 174K Apr 21 11:13 fastp-Yell-July18-Site5L_S109_L001.fastp-trim.report.json
+-rw-rw-r-- 1 sam sam 913K Apr 21 11:18 fastp-Yell-July18-Site5L_S109_L001_R1_001_fastqc.html
+-rw-rw-r-- 1 sam sam  11M Apr 21 11:13 fastp-Yell-July18-Site5L_S109_L001_R1_001.fastq.gz
+-rw-rw-r-- 1 sam sam   85 Apr 21 11:13 fastp-Yell-July18-Site5L_S109_L001_R1_001.fastq.gz.md5
+-rw-rw-r-- 1 sam sam 919K Apr 21 11:18 fastp-Yell-July18-Site5L_S109_L001_R2_001_fastqc.html
+-rw-rw-r-- 1 sam sam  12M Apr 21 11:13 fastp-Yell-July18-Site5L_S109_L001_R2_001.fastq.gz
+-rw-rw-r-- 1 sam sam   85 Apr 21 11:13 fastp-Yell-July18-Site5L_S109_L001_R2_001.fastq.gz.md5
+-rw-rw-r-- 1 sam sam 2.1K Apr 21 11:13 fastp-Yell-July18-Site5m_S110_L001-fastp.stderr
+-rw-rw-r-- 1 sam sam 488K Apr 21 11:13 fastp-Yell-July18-Site5m_S110_L001.fastp-trim.report.html
+-rw-rw-r-- 1 sam sam 173K Apr 21 11:13 fastp-Yell-July18-Site5m_S110_L001.fastp-trim.report.json
+-rw-rw-r-- 1 sam sam 914K Apr 21 11:18 fastp-Yell-July18-Site5m_S110_L001_R1_001_fastqc.html
+-rw-rw-r-- 1 sam sam 6.1M Apr 21 11:13 fastp-Yell-July18-Site5m_S110_L001_R1_001.fastq.gz
+-rw-rw-r-- 1 sam sam   85 Apr 21 11:13 fastp-Yell-July18-Site5m_S110_L001_R1_001.fastq.gz.md5
+-rw-rw-r-- 1 sam sam 927K Apr 21 11:18 fastp-Yell-July18-Site5m_S110_L001_R2_001_fastqc.html
+-rw-rw-r-- 1 sam sam 7.0M Apr 21 11:13 fastp-Yell-July18-Site5m_S110_L001_R2_001.fastq.gz
+-rw-rw-r-- 1 sam sam   85 Apr 21 11:13 fastp-Yell-July18-Site5m_S110_L001_R2_001.fastq.gz.md5
+-rw-rw-r-- 1 sam sam 2.1K Apr 21 11:13 fastp-Yell-July18-Site5n_S115_L001-fastp.stderr
+-rw-rw-r-- 1 sam sam 487K Apr 21 11:13 fastp-Yell-July18-Site5n_S115_L001.fastp-trim.report.html
+-rw-rw-r-- 1 sam sam 173K Apr 21 11:13 fastp-Yell-July18-Site5n_S115_L001.fastp-trim.report.json
+-rw-rw-r-- 1 sam sam 925K Apr 21 11:18 fastp-Yell-July18-Site5n_S115_L001_R1_001_fastqc.html
+-rw-rw-r-- 1 sam sam 6.1M Apr 21 11:13 fastp-Yell-July18-Site5n_S115_L001_R1_001.fastq.gz
+-rw-rw-r-- 1 sam sam   85 Apr 21 11:13 fastp-Yell-July18-Site5n_S115_L001_R1_001.fastq.gz.md5
+-rw-rw-r-- 1 sam sam 936K Apr 21 11:19 fastp-Yell-July18-Site5n_S115_L001_R2_001_fastqc.html
+-rw-rw-r-- 1 sam sam 6.6M Apr 21 11:13 fastp-Yell-July18-Site5n_S115_L001_R2_001.fastq.gz
+-rw-rw-r-- 1 sam sam   85 Apr 21 11:13 fastp-Yell-July18-Site5n_S115_L001_R2_001.fastq.gz.md5
+-rw-rw-r-- 1 sam sam 2.1K Apr 21 11:14 fastp-Yell-July18-Site5o_S116_L001-fastp.stderr
+-rw-rw-r-- 1 sam sam 487K Apr 21 11:14 fastp-Yell-July18-Site5o_S116_L001.fastp-trim.report.html
+-rw-rw-r-- 1 sam sam 173K Apr 21 11:14 fastp-Yell-July18-Site5o_S116_L001.fastp-trim.report.json
+-rw-rw-r-- 1 sam sam 932K Apr 21 11:19 fastp-Yell-July18-Site5o_S116_L001_R1_001_fastqc.html
+-rw-rw-r-- 1 sam sam 5.8M Apr 21 11:14 fastp-Yell-July18-Site5o_S116_L001_R1_001.fastq.gz
+-rw-rw-r-- 1 sam sam   85 Apr 21 11:14 fastp-Yell-July18-Site5o_S116_L001_R1_001.fastq.gz.md5
+-rw-rw-r-- 1 sam sam 939K Apr 21 11:19 fastp-Yell-July18-Site5o_S116_L001_R2_001_fastqc.html
+-rw-rw-r-- 1 sam sam 6.4M Apr 21 11:14 fastp-Yell-July18-Site5o_S116_L001_R2_001.fastq.gz
+-rw-rw-r-- 1 sam sam   85 Apr 21 11:14 fastp-Yell-July18-Site5o_S116_L001_R2_001.fastq.gz.md5
+-rw-rw-r-- 1 sam sam 2.1K Apr 21 11:14 fastp-Yell-July18-Site5p_S121_L001-fastp.stderr
+-rw-rw-r-- 1 sam sam 488K Apr 21 11:14 fastp-Yell-July18-Site5p_S121_L001.fastp-trim.report.html
+-rw-rw-r-- 1 sam sam 174K Apr 21 11:14 fastp-Yell-July18-Site5p_S121_L001.fastp-trim.report.json
+-rw-rw-r-- 1 sam sam 921K Apr 21 11:19 fastp-Yell-July18-Site5p_S121_L001_R1_001_fastqc.html
+-rw-rw-r-- 1 sam sam 7.7M Apr 21 11:14 fastp-Yell-July18-Site5p_S121_L001_R1_001.fastq.gz
+-rw-rw-r-- 1 sam sam   85 Apr 21 11:14 fastp-Yell-July18-Site5p_S121_L001_R1_001.fastq.gz.md5
+-rw-rw-r-- 1 sam sam 924K Apr 21 11:19 fastp-Yell-July18-Site5p_S121_L001_R2_001_fastqc.html
+-rw-rw-r-- 1 sam sam 8.8M Apr 21 11:14 fastp-Yell-July18-Site5p_S121_L001_R2_001.fastq.gz
+-rw-rw-r-- 1 sam sam   85 Apr 21 11:14 fastp-Yell-July18-Site5p_S121_L001_R2_001.fastq.gz.md5
+-rw-rw-r-- 1 sam sam 2.1K Apr 21 11:15 fastp-Yell-July18-Site5q_S122_L001-fastp.stderr
+-rw-rw-r-- 1 sam sam 490K Apr 21 11:15 fastp-Yell-July18-Site5q_S122_L001.fastp-trim.report.html
+-rw-rw-r-- 1 sam sam 174K Apr 21 11:15 fastp-Yell-July18-Site5q_S122_L001.fastp-trim.report.json
+-rw-rw-r-- 1 sam sam 901K Apr 21 11:19 fastp-Yell-July18-Site5q_S122_L001_R1_001_fastqc.html
+-rw-rw-r-- 1 sam sam  15M Apr 21 11:15 fastp-Yell-July18-Site5q_S122_L001_R1_001.fastq.gz
+-rw-rw-r-- 1 sam sam   85 Apr 21 11:15 fastp-Yell-July18-Site5q_S122_L001_R1_001.fastq.gz.md5
+-rw-rw-r-- 1 sam sam 916K Apr 21 11:19 fastp-Yell-July18-Site5q_S122_L001_R2_001_fastqc.html
+-rw-rw-r-- 1 sam sam  16M Apr 21 11:15 fastp-Yell-July18-Site5q_S122_L001_R2_001.fastq.gz
+-rw-rw-r-- 1 sam sam   85 Apr 21 11:15 fastp-Yell-July18-Site5q_S122_L001_R2_001.fastq.gz.md5
+-rw-rw-r-- 1 sam sam 2.1K Apr 21 11:15 fastp-Yell-July18-Site5r_S123_L001-fastp.stderr
+-rw-rw-r-- 1 sam sam 489K Apr 21 11:15 fastp-Yell-July18-Site5r_S123_L001.fastp-trim.report.html
+-rw-rw-r-- 1 sam sam 174K Apr 21 11:15 fastp-Yell-July18-Site5r_S123_L001.fastp-trim.report.json
+-rw-rw-r-- 1 sam sam 927K Apr 21 11:19 fastp-Yell-July18-Site5r_S123_L001_R1_001_fastqc.html
+-rw-rw-r-- 1 sam sam 9.3M Apr 21 11:15 fastp-Yell-July18-Site5r_S123_L001_R1_001.fastq.gz
+-rw-rw-r-- 1 sam sam   85 Apr 21 11:15 fastp-Yell-July18-Site5r_S123_L001_R1_001.fastq.gz.md5
+-rw-rw-r-- 1 sam sam 930K Apr 21 11:19 fastp-Yell-July18-Site5r_S123_L001_R2_001_fastqc.html
+-rw-rw-r-- 1 sam sam  11M Apr 21 11:15 fastp-Yell-July18-Site5r_S123_L001_R2_001.fastq.gz
+-rw-rw-r-- 1 sam sam   85 Apr 21 11:15 fastp-Yell-July18-Site5r_S123_L001_R2_001.fastq.gz.md5
+-rw-rw-r-- 1 sam sam 2.1K Apr 21 11:16 fastp-Yell-July18-Site5s_S124_L001-fastp.stderr
+-rw-rw-r-- 1 sam sam 487K Apr 21 11:16 fastp-Yell-July18-Site5s_S124_L001.fastp-trim.report.html
+-rw-rw-r-- 1 sam sam 173K Apr 21 11:16 fastp-Yell-July18-Site5s_S124_L001.fastp-trim.report.json
+-rw-rw-r-- 1 sam sam 906K Apr 21 11:19 fastp-Yell-July18-Site5s_S124_L001_R1_001_fastqc.html
+-rw-rw-r-- 1 sam sam 7.1M Apr 21 11:16 fastp-Yell-July18-Site5s_S124_L001_R1_001.fastq.gz
+-rw-rw-r-- 1 sam sam   85 Apr 21 11:16 fastp-Yell-July18-Site5s_S124_L001_R1_001.fastq.gz.md5
+-rw-rw-r-- 1 sam sam 916K Apr 21 11:19 fastp-Yell-July18-Site5s_S124_L001_R2_001_fastqc.html
+-rw-rw-r-- 1 sam sam 8.4M Apr 21 11:16 fastp-Yell-July18-Site5s_S124_L001_R2_001.fastq.gz
+-rw-rw-r-- 1 sam sam   85 Apr 21 11:16 fastp-Yell-July18-Site5s_S124_L001_R2_001.fastq.gz.md5
+-rw-rw-r-- 1 sam sam 2.1K Apr 21 11:16 fastp-Yell-July18-Site5u_S126_L001-fastp.stderr
+-rw-rw-r-- 1 sam sam 487K Apr 21 11:16 fastp-Yell-July18-Site5u_S126_L001.fastp-trim.report.html
+-rw-rw-r-- 1 sam sam 173K Apr 21 11:16 fastp-Yell-July18-Site5u_S126_L001.fastp-trim.report.json
+-rw-rw-r-- 1 sam sam 922K Apr 21 11:19 fastp-Yell-July18-Site5u_S126_L001_R1_001_fastqc.html
+-rw-rw-r-- 1 sam sam 4.8M Apr 21 11:16 fastp-Yell-July18-Site5u_S126_L001_R1_001.fastq.gz
+-rw-rw-r-- 1 sam sam   85 Apr 21 11:16 fastp-Yell-July18-Site5u_S126_L001_R1_001.fastq.gz.md5
+-rw-rw-r-- 1 sam sam 926K Apr 21 11:19 fastp-Yell-July18-Site5u_S126_L001_R2_001_fastqc.html
+-rw-rw-r-- 1 sam sam 5.4M Apr 21 11:16 fastp-Yell-July18-Site5u_S126_L001_R2_001.fastq.gz
+-rw-rw-r-- 1 sam sam   85 Apr 21 11:16 fastp-Yell-July18-Site5u_S126_L001_R2_001.fastq.gz.md5
+-rw-rw-r-- 1 sam sam 2.1K Apr 21 11:16 fastp-Yell-July18-Site5v_S127_L001-fastp.stderr
+-rw-rw-r-- 1 sam sam 487K Apr 21 11:16 fastp-Yell-July18-Site5v_S127_L001.fastp-trim.report.html
+-rw-rw-r-- 1 sam sam 172K Apr 21 11:16 fastp-Yell-July18-Site5v_S127_L001.fastp-trim.report.json
+-rw-rw-r-- 1 sam sam 940K Apr 21 11:19 fastp-Yell-July18-Site5v_S127_L001_R1_001_fastqc.html
+-rw-rw-r-- 1 sam sam 4.2M Apr 21 11:16 fastp-Yell-July18-Site5v_S127_L001_R1_001.fastq.gz
+-rw-rw-r-- 1 sam sam   85 Apr 21 11:16 fastp-Yell-July18-Site5v_S127_L001_R1_001.fastq.gz.md5
+-rw-rw-r-- 1 sam sam 946K Apr 21 11:19 fastp-Yell-July18-Site5v_S127_L001_R2_001_fastqc.html
+-rw-rw-r-- 1 sam sam 4.6M Apr 21 11:16 fastp-Yell-July18-Site5v_S127_L001_R2_001.fastq.gz
+-rw-rw-r-- 1 sam sam   85 Apr 21 11:16 fastp-Yell-July18-Site5v_S127_L001_R2_001.fastq.gz.md5
+-rw-rw-r-- 1 sam sam 2.1K Apr 21 11:16 fastp-Yell-July18-Site5w_S128_L001-fastp.stderr
+-rw-rw-r-- 1 sam sam 437K Apr 21 11:16 fastp-Yell-July18-Site5w_S128_L001.fastp-trim.report.html
+-rw-rw-r-- 1 sam sam 120K Apr 21 11:16 fastp-Yell-July18-Site5w_S128_L001.fastp-trim.report.json
+-rw-rw-r-- 1 sam sam 833K Apr 21 11:19 fastp-Yell-July18-Site5w_S128_L001_R1_001_fastqc.html
+-rw-rw-r-- 1 sam sam 1.2K Apr 21 11:16 fastp-Yell-July18-Site5w_S128_L001_R1_001.fastq.gz
+-rw-rw-r-- 1 sam sam   85 Apr 21 11:16 fastp-Yell-July18-Site5w_S128_L001_R1_001.fastq.gz.md5
+-rw-rw-r-- 1 sam sam 857K Apr 21 11:19 fastp-Yell-July18-Site5w_S128_L001_R2_001_fastqc.html
+-rw-rw-r-- 1 sam sam 1.3K Apr 21 11:16 fastp-Yell-July18-Site5w_S128_L001_R2_001.fastq.gz
+-rw-rw-r-- 1 sam sam   85 Apr 21 11:16 fastp-Yell-July18-Site5w_S128_L001_R2_001.fastq.gz.md5
+-rw-rw-r-- 1 sam sam 2.2K Apr 21 11:17 fastp-Yell-July18-Site5z_S131_L001-fastp.stderr
+-rw-rw-r-- 1 sam sam 492K Apr 21 11:17 fastp-Yell-July18-Site5z_S131_L001.fastp-trim.report.html
+-rw-rw-r-- 1 sam sam 177K Apr 21 11:17 fastp-Yell-July18-Site5z_S131_L001.fastp-trim.report.json
+-rw-rw-r-- 1 sam sam 894K Apr 21 11:19 fastp-Yell-July18-Site5z_S131_L001_R1_001_fastqc.html
+-rw-rw-r-- 1 sam sam  33M Apr 21 11:17 fastp-Yell-July18-Site5z_S131_L001_R1_001.fastq.gz
+-rw-rw-r-- 1 sam sam   85 Apr 21 11:17 fastp-Yell-July18-Site5z_S131_L001_R1_001.fastq.gz.md5
+-rw-rw-r-- 1 sam sam 909K Apr 21 11:19 fastp-Yell-July18-Site5z_S131_L001_R2_001_fastqc.html
+-rw-rw-r-- 1 sam sam  37M Apr 21 11:17 fastp-Yell-July18-Site5z_S131_L001_R2_001.fastq.gz
+-rw-rw-r-- 1 sam sam   85 Apr 21 11:17 fastp-Yell-July18-Site5z_S131_L001_R2_001.fastq.gz.md5
+drwxrwxr-x 2 sam sam 4.0K Apr 21 11:19 multiqc_data
+-rw-rw-r-- 1 sam sam 8.1M Apr 21 11:19 multiqc_report.html
+-rw-rw-r-- 1 sam sam 7.8K Apr 21 10:53 raw-fastq-checksums.md5</code></pre>
 </section>
-</section>
-<section id="results" class="level1">
-<h1>RESULTS</h1>
-<p>Trimming looks as expected. Due to the heterogeneous nature of eDNA, we don’t see the usual “smooth” lines across the length of the reads when viewing the “Per Base Sequence Content” plots from FastQC/MultiQC. As such, we’ll proceed with QIIME 2 18s analyses of these samples.</p>
-<div class="quarto-figure quarto-figure-center">
-<figure class="figure">
-<p><img src="./20250418-yellow-eDNA-fastp-multiqc-per_base_sequence_content-screenshot.png" class="img-fluid figure-img" alt="Screenshot of example MultiQC Per Base Sequence Content showing expected uneven sequences, due to heterogenous content of eDNA."></p>
-<figcaption>Screenshot of example MultiQC Per Base Sequence Content showing expected uneven sequences, due to heterogenous content of eDNA.</figcaption>
-</figure>
-</div>
 </section>
 <section id="references" class="level1">
 <h1>REFERENCES</h1>
