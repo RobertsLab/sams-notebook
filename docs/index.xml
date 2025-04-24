@@ -10,7 +10,1106 @@
 <atom:link href="https://robertslab.github.io/sams-notebook/index.xml" rel="self" type="application/rss+xml"/>
 <description></description>
 <generator>quarto-1.6.42</generator>
-<lastBuildDate>Fri, 18 Apr 2025 07:00:00 GMT</lastBuildDate>
+<lastBuildDate>Thu, 24 Apr 2025 07:00:00 GMT</lastBuildDate>
+<item>
+  <title>Taxonomy Assignment - Yellow Island 2018 eDNA Samples Using QIIME 2</title>
+  <dc:creator>Sam White</dc:creator>
+  <link>https://robertslab.github.io/sams-notebook/posts/2025/2025-04-24-Taxonomy-Assignment---Yellow-Island-2018-eDNA-Samples-Using-QIIME-2/</link>
+  <description><![CDATA[ 
+
+
+
+
+
+<section id="intro" class="level1">
+<h1>INTRO</h1>
+<p>Performed taxonomic assignment for the July 18 Yellow Island sites for <a href="https://github.com/RobertsLab/project-eDNA-yellow">project-eDNA-yellow</a> (GitHub repo) project using QIIME 2 analysis, as <a href="https://github.com/RobertsLab/resources/issues/2167">requested in this GitHub Issue</a>.</p>
+<p>The resulting taxonomic output file is a QIIME 2 bar plot visualization. This can be downloaded (either by using the link below or by cloning this project’s repo) and then uploaded to the <a href="https://view.qiime2.org/">QIIME 2 Viewer website</a>. This provides interactive viewing/filtering/sorting of taxonomic assignments.</p>
+<ul>
+<li><a href="https://github.com/RobertsLab/project-eDNA-yellow/raw/516fd3772577550c1d8f991b116fe1f1081a0cec/output/02.00-qiime2/taxa-bar-plots.qzv"><code>taxa-bar-plots.qzv</code></a></li>
+</ul>
+<div class="callout callout-style-default callout-note callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Note
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>The contents below are from markdown knitted from <a href="https://github.com/RobertsLab/project-eDNA-yellow/blob/01f599e4e7072b0a546351e1d1a7206e839a7755/code/02.00-qiime2.Rmd">02.00-qiime2.Rmd</a> (commit <code>01f599e4e</code>).</p>
+</div>
+</div>
+</section>
+<section id="background" class="level1">
+<h1>1 BACKGROUND</h1>
+<p>This notebook will use <a href="https://docs.qiime2.org/2024.10/">QIIME 2 2024.10</a> (Bolyen et al.&nbsp;2019) to taxonomically classify eukaryotic sequences in eDNA samples. Expects trimmed reads to exist in <a href="https://github.com/RobertsLab/project-eDNA-yellow/tree/main/output/01.00-trimming-fastp-fastqc-multiqc"><code>../output/01.00-trimming-fastp-fastqc-multiqc</code></a>.</p>
+<section id="inputs" class="level2">
+<h2 class="anchored" data-anchor-id="inputs">1.1 Inputs:</h2>
+<ul>
+<li><p>Trimmed FastQs from <a href="https://github.com/RobertsLab/project-eDNA-yellow/blob/13bdbbec60b0da23266af2e0b409c2b09f3d38fa/code/01.00-trimming-fastp-fastqc-multiqc.Rmd"><code>01.00-trimming-fastp-fastqc-multiqc.Rmd</code></a></p>
+<ul>
+<li>Filename format: <code>fastp-Yell-July18-Site5e_S95_L001_R1_001.fastq.gz</code></li>
+</ul></li>
+<li><p>SILVA classifier QZA <code>silva-138-99-nb-classifier.qza</code>.</p>
+<ul>
+<li>Downloaded from <a href="https://library.qiime2.org/data-resources#naive-bayes-classifiers" class="uri">https://library.qiime2.org/data-resources#naive-bayes-classifiers</a></li>
+</ul></li>
+</ul>
+</section>
+<section id="outputs" class="level2">
+<h2 class="anchored" data-anchor-id="outputs">1.2 Outputs:</h2>
+<p>Files ending in <code>.qza</code> are QIIME zip archives.</p>
+<p>Files ending in <code>.qzv</code> are QIIME zip visualization tables.</p>
+<ul>
+<li><p><code>deblur-stats.qza</code>: Stats after denoise.</p></li>
+<li><p><code>deblur-stats.qzv</code>: Stats visualization after denoise.</p></li>
+<li><p><code>demux-paired-end-filtered.qza</code>: Quality score filtered archive.</p></li>
+<li><p><code>demux-paired-end-filter-stats.qza</code>: Stats archive for quality score filtering.</p></li>
+<li><p><code>demux-paired-end.qza</code>: Paired-end reads archive.</p></li>
+<li><p><code>rep-seqs-deblur.qza</code>: Representative sequences after denoise.</p></li>
+<li><p><code>rep-seqs-deblur.qzv</code>: Representative sequences after denoise visualization.</p></li>
+<li><p><code>table-deblur.qza</code>: Table after denoise.</p></li>
+<li><p><code>table.qzv</code>: Feature table summary visuallization.</p></li>
+<li><p><code>taxa-bar-plots.qzv</code>: Bar plots of taxonomic assignment visualization.</p></li>
+<li><p><code>taxonomy.qza</code>: Feature taxonomic classification after applying SILVA classifier.</p></li>
+<li><p><code>taxonomy.qzv</code>: Feature taxonomic classification visualization after applying SILVA classifier.</p></li>
+</ul>
+<p>Software requirements:</p>
+<ul>
+<li>Utilizes a <a href="https://docs.qiime2.org/2024.10/"><code>qiime2-amplicon-2024.10</code></a> Conda/Mamba environment, per the installation instructions.</li>
+</ul>
+<p>To use on your own system, replace with name of your qiime2-amplicon-2024.10 environment and the path to the corresponding conda installation (find this <em>after</em> you’ve activated the environment).</p>
+<p>E.g.</p>
+<div class="sourceCode" id="cb1" style="background: #f1f3f5;"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb1-1"><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># Activate environment</span></span>
+<span id="cb1-2"><span class="ex" style="color: null;
+background-color: null;
+font-style: inherit;">conda</span> activate ShortStack4_env</span>
+<span id="cb1-3"></span>
+<span id="cb1-4"><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># Find conda path</span></span>
+<span id="cb1-5"><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">which</span> conda</span></code></pre></div>
+<hr>
+</section>
+</section>
+<section id="set-r-variables" class="level1">
+<h1>2 Set R variables</h1>
+<p>Change <code>repo_dir</code> to match local repo location.</p>
+<p>Change <code>threads &lt;- 4</code> to match computer resources for your system.</p>
+<div class="sourceCode" id="cb2" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb2-1"><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># Conda info</span></span>
+<span id="cb2-2">qiime2_conda_env_name <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">c</span>(<span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"qiime2-amplicon-2024.10"</span>)</span>
+<span id="cb2-3">qiime2_conda_path <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">c</span>(<span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"/home/sam/programs/miniforge3/condabin/conda"</span>)</span>
+<span id="cb2-4"></span>
+<span id="cb2-5"><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># Data directories</span></span>
+<span id="cb2-6">repo_dir <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"/home/sam/gitrepos/RobertsLab/project-eDNA-yellow"</span></span>
+<span id="cb2-7">data_dir <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">file.path</span>(repo_dir, <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"data"</span>)</span>
+<span id="cb2-8">output_dir <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">file.path</span>(repo_dir, <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"output"</span>, <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"02.00-qiime2"</span>)</span>
+<span id="cb2-9">trimmed_reads_dir <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">file.path</span>(repo_dir, <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"output"</span>, <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"01.00-trimming-fastp-fastqc-multiqc"</span>)</span>
+<span id="cb2-10"></span>
+<span id="cb2-11"><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># Files</span></span>
+<span id="cb2-12">metadata <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">file.path</span>(data_dir, <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"raw-fastqs"</span>, <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"metadata.tsv"</span>)</span>
+<span id="cb2-13">silva_classifier <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">file.path</span>(data_dir, <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"silva-138-99-nb-classifier.qza"</span>)</span>
+<span id="cb2-14">silva_ref_seqs <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">file.path</span>(data_dir, <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"silva-138-99-seqs.qza"</span>)</span>
+<span id="cb2-15"></span>
+<span id="cb2-16"><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># Parameters</span></span>
+<span id="cb2-17"></span>
+<span id="cb2-18"><span class="do" style="color: #5E5E5E;
+background-color: null;
+font-style: italic;">## Set Deblur read length</span></span>
+<span id="cb2-19"><span class="do" style="color: #5E5E5E;
+background-color: null;
+font-style: italic;">## Based on FastQC results, post-trimming, where quality starts to decline.</span></span>
+<span id="cb2-20">deblur_ptrim_length <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">150</span></span>
+<span id="cb2-21"></span>
+<span id="cb2-22"><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># CPUs</span></span>
+<span id="cb2-23">threads <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">4</span></span>
+<span id="cb2-24"></span>
+<span id="cb2-25"></span>
+<span id="cb2-26"><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># Export these as environment variables for bash chunks.</span></span>
+<span id="cb2-27"><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">Sys.setenv</span>(</span>
+<span id="cb2-28">  <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">data_dir =</span> data_dir,</span>
+<span id="cb2-29">  <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">deblur_ptrim_length =</span> deblur_ptrim_length,</span>
+<span id="cb2-30">  <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">metadata =</span> metadata,</span>
+<span id="cb2-31">  <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">silva_classifier =</span> silva_classifier,</span>
+<span id="cb2-32">  <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">silva_ref_seqs =</span> silva_ref_seqs,</span>
+<span id="cb2-33">  <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">threads =</span> threads,</span>
+<span id="cb2-34">  <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">trimmed_reads_dir =</span> trimmed_reads_dir,</span>
+<span id="cb2-35">  <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">output_dir =</span> output_dir</span>
+<span id="cb2-36">)</span></code></pre></div>
+</section>
+<section id="load-qiime2-amplicon-2024.10-conda-environment" class="level1">
+<h1>3 Load <a href="https://docs.qiime2.org/2024.10/"><code>qiime2-amplicon-2024.10</code></a> conda environment</h1>
+<p>If this is successful, the first line of output should show that the Python being used is the one in your <a href="https://docs.qiime2.org/2024.10/"><code>qiime2-amplicon-2024.10</code></a> conda environment path.</p>
+<p>E.g.</p>
+<p><code>python:         /home/sam/programs/mambaforge/envs/mirmachine_env/bin/python</code></p>
+<div class="sourceCode" id="cb3" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb3-1"><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">use_condaenv</span>(<span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">condaenv =</span> qiime2_conda_env_name, <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">conda =</span> qiime2_conda_path)</span>
+<span id="cb3-2"></span>
+<span id="cb3-3"><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># Check successful env loading</span></span>
+<span id="cb3-4"><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">py_config</span>()</span></code></pre></div>
+<pre><code>python:         /home/sam/programs/miniforge3/envs/qiime2-amplicon-2024.10/bin/python
+libpython:      /home/sam/programs/miniforge3/envs/qiime2-amplicon-2024.10/lib/libpython3.10.so
+pythonhome:     /home/sam/programs/miniforge3/envs/qiime2-amplicon-2024.10:/home/sam/programs/miniforge3/envs/qiime2-amplicon-2024.10
+version:        3.10.14 | packaged by conda-forge | (main, Mar 20 2024, 12:45:18) [GCC 12.3.0]
+numpy:          /home/sam/programs/miniforge3/envs/qiime2-amplicon-2024.10/lib/python3.10/site-packages/numpy
+numpy_version:  1.26.4
+
+NOTE: Python version was forced by use_python() function</code></pre>
+</section>
+<section id="import-trimmed-reads" class="level1">
+<h1>4 Import trimmed reads</h1>
+<section id="transfer-trimmed-reads" class="level2">
+<h2 class="anchored" data-anchor-id="transfer-trimmed-reads">4.1 Transfer trimmed reads</h2>
+<div class="sourceCode" id="cb5" style="background: #f1f3f5;"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb5-1"><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># Make output directory if it doesn't exist</span></span>
+<span id="cb5-2"><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">mkdir</span> <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">--parents</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"</span><span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">${output_dir}</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"</span></span>
+<span id="cb5-3"></span>
+<span id="cb5-4"><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">rsync</span> <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">-avP</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"</span><span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">${trimmed_reads_dir}</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"</span>/<span class="pp" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">*</span>.fastq.gz <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"</span><span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">${output_dir}</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"</span></span>
+<span id="cb5-5"></span>
+<span id="cb5-6"><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">ls</span> <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">-lh</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"</span><span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">${output_dir}</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"</span></span></code></pre></div>
+<pre><code>sending incremental file list
+Site1J_S99_L001_R1_001.fastq.gz
+         32,768   3%    0.00kB/s    0:00:00        1,049,054 100%  969.21MB/s    0:00:00 (xfr#1, to-chk=107/108)
+Site1J_S99_L001_R2_001.fastq.gz
+         32,768   3%   15.62MB/s    0:00:00          870,682 100%  207.59MB/s    0:00:00 (xfr#2, to-chk=106/108)
+Site1L_S101_L001_R1_001.fastq.gz
+         32,768   1%    7.81MB/s    0:00:00        2,695,538 100%  321.33MB/s    0:00:00 (xfr#3, to-chk=105/108)
+Site1L_S101_L001_R2_001.fastq.gz
+         32,768   1%    3.91MB/s    0:00:00        3,045,986 100%  223.45MB/s    0:00:00 (xfr#4, to-chk=104/108)
+Site1U_S114_L001_R1_001.fastq.gz
+         32,768   0%    2.40MB/s    0:00:01        3,303,317 100%  175.02MB/s    0:00:00 (xfr#5, to-chk=103/108)
+Site1U_S114_L001_R2_001.fastq.gz
+         32,768   0%    1.74MB/s    0:00:02        3,694,663 100%  146.81MB/s    0:00:00 (xfr#6, to-chk=102/108)
+Site1a_S83_L001_R1_001.fastq.gz
+         32,768   0%    1.30MB/s    0:00:07       10,094,265 100%  178.27MB/s    0:00:00 (xfr#7, to-chk=101/108)
+Site1a_S83_L001_R2_001.fastq.gz
+         32,768   0%  592.59kB/s    0:00:18       10,924,826 100%  127.06MB/s    0:00:00 (xfr#8, to-chk=100/108)
+Site1b_S84_L001_R1_001.fastq.gz
+         32,768   0%  390.24kB/s    0:00:24        9,597,931 100%   87.17MB/s    0:00:00 (xfr#9, to-chk=99/108)
+Site1b_S84_L001_R2_001.fastq.gz
+         32,768   0%  304.76kB/s    0:00:34       10,396,372 100%   71.85MB/s    0:00:00 (xfr#10, to-chk=98/108)
+Site1bb_S139_L001_R1_001.fastq.gz
+         32,768   0%  231.88kB/s    0:00:31        7,292,087 100%   44.58MB/s    0:00:00 (xfr#11, to-chk=97/108)
+Site1bb_S139_L001_R2_001.fastq.gz
+         32,768   0%  203.82kB/s    0:00:38        7,812,044 100%   43.82MB/s    0:00:00 (xfr#12, to-chk=96/108)
+Site1c_S85_L001_R1_001.fastq.gz
+         32,768   0%  188.24kB/s    0:00:37        7,079,940 100%   34.45MB/s    0:00:00 (xfr#13, to-chk=95/108)
+Site1c_S85_L001_R2_001.fastq.gz
+         32,768   0%  163.27kB/s    0:00:47        7,720,428 100%   34.73MB/s    0:00:00 (xfr#14, to-chk=94/108)
+Site1cc_S140_L001_R1_001.fastq.gz
+         32,768   0%  150.23kB/s    0:01:55       17,422,172 100%   67.27MB/s    0:00:00 (xfr#15, to-chk=93/108)
+Site1cc_S140_L001_R2_001.fastq.gz
+         32,768   0%  129.03kB/s    0:02:29       19,271,102 100%   62.09MB/s    0:00:00 (xfr#16, to-chk=92/108)
+Site1d_S86_L001_R1_001.fastq.gz
+         32,768   0%  107.74kB/s    0:01:31        9,882,039 100%   29.27MB/s    0:00:00 (xfr#17, to-chk=91/108)
+Site1d_S86_L001_R2_001.fastq.gz
+         32,768   0%   99.38kB/s    0:01:50       10,999,755 100%   30.23MB/s    0:00:00 (xfr#18, to-chk=90/108)
+Site1dd_S141_L001_R1_001.fastq.gz
+         32,768   0%   91.95kB/s    0:03:24       18,882,154 100%   46.89MB/s    0:00:00 (xfr#19, to-chk=89/108)
+Site1dd_S141_L001_R2_001.fastq.gz
+         32,768   0%   83.33kB/s    0:03:48       19,062,705 100%   42.98MB/s    0:00:00 (xfr#20, to-chk=88/108)
+Site1e_S91_L001_R1_001.fastq.gz
+         32,768   2%   75.65kB/s    0:00:21        1,632,564 100%    3.65MB/s    0:00:00 (xfr#21, to-chk=87/108)
+Site1e_S91_L001_R2_001.fastq.gz
+         32,768   1%   74.94kB/s    0:00:22        1,709,840 100%    3.78MB/s    0:00:00 (xfr#22, to-chk=86/108)
+Site1ee_S142_L001_R1_001.fastq.gz
+         32,768   0%   74.25kB/s    0:02:35       11,554,889 100%   24.17MB/s    0:00:00 (xfr#23, to-chk=85/108)
+Site1ee_S142_L001_R2_001.fastq.gz
+         32,768   0%   70.18kB/s    0:02:43       11,489,305 100%   22.73MB/s    0:00:00 (xfr#24, to-chk=84/108)
+Site1f_S92_L001_R1_001.fastq.gz
+         32,768   0%   66.39kB/s    0:02:39       10,637,646 100%   19.81MB/s    0:00:00 (xfr#25, to-chk=83/108)
+Site1f_S92_L001_R2_001.fastq.gz
+         32,768   0%   62.50kB/s    0:03:06       11,684,921 100%   20.56MB/s    0:00:00 (xfr#26, to-chk=82/108)
+Site1g_S93_L001_R1_001.fastq.gz
+         32,768   0%   59.04kB/s    0:02:50       10,116,667 100%   17.11MB/s    0:00:00 (xfr#27, to-chk=81/108)
+Site1g_S93_L001_R2_001.fastq.gz
+         32,768   0%   56.74kB/s    0:03:14       11,076,204 100%   17.55MB/s    0:00:00 (xfr#28, to-chk=80/108)
+Site1h_S94_L001_R1_001.fastq.gz
+         32,768   0%   53.16kB/s    0:01:08        3,661,936 100%    5.71MB/s    0:00:00 (xfr#29, to-chk=79/108)
+Site1h_S94_L001_R2_001.fastq.gz
+         32,768   0%   52.29kB/s    0:01:14        3,944,595 100%    6.01MB/s    0:00:00 (xfr#30, to-chk=78/108)
+Site1k_S100_L001_R1_001.fastq.gz
+         32,768   0%   51.12kB/s    0:02:24        7,419,423 100%   10.94MB/s    0:00:00 (xfr#31, to-chk=77/108)
+Site1k_S100_L001_R2_001.fastq.gz
+         32,768   0%   49.46kB/s    0:02:27        7,329,144 100%   10.31MB/s    0:00:00 (xfr#32, to-chk=76/108)
+Site1m_S102_L001_R1_001.fastq.gz
+         32,768   0%   47.13kB/s    0:03:38       10,344,255 100%   14.05MB/s    0:00:00 (xfr#33, to-chk=75/108)
+Site1m_S102_L001_R2_001.fastq.gz
+         32,768   0%   45.58kB/s    0:03:58       10,925,572 100%   14.37MB/s    0:00:00 (xfr#34, to-chk=74/108)
+Site1n_S103_L001_R1_001.fastq.gz
+         32,768   0%   44.14kB/s    0:05:09       13,696,893 100%   16.68MB/s    0:00:00 (xfr#35, to-chk=73/108)
+Site1n_S103_L001_R2_001.fastq.gz
+         32,768   0%   40.87kB/s    0:06:14       15,317,828 100%   17.27MB/s    0:00:00 (xfr#36, to-chk=72/108)
+Site1o_S104_L001_R1_001.fastq.gz
+         32,768   0%   37.78kB/s    0:05:24       12,295,963 100%   13.51MB/s    0:00:00 (xfr#37, to-chk=71/108)
+Site1o_S104_L001_R2_001.fastq.gz
+         32,768   0%   36.87kB/s    0:06:08       13,599,819 100%   14.59MB/s    0:00:00 (xfr#38, to-chk=70/108)
+Site1p_S105_L001_R1_001.fastq.gz
+         32,768   0%   36.00kB/s    0:26:25       57,109,173 100%   54.68MB/s    0:00:00 (xfr#39, to-chk=69/108)
+Site1p_S105_L001_R2_001.fastq.gz
+         32,768   0%   32.10kB/s    0:30:03        1,376,256   2%    1.31MB/s    0:00:42       57,912,100 100%   49.01MB/s    0:00:01 (xfr#40, to-chk=68/108)
+Site1q_S106_L001_R1_001.fastq.gz
+         32,768   0%  250.00kB/s    0:00:23        6,030,256 100%   34.64MB/s    0:00:00 (xfr#41, to-chk=67/108)
+Site1q_S106_L001_R2_001.fastq.gz
+         32,768   0%  191.62kB/s    0:00:33        6,469,667 100%   33.35MB/s    0:00:00 (xfr#42, to-chk=66/108)
+Site1r_S111_L001_R1_001.fastq.gz
+         32,768   0%  172.97kB/s    0:00:50        8,838,881 100%   41.73MB/s    0:00:00 (xfr#43, to-chk=65/108)
+Site1r_S111_L001_R2_001.fastq.gz
+         32,768   0%  158.42kB/s    0:01:02       10,009,537 100%   43.99MB/s    0:00:00 (xfr#44, to-chk=64/108)
+Site1s_S112_L001_R1_001.fastq.gz
+         32,768   0%  147.47kB/s    0:01:23       12,401,363 100%   49.28MB/s    0:00:00 (xfr#45, to-chk=63/108)
+Site1s_S112_L001_R2_001.fastq.gz
+         32,768   0%  132.78kB/s    0:01:41       13,539,813 100%   43.48MB/s    0:00:00 (xfr#46, to-chk=62/108)
+Site1t_S113_L001_R1_001.fastq.gz
+         32,768   0%  107.74kB/s    0:01:48       11,735,076 100%   33.51MB/s    0:00:00 (xfr#47, to-chk=61/108)
+Site1t_S113_L001_R2_001.fastq.gz
+         32,768   0%   95.52kB/s    0:02:18       13,260,345 100%   27.85MB/s    0:00:00 (xfr#48, to-chk=60/108)
+Site1v_S117_L001_R1_001.fastq.gz
+         32,768   0%   69.87kB/s    0:02:13        9,342,851 100%   17.82MB/s    0:00:00 (xfr#49, to-chk=59/108)
+Site1v_S117_L001_R2_001.fastq.gz
+         32,768   0%   64.00kB/s    0:02:41       10,359,447 100%   19.07MB/s    0:00:00 (xfr#50, to-chk=58/108)
+Site1w_S118_L001_R1_001.fastq.gz
+         32,768   0%   61.66kB/s    0:02:41        9,964,110 100%   17.60MB/s    0:00:00 (xfr#51, to-chk=57/108)
+Site1w_S118_L001_R2_001.fastq.gz
+         32,768   0%   59.26kB/s    0:03:06       11,075,680 100%   17.40MB/s    0:00:00 (xfr#52, to-chk=56/108)
+Site1y_S120_L001_R1_001.fastq.gz
+         32,768   0%   52.72kB/s    0:02:43        8,648,625 100%   12.93MB/s    0:00:00 (xfr#53, to-chk=55/108)
+Site1y_S120_L001_R2_001.fastq.gz
+         32,768   0%   50.16kB/s    0:03:13        9,735,967 100%   14.13MB/s    0:00:00 (xfr#54, to-chk=54/108)
+Site1z_S129_L001_R1_001.fastq.gz
+         32,768   0%   48.71kB/s    0:02:21        6,906,228 100%    9.82MB/s    0:00:00 (xfr#55, to-chk=53/108)
+Site1z_S129_L001_R2_001.fastq.gz
+         32,768   0%   47.69kB/s    0:02:38        7,594,675 100%   10.57MB/s    0:00:00 (xfr#56, to-chk=52/108)
+Site5J_S107_L001_R1_001.fastq.gz
+          3,152 100%    4.49kB/s    0:00:00            3,152 100%    4.49kB/s    0:00:00 (xfr#57, to-chk=51/108)
+Site5J_S107_L001_R2_001.fastq.gz
+          3,267 100%    4.66kB/s    0:00:00            3,267 100%    4.66kB/s    0:00:00 (xfr#58, to-chk=50/108)
+Site5L_S109_L001_R1_001.fastq.gz
+         32,768   0%   46.72kB/s    0:03:46       10,591,641 100%   14.43MB/s    0:00:00 (xfr#59, to-chk=49/108)
+Site5L_S109_L001_R2_001.fastq.gz
+         32,768   0%   45.71kB/s    0:04:29       12,335,179 100%   16.25MB/s    0:00:00 (xfr#60, to-chk=48/108)
+Site5a_S87_L001_R1_001.fastq.gz
+         32,768   0%   44.20kB/s    0:02:09        5,736,372 100%    7.41MB/s    0:00:00 (xfr#61, to-chk=47/108)
+Site5a_S87_L001_R2_001.fastq.gz
+         32,768   0%   43.36kB/s    0:02:35        6,756,033 100%    8.63MB/s    0:00:00 (xfr#62, to-chk=46/108)
+Site5aa_S132_L001_R1_001.fastq.gz
+         32,768   0%   42.78kB/s    0:06:43       17,275,560 100%   21.07MB/s    0:00:00 (xfr#63, to-chk=45/108)
+Site5aa_S132_L001_R2_001.fastq.gz
+         32,768   0%   40.92kB/s    0:07:38       18,803,462 100%   21.66MB/s    0:00:00 (xfr#64, to-chk=44/108)
+Site5b_S88_L001_R1_001.fastq.gz
+         32,768   0%   38.60kB/s    0:03:54        9,073,525 100%   10.25MB/s    0:00:00 (xfr#65, to-chk=43/108)
+Site5b_S88_L001_R2_001.fastq.gz
+         32,768   0%   37.91kB/s    0:04:42       10,726,254 100%   11.88MB/s    0:00:00 (xfr#66, to-chk=42/108)
+Site5bb_S133_L001_R1_001.fastq.gz
+         32,768   0%   37.12kB/s    0:09:28       21,123,332 100%   22.36MB/s    0:00:00 (xfr#67, to-chk=41/108)
+Site5bb_S133_L001_R2_001.fastq.gz
+         32,768   0%   35.52kB/s    0:11:02       23,551,318 100%   23.67MB/s    0:00:00 (xfr#68, to-chk=40/108)
+Site5c_S89_L001_R1_001.fastq.gz
+         32,768   0%   33.72kB/s    0:01:52        3,809,576 100%    3.76MB/s    0:00:00 (xfr#69, to-chk=39/108)
+Site5c_S89_L001_R2_001.fastq.gz
+         32,768   0%   33.09kB/s    0:02:01        4,045,650 100%    3.91MB/s    0:00:00 (xfr#70, to-chk=38/108)
+Site5cc_S134_L001_R1_001.fastq.gz
+         32,768   0%   32.39kB/s    0:11:49        2,195,456   9%    2.09MB/s    0:00:09       23,024,076 100%   20.81MB/s    0:00:01 (xfr#71, to-chk=37/108)
+Site5cc_S134_L001_R2_001.fastq.gz
+         32,768   0%  581.82kB/s    0:00:47       27,433,098 100%  261.62MB/s    0:00:00 (xfr#72, to-chk=36/108)
+Site5e_S95_L001_R1_001.fastq.gz
+         32,768   0%  316.83kB/s    0:00:39       12,623,394 100%   91.90MB/s    0:00:00 (xfr#73, to-chk=35/108)
+Site5e_S95_L001_R2_001.fastq.gz
+         32,768   0%  244.27kB/s    0:00:55       13,593,516 100%   83.64MB/s    0:00:00 (xfr#74, to-chk=34/108)
+Site5ee_S136_L001_R1_001.fastq.gz
+         32,768   0%  205.13kB/s    0:01:10       14,409,417 100%   73.49MB/s    0:00:00 (xfr#75, to-chk=33/108)
+Site5ee_S136_L001_R2_001.fastq.gz
+         32,768   0%  171.12kB/s    0:01:34       16,177,439 100%   67.08MB/s    0:00:00 (xfr#76, to-chk=32/108)
+Site5f_S96_L001_R1_001.fastq.gz
+         32,768   4%  139.13kB/s    0:00:04          687,567 100%    2.83MB/s    0:00:00 (xfr#77, to-chk=31/108)
+Site5f_S96_L001_R2_001.fastq.gz
+         32,768   5%  137.93kB/s    0:00:04          586,382 100%    2.39MB/s    0:00:00 (xfr#78, to-chk=30/108)
+Site5ff_S137_L001_R1_001.fastq.gz
+         32,768   0%  136.75kB/s    0:03:08       25,791,900 100%   84.53MB/s    0:00:00 (xfr#79, to-chk=29/108)
+Site5ff_S137_L001_R2_001.fastq.gz
+         32,768   0%  109.97kB/s    0:04:22       28,940,772 100%   76.67MB/s    0:00:00 (xfr#80, to-chk=28/108)
+Site5g_S97_L001_R1_001.fastq.gz
+         32,768   0%   88.89kB/s    0:01:43        9,192,625 100%   23.01MB/s    0:00:00 (xfr#81, to-chk=27/108)
+Site5g_S97_L001_R2_001.fastq.gz
+         32,768   0%   83.99kB/s    0:02:01       10,215,095 100%   24.35MB/s    0:00:00 (xfr#82, to-chk=26/108)
+Site5h_S98_L001_R1_001.fastq.gz
+         32,768   0%   80.00kB/s    0:02:36       12,583,460 100%   27.97MB/s    0:00:00 (xfr#83, to-chk=25/108)
+Site5h_S98_L001_R2_001.fastq.gz
+         32,768   0%   74.59kB/s    0:03:00       13,492,257 100%   28.22MB/s    0:00:00 (xfr#84, to-chk=24/108)
+Site5k_S108_L001_R1_001.fastq.gz
+         32,768   0%   70.18kB/s    0:00:49        3,490,162 100%    7.19MB/s    0:00:00 (xfr#85, to-chk=23/108)
+Site5k_S108_L001_R2_001.fastq.gz
+         32,768   0%   68.97kB/s    0:01:03        4,381,885 100%    8.85MB/s    0:00:00 (xfr#86, to-chk=22/108)
+Site5m_S110_L001_R1_001.fastq.gz
+         32,768   0%   67.80kB/s    0:01:33        6,394,434 100%   12.60MB/s    0:00:00 (xfr#87, to-chk=21/108)
+Site5m_S110_L001_R2_001.fastq.gz
+         32,768   0%   65.98kB/s    0:01:50        7,315,926 100%   13.95MB/s    0:00:00 (xfr#88, to-chk=20/108)
+Site5n_S115_L001_R1_001.fastq.gz
+         32,768   0%   64.00kB/s    0:01:38        6,337,613 100%   11.80MB/s    0:00:00 (xfr#89, to-chk=19/108)
+Site5n_S115_L001_R2_001.fastq.gz
+         32,768   0%   62.50kB/s    0:01:49        6,878,872 100%   12.42MB/s    0:00:00 (xfr#90, to-chk=18/108)
+Site5o_S116_L001_R1_001.fastq.gz
+         32,768   0%   60.61kB/s    0:01:39        6,076,898 100%   10.71MB/s    0:00:00 (xfr#91, to-chk=17/108)
+Site5o_S116_L001_R2_001.fastq.gz
+         32,768   0%   59.15kB/s    0:01:51        6,648,513 100%   11.40MB/s    0:00:00 (xfr#92, to-chk=16/108)
+Site5p_S121_L001_R1_001.fastq.gz
+         32,768   0%   57.45kB/s    0:02:19        8,050,112 100%   13.24MB/s    0:00:00 (xfr#93, to-chk=15/108)
+Site5p_S121_L001_R2_001.fastq.gz
+         32,768   0%   55.08kB/s    0:02:45        9,138,963 100%   14.41MB/s    0:00:00 (xfr#94, to-chk=14/108)
+Site5q_S122_L001_R1_001.fastq.gz
+         32,768   0%   52.89kB/s    0:04:56       15,700,699 100%   23.25MB/s    0:00:00 (xfr#95, to-chk=13/108)
+Site5q_S122_L001_R2_001.fastq.gz
+         32,768   0%   49.69kB/s    0:05:23       16,118,120 100%   22.77MB/s    0:00:00 (xfr#96, to-chk=12/108)
+Site5r_S123_L001_R1_001.fastq.gz
+         32,768   0%   47.41kB/s    0:03:24        9,712,950 100%   13.33MB/s    0:00:00 (xfr#97, to-chk=11/108)
+Site5r_S123_L001_R2_001.fastq.gz
+         32,768   0%   46.04kB/s    0:03:55       10,897,039 100%   14.51MB/s    0:00:00 (xfr#98, to-chk=10/108)
+Site5s_S124_L001_R1_001.fastq.gz
+         32,768   0%   44.69kB/s    0:02:43        7,340,512 100%    9.56MB/s    0:00:00 (xfr#99, to-chk=9/108)
+Site5s_S124_L001_R2_001.fastq.gz
+         32,768   0%   43.72kB/s    0:03:19        8,732,252 100%   11.12MB/s    0:00:00 (xfr#100, to-chk=8/108)
+Site5u_S126_L001_R1_001.fastq.gz
+         32,768   0%   42.72kB/s    0:01:57        5,033,056 100%    6.32MB/s    0:00:00 (xfr#101, to-chk=7/108)
+Site5u_S126_L001_R2_001.fastq.gz
+         32,768   0%   42.16kB/s    0:02:11        5,584,122 100%    6.90MB/s    0:00:00 (xfr#102, to-chk=6/108)
+Site5v_S127_L001_R1_001.fastq.gz
+         32,768   0%   41.45kB/s    0:01:43        4,309,446 100%    5.26MB/s    0:00:00 (xfr#103, to-chk=5/108)
+Site5v_S127_L001_R2_001.fastq.gz
+         32,768   0%   40.97kB/s    0:01:56        4,795,986 100%    5.78MB/s    0:00:00 (xfr#104, to-chk=4/108)
+Site5w_S128_L001_R1_001.fastq.gz
+          1,181 100%    1.46kB/s    0:00:00            1,181 100%    1.46kB/s    0:00:00 (xfr#105, to-chk=3/108)
+Site5w_S128_L001_R2_001.fastq.gz
+          1,265 100%    1.56kB/s    0:00:00            1,265 100%    1.56kB/s    0:00:00 (xfr#106, to-chk=2/108)
+Site5z_S131_L001_R1_001.fastq.gz
+         32,768   0%   40.46kB/s    0:14:08       34,377,141 100%   37.64MB/s    0:00:00 (xfr#107, to-chk=1/108)
+Site5z_S131_L001_R2_001.fastq.gz
+         32,768   0%   36.74kB/s    0:17:11       37,920,700 100%   37.55MB/s    0:00:00 (xfr#108, to-chk=0/108)
+
+sent 1,198,592,058 bytes  received 2,068 bytes  342,455,464.57 bytes/sec
+total size is 1,198,291,484  speedup is 1.00
+total 2.7G
+-rw-rw-r-- 1 sam sam 406M Apr 24 07:43 demux-paired-end-filtered.qza
+-rw-rw-r-- 1 sam sam  17K Apr 24 07:43 demux-paired-end-filter-stats.qza
+-rw-rw-r-- 1 sam sam 1.2G Apr 24 07:23 demux-paired-end.qza
+-rw-rw-r-- 1 sam sam 9.7M Apr 22 16:49 Site1a_S83_L001_R1_001.fastq.gz
+-rw-rw-r-- 1 sam sam  11M Apr 22 16:49 Site1a_S83_L001_R2_001.fastq.gz
+-rw-rw-r-- 1 sam sam 7.0M Apr 22 16:49 Site1bb_S139_L001_R1_001.fastq.gz
+-rw-rw-r-- 1 sam sam 7.5M Apr 22 16:49 Site1bb_S139_L001_R2_001.fastq.gz
+-rw-rw-r-- 1 sam sam 9.2M Apr 22 16:50 Site1b_S84_L001_R1_001.fastq.gz
+-rw-rw-r-- 1 sam sam  10M Apr 22 16:50 Site1b_S84_L001_R2_001.fastq.gz
+-rw-rw-r-- 1 sam sam  17M Apr 22 16:50 Site1cc_S140_L001_R1_001.fastq.gz
+-rw-rw-r-- 1 sam sam  19M Apr 22 16:50 Site1cc_S140_L001_R2_001.fastq.gz
+-rw-rw-r-- 1 sam sam 6.8M Apr 22 16:51 Site1c_S85_L001_R1_001.fastq.gz
+-rw-rw-r-- 1 sam sam 7.4M Apr 22 16:51 Site1c_S85_L001_R2_001.fastq.gz
+-rw-rw-r-- 1 sam sam  19M Apr 22 16:51 Site1dd_S141_L001_R1_001.fastq.gz
+-rw-rw-r-- 1 sam sam  19M Apr 22 16:51 Site1dd_S141_L001_R2_001.fastq.gz
+-rw-rw-r-- 1 sam sam 9.5M Apr 22 16:52 Site1d_S86_L001_R1_001.fastq.gz
+-rw-rw-r-- 1 sam sam  11M Apr 22 16:52 Site1d_S86_L001_R2_001.fastq.gz
+-rw-rw-r-- 1 sam sam  12M Apr 22 16:52 Site1ee_S142_L001_R1_001.fastq.gz
+-rw-rw-r-- 1 sam sam  11M Apr 22 16:52 Site1ee_S142_L001_R2_001.fastq.gz
+-rw-rw-r-- 1 sam sam 1.6M Apr 22 16:52 Site1e_S91_L001_R1_001.fastq.gz
+-rw-rw-r-- 1 sam sam 1.7M Apr 22 16:52 Site1e_S91_L001_R2_001.fastq.gz
+-rw-rw-r-- 1 sam sam  11M Apr 22 16:53 Site1f_S92_L001_R1_001.fastq.gz
+-rw-rw-r-- 1 sam sam  12M Apr 22 16:53 Site1f_S92_L001_R2_001.fastq.gz
+-rw-rw-r-- 1 sam sam 9.7M Apr 22 16:53 Site1g_S93_L001_R1_001.fastq.gz
+-rw-rw-r-- 1 sam sam  11M Apr 22 16:53 Site1g_S93_L001_R2_001.fastq.gz
+-rw-rw-r-- 1 sam sam 3.5M Apr 22 16:54 Site1h_S94_L001_R1_001.fastq.gz
+-rw-rw-r-- 1 sam sam 3.8M Apr 22 16:54 Site1h_S94_L001_R2_001.fastq.gz
+-rw-rw-r-- 1 sam sam 1.1M Apr 22 16:54 Site1J_S99_L001_R1_001.fastq.gz
+-rw-rw-r-- 1 sam sam 851K Apr 22 16:54 Site1J_S99_L001_R2_001.fastq.gz
+-rw-rw-r-- 1 sam sam 7.1M Apr 22 16:54 Site1k_S100_L001_R1_001.fastq.gz
+-rw-rw-r-- 1 sam sam 7.0M Apr 22 16:54 Site1k_S100_L001_R2_001.fastq.gz
+-rw-rw-r-- 1 sam sam 2.6M Apr 22 16:54 Site1L_S101_L001_R1_001.fastq.gz
+-rw-rw-r-- 1 sam sam 3.0M Apr 22 16:54 Site1L_S101_L001_R2_001.fastq.gz
+-rw-rw-r-- 1 sam sam 9.9M Apr 22 16:54 Site1m_S102_L001_R1_001.fastq.gz
+-rw-rw-r-- 1 sam sam  11M Apr 22 16:54 Site1m_S102_L001_R2_001.fastq.gz
+-rw-rw-r-- 1 sam sam  14M Apr 22 16:55 Site1n_S103_L001_R1_001.fastq.gz
+-rw-rw-r-- 1 sam sam  15M Apr 22 16:55 Site1n_S103_L001_R2_001.fastq.gz
+-rw-rw-r-- 1 sam sam  12M Apr 22 16:56 Site1o_S104_L001_R1_001.fastq.gz
+-rw-rw-r-- 1 sam sam  13M Apr 22 16:56 Site1o_S104_L001_R2_001.fastq.gz
+-rw-rw-r-- 1 sam sam  55M Apr 22 16:56 Site1p_S105_L001_R1_001.fastq.gz
+-rw-rw-r-- 1 sam sam  56M Apr 22 16:56 Site1p_S105_L001_R2_001.fastq.gz
+-rw-rw-r-- 1 sam sam 5.8M Apr 22 16:57 Site1q_S106_L001_R1_001.fastq.gz
+-rw-rw-r-- 1 sam sam 6.2M Apr 22 16:57 Site1q_S106_L001_R2_001.fastq.gz
+-rw-rw-r-- 1 sam sam 8.5M Apr 22 16:57 Site1r_S111_L001_R1_001.fastq.gz
+-rw-rw-r-- 1 sam sam 9.6M Apr 22 16:57 Site1r_S111_L001_R2_001.fastq.gz
+-rw-rw-r-- 1 sam sam  12M Apr 22 16:58 Site1s_S112_L001_R1_001.fastq.gz
+-rw-rw-r-- 1 sam sam  13M Apr 22 16:58 Site1s_S112_L001_R2_001.fastq.gz
+-rw-rw-r-- 1 sam sam  12M Apr 22 16:58 Site1t_S113_L001_R1_001.fastq.gz
+-rw-rw-r-- 1 sam sam  13M Apr 22 16:58 Site1t_S113_L001_R2_001.fastq.gz
+-rw-rw-r-- 1 sam sam 3.2M Apr 22 16:58 Site1U_S114_L001_R1_001.fastq.gz
+-rw-rw-r-- 1 sam sam 3.6M Apr 22 16:58 Site1U_S114_L001_R2_001.fastq.gz
+-rw-rw-r-- 1 sam sam 9.0M Apr 22 16:59 Site1v_S117_L001_R1_001.fastq.gz
+-rw-rw-r-- 1 sam sam 9.9M Apr 22 16:59 Site1v_S117_L001_R2_001.fastq.gz
+-rw-rw-r-- 1 sam sam 9.6M Apr 22 16:59 Site1w_S118_L001_R1_001.fastq.gz
+-rw-rw-r-- 1 sam sam  11M Apr 22 16:59 Site1w_S118_L001_R2_001.fastq.gz
+-rw-rw-r-- 1 sam sam 8.3M Apr 22 17:00 Site1y_S120_L001_R1_001.fastq.gz
+-rw-rw-r-- 1 sam sam 9.3M Apr 22 17:00 Site1y_S120_L001_R2_001.fastq.gz
+-rw-rw-r-- 1 sam sam 6.6M Apr 22 17:00 Site1z_S129_L001_R1_001.fastq.gz
+-rw-rw-r-- 1 sam sam 7.3M Apr 22 17:00 Site1z_S129_L001_R2_001.fastq.gz
+-rw-rw-r-- 1 sam sam  17M Apr 22 17:01 Site5aa_S132_L001_R1_001.fastq.gz
+-rw-rw-r-- 1 sam sam  18M Apr 22 17:01 Site5aa_S132_L001_R2_001.fastq.gz
+-rw-rw-r-- 1 sam sam 5.5M Apr 22 17:01 Site5a_S87_L001_R1_001.fastq.gz
+-rw-rw-r-- 1 sam sam 6.5M Apr 22 17:01 Site5a_S87_L001_R2_001.fastq.gz
+-rw-rw-r-- 1 sam sam  21M Apr 22 17:02 Site5bb_S133_L001_R1_001.fastq.gz
+-rw-rw-r-- 1 sam sam  23M Apr 22 17:02 Site5bb_S133_L001_R2_001.fastq.gz
+-rw-rw-r-- 1 sam sam 8.7M Apr 22 17:02 Site5b_S88_L001_R1_001.fastq.gz
+-rw-rw-r-- 1 sam sam  11M Apr 22 17:02 Site5b_S88_L001_R2_001.fastq.gz
+-rw-rw-r-- 1 sam sam  22M Apr 22 17:03 Site5cc_S134_L001_R1_001.fastq.gz
+-rw-rw-r-- 1 sam sam  27M Apr 22 17:03 Site5cc_S134_L001_R2_001.fastq.gz
+-rw-rw-r-- 1 sam sam 3.7M Apr 22 17:03 Site5c_S89_L001_R1_001.fastq.gz
+-rw-rw-r-- 1 sam sam 3.9M Apr 22 17:03 Site5c_S89_L001_R2_001.fastq.gz
+-rw-rw-r-- 1 sam sam  14M Apr 22 17:03 Site5ee_S136_L001_R1_001.fastq.gz
+-rw-rw-r-- 1 sam sam  16M Apr 22 17:03 Site5ee_S136_L001_R2_001.fastq.gz
+-rw-rw-r-- 1 sam sam  13M Apr 22 17:04 Site5e_S95_L001_R1_001.fastq.gz
+-rw-rw-r-- 1 sam sam  13M Apr 22 17:04 Site5e_S95_L001_R2_001.fastq.gz
+-rw-rw-r-- 1 sam sam  25M Apr 22 17:04 Site5ff_S137_L001_R1_001.fastq.gz
+-rw-rw-r-- 1 sam sam  28M Apr 22 17:04 Site5ff_S137_L001_R2_001.fastq.gz
+-rw-rw-r-- 1 sam sam 672K Apr 22 17:04 Site5f_S96_L001_R1_001.fastq.gz
+-rw-rw-r-- 1 sam sam 573K Apr 22 17:04 Site5f_S96_L001_R2_001.fastq.gz
+-rw-rw-r-- 1 sam sam 8.8M Apr 22 17:05 Site5g_S97_L001_R1_001.fastq.gz
+-rw-rw-r-- 1 sam sam 9.8M Apr 22 17:05 Site5g_S97_L001_R2_001.fastq.gz
+-rw-rw-r-- 1 sam sam  13M Apr 22 17:05 Site5h_S98_L001_R1_001.fastq.gz
+-rw-rw-r-- 1 sam sam  13M Apr 22 17:05 Site5h_S98_L001_R2_001.fastq.gz
+-rw-rw-r-- 1 sam sam 3.1K Apr 22 17:05 Site5J_S107_L001_R1_001.fastq.gz
+-rw-rw-r-- 1 sam sam 3.2K Apr 22 17:05 Site5J_S107_L001_R2_001.fastq.gz
+-rw-rw-r-- 1 sam sam 3.4M Apr 22 17:05 Site5k_S108_L001_R1_001.fastq.gz
+-rw-rw-r-- 1 sam sam 4.2M Apr 22 17:05 Site5k_S108_L001_R2_001.fastq.gz
+-rw-rw-r-- 1 sam sam  11M Apr 22 17:06 Site5L_S109_L001_R1_001.fastq.gz
+-rw-rw-r-- 1 sam sam  12M Apr 22 17:06 Site5L_S109_L001_R2_001.fastq.gz
+-rw-rw-r-- 1 sam sam 6.1M Apr 22 17:06 Site5m_S110_L001_R1_001.fastq.gz
+-rw-rw-r-- 1 sam sam 7.0M Apr 22 17:06 Site5m_S110_L001_R2_001.fastq.gz
+-rw-rw-r-- 1 sam sam 6.1M Apr 22 17:06 Site5n_S115_L001_R1_001.fastq.gz
+-rw-rw-r-- 1 sam sam 6.6M Apr 22 17:06 Site5n_S115_L001_R2_001.fastq.gz
+-rw-rw-r-- 1 sam sam 5.8M Apr 22 17:07 Site5o_S116_L001_R1_001.fastq.gz
+-rw-rw-r-- 1 sam sam 6.4M Apr 22 17:07 Site5o_S116_L001_R2_001.fastq.gz
+-rw-rw-r-- 1 sam sam 7.7M Apr 22 17:07 Site5p_S121_L001_R1_001.fastq.gz
+-rw-rw-r-- 1 sam sam 8.8M Apr 22 17:07 Site5p_S121_L001_R2_001.fastq.gz
+-rw-rw-r-- 1 sam sam  15M Apr 22 17:08 Site5q_S122_L001_R1_001.fastq.gz
+-rw-rw-r-- 1 sam sam  16M Apr 22 17:08 Site5q_S122_L001_R2_001.fastq.gz
+-rw-rw-r-- 1 sam sam 9.3M Apr 22 17:08 Site5r_S123_L001_R1_001.fastq.gz
+-rw-rw-r-- 1 sam sam  11M Apr 22 17:08 Site5r_S123_L001_R2_001.fastq.gz
+-rw-rw-r-- 1 sam sam 7.1M Apr 22 17:08 Site5s_S124_L001_R1_001.fastq.gz
+-rw-rw-r-- 1 sam sam 8.4M Apr 22 17:08 Site5s_S124_L001_R2_001.fastq.gz
+-rw-rw-r-- 1 sam sam 4.8M Apr 22 17:09 Site5u_S126_L001_R1_001.fastq.gz
+-rw-rw-r-- 1 sam sam 5.4M Apr 22 17:09 Site5u_S126_L001_R2_001.fastq.gz
+-rw-rw-r-- 1 sam sam 4.2M Apr 22 17:09 Site5v_S127_L001_R1_001.fastq.gz
+-rw-rw-r-- 1 sam sam 4.6M Apr 22 17:09 Site5v_S127_L001_R2_001.fastq.gz
+-rw-rw-r-- 1 sam sam 1.2K Apr 22 17:09 Site5w_S128_L001_R1_001.fastq.gz
+-rw-rw-r-- 1 sam sam 1.3K Apr 22 17:09 Site5w_S128_L001_R2_001.fastq.gz
+-rw-rw-r-- 1 sam sam  33M Apr 22 17:09 Site5z_S131_L001_R1_001.fastq.gz
+-rw-rw-r-- 1 sam sam  37M Apr 22 17:09 Site5z_S131_L001_R2_001.fastq.gz</code></pre>
+</section>
+<section id="import-to-qiime2-qza-format" class="level2">
+<h2 class="anchored" data-anchor-id="import-to-qiime2-qza-format">4.2 Import to QIIME2 QZA format</h2>
+<div class="sourceCode" id="cb7" style="background: #f1f3f5;"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb7-1"></span>
+<span id="cb7-2"><span class="ex" style="color: null;
+background-color: null;
+font-style: inherit;">qiime</span> tools import <span class="dt" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">\</span></span>
+<span id="cb7-3">  <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">--type</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">'SampleData[PairedEndSequencesWithQuality]'</span> <span class="dt" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">\</span></span>
+<span id="cb7-4">  <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">--input-path</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"</span><span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">${output_dir}</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"</span> <span class="dt" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">\</span></span>
+<span id="cb7-5">  <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">--input-format</span> CasavaOneEightSingleLanePerSampleDirFmt <span class="dt" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">\</span></span>
+<span id="cb7-6">  <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">--output-path</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"</span><span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">${output_dir}</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"</span>/demux-paired-end.qza</span>
+<span id="cb7-7">  </span>
+<span id="cb7-8"><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># Remove trimmed reads</span></span>
+<span id="cb7-9"><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">rm</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"</span><span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">${output_dir}</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"</span>/<span class="pp" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">*</span>.fastq.gz</span></code></pre></div>
+<pre><code>There was a problem importing /home/sam/gitrepos/RobertsLab/project-eDNA-yellow/output/02.00-qiime2:
+
+  Unrecognized file (/home/sam/gitrepos/RobertsLab/project-eDNA-yellow/output/02.00-qiime2/demux-paired-end-filtered.qza) for CasavaOneEightSingleLanePerSampleDirFmt.</code></pre>
+</section>
+</section>
+<section id="deblur" class="level1">
+<h1>5 Deblur</h1>
+<section id="quality-filter" class="level2">
+<h2 class="anchored" data-anchor-id="quality-filter">5.1 Quality filter</h2>
+<div class="sourceCode" id="cb9" style="background: #f1f3f5;"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb9-1"><span class="ex" style="color: null;
+background-color: null;
+font-style: inherit;">qiime</span> quality-filter q-score <span class="dt" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">\</span></span>
+<span id="cb9-2"> <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">--i-demux</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"</span><span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">${output_dir}</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"</span>/demux-paired-end.qza <span class="dt" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">\</span></span>
+<span id="cb9-3"> <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">--o-filtered-sequences</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"</span><span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">${output_dir}</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"</span>/demux-paired-end-filtered.qza <span class="dt" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">\</span></span>
+<span id="cb9-4"> <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">--o-filter-stats</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"</span><span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">${output_dir}</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"</span>/demux-paired-end-filter-stats.qza</span></code></pre></div>
+<pre><code>Saved SampleData[SequencesWithQuality] to: /home/sam/gitrepos/RobertsLab/project-eDNA-yellow/output/02.00-qiime2/demux-paired-end-filtered.qza
+Saved QualityFilterStats to: /home/sam/gitrepos/RobertsLab/project-eDNA-yellow/output/02.00-qiime2/demux-paired-end-filter-stats.qza</code></pre>
+</section>
+<section id="denoise" class="level2">
+<h2 class="anchored" data-anchor-id="denoise">5.2 Denoise</h2>
+<p>Trim length is based on FastQC results, where most samples show sharp drop in quality scores.</p>
+<div class="sourceCode" id="cb11" style="background: #f1f3f5;"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb11-1"><span class="ex" style="color: null;
+background-color: null;
+font-style: inherit;">qiime</span> deblur denoise-other <span class="dt" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">\</span></span>
+<span id="cb11-2">  <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">--i-demultiplexed-seqs</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"</span><span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">${output_dir}</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"</span>/demux-paired-end-filtered.qza <span class="dt" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">\</span></span>
+<span id="cb11-3">  <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">--i-reference-seqs</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"</span><span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">${silva_ref_seqs}</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"</span> <span class="dt" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">\</span></span>
+<span id="cb11-4">  <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">--p-trim-length</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"</span><span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">${deblur_ptrim_length}</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"</span> <span class="dt" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">\</span></span>
+<span id="cb11-5">  <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">--o-representative-sequences</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"</span><span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">${output_dir}</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"</span>/rep-seqs-deblur.qza <span class="dt" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">\</span></span>
+<span id="cb11-6">  <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">--o-table</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"</span><span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">${output_dir}</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"</span>/table-deblur.qza <span class="dt" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">\</span></span>
+<span id="cb11-7">  <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">--p-sample-stats</span> <span class="dt" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">\</span></span>
+<span id="cb11-8">  <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">--p-jobs-to-start</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"</span><span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">${threads}</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"</span> <span class="dt" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">\</span></span>
+<span id="cb11-9">  <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">--o-stats</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"</span><span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">${output_dir}</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"</span>/deblur-stats.qza</span></code></pre></div>
+<pre><code>Saved FeatureTable[Frequency] to: /home/sam/gitrepos/RobertsLab/project-eDNA-yellow/output/02.00-qiime2/table-deblur.qza
+Saved FeatureData[Sequence] to: /home/sam/gitrepos/RobertsLab/project-eDNA-yellow/output/02.00-qiime2/rep-seqs-deblur.qza
+Saved DeblurStats to: /home/sam/gitrepos/RobertsLab/project-eDNA-yellow/output/02.00-qiime2/deblur-stats.qza</code></pre>
+</section>
+<section id="deblur-visualization" class="level2">
+<h2 class="anchored" data-anchor-id="deblur-visualization">5.3 Deblur visualization</h2>
+<div class="sourceCode" id="cb13" style="background: #f1f3f5;"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb13-1"><span class="ex" style="color: null;
+background-color: null;
+font-style: inherit;">qiime</span> deblur visualize-stats <span class="dt" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">\</span></span>
+<span id="cb13-2">  <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">--i-deblur-stats</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"</span><span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">${output_dir}</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"</span>/deblur-stats.qza <span class="dt" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">\</span></span>
+<span id="cb13-3">  <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">--o-visualization</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"</span><span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">${output_dir}</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"</span>/deblur-stats.qzv</span></code></pre></div>
+<pre><code>Saved Visualization to: /home/sam/gitrepos/RobertsLab/project-eDNA-yellow/output/02.00-qiime2/deblur-stats.qzv</code></pre>
+</section>
+</section>
+<section id="feature-table" class="level1">
+<h1>6 Feature Table</h1>
+<div class="sourceCode" id="cb15" style="background: #f1f3f5;"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb15-1"><span class="ex" style="color: null;
+background-color: null;
+font-style: inherit;">qiime</span> feature-table summarize <span class="dt" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">\</span></span>
+<span id="cb15-2">  <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">--i-table</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"</span><span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">${output_dir}</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"</span>/table-deblur.qza <span class="dt" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">\</span></span>
+<span id="cb15-3">  <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">--o-visualization</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"</span><span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">${output_dir}</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"</span>/table.qzv <span class="dt" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">\</span></span>
+<span id="cb15-4">  <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">--m-sample-metadata-file</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"</span><span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">${metadata}</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"</span></span>
+<span id="cb15-5"></span>
+<span id="cb15-6"><span class="ex" style="color: null;
+background-color: null;
+font-style: inherit;">qiime</span> feature-table tabulate-seqs <span class="dt" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">\</span></span>
+<span id="cb15-7">  <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">--i-data</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"</span><span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">${output_dir}</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"</span>/rep-seqs-deblur.qza <span class="dt" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">\</span></span>
+<span id="cb15-8">  <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">--o-visualization</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"</span><span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">${output_dir}</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"</span>/rep-seqs-deblur.qzv</span></code></pre></div>
+<pre><code>Saved Visualization to: /home/sam/gitrepos/RobertsLab/project-eDNA-yellow/output/02.00-qiime2/table.qzv
+Saved Visualization to: /home/sam/gitrepos/RobertsLab/project-eDNA-yellow/output/02.00-qiime2/rep-seqs-deblur.qzv</code></pre>
+</section>
+<section id="taxonomy" class="level1">
+<h1>7 Taxonomy</h1>
+<section id="classification" class="level2">
+<h2 class="anchored" data-anchor-id="classification">7.1 Classification</h2>
+<div class="sourceCode" id="cb17" style="background: #f1f3f5;"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb17-1"><span class="ex" style="color: null;
+background-color: null;
+font-style: inherit;">qiime</span> feature-classifier classify-sklearn <span class="dt" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">\</span></span>
+<span id="cb17-2">  <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">--i-classifier</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"</span><span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">${silva_classifier}</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"</span> <span class="dt" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">\</span></span>
+<span id="cb17-3">  <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">--i-reads</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"</span><span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">${output_dir}</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"</span>/rep-seqs-deblur.qza <span class="dt" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">\</span></span>
+<span id="cb17-4">  <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">--o-classification</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"</span><span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">${output_dir}</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"</span>/taxonomy.qza</span>
+<span id="cb17-5"></span>
+<span id="cb17-6"><span class="ex" style="color: null;
+background-color: null;
+font-style: inherit;">qiime</span> metadata tabulate <span class="dt" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">\</span></span>
+<span id="cb17-7">  <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">--m-input-file</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"</span><span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">${output_dir}</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"</span>/taxonomy.qza <span class="dt" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">\</span></span>
+<span id="cb17-8">  <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">--o-visualization</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"</span><span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">${output_dir}</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"</span>/taxonomy.qzv</span></code></pre></div>
+<pre><code>Saved FeatureData[Taxonomy] to: /home/sam/gitrepos/RobertsLab/project-eDNA-yellow/output/02.00-qiime2/taxonomy.qza
+Saved Visualization to: /home/sam/gitrepos/RobertsLab/project-eDNA-yellow/output/02.00-qiime2/taxonomy.qzv</code></pre>
+</section>
+<section id="bar-plots" class="level2">
+<h2 class="anchored" data-anchor-id="bar-plots">7.2 Bar plots</h2>
+<div class="sourceCode" id="cb19" style="background: #f1f3f5;"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb19-1"><span class="ex" style="color: null;
+background-color: null;
+font-style: inherit;">qiime</span> taxa barplot <span class="dt" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">\</span></span>
+<span id="cb19-2">  <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">--i-table</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"</span><span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">${output_dir}</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"</span>/table-deblur.qza <span class="dt" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">\</span></span>
+<span id="cb19-3">  <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">--i-taxonomy</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"</span><span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">${output_dir}</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"</span>/taxonomy.qza <span class="dt" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">\</span></span>
+<span id="cb19-4">  <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">--m-metadata-file</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"</span><span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">${metadata}</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"</span> <span class="dt" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">\</span></span>
+<span id="cb19-5">  <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">--o-visualization</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"</span><span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">${output_dir}</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"</span>/taxa-bar-plots.qzv</span></code></pre></div>
+<pre><code>Saved Visualization to: /home/sam/gitrepos/RobertsLab/project-eDNA-yellow/output/02.00-qiime2/taxa-bar-plots.qzv</code></pre>
+</section>
+</section>
+<section id="results" class="level1">
+<h1>RESULTS</h1>
+<p>Taxonomic assignments are available in this QIIME 2 visualization file:</p>
+<ul>
+<li><a href="https://github.com/RobertsLab/project-eDNA-yellow/raw/516fd3772577550c1d8f991b116fe1f1081a0cec/output/02.00-qiime2/taxa-bar-plots.qzv"><code>taxa-bar-plots.qzv</code></a></li>
+</ul>
+<p>The resulting taxonomic output file is a QIIME 2 bar plot visualization. This can be downloaded (either by using the link below or by cloning this project’s repo) and then uploaded to the <a href="https://view.qiime2.org/">QIIME 2 Viewer website</a>. This provides interactive viewing/filtering/sorting of taxonomic assignments.</p>
+<p>If one wants the actual tables used to generate the interactive visualization, take the following steps:</p>
+<ol type="1">
+<li><p>Rename <code>taxa-bar-plots.qzv</code> to <code>taxa-bar-plots.zip</code> (QZV files are simply a ZIP file).</p></li>
+<li><p>Navigate to the <code>66fd6b7b-8685-46ee-995c-3cd1e139f288/data</code> directory.</p></li>
+<li><p>Open any of the <code>level-*.csv</code> files. Each level corresponds to a taxonomic level. E.g. Level 1 corresponds to Kingdom, Level 2 corresponds to Phylum, etc down to Level 7, which is Species.</p></li>
+</ol>
+<p>These CSVs contain counts assigned at each specific level of taxonomy for each Yellow Island site.</p>
+<p>When viewed at the Family level of classifcation, the bulk of the classifications fall into two groups/levels:</p>
+<ul>
+<li><p>Kingdom: Eukaryotes (light purple bars in plot below)</p></li>
+<li><p>Family: Capitellida (light green bars in plot below).</p></li>
+</ul>
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="https://robertslab.github.io/sams-notebook/posts/2025/2025-04-24-Taxonomy-Assignment---Yellow-Island-2018-eDNA-Samples-Using-QIIME-2/20250424-eDNA-taxonomic-bar-plots-01.png" class="img-fluid figure-img" alt="Screenshot showing taxonomic distribution across sites. The bulk of the classifications fall into two groups: Kingdom Eukaryotes (light purple bars) and Family Capitellida (light green bars)."></p>
+<figcaption>Screenshot showing taxonomic distribution across sites. The bulk of the classifications fall into two groups: Kingdom Eukaryotes (light purple bars) and Family Capitellida (light green bars).</figcaption>
+</figure>
+</div>
+<p>Additionaly analyses is needed to determine if the counts differ significantly between sites. Also, it would be interesting to somehow overlay these with data on currents flowing around Yellow Island.</p>
+</section>
+<section id="references" class="level1">
+<h1>REFERENCES</h1>
+<div id="refs" class="references csl-bib-body hanging-indent" data-entry-spacing="0">
+<div id="ref-bolyen2019" class="csl-entry">
+Bolyen, Evan, Jai Ram Rideout, Matthew R. Dillon, Nicholas A. Bokulich, Christian C. Abnet, Gabriel A. Al-Ghalith, Harriet Alexander, et al. 2019. “Reproducible, Interactive, Scalable and Extensible Microbiome Data Science Using QIIME 2.” <em>Nature Biotechnology</em> 37 (8): 852–57. <a href="https://doi.org/10.1038/s41587-019-0209-9" class="uri">https://doi.org/10.1038/s41587-019-0209-9</a>.
+</div>
+</div>
+
+
+</section>
+
+ ]]></description>
+  <category>2025</category>
+  <category>taxonomy</category>
+  <category>Yellow Island</category>
+  <category>eDNA</category>
+  <category>QIIME 2</category>
+  <guid>https://robertslab.github.io/sams-notebook/posts/2025/2025-04-24-Taxonomy-Assignment---Yellow-Island-2018-eDNA-Samples-Using-QIIME-2/</guid>
+  <pubDate>Thu, 24 Apr 2025 07:00:00 GMT</pubDate>
+</item>
 <item>
   <title>Trimming - Yellow Island eDNA FastQs Using Fastp FastQC and MultiQC</title>
   <dc:creator>Sam White</dc:creator>
@@ -20258,1560 +21357,6 @@ Ewels, Philip, Måns Magnusson, Sverker Lundin, and Max Käller. 2016. “MultiQ
   <category>timeseries_molecular</category>
   <category>coral</category>
   <guid>https://robertslab.github.io/sams-notebook/posts/2025/2025-02-12-Trimming---P.evermanni-WGBS-Trimming-and-QC-with-fastp-FastQC-and-MultiQC-for-E5-timeseries_molecular-Project/</guid>
-  <pubDate>Wed, 12 Feb 2025 08:00:00 GMT</pubDate>
-</item>
-<item>
-  <title>Trimming - P.tuahiniensis WGBS Trimming and QC with fastp FastQC and MultiQC for E5 timeseries_molecular Project</title>
-  <dc:creator>Sam White</dc:creator>
-  <link>https://robertslab.github.io/sams-notebook/posts/2025/2025-02-12-Trimming---P.tuahiniensis-WGBS-Trimming-and-QC-with-fastp-FastQC-and-MultiQC-for-E5-timeseries_molecular-Project/</link>
-  <description><![CDATA[ 
-
-
-
-
-
-<section id="intro" class="level1">
-<h1>INTRO</h1>
-<p>I <a href="../../../posts/2025/2025-02-10-FastQC-MultiQC---P.tuahiniensis-Raw-WGBS-Renaming-and-FastQC-MultiQC-timeseries_molecular-Project/index.html">previously ran FastQC and MultiQC quality checks (20250210)</a> (Notebook) on the <em>P.evermanni</em> raw whole genome bisulfite sequencing (WGBS) data <a href="../../../posts/2024/2024-12-30-Data-Received---Coral-E5-WGBS-Time-Series-from-Azenta-Project-30-1067895835/index.html">received 20241230</a> (Notebook), as part of <a href="https://github.com/urol-e5/timeseries_molecular">urol-e5/timeseries_molecular</a> (GitHub repo).</p>
-<div class="callout callout-style-default callout-tip callout-titled">
-<div class="callout-header d-flex align-content-center">
-<div class="callout-icon-container">
-<i class="callout-icon"></i>
-</div>
-<div class="callout-title-container flex-fill">
-Tip
-</div>
-</div>
-<div class="callout-body-container callout-body">
-<p>These are <em>directional</em> libraries - important info for downstream analysis.</p>
-</div>
-</div>
-<div class="callout callout-style-default callout-note callout-titled">
-<div class="callout-header d-flex align-content-center">
-<div class="callout-icon-container">
-<i class="callout-icon"></i>
-</div>
-<div class="callout-title-container flex-fill">
-Note
-</div>
-</div>
-<div class="callout-body-container callout-body">
-<p>The contents below are from markdown knitted from <a href="https://github.com/urol-e5/timeseries_molecular/blob/960d871c2d54d5c3fbdf3665a7fb4bafe68f88c7/F-Ptua/code/01.00-F-Ptua-WGBS-trimming-fastp-FastQC-MultiQC.Rmd"><code>01.00-F-Ptua-WGBS-trimming-fastp-FastQC-MultiQC.Rmd</code></a> (commit <code>960d871</code>).</p>
-</div>
-</div>
-</section>
-<section id="background" class="level1">
-<h1>1 Background</h1>
-<p>This notebook will trim raw WGBS FastQs using <a href="https://github.com/OpenGene/fastp">fastp</a> (Chen 2023). Samples which generate an error during trimming will attempt to be repaired using <a href="https://jgi.doe.gov/data-and-tools/software-tools/bbtools/">BBTools <code>repairl.sh</code></a> (BBMap – Bushnell B. – sourceforge.net/projects/bbmap/). Trimming results will be analyzed with FastQC and summarized by <a href="https://github.com/MultiQC/MultiQC">MultiQC</a> (Ewels et al.&nbsp;2016).</p>
-<div class="callout callout-style-default callout-note callout-titled">
-<div class="callout-header d-flex align-content-center">
-<div class="callout-icon-container">
-<i class="callout-icon"></i>
-</div>
-<div class="callout-title-container flex-fill">
-Note
-</div>
-</div>
-<div class="callout-body-container callout-body">
-<p>If you need to download the raw sequencing reads, please see <a href="https://github.com/urol-e5/timeseries_molecular/blob/e05febcc9105afaf086c573368e15b7228d2cbaf/F-Ptua/code/00.20-F-Ptua-WGBS-reads-FastQC-MultiQC.Rmd">00.20-F-Ptua-WGBS-reads-FastQC-MultiQC.Rmd</a></p>
-</div>
-</div>
-<section id="inputs" class="level2">
-<h2 class="anchored" data-anchor-id="inputs">1.1 Inputs</h2>
-<p>Raw FastQ files with the following pattern:</p>
-<ul>
-<li><code>*.fastq.gz</code></li>
-</ul>
-</section>
-<section id="outputs" class="level2">
-<h2 class="anchored" data-anchor-id="outputs">1.2 Outputs</h2>
-<p>The expected outputs will be:</p>
-<ul>
-<li><p><code>multiqc_report.html</code>: A summary report of the alignment results generated by <a href="https://github.com/MultiQC/MultiQC">MultiQC</a>, in HTML format.</p></li>
-<li><p><code>*fastp-trim*.fq.gz</code>: Trimmed FastQ files.</p>
-<ul>
-<li><p>Due to the large file sizes of FastQs, these cannot be hosted in the <a href="https://github.com/urol-e5/timeseries_molecular">urol-e5/timeseries_molecular GitHub repo</a>. As such these files are available for download here:</p>
-<ul>
-<li><a href="https://gannet.fish.washington.edu/gitrepos/urol-e5/timeseries_molecular/F-Ptua/output/01.00-F-Ptua-WGBS-trimming-fastp-FastQC-MultiQC/" class="uri">https://gannet.fish.washington.edu/gitrepos/urol-e5/timeseries_molecular/F-Ptua/output/01.00-F-Ptua-WGBS-trimming-fastp-FastQC-MultiQC/</a></li>
-</ul></li>
-</ul></li>
-</ul>
-</section>
-</section>
-<section id="create-a-bash-variables-file" class="level1">
-<h1>2 Create a Bash variables file</h1>
-<p>This allows usage of Bash variables across R Markdown chunks.</p>
-<div class="sourceCode" id="cb1" style="background: #f1f3f5;"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb1-1"><span class="kw" style="color: #003B4F;
-background-color: null;
-font-weight: bold;
-font-style: inherit;">{</span></span>
-<span id="cb1-2"><span class="bu" style="color: null;
-background-color: null;
-font-style: inherit;">echo</span> <span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"#### Assign Variables ####"</span></span>
-<span id="cb1-3"><span class="bu" style="color: null;
-background-color: null;
-font-style: inherit;">echo</span> <span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">""</span></span>
-<span id="cb1-4"></span>
-<span id="cb1-5"><span class="bu" style="color: null;
-background-color: null;
-font-style: inherit;">echo</span> <span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"# Data directories"</span></span>
-<span id="cb1-6"><span class="bu" style="color: null;
-background-color: null;
-font-style: inherit;">echo</span> <span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">'export repo_dir=/home/shared/8TB_HDD_01/sam/gitrepos/urol-e5/timeseries_molecular'</span></span>
-<span id="cb1-7"><span class="bu" style="color: null;
-background-color: null;
-font-style: inherit;">echo</span> <span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">'export output_dir_top=${repo_dir}/F-Ptua/output/01.00-F-Ptua-WGBS-trimming-fastp-FastQC-MultiQC'</span></span>
-<span id="cb1-8"><span class="bu" style="color: null;
-background-color: null;
-font-style: inherit;">echo</span> <span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">'export raw_reads_dir="${repo_dir}/F-Ptua/data/wgbs-raw-fastqs"'</span></span>
-<span id="cb1-9"><span class="bu" style="color: null;
-background-color: null;
-font-style: inherit;">echo</span> <span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">'export trimmed_fastqs_dir="${output_dir_top}"'</span></span>
-<span id="cb1-10"><span class="bu" style="color: null;
-background-color: null;
-font-style: inherit;">echo</span> <span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">""</span></span>
-<span id="cb1-11"></span>
-<span id="cb1-12"><span class="bu" style="color: null;
-background-color: null;
-font-style: inherit;">echo</span> <span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"# Paths to programs"</span></span>
-<span id="cb1-13"><span class="bu" style="color: null;
-background-color: null;
-font-style: inherit;">echo</span> <span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">'export programs_dir="/home/shared"'</span></span>
-<span id="cb1-14"><span class="bu" style="color: null;
-background-color: null;
-font-style: inherit;">echo</span> <span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">'export bbmap_repair="${programs_dir}/bbmap-39.12/repair.sh"'</span></span>
-<span id="cb1-15"><span class="bu" style="color: null;
-background-color: null;
-font-style: inherit;">echo</span> <span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">'export bismark_dir="${programs_dir}/Bismark-0.24.0"'</span></span>
-<span id="cb1-16"><span class="bu" style="color: null;
-background-color: null;
-font-style: inherit;">echo</span> <span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">'export bowtie2_dir="${programs_dir}/bowtie2-2.4.4-linux-x86_64"'</span></span>
-<span id="cb1-17"><span class="bu" style="color: null;
-background-color: null;
-font-style: inherit;">echo</span> <span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">'export fastp="${programs_dir}/fastp-v0.24.0/fastp"'</span></span>
-<span id="cb1-18"><span class="bu" style="color: null;
-background-color: null;
-font-style: inherit;">echo</span> <span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">'export fastqc="${programs_dir}/FastQC-0.12.1/fastqc"'</span></span>
-<span id="cb1-19"><span class="bu" style="color: null;
-background-color: null;
-font-style: inherit;">echo</span> <span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">'export multiqc="/home/sam/programs/mambaforge/bin/multiqc"'</span></span>
-<span id="cb1-20"><span class="bu" style="color: null;
-background-color: null;
-font-style: inherit;">echo</span> <span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">'export samtools_dir="${programs_dir}/samtools-1.12"'</span></span>
-<span id="cb1-21"><span class="bu" style="color: null;
-background-color: null;
-font-style: inherit;">echo</span> <span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">""</span></span>
-<span id="cb1-22"></span>
-<span id="cb1-23"></span>
-<span id="cb1-24"><span class="bu" style="color: null;
-background-color: null;
-font-style: inherit;">echo</span> <span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"# Set FastQ filename patterns"</span></span>
-<span id="cb1-25"><span class="bu" style="color: null;
-background-color: null;
-font-style: inherit;">echo</span> <span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"export fastq_pattern='*.fastq.gz'"</span></span>
-<span id="cb1-26"><span class="bu" style="color: null;
-background-color: null;
-font-style: inherit;">echo</span> <span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"export R1_fastq_pattern='*_R1_*.fastq.gz'"</span></span>
-<span id="cb1-27"><span class="bu" style="color: null;
-background-color: null;
-font-style: inherit;">echo</span> <span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"export R2_fastq_pattern='*_R2_*.fastq.gz'"</span></span>
-<span id="cb1-28"><span class="bu" style="color: null;
-background-color: null;
-font-style: inherit;">echo</span> <span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"export trimmed_fastq_pattern='*fastp-trim*.fq.gz'"</span></span>
-<span id="cb1-29"><span class="bu" style="color: null;
-background-color: null;
-font-style: inherit;">echo</span> <span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">""</span></span>
-<span id="cb1-30"></span>
-<span id="cb1-31"><span class="bu" style="color: null;
-background-color: null;
-font-style: inherit;">echo</span> <span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"# Set number of CPUs to use"</span></span>
-<span id="cb1-32"><span class="bu" style="color: null;
-background-color: null;
-font-style: inherit;">echo</span> <span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">'export threads=40'</span></span>
-<span id="cb1-33"><span class="bu" style="color: null;
-background-color: null;
-font-style: inherit;">echo</span> <span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">""</span></span>
-<span id="cb1-34"></span>
-<span id="cb1-35"></span>
-<span id="cb1-36"><span class="bu" style="color: null;
-background-color: null;
-font-style: inherit;">echo</span> <span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"## Inititalize arrays"</span></span>
-<span id="cb1-37"><span class="bu" style="color: null;
-background-color: null;
-font-style: inherit;">echo</span> <span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">'export fastq_array_R1=()'</span></span>
-<span id="cb1-38"><span class="bu" style="color: null;
-background-color: null;
-font-style: inherit;">echo</span> <span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">'export fastq_array_R2=()'</span></span>
-<span id="cb1-39"><span class="bu" style="color: null;
-background-color: null;
-font-style: inherit;">echo</span> <span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">'export trimmed_fastqs_array=()'</span></span>
-<span id="cb1-40"><span class="bu" style="color: null;
-background-color: null;
-font-style: inherit;">echo</span> <span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">'export R1_names_array=()'</span></span>
-<span id="cb1-41"><span class="bu" style="color: null;
-background-color: null;
-font-style: inherit;">echo</span> <span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">'export R2_names_array=()'</span></span>
-<span id="cb1-42"><span class="bu" style="color: null;
-background-color: null;
-font-style: inherit;">echo</span> <span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">""</span></span>
-<span id="cb1-43"></span>
-<span id="cb1-44"><span class="bu" style="color: null;
-background-color: null;
-font-style: inherit;">echo</span> <span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"# Print formatting"</span></span>
-<span id="cb1-45"><span class="bu" style="color: null;
-background-color: null;
-font-style: inherit;">echo</span> <span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">'export line="--------------------------------------------------------"'</span></span>
-<span id="cb1-46"><span class="bu" style="color: null;
-background-color: null;
-font-style: inherit;">echo</span> <span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">""</span></span>
-<span id="cb1-47"><span class="kw" style="color: #003B4F;
-background-color: null;
-font-weight: bold;
-font-style: inherit;">}</span> <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">&gt;</span> .bashvars</span>
-<span id="cb1-48"></span>
-<span id="cb1-49"><span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">cat</span> .bashvars</span></code></pre></div>
-<pre><code>#### Assign Variables ####
-
-# Data directories
-export repo_dir=/home/shared/8TB_HDD_01/sam/gitrepos/urol-e5/timeseries_molecular
-export output_dir_top=${repo_dir}/F-Ptua/output/01.00-F-Ptua-WGBS-trimming-fastp-FastQC-MultiQC
-export raw_reads_dir="${repo_dir}/F-Ptua/data/wgbs-raw-fastqs"
-export trimmed_fastqs_dir="${output_dir_top}"
-
-# Paths to programs
-export programs_dir="/home/shared"
-export bbmap_repair="${programs_dir}/bbmap-39.12/repair.sh"
-export bismark_dir="${programs_dir}/Bismark-0.24.0"
-export bowtie2_dir="${programs_dir}/bowtie2-2.4.4-linux-x86_64"
-export fastp="${programs_dir}/fastp-v0.24.0/fastp"
-export fastqc="${programs_dir}/FastQC-0.12.1/fastqc"
-export multiqc="/home/sam/programs/mambaforge/bin/multiqc"
-export samtools_dir="${programs_dir}/samtools-1.12"
-
-# Set FastQ filename patterns
-export fastq_pattern='*.fastq.gz'
-export R1_fastq_pattern='*_R1_*.fastq.gz'
-export R2_fastq_pattern='*_R2_*.fastq.gz'
-export trimmed_fastq_pattern='*fastp-trim*.fq.gz'
-
-# Set number of CPUs to use
-export threads=40
-
-## Inititalize arrays
-export fastq_array_R1=()
-export fastq_array_R2=()
-export trimmed_fastqs_array=()
-export R1_names_array=()
-export R2_names_array=()
-
-# Print formatting
-export line="--------------------------------------------------------"</code></pre>
-</section>
-<section id="trimming-and-error-repair" class="level1">
-<h1>3 Trimming and Error Repair</h1>
-<p>Trimming will remove any Illumina sequencing adapters, as well as polyG and polyX (primarily polyA) sequences. Trimming will also remove the first 15bp from the 5’ end of each read - this is based on FastQC/MultiQC assessment of raw reads.</p>
-<p>Samples generating an error during trimming will attempt to be repaired with BBTools’ <code>repair.sh</code> script.</p>
-<div class="sourceCode" id="cb3" style="background: #f1f3f5;"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb3-1"><span class="co" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;"># Load bash variables into memory</span></span>
-<span id="cb3-2"><span class="bu" style="color: null;
-background-color: null;
-font-style: inherit;">source</span> .bashvars</span>
-<span id="cb3-3"></span>
-<span id="cb3-4"><span class="co" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;"># Make output directory, if it doesn't exist</span></span>
-<span id="cb3-5"><span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">mkdir</span> <span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">--parents</span> <span class="va" style="color: #111111;
-background-color: null;
-font-style: inherit;">${output_dir_top}</span></span>
-<span id="cb3-6"></span>
-<span id="cb3-7"><span class="bu" style="color: null;
-background-color: null;
-font-style: inherit;">cd</span> <span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"</span><span class="va" style="color: #111111;
-background-color: null;
-font-style: inherit;">${raw_reads_dir}</span><span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"</span></span>
-<span id="cb3-8"></span>
-<span id="cb3-9"></span>
-<span id="cb3-10"><span class="co" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;"># Create arrays of fastq R1 files and sample names</span></span>
-<span id="cb3-11"><span class="co" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;"># Do NOT quote R1_fastq_pattern variable</span></span>
-<span id="cb3-12"></span>
-<span id="cb3-13"><span class="cf" style="color: #003B4F;
-background-color: null;
-font-weight: bold;
-font-style: inherit;">for</span> fastq <span class="kw" style="color: #003B4F;
-background-color: null;
-font-weight: bold;
-font-style: inherit;">in</span> <span class="va" style="color: #111111;
-background-color: null;
-font-style: inherit;">${R1_fastq_pattern}</span></span>
-<span id="cb3-14"><span class="cf" style="color: #003B4F;
-background-color: null;
-font-weight: bold;
-font-style: inherit;">do</span></span>
-<span id="cb3-15">  <span class="va" style="color: #111111;
-background-color: null;
-font-style: inherit;">fastq_array_R1</span><span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">+=</span><span class="va" style="color: #111111;
-background-color: null;
-font-style: inherit;">(</span><span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"</span><span class="va" style="color: #111111;
-background-color: null;
-font-style: inherit;">${fastq}</span><span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"</span><span class="va" style="color: #111111;
-background-color: null;
-font-style: inherit;">)</span></span>
-<span id="cb3-16"></span>
-<span id="cb3-17">  <span class="co" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;"># Use parameter substitution to remove all text up to and including last "." from</span></span>
-<span id="cb3-18">  <span class="co" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;"># right side of string.</span></span>
-<span id="cb3-19">  <span class="va" style="color: #111111;
-background-color: null;
-font-style: inherit;">R1_names_array</span><span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">+=</span><span class="va" style="color: #111111;
-background-color: null;
-font-style: inherit;">(</span><span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"</span><span class="va" style="color: #111111;
-background-color: null;
-font-style: inherit;">${fastq</span><span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">%%</span>.<span class="pp" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">*</span><span class="va" style="color: #111111;
-background-color: null;
-font-style: inherit;">}</span><span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"</span><span class="va" style="color: #111111;
-background-color: null;
-font-style: inherit;">)</span></span>
-<span id="cb3-20"><span class="cf" style="color: #003B4F;
-background-color: null;
-font-weight: bold;
-font-style: inherit;">done</span></span>
-<span id="cb3-21"></span>
-<span id="cb3-22"><span class="co" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;"># Create array of fastq R2 files</span></span>
-<span id="cb3-23"><span class="co" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;"># Do NOT quote R2_fastq_pattern variable</span></span>
-<span id="cb3-24"><span class="cf" style="color: #003B4F;
-background-color: null;
-font-weight: bold;
-font-style: inherit;">for</span> fastq <span class="kw" style="color: #003B4F;
-background-color: null;
-font-weight: bold;
-font-style: inherit;">in</span> <span class="va" style="color: #111111;
-background-color: null;
-font-style: inherit;">${R2_fastq_pattern}</span></span>
-<span id="cb3-25"><span class="cf" style="color: #003B4F;
-background-color: null;
-font-weight: bold;
-font-style: inherit;">do</span></span>
-<span id="cb3-26">  <span class="va" style="color: #111111;
-background-color: null;
-font-style: inherit;">fastq_array_R2</span><span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">+=</span><span class="va" style="color: #111111;
-background-color: null;
-font-style: inherit;">(</span><span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"</span><span class="va" style="color: #111111;
-background-color: null;
-font-style: inherit;">${fastq}</span><span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"</span><span class="va" style="color: #111111;
-background-color: null;
-font-style: inherit;">)</span></span>
-<span id="cb3-27"></span>
-<span id="cb3-28">  <span class="co" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;"># Use parameter substitution to remove all text up to and including last "." from</span></span>
-<span id="cb3-29">  <span class="co" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;"># right side of string.</span></span>
-<span id="cb3-30">  <span class="va" style="color: #111111;
-background-color: null;
-font-style: inherit;">R2_names_array</span><span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">+=</span><span class="va" style="color: #111111;
-background-color: null;
-font-style: inherit;">(${fastq</span><span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">%%</span>.<span class="pp" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">*</span><span class="va" style="color: #111111;
-background-color: null;
-font-style: inherit;">})</span></span>
-<span id="cb3-31"><span class="cf" style="color: #003B4F;
-background-color: null;
-font-weight: bold;
-font-style: inherit;">done</span></span>
-<span id="cb3-32"></span>
-<span id="cb3-33"></span>
-<span id="cb3-34"></span>
-<span id="cb3-35"><span class="co" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;"># Run fastp on files</span></span>
-<span id="cb3-36"><span class="co" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;"># Adds JSON report output for downstream usage by MultiQC</span></span>
-<span id="cb3-37"></span>
-<span id="cb3-38"><span class="bu" style="color: null;
-background-color: null;
-font-style: inherit;">echo</span> <span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"Beginning fastp trimming."</span></span>
-<span id="cb3-39"><span class="bu" style="color: null;
-background-color: null;
-font-style: inherit;">echo</span> <span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"-------------------------------------------------"</span></span>
-<span id="cb3-40"><span class="bu" style="color: null;
-background-color: null;
-font-style: inherit;">echo</span> <span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">""</span></span>
-<span id="cb3-41"></span>
-<span id="cb3-42"><span class="cf" style="color: #003B4F;
-background-color: null;
-font-weight: bold;
-font-style: inherit;">for</span> index <span class="kw" style="color: #003B4F;
-background-color: null;
-font-weight: bold;
-font-style: inherit;">in</span> <span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"</span><span class="va" style="color: #111111;
-background-color: null;
-font-style: inherit;">${</span><span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">!</span><span class="va" style="color: #111111;
-background-color: null;
-font-style: inherit;">fastq_array_R1</span><span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">[@]</span><span class="va" style="color: #111111;
-background-color: null;
-font-style: inherit;">}</span><span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"</span></span>
-<span id="cb3-43"><span class="cf" style="color: #003B4F;
-background-color: null;
-font-weight: bold;
-font-style: inherit;">do</span></span>
-<span id="cb3-44">  <span class="va" style="color: #111111;
-background-color: null;
-font-style: inherit;">R1_sample_name</span><span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">=</span><span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"</span><span class="va" style="color: #111111;
-background-color: null;
-font-style: inherit;">${R1_names_array</span><span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">[</span>index<span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">]</span><span class="va" style="color: #111111;
-background-color: null;
-font-style: inherit;">}</span><span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"</span></span>
-<span id="cb3-45">  <span class="va" style="color: #111111;
-background-color: null;
-font-style: inherit;">R2_sample_name</span><span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">=</span><span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"</span><span class="va" style="color: #111111;
-background-color: null;
-font-style: inherit;">${R2_names_array</span><span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">[</span>index<span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">]</span><span class="va" style="color: #111111;
-background-color: null;
-font-style: inherit;">}</span><span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"</span></span>
-<span id="cb3-46">  </span>
-<span id="cb3-47">  <span class="va" style="color: #111111;
-background-color: null;
-font-style: inherit;">stderr_PE_name</span><span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">=</span><span class="va" style="color: #111111;
-background-color: null;
-font-style: inherit;">$(</span><span class="bu" style="color: null;
-background-color: null;
-font-style: inherit;">echo</span> <span class="va" style="color: #111111;
-background-color: null;
-font-style: inherit;">${R1_sample_name}</span> <span class="kw" style="color: #003B4F;
-background-color: null;
-font-weight: bold;
-font-style: inherit;">|</span> <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">awk</span> <span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">-F</span><span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"_"</span> <span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">'{print $1}'</span><span class="va" style="color: #111111;
-background-color: null;
-font-style: inherit;">)</span></span>
-<span id="cb3-48">  </span>
-<span id="cb3-49">  <span class="va" style="color: #111111;
-background-color: null;
-font-style: inherit;">${fastp}</span> <span class="dt" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">\</span></span>
-<span id="cb3-50">  <span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">--in1</span> <span class="va" style="color: #111111;
-background-color: null;
-font-style: inherit;">${fastq_array_R1</span><span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">[</span>index<span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">]</span><span class="va" style="color: #111111;
-background-color: null;
-font-style: inherit;">}</span> <span class="dt" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">\</span></span>
-<span id="cb3-51">  <span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">--in2</span> <span class="va" style="color: #111111;
-background-color: null;
-font-style: inherit;">${fastq_array_R2</span><span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">[</span>index<span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">]</span><span class="va" style="color: #111111;
-background-color: null;
-font-style: inherit;">}</span> <span class="dt" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">\</span></span>
-<span id="cb3-52">  <span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">--detect_adapter_for_pe</span> <span class="dt" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">\</span></span>
-<span id="cb3-53">  <span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">--trim_poly_g</span> <span class="dt" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">\</span></span>
-<span id="cb3-54">  <span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">--trim_poly_x</span> <span class="dt" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">\</span></span>
-<span id="cb3-55">  <span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">--thread</span> 16 <span class="dt" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">\</span></span>
-<span id="cb3-56">  <span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">--trim_front1</span> 15 <span class="dt" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">\</span></span>
-<span id="cb3-57">  <span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">--trim_front2</span> 15 <span class="dt" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">\</span></span>
-<span id="cb3-58">  <span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">--html</span> <span class="va" style="color: #111111;
-background-color: null;
-font-style: inherit;">${output_dir_top}</span>/<span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"</span><span class="va" style="color: #111111;
-background-color: null;
-font-style: inherit;">${R1_sample_name}</span><span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"</span>.fastp-trim.report.html <span class="dt" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">\</span></span>
-<span id="cb3-59">  <span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">--json</span> <span class="va" style="color: #111111;
-background-color: null;
-font-style: inherit;">${output_dir_top}</span>/<span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"</span><span class="va" style="color: #111111;
-background-color: null;
-font-style: inherit;">${R1_sample_name}</span><span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"</span>.fastp-trim.report.json <span class="dt" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">\</span></span>
-<span id="cb3-60">  <span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">--out1</span> <span class="va" style="color: #111111;
-background-color: null;
-font-style: inherit;">${output_dir_top}</span>/<span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"</span><span class="va" style="color: #111111;
-background-color: null;
-font-style: inherit;">${R1_sample_name}</span><span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"</span>.fastp-trim.fq.gz <span class="dt" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">\</span></span>
-<span id="cb3-61">  <span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">--out2</span> <span class="va" style="color: #111111;
-background-color: null;
-font-style: inherit;">${output_dir_top}</span>/<span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"</span><span class="va" style="color: #111111;
-background-color: null;
-font-style: inherit;">${R2_sample_name}</span><span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"</span>.fastp-trim.fq.gz <span class="dt" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">\</span></span>
-<span id="cb3-62">  <span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">2</span><span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">&gt;</span> <span class="va" style="color: #111111;
-background-color: null;
-font-style: inherit;">${output_dir_top}</span>/<span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"</span><span class="va" style="color: #111111;
-background-color: null;
-font-style: inherit;">${stderr_PE_name}</span><span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"</span>.fastp-trim.stderr</span>
-<span id="cb3-63">  </span>
-<span id="cb3-64">  <span class="co" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;"># Check for errors in fastp stderr</span></span>
-<span id="cb3-65">  <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">grep</span> <span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">--before-context</span> 5 <span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"ERROR"</span> <span class="va" style="color: #111111;
-background-color: null;
-font-style: inherit;">${output_dir_top}</span>/<span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"</span><span class="va" style="color: #111111;
-background-color: null;
-font-style: inherit;">${stderr_PE_name}</span><span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"</span>.fastp-trim.stderr</span>
-<span id="cb3-66">  </span>
-<span id="cb3-67">  <span class="co" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;"># Check for fastp errors and then repair</span></span>
-<span id="cb3-68">  <span class="cf" style="color: #003B4F;
-background-color: null;
-font-weight: bold;
-font-style: inherit;">if</span> <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">grep</span> <span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">--quiet</span> <span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"ERROR"</span> <span class="va" style="color: #111111;
-background-color: null;
-font-style: inherit;">${output_dir_top}</span>/<span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"</span><span class="va" style="color: #111111;
-background-color: null;
-font-style: inherit;">${stderr_PE_name}</span><span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"</span>.fastp-trim.stderr<span class="kw" style="color: #003B4F;
-background-color: null;
-font-weight: bold;
-font-style: inherit;">;</span> <span class="cf" style="color: #003B4F;
-background-color: null;
-font-weight: bold;
-font-style: inherit;">then</span></span>
-<span id="cb3-69">      </span>
-<span id="cb3-70">    <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">rm</span> <span class="va" style="color: #111111;
-background-color: null;
-font-style: inherit;">${output_dir_top}</span>/<span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"</span><span class="va" style="color: #111111;
-background-color: null;
-font-style: inherit;">${R1_sample_name}</span><span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"</span>.fastp-trim.fq.gz</span>
-<span id="cb3-71">    <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">rm</span> <span class="va" style="color: #111111;
-background-color: null;
-font-style: inherit;">${output_dir_top}</span>/<span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"</span><span class="va" style="color: #111111;
-background-color: null;
-font-style: inherit;">${R2_sample_name}</span><span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"</span>.fastp-trim.fq.gz</span>
-<span id="cb3-72">    </span>
-<span id="cb3-73">    </span>
-<span id="cb3-74">    <span class="va" style="color: #111111;
-background-color: null;
-font-style: inherit;">${bbmap_repair}</span> <span class="dt" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">\</span></span>
-<span id="cb3-75">    in1=<span class="va" style="color: #111111;
-background-color: null;
-font-style: inherit;">${fastq_array_R1</span><span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">[</span>index<span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">]</span><span class="va" style="color: #111111;
-background-color: null;
-font-style: inherit;">}</span> <span class="dt" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">\</span></span>
-<span id="cb3-76">    in2=<span class="va" style="color: #111111;
-background-color: null;
-font-style: inherit;">${fastq_array_R2</span><span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">[</span>index<span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">]</span><span class="va" style="color: #111111;
-background-color: null;
-font-style: inherit;">}</span> <span class="dt" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">\</span></span>
-<span id="cb3-77">    out1=<span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"</span><span class="va" style="color: #111111;
-background-color: null;
-font-style: inherit;">${R1_sample_name}</span><span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"</span>.REPAIRED.fastq.gz <span class="dt" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">\</span></span>
-<span id="cb3-78">    out2=<span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"</span><span class="va" style="color: #111111;
-background-color: null;
-font-style: inherit;">${R2_sample_name}</span><span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"</span>.REPAIRED.fastq.gz <span class="dt" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">\</span></span>
-<span id="cb3-79">    outs=/dev/null <span class="dt" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">\</span></span>
-<span id="cb3-80">    <span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">2</span><span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">&gt;</span> <span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"</span><span class="va" style="color: #111111;
-background-color: null;
-font-style: inherit;">${R1_sample_name}</span><span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"</span>.REPAIRED.stderr</span>
-<span id="cb3-81">    </span>
-<span id="cb3-82">    <span class="va" style="color: #111111;
-background-color: null;
-font-style: inherit;">${fastp}</span> <span class="dt" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">\</span></span>
-<span id="cb3-83">    <span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">--in1</span> <span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"</span><span class="va" style="color: #111111;
-background-color: null;
-font-style: inherit;">${R1_sample_name}</span><span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"</span>.REPAIRED.fastq.gz <span class="dt" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">\</span></span>
-<span id="cb3-84">    <span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">--in2</span> <span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"</span><span class="va" style="color: #111111;
-background-color: null;
-font-style: inherit;">${R2_sample_name}</span><span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"</span>.REPAIRED.fastq.gz <span class="dt" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">\</span></span>
-<span id="cb3-85">    <span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">--detect_adapter_for_pe</span> <span class="dt" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">\</span></span>
-<span id="cb3-86">    <span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">--trim_poly_g</span> <span class="dt" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">\</span></span>
-<span id="cb3-87">    <span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">--trim_poly_x</span> <span class="dt" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">\</span></span>
-<span id="cb3-88">    <span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">--thread</span> 16 <span class="dt" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">\</span></span>
-<span id="cb3-89">    <span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">--trim_front1</span> 10 <span class="dt" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">\</span></span>
-<span id="cb3-90">    <span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">--trim_front2</span> 10 <span class="dt" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">\</span></span>
-<span id="cb3-91">    <span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">--html</span> <span class="va" style="color: #111111;
-background-color: null;
-font-style: inherit;">${output_dir_top}</span>/<span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"</span><span class="va" style="color: #111111;
-background-color: null;
-font-style: inherit;">${R1_sample_name}</span><span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"</span>.fastp-trim.REPAIRED.report.html <span class="dt" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">\</span></span>
-<span id="cb3-92">    <span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">--json</span> <span class="va" style="color: #111111;
-background-color: null;
-font-style: inherit;">${output_dir_top}</span>/<span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"</span><span class="va" style="color: #111111;
-background-color: null;
-font-style: inherit;">${R1_sample_name}</span><span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"</span>.fastp-trim.REPAIRED.report.json <span class="dt" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">\</span></span>
-<span id="cb3-93">    <span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">--out1</span> <span class="va" style="color: #111111;
-background-color: null;
-font-style: inherit;">${output_dir_top}</span>/<span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"</span><span class="va" style="color: #111111;
-background-color: null;
-font-style: inherit;">${R1_sample_name}</span><span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"</span>.fastp-trim.REPAIRED.fq.gz <span class="dt" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">\</span></span>
-<span id="cb3-94">    <span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">--out2</span> <span class="va" style="color: #111111;
-background-color: null;
-font-style: inherit;">${output_dir_top}</span>/<span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"</span><span class="va" style="color: #111111;
-background-color: null;
-font-style: inherit;">${R2_sample_name}</span><span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"</span>.fastp-trim.REPAIRED.fq.gz <span class="dt" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">\</span></span>
-<span id="cb3-95">    <span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">2</span><span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">&gt;</span> <span class="va" style="color: #111111;
-background-color: null;
-font-style: inherit;">${output_dir_top}</span>/<span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"</span><span class="va" style="color: #111111;
-background-color: null;
-font-style: inherit;">${stderr_PE_name}</span><span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"</span>.fastp-trim.REPAIRED.stderr</span>
-<span id="cb3-96"> </span>
-<span id="cb3-97">    </span>
-<span id="cb3-98">    <span class="cf" style="color: #003B4F;
-background-color: null;
-font-weight: bold;
-font-style: inherit;">if</span> <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">grep</span> <span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">--quiet</span> <span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"ERROR"</span> <span class="va" style="color: #111111;
-background-color: null;
-font-style: inherit;">${output_dir_top}</span>/<span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"</span><span class="va" style="color: #111111;
-background-color: null;
-font-style: inherit;">${stderr_PE_name}</span><span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"</span>.fastp-trim.REPAIRED.stderr<span class="kw" style="color: #003B4F;
-background-color: null;
-font-weight: bold;
-font-style: inherit;">;</span> <span class="cf" style="color: #003B4F;
-background-color: null;
-font-weight: bold;
-font-style: inherit;">then</span></span>
-<span id="cb3-99">      <span class="bu" style="color: null;
-background-color: null;
-font-style: inherit;">echo</span> <span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"These </span><span class="va" style="color: #111111;
-background-color: null;
-font-style: inherit;">${stderr_PE_name}</span><span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;"> samples are broken."</span></span>
-<span id="cb3-100">      <span class="bu" style="color: null;
-background-color: null;
-font-style: inherit;">echo</span> <span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"Just give up.  :("</span></span>
-<span id="cb3-101">      <span class="bu" style="color: null;
-background-color: null;
-font-style: inherit;">echo</span> <span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">""</span></span>
-<span id="cb3-102">    <span class="cf" style="color: #003B4F;
-background-color: null;
-font-weight: bold;
-font-style: inherit;">fi</span></span>
-<span id="cb3-103">  <span class="cf" style="color: #003B4F;
-background-color: null;
-font-weight: bold;
-font-style: inherit;">fi</span></span>
-<span id="cb3-104"></span>
-<span id="cb3-105">  <span class="bu" style="color: null;
-background-color: null;
-font-style: inherit;">echo</span> <span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"Finished trimming:"</span></span>
-<span id="cb3-106">  <span class="bu" style="color: null;
-background-color: null;
-font-style: inherit;">echo</span> <span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"</span><span class="va" style="color: #111111;
-background-color: null;
-font-style: inherit;">${fastq_array_R1</span><span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">[</span>index<span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">]</span><span class="va" style="color: #111111;
-background-color: null;
-font-style: inherit;">}</span><span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"</span></span>
-<span id="cb3-107">  <span class="bu" style="color: null;
-background-color: null;
-font-style: inherit;">echo</span> <span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"</span><span class="va" style="color: #111111;
-background-color: null;
-font-style: inherit;">${fastq_array_R2</span><span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">[</span>index<span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">]</span><span class="va" style="color: #111111;
-background-color: null;
-font-style: inherit;">}</span><span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"</span></span>
-<span id="cb3-108">  <span class="bu" style="color: null;
-background-color: null;
-font-style: inherit;">echo</span> <span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">""</span></span>
-<span id="cb3-109">  </span>
-<span id="cb3-110">  <span class="co" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;"># Generate md5 checksums for newly trimmed files</span></span>
-<span id="cb3-111">  <span class="bu" style="color: null;
-background-color: null;
-font-style: inherit;">cd</span> <span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"</span><span class="va" style="color: #111111;
-background-color: null;
-font-style: inherit;">${output_dir_top}</span><span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"</span></span>
-<span id="cb3-112">  <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">md5sum</span> <span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"</span><span class="va" style="color: #111111;
-background-color: null;
-font-style: inherit;">${R1_sample_name}</span><span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"</span>.fastp-trim.fq.gz <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">&gt;</span> <span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"</span><span class="va" style="color: #111111;
-background-color: null;
-font-style: inherit;">${R1_sample_name}</span><span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"</span>.fastp-trim.fq.gz.md5</span>
-<span id="cb3-113">  <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">md5sum</span> <span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"</span><span class="va" style="color: #111111;
-background-color: null;
-font-style: inherit;">${R2_sample_name}</span><span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"</span>.fastp-trim.fq.gz <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">&gt;</span> <span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"</span><span class="va" style="color: #111111;
-background-color: null;
-font-style: inherit;">${R2_sample_name}</span><span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"</span>.fastp-trim.fq.gz.md5</span>
-<span id="cb3-114">  </span>
-<span id="cb3-115">  <span class="bu" style="color: null;
-background-color: null;
-font-style: inherit;">cd</span> <span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"</span><span class="va" style="color: #111111;
-background-color: null;
-font-style: inherit;">${raw_reads_dir}</span><span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"</span></span>
-<span id="cb3-116"><span class="cf" style="color: #003B4F;
-background-color: null;
-font-weight: bold;
-font-style: inherit;">done</span></span></code></pre></div>
-<pre><code>Beginning fastp trimming.
--------------------------------------------------
-
-Finished trimming:
-POC-201-TP1_R1_001.fastq.gz
-POC-201-TP1_R2_001.fastq.gz
-
-Finished trimming:
-POC-201-TP2_R1_001.fastq.gz
-POC-201-TP2_R2_001.fastq.gz
-
-Finished trimming:
-POC-219-TP1_R1_001.fastq.gz
-POC-219-TP1_R2_001.fastq.gz
-
-Finished trimming:
-POC-219-TP2_R1_001.fastq.gz
-POC-219-TP2_R2_001.fastq.gz
-
-Finished trimming:
-POC-219-TP3_R1_001.fastq.gz
-POC-219-TP3_R2_001.fastq.gz
-
-Finished trimming:
-POC-219-TP4_R1_001.fastq.gz
-POC-219-TP4_R2_001.fastq.gz
-
-Finished trimming:
-POC-222-TP1_R1_001.fastq.gz
-POC-222-TP1_R2_001.fastq.gz
-
-Finished trimming:
-POC-222-TP3_R1_001.fastq.gz
-POC-222-TP3_R2_001.fastq.gz
-
-Finished trimming:
-POC-222-TP4_R1_001.fastq.gz
-POC-222-TP4_R2_001.fastq.gz
-
-Finished trimming:
-POC-255-TP1_R1_001.fastq.gz
-POC-255-TP1_R2_001.fastq.gz
-
-Finished trimming:
-POC-255-TP2_R1_001.fastq.gz
-POC-255-TP2_R2_001.fastq.gz
-
-Finished trimming:
-POC-255-TP3_R1_001.fastq.gz
-POC-255-TP3_R2_001.fastq.gz
-
-Finished trimming:
-POC-259-TP1_R1_001.fastq.gz
-POC-259-TP1_R2_001.fastq.gz
-
-Finished trimming:
-POC-259-TP2_R1_001.fastq.gz
-POC-259-TP2_R2_001.fastq.gz
-
-Finished trimming:
-POC-40-TP1_R1_001.fastq.gz
-POC-40-TP1_R2_001.fastq.gz
-
-Finished trimming:
-POC-40-TP2_R1_001.fastq.gz
-POC-40-TP2_R2_001.fastq.gz
-
-Finished trimming:
-POC-40-TP3_R1_001.fastq.gz
-POC-40-TP3_R2_001.fastq.gz
-
-Finished trimming:
-POC-40-TP4_R1_001.fastq.gz
-POC-40-TP4_R2_001.fastq.gz
-
-Finished trimming:
-POC-42-TP2_R1_001.fastq.gz
-POC-42-TP2_R2_001.fastq.gz
-
-Finished trimming:
-POC-42-TP4_R1_001.fastq.gz
-POC-42-TP4_R2_001.fastq.gz
-
-Finished trimming:
-POC-52-TP1_R1_001.fastq.gz
-POC-52-TP1_R2_001.fastq.gz
-
-Finished trimming:
-POC-52-TP2_R1_001.fastq.gz
-POC-52-TP2_R2_001.fastq.gz
-
-Finished trimming:
-POC-52-TP3_R1_001.fastq.gz
-POC-52-TP3_R2_001.fastq.gz
-
-Finished trimming:
-POC-52-TP4_R1_001.fastq.gz
-POC-52-TP4_R2_001.fastq.gz
-
-Finished trimming:
-POC-53-TP1_R1_001.fastq.gz
-POC-53-TP1_R2_001.fastq.gz
-
-Finished trimming:
-POC-53-TP2_R1_001.fastq.gz
-POC-53-TP2_R2_001.fastq.gz
-
-Finished trimming:
-POC-53-TP3_R1_001.fastq.gz
-POC-53-TP3_R2_001.fastq.gz
-
-Finished trimming:
-POC-53-TP4_R1_001.fastq.gz
-POC-53-TP4_R2_001.fastq.gz
-
-Finished trimming:
-POC-57-TP1_R1_001.fastq.gz
-POC-57-TP1_R2_001.fastq.gz
-
-Finished trimming:
-POC-57-TP2_R1_001.fastq.gz
-POC-57-TP2_R2_001.fastq.gz
-
-Finished trimming:
-POC-57-TP3_R1_001.fastq.gz
-POC-57-TP3_R2_001.fastq.gz
-
-Finished trimming:
-POC-57-TP4_R1_001.fastq.gz
-POC-57-TP4_R2_001.fastq.gz</code></pre>
-</section>
-<section id="fastqc" class="level1">
-<h1>4 FastQC</h1>
-<div class="sourceCode" id="cb5" style="background: #f1f3f5;"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb5-1"><span class="co" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;"># Load bash variables into memory</span></span>
-<span id="cb5-2"><span class="bu" style="color: null;
-background-color: null;
-font-style: inherit;">source</span> .bashvars</span>
-<span id="cb5-3"></span>
-<span id="cb5-4"><span class="bu" style="color: null;
-background-color: null;
-font-style: inherit;">cd</span> <span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"</span><span class="va" style="color: #111111;
-background-color: null;
-font-style: inherit;">${output_dir_top}</span><span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"</span></span>
-<span id="cb5-5"></span>
-<span id="cb5-6"><span class="co" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">############ RUN FASTQC ############</span></span>
-<span id="cb5-7"></span>
-<span id="cb5-8"></span>
-<span id="cb5-9"><span class="co" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;"># Create array of trimmed FastQs</span></span>
-<span id="cb5-10"><span class="va" style="color: #111111;
-background-color: null;
-font-style: inherit;">trimmed_fastqs_array</span><span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">=</span><span class="va" style="color: #111111;
-background-color: null;
-font-style: inherit;">(${trimmed_fastq_pattern})</span></span>
-<span id="cb5-11"></span>
-<span id="cb5-12"><span class="co" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;"># Pass array contents to new variable as space-delimited list</span></span>
-<span id="cb5-13"><span class="va" style="color: #111111;
-background-color: null;
-font-style: inherit;">trimmed_fastqc_list</span><span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">=</span><span class="va" style="color: #111111;
-background-color: null;
-font-style: inherit;">$(</span><span class="bu" style="color: null;
-background-color: null;
-font-style: inherit;">echo</span> <span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"</span><span class="va" style="color: #111111;
-background-color: null;
-font-style: inherit;">${trimmed_fastqs_array</span><span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">[*]</span><span class="va" style="color: #111111;
-background-color: null;
-font-style: inherit;">}</span><span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"</span><span class="va" style="color: #111111;
-background-color: null;
-font-style: inherit;">)</span></span>
-<span id="cb5-14"></span>
-<span id="cb5-15"><span class="bu" style="color: null;
-background-color: null;
-font-style: inherit;">echo</span> <span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"Beginning FastQC on trimmed reads..."</span></span>
-<span id="cb5-16"><span class="bu" style="color: null;
-background-color: null;
-font-style: inherit;">echo</span> <span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">""</span></span>
-<span id="cb5-17"></span>
-<span id="cb5-18"><span class="co" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;"># Run FastQC</span></span>
-<span id="cb5-19"><span class="co" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">### </span><span class="al" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">NOTE</span><span class="co" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">: Do NOT quote raw_fastqc_list</span></span>
-<span id="cb5-20"><span class="va" style="color: #111111;
-background-color: null;
-font-style: inherit;">${fastqc}</span> <span class="dt" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">\</span></span>
-<span id="cb5-21">--threads <span class="va" style="color: #111111;
-background-color: null;
-font-style: inherit;">${threads}</span> <span class="dt" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">\</span></span>
-<span id="cb5-22">--outdir <span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"</span><span class="va" style="color: #111111;
-background-color: null;
-font-style: inherit;">${output_dir_top}</span><span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"</span> <span class="dt" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">\</span></span>
-<span id="cb5-23">--quiet <span class="dt" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">\</span></span>
-<span id="cb5-24"><span class="va" style="color: #111111;
-background-color: null;
-font-style: inherit;">${trimmed_fastqc_list}</span></span>
-<span id="cb5-25"></span>
-<span id="cb5-26"><span class="bu" style="color: null;
-background-color: null;
-font-style: inherit;">echo</span> <span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"FastQC on trimmed reads complete!"</span></span>
-<span id="cb5-27"><span class="bu" style="color: null;
-background-color: null;
-font-style: inherit;">echo</span> <span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">""</span></span>
-<span id="cb5-28"></span>
-<span id="cb5-29"><span class="co" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">############ </span><span class="re">END</span><span class="co" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;"> FASTQC ############</span></span></code></pre></div>
-<pre><code>Beginning FastQC on trimmed reads...
-
-application/gzip
-application/gzip
-application/gzip
-application/gzip
-application/gzip
-application/gzip
-application/gzip
-application/gzip
-application/gzip
-application/gzip
-application/gzip
-application/gzip
-application/gzip
-application/gzip
-application/gzip
-application/gzip
-application/gzip
-application/gzip
-application/gzip
-application/gzip
-application/gzip
-application/gzip
-application/gzip
-application/gzip
-application/gzip
-application/gzip
-application/gzip
-application/gzip
-application/gzip
-application/gzip
-application/gzip
-application/gzip
-application/gzip
-application/gzip
-application/gzip
-application/gzip
-application/gzip
-application/gzip
-application/gzip
-application/gzip
-application/gzip
-application/gzip
-application/gzip
-application/gzip
-application/gzip
-application/gzip
-application/gzip
-application/gzip
-application/gzip
-application/gzip
-application/gzip
-application/gzip
-application/gzip
-application/gzip
-application/gzip
-application/gzip
-application/gzip
-application/gzip
-application/gzip
-application/gzip
-application/gzip
-application/gzip
-application/gzip
-application/gzip
-FastQC on trimmed reads complete!</code></pre>
-</section>
-<section id="multiqc" class="level1">
-<h1>5 MultiQC</h1>
-<p>Uses <code>--cl-config "sp: { fastp: { fn: '*report.json' } }"</code> to update the MultiQC search pattern for the fastp module.</p>
-<div class="sourceCode" id="cb7" style="background: #f1f3f5;"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb7-1"><span class="co" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;"># Load bash variables into memory</span></span>
-<span id="cb7-2"><span class="bu" style="color: null;
-background-color: null;
-font-style: inherit;">source</span> .bashvars</span>
-<span id="cb7-3"></span>
-<span id="cb7-4"></span>
-<span id="cb7-5"><span class="bu" style="color: null;
-background-color: null;
-font-style: inherit;">cd</span> <span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"</span><span class="va" style="color: #111111;
-background-color: null;
-font-style: inherit;">${output_dir_top}</span><span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"</span></span>
-<span id="cb7-6"></span>
-<span id="cb7-7"><span class="va" style="color: #111111;
-background-color: null;
-font-style: inherit;">${multiqc}</span> . <span class="dt" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">\</span></span>
-<span id="cb7-8">--cl-config <span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"sp: { fastp: { fn: '*report.json' } }"</span> <span class="dt" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">\</span></span>
-<span id="cb7-9">--interactive</span>
-<span id="cb7-10"></span>
-<span id="cb7-11"><span class="co" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;"># Remove zip files</span></span>
-<span id="cb7-12"><span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">rm</span> <span class="pp" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">*</span>_fastqc.zip</span></code></pre></div>
-<pre><code>  /// MultiQC 🔍 | v1.14
-
-|           multiqc | MultiQC Version v1.27 now available!
-|           multiqc | Search path : /home/shared/8TB_HDD_01/sam/gitrepos/urol-e5/timeseries_molecular/F-Ptua/output/01.00-F-Ptua-WGBS-trimming-fastp-FastQC-MultiQC
-|         searching | ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 100% 352/352  
-|             fastp | Found 32 reports
-|            fastqc | Found 64 reports
-|           multiqc | Compressing plot data
-|           multiqc | Report      : multiqc_report.html
-|           multiqc | Data        : multiqc_data
-|           multiqc | MultiQC complete</code></pre>
-</section>
-<section id="results" class="level1">
-<h1>RESULTS</h1>
-<p>Overall, trimming looks okay. Surprisingly, the 5’ ends still exhibit some variation in the sequnce contant. Additionally,, it’s disappointing to see residual polyA contamination, despite specifying <code>--trim_poly_x</code> in the <a href="https://github.com/OpenGene/fastp"><code>fastp</code></a> arguments. The polyA contamination is likely RNA carried over from the DNA isolation prep. It shouldn’t cause any issues, as RNA shouldn’t end up aligning to the bisulfite-converted genome downstream.</p>
-<p>MultiQC report:</p>
-<ul>
-<li><a href="https://github.com/urol-e5/timeseries_molecular/blob/960d871c2d54d5c3fbdf3665a7fb4bafe68f88c7/F-Ptua/output/01.00-F-Ptua-WGBS-trimming-fastp-FastQC-MultiQC/multiqc_report.html">01.00-F-Ptua-WGBS-trimming-fastp-FastQC-MultiQC/multiqc_report.html</a> (GitHub repo)</li>
-</ul>
-<div class="quarto-figure quarto-figure-center">
-<figure class="figure">
-<p><img src="https://robertslab.github.io/sams-notebook/posts/2025/2025-02-12-Trimming---P.tuahiniensis-WGBS-Trimming-and-QC-with-fastp-FastQC-and-MultiQC-for-E5-timeseries_molecular-Project/20250212-ptua-multiqc-plot-sequence-content.png" class="img-fluid figure-img" alt="Screenshot of trimmed MultiQC per base sequence content plot showing low C content - indicative of directional WGBS libraries"></p>
-<figcaption>MultiQC screencap showing post trimming Sequence Content.</figcaption>
-</figure>
-</div>
-<div class="quarto-figure quarto-figure-center">
-<figure class="figure">
-<p><img src="https://robertslab.github.io/sams-notebook/posts/2025/2025-02-12-Trimming---P.tuahiniensis-WGBS-Trimming-and-QC-with-fastp-FastQC-and-MultiQC-for-E5-timeseries_molecular-Project/20250212-ptua-multiqc-plot-adapter-content.png" class="img-fluid figure-img"></p>
-<figcaption>MultiQC screencap showing post trimming Adapter Content with residula polyA contamination.</figcaption>
-</figure>
-</div>
-</section>
-<section id="references" class="level1">
-<h1>6 REFERENCES</h1>
-<div id="refs" class="references csl-bib-body hanging-indent">
-<div id="ref-chen2023" class="csl-entry">
-Chen, Shifu. 2023. “Ultrafast One-Pass FASTQ Data Preprocessing, Quality Control, and Deduplication Using Fastp.” <em>iMeta</em> 2 (2). <a href="https://doi.org/10.1002/imt2.107" class="uri">https://doi.org/10.1002/imt2.107</a>.
-</div>
-<div id="ref-ewels2016" class="csl-entry">
-Ewels, Philip, Måns Magnusson, Sverker Lundin, and Max Käller. 2016. “MultiQC: Summarize Analysis Results for Multiple Tools and Samples in a Single Report.” <em>Bioinformatics</em> 32 (19): 3047–48. <a href="https://doi.org/10.1093/bioinformatics/btw354" class="uri">https://doi.org/10.1093/bioinformatics/btw354</a>.
-</div>
-</div>
-
-
-</section>
-
- ]]></description>
-  <category>2025</category>
-  <category>Porites tuahiniensis</category>
-  <category>E5</category>
-  <category>WGBS</category>
-  <category>bisulfite sequencing</category>
-  <category>FastQC</category>
-  <category>MultiQC</category>
-  <category>fastp</category>
-  <category>trimming</category>
-  <category>timeseries_molecular</category>
-  <category>coral</category>
-  <guid>https://robertslab.github.io/sams-notebook/posts/2025/2025-02-12-Trimming---P.tuahiniensis-WGBS-Trimming-and-QC-with-fastp-FastQC-and-MultiQC-for-E5-timeseries_molecular-Project/</guid>
   <pubDate>Wed, 12 Feb 2025 08:00:00 GMT</pubDate>
 </item>
 </channel>
