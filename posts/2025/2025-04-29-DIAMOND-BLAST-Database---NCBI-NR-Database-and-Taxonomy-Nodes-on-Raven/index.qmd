@@ -1,0 +1,74 @@
+---
+author: Sam White
+toc-title: Contents
+toc-depth: 5
+toc-location: left
+title: DIAMOND BLAST Database - NCBI NR Database and Taxonomy Nodes on Raven
+date: '2025-04-29'
+draft: false
+engine: knitr
+categories: 
+  - "2025"
+  - "DIAMOND"
+  - "BLAST"
+  - "Raven"
+---
+# INTRO
+
+[Steven asked me](https://github.com/RobertsLab/resources/issues/2185) (GitHub Issue) to generate a [`DIAMOND`](https://github.com/bbuchfink/diamond) BLAST database for use with his class, as well as our lab, since we didn't currently have one set up.
+
+# MATERIALS & METHODS
+
+Downloaded NCBI NR FastA from here:
+
+- https://ftp.ncbi.nlm.nih.gov/blast/db/FASTA/nr.gz
+
+- Confirmed MD5 sum was okay (not shown)
+
+- Renamed the unzipped FastA to match download date: `ncbi-nr-20250429.fasta`
+
+::: {.callout-caution}
+This is a _huge_ FastA file. Unzipped, it will be ~350GB in size!
+:::
+
+Downloaded NCBI Taxonomy info from here:
+
+- https://ftp.ncbi.nlm.nih.gov/pub/taxonomy/taxdmp.zip
+
+- Confirmed MD5 sum was okay (not shown)
+
+Before creating the DIAMOND BLAST database, I had to manipulate some of the NCBI files first.
+
+Had to replace `superkingdom` designation in NCBI NR `node.dmp`, as this is a recent change at NCBI and [`DIAMOND`](https://github.com/bbuchfink/diamond) does not yet have a release to handle this change in nomenclature.
+
+`sed -i 's/domain/superkingdom/g' nodes.dmp`
+
+And, I actually had to replace all the new ranks ("domain", "realm", "acellular root", and "cellular root") in `nodes.dmp` and `names.dmp` with "superkingdom" (figured out due to [this comment in this GitHub issue](https://github.com/bbuchfink/diamond/issues/866#issuecomment-2792526476)).
+
+## Make the Database
+
+Ran this command to make the database:
+
+```bash
+/home/shared/diamond-2.1.8 makedb \
+--in ncbi-nr-20250429.fasta \
+--db ncbi-nr-20250429 \
+--taxonmap prot.accession2taxid \
+--taxonnodes nodes.dmp \
+--taxonnames names.dmp \
+--threads 40
+```
+
+The `--db ncbi-nr-20250429` simply specifies the output file name to be used for the resulting database.
+
+# RESULTS
+
+The final database is located here:
+
+`/home/shared/16TB_HDD_01/sam/databases/blastdbs/ncbi-nr-20250429.dmnd`
+
+The database is _349GB_!
+
+# SUMMARY
+
+Overall, the entire process of downloading, unzipping, and creating the database took nearly 6hrs.
