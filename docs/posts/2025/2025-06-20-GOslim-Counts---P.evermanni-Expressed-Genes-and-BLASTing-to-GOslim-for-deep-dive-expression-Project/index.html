@@ -1,0 +1,1415 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.6.42">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+<meta name="author" content="Sam White">
+<meta name="dcterms.date" content="2025-06-20">
+
+<title>GOslim Counts - P.evermanni Expressed Genes and BLASTing to GOslim for deep-dive-expression Project – Sam’s Notebook</title>
+<style>
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: min(4vw, 1.5em);}
+div.column{flex: auto; overflow-x: auto;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+  vertical-align: middle;
+}
+/* CSS for syntax highlighting */
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { display: inline-block; text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+</style>
+
+
+<script src="../../../site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="../../../site_libs/quarto-nav/headroom.min.js"></script>
+<script src="../../../site_libs/clipboard/clipboard.min.js"></script>
+<script src="../../../site_libs/quarto-search/autocomplete.umd.js"></script>
+<script src="../../../site_libs/quarto-search/fuse.min.js"></script>
+<script src="../../../site_libs/quarto-search/quarto-search.js"></script>
+<meta name="quarto:offset" content="../../../">
+<link href="../../..//images/favicon.ico" rel="icon">
+<script src="../../../site_libs/quarto-html/quarto.js"></script>
+<script src="../../../site_libs/quarto-html/popper.min.js"></script>
+<script src="../../../site_libs/quarto-html/tippy.umd.min.js"></script>
+<script src="../../../site_libs/quarto-html/anchor.min.js"></script>
+<link href="../../../site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="../../../site_libs/quarto-html/quarto-syntax-highlighting-dark-b53751a350365c71b6c909e95f209ed1.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="../../../site_libs/bootstrap/bootstrap.min.js"></script>
+<link href="../../../site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="../../../site_libs/bootstrap/bootstrap-e518e50a9807db09b51ea894c4c266f8.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="dark">
+<script id="quarto-search-options" type="application/json">{
+  "location": "navbar",
+  "copy-button": true,
+  "collapse-after": 2,
+  "panel-placement": "end",
+  "type": "textbox",
+  "limit": 100,
+  "keyboard-shortcut": [
+    "f",
+    "/",
+    "s"
+  ],
+  "language": {
+    "search-no-results-text": "No results",
+    "search-matching-documents-text": "matching documents",
+    "search-copy-link-title": "Copy link to search",
+    "search-hide-matches-text": "Hide additional matches",
+    "search-more-match-text": "more match in this document",
+    "search-more-matches-text": "more matches in this document",
+    "search-clear-button-title": "Clear",
+    "search-text-placeholder": "",
+    "search-detached-cancel-button-title": "Cancel",
+    "search-submit-button-title": "Submit",
+    "search-label": "Search"
+  }
+}</script>
+<script async="" src="https://www.googletagmanager.com/gtag/js?id=G-7483T61T11"></script>
+
+<script type="text/javascript">
+
+window.dataLayer = window.dataLayer || [];
+function gtag(){dataLayer.push(arguments);}
+gtag('js', new Date());
+gtag('config', 'G-7483T61T11', { 'anonymize_ip': true});
+</script>
+
+
+<link rel="stylesheet" href="../../../styles.css">
+</head>
+
+<body class="floating nav-fixed">
+
+<div id="quarto-search-results"></div>
+  <header id="quarto-header" class="headroom fixed-top quarto-banner">
+    <nav class="navbar navbar-expand-lg " data-bs-theme="dark">
+      <div class="navbar-container container-fluid">
+      <div class="navbar-brand-container mx-auto">
+    <a class="navbar-brand" href="../../../index.html">
+    <span class="navbar-title">Sam’s Notebook</span>
+    </a>
+  </div>
+            <div id="quarto-search" class="" title="Search"></div>
+          <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarCollapse" aria-controls="navbarCollapse" role="menu" aria-expanded="false" aria-label="Toggle navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+  <span class="navbar-toggler-icon"></span>
+</button>
+          <div class="collapse navbar-collapse" id="navbarCollapse">
+            <ul class="navbar-nav navbar-nav-scroll ms-auto">
+  <li class="nav-item dropdown ">
+    <a class="nav-link dropdown-toggle" href="#" id="nav-menu-bi-hdd-network" role="link" data-bs-toggle="dropdown" aria-expanded="false">
+      <i class="bi bi-hdd-network" role="img">
+</i> 
+ <span class="menu-text"></span>
+    </a>
+    <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="nav-menu-bi-hdd-network">    
+        <li>
+    <a class="dropdown-item" href="http://raven.fish.washington.edu:8787" target="_blank">
+ <span class="dropdown-text">Rstudio Server - Raven</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="https://gannet.fish.washington.edu/Atumefaciens/" target="_blank">
+ <span class="dropdown-text">My Gannet Directory</span></a>
+  </li>  
+    </ul>
+  </li>
+  <li class="nav-item dropdown ">
+    <a class="nav-link dropdown-toggle" href="#" id="nav-menu-bi-journal-code" role="link" data-bs-toggle="dropdown" aria-expanded="false">
+      <i class="bi bi-journal-code" role="img">
+</i> 
+ <span class="menu-text"></span>
+    </a>
+    <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="nav-menu-bi-journal-code">    
+        <li>
+    <a class="dropdown-item" href="https://sr320.github.io" target="_blank">
+ <span class="dropdown-text">Steven’s Notebook</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="https://shedurkin.github.io/Roberts-LabNotebook/" target="_blank">
+ <span class="dropdown-text">Kathleen’s Notebook</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="https://meganewing.github.io/mewing-notebook/" target="_blank">
+ <span class="dropdown-text">Megan’s Notebook</span></a>
+  </li>  
+    </ul>
+  </li>
+  <li class="nav-item dropdown ">
+    <a class="nav-link dropdown-toggle" href="#" id="nav-menu-bi-github" role="link" data-bs-toggle="dropdown" aria-expanded="false">
+      <i class="bi bi-github" role="img">
+</i> 
+ <span class="menu-text"></span>
+    </a>
+    <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="nav-menu-bi-github">    
+        <li>
+    <a class="dropdown-item" href="https://github.com/RobertsLab/sams-notebook" target="_blank">
+ <span class="dropdown-text">Notebook repo</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="https://github.com/RobertsLab" target="_blank">
+ <span class="dropdown-text">Lab Organization (GitHub)</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="https://github.com/RobertsLab/lab-website" target="_blank">
+ <span class="dropdown-text">Edit Roberts Lab website</span></a>
+  </li>  
+    </ul>
+  </li>
+  <li class="nav-item compact">
+    <a class="nav-link" href="https://calendar.google.com/calendar/embed?src=mrc305@gmail.com&amp;ctz=America/Vancouver" target="_blank"> <i class="bi bi-calendar-week" role="img">
+</i> 
+<span class="menu-text"></span></a>
+  </li>  
+  <li class="nav-item compact">
+    <a class="nav-link" href="../../../index.xml"> <i class="bi bi-rss" role="img">
+</i> 
+<span class="menu-text"></span></a>
+  </li>  
+</ul>
+          </div> <!-- /navcollapse -->
+            <div class="quarto-navbar-tools">
+</div>
+      </div> <!-- /container-fluid -->
+    </nav>
+</header>
+<!-- content -->
+<header id="title-block-header" class="quarto-title-block default toc-left page-columns page-full">
+  <div class="quarto-title-banner page-columns page-full">
+    <div class="quarto-title column-page-right">
+      <h1 class="title">GOslim Counts - P.evermanni Expressed Genes and BLASTing to GOslim for deep-dive-expression Project</h1>
+                                <div class="quarto-categories">
+                <div class="quarto-category">2025</div>
+                <div class="quarto-category">E5</div>
+                <div class="quarto-category">deep-dive-expression</div>
+                <div class="quarto-category">GOslim</div>
+                <div class="quarto-category">Porites evermanni</div>
+              </div>
+                  </div>
+  </div>
+    
+  
+  <div class="quarto-title-meta column-page-right">
+
+      <div>
+      <div class="quarto-title-meta-heading">Author</div>
+      <div class="quarto-title-meta-contents">
+               <p>Sam White </p>
+            </div>
+    </div>
+      
+      <div>
+      <div class="quarto-title-meta-heading">Published</div>
+      <div class="quarto-title-meta-contents">
+        <p class="date">June 20, 2025</p>
+      </div>
+    </div>
+    
+      
+    </div>
+    
+  
+  </header><div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-full page-navbar">
+<!-- sidebar -->
+  <nav id="quarto-sidebar" class="sidebar collapse collapse-horizontal quarto-sidebar-collapse-item sidebar-navigation floating overflow-auto">
+    <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">Contents</h2>
+   
+  <ul>
+  <li><a href="#intro" id="toc-intro" class="nav-link active" data-scroll-target="#intro">INTRO</a></li>
+  <li><a href="#background" id="toc-background" class="nav-link" data-scroll-target="#background">1 BACKGROUND</a>
+  <ul>
+  <li><a href="#inputs" id="toc-inputs" class="nav-link" data-scroll-target="#inputs">1.1 INPUTS</a></li>
+  <li><a href="#outputs" id="toc-outputs" class="nav-link" data-scroll-target="#outputs">1.2 OUTPUTS</a></li>
+  <li><a href="#software" id="toc-software" class="nav-link" data-scroll-target="#software">1.3 SOFTWARE</a></li>
+  </ul></li>
+  <li><a href="#variables" id="toc-variables" class="nav-link" data-scroll-target="#variables">2 VARIABLES</a></li>
+  <li><a href="#extract-genes-as-fasta" id="toc-extract-genes-as-fasta" class="nav-link" data-scroll-target="#extract-genes-as-fasta">3 Extract genes as FastA</a>
+  <ul>
+  <li><a href="#extract-genes-from-gff" id="toc-extract-genes-from-gff" class="nav-link" data-scroll-target="#extract-genes-from-gff">3.1 Extract genes from GFF</a>
+  <ul>
+  <li><a href="#write-genes-to-bed" id="toc-write-genes-to-bed" class="nav-link" data-scroll-target="#write-genes-to-bed">3.1.1 Write genes to BED</a></li>
+  </ul></li>
+  <li><a href="#create-genes-fasta" id="toc-create-genes-fasta" class="nav-link" data-scroll-target="#create-genes-fasta">3.2 Create genes FastA</a></li>
+  </ul></li>
+  <li><a href="#subset-expressed-genes" id="toc-subset-expressed-genes" class="nav-link" data-scroll-target="#subset-expressed-genes">4 Subset Expressed Genes</a>
+  <ul>
+  <li><a href="#peek-at-count-matrix" id="toc-peek-at-count-matrix" class="nav-link" data-scroll-target="#peek-at-count-matrix">4.0.1 Peek at count matrix</a></li>
+  <li><a href="#import-count-matrix" id="toc-import-count-matrix" class="nav-link" data-scroll-target="#import-count-matrix">4.1 Import count matrix</a></li>
+  <li><a href="#only-genes-with-at-least-one-read-per-sample" id="toc-only-genes-with-at-least-one-read-per-sample" class="nav-link" data-scroll-target="#only-genes-with-at-least-one-read-per-sample">4.2 Only genes with at least one read per sample</a></li>
+  <li><a href="#subset-genes-fasta" id="toc-subset-genes-fasta" class="nav-link" data-scroll-target="#subset-genes-fasta">4.3 Subset genes FastA</a>
+  <ul>
+  <li><a href="#peek-at-genes-subset-fasta" id="toc-peek-at-genes-subset-fasta" class="nav-link" data-scroll-target="#peek-at-genes-subset-fasta">4.3.1 Peek at genes subset FastA</a></li>
+  </ul></li>
+  </ul></li>
+  <li><a href="#blastx" id="toc-blastx" class="nav-link" data-scroll-target="#blastx">5 BLASTx</a>
+  <ul>
+  <li><a href="#download-swissprot" id="toc-download-swissprot" class="nav-link" data-scroll-target="#download-swissprot">5.1 Download SwissProt</a></li>
+  <li><a href="#create-blastdb" id="toc-create-blastdb" class="nav-link" data-scroll-target="#create-blastdb">5.2 Create BLASTdb</a></li>
+  <li><a href="#run-diamond-blastx" id="toc-run-diamond-blastx" class="nav-link" data-scroll-target="#run-diamond-blastx">5.3 Run DIAMOND BLASTx</a></li>
+  </ul></li>
+  <li><a href="#gene-ontology" id="toc-gene-ontology" class="nav-link" data-scroll-target="#gene-ontology">6 GENE ONTOLOGY</a>
+  <ul>
+  <li><a href="#get-gene-ids-and-swissprot-ids" id="toc-get-gene-ids-and-swissprot-ids" class="nav-link" data-scroll-target="#get-gene-ids-and-swissprot-ids">6.1 Get gene IDs and SwissProt IDs</a></li>
+  <li><a href="#get-swissprot-ids" id="toc-get-swissprot-ids" class="nav-link" data-scroll-target="#get-swissprot-ids">6.2 Get SwissProt IDs</a></li>
+  <li><a href="#retrieve-uniprot-records" id="toc-retrieve-uniprot-records" class="nav-link" data-scroll-target="#retrieve-uniprot-records">6.3 Retrieve UniProt records</a></li>
+  <li><a href="#map-go-to-genes" id="toc-map-go-to-genes" class="nav-link" data-scroll-target="#map-go-to-genes">6.4 Map GO to Genes</a>
+  <ul>
+  <li><a href="#write-merged-to-file" id="toc-write-merged-to-file" class="nav-link" data-scroll-target="#write-merged-to-file">6.4.1 Write merged to file</a></li>
+  </ul></li>
+  <li><a href="#clean-up-merged" id="toc-clean-up-merged" class="nav-link" data-scroll-target="#clean-up-merged">6.5 Clean up merged</a></li>
+  <li><a href="#flatten-gene-goid-file" id="toc-flatten-gene-goid-file" class="nav-link" data-scroll-target="#flatten-gene-goid-file">6.6 Flatten gene GOID file</a></li>
+  <li><a href="#group-by-goid" id="toc-group-by-goid" class="nav-link" data-scroll-target="#group-by-goid">6.7 Group by GOID</a></li>
+  <li><a href="#vectorize-goids" id="toc-vectorize-goids" class="nav-link" data-scroll-target="#vectorize-goids">6.8 Vectorize GOIDs</a></li>
+  <li><a href="#prepare-goslim-obo" id="toc-prepare-goslim-obo" class="nav-link" data-scroll-target="#prepare-goslim-obo">6.9 Prepare GOslim OBO</a></li>
+  <li><a href="#goslims-from-obo" id="toc-goslims-from-obo" class="nav-link" data-scroll-target="#goslims-from-obo">6.10 GOslims from OBO</a></li>
+  <li><a href="#biological-process-goslims" id="toc-biological-process-goslims" class="nav-link" data-scroll-target="#biological-process-goslims">6.11 Biological Process GOslims</a></li>
+  <li><a href="#map-go-to-goslims" id="toc-map-go-to-goslims" class="nav-link" data-scroll-target="#map-go-to-goslims">6.12 Map GO to GOslims</a></li>
+  <li><a href="#flatten-goslims" id="toc-flatten-goslims" class="nav-link" data-scroll-target="#flatten-goslims">6.13 Flatten GOslims</a></li>
+  <li><a href="#counts-of-goslims" id="toc-counts-of-goslims" class="nav-link" data-scroll-target="#counts-of-goslims">6.14 Counts of GOslims</a>
+  <ul>
+  <li><a href="#write-goslims-to-file" id="toc-write-goslims-to-file" class="nav-link" data-scroll-target="#write-goslims-to-file">6.14.1 Write GOslims to file</a></li>
+  </ul></li>
+  </ul></li>
+  <li><a href="#references" id="toc-references" class="nav-link" data-scroll-target="#references">7 REFERENCES</a></li>
+  </ul>
+</nav>
+</nav>
+<div id="quarto-sidebar-glass" class="quarto-sidebar-collapse-item" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item"></div>
+<!-- margin-sidebar -->
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar zindex-bottom">
+    </div>
+<!-- main -->
+<main class="content quarto-banner-title-block column-page-right" id="quarto-document-content">
+
+
+
+
+
+<section id="intro" class="level1">
+<h1>INTRO</h1>
+<p>This notebook annotated expressed genes with gene ontologies, assigned them to GOslims, and generated corresponding counts of GOs in each GOslim category, as part of <a href="https://github.com/urol-e5/deep-dive-expression">urol-e5/deep-dive-expression</a> (GitHub repo).</p>
+<div class="callout callout-style-default callout-note callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Note
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>The contents below are from markdown knitted from <a href="https://github.com/urol-e5/deep-dive-expression/blob/0b980cbb495f0a4d6117b56f214e7dcd0e915c79/E-Peve/code/30.00-Peve-transcriptome-GOslims.md"><code>30.00-Peve-transcriptome-GOslims.md</code></a> (commit <code>0b980cb</code>).</p>
+</div>
+</div>
+</section>
+<section id="background" class="level1">
+<h1>1 BACKGROUND</h1>
+<p>This notebook will perform annotation of expressed genes, as previously determined by <a href="https://github.com/urol-e5/deep-dive-expression/blob/7958cd3fdd10f4f80fb499d60e8befa55f3600a7/E-Peve/code/06-Peve-Hisat.qmd"><code>06.2-Peve-Hisat.qmd</code></a> (GitHub).</p>
+<p>Briefly, the notebook will perform the following tasks:</p>
+<ol type="1">
+<li><p>Extract all genes from the genome, as GFF and FastA.</p></li>
+<li><p>Create a subset of only <em>expressed</em> genes, based on gene count matrix.</p></li>
+<li><p>BLASTx expressed genes against SwissProt database.</p></li>
+<li><p>Get gene ontology.</p></li>
+<li><p>Map gene ontology to GOslims and get counts.</p></li>
+</ol>
+<div class="callout callout-style-default callout-important callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Important
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>Expressed genes were defined as those genes having at least one count across all samples.</p>
+</div>
+</div>
+<section id="inputs" class="level2">
+<h2 class="anchored" data-anchor-id="inputs">1.1 INPUTS</h2>
+<ul>
+<li><p>Gene count matrix</p></li>
+<li><p>Genome FastA</p></li>
+<li><p>Genome GFF</p></li>
+</ul>
+</section>
+<section id="outputs" class="level2">
+<h2 class="anchored" data-anchor-id="outputs">1.2 OUTPUTS</h2>
+<ul>
+<li><p>Genes BED</p></li>
+<li><p>Genes FastA</p></li>
+<li><p>Expressed genes FastA</p></li>
+<li><p>Expressed genes SwissProt IDs only file.</p></li>
+<li><p>Expressed genes to SwissProt IDs mapping file.</p></li>
+<li><p>Expressed genes to SwissProtIDs and GO mapping file.</p></li>
+<li><p>Counts file of expressed genes GOslims.</p></li>
+</ul>
+</section>
+<section id="software" class="level2">
+<h2 class="anchored" data-anchor-id="software">1.3 SOFTWARE</h2>
+<ul>
+<li><p><a href="https://github.com/bbuchfink/diamond">DIAMOND BLAST</a> (<strong>buchfink2021?</strong>)</p></li>
+<li><p><a href="https://github.com/arq5x/bedtools2">bedtools</a> (<strong>quinlan2010?</strong>)</p></li>
+<li><p><a href="https://github.com/samtools/samtools">samtools</a> (<strong>danecek2021?</strong>)</p></li>
+<li><p><a href="https://bioconductor.org/packages/release/bioc/html/Biostrings.html">Biostrings</a> (<strong>h.pagès2017?</strong>) (Bioconductor R package)</p></li>
+<li><p><a href="https://www.bioconductor.org/packages/release/data/annotation/html/GO.db.html">GO.db</a> (<strong>carlson2017?</strong>) (Bioconductor R package)</p></li>
+<li><p><a href="https://www.bioconductor.org/packages/release/bioc/html/GSEABase.html">GSEABase</a> (<strong>martinmorgan2017?</strong>) (Bioconductor R package)</p></li>
+</ul>
+</section>
+</section>
+<section id="variables" class="level1">
+<h1>2 VARIABLES</h1>
+<div class="sourceCode" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="co"># DIRECTORIES</span></span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a>top_output_dir <span class="ot">&lt;-</span> <span class="fu">file.path</span>(<span class="st">".."</span>, <span class="st">"output"</span>)</span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a>output_dir <span class="ot">&lt;-</span> <span class="fu">file.path</span>(top_output_dir, <span class="st">"30.00-Peve-transcriptome-GOslims"</span>)</span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a>data_dir <span class="ot">&lt;-</span> <span class="fu">file.path</span>(<span class="st">".."</span>, <span class="st">"data"</span>)</span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a><span class="co"># PROGRAMS</span></span>
+<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a>blastdbs_dir <span class="ot">&lt;-</span> <span class="fu">file.path</span>(<span class="st">".."</span>, <span class="st">".."</span>, <span class="st">"M-multi-species"</span>, <span class="st">"data"</span>, <span class="st">"blastdbs"</span>)</span>
+<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a>programs_dir <span class="ot">&lt;-</span> <span class="fu">file.path</span>(<span class="st">""</span>, <span class="st">"home"</span>, <span class="st">"shared"</span>)</span>
+<span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a>bedtools_dir <span class="ot">&lt;-</span> <span class="fu">file.path</span>(programs_dir, <span class="st">"bedtools-v2.30.0"</span>, <span class="st">"bin"</span>)</span>
+<span id="cb1-10"><a href="#cb1-10" aria-hidden="true" tabindex="-1"></a>blast_dir <span class="ot">&lt;-</span> <span class="fu">file.path</span>(programs_dir, <span class="st">"ncbi-blast-2.15.0+"</span>, <span class="st">"bin"</span>)</span>
+<span id="cb1-11"><a href="#cb1-11" aria-hidden="true" tabindex="-1"></a>diamond <span class="ot">&lt;-</span> <span class="fu">file.path</span>(programs_dir, <span class="st">"diamond-2.1.8"</span>)</span>
+<span id="cb1-12"><a href="#cb1-12" aria-hidden="true" tabindex="-1"></a>fastaFromBed <span class="ot">&lt;-</span> <span class="fu">file.path</span>(bedtools_dir, <span class="st">"fastaFromBed"</span>)</span>
+<span id="cb1-13"><a href="#cb1-13" aria-hidden="true" tabindex="-1"></a>samtools_dir <span class="ot">&lt;-</span> <span class="fu">file.path</span>(programs_dir, <span class="st">"samtools-1.12"</span>)</span>
+<span id="cb1-14"><a href="#cb1-14" aria-hidden="true" tabindex="-1"></a>samtools <span class="ot">&lt;-</span> <span class="fu">file.path</span>(samtools_dir, <span class="st">"samtools"</span>)</span>
+<span id="cb1-15"><a href="#cb1-15" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-16"><a href="#cb1-16" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-17"><a href="#cb1-17" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-18"><a href="#cb1-18" aria-hidden="true" tabindex="-1"></a><span class="co"># FILES</span></span>
+<span id="cb1-19"><a href="#cb1-19" aria-hidden="true" tabindex="-1"></a>count_matrix <span class="ot">&lt;-</span> <span class="fu">file.path</span>(top_output_dir, <span class="st">"06.2-Peve-Hisat/gene_count_matrix.csv"</span>)</span>
+<span id="cb1-20"><a href="#cb1-20" aria-hidden="true" tabindex="-1"></a>diamond_db <span class="ot">&lt;-</span> <span class="st">"20250620-diamond"</span></span>
+<span id="cb1-21"><a href="#cb1-21" aria-hidden="true" tabindex="-1"></a>diamond_output <span class="ot">&lt;-</span> <span class="fu">file.path</span>(output_dir, <span class="st">"Pevermanni-expressed-genes.blastx.outfmt6"</span>)</span>
+<span id="cb1-22"><a href="#cb1-22" aria-hidden="true" tabindex="-1"></a>genome_fasta <span class="ot">&lt;-</span> <span class="fu">file.path</span>(data_dir, <span class="st">"Porites_evermanni_v1.fa"</span>)</span>
+<span id="cb1-23"><a href="#cb1-23" aria-hidden="true" tabindex="-1"></a>genes_fasta <span class="ot">&lt;-</span> <span class="fu">file.path</span>(output_dir, <span class="st">"Pevermanni-genes.fasta"</span>)</span>
+<span id="cb1-24"><a href="#cb1-24" aria-hidden="true" tabindex="-1"></a>genes_fasta_index <span class="ot">&lt;-</span> <span class="fu">file.path</span>(output_dir, <span class="st">"Pevermanni-genes.fasta.fai"</span>)</span>
+<span id="cb1-25"><a href="#cb1-25" aria-hidden="true" tabindex="-1"></a>genes_subset_fasta <span class="ot">&lt;-</span> <span class="fu">file.path</span>(output_dir, <span class="st">"Pevermanni-subset-genes.fasta"</span>)</span>
+<span id="cb1-26"><a href="#cb1-26" aria-hidden="true" tabindex="-1"></a>genes_subset_fasta_index <span class="ot">&lt;-</span> <span class="fu">file.path</span>(output_dir, <span class="st">"Pevermanni-subset-genes.fasta.fai"</span>)</span>
+<span id="cb1-27"><a href="#cb1-27" aria-hidden="true" tabindex="-1"></a>genes_bed <span class="ot">&lt;-</span> <span class="fu">file.path</span>(output_dir, <span class="st">"Pevermanni-genes.bed"</span>)</span>
+<span id="cb1-28"><a href="#cb1-28" aria-hidden="true" tabindex="-1"></a>og_genome_gff <span class="ot">&lt;-</span> <span class="fu">file.path</span>(data_dir, <span class="st">"Porites_evermanni_validated.gff3"</span>)</span>
+<span id="cb1-29"><a href="#cb1-29" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-30"><a href="#cb1-30" aria-hidden="true" tabindex="-1"></a><span class="co"># THREADS</span></span>
+<span id="cb1-31"><a href="#cb1-31" aria-hidden="true" tabindex="-1"></a>threads <span class="ot">&lt;-</span> <span class="st">"40"</span></span>
+<span id="cb1-32"><a href="#cb1-32" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-33"><a href="#cb1-33" aria-hidden="true" tabindex="-1"></a><span class="do">##### Official GO info - no need to change #####</span></span>
+<span id="cb1-34"><a href="#cb1-34" aria-hidden="true" tabindex="-1"></a>goslims_obo <span class="ot">&lt;-</span> <span class="st">"goslim_generic.obo"</span></span>
+<span id="cb1-35"><a href="#cb1-35" aria-hidden="true" tabindex="-1"></a>goslims_url <span class="ot">&lt;-</span> <span class="st">"http://current.geneontology.org/ontology/subsets/goslim_generic.obo"</span></span>
+<span id="cb1-36"><a href="#cb1-36" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-37"><a href="#cb1-37" aria-hidden="true" tabindex="-1"></a><span class="co"># FORMATTING</span></span>
+<span id="cb1-38"><a href="#cb1-38" aria-hidden="true" tabindex="-1"></a>line <span class="ot">&lt;-</span> <span class="st">"-----------------------------------------------"</span></span>
+<span id="cb1-39"><a href="#cb1-39" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-40"><a href="#cb1-40" aria-hidden="true" tabindex="-1"></a><span class="co"># Export these as environment variables for bash chunks.</span></span>
+<span id="cb1-41"><a href="#cb1-41" aria-hidden="true" tabindex="-1"></a><span class="fu">Sys.setenv</span>(</span>
+<span id="cb1-42"><a href="#cb1-42" aria-hidden="true" tabindex="-1"></a>  <span class="at">blastdbs_dir =</span> blastdbs_dir,</span>
+<span id="cb1-43"><a href="#cb1-43" aria-hidden="true" tabindex="-1"></a>  <span class="at">count_matrix =</span> count_matrix,</span>
+<span id="cb1-44"><a href="#cb1-44" aria-hidden="true" tabindex="-1"></a>  <span class="at">data_dir =</span> data_dir,</span>
+<span id="cb1-45"><a href="#cb1-45" aria-hidden="true" tabindex="-1"></a>  <span class="at">diamond =</span> diamond,</span>
+<span id="cb1-46"><a href="#cb1-46" aria-hidden="true" tabindex="-1"></a>  <span class="at">diamond_db =</span> diamond_db,</span>
+<span id="cb1-47"><a href="#cb1-47" aria-hidden="true" tabindex="-1"></a>  <span class="at">diamond_output =</span> diamond_output,</span>
+<span id="cb1-48"><a href="#cb1-48" aria-hidden="true" tabindex="-1"></a>  <span class="at">fastaFromBed =</span> fastaFromBed,</span>
+<span id="cb1-49"><a href="#cb1-49" aria-hidden="true" tabindex="-1"></a>  <span class="at">genes_bed =</span> genes_bed,</span>
+<span id="cb1-50"><a href="#cb1-50" aria-hidden="true" tabindex="-1"></a>  <span class="at">genes_fasta =</span> genes_fasta,</span>
+<span id="cb1-51"><a href="#cb1-51" aria-hidden="true" tabindex="-1"></a>  <span class="at">genes_fasta_index =</span> genes_fasta_index,</span>
+<span id="cb1-52"><a href="#cb1-52" aria-hidden="true" tabindex="-1"></a>  <span class="at">genes_subset_fasta =</span> genes_subset_fasta,</span>
+<span id="cb1-53"><a href="#cb1-53" aria-hidden="true" tabindex="-1"></a>  <span class="at">genes_subset_fasta_index =</span> genes_subset_fasta_index,</span>
+<span id="cb1-54"><a href="#cb1-54" aria-hidden="true" tabindex="-1"></a>  <span class="at">genome_fasta =</span> genome_fasta,</span>
+<span id="cb1-55"><a href="#cb1-55" aria-hidden="true" tabindex="-1"></a>  <span class="at">og_genome_gff =</span> og_genome_gff,</span>
+<span id="cb1-56"><a href="#cb1-56" aria-hidden="true" tabindex="-1"></a>  <span class="at">output_dir =</span> output_dir,</span>
+<span id="cb1-57"><a href="#cb1-57" aria-hidden="true" tabindex="-1"></a>  <span class="at">top_output_dir =</span> top_output_dir,</span>
+<span id="cb1-58"><a href="#cb1-58" aria-hidden="true" tabindex="-1"></a>  <span class="at">line =</span> line,</span>
+<span id="cb1-59"><a href="#cb1-59" aria-hidden="true" tabindex="-1"></a>  <span class="at">samtools =</span> samtools,</span>
+<span id="cb1-60"><a href="#cb1-60" aria-hidden="true" tabindex="-1"></a>  <span class="at">threads =</span> threads</span>
+<span id="cb1-61"><a href="#cb1-61" aria-hidden="true" tabindex="-1"></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</section>
+<section id="extract-genes-as-fasta" class="level1">
+<h1>3 Extract genes as FastA</h1>
+<section id="extract-genes-from-gff" class="level2">
+<h2 class="anchored" data-anchor-id="extract-genes-from-gff">3.1 Extract genes from GFF</h2>
+<div class="sourceCode" id="cb2"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Read GFF, skipping comment lines</span></span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>genome_gff <span class="ot">&lt;-</span> readr<span class="sc">::</span><span class="fu">read_tsv</span>(</span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a>  og_genome_gff,</span>
+<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a>  <span class="at">comment =</span> <span class="st">"#"</span>,</span>
+<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a>  <span class="at">col_names =</span> <span class="fu">c</span>(<span class="st">"seqid"</span>, <span class="st">"source"</span>, <span class="st">"type"</span>, <span class="st">"start"</span>, <span class="st">"end"</span>, <span class="st">"score"</span>, <span class="st">"strand"</span>, <span class="st">"phase"</span>, <span class="st">"attributes"</span>)</span>
+<span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb2-7"><a href="#cb2-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-8"><a href="#cb2-8" aria-hidden="true" tabindex="-1"></a><span class="co"># Filter for gene features</span></span>
+<span id="cb2-9"><a href="#cb2-9" aria-hidden="true" tabindex="-1"></a>genes <span class="ot">&lt;-</span> <span class="fu">as.data.frame</span>(genome_gff) <span class="sc">%&gt;%</span></span>
+<span id="cb2-10"><a href="#cb2-10" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(type <span class="sc">==</span> <span class="st">"gene"</span>) <span class="sc">%&gt;%</span></span>
+<span id="cb2-11"><a href="#cb2-11" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(</span>
+<span id="cb2-12"><a href="#cb2-12" aria-hidden="true" tabindex="-1"></a>    <span class="at">chrom =</span> seqid,</span>
+<span id="cb2-13"><a href="#cb2-13" aria-hidden="true" tabindex="-1"></a>    <span class="at">start =</span> start <span class="sc">-</span> <span class="dv">1</span>,  <span class="co"># BED is 0-based</span></span>
+<span id="cb2-14"><a href="#cb2-14" aria-hidden="true" tabindex="-1"></a>    <span class="at">end =</span> end,</span>
+<span id="cb2-15"><a href="#cb2-15" aria-hidden="true" tabindex="-1"></a>    <span class="at">gene_id =</span> <span class="fu">sub</span>(<span class="st">"ID=([^;]+);?.*"</span>, <span class="st">"</span><span class="sc">\\</span><span class="st">1"</span>, attributes)</span>
+<span id="cb2-16"><a href="#cb2-16" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">%&gt;%</span></span>
+<span id="cb2-17"><a href="#cb2-17" aria-hidden="true" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">select</span>(chrom, start, end, gene_id)</span>
+<span id="cb2-18"><a href="#cb2-18" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-19"><a href="#cb2-19" aria-hidden="true" tabindex="-1"></a><span class="fu">str</span>(genes)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<pre><code>'data.frame':   40389 obs. of  4 variables:
+ $ chrom  : chr  "Porites_evermani_scaffold_1" "Porites_evermani_scaffold_1" "Porites_evermani_scaffold_1" "Porites_evermani_scaffold_1" ...
+ $ start  : num  3106 8491 26133 30312 32615 ...
+ $ end    : num  4488 11026 26404 42225 67628 ...
+ $ gene_id: chr  "gene-Peve_00000001" "gene-Peve_00000039" "gene-Peve_00000112" "gene-Peve_00000117" ...</code></pre>
+<section id="write-genes-to-bed" class="level3">
+<h3 class="anchored" data-anchor-id="write-genes-to-bed">3.1.1 Write genes to BED</h3>
+<div class="sourceCode" id="cb4"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Write to BED</span></span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a><span class="fu">write_tsv</span>(genes, genes_bed, <span class="at">col_names =</span> <span class="cn">FALSE</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</section>
+</section>
+<section id="create-genes-fasta" class="level2">
+<h2 class="anchored" data-anchor-id="create-genes-fasta">3.2 Create genes FastA</h2>
+<div class="sourceCode" id="cb5"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a><span class="st">"</span><span class="va">${fastaFromBed}</span><span class="st">"</span> <span class="at">-fi</span> <span class="st">"</span><span class="va">${genome_fasta}</span><span class="st">"</span> <span class="at">-bed</span> <span class="st">"</span><span class="va">${genes_bed}</span><span class="st">"</span> <span class="at">-nameOnly</span> <span class="op">&gt;</span> <span class="st">"</span><span class="va">${genes_fasta}</span><span class="st">"</span></span>
+<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a><span class="co"># Create FastA index</span></span>
+<span id="cb5-5"><a href="#cb5-5" aria-hidden="true" tabindex="-1"></a><span class="st">"</span><span class="va">${samtools}</span><span class="st">"</span> faidx <span class="st">"</span><span class="va">${genes_fasta}</span><span class="st">"</span></span>
+<span id="cb5-6"><a href="#cb5-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-7"><a href="#cb5-7" aria-hidden="true" tabindex="-1"></a><span class="fu">head</span> <span class="st">"</span><span class="va">${genes_fasta}</span><span class="st">"</span></span>
+<span id="cb5-8"><a href="#cb5-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-9"><a href="#cb5-9" aria-hidden="true" tabindex="-1"></a><span class="bu">echo</span> <span class="st">""</span></span>
+<span id="cb5-10"><a href="#cb5-10" aria-hidden="true" tabindex="-1"></a><span class="bu">echo</span> <span class="st">""</span></span>
+<span id="cb5-11"><a href="#cb5-11" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-12"><a href="#cb5-12" aria-hidden="true" tabindex="-1"></a><span class="fu">head</span> <span class="st">"</span><span class="va">${genes_fasta_index}</span><span class="st">"</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<pre><code>&gt;gene-Peve_00000001
+TTACTGCTTCAGTATGTGAATTTCGATGGTGGCTTGACCGGAGTTAGACATGGCCCCCCTTGCTCGGAGTCCCGATCCCAAATCTCTCTCGTGCCAGTAGTTATCTCCTTTGAAGGGATTATCGTAATACATCCGGTACCAAAGATTGTAGTTGGCGCGTCTTTTACCACTGTAAAGCCAAACATCAAACCAGTTGCTGTACCAGTTGTAGTCAAATGGAACGGAATACATAACAGCAAGTGTTTTATCGATGTGTGGGATGTAGTATGTTAATACTCCTACTGCGCCTCTCGCAACGGGCCCCGCAGTTTTTCGTGCGCCGTAAAGCAAAGCTGTGCCTAGAAATAAGCAAACAAATTAGCAATTAAACAAAAATCATAAACATGATCATTCGTCACAATGATACATGGCAAACNTTGTGTCAGGTTAGTGATTGCTTATCTTTTCCCCAAATATTACACGCAAAGGGATTCTCATTCTGAACATGAATACTAAGTTTAGTTGGTTTAAGAAGCTCTTTCAACCCTGAAGTCATTTTGCCGTTCTGACAAAGCAAAACATAAACCTGTTGTCTGCAAAATTTCAAGAATGGGCAAATCCTCTAATACAGTTTCTTTACTCTTTAGGGTAAGTGGTCGCTGAGTTCGTCCTTGGTTTCATACGGTAATAGGCCCTTTGCACGCGATGAACTCATTTTACTACTACTACTACTACCAGAATCACTCGGGGTTTTGCTTTCTTGGACAAACGAGGGCTTTATTTTTCAAACCTCGCATAACCTGTGATCAGGCCCCCAAAACAAAAAGGGAAGAAGGACCGCCTGATTGCAGGTTAAATTCTTCGCAGAGATTAGCTAGAAAAATTAAATATGACAAGAAAACCAAAATGGATTCTATAGCAATAGATCAGACCTTTTTAGCTTGTATGGTTTGTTTACCCATTTCAGACCAAGTGATGGTACCCCAGAGAACTGTTTCTTTCAATGTCGTCTTTTGCACGTGCACCCACATGTTATGTATGCATAATTATATAAAAGACAAATTCCCCCAAGAACATCACGTGGTCTGAATTGGGAAAACAAAACAAACAAGCTAATGACACCATCCTGCATACTGGCCTTAGTGTTATTACTAAAAGAAAGGATTTTAAACTTTTATGTTATTAATATTAATTTTACCTGAAGAAACATCATGAGGCAAAACACGATTTGACGTCCCTGAATAAAAATATATGTTGACTGCTCTCCATTTATATCCACTTTCGTTATCAACACCAATGGCGACCTTGCGGCTTATGCTACCAAGGGTGTTTAAAATTGTTGTGAGAATGCCCAAGCCAAGTTGAGCACCGCTGATGACAGCACCAGCGTCAGCTAAAATTTT
+&gt;gene-Peve_00000039
+ATGGGCATCGTTAGGCTGTTCACCCTTCTGCTTTTCGTTCTGCTGATAACTCAGTCAATCTTTGGGTCTCCCTTCAAGCAAGACAATCATGTCGAAAGGAGTCCTGGATCGTCCTCTAAACACACTGAGGTAAAACAGTTCTCTTTAAAATAAGATAGTCAATTGGTGTCTTGTGTTTAAGACGAACATGAAAGTGTCTCTTGGGGGTGGCGTGATATCTACGGAAATGCAACTCACTGTTCTAATCGGATCTCGGTTGTTTCACTAAAACAAAATGAACCCTAATCTCGGACCGAATATAAAACCGACTAACACCCCCCCCCCCCCCCTCCAGTTCAGAATTCTAATCTCGACACTCGCTTTCCCTTTTCTCCAAAACACCGATTACCCTTGTGAGTGTGTAGTGCTGCGAGTAGATACTAGGTAGTTTTACACCTTAACGCTTGAATGTATAGTAAACATTTTAATAATTTTAAGCCGTAAATCTATTGAGTTCTTTGTGATGTGTCCCTCAATAATCAATGTTCAGTTTGGCGAAGTGTAAACTGAATGAATACACAGCCATCATGCAATTCTTGGTGGTTTCGCTAAGGCTCCCAGCGATAATTTTAGCCGGCTTCCGATTTCATTTCTGTGCCTCAAATGTATTTAAATACACAGAGGAAAAATTAGTGAAAAAAAAAGAATACTCATTCCAGTTTGTATTCAGTGGAATGACCTTAATGGCCATACTTTCCTTCACAGATACAGGGACGACAAGGCTCGTCCACGATCTCTACTCGTAAAGAAGGCGACGAGAAAAACAAGCGAAAAGGTAATTGCATCAGTTGTTTAGAAGTTGCGTACCATAACCTTTGAAAACAAAAGGAAGAAACAAAAAGAAGCTGAAACGTAACTGCACAGGCTAGCTGTTTGGTAAACCAAACTATTCATTACAGTTGTTGGGTTACTCTGCTAAACGAAAACATTCATTAGCCGACTGTTTATTCAAACTTGGTTTGTTTTAATACCACTAAGTGTGCAACTAAAAATTTTATCTTGCTGTGTTCTTTAAAATTTTAGCTGACGCTGGTGCTGTCATCAGCGGTGCTCAACTTGGTTTGGGCATTCTCACAACAATTTTAAACACCCTTGGTAGCATAAGCCGCAAGGTCGCCATTGGTGTTGATAACGAAAGTGGATATAAATGGAGAGCAATCAACATATATTTTTATTCAGGGACGTCAAATCGTGTTTTGCCTCATGATGTTTCTTCAGGTAAAATTAATATTAATAACATAAAAGTTTAAAATCCTTTCTTTTAGTAATGACACTGAGGCCCGTATGCAGGATGATGTCATTAGCTTGTTTGATTTGTTTTCCCAACGTTCTTCGGGGAATTTGTCTTTTATATAATTATGCATACATATACACGTGGGTGCACATGCAAAAGATCAGACGACATTGAAAGAAACAGTTCTCTGGGGTACTATCACCTGGTCTGAAATGGGAAAACAAAACGTACCAGCTAAAAAGGTCTGATCTATTAGTATAGAATCCATTTCGGTTTTCTTGTCATATTTAATTTTTCTAGCTAATCTCTGCGAAGAGTTTAACCTGTAATCAGGCGGTCCTTCTTCCCTTTTTGTTTTTGGGGGCCTGACCGCAGGTTATGCCAGGTTTGAAAAGTAAAGCCCTCGTTGGTCCAAGAAAGCAAAACCCCGAGTGATTCTGGTAGTAGTAGTAGTAGTGAAATGAGCTCATCGCGTGCAAAGGGCCTATTACTGTATGAAACCAGGGGCGAACTCAGCGACCACTTACCCTAAAGAGGAAAGAAACTGTATCAGAGGATTTGCCCCTTCTTGAAATTTTGCTGACAACAGGTTTACGTTTTGCTTTGTCAGAACGGCAAAATGACTTCAGGGTTGAAAGAGCTTCTTAAACCAACCAAACGTAGTATTCTGAGTGTGTGATGTTCAGAATGAACATCCCTTTGCGTGTAATATTTGGGGAAAAGATAAGCAATCACTAACCTGACACAAATAAAATTTCTGGGTGGCAACAAAGGAGGACATGTTAATGATCTGACACATTCTATGTAAATTTTGTTTTTGGGTACACGACTCTATTCTGTGATGCTTGTTTGCCATGTATTATTGTGACGAATGATCATGTTTATGATTTTTGTTTAATTGCTAATTTGTTTGCTTATTTCTAGGCACAGCTTTGCTTTACGGCGCACGAAAAACTGCGGGGCCCGTTGCGAGAGGCGCAGTAGGAGTATTAACATACTACATCCCACACATCGATAAAACACTTGCTGTTATGTATTCCGTTCCATTTGACTACAACTGGTACAGCAACTGGTTTGATGTTTGGCTTTACAGTGGTAAAAGACGCGCCAACTACAATCTTTGGTACCGGATGTATTACGATAATCCCTTCAAAGGAGATAACTACTGGCACGAGAGAGATTTGGGATCGGGACTCCGAGCAAGGGGGGCCATGTCTAACTCCGGTCAAGCCACCATCGAAATTCACATACTGAAGCAGTAA
+&gt;gene-Peve_00000112
+TTCTGCTCTCTATGTTTAGGTCAGCCTTATCAGCGTGGTCTCACAGCTATTCTTTGCACGATAGGCAGTGATAGCATCACTAAGTCTGTCATCCATAAACTTACTGTCTTGTTGGCCCAACAGTACTTCATAAACTTTATTCACGCATGGCAACACCGTGATAGGTCTATAGTTTATATCCCATTGTTTATCCAGTTTATCATCCTTCTTATGTACTGGTGTCCATTCCCCACGCTTAAGCTTTGCTATCCATTCTCCATTTCTAATCGCT
+&gt;gene-Peve_00000117
+AACTTTCTTGCTGCAGTGAAGGACCTGAAGATACTAAAAACTCTGAGGTGAGTACCCCAGTAATGATTGTATTTCGTACGAAAAAAGTTAACAGGTCTTTGGCTAAAGAAAATAGATTTCTAAAATAATATTCTTGTTTTTAATAACGAAATTTCCACTGAAAGCACTCATTTTGCGACAGGTTTTAGATCCTTTGAGCTTTATGTTTAGCTCAGTGTTGCACACTTTTATGTTCGATTCGATTTTATGTTCAATAAACAGCCTGTCCGGCACTTTAAAAAAAAACTGAATAAGACTTGCTAAAATTTCTTTCATGTTTAAACAATCAATTGAAACTCTTAGGACTATTCTTGTTTTGCCTTCATTAAGCCTGTTCAATTCACTTGGCTGTTCATCATGTCAAAACCAAATTTTGGCGTTACTTTATCACCTATGCAGCTCAACCTTTCCTTGGTTTTTCTTTCGATTAAGTTTCTCGTTCTTTACCTAAAGCTGAAAAATCGAAAAAACCTCCAAACCAGTGCAACACTGACAACTTTTCCTGAATTTTTAATTGAGGAATAAAGCTTTTAATTAACTCCAACGTCAGCTTAGTAAGGTGCTTCCTTTTCAGACACAATCGTGAGGGAGAGGAATAATTTTGGGGAAGTTTCCATTAATAACTGTTCGCCAGAAAATTACTTTAAGATAAAAACAACTGAGTTCATGTTTTTTAAGACTATAATTTTAATGGGAAACCTGTGTTGATGCGAGAGTTTCAAAATTTTTCGTATTTATGGCATGCTTTTTGCATCAACATTTTCGCAGTTTCAATAACCCTGTCAAACAATACACACTTTTTGTTTCTTTGGCAATGTTTGTAAACCTCCTGGTCTTCTCAAACTTAACTCGAGAAGGAAAATTAACCGGGTTATGTTTAATAAAGCTTTTGCTTCACGCAAAAATGAAATTTCGGCACCCCATGTTTTCACTTGAATTTAAGTAGTTACATAAGCTTAGCTAAACTTTCATTTCCGCAAATCAATAAAACAGCGTTAACGTTGTGCGGCAAACTTTGCCCCTAGAATTTCTATCAGTGCTTTTTCCTTTCTTGTATAAATATTTTAGGTTTTTAATTGCCTTTAAGATTCAGAATGGAGCACACTGTATTTGTCATCTTTGTTTTGATCCTTGGAATAACTGTCACCACCTTGGGCTCTCCGATGTCAGACGATCATAAAGACGGCGATCCTGAACTATCTCCAAGGCTTAAGGTATACAAAAACGTTTTTTAAGGAGTTATTTTGCTCGAAATTCCTGTGTGGAAGCTGCATTTTTTTTATTCATCAGAGACCTCTGGCACGGCCTCTGAGCAGTACTGTGGCACAGCTGTGTAGCCGTCTCGTTACCCTTTCAGCAGTTAGTTAAGCTAATTCAATGGTTACTTGTTGTTTTTTGTTTTTGTTTTTTATCAAAATGATAGAATTTTGTTTGATCAGTCTGTATCGCCCATAATGCACCACGAAAAGCATAGTCATTCTTTAACGACAGGAAAAGGGACATTGTTTTTGTTTCGCAAAACAAATAAAAAACGAAAAGTGTGTTTTAACTGTTATTTACCGTTCTCTGAGCCTTCCCCAAATTCCAAAGTTTAGATAAGTGATTCTGCACAATAATTGTTCTAGCTGGTCTAGTGTAGCCGGAAACACTGGGAAAGTTAAATTAATTGGTGCTGTTGCCATTTCATTATTTTGTTTTGCATCTGGCTTGTTCATTTAAACTTTCCGCTAATTCTTATTTTTCCACACTGGTCATCCCATTCAGAAGTATCTCAAATAGGCTATTTTTCAAGGAAGGAGAAGGACAACTGGGGAAATTTAACTTAGAAATGACAAAAGAATTAGGTTAAAAACATGTATATTGACTTTAATTAAAAACCACAAATGTTTCTGTTTGATATAAAGAAAATTGAAGGACTGAGAATGCGTTCAAATCAATCAAAAGTCGCATTGGCAAAGGATGCTGAAAAATCAACAAAAGTCCAGGTGAAGTTATTGTTAGCCGTTCTATTTCTCATTTAATCATACGAGTGATTAACAAAATCGGACGACCGCGTAGCGGGAGTCCGATTTGTTTAATCACAAGTATGATTACAGACCGAATTGGATGACACGAAGTTCTGTTACCAATTAATCATAACTTTAACAAAATTTGTGATATATAGGGCTCTTTTTAAAATCAAAACCAAAGAAATTCCAAGATTTTTTCGCTAGCAATGAAAAAAAAGCCATTTAAGAGCGCGCGTGATGGCGCACACTGTCCAATTACTTATGCATGACGCGTACTGTCCTATTAAACTGTCCTATTAAGGCTGAAATCAGGGCAGTTGAGAACCAATCAGATTTGAGAATTTTGTTATAGTTATGATTACAGACCGAATTGGACTCCACTCAGTCCTGTTACCATTACATACTACTGAGCATATACACACGGGAAAACGCGATACTTATCTTAAACGAAAATTCACGGGTAGCCTGCGAGGCATGTTAATACTATCGATGCATTGGTACCGGAGAAAGAGAAATTCAAGTTAGTTCCAAGGGAAAATATTTCACCCTTCAATGTCAGCGTCTTTGGTTGTCGCCAGCACTACCACTATGGTATAAAGAGAGATCGTATAAAAAAAATAAACTTTGCTTGAACATATTTATCTCGACAGGAACGAAAAGAGCAAAGGACCAAGCGTCAAGAACCAGGTCAGTAGTTCATGTATGACCCCATGAAATGTCCTGAGACACCAGTGCCGTGTCGGGTCTCTAGGCACAGAAGCAAGTGTCCAAGAACCAACACGTAATATACCTTTCATTTCCTTCTTTATTGTGTAACATAGGTCAGGTGTTCATACGTTAATTAATTATTTATTTATTTATTGAGAAGCAATAACAGACCCCATGCAAAGGTCTGCTCCCAAAATACAAAAGAGATCCTCAAAATTTTTTTCGAAATTGTATGGCTTAAGACATCTCGAAGAGTCTTTCGTGTTGGAGCCCAGTATGGACCCAGTGGAGGCTGCGAGTTTATATATTATAAATTTGCCGCAAGTGGAAGGTATCTTGAACATATGCCATGCATTTGTAGGGACCGCGGAGCAGGGTTTGGAGTTGTGGGGGGAGGGGGCAGTTAATCTGAACCCGTAAGGGTGAGCCTACTAGGGGATACAGGGGCATGTTTCCCCTGTAAAATTTGATTTTAGGAGTCCTGAAACGGCTAGAAAAGCACCTAAAACTATTATACTTAAATAAAAGTAACGCAAGGCCAAATTTTTAACGATCATATCGCTGCTAAAGTCTGTGAAAGTTGTAACCGAGCTGGTGCTCCTTCAACTGGAAAAGGCAAGATAATTAAAAGGTATAATCGTACCAGTCTCACAATATTTAGGCAGTAAAATAAATCCAACTCCATCAATGACTTGTGCCTTGTTCGAAGTTGTTGCGGATTGGCCGCTTCATCTTCTGACAACTGAGTATCTGTCATTATTGGCTCAAACCTACCACACCACGCTGTTGAATATTTTTAAAAGACGTTTTCTGAACGTTCTTCCCTTTTTATCCCTACCAAAGCCTCTCGTCAGGTTTCGATCAGGTTCCTCATTGCGTGTTTCCAACTTGAAGTTTAAAACAGCATTGATAGAAGAAAGAAGATTCAATAACAAAACCTTCGTAACGTCCCAGTGTAACAAAACCAAACATTCAGGCCTCCTGTTGTTCAATAGGTGGTTAGCGCTACTCTCTCCTCCGCAGAGGCGTCTTTGTGTCGTAGGGAGGCTGGGGAGAAAGAAATAGAAAGCGCGCGGGGCACGGTGGGAAGGGGAGAGAGAGAAAAGAGGCTCCCGTCTTTTCCCTCTTCCCATCTCCCCCCCCCCTCCCCCCCTCGCACTTTTTATTTTTCGATTATTGCTATTTTTATTGTGATACCCAGCAAGAGCCTCTGCGGAGGAGAGAGTTAGCGCTAGCCGACGGATAAATCACTATCCAGTGGATAAGTATTAGGGGTGAATCATTTGAGCTATCCGCTAGGTAAAGATTTATCCGAGCGCTATCCACCTTTTGAACTACTGAAGCTGGCGGTAAAACATTGATCCAAAGGCAAATTAATTCTGGAAAGAAACAGAAGTTGTTAACTCCATTATTTTACCGTCAAAAATCCAAGCGTCCTTTCAGCAACAATAAGCCTTATCACGGTTGTCGACGACATCTTTTGAAAAGTGGGCAACGGCGTGAGAAATTACAGTGTTTGTATGAGAATCTAATATCGAATAATTTCCCTAAAACGGCGGTTCTGAAAAAGATATGAAGTGTAAACTAAAGCTTTGACTCCTAACGATTCTACTGAAAAAATGTAAGGGCGTAACATGCAGTTACATTCGCTAGAACCACTTTATAAAATTTTCTATACATTTGTCTGTAAAAATTTCTCTTCCGACTAAAATTTTCCGGGAAAAATTGCAGACACCGTGAATATATGGAAAACCTAAAGCAAGCGTTCTGGAGAAATTGAAGCACAGTAACAGCCCCCAAAATTTGTTAGTAAAATCCTTTCCTGTGTAGCTTTATTTAATTCATATATCTTTTTTCAGAACACCCGTTTTACGGAAATTATTCGACATTAGATTCTTCTACAATCACTAATTTCTCACGCGGTTGCCTACTCGTCAAAATGGCGTCGAAAACCGTGATGAGGCCTGGAAGGAACAAAAAGAAAAAACAATAGTATTGCAAAGTTTACAAACCAGAGACCAGATTCCGGACAGTTATGTGTTATCACAGCATGGAATTTTTGTCACTGCAGGCGCAGACGTCCCTCCTGGCGAGACGTCCCTTGCGGCGAGGAGCGAGGAGGGAAGGCTGTATTCGCAGGCTAGCGATTGTGGTGATCGTATAGAAAAAATGCACACCCCTAAACGTTTTTGTTTGGCTTTTTTCACACATAGCTGACATAATCGCAGCGGCTGCACTAACTGTTGGCGTACTTCAAGGGATCTTGGATGGCATCATAGGTGTAGATCGCAAGATAGCCATCGGCATCAAGAATAGAAGCGGATATAGCTGGGGAGCAATTGATATTTACTTGCAACAAGGAGTTACAGATAGGGTCATTCCCCGTAGAGTCGATAATGGTAACTATGAATGTCACGAATTTAGCATGAAAGCGCTTATCGGGGACACTGTTATAATGTCTCCTTTAGGAGACGGGGTGGCCATTTCTACGTAGTCTTCGCCCAATTTGATTAATCACTTTTTGTGCTGGAAGAGAAACAAGTCAGTACGTGCCCCTCCTTCAAATTTTTTTCCATTACTTTAAGTTTTTGTTATGGTTTTAGCTTCTCCCTCTTCTTCTTACTTAGGATTTGAGCGTAACCCATTAAGGTAGCTCAAGCTCGAAATATAAATTTGACCAGAGCGCCGTTGTGTCGAAATATGAGGATTTGTGTGGGAAAACTGATATAGCTTTTTAAGGGGGAAATTCGGCTGTTTGTTTTAGGGGGGACATGGGGCTGATTTGAGAAGGAAAGAAATAAGGGAAGAAAAGGTATACACATAAATGACCAGTTAGTTTGGCATTTGTCTACTAATTATTCTCTTCATATTTTAATTATTAACCTCCCCAAATTCAATTTTCCATTATTTTAAACATTTTCCCCCAAATTTTATTCATCAAAACCATCCAAAAACAGTCGCACATTGAGCCAACGACAACGACCTTATTGAGCCTTTTATTATTCAATGAAGTCTTGTCTAGATTTGGAAGAAAAAGAGCAGAAATAACGAAAAACAATGCTGTTGAGTAGAATTCCCCCTTTACTAAAACTGTAAACCAGTATTGAACAAAAACTTAACCAGGTCTAGTTCTCTTTTTGTTTGCCATTTTGCCTGATGTGTGGTTTATTGGTGGCCTTTGGTCCACTCCGAGTTTTGGTTTATATACCAACCCTTTAAAATTAAAGACCCAAAGGTCAGGGGCACCCAACGAGAATATAGTTCAAAACCACTTAACATAGCATTTTTGAACGTAATTTAGTCTTTAAACTGTAGATATAAACATATTTTTATCCCCTAACAATTTTTCATCTGTTCGGATTTCCTAGGTGAAAATCTAGGGATCCGAAAATTATAGGGATCAAAACTTAACTTTTCGAAAATTTCAGTCAGAAAAAAGGCTCCCGAAAATTCTAGATGACCTTTTTAGGGTAAAAATCCGCTTAAAATGGGCAATTGTAGCATTTTTTACATGTTCGAAAATCCTAGGAGAGGCAGGCAAGCAAGAAATTTTATAACAAATGTTCCGAAACTTCTAGATCTCAAATCGTCTTCCGAACAGATATTTTCCGAAAATTGACGTTGGGTGCCCCTGAAAAGTCGATAAGAATTCACGCAGGACGAAAAGAAACAAAGAACTAAGCGAGGTAGAACCGAGGTAGGTTATTTCACAATGCAACACTGTTGCCCAAATGTTAACCATATCGGCTTTTCCCCTACAAAACTCCATATTTCGGCTCATATCTCGAGCTTGGGAAAAAACCTCTTCGACAAGTTATGATGTTGTTTTCATGATGTTGATGATAAGTTCATTCAATATCGTAAATGCTCTTGGTTTTTGGCCATCTCAGTTTTAAAAGGAATAACACACAAACTGTGGTTAAAAACATCAGAAATAACAAACGCATTGTGTAACTGACTTTTATAGAGGTCTTTATAATATCGAACTTGACGTTTCGTATCCTTCAACTGACATCTTCAGAATTGACTGTTAAGATGAGTAGTAACTACACTTAAATAAAAAAAAGAACAAAGTAAGATAAGTAACTAATTAACGTGAAGGAAAAAACAAATAAATGTGACAGATGAGAAAATTTCCATGAAATTATGCAAACTAGTTTAAGTAAAGCTTTTCGCTGCTTATATTTTCATTTAGGGCTGGTTTTTAAAATCCCTAATAAGGTTATTTTCCAAAACACGCAAAACACACATCGCATCAAGTCTCTTTTCCCCGACAAAGACAGGCTCAACCGTTCTCAAATGTCCAATGTTGTATATAAAGCTAGTTGTTGGGACTGTCTGGATTTCTACATTAGCAAAACCACACGGAGATTGCATGACCGAAAAACTGAACACTTCAAGGCAATCACCAGTATTAACGGTCATTTATCAGCTATTGCAGAACTCGTCACTTCAACTGTTTACAATTTGAAATGGCACCATTTTGACATTTTAGCAAGAGGAAAATCAAATACCGATTGTAAAATCAAGGAGGCTCTTCTTATTAGGGATTTAAAACGAGCCCTAAATGAAAATATAAGCAGCGAAAAGCTTTACTTATACTAGTTTGCATAATTTCATGCAAATTTTCTCATCTGTCACATTTACTTCTTTTTTCCTTCACGGTAATTAGTTACTTAACTTACTTTGTTTTTTTGATTCAAATTTAATTACTACTCATGTTAACGGTCAATTCTGAAGATGTCAGTTGAAGCATACGAAACGTCAAGTTCGATATTATAAAAGTCAGTTATGCAATGCGTTTGTTATCTCTGATGTTTTTAACAGCAGTTTGTGTGTTATTCCTTTTAAGTTTATTCAAGAGCCATAATGACCATTATGGCTCTTAGTTCATAATTTTACTTTAAAAAATAATGTAAAAAGTAAGGGAGAATGCCCGCAGGGTATAGAGGAGTTAAGTTGATTTTCTTTATGGGTACCTGCAGTTGCCTGCAAACCTCGCTTTAGGTATGTGACTTCCCAAAGGGTAGGATTTTTGCGCCGTTTTGGTTTGAGAACGGGTACACGTAGGGGTCAAACCACCCCCCAAATGTTTCATGAAACCTAATTTTGGTTATTTTCAACATTATTATACTAAACTTGTGGTGTTTGCTCAAATTGATGTCCACTTCAATTTAAGCTGAAGAATTTCTCAAAATGGCACATAGCGGCGTCACAAAGGATGACGTCACAAAAACCAGTAAAGTGAAATTTTTAATTATTATTTAAAGTGTCTCATCTAAAAGTGGGTTAGCCTGGATTTCTTCCGATTACTTCGAGTCGTTATTACTCCCTCAGTAACGTCTGAATCGACCGGCCGTTAATGCCGCCAGTGACGTCAATACTCCTTTGCTTTAATTCATGCAAAAAGTTAAACACGATTTTTAAGTGGCAAACCAAGAAATATCGTTCGGAAATGTCTACATGATACAGAACGGTTGACAGAATTGCTTTCATGCGTTGCGTGAATTTCTCGAACGTTCTCTACGTTTTTGGATTATTCATGAATAATTAATTAGGGCATGTTTATATTTCAGCATGAGTCAGCAGATTTGCATCATTTACTGAAATTATAAAATATGTCGAAAAGCTACTACTATTCGCTTGTTTAGTATTTTCTAGAACTTTATGTCAAACGGTATACAAGTTCCAAGCGAGTTCTTTTGACGCTCAGGCCACTTAAGGCATGACTATCTAATTAAATATGCATATTTTGATAAAATGCTATTTAGAACGGTTTGCTTCTATCAATTATCCTAAAAATTGAACTGCAAATGTAGCTTACTGGCCTTAGCAATATGAGTGCATTTTAGAGGCCCAAATTTTCGTCACGTGACTGACAATTGAGAATTAACGGTCAAAATATTTACTCTAAAATGAGGAAAGGATAATGAGAGAGTAACAAGTTCTTTTAGGTGCATTTCGGAGACTACTAAAAAAGGTTCTTAAAAATTCGCCTTGTATGTGTGTTTACGTTATATAGGAATTGGTAAATAAAAGAAAAAGGGTCACGTGACTTATTAATGAGTTAAATAGCTAATAGGATAAATAACATTTTCAATCGTACAAGGCGAATTTACGATTTACACTGTTTATGTAACATTTTGGTAGTGAAAATTCCTAAGATTAAGATTTGCAACCCTTCCCCGTTTAGGAAAACGTGTTTTGTGACGTCATTGACGAAGCAATATCACGTGTTTTTTTCTTTGAGCCACATGTGTATCTCACTTTTCAGGATTACTGATGAAAGCAAACCGTTCTAAATAGCATTTAACAAAATATGCATATTTAATTAGATAGTCATGCCTTAAGTGGCCTGAGCGAACAAAGTTTTTTCCCACGAGTCTGGAGTGCTGTGTTTAGTCAAGTGTGACGAAGGTCGATTTTCAAGTTCTGTGTTCACATTTGGCGGAAGCCGTAAGATATCTGAAGTTCAAGTGAGTGGTTTGTTATTATTGGCAGAGGCTGTTTAGTTTTACTTAAGTTCAAGTCAAGTTTGTGTGCTGTGTTTGCTGGATGCTGTGTTTTAAAGCTCTGTAAAGACTATGTTCCTTTGGTATTAAACTTCCTTGTGTTAATCCGACATCCCTGCGTGCTGATCGTCAGTGAATAATTATCCTCAAAACATTCGAACTCGTAACATTGAGTTTTAGCCAATTCCATGCTCAACGTAATTGACTCCTTACCCATGTCTTACATATCTTTAATCAGTACATGAGACTGCTATGCTGTTTTTGAAGCCAGATGTAAGAAAAATAGAGAATTCTTTTTTCGCTGTTTGTTTTGTTAGACTTGTTATTCACCGCTAGTANNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNCCCCCCCCCCCCCCCCCCGACGTCGGTTTTTAGGGCAACACAGCGTGGCAATGTTGGAACAATGTTGTAACCATTCGCAACAATGTTGCAAAATCGTCGTTGCGAGTCGTCTCGTGTAACATCACCTTAAAGATCTTGCATTGAGCATTGAAACTACCAACTGAGCGAGGCCACGAGGTTATATATTTAAACGTTAAGACGTCAGAGAATTGATTGATGTGTTCAATTTTTCCTCTGGACTCTAAGGTTAGCCATTTTCCTGGCTGCCAACAGAGCTGCCAACTTGTTGGCGTGGATTTGAACAATGGGGAAAAGAGAACAAAAAAATTAGTCTGTAGTACAGTTTGAACTGAATCTGACTCAGCTTTTTCTTGCTTGTGTCTTCGAACTCGTTTCTAGATAAAGCACTGCTTTTCAAAGCACGAAGAAAAAATAACTTCTTTCCAGAGGGAGTATATGGAGTAATGACGTACTGCATAATCGCCATTGACAAAACGCTGGCTATCATGTTTTATGTTCCTCATGATCAAACTTTTGACAGAAATTGGTGGAATGTTAAGCTTTACAGTGGATATAAAAGGAGCAACTCTCAAATGCTTCACGAAATGTATGAAGATCATAGCGCTATCGAGGGTGATGCCTACTGGCACTATAAAGACCTGGGCCTGGGATCAGAGCTTAGAGCAACTGGTGCCATGGCTTCCTCTGGTGCAGCTCATCTTATGATTGAAATAAGCAAGCAGCACCGAAAAAGACTTTAA
+&gt;gene-Peve_00000122
+TTACTTATGCATGACGCGTACTGTCCTATTAAACTGTCCTATTAAGGCTGAAATCAGGGCAGTTGAGAACCAATCAGATTTGAGAATTTTGTTATAGTTATGATTACAGACCGAATTGGACTCCACTCAGTCCTGTTACCATTACATACTACTGAGCATATACACACGGGAAAACGCGATACTTATCTTAAACGAAAATTCACGGGTAGCCTGCGAGGCATGTTAATACTATCGATGCATTGGTACCGGAGAAAGAGAAATTCAAGTTAGTTCCAAGGGAAAATATTTCACCCTTCAATGTCAGCGTCTTTGGTTGTCGCCAGCACTACCACTATGGTATAAAGAGAGATCGTATAAAAAAAATAAACTTTGCTTGAACATATTTATCTCGACAGGAACGAAAAGAGCAAAGGACCAAGCGTCAAGAACCAGGTCAGTAGTTCATGTATGACCCCATGAAATGTCCTGAGACACCAGTGCCGTGTCGGGTCTCTAGGCACAGAAGCAAGTGTCCAAGAACCAACACGTAATATACCTTTCATTTCCTTCTTTATTGTGTAACATAGGTCAGGTGTTCATACGTTAATTAATTATTTATTTATTTATTGAGAAGCAATAACAGACCCCATGCAAAGGTCTGCTCCCAAAATACAAAAGAGATCCTCAAAATTTTTTTCGAAATTGTATGGCTTAAGACATCTCGAAGAGTCTTTCGTGTTGGAGCCCAGTATGGACCCAGTGGAGGCTGCGAGTTTATATATTATAAATTTGCCGCAAGTGGAAGGTATCTTGAACATATGCCATGCATTTGTAGGGACCGCGGAGCAGGGTTTGGAGTTGTGGGGGGAGGGGGCAGTTAATCTGAACCCGTAAGGGTGAGCCTACTAGGGGATACAGGGGCATGTTTCCCCTGTAAAATTTGATTTTAGGAGTCCTGAAACGGCTAGAAAAGCACCTAAAACTATTATACTTAAATAAAAGTAACGCAAGGCCAAATTTTTAACGATCATATCGCTGCTAAAGTCTGTGAAAGTTGTAACCGAGCTGGTGCTCCTTCAACTGGAAAAGGCAAGATAATTAAAAGGTATAATCGTACCAGTCTCACAATATTTAGGCAGTAAAATAAATCCAACTCCATCAATGACTTGTGCCTTGTTCGAAGTTGTTGCGGATTGGCCGCTTCATCTTCTGACAACTGAGTATCTGTCATTATTGGCTCAAACCTACCACACCACGCTGTTGAATATTTTTAAAAGACGTTTTCTGAACGTTCTTCCCTTTTTATCCCTACCAAAGCCTCTCGTCAGGTTTCGATCAGGTTCCTCATTGCGTGTTTCCAACTTGAAGTTTAAAACAGCATTGATAGAAGAAAGAAGATTCAATAACAAAACCTTCGTAACGTCCCAGTGTAACAAAACCAAACATTCAGGCCTCCTGTTGTTCAATAGGTGGTTAGCGCTACTCTCTCCTCCGCAGAGGCGTCTTTGTGTCGTAGGGAGGCTGGGGAGAAAGAAATAGAAAGCGCGCGGGGCACGGTGGGAAGGGGAGAGAGAGAAAAGAGGCTCCCGTCTTTTCCCTCTTCCCATCTCCCCCCCCCCTCCCCCCCTCGCACTTTTTATTTTTCGATTATTGCTATTTTTATTGTGATACCCAGCAAGAGCCTCTGCGGAGGAGAGAGTTAGCGCTAGCCGACGGATAAATCACTATCCAGTGGATAAGTATTAGGGGTGAATCATTTGAGCTATCCGCTAGGTAAAGATTTATCCGAGCGCTATCCACCTTTTGAACTACTGAAGCTGGCGGTAAAACATTGATCCAAAGGCAAATTAATTCTGGAAAGAAACAGAAGTTGTTAACTCCATTATTTTACCGTCAAAAATCCAAGCGTCCTTTCAGCAACAATAAGCCTTATCACGGTTGTCGACGACATCTTTTGAAAAGTGGGCAACGGCGTGAGAAATTACAGTGTTTGTATGAGAATCTAATATCGAATAATTTCCCTAAAACGGCGGTTCTGAAAAAGATATGAAGTGTAAACTAAAGCTTTGACTCCTAACGATTCTACTGAAAAAATGTAAGGGCGTAACATGCAGTTACATTCGCTAGAACCACTTTATAAAATTTTCTATACATTTGTCTGTAAAAATTTCTCTTCCGACTAAAATTTTCCGGGAAAAATTGCAGACACCGTGAATATATGGAAAACCTAAAGCAAGCGTTCTGGAGAAATTGAAGCACAGTAACAGCCCCCAAAATTTGTTAGTAAAATCCTTTCCTGTGTAGCTTTATTTAATTCATATATCTTTTTTCAGAACACCCGTTTTACGGAAATTATTCGACATTAGATTCTTCTACAATCACTAATTTCTCACGCGGTTGCCTACTCGTCAAAATGGCGTCGAAAACCGTGATGAGGCCTGGAAGGAACAAAAAGAAAAAACAATAGTATTGCAAAGTTTACAAACCAGAGACCAGATTCCGGACAGTTATGTGTTATCACAGCATGGAATTTTTGTCACTGCAGGCGCAGACGTCCCTCCTGGCGAGACGTCCCTTGCGGCGAGGAGCGAGGAGGGAAGGCTGTATTCGCAGGCTAGCGATTGTGGTGATCGTATAGAAAAAATGCACACCCCTAAACGTTTTTGTTTGGCTTTTTTCACACATAGCTGACATAATCGCAGCGGCTGCACTAACTGTTGGCGTACTTCAAGGGATCTTGGATGGCATCATAGGTGTAGATCGCAAGATAGCCATCGGCATCAAGAATAGAAGCGGATATAGCTGGGGAGCAATTGATATTTACTTGCAACAAGGAGTTACAGATAGGGTCATTCCCCGTAGAGTCGATAATGGTAACTATGAATGTCACGAATTTAGCATGAAAGCGCTTATCGGGGACACTGTTATAATGTCTCCTTTAGGAGACGGGGTGGCCATTTCTACGTAGTCTTCGCCCAATTTGATTAATCACTTTTTGTGCTGGAAGAGAAACAAGTCAGTACGTGCCCCTCCTTCAAATTTTTTTCCATTACTTTAAGTTTTTGTTATGGTTTTAGCTTCTCCCTCTTCTTCTTACTTAGGATTTGAGCGTAACCCATTAAGGTAGCTCAAGCTCGAAATATAAATTTGACCAGAGCGCCGTTGTGTCGAAATATGAGGATTTGTGTGGGAAAACTGATATAGCTTTTTAAGGGGGAAATTCGGCTGTTTGTTTTAGGGGGGACATGGGGCTGATTTGAGAAGGAAAGAAATAAGGGAAGAAAAGGTATACACATAAATGACCAGTTAGTTTGGCATTTGTCTACTAATTATTCTCTTCATATTTTAATTATTAACCTCCCCAAATTCAATTTTCCATTATTTTAAACATTTTCCCCCAAATTTTATTCATCAAAACCATCCAAAAACAGTCGCACATTGAGCCAACGACAACGACCTTATTGAGCCTTTTATTATTCAATGAAGTCTTGTCTAGATTTGGAAGAAAAAGAGCAGAAATAACGAAAAACAATGCTGTTGAGTAGAATTCCCCCTTTACTAAAACTGTAAACCAGTATTGAACAAAAACTTAACCAGGTCTAGTTCTCTTTTTGTTTGCCATTTTGCCTGATGTGTGGTTTATTGGTGGCCTTTGGTCCACTCCGAGTTTTGGTTTATATACCAACCCTTTAAAATTAAAGACCCAAAGGTCAGGGGCACCCAACGAGAATATAGTTCAAAACCACTTAACATAGCATTTTTGAACGTAATTTAGTCTTTAAACTGTAGATATAAACATATTTTTATCCCCTAACAATTTTTCATCTGTTCGGATTTCCTAGGTGAAAATCTAGGGATCCGAAAATTATAGGGATCAAAACTTAACTTTTCGAAAATTTCAGTCAGAAAAAAGGCTCCCGAAAATTCTAGATGACCTTTTTAGGGTAAAAATCCGCTTAAAATGGGCAATTGTAGCATTTTTTACATGTTCGAAAATCCTAGGAGAGGCAGGCAAGCAAGAAATTTTATAACAAATGTTCCGAAACTTCTAGATCTCAAATCGTCTTCCGAACAGATATTTTCCGAAAATTGACGTTGGGTGCCCCTGAAAAGTCGATAAGAATTCACGCAGGACGAAAAGAAACAAAGAACTAAGCGAGGTAGAACCGAGGTAGGTTATTTCACAATGCAACACTGTTGCCCAAATGTTAACCATATCGGCTTTTCCCCTACAAAACTCCATATTTCGGCTCATATCTCGAGCTTGGGAAAAAACCTCTTCGACAAGTTATGATGTTGTTTTCATGATGTTGATGATAAGTTCATTCAATATCGTAAATGCTCTTGGTTTTTGGCCATCTCAGTTTTAAAAGGAATAACACACAAACTGTGGTTAAAAACATCAGAAATAACAAACGCATTGTGTAACTGACTTTTATAGAGGTCTTTATAATATCGAACTTGACGTTTCGTATCCTTCAACTGACATCTTCAGAATTGACTGTTAAGATGAGTAGTAACTACACTTAAATAAAAAAAAGAACAAAGTAAGATAAGTAACTAATTAACGTGAAGGAAAAAACAAATAAATGTGACAGATGAGAAAATTTCCATGAAATTATGCAAACTAGTTTAAGTAAAGCTTTTCGCTGCTTATATTTTCATTTAGGGCTGGTTTTTAAAATCCCTAATAAGGTTATTTTCCAAAACACGCAAAACACACATCGCATCAAGTCTCTTTTCCCCGACAAAGACAGGCTCAACCGTTCTCAAATGTCCAATGTTGTATATAAAGCTAGTTGTTGGGACTGTCTGGATTTCTACATTAGCAAAACCACACGGAGATTGCATGACCGAAAAACTGAACACTTCAAGGCAATCACCAGTATTAACGGTCATTTATCAGCTATTGCAGAACTCGTCACTTCAACTGTTTACAATTTGAAATGGCACCATTTTGACATTTTAGCAAGAGGAAAATCAAATACCGATTGTAAAATCAAGGAGGCTCTTCTTATTAGGGATTTAAAACGAGCCCTAAATGAAAATATAAGCAGCGAAAAGCTTTACTTATACTAGTTTGCATAATTTCATGCAAATTTTCTCATCTGTCACATTTACTTCTTTTTTCCTTCACGGTAATTAGTTACTTAACTTACTTTGTTTTTTTGATTCAAATTTAATTACTACTCATGTTAACGGTCAATTCTGAAGATGTCAGTTGAAGCATACGAAACGTCAAGTTCGATATTATAAAAGTCAGTTATGCAATGCGTTTGTTATCTCTGATGTTTTTAACAGCAGTTTGTGTGTTATTCCTTTTAAGTTTATTCAAGAGCCATAATGACCATTATGGCTCTTAGTTCATAATTTTACTTTAAAAAATAATGTAAAAAGTAAGGGAGAATGCCCGCAGGGTATAGAGGAGTTAAGTTGATTTTCTTTATGGGTACCTGCAGTTGCCTGCAAACCTCGCTTTAGGTATGTGACTTCCCAAAGGGTAGGATTTTTGCGCCGTTTTGGTTTGAGAACGGGTACACGTAGGGGTCAAACCACCCCCCAAATGTTTCATGAAACCTAATTTTGGTTATTTTCAACATTATTATACTAAACTTGTGGTGTTTGCTCAAATTGATGTCCACTTCAATTTAAGCTGAAGAATTTCTCAAAATGGCACATAGCGGCGTCACAAAGGATGACGTCACAAAAACCAGTAAAGTGAAATTTTTAATTATTATTTAAAGTGTCTCATCTAAAAGTGGGTTAGCCTGGATTTCTTCCGATTACTTCGAGTCGTTATTACTCCCTCAGTAACGTCTGAATCGACCGGCCGTTAATGCCGCCAGTGACGTCAATACTCCTTTGCTTTAATTCATGCAAAAAGTTAAACACGATTTTTAAGTGGCAAACCAAGAAATATCGTTCGGAAATGTCTACATGATACAGAACGGTTGACAGAATTGCTTTCATGCGTTGCGTGAATTTCTCGAACGTTCTCTACGTTTTTGGATTATTCATGAATAATTAATTAGGGCATGTTTATATTTCAGCATGAGTCAGCAGATTTGCATCATTTACTGAAATTATAAAATATGTCGAAAAGCTACTACTATTCGCTTGTTTAGTATTTTCTAGAACTTTATGTCAAACGGTATACAAGTTCCAAGCGAGTTCTTTTGACGCTCAGGCCACTTAAGGCATGACTATCTAATTAAATATGCATATTTTGATAAAATGCTATTTAGAACGGTTTGCTTCTATCAATTATCCTAAAAATTGAACTGCAAATGTAGCTTACTGGCCTTAGCAATATGAGTGCATTTTAGAGGCCCAAATTTTCGTCACGTGACTGACAATTGAGAATTAACGGTCAAAATATTTACTCTAAAATGAGGAAAGGATAATGAGAGAGTAACAAGTTCTTTTAGGTGCATTTCGGAGACTACTAAAAAAGGTTCTTAAAAATTCGCCTTGTATGTGTGTTTACGTTATATAGGAATTGGTAAATAAAAGAAAAAGGGTCACGTGACTTATTAATGAGTTAAATAGCTAATAGGATAAATAACATTTTCAATCGTACAAGGCGAATTTACGATTTACACTGTTTATGTAACATTTTGGTAGTGAAAATTCCTAAGATTAAGATTTGCAACCCTTCCCCGTTTAGGAAAACGTGTTTTGTGACGTCATTGACGAAGCAATATCACGTGTTTTTTTCTTTGAGCCACATGTGTATCTCACTTTTCAGGATTACTGATGAAAGCAAACCGTTCTAAATAGCATTTAACAAAATATGCATATTTAATTAGATAGTCATGCCTTAAGTGGCCTGAGCGAACAAAGTTTTTTCCCACGAGTCTGGAGTGCTGTGTTTAGTCAAGTGTGACGAAGGTCGATTTTCAAGTTCTGTGTTCACATTTGGCGGAAGCCGTAAGATATCTGAAGTTCAAGTGAGTGGTTTGTTATTATTGGCAGAGGCTGTTTAGTTTTACTTAAGTTCAAGTCAAGTTTGTGTGCTGTGTTTGCTGGATGCTGTGTTTTAAAGCTCTGTAAAGACTATGTTCCTTTGGTATTAAACTTCCTTGTGTTAATCCGACATCCCTGCGTGCTGATCGTCAGTGAATAATTATCCTCAAAACATTCGAACTCGTAACATTGAGTTTTAGCCAATTCCATGCTCAACGTAATTGACTCCTTACCCATGTCTTACATATCTTTAATCAGTACATGAGACTGCTATGCTGTTTTTGAAGCCAGATGTAAGAAAAATAGAGAATTCTTTTTTCGCTGTTTGTTTTGTTAGACTTGTTATTCACCGCTAGTANNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNCCCCCCCCCCCCCCCCCCGACGTCGGTTTTTAGGGCAACACAGCGTGGCAATGTTGGAACAATGTTGTAACCATTCGCAACAATGTTGCAAAATCGTCGTTGCGAGTCGTCTCGTGTAACATCACCTTAAAGATCTTGCATTGAGCATTGAAACTACCAACTGAGCGAGGCCACGAGGTTATATATTTAAACGTTAAGACGTCAGAGAATTGATTGATGTGTTCAATTTTTCCTCTGGACTCTAAGGTTAGCCATTTTCCTGGCTGCCAACAGAGCTGCCAACTTGTTGGCGTGGATTTGAACAATGGGGAAAAGAGAACAAAAAAATTAGTCTGTAGTACAGTTTGAACTGAATCTGACTCAGCTTTTTCTTGCTTGTGTCTTCGAACTCGTTTCTAGATAAAGCACTGCTTTTCAAAGCACGAAGAAAAAATAACTTCTTTCCAGAGGGAGTATATGGAGTAATGACGTACTGCATAATCGCCATTGACAAAACGCTGGCTATCATGTTTTATGTTCCTCATGATCAAACTTTTGACAGAAATTGGTGGAATGTTAAGCTTTACAGTGGATATAAAAGGAGCAACTCTCAAATGCTTCACGAAATGTATGAAGATCATAGCGCTATCGAGGGTGATGCCTACTGGCACTATAAAGACCTGGGCCTGGGATCAGAGCTTAGAGCAACTGGTGCCATGGCTTCCTCTGGTGCAGCTCATCTTATGATTGAAATAAGCAAGCAGCACCGAAAAAGACTTTAAACATTAAGTCATGTATTCCCTTTATTACAATAACGTGTGTTTGTTTTTCTTTAATAAACTGAGATAATCTTAAGTCTAGAGGCCTGGCCAATTTGTATAAACTCCTCTAAAAATATCCTCAGAGTTGTCCTTAAATTTTAAATGCTAAGTTTTGCTTTATGTCAATGACTTTAGTGGGCCTGTTAATGGAAATAGCGAGAACGTTATTCCATGGATCCTACCCATTTGTGGCTGTACGGATCTGTCCTAAATGGTCGACAACGATTTAAAGCTAAAAAGGCCGGGATTTTCCGAGTCAGGGCCAATTAGTAAGTTCAGCATAGCATGAGCATGCCAGTTGCTATGAAAATGCGGTCTATATACTTCTCTATAAAAACCTTAACTTTTATTTATCCTTTCACCCTGCAATTGTTCATTAAATATTTCCTAAAATGTGTGCCAACACAAGGGTATTATAAATTAAAGGTTTCCAAAGAGTGGTATATATAATGCACCGATAATTTTCAAAACTTTGGGCGTCTACAACAATGAAAGGATTCCTGTGGGTGTCTCTACAAAGTTTTCGGCTTTTGGGCAACATCAGAAACTCATAAGCATATTGAACAGCAACTAACAACTTCTCATGACCTGTTTTAGGAAAAAAGAAACCCGGCCCTAGCTATCTTTAAATCGTAGCACGTAAATCGTTTAGGGCAGATAAGTATAGCACAGACGAACAACTGACTCTCAAGTTGCAAATATTACATATTTGGCTTATTACCAGCAGTTTCTATTATTTTTCCATAAGTCAGTAAAGCCGTTTTGAAAAAATGTCTAATGTTTAATCTGACAGAACGAGAAGTTGATTAGTTACTTTGAATTTTATCCAAACTGCTCTAGCCTTTTTTAGATTTTTCGTTTGCGTGTGTGTGTGTGTGTGTGTGTGTCTGTGTGTGTGTGTGTGTGTGTGTGTGTGTGTGTGTTTTTGTTTGTCACGATATGGAGCCTATAGCTCCGTATACCACTGTTAGGCAAAAAAAAAGGGAAGGACGGAAGGACCAGTTGAAAACCCTCTATTTTCGTACACTTTTCAAAATAAAAACCTCGAGTTTTTATCCGAGACGTTTTAGAAAGGACTAAATGTTCTTACATTATTTTGGCGATTTTAACTTATTTGTTGCATTGTTAACCTTGATACAAAATAGTGCCATCAGTCGATTGGGATTATTTGGACTATACTTAAGTTTAGACCTAACATCGTCAGTTACTTTCTATCTACGGTAACTTCATTATAACGTTGTATGCTGCACCGCATTATCTTGGCCTATGTTCTTAATATCTTCTTAAGTTTTGTCCATTTTCAACGGCTTGAACGTTCTTTTGCTGTTCTAGTTTTCTCTTAAACGAAATGAAACTGGTCATTTCGTATCGTGCTTTCCACGTTTGTCTTTGAAATTAACGCAGTATCTTATTTTAACGTAGAGAATGTGTGCAAAAATCCGTTGAAAACTAATGGTTCTTATTTGACATTAACCGTCGTTAGTGTTGGAGTTCAGTGTGTGAGCATTAATTCAGCTGATCAGAATAAAAGCATACATTCATCCTTTTATGACTCCGTATGAGAATTTTTGTATTAAGAATACGAATTAAAACATAACTCCACTTTTACCATTTAATTCGATCTCACCTAGGGGAAGGGGGAAGGCATACACATAAGGGAAGTTTGGGTAGGGGTCGAGACAATCCCCGTTTAAAAAATCTGTTTAACAGAGAATAAGATTTAGCAAAAATAATAATAAAATCGTTGGTACCACAATGATTCAGACCGCGCACCACCAATGTTCACACCTTAAAGGCGCTAAATAACGCAATTGTATACCCTCTTTAAGACTCAAGACCCAGAAAAACAAATCCTGTTGGGCGGGACATACCCCGGTTTAGGCACCAGTCAGTTGCATTGTCTTCTAAGGGTAAAAACTCTTTAAATGTTCACACCCTCCATCGTTCATATAGAATCGTTTTCGCCATTCAAACTTCATTGCATTTGCATTTAGCAAGAGAATTTTAAACTTCACTTTTTGATAGTTTCGAGAATCGTGATATAAAAACTGGCCCGAAACGTGCTGAATATCTTTAACTAACTGACAACAAAATGAGAACGTGATAAAATTATTTCGTCAACATTTGTGAACTTTTGCCCTCTCACCTCTTCTGAGCATGTTCCACATGTTACCACAGCTCAGGAGTGAGAATCATTGTAGCGTAACAAAAATCATTATAAGCTGGGTTTTTGAGGCGATTTTAACGGTCGTCACTTAGGAAAATTGTAGAGAGAACAAAGAAAGAACTAAAACTCGCTGGAATAGCGCTGAAAGTGTCAAAAATGCTAAGAACAAAACTAGGAGATAAGGTAAGGAGTTCTAGAGTTTATTTTGGACATCTTAATAATAATCACTAAACATGCTAATATCCACATAATATTTCTGTTTTCTTACTCTTGAGCTTGTCACCCCTCTCTAACAGTTATCAGAGTGTAAAGTCTCATTATGATATAATTGCTTTATCGCCCATAAAGGTATGGAGAAGAAAGAAAATGATCAAAAGTCTTCCTTGTTAATCAGTTTCTGGTTATCATAACTGTAGCAGAAGTACGGAAAACAGCTAGTGAGGAAAATACGACACATTTCCAATGATATGGCAACAGAACGTTAATATATTTTTAGGCTTCCTTGCGAATATCCAAATGCAGTAATTATGTGTCAGTTAGTAAGATGCCAAAAGGACGTGCGATTTCACTATGTTGACTATATTGCCGAGGGATTCTTAATCCGATCATACGGATTGGGGGATAAATCCTTTAGCAGTTTGACACTGTCCGGAAAAAACCTGTTCAATTCTTAACACGACTCCTGAACACAAGATTTTACTGCACCGAACAACTCCTTCATTGTTATGTGTCAGAGCAGCCAATAAAGACGCGTGTTGCATGAAGCTGGCAAAACTCCAAATGTAAACAACATCCGGGATGTCAACTTGTGCTTGTATATTTACTGGAGCATCGAACGTCCCACCCAATTTTACGCAAGAGCCGTGTTTATTACTGATCTTGCACCTCTGTTCCACATCAGTTTCGACTCACCAGTTCCTTCGCCTAAATCATGGCAACCTATATTCCATTAGTCACACCACTGGGCGAATTGCCGGAATTTCCCGAGGAGGAAAAGATTTACGACCTAAAAATGGAAGGTGGAGGAGTCCCACCAGAAGCGAATGAAGTGTTCGTGTACGTATTTGTCACAACACACGGGGAAGGATCTTTTCAGAGGGGATACTACGAAATTTCTACAAACATGCTGGGAGGACCAGATCTCAAGCAGTACATGAATGTGGCGACAGGGCAAGGCTTGTTGGCCGTTAACTCTGCCAATATGTGGTTTCCTGTTGGAGCTGGCCAGTTGAAGGTAAAGTTGGTCCACCCAGGTGAGGCTAAGAAAAGCATTGCAGGGAAGACCGACGAAAAAGATTGGAGCGGAGTGTTCATCATTGGATACCGATAGAGTGTTTGCTAGTTGGAGACCCGATCCGCGCACTTTCAATATTAACCAAGGAGCTGTTAAAACAATATTGTAGTTAACAGAGCAGAACTAATTGCATAAGACAAGGAACAACAACTAAAACGTAGAACTGACGCTCAGTAAGTTTACAGTAGAGGTGGCCAAGAATCAGTGTTTCATAACACGATTCTTTCTGAACAACAAGATATTCACCAACATGTACGCCGTAACACATTTTTAAAATAAAACTTGCAATAGAATTTACAATTTCTTTCCTGTTGTTTGTTTATTCATTTCAGGTTCAGAGACATGCACTCCCGCACACACAGCATTTAAAAGAAACTTTAACCCTGCGTCTCAACCCACATATTCTTCACACTGTTCACAATTTACTTCTTTTGGCTCTTTTAAGGAGAGCTCATCTAAATATTGGAACATTTTACTTTTCTTGATTATTTTCTCTACTCACACTACCTTCAATGTTTGAATTAGAATTCGTACGATAGAGAGAGGTTAGATGCTGATCACTGATAGGGTTGAAAGGTATAAGGGTACCTCATTTTTAAGAGACCGTATCCATTTTGCGGTAAGATGTGTCGACGGATATTGGCATGGCTTTGCATCGTACAAAAAAGGTAATTAGTTTAGGATGACCAGGCCGACCCCCTAATCTATAAAAACACTTCAACCATTTAACGCCAGATGCACTTGCAACTTATAGTACTGAAATTCATGAACTTTTGCCTGTTATGTTAATGGGGAAACGCATTTCTGACCGTTAATGAAGACTTGGTCACGAAAACTATTTGCAGGTGGATCATCGTTTAAAGAAGGCTAAGTTCAACTGATATATAAAAAATATATTGATACATACAATATATAATTCGTGTTAAGTTGACATTTGTTTTAATCGGCGTCGCTGTCGTCGAAAAGCTGTAAAGGCAGCGTGCAAACGGACGCAAACGGACGCAACAACTCCCAACATTAGAGGTAAAGACAAATTTTGAAACATTTAGCTCAAAAAAGGTCGATTAGAAAAGGAAGTTTTAACCCCTTTACTCTATTTACTTTCGTGAGCACTTAAGTGGACAATTAACTGATGTGCAAATACAAAAAAGTAGCGGGTTGATTTTTACACGGCAACTGTCTACTACATTAACTTAGCGTCATTATTTCACGCACGCTCTTAAAACGGGGGGTAAGAAAAATGGGAAAGAGATCCATTTGCTATTGCTCGAGAGAAAAAAAAACCGCTCGTTTTTCCCCACACGGGGTAACTTTGCTCTAATTTGTTAAACAAATTCAAAGCAGTTAATAATTTTTATTTTTTGTTTGTTTTTTTTCGACAATATATGAATTAATGCAAACTTTTACTAGCTGTGTCGCTCGCTCAAATAGATCGATTAATGGAGGAACTGACTTTTAAAGTCAATATCGTTTTCCTTTACTGCATTAAAATTGACACGGGATTTGGTCCTCCAGAGAGGCTTCTTAGTACACTAGCAGGCTGAGACCAGGGTAAAAACAAACCGCAGGGAAACAATGGAAAAGCCCAGTAAATAATTTAATTTATCACCTTTTTGTTTCCAATATTAGTGAGAGTAGACTGAGTGCCGGTGCTCCAGCCCCTCTAATAAAATCGGGTAATTTCTCTACAGTGAGAACCTCTGAGAAAGAGCACACCGGCGGATAAAACTAGTAGTAAAAAAAAAACAGATTATGGGTACTTACCCTGAAACGTCTTCTTACCGCATCCCAGCACAAACTGAATGATGCTGGCAAGCTCGGCCTCTCACACGCAGACACAAATACAGTGCCGTATACATACTAGTAATAACCAAAGGTTACGTAGTGCGGGCGACAACGATCGAAGGTAAAATCGCTTTTGCTCCAGCGCTGTGCTTTGCGTAAGTTTCACGTGACTGATAGTCAAAACATGCATAACCAGATTACGAGTGATAGAAGGTCCAAACGCGCGTGATCAAAGTGTGTTCTGTGCATTCTATACATTCATAGTGGAAGTCCAAACGAATGCTGGCTACATACATGCGACGCATGCGTAATAACAACCTGGAGATTAGGATTGCGCGCTCCTCTTGTTGCCCGCAATTAGAATTGTAAATAGGACATTTGCATGATTGCGTCATTTTACTACTATGACCAGGATCCTTCAGGGTTTTGCTTTCTTCTGCAAATTAGGGCTTTTGTTATTTAAACCTCACTGGGATTACCATATTTAAATATGAAAAGAAAAACGAAAAATTCTGGTCCTAGTAGTAAAATGACGCCATCGTGCAAATGTCCTATTGTAGACTGGTGTCTGCTTTAGAAAGCTCCCTCTTGACATTTTTCATATGAGAAATAAAATTGACTCGACGTCATTAGTATTAGAGATTGTAAGAGAATTGTTACTTTTTAATTGGCACATTTGTTTCTATAAACATGCCAATTAAAGGTCACTAGATCTCACTAGCTCACAGGTACTGGCAAAGTTTCATTCTTTCCCCAGTCTCCCCATTTGGTATCGTTTAATATCTAGTCAACAATAATACTGACATGAGAATTTTTATGCCACACTTTATTTTTCTTTTCGATGAAGTCAACGTGTCCATTAATCAAGTAATATTAGACTATTATCTACTTGTCTTTTACAGGTATTAGGTTTATTTACATATATGGCTGGTGGGAGTTTCATCAAAGAGACATTCAGAATTGTAACTTTTGAAAATATCGTCCTCATAATCTTATATCACAATCGCTGTGATTCACTGATTATATTTCGTATTTGCTTCTTTACCTTCTCAGCTTTAGTCCTTTCCGTCTTTTTAAGGTCACAAAAACATTCTCAAATTGATGACGATGAATAGAAATCAGGAAAACACCTTTTAGTGCATGATAAATATGCTAACTTAGACTCTTCCAGGAAAAGAAGTCTTAAAATTAGCTATATACTTTGATTCTTTTGGGAAAGTTTTTCTCTCGATGTATAACAATCAGAAAAATGTTTCATCACATTGACCACCTTGGTTGTCCCATTTAAATTTTTGCAAAGGAACTTAAATCTTTTTTAGAAATGAAACTTTACATATAAAGTTAACCAATGACAAGAGACTATTTACTGCTTCAGTATGTGAATTTCGATGGTGGCTTGACCGGAGTTAGACATGGCATCCCTCAATCGGAGTCCCGATCCCAAATTTCTATCGTTCCAGTAGTTATCTCCTTTGAAGGGATTATCGTAATACATCCGGTACCAAAGATTGTAGTTGGCGCGTCTTTTACCACTGTAAAGCCAAACATCAAACCAGTTGCTGTACCAGTTGTAGTCAAATGGAACGGAATACATAACAGCAAGTGTTTTATCGATGTGTGGGATGTAGTATGTTAATACTCCTACTGCGCCTCTCGCAACGGGCCCCGCAGTTTTTCGTGCGCCGTAAAGCAAAGCTGTGCCTAGAAATAAGCAAACAAATTAGCAATTAAACAAAAATCATAAACATGATCATTCGTCACAATGATACATGGCAAACGAGCATCACAGAATAGAGGCATGTACCCNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNGCTACTGCTACTGCTACTGCTACTGCTACTGCTACTGCTACTGCTACTGCTACTGCTACTGCTACTGCTACTGCTACTGCTACTGCTACTGCTACTGCTACTGCTACTGCTACTACTACTACTACTACTACCACCAGAATCACTCAGGGTTTTGCTTTCTTACAAACGAGGGCTTTACTTTTCAAACCTCGCATAACCTGTGATCAGGCCCCCAAAGCAAAACGGGAAGAAGGACAGCCTTATTACAGTTTAAACTCTTCGCAGAGATTGAATAGATTCTATAGCAATAGATCAGACCTTTTTAGCTTGTATGTTTTGTTTTCCCATTTCAGACCAAGTGATGGTACCCCAGAGAACTGTTTCTTTCAATGTCGTCTTTTGCACGTGCACCCACATGTCAGGATGTATGCATAATTATATAAAAGACAAATTCCCCGAAGAACGTTGGGAAAACAAAACAAACAAGCTAATGACACCATCCTGCATACGGGCCTCAGTGTCATTACTAAAACAAACGGCTAGCCTGTGCAGCCTTACGTTTCAGCTTCTTTTTGTTTCTCCCTTTTGTTTTCAAAGGTTATGGTACGCAACTTCTAAACAACCGATGCAATTACCTTTTCGCTTGTTTTTCTCCTCGCCTTCTTTACGAGTAGAGATCAAGGACGAGCCCTGTCGCCCCTGTATCTGTGAAGGAAAGTATGTCCATTAAGGTCACTCCACTGAATACAAACTGGAATGAGCATTCTGTTTTGTCACCAATTTTTCCTCTGTGTATTTCAGTACATTTGAGGCACAGAAATGAAATCGGAAGCCAGCTAAAAATTAATTATCGTTGCGAGCCTTAGCGAAATCACCAAGAATTGCGTGATGGCTGTGTATTCATTCAGTTTACACTTCGCCAAACTGAACATTGATTATTGAGGGACACACATCGCAAAGAACTCAATAGATTTACAGCATAAAATTATAAAAATGTTTATTATACATTCAAACGTTAAGGTGTAAAACTACCTAGTATCTACTCGCAACTGGAGGGGGGGGAGAGGTTGGTCGGTTTTATATTCGCTCGGAGATTAGGGTTCATTTTGTTTCACTGAAACAACCAAGATTCGATTAGAGCATTGAGTTGCATTTCCGTAGATATCACGCCACCCCCAAGAGAAATTTTCATGTTTGGCTTTAATACAAGTCACCAATTGACTATCTTATTTTAAAGAGAACTATTTTACCTTAGTGTGTTTAGAGGACAATCCAGGACTCCTTTGGACATGATTGTCTTGCTTGAAGGGAGACCCAAAGATTGACTGAGTTATCAGCAGAACGAAAAACATAAGGGTAAACAGCCTAACTCTACTAACTATGGCCTAACGATGCCCATTTTCAATTCTATAATAGGAGAATAAGAATGAAGGAAAGAACAAATGCAACATTGTTGTCCCGGTACAATATCATTTTAAGAGGGTTTGTTTGTTTGTTCGTCTGTAAATTGATGAGATGAACGATGTTATGACCTGGGAATGTCATAACTCATACGACAAGTTCAGGTAGCGCTCGTGGTAGAACTGATTGATGATAAATCACGCGACAGTAGCTGCATTTGAGACGAGAGACTGTGTCATAAATTTGCTGTCGTTCTTGTTTTTAACTTTAACTAATTAACTTAACGTAATTAATGTAATAAACTACCAATGTTGCCAATAGCTAGCTTTAAAAATGCTGGCACTGAGATGATATTAGAGAGATTTACTCTTACATGTTTTATTGCAAACGGCAAACGTGAATTTGTACCACGTGACCAAGTTTTACTCTTACTTGACTTTTACAAAATAAGAGTTGTTTGGGACAGTTTTTATCTGCTCATTTATTATTTTGAATCTACAACTGCCGTAAACGTGACTCTGAAGTTTCGCTACCCCTTTCGACGCCTGCTACGCAGGTTAAAGAAGTACAGTGGAACCCCGCCTTACGGCCACCTCGGTAACATGGTCACCTCGTTATTACGGCCACTTTTTTTTGGCCGCCCGGCTAAACGACCATACATTTTCTTGTAAAAAAACAAACCCTCGTTAATACGGTCACCCGTTAATACGGCCAAATTTTTTTGGCTCATTGGTGACCGTATTAACGGGGTTCTACTGAAAACAAACTTTTCTACTCCGTTCTCTGGAACGGAAAGGGAAACCGATCATCAAGCGAAATGTTATCTTCAATGACTATCCCAACGGGGAGCTTAAAATGATAGAAACTGACTCCTTTAGCAAACCACTGAAAGCTACTTGGATAAATAAGTATTTGGATGAGAAAAACAAGAGTAAATGGAAATTTTTTTTTTTGGCCTAGAATTGCTGAGAATTGGAATCTTTCGGTGGAGAAACTGTCCTCACAGGTAATCTTAACATGACGGACACAAAGACTTTGCTCAAAACAAAAGATAAATTCATCAATGAAGATCTGACAATTTGGGCAGAAGTAAACTTTGAAGTGCAAATCAAATCAGACAATCATTTTCTTAACCAAAGCTTCGCTTATGGCACAACTCGTTGATAAGAATTGACAACTGCCCTTTGTTTTTCCCTGAGTGGCATTGTAAAGGTATCACTAAGGTAAGACACTTGAGACAGGATGACTCAAATAATTTTTTAACTCTCCTTGAATTACAGACTAGTATTGGACTAAAAATCTGCCCTCTTAAATATCGTGGATTGTTGACTGCAAGCTCTCTGGAACGAACATACAGGTAACTTTTCTGCGGACGGCTCTGAATGTCCAATTTTTTTGGAAAGGGTGTCAAAAACACAAAAAGCAAGTCAAATTGTGTACGCTAAACTTATATGAAGAACTGAAAAGTATACTCCCTACACACACTCAGCAGAAATGGATAAAGGAATGCAATATCGAAGGCAATAAACAATAAATGAGGTACGAAGCCCGATCAGCTCCAAAATGTCAGTGGCACCCAACGTCAATTTTCGGAAAATATCTGTTCGGAAGACGATTTGAGAATTTTCGGAACGTTTGTTGTAAAATTTACGGTAAAATTTCTTGCTTGCCTGCCTCTCCTAAGATTTTCGAACATCTAAAAAATGGTATAATTACCGATTTTTAACGGATTTTTACTCAAAAAGGTCTCCTAGAATTTTTGGGAGCATTTTTTCTGGCTGAAATTTTCGAAAAGGTAAGTTTTGATCTTATAATTTTCGGATCACTAGACTTTCAGCTAGGAAATCCGAACAGATGAAAAATTTTTAGGGGATAAAAATATGCCTATATCTACCTTTTAAATACTAAAATACGTTCAACAATGGTATTGTTGGGTGCCCCTGAAATGTACTAAAAGCACAAGTCTGGTAGAATTTCAATTCAGACTTCTACAAAGACGAATATTGACCAACAACTTTTTACCAAAATTGGAATAAACGATGATCCAAACTGCTCCTTTTGTAATGAAGAGCTAGAAAAACTAACACATCTTTTTTGGTCTTGTTTCAAAGTAACTACCTTTTGGAATTCCTTAATCCAACGACTTACTTTATCCCAAATTATCCCACAAAATAAATATTTCTACGAGCCTTGGATTGACACCAGACGCCCCAGTCTAAAAACCATAATAAATAAATTTATGTCTATTATTAACAAGAAATTATATTTGGATATTTTTGTAAAAATAAGAAAGCCTCGCCTAATATACAAGACTTTCTTCAATTCCTTAAATCAAACTATCCACTGGCGAGGAGCTAAACTGAACCTTGTGATGGCCCCAGTGAAAAGTGGGAGCTATTGCAGACTTTAATTTTGAAAGATCTTAGTTTGTTGATGTTGCTCTTGTTTTTGTTTTATTTATTTTTTCTCTTTGCTCTCGTCGGTCCCCTAGATAAATTCGGTTCTATCCTTCCTTCACTGCCTTCTTAAACAAGTTTAACTGCCTTGATAATTTATCTGCATTGCATAGTATCCCAGTATTGTTAGTGTTAAATTGTAAGCTATAATTAGCTAGTTATTGTAAGTGTCAACTTGTAAAGTTATTGTTACTCTCACAACTGGTAGTGTCAACTTATTTGGTCCTGTTTACAAGGAGGGAAGGTAACCCTGGTGCTAGGGTTGTCCTATCACTCTCATATTTCCTCTTTTTTCACACGACGTGTTTACAAGGCAGGTAGGGTTACCCTAGCGCTAGGGTAACCTTACCTGAGTACAGTATTATCCATTTTCTGAGCTTAATTATAGACATCTGAAAAATAAAAAGTTATGTTCTGTCTACCATGATAATATTTCCCTTTTTCCCCTGAATTTAAGGTGTTTTCCATAGAGAACTTCAAGATTATTTCAAATTTTGGACCTTTACAAAGAATGTCACGCATGACGAAACACGTCAGCAAAGCTTGTAAAGTTGACCCGGGGCCCGGTTCCTGAAAGACCGATTAGTGCCAATCCAGGATTAAAATTTTGCTCCACTTTTTGTATTTACCTTCCTATGCATTGTCTAGAGTAGCATTTTGTGTTATAATTTCTTTTTTTTTTCGAAGTAAAGGCACAGCTCGAGTGACTTGTTCTTAGACAAGAAAGCGTTGCTTAAAGTTTGGCTTTATCCTAGGTTAAACTTAACCATCTTTCGAGGAACCGGGCCCCGGGTGATAGGGTAACCCTACCAGTGAAATTTGCTTGTAAACTAGAGCTAATTTTAACCCCCTTGCTAGGGTAACCCTAGCAAAAGGGTAACCCTCTTTCCTTGTAAACAGGCCCTTAGTTAGTTATTGTTAGTACAGTGTCAATTTGTAAACTAGTAGTTACCGTTTGCCAACTTGTAAGCACCGTTAAGGGTATTGTTTGCAATCTGCTGTTTGTTACTATAAAAAAAGTTTTGCAAATAATGTCAATAACTATTAAGTCTACGACAGATTTGTTCCTAACTTTACTAAATAATTCTCAGAGTTATCTAATTTTGTGTGCAAGTTTGAAGTCAATCGAGACTATACAACGCGCTGCACAAAATGCTGGTCAAATTTGTCCTAAAATGCCATGTAAACTTGTGAAAGCCGGTTTTCGTGCATATAATTGAAGATTACCGACAATCTACTAATCCTGCTATAGACTGCAAGCAGTCTCCCCAGGGGGGGGTGGGGGGTACCGCCATATATGGGCTATATAGGTATGTACCGTTGTGAAGGGTATGGTTTTCAAGCAGTTTGCTCTAGGATAGCGTATATAAATCAGAACATTTGGGTCTAGAATAGGAAAGGGTATATAAATCAGAACATTTGGGTCTAGAATAGGGTATCATTTTTCAGGAAACTGATCAGTTGGTTGAAGATTTTATCTAGACAAGGGAAACAGCTACTCTAGGATAGGGGGGATTTGGGGAGTTTACTCTAGTATAGGGTAGCAAAATCTAGCTGAACTAGCTCTGGTGTAGGTTAAGGGTTCCAGGGTCCCAGCGGCACATCCCCAACCAGAAATTCCTAAACTACCCCCAGGACAGTCTCTTATTTTTCTCTGCAAAGTGACCCAATGCACGCGAAACCGAAGCACGCGAGCGGCGAGCGAAGCCGCGATAAACGAAAGCGTAAGCCCGAGACGTCGTGGTTTGCAATCGCGCTGGCTGAGATAAGAACTAGACAGATTTAAGGGAAAGGGCATTTATTTAGTGAGTCGTTTGTTTCTGTCTTTTACCTTATTATTCCTGCCCCGTACCCAGACGTCTCTCTCGTGCGCGCAAAGGAAGGCGGGCCGTCTGTGCCCTTCCCATTGTCCCTTGCGGCTCATCACCAGTCGCTCGCCTCTACCTTGCGAAAAACGAAGCGGCTGAGGAGGTTTTGAGGAGGAGGCTGTTATTGTTTGTTGTTTTGAAGACAAGGCAAGTACTAGTGCCAGTCCCTCCCGAGAACTGAATTTTCAAGATGGTGTCCCCTTGTTATTTTCTAGTTTTATCCCATGGTTTAGCACTTTTTGCCGTTTCAAGATGTTACAGTGGCAGTATTTCGAACTTTTTGATATTTCCTCTACCTGTTGACCATGCTGCCAGCGAAATAGGGAAGAAAAATCATGAAGAGGACTTAAACAAACAAGAAGAGATTGGCCTATTTTCAAGAAAAAGCCAGTTGGTACCTATGCATACAAATTTGAGTTTTCTAATTTCTTCCTGTTCCAACAAGCCAAAATGATTATTAGTGTTTTGGTAACATATATGATAGTAGACTGCAATTTGGCTGTCAAAGTTTTATTATCCTTTTAGTTGTGCGCTACAGATCAATTAAAAAACGACCGATTTTTGGTTCGCTCGCAGACGCTGAGGTTAGGTCAGGTAAAATTAAAAAGTTTTAGTCTTGCCCGTCGCTACCTAACAATGTTTATGGTTTTCGAAGATAGTCCTGTGTTGTTTTGTATCGCATACAAAAAATGAACTTCGCTCGTTTAATTTTAAGGAGTTTAAGAGCTTCAGAAAATGGTCCAAATTTGCATAAAAAATGGCTTCAGAGGGGGCCAAAGTGATGCTCGTATCTCTAATATCTTCTCTAATACAATAGCAGTGAAGAACTTGTGTTTATTATATTTGTCTATTACTCCACCTAACCTATCTATGATGTTAGTATGAGCTTATTCTGTTGACCTCCTTCCGTTGACATTTTTAACATTTAAATTGCCCGGTTTTCTCTGACAACCACTCTTAAGCAATCAATAATTGATCCTGTAGTCAGAGCTCCACCATCACTGACACTATGGTCACCATTTTGCAATTATCCATTCTCCTTCAACAAAGCAGACTTAATGACCACTCAAATGGCGACTTAACAGTATCAAAAAGCGCTTCCAACCAGTTGTGAGTAAAATTTCTGGATAAAGCGAAACCAGACATAAGAATTCTGAATTTGTTTTTCATATTCAATAATTCACAGTTCAAAGCATTTTTCATGTTTGAGTCCAACACAAAAGAAGTTGAATTTAATAGACCTTGTCACGGTTTTCGACGCCATCTTGACGAGTAGGCAAACGTGTGAGAAATAACAGTGATTGTATGAGAATCTAATGTCGGATAATTTCCTTAGAATGGTTGTTCTGAAAAAAATATGATTGTGGATAACACGTGACCATTTTTCCTGATACCGTACTTTGGGCTAATATGGAACGAGGTCTTGAATCCCAAGAAATTCTGCACATTTTTACCACTGAAACTGTGACATTTCCCGGAGGAATCTGACCGTTACGTTTTACGTGTAAAGATGGAAACCAGGTTCCTTGCTGGCGTATTTATTTCTTTAACAGAAGAGACTGTGAAATACCGCCGTCAGGTTAAAATCGTTCAAACGGTCCAGCGCGAAACCGTGGCCACATAGCGACGGGTATGTCAAAAAGCTGAAGAAAGTCAGTTAAAAACGTTTTCTAGCTTGCGCGTCGAGCATTTTCGCTTTCCTTTTTTAAGGCAAAAGCTCATTTAGGCATTGCGATCAGCGAATCAGGCCGCGTTTTCTGAGAGTAGTCATGTAGTCAGAATAGAGTTCATATTAACTCTATCCCGTCCCATGGGAATAATGGACTTTCCTTAATAGAGATTAGAGCCATTATCCACATTACTAGTTTTTCCTTGTTTGCCATTATCCACCGGTATTGCGATGAATAATGAAGTATCTTTAATGGAGATTAGATATTATATTACCTGAGAGTAGTCATGTAGTCAGATTGGAGTTCATGTTACCTCTATCCACATTATTTCTATGAATAATGGACTTTCCTTAATGGAGTTTAGAGCCAATATCCACATTACTAGTTTTTCCTTATTTTCTATCATTAAAAAGTGATATCACATGTTGTAAGTTTCCTGCTGGTTCAACGTCTTTTAACTTTAAAAGTTAGCAAGATATAAAAGAACCTCATTACCTTTCTCATAAAGGAAAAGGTCAAGTCCAAAAATGGTTGTTTTGAAACCTTGTATAACTTGCCGATGATCTAACCGTCCTCGAAATGACGGAAAGTCAAATAAAAAAATATTTAACAATTATTCAATGAGTGCGCGTTGGATATGATGAGGTTGTAAATAGCCAACGAGGCGCGTAGCGCCGAGTTGGCTATAACTGCCTCATATCCAACAAGCGGGAATGAATTAATAGTTTTATTAAACTTTTTTAAACTCCAAACGTCTGGTTATTACAACTGAATTTTAGTAAATTACTAAACGACCGGATATTAATGTAACTTCCGGTAAACCAAGGGAAAATCACATGACATGTGCGCCGCTTGCGAACTTAGTTGAATGAAAAATCTGAAAGGGACGGACGCTGTGCTTTAATTATTCTCGACAAGTACTGTTTTCGCTTTACCTCGCTGTGACTGTGGAATTTGTCGCTGGATAGGTCGACCTGATTGCTCTTCAATTTCCTTTTCTTCCTCCACTGAATCCGAGCTGTAGTGTGTAGTTCATGGTTGTTGCTGTTAAAAGGAAAGCCGCTCGTTGTAGGATTCACTTGAGGCCCGTTATGGACATGCGAAAGTGTTAAGAGATGTAAAAGCTCTTCAAACAAGCAAAAAATCTGCCAGTGGTTTTGAAAACTTACTCCTACAAGGACGTGCTAGCCATTCTGAAAATTTTTAAGGTAAACTTTGTTGTTGTTGTTGTTGTTGTTGTTAAATAATCAGCTCGACGTAAGGAAGAATTAAGCTTATAATTTCTTCGGAGTACCATTAAATAATTTCAAACCAAAGTTTGTAGCTTTTTTGTCGCTGCCGCTATGGCATTTTCTGTTTTTTTTTCTTTTATTTCGTCGGTAGATCTACTTTTTTCCGCCGCTTTGTCCGAGGGAAATTTTGTTGTTTTCCATATTAGGTCAAATCAAGGTACATGAGCAAACATAAAATGATAACCGAGATTGAGTGAACCAATCAGAATGCTAGATATGCATTATCATATTAATGTGTACCTGTGTGGGTGAGCGTGTAAACCCCCATCGCAACTGTTTTCCAGGGAATAAAATGACGGCTTAAAGTTATAAATGATTATGTTCCGCGATGAAAAACACTCGACTTACCAGAGTTAAGACTAATTTCACCAGCGCGCATTGGATCTCTTAGTGATCGTTTTCACTGAAACGCTCCTCACCCCTGGCCTGCGCATACACTTTTCACTATGAATAACTTTCATGCTAAAATTTTGCTAAACAAGCACCGTAGATTTAAGAACGTCTCTTTCTTTTGCTAAGAACGATCATAGCCTGTTGTCGGGAAAACCGTTGTTGAAATACGTCGGTTTTCCGCGACATTGTTTGGGACAAACCATATATGTATCACAAGGGCCATGTTGCTCGCGTGACTTTCAAGAGCTCAATCATAGGAGAAAACAAACAACACTTAAAAAGAGACTCAACAAGAATTACTTGTAAACATAAAAAATCAAAAATCATGATCTTAAAGCATTCACTGAACATCCCACTGGTTTTGTCTAGGACTGAGTGAGAAATATGCAAACCAACAAAGCATTGTTGTTCACTAGGGGGAAAATGACCTAATAAACGCCCGGGGCGTTTATTTAATTTTAGGGATCCAAGCGGAGGCGGTTAATAGATAGGAGGGCTTTTTTATTAAAAGAGAGAGAGAGGGAGACGTTTATTCTCATAACTGTAACAAGCTCAAGAGAACAAATATGCTTTCGGCAAAAATATCAAGAGAGTTTTAAAGTGGTGGAATATCCTGACTCCATCAATTTATACGTCTTGGCAGTCTAGAGATCCATATCACTCTTACAAATCGTAACATCGATGTCAGAATGCTCGCTCAGGGTCATGTGTTGCCATCATTAGTCCACTCTAAAGTTGACATTGAACAAGATGAAATACGCAAAGCCTTGTTAATCAAAGGAGGAAACTAAATGAATTAAAAGATTTTGCTGCTTTTTGCTAATTCCTAGTATTTTGGAGTAATTCTCATAGGGGGCGTCTATTGAAGAGGGGCGTCTAATAAAATTTTCACAGCGTAGAGGGGGCGTTTATTAGATAAGAGGCGTTTATTTGGAAGTGGGAGTTTATTAGGTTTACGGTAGTCTTATTTCATCACTAATTTATAGTTGCACAAATCTGGTTGTACCCTGTTTTGCGTGCGCAAATTTTACCTTAACCCTTAAAATATATTCAGTTGTTCTTGCATCAACGCGAAACCTTTACCGAGTGTAAATATTTTTGATTTTCTTCGTTTTAACCATTCTTTTATTTAAAGTGAATTATCTCCGAAAAGAACTTTTAAAGTGTCTCACCATGTCAAGAAATCCAAGACAGTCTTGAATTCTGGATTCTACGCCGCGGATTCCGGATTCCAGGTACTGGATTCCAGTCTCTTACAGTGGAACTTGGATCGGCTGGATTCCTTGAGTTGTATTCCGGATTCCAAAGCACAGGATTTCGGATTCCGCAAGCAAAACAATTCCCGGATTCTGGAATCCGGATTCCCTTATAAGGGACGAAAAGTGTGAGAGTCTCGTTCCCAGAGGCCGCGATCCTTTTGTACAGCGACGAGGATGGTAGATACTTCATATATGATTCCTATAGTGTACCGATTTGCCTCATCCGCTGGACAAAGGTAACGGAGGCTCTGGGGACGAGACTGAAAGTGTGAGAGTTTCAGATATGCTTAAGCGCAAGATTAGGTGTCATCGGTGGCCTCACGCCAGCACCCCGATAACCTGTATAGATCCTGAATCCAAAAATTTATCAAAGTCAAAACTACTATTTAACACAAAATTACCCATCCCACACAACTAGCACTTTTCAATTCCGATACGGCCTGATGGTTTACACGGAGCTCAAGGTTGATGGTTTTCTGATCCACATGAATTACCTGAGGATGCAATTCGTTAACTAAAACGCGTTTTTACATCCCTCAATAAATAATGTATACTTCTTAATGGAAATTGGAGTTCATATTACGTGTACCGGCAACAAATGGTTTTGTGATGACTGTATCAAATAATTAGATAATTGTCCGGTAGCCGATTAAGAGGTCATATTACCACTGTCCACATCAAAGAGTTCATCAACCCTCGAGAGGTTATTGTTCACTTTGTATTGACGCCAGAAAGAGGGGATACTCAAACACGCGTAAAAGGTCAGTAGTATCTTATTAAGCTGTTATGAAAGCGGAATATACAGATGTACCAACGTTTAATTCAGCCCGGAAAGTCATCACTGAAAATTCGAATTTTACAAAAAAAATTGCTGGATTCATTCCTTAATGGAATGGAGCCTTGAGGTTCGGTTTATATTCGTATTCGGTCAGGGCCACCCAACGATTGTTTTCTGTAAAATATATGTGTGAGGAAGCACATTTTGTCTGGAAATTTTTATAGCTTGAGAAAGGCTTAAGATGATTACCCTATTTCCCTTTCGTATTTGAAAAACACCAGAGTAACCAGAGTTAAGAGTAATTTTACCAGCGCGCATTGGATCTCTCATTGATCGTTTTCACTGAAACGCCTCTCATCCCTGGCCTGCCCATACAGTTTTCAGGCGAAAATTTGCCTAAGCAGTAAGCACCGTAGATATTAGAACGTCTCTTTCTTTTGCTAAGAACTAACATAGCCTGTTGTCGGAAAAAAATGTTGCTGAAATACGTGCTGCTTTTACTTTCCCTGTCTCCTTTAATACTGAACTTTCTGGTTTGCCCTGCATACGCGGCATTGTTGGACAAACCAGCTTGCAATCACTGGGGCCATGTTGCTCGCGTGACTTTCAAGAGTTCAATCATAGGAGAAAACAAGCAGCACTTAAAAAGATATCCAGAGGAATTGCTCAGTTCCGGACATGAAAAATTAAAATCTTAAAGCATTCACTGAACATCCCACCGGTTTTGTTTAGGATTGAGCAATGTGCAAATCAACAAAGCCTTGTTGTTAACAAGGGGGGAAATGATCTAATAAAGGTCCAGGTTAGGGGTCCAAGTGGGGGCGTGTTATAGATAGGAGGCGTTTAAAACAGAGAGGCGTTTATTCTCATAACTGTAACAAGCTCAACAAAGCAAATATGCTTTCGGCGAAAGTATCAAGAGAGTTTAAAATTGGCGGAATTCGAATATCCGCTCCATCAATTGATACGTCTAGGCCGTCTAGAAATCTATATCATTGCACTCTTACATATCCTAACATCGATATCAGACTGCTCGCTTAGGGTGATTGTGTTGCCATCATTAGTCTATCCTCAGTGACTCTAAACTTGACACTGAACAATGCAAGATGAAATAGGCAAATCCTTGTTTGTTAATTGAGGGAGAAAACTAAATGAATGAAAAGATTTTGCAATCCCTACTGAGCCTTTTGGAGTAATTCTCATAAAGGGCGTCAATTAGGGAGGGGCTTCTCATATTTTCACAGCGGAGGGGAGGCGTTTATTTATTTATTTTTGTTTACAGATTAGGTCGATTATCATGTAAGGTTTTTATCGTTGGCCTCCGGCTATCTCTCTCACTGTCAATGGTGATCGCGAGCACCCCGATAACCTATAAAGATGAAATCTGAAACATAACCATCGAGTAAATTCAAACAGGCGTCTCGATTTCTAAATCAAACCCGAAACTATTATATAACACAAAATTACCCATCACTATTCCAATACGGTCTGTTGGTTAACACAGAACTCAAGGTTGATGGTTTTCTGATCCACATGAATTCCCTGTGGATGCAATTCATTAACTAAAAAGCGTTTTTTCATGCCTCAATAAATAATGTATACTTCTTAATGGAAATTGGAGTTCATATTACGTGTACCTGCCACAAATGGTTTTGTGATGACTATATCAAATAATTAGATAATTACCTCAATCAGGAGCTGACCTCAATATAGCCGATTACGAAGTCATATTACCAGTGTCCACATTTAAGATTTCATCAACCCCCTAGAGATTATTGTTCACTTTGTATTGAAGCCAGAAAGCGGGAGGGGATACTCAAACACGCTTAAAGGTTAGTAGTATCTTACTGGTAATAGTTGGCACTACAGCTGCCCCCGCTCTGTATATTGTCGGTTAATAGTATTCTTGCTCGTTATGTAGCTGTTTGAAATAAGCCGATTCATAATGAAGATGTTCACACATAGTCCATACAACAGGTGAGATAAATCTGCGGGGGCAATTAAGCTGTTATGAGGGTGGAATATACAAATGTGCCAACGTTTTATTCAGTCCAGAAAGTCATCACTGGAAATTCGAATTTGGCCACCCGAATAAAATGTTTCGTTTCCCTTCGCCCCGTCTCTTGTGATGGTCGGTCGGTCGGGCAAAAGAAAAGAAAAAAGAATGAACACTTGAAGGGGTCTGCGTTCCAGAGAAGGCCGGGCTGCTAAGTAAGAAAGCCTGGCTACAAAGTCAACTCGAAAACGTGGTCTTTTCGACTATTAAATGTCTAAATGGCCTTTAAAAAACGTAGTATCGATGTTAATTAAAGACAAGGACATCACATCATACCAATTGTTGTTAATAAAACAAGATCGTGTGCTTGTAAATTAAAGTACCCTTTTGAAACTAGAGAAGTCCGAAAATCATTTGGTTTACTTTCGTTCCGTGGTGTGATAACTAATTAAAATTAACCACTGTAATATAACAAAAGCTCGTGATGTGTGTGCATTAGCTATTTGCCTATGGGTAAACGCTGGCTAAAGCTGGCGAGTCCACTTATTGTATCTTCTGAGGCCGTTTCTGAGGAAAAGTCCTTAAACTGTAGCTTAACATAACGATGCCTATATATGGCGAAATTTCGACAGTGGTCCCTGATTGTATGGTTGGTTCTCATTGTGACGTCTTTAGGATACGCCCATATATGACCCAATACAGAGATTCGTGGCAAATGATTCTTAATCACCCAAACTCCATACAGACACCGTCAACTTCACCACCATTTCACAGTTTTCAGTGGTAAAAGTAACTCCTGAATTTAAGCCGGAAGCAATGAGACCAGTTGTTGATTATCTGAAACAAATATTTTCTTTTTTCAGTGCATGACGTTTATTTAGTCAATTCTCCTCTTTATAAAGCAGAGGTGCCCAAAGACGGTTTCCTCCTAAATACATTGAGAACACTCTTTACGTGTCCAGATTACTATTAAGATCTATAGAACCAAGAGAGGATGAAGGGGCCTTTATCCTCTCTTGATAGAACTGAATGCATTCTAAGCGACGCTATGACGTTTGTACCTGTGCGGTCATCCTAGGGGAACTTGAGTCTTGTCGAAATTTCAAGGGCTTCAGTATACATTTTTTGATTCCTCCCTGACTCACCTTCACAGTTTTGAATGCGAAAATTTCAGGTTTCCTTTTTTGAACGAAAAAAAAAAGGCCTAACCTGGGCAGTAAAAAAAACAACAAAATTGTCATTGAAAATCGTAGGGAATTTATTAGAGGCTTCGAAAATTGTACATAAATGGAACGGTCATCTAGATTTTTTTTTTATAAGCGGTTTTCCGAACAAAAATGGTAAACAACAGATGCCGTACATGTACGACATTCTAACTGAATCTATTTTGGTGGCTCCTTAACTTTTAGCCATTAGTTACATATCATTCCATGTTTGTCATCTATTTACATTCGTATACTGTTTTTAAAACCCTTACAGTCTGCTTACGCCGGTTTACTTTTTCCTAATAATTTTGAAAACAAAATTCATTATCAGACTAAGGTTTTACTATAAGGTTTGTTTATAGTGGAAAGTGCACTTAGCTTATCCAGCTAGTTTACAGGCACTCCACTCAAATACTTAGAAACAAATAATTTAAACATAACATAACAGGATTAAAAACCCCACTGGCAGGAGGCAACTAGTTGGCTGTTTACAAGTGTGGCCAAGGATTTCAAATCCAGCAAGTGGTCAGAGCGGGACTCGAACCCAGGACCGCGGGATTGCGAATTTACGCGCTGACCACTCTTCGACATCGGCTTCAGTTTTAAATTCTTATAATTTTACTATCTTAAGATATATTCTATTCGAGAAACGTATGTGTTTCTAACCGAAATATATACATTTCGTATATTCATACGTAGTTTATGTTGCTTTTCCCTCTTGTCTTCACCGCGAGGGATCAATTTGTTGTCTTTTTCCTTTATTTTTCTCAACACGAGAAGCACGAGGACTTGCCGTTGTCTTGGTAAATGATCCTTTTCGGATCTTCCGTTTTTTTGGTAGTGAAGAATCCATATGATCTGAGATCGCAAATCCGTTTTTAGATTCTCCCAAATAGACGCAGAGTCATGTTCAGTGCCGGATCCAGGCCTTGAGATAAGGGTCAGTTCAGAAAAAAATTTATTCGGCCCTTCGAGGCCTCAGCTTGGTCTAAAAATAAGGTGGGGGTGGGGGGGGGGGGGGGGCTGTGGGTAAAAGGTAGGATCCGGTTGTTTTTTTAAAAAAAAAATTGAAAGAAAAAAATAGTCGCCCACTCTTTTGAACTCCAACCCGGTCTTNTAGAATTTTAAAATGAGCTTGGTCAGGGCGGTCATCCTTCTGTTCTCCATTGCGCTGGTAACTCAGTCAATCTTTGGGTCTCCCTTCAAACAAAACAATCATGTCAAAAGGAACCCTGGATCGTCTACTCATGACACTGAGGTAAAATATATTGTCTTTGAAATGAGATACGTACGGTGGGTGTTCAAGTCAATTTTGGTGACTTTCGTTTAAATCGAACATGAAAGTTTCTTTTGGAGGTAATACAGTATGTTGCCCAGTATCCGGACACTTCAGTTTAACATTGCAATAACTTTCCTTTGTTAGTCGCAAGAGCTCTGAAATTTGGCCCAGAGAAAATCTACTTAGTCCTTAATATGACGAAAGACAGTTTAACTTTTTTATCTTTGTTTCCATCGCGAAATTAATATTTTTGCAGAGCTCCTATGTTGCCCAGTATCCGGACAGCTGGCCCAGTGTCCGGACACAACAATAACAACGTAATTGTACATAAATTTCGACAGGCAAGCGACTTATAAGCTTCTCTTGCACTTGCAAAGTAGTCTGGCAATCGATTCCAAAAATATAACCTAGCATCGTGAAATAAAACATAACAAATGACCGGGGTATGGTGGGGAACGCGAGCGGTTGCTAAATGGCATAATTCTCACTTCCTTGTCTAGGAACTTTTTTCCCTGATCATGTAAGGAAGGCATCCATGGACATGCCGAAGCCGCAGTTTCCTAGCTCAATTAGCCAATCTGCAAAAGACTTTTTTTTCCTTCATTTTTTATTTTAAAAAAAAGCTTGCGGAAGGGACCTCAATGCGACAGTCAAAGGTCACTCTCCTATTTATAGTCTGACCTGCGGTGTTGATTTCTTCATGCTCAGTCCCGACAGACCTTACAATAAGCCTGTTTTTCTAGCACTAATTCCTCCTTCTTTCACATCTCTCAATCCCTTTGTGACATTATTTAGACCGTTGCAACCCCATTCTAGCAGTCACAACTGGGGAAAGTATGAGAATTCCAGCTTCAACTCCGACGCTTTTGATTTTTATATGGACAATGCAGTCACGCGAAACAAGCGGCGCACACGAAATCAAGTCGCCTCCGAATGAGTGAAGAAAATTTCCGTACGGAATTGAGTAGAATAACATTTTACGACTACATCATATATCCTAAGCTTTAATTATAGTTATAGATATGAAATAAATCTTATCCGGGTATAGGTATTCATCGATTCTGTACAGCAAAGAAAAAACTGTCCGGATACTGGGCAACCTAACATCAATACTTAGTGAATGTTTTTGGGCTCCGTTATTCCAAACAAATCGAATTTCAAGAAGAATCAATAAAATTTCTGAGAACCTGACTTCTTTAAGTATCTTCACTTTAAATATTAAACCGTTTGTTTGAAAATATCACGTATTACCTACCCTTTTCTGAGCAGCACTAATTTTACCGCGCAGTAAACAGCGTAAATATTAGCCATAAAATGTTTATTCACCTGAACAGAACGGCGTCTACTGCGACTGTTTCGCAAGCTTTCAACTCGCCAAAACCATCATCTTAAAGCTGAATTGTTCAGCTTTCATTCGAAAAACTTCGTTTACCGATAACTGAAAAGGGCGCCTCGAAAATTGAGTTTTTGTTTTAAGAGCCAGTCTCTGTAAGATCCTCATATCGAGTTTTGCCCACAAAATGGATTTCGCTCATAATTTTTCTGTAGACTTCTTTTAATAAGTATATAACAAATATGAAACTAGATTGGAGAAATTCGCTTCTGTAAATTTTTTTTAACGAATTTTCTTTCGGCGCCACATGAGGACCTGAGATGCCTGTGAAATATGCAAATTTTGTCAAAATTCAACCGATTGCTCCGGATCATAGTCCCCTCTACTAACTATGTCCGGATAAAAGAGTTCGACCCAAAGCTTCCAATTTATTAGTTATTTTAATTGAGCCTTTATCTTTACAATAATACAGGTCAGAATCAGCAACACCTTTTCGTTTAGAAAATCTGAGGAAACACACTTAGCCCCTTTGACCCACTTAGCGAAACATACGATTTTAGCCAAATTCAGTGGATTAAATCTCAAAAGTGGCTCACACTTACAGACTCTCCTGCATATCATTGTGTAGTTCAATCCTTCAGCTACTGAATCGTGTTAAAAGTTTTGGCGGCCATTCAGGTTCGGTCGAGGGGTGAGTGGCGAAACTTGCCTTACTTTGCCATTTCGCCGGTGTTTCGCCATCGTGAAGTCCAGAAGGATTGTCAGAATAGAAAGCGAGAAATCGGGTAAATGCCACTCGAAACTTGTCCATTCCTAAAGACTGCAT
+
+
+gene-Peve_00000001  1382    20  1382    1383
+gene-Peve_00000039  2535    1423    2535    2536
+gene-Peve_00000112  271 3979    271 272
+gene-Peve_00000117  11913   4271    11913   11914
+gene-Peve_00000122  35013   16205   35013   35014
+gene-Peve_00000008  2351    51239   2351    2352
+gene-Peve_00000013  21088   53611   21088   21089
+gene-Peve_00000032  7683    74720   7683    7684
+gene-Peve_00000035  39241   82424   39241   39242
+gene-Peve_00000042  5389    121686  5389    5390</code></pre>
+</section>
+</section>
+<section id="subset-expressed-genes" class="level1">
+<h1>4 Subset Expressed Genes</h1>
+<p>Only those with at least <em>one</em> read in each sample</p>
+<section id="peek-at-count-matrix" class="level3">
+<h3 class="anchored" data-anchor-id="peek-at-count-matrix">4.0.1 Peek at count matrix</h3>
+<div class="sourceCode" id="cb7"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="fu">head</span> <span class="st">"</span><span class="va">${count_matrix}</span><span class="st">"</span> <span class="kw">|</span> <span class="ex">column</span> <span class="at">-t</span> <span class="at">-s</span><span class="st">","</span></span>
+<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a><span class="bu">echo</span> <span class="st">""</span></span>
+<span id="cb7-4"><a href="#cb7-4" aria-hidden="true" tabindex="-1"></a><span class="bu">echo</span> <span class="st">""</span></span>
+<span id="cb7-5"><a href="#cb7-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-6"><a href="#cb7-6" aria-hidden="true" tabindex="-1"></a><span class="fu">wc</span> <span class="at">-l</span> <span class="st">"</span><span class="va">${count_matrix}</span><span class="st">"</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<pre><code>gene_id             RNA-POR-71  RNA-POR-73  RNA-POR-76  RNA-POR-79  RNA-POR-82
+gene-Peve_00006864  0           0           3           263         79
+gene-Peve_00022042  439         396         552         640         286
+gene-Peve_00009109  89          181         33          293         1789
+gene-Peve_00009108  0           0           0           0           0
+gene-Peve_00004359  4598        2449        6571        2745        10812
+gene-Peve_00004358  147         159         24          155         153
+gene-Peve_00004353  158         62          461         123         143
+gene-Peve_00009100  179507      81177       154976      83235       211948
+gene-Peve_00009103  187         16          885         106         263
+
+
+40390 ../output/06.2-Peve-Hisat/gene_count_matrix.csv</code></pre>
+</section>
+<section id="import-count-matrix" class="level2">
+<h2 class="anchored" data-anchor-id="import-count-matrix">4.1 Import count matrix</h2>
+<div class="sourceCode" id="cb9"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Read the data into a data frame</span></span>
+<span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a>count_matrix_df <span class="ot">&lt;-</span> <span class="fu">read.csv</span>(count_matrix, <span class="at">header =</span> <span class="cn">TRUE</span>)</span>
+<span id="cb9-3"><a href="#cb9-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-4"><a href="#cb9-4" aria-hidden="true" tabindex="-1"></a><span class="fu">str</span>(count_matrix_df)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<pre><code>'data.frame':   40389 obs. of  6 variables:
+ $ gene_id   : chr  "gene-Peve_00006864" "gene-Peve_00022042" "gene-Peve_00009109" "gene-Peve_00009108" ...
+ $ RNA.POR.71: int  0 439 89 0 4598 147 158 179507 187 0 ...
+ $ RNA.POR.73: int  0 396 181 0 2449 159 62 81177 16 17 ...
+ $ RNA.POR.76: int  3 552 33 0 6571 24 461 154976 885 0 ...
+ $ RNA.POR.79: int  263 640 293 0 2745 155 123 83235 106 0 ...
+ $ RNA.POR.82: int  79 286 1789 0 10812 153 143 211948 263 21 ...</code></pre>
+</section>
+<section id="only-genes-with-at-least-one-read-per-sample" class="level2">
+<h2 class="anchored" data-anchor-id="only-genes-with-at-least-one-read-per-sample">4.2 Only genes with at least one read per sample</h2>
+<div class="sourceCode" id="cb11"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Filter rows where all values are greater than 0</span></span>
+<span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a>filtered_count_matrix_df <span class="ot">&lt;-</span> count_matrix_df[<span class="fu">apply</span>(count_matrix_df <span class="sc">&gt;</span> <span class="dv">0</span>, <span class="dv">1</span>, all), ]</span>
+<span id="cb11-3"><a href="#cb11-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb11-4"><a href="#cb11-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb11-5"><a href="#cb11-5" aria-hidden="true" tabindex="-1"></a><span class="fu">str</span>(filtered_count_matrix_df)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<pre><code>'data.frame':   17224 obs. of  6 variables:
+ $ gene_id   : chr  "gene-Peve_00022042" "gene-Peve_00009109" "gene-Peve_00004359" "gene-Peve_00004358" ...
+ $ RNA.POR.71: int  439 89 4598 147 158 179507 187 1049 484 128 ...
+ $ RNA.POR.73: int  396 181 2449 159 62 81177 16 412 15 60 ...
+ $ RNA.POR.76: int  552 33 6571 24 461 154976 885 1785 460 420 ...
+ $ RNA.POR.79: int  640 293 2745 155 123 83235 106 433 78 118 ...
+ $ RNA.POR.82: int  286 1789 10812 153 143 211948 263 1613 151 127 ...</code></pre>
+</section>
+<section id="subset-genes-fasta" class="level2">
+<h2 class="anchored" data-anchor-id="subset-genes-fasta">4.3 Subset genes FastA</h2>
+<p>Only expressed genes</p>
+<div class="sourceCode" id="cb13"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Get the row names (gene_ids) of the filtered data frame</span></span>
+<span id="cb13-2"><a href="#cb13-2" aria-hidden="true" tabindex="-1"></a>filtered_gene_ids <span class="ot">&lt;-</span> filtered_count_matrix_df<span class="sc">$</span>gene_id</span>
+<span id="cb13-3"><a href="#cb13-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb13-4"><a href="#cb13-4" aria-hidden="true" tabindex="-1"></a>fasta <span class="ot">&lt;-</span> <span class="fu">readDNAStringSet</span>(genes_fasta)</span>
+<span id="cb13-5"><a href="#cb13-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb13-6"><a href="#cb13-6" aria-hidden="true" tabindex="-1"></a>subset_fasta <span class="ot">&lt;-</span> fasta[<span class="fu">names</span>(fasta) <span class="sc">%in%</span> filtered_gene_ids]</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode" id="cb14"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a><span class="fu">writeXStringSet</span>(subset_fasta, genes_subset_fasta)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<section id="peek-at-genes-subset-fasta" class="level3">
+<h3 class="anchored" data-anchor-id="peek-at-genes-subset-fasta">4.3.1 Peek at genes subset FastA</h3>
+<div class="sourceCode" id="cb15"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a><span class="fu">head</span> <span class="st">"</span><span class="va">${genes_subset_fasta}</span><span class="st">"</span></span>
+<span id="cb15-2"><a href="#cb15-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb15-3"><a href="#cb15-3" aria-hidden="true" tabindex="-1"></a><span class="bu">echo</span> <span class="st">""</span></span>
+<span id="cb15-4"><a href="#cb15-4" aria-hidden="true" tabindex="-1"></a><span class="fu">grep</span> <span class="st">"^&gt;"</span> <span class="at">--count</span> <span class="st">"</span><span class="va">${genes_subset_fasta}</span><span class="st">"</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<pre><code>&gt;gene-Peve_00000013
+ATGAGCTTGGTCAGGGCGGTCATCCTTCTGTTCTCCATTGCGCTGGTAACTCAGTCAATCTTTGGGTCTCCCTTCAAACA
+AAACAATCATGTCAAAAGGAACCCTGGATCGTCTACTCATGACACTGAGGTAAAATATATTGTCTTTGAAATGAGATACG
+TACGGTGGGTGTTCAAGTCAATTTTGGTGACTTTCGTTTAAATCGAACATGAAAGTTTCTTTTGGAGGTAATACAGTATG
+TTGCCCAGTATCCGGACACTTCAGTTTAACATTGCAATAACTTTCCTTTGTTAGTCGCAAGAGCTCTGAAATTTGGCCCA
+GAGAAAATCTACTTAGTCCTTAATATGACGAAAGACAGTTTAACTTTTTTATCTTTGTTTCCATCGCGAAATTAATATTT
+TTGCAGAGCTCCTATGTTGCCCAGTATCCGGACAGCTGGCCCAGTGTCCGGACACAACAATAACAACGTAATTGTACATA
+AATTTCGACAGGCAAGCGACTTATAAGCTTCTCTTGCACTTGCAAAGTAGTCTGGCAATCGATTCCAAAAATATAACCTA
+GCATCGTGAAATAAAACATAACAAATGACCGGGGTATGGTGGGGAACGCGAGCGGTTGCTAAATGGCATAATTCTCACTT
+CCTTGTCTAGGAACTTTTTTCCCTGATCATGTAAGGAAGGCATCCATGGACATGCCGAAGCCGCAGTTTCCTAGCTCAAT
+
+17224</code></pre>
+</section>
+</section>
+</section>
+<section id="blastx" class="level1">
+<h1>5 BLASTx</h1>
+<section id="download-swissprot" class="level2">
+<h2 class="anchored" data-anchor-id="download-swissprot">5.1 Download SwissProt</h2>
+<div class="sourceCode" id="cb17"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a><span class="bu">cd</span> <span class="st">"</span><span class="va">${blastdbs_dir}</span><span class="st">"</span></span>
+<span id="cb17-2"><a href="#cb17-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb17-3"><a href="#cb17-3" aria-hidden="true" tabindex="-1"></a><span class="ex">curl</span> <span class="at">-O</span> https://ftp.uniprot.org/pub/databases/uniprot/current_release/knowledgebase/complete/uniprot_sprot.fasta.gz</span>
+<span id="cb17-4"><a href="#cb17-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb17-5"><a href="#cb17-5" aria-hidden="true" tabindex="-1"></a><span class="fu">mv</span> uniprot_sprot.fasta.gz 20250618-uniprot_sprot.fasta.gz</span>
+<span id="cb17-6"><a href="#cb17-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb17-7"><a href="#cb17-7" aria-hidden="true" tabindex="-1"></a><span class="fu">gunzip</span> <span class="at">--keep</span> 20250618-uniprot_sprot.fasta.gz</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<pre><code>  % Total    % Received % Xferd  Average Speed   Time    Time     Time  Current
+                                 Dload  Upload   Total   Spent    Left  Speed
+  0     0    0     0    0     0      0      0 --:--:-- --:--:-- --:--:--     0  0 88.7M    0  374k    0     0   547k      0  0:02:46 --:--:--  0:02:46  546k 27 88.7M   27 24.7M    0     0  14.5M      0  0:00:06  0:00:01  0:00:05 14.5M 65 88.7M   65 58.1M    0     0  21.7M      0  0:00:04  0:00:02  0:00:02 21.7M 94 88.7M   94 83.6M    0     0  22.6M      0  0:00:03  0:00:03 --:--:-- 22.6M100 88.7M  100 88.7M    0     0  22.7M      0  0:00:03  0:00:03 --:--:-- 22.7M</code></pre>
+</section>
+<section id="create-blastdb" class="level2">
+<h2 class="anchored" data-anchor-id="create-blastdb">5.2 Create BLASTdb</h2>
+<div class="sourceCode" id="cb19"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb19-1"><a href="#cb19-1" aria-hidden="true" tabindex="-1"></a><span class="bu">cd</span> <span class="st">"</span><span class="va">${blastdbs_dir}</span><span class="st">"</span></span>
+<span id="cb19-2"><a href="#cb19-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb19-3"><a href="#cb19-3" aria-hidden="true" tabindex="-1"></a><span class="st">"</span><span class="va">${diamond}</span><span class="st">"</span> makedb <span class="dt">\</span></span>
+<span id="cb19-4"><a href="#cb19-4" aria-hidden="true" tabindex="-1"></a>--in 20250618-uniprot_sprot.fasta.gz <span class="dt">\</span></span>
+<span id="cb19-5"><a href="#cb19-5" aria-hidden="true" tabindex="-1"></a>--db <span class="st">"</span><span class="va">${diamond_db}</span><span class="st">"</span> <span class="dt">\</span></span>
+<span id="cb19-6"><a href="#cb19-6" aria-hidden="true" tabindex="-1"></a>--quiet <span class="dt">\</span></span>
+<span id="cb19-7"><a href="#cb19-7" aria-hidden="true" tabindex="-1"></a>--threads <span class="st">"</span><span class="va">${threads}</span><span class="st">"</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</section>
+<section id="run-diamond-blastx" class="level2">
+<h2 class="anchored" data-anchor-id="run-diamond-blastx">5.3 Run DIAMOND BLASTx</h2>
+<div class="sourceCode" id="cb20"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb20-1"><a href="#cb20-1" aria-hidden="true" tabindex="-1"></a><span class="st">"</span><span class="va">${diamond}</span><span class="st">"</span> blastx <span class="dt">\</span></span>
+<span id="cb20-2"><a href="#cb20-2" aria-hidden="true" tabindex="-1"></a>--db <span class="st">"</span><span class="va">${blastdbs_dir}</span><span class="st">"</span>/<span class="st">"</span><span class="va">${diamond_db}</span><span class="st">.dmnd"</span> <span class="dt">\</span></span>
+<span id="cb20-3"><a href="#cb20-3" aria-hidden="true" tabindex="-1"></a>--query <span class="st">"</span><span class="va">${genes_subset_fasta}</span><span class="st">"</span> <span class="dt">\</span></span>
+<span id="cb20-4"><a href="#cb20-4" aria-hidden="true" tabindex="-1"></a>--out <span class="st">"</span><span class="va">${diamond_output}</span><span class="st">"</span> <span class="dt">\</span></span>
+<span id="cb20-5"><a href="#cb20-5" aria-hidden="true" tabindex="-1"></a>--outfmt 6  <span class="dt">\</span></span>
+<span id="cb20-6"><a href="#cb20-6" aria-hidden="true" tabindex="-1"></a>--sensitive <span class="dt">\</span></span>
+<span id="cb20-7"><a href="#cb20-7" aria-hidden="true" tabindex="-1"></a>--evalue 1e-10 <span class="dt">\</span></span>
+<span id="cb20-8"><a href="#cb20-8" aria-hidden="true" tabindex="-1"></a>--max-target-seqs 1 <span class="dt">\</span></span>
+<span id="cb20-9"><a href="#cb20-9" aria-hidden="true" tabindex="-1"></a>--block-size 15.0 <span class="dt">\</span></span>
+<span id="cb20-10"><a href="#cb20-10" aria-hidden="true" tabindex="-1"></a>--index-chunks 4 <span class="dt">\</span></span>
+<span id="cb20-11"><a href="#cb20-11" aria-hidden="true" tabindex="-1"></a>--threads <span class="st">"</span><span class="va">${threads}</span><span class="st">"</span> <span class="dt">\</span></span>
+<span id="cb20-12"><a href="#cb20-12" aria-hidden="true" tabindex="-1"></a>2<span class="op">&gt;</span> <span class="st">"</span><span class="va">${output_dir}</span><span class="st">"</span>/diamond-blastx.log</span>
+<span id="cb20-13"><a href="#cb20-13" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb20-14"><a href="#cb20-14" aria-hidden="true" tabindex="-1"></a><span class="fu">head</span> <span class="st">"</span><span class="va">${diamond_output}</span><span class="st">"</span></span>
+<span id="cb20-15"><a href="#cb20-15" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb20-16"><a href="#cb20-16" aria-hidden="true" tabindex="-1"></a><span class="bu">echo</span> <span class="st">""</span></span>
+<span id="cb20-17"><a href="#cb20-17" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb20-18"><a href="#cb20-18" aria-hidden="true" tabindex="-1"></a><span class="fu">wc</span> <span class="at">-l</span> <span class="st">"</span><span class="va">${diamond_output}</span><span class="st">"</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<pre><code>gene-Peve_00000013  sp|P58691|ACTPA_RADCR   42.0    112 57  4   20741   21073   69  173 1.43e-15    81.6
+gene-Peve_00000035  sp|Q9NBX4|RTXE_DROME    24.9    486 325 16  10287   11693   428 890 2.49e-17    95.5
+gene-Peve_00000042  sp|P62993|GRB2_HUMAN    51.8    56  27  0   887 720 161 216 3.81e-11    68.2
+gene-Peve_00000058  sp|A3KN95|T151B_XENTR   29.2    202 135 5   1732    2322    127 325 1.16e-12    75.5
+gene-Peve_00000107  sp|F4IE66|PRP22_ARATH   64.5    76  27  0   10104   9877    41  116 1.08e-20    103
+gene-Peve_00000108  sp|Q6P4S8|INT1_MOUSE    51.7    89  42  1   5664    5930    180 267 3.17e-20    105
+gene-Peve_00000114  sp|F1R8Z9|FXJ1B_DANRE   73.1    67  14  1   2663    2475    183 249 5.64e-21    102
+gene-Peve_00000115  sp|Q9DCV4|RMD1_MOUSE    33.3    147 85  4   8274    7870    71  216 3.40e-13    76.6
+gene-Peve_00000116  sp|Q32KL4|RMD1_BOVIN    47.6    84  42  1   8369    8124    85  168 2.34e-12    74.3
+gene-Peve_00000121  sp|O50655|XERD_SELRU    25.5    314 209 10  25765   26682   29  325 2.56e-13    79.3
+
+8966 ../output/30.00-Peve-transcriptome-GOslims/Pevermanni-expressed-genes.blastx.outfmt6</code></pre>
+</section>
+</section>
+<section id="gene-ontology" class="level1">
+<h1>6 GENE ONTOLOGY</h1>
+<section id="get-gene-ids-and-swissprot-ids" class="level2">
+<h2 class="anchored" data-anchor-id="get-gene-ids-and-swissprot-ids">6.1 Get gene IDs and SwissProt IDs</h2>
+<div class="sourceCode" id="cb22"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb22-1"><a href="#cb22-1" aria-hidden="true" tabindex="-1"></a><span class="fu">awk</span> <span class="at">-F</span><span class="st">"|"</span> <span class="st">'{print $1"\t"$2}'</span> <span class="st">"</span><span class="va">${diamond_output}</span><span class="st">"</span> <span class="dt">\</span></span>
+<span id="cb22-2"><a href="#cb22-2" aria-hidden="true" tabindex="-1"></a><span class="kw">|</span> <span class="fu">awk</span> <span class="st">'{print $1"\t"$3}'</span> <span class="dt">\</span></span>
+<span id="cb22-3"><a href="#cb22-3" aria-hidden="true" tabindex="-1"></a><span class="op">&gt;</span> <span class="st">"</span><span class="va">${output_dir}</span><span class="st">"</span>/gene-SPIDs.txt</span>
+<span id="cb22-4"><a href="#cb22-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb22-5"><a href="#cb22-5" aria-hidden="true" tabindex="-1"></a><span class="fu">head</span> <span class="st">"</span><span class="va">${output_dir}</span><span class="st">"</span>/gene-SPIDs.txt</span>
+<span id="cb22-6"><a href="#cb22-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb22-7"><a href="#cb22-7" aria-hidden="true" tabindex="-1"></a><span class="bu">echo</span> <span class="st">""</span></span>
+<span id="cb22-8"><a href="#cb22-8" aria-hidden="true" tabindex="-1"></a><span class="bu">echo</span> <span class="st">""</span></span>
+<span id="cb22-9"><a href="#cb22-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb22-10"><a href="#cb22-10" aria-hidden="true" tabindex="-1"></a><span class="fu">wc</span> <span class="at">-l</span> <span class="st">"</span><span class="va">${output_dir}</span><span class="st">"</span>/gene-SPIDs.txt</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<pre><code>gene-Peve_00000013  P58691
+gene-Peve_00000035  Q9NBX4
+gene-Peve_00000042  P62993
+gene-Peve_00000058  A3KN95
+gene-Peve_00000107  F4IE66
+gene-Peve_00000108  Q6P4S8
+gene-Peve_00000114  F1R8Z9
+gene-Peve_00000115  Q9DCV4
+gene-Peve_00000116  Q32KL4
+gene-Peve_00000121  O50655
+
+
+8966 ../output/30.00-Peve-transcriptome-GOslims/gene-SPIDs.txt</code></pre>
+</section>
+<section id="get-swissprot-ids" class="level2">
+<h2 class="anchored" data-anchor-id="get-swissprot-ids">6.2 Get SwissProt IDs</h2>
+<div class="sourceCode" id="cb24"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb24-1"><a href="#cb24-1" aria-hidden="true" tabindex="-1"></a><span class="fu">awk</span> <span class="at">-F</span><span class="st">"|"</span> <span class="st">'{print $2}'</span> <span class="st">"</span><span class="va">${diamond_output}</span><span class="st">"</span> <span class="dt">\</span></span>
+<span id="cb24-2"><a href="#cb24-2" aria-hidden="true" tabindex="-1"></a><span class="kw">|</span> <span class="fu">sort</span> <span class="at">--unique</span> <span class="dt">\</span></span>
+<span id="cb24-3"><a href="#cb24-3" aria-hidden="true" tabindex="-1"></a><span class="op">&gt;</span> <span class="st">"</span><span class="va">${output_dir}</span><span class="st">"</span>/SPIDs.txt</span>
+<span id="cb24-4"><a href="#cb24-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb24-5"><a href="#cb24-5" aria-hidden="true" tabindex="-1"></a><span class="fu">head</span> <span class="st">"</span><span class="va">${output_dir}</span><span class="st">"</span>/SPIDs.txt</span>
+<span id="cb24-6"><a href="#cb24-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb24-7"><a href="#cb24-7" aria-hidden="true" tabindex="-1"></a><span class="bu">echo</span> <span class="st">""</span></span>
+<span id="cb24-8"><a href="#cb24-8" aria-hidden="true" tabindex="-1"></a><span class="bu">echo</span> <span class="st">""</span></span>
+<span id="cb24-9"><a href="#cb24-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb24-10"><a href="#cb24-10" aria-hidden="true" tabindex="-1"></a><span class="fu">wc</span> <span class="at">-l</span> <span class="st">"</span><span class="va">${output_dir}</span><span class="st">"</span>/SPIDs.txt</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<pre><code>A0A096X8J7
+A0A0C2SRU0
+A0A0G2JZ79
+A0A0G2L7I0
+A0A0P0XB70
+A0A0R3K2G2
+A0A0R4I9Y1
+A0A0R4IBK5
+A0A0R4IES7
+A0A0R4ITC5
+
+
+6137 ../output/30.00-Peve-transcriptome-GOslims/SPIDs.txt</code></pre>
+</section>
+<section id="retrieve-uniprot-records" class="level2">
+<h2 class="anchored" data-anchor-id="retrieve-uniprot-records">6.3 Retrieve UniProt records</h2>
+<p>A difference in number of records could be due to retrieval from only “reviewed” records, while BLAST may have included both “reviewed” and “unreviewed.” SwissProt records</p>
+<div class="sourceCode" id="cb26"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb26-1"><a href="#cb26-1" aria-hidden="true" tabindex="-1"></a><span class="ex">python3</span> <span class="dt">\</span></span>
+<span id="cb26-2"><a href="#cb26-2" aria-hidden="true" tabindex="-1"></a>../../M-multi-species/code/uniprot-retrieval.py <span class="dt">\</span></span>
+<span id="cb26-3"><a href="#cb26-3" aria-hidden="true" tabindex="-1"></a><span class="st">"</span><span class="va">${output_dir}</span><span class="st">"</span>/SPIDs.txt <span class="dt">\</span></span>
+<span id="cb26-4"><a href="#cb26-4" aria-hidden="true" tabindex="-1"></a><span class="st">"</span><span class="va">${output_dir}</span><span class="st">"</span>/</span>
+<span id="cb26-5"><a href="#cb26-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb26-6"><a href="#cb26-6" aria-hidden="true" tabindex="-1"></a><span class="fu">gunzip</span> <span class="st">"</span><span class="va">${output_dir}</span><span class="st">"</span>/uniprot-retrieval.tsv.gz</span>
+<span id="cb26-7"><a href="#cb26-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb26-8"><a href="#cb26-8" aria-hidden="true" tabindex="-1"></a><span class="bu">echo</span> <span class="st">""</span></span>
+<span id="cb26-9"><a href="#cb26-9" aria-hidden="true" tabindex="-1"></a><span class="bu">echo</span> <span class="st">""</span></span>
+<span id="cb26-10"><a href="#cb26-10" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb26-11"><a href="#cb26-11" aria-hidden="true" tabindex="-1"></a><span class="fu">wc</span> <span class="at">-l</span> <span class="st">"</span><span class="va">${output_dir}</span><span class="st">"</span>/uniprot-retrieval.tsv</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<pre><code>500 / 500
+500 / 500
+500 / 500
+500 / 500
+500 / 500
+500 / 500
+500 / 500
+500 / 500
+500 / 500
+500 / 500
+500 / 500
+500 / 500
+137 / 137
+
+
+6149 ../output/30.00-Peve-transcriptome-GOslims/uniprot-retrieval.tsv</code></pre>
+</section>
+<section id="map-go-to-genes" class="level2">
+<h2 class="anchored" data-anchor-id="map-go-to-genes">6.4 Map GO to Genes</h2>
+<div class="sourceCode" id="cb28"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb28-1"><a href="#cb28-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Read gene-SPIDs.txt</span></span>
+<span id="cb28-2"><a href="#cb28-2" aria-hidden="true" tabindex="-1"></a>gene_spids <span class="ot">&lt;-</span> <span class="fu">read.delim</span>(<span class="fu">file.path</span>(output_dir, <span class="st">"gene-SPIDs.txt"</span>), <span class="at">header =</span> <span class="cn">FALSE</span>, <span class="at">stringsAsFactors =</span> <span class="cn">FALSE</span>)</span>
+<span id="cb28-3"><a href="#cb28-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb28-4"><a href="#cb28-4" aria-hidden="true" tabindex="-1"></a><span class="fu">colnames</span>(gene_spids) <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="st">"GeneID"</span>, <span class="st">"Entry"</span>)</span>
+<span id="cb28-5"><a href="#cb28-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb28-6"><a href="#cb28-6" aria-hidden="true" tabindex="-1"></a><span class="co"># Read uniprot-retrieval.tsv</span></span>
+<span id="cb28-7"><a href="#cb28-7" aria-hidden="true" tabindex="-1"></a>uniprot <span class="ot">&lt;-</span> <span class="fu">read.delim</span>(</span>
+<span id="cb28-8"><a href="#cb28-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">file.path</span>(output_dir, <span class="st">"uniprot-retrieval.tsv"</span>),</span>
+<span id="cb28-9"><a href="#cb28-9" aria-hidden="true" tabindex="-1"></a>  <span class="at">header =</span> <span class="cn">TRUE</span>,</span>
+<span id="cb28-10"><a href="#cb28-10" aria-hidden="true" tabindex="-1"></a>  <span class="at">stringsAsFactors =</span> <span class="cn">FALSE</span>,</span>
+<span id="cb28-11"><a href="#cb28-11" aria-hidden="true" tabindex="-1"></a>  <span class="at">check.names =</span> <span class="cn">FALSE</span></span>
+<span id="cb28-12"><a href="#cb28-12" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb28-13"><a href="#cb28-13" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb28-14"><a href="#cb28-14" aria-hidden="true" tabindex="-1"></a><span class="co"># Merge on Entry</span></span>
+<span id="cb28-15"><a href="#cb28-15" aria-hidden="true" tabindex="-1"></a>gene_SPID_GOID_merged <span class="ot">&lt;-</span> <span class="fu">merge</span>(gene_spids, uniprot[, <span class="fu">c</span>(<span class="st">"Entry"</span>, <span class="st">"Gene Ontology IDs"</span>)], <span class="at">by =</span> <span class="st">"Entry"</span>, <span class="at">all.x =</span> <span class="cn">TRUE</span>)</span>
+<span id="cb28-16"><a href="#cb28-16" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb28-17"><a href="#cb28-17" aria-hidden="true" tabindex="-1"></a><span class="co"># View result</span></span>
+<span id="cb28-18"><a href="#cb28-18" aria-hidden="true" tabindex="-1"></a><span class="fu">str</span>(gene_SPID_GOID_merged)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<pre><code>'data.frame':   8966 obs. of  3 variables:
+ $ Entry            : chr  "A0A096X8J7" "A0A096X8J7" "A0A0C2SRU0" "A0A0C2SRU0" ...
+ $ GeneID           : chr  "gene-Peve_00003282" "gene-Peve_00027371" "gene-Peve_00011467" "gene-Peve_00011913" ...
+ $ Gene Ontology IDs: chr  "GO:0005452; GO:0005886; GO:0008509; GO:0015701; GO:0051453; GO:0055085; GO:0086001" "GO:0005452; GO:0005886; GO:0008509; GO:0015701; GO:0051453; GO:0055085; GO:0086001" "GO:0004609; GO:0005739; GO:0006646" "GO:0004609; GO:0005739; GO:0006646" ...</code></pre>
+<section id="write-merged-to-file" class="level3">
+<h3 class="anchored" data-anchor-id="write-merged-to-file">6.4.1 Write merged to file</h3>
+<div class="sourceCode" id="cb30"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb30-1"><a href="#cb30-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Optionally, write to file</span></span>
+<span id="cb30-2"><a href="#cb30-2" aria-hidden="true" tabindex="-1"></a><span class="fu">write.table</span>(gene_SPID_GOID_merged, </span>
+<span id="cb30-3"><a href="#cb30-3" aria-hidden="true" tabindex="-1"></a>            <span class="at">file =</span> <span class="fu">file.path</span>(output_dir, <span class="st">"gene-SPIDs-GOIDs.tsv"</span>), </span>
+<span id="cb30-4"><a href="#cb30-4" aria-hidden="true" tabindex="-1"></a>            <span class="at">sep =</span> <span class="st">"</span><span class="sc">\t</span><span class="st">"</span>, </span>
+<span id="cb30-5"><a href="#cb30-5" aria-hidden="true" tabindex="-1"></a>            <span class="at">row.names =</span> <span class="cn">FALSE</span>, </span>
+<span id="cb30-6"><a href="#cb30-6" aria-hidden="true" tabindex="-1"></a>            <span class="at">quote =</span> <span class="cn">FALSE</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</section>
+</section>
+<section id="clean-up-merged" class="level2">
+<h2 class="anchored" data-anchor-id="clean-up-merged">6.5 Clean up merged</h2>
+<div class="sourceCode" id="cb31"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb31-1"><a href="#cb31-1" aria-hidden="true" tabindex="-1"></a>full.gene.df <span class="ot">&lt;-</span> <span class="fu">as.data.frame</span>(gene_SPID_GOID_merged)</span>
+<span id="cb31-2"><a href="#cb31-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb31-3"><a href="#cb31-3" aria-hidden="true" tabindex="-1"></a><span class="co"># Clean whitespace, filter NA/empty rows, select columns, and split GO terms using column name variables</span></span>
+<span id="cb31-4"><a href="#cb31-4" aria-hidden="true" tabindex="-1"></a>gene.GO.df <span class="ot">&lt;-</span> full.gene.df <span class="sc">%&gt;%</span></span>
+<span id="cb31-5"><a href="#cb31-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="sc">!!</span><span class="st">"Gene Ontology IDs"</span> <span class="sc">:</span><span class="er">=</span> <span class="fu">str_replace_all</span>(.data[[<span class="st">"Gene Ontology IDs"</span>]], <span class="st">"</span><span class="sc">\\</span><span class="st">s*;</span><span class="sc">\\</span><span class="st">s*"</span>, <span class="st">";"</span>)) <span class="sc">%&gt;%</span> <span class="co"># Clean up spaces around ";"</span></span>
+<span id="cb31-6"><a href="#cb31-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(<span class="sc">!</span><span class="fu">is.na</span>(.data[[<span class="st">"GeneID"</span>]]) <span class="sc">&amp;</span> <span class="sc">!</span><span class="fu">is.na</span>(.data[[<span class="st">"Gene Ontology IDs"</span>]]) <span class="sc">&amp;</span> .data[[<span class="st">"Gene Ontology IDs"</span>]] <span class="sc">!=</span> <span class="st">""</span>) <span class="sc">%&gt;%</span> </span>
+<span id="cb31-7"><a href="#cb31-7" aria-hidden="true" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">select</span>(<span class="fu">all_of</span>(<span class="fu">c</span>(<span class="st">"GeneID"</span>, <span class="st">"Gene Ontology IDs"</span>)))</span>
+<span id="cb31-8"><a href="#cb31-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb31-9"><a href="#cb31-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb31-10"><a href="#cb31-10" aria-hidden="true" tabindex="-1"></a><span class="fu">str</span>(gene.GO.df)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<pre><code>'data.frame':   8781 obs. of  2 variables:
+ $ GeneID           : chr  "gene-Peve_00003282" "gene-Peve_00027371" "gene-Peve_00011467" "gene-Peve_00011913" ...
+ $ Gene Ontology IDs: chr  "GO:0005452;GO:0005886;GO:0008509;GO:0015701;GO:0051453;GO:0055085;GO:0086001" "GO:0005452;GO:0005886;GO:0008509;GO:0015701;GO:0051453;GO:0055085;GO:0086001" "GO:0004609;GO:0005739;GO:0006646" "GO:0004609;GO:0005739;GO:0006646" ...</code></pre>
+</section>
+<section id="flatten-gene-goid-file" class="level2">
+<h2 class="anchored" data-anchor-id="flatten-gene-goid-file">6.6 Flatten gene GOID file</h2>
+<div class="sourceCode" id="cb33"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb33-1"><a href="#cb33-1" aria-hidden="true" tabindex="-1"></a>flat.gene.GO.df <span class="ot">&lt;-</span> gene.GO.df <span class="sc">%&gt;%</span> <span class="fu">separate_rows</span>(<span class="sc">!!</span><span class="fu">sym</span>(<span class="st">"Gene Ontology IDs"</span>), <span class="at">sep =</span> <span class="st">";"</span>)</span>
+<span id="cb33-2"><a href="#cb33-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb33-3"><a href="#cb33-3" aria-hidden="true" tabindex="-1"></a><span class="fu">str</span>(flat.gene.GO.df)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<pre><code>tibble [106,348 × 2] (S3: tbl_df/tbl/data.frame)
+ $ GeneID           : chr [1:106348] "gene-Peve_00003282" "gene-Peve_00003282" "gene-Peve_00003282" "gene-Peve_00003282" ...
+ $ Gene Ontology IDs: chr [1:106348] "GO:0005452" "GO:0005886" "GO:0008509" "GO:0015701" ...</code></pre>
+</section>
+<section id="group-by-goid" class="level2">
+<h2 class="anchored" data-anchor-id="group-by-goid">6.7 Group by GOID</h2>
+<div class="sourceCode" id="cb35"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb35-1"><a href="#cb35-1" aria-hidden="true" tabindex="-1"></a>grouped.gene.GO.df <span class="ot">&lt;-</span> flat.gene.GO.df <span class="sc">%&gt;%</span></span>
+<span id="cb35-2"><a href="#cb35-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">group_by</span>(<span class="sc">!!</span><span class="fu">sym</span>(<span class="st">"Gene Ontology IDs"</span>)) <span class="sc">%&gt;%</span></span>
+<span id="cb35-3"><a href="#cb35-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">summarise</span>(<span class="sc">!!</span><span class="st">"GeneID"</span> <span class="sc">:</span><span class="er">=</span> <span class="fu">paste</span>(.data[[<span class="st">"GeneID"</span>]], <span class="at">collapse =</span> <span class="st">","</span>))</span>
+<span id="cb35-4"><a href="#cb35-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb35-5"><a href="#cb35-5" aria-hidden="true" tabindex="-1"></a><span class="fu">str</span>(grouped.gene.GO.df)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<pre><code>tibble [12,132 × 2] (S3: tbl_df/tbl/data.frame)
+ $ Gene Ontology IDs: chr [1:12132] "GO:0000002" "GO:0000009" "GO:0000012" "GO:0000014" ...
+ $ GeneID           : chr [1:12132] "gene-Peve_00012113,gene-Peve_00027057,gene-Peve_00036001,gene-Peve_00043435,gene-Peve_00020141,gene-Peve_000383"| __truncated__ "gene-Peve_00020421" "gene-Peve_00036938,gene-Peve_00028780,gene-Peve_00013011,gene-Peve_00032733" "gene-Peve_00023146,gene-Peve_00032460,gene-Peve_00008105,gene-Peve_00013484,gene-Peve_00013490,gene-Peve_000098"| __truncated__ ...</code></pre>
+</section>
+<section id="vectorize-goids" class="level2">
+<h2 class="anchored" data-anchor-id="vectorize-goids">6.8 Vectorize GOIDs</h2>
+<div class="sourceCode" id="cb37"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb37-1"><a href="#cb37-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Vector of GO IDs</span></span>
+<span id="cb37-2"><a href="#cb37-2" aria-hidden="true" tabindex="-1"></a>go_ids <span class="ot">&lt;-</span> grouped.gene.GO.df[[<span class="st">"Gene Ontology IDs"</span>]]</span>
+<span id="cb37-3"><a href="#cb37-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb37-4"><a href="#cb37-4" aria-hidden="true" tabindex="-1"></a><span class="fu">str</span>(go_ids)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<pre><code> chr [1:12132] "GO:0000002" "GO:0000009" "GO:0000012" "GO:0000014" ...</code></pre>
+</section>
+<section id="prepare-goslim-obo" class="level2">
+<h2 class="anchored" data-anchor-id="prepare-goslim-obo">6.9 Prepare GOslim OBO</h2>
+<div class="sourceCode" id="cb39"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb39-1"><a href="#cb39-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Find GSEAbase installation location</span></span>
+<span id="cb39-2"><a href="#cb39-2" aria-hidden="true" tabindex="-1"></a>gseabase_location <span class="ot">&lt;-</span> <span class="fu">find.package</span>(<span class="st">"GSEABase"</span>)</span>
+<span id="cb39-3"><a href="#cb39-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb39-4"><a href="#cb39-4" aria-hidden="true" tabindex="-1"></a><span class="co"># Load path to GOslim OBO file</span></span>
+<span id="cb39-5"><a href="#cb39-5" aria-hidden="true" tabindex="-1"></a>goslim_obo_destintation <span class="ot">&lt;-</span> <span class="fu">file.path</span>(gseabase_location, <span class="st">"extdata"</span>, goslims_obo, <span class="at">fsep =</span> <span class="st">"/"</span>)</span>
+<span id="cb39-6"><a href="#cb39-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb39-7"><a href="#cb39-7" aria-hidden="true" tabindex="-1"></a><span class="co"># Download the GOslim OBO file</span></span>
+<span id="cb39-8"><a href="#cb39-8" aria-hidden="true" tabindex="-1"></a><span class="fu">download.file</span>(<span class="at">url =</span> goslims_url, <span class="at">destfile =</span> goslim_obo_destintation)</span>
+<span id="cb39-9"><a href="#cb39-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb39-10"><a href="#cb39-10" aria-hidden="true" tabindex="-1"></a><span class="co"># Loads package files</span></span>
+<span id="cb39-11"><a href="#cb39-11" aria-hidden="true" tabindex="-1"></a>gseabase_files <span class="ot">&lt;-</span> <span class="fu">system.file</span>(<span class="st">"extdata"</span>, goslims_obo, <span class="at">package=</span><span class="st">"GSEABase"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</section>
+<section id="goslims-from-obo" class="level2">
+<h2 class="anchored" data-anchor-id="goslims-from-obo">6.10 GOslims from OBO</h2>
+<div class="sourceCode" id="cb40"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb40-1"><a href="#cb40-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Create GSEAbase GOCollection using `go_ids`</span></span>
+<span id="cb40-2"><a href="#cb40-2" aria-hidden="true" tabindex="-1"></a>myCollection <span class="ot">&lt;-</span> <span class="fu">GOCollection</span>(go_ids)</span>
+<span id="cb40-3"><a href="#cb40-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb40-4"><a href="#cb40-4" aria-hidden="true" tabindex="-1"></a><span class="co"># Retrieve GOslims from GO OBO file set</span></span>
+<span id="cb40-5"><a href="#cb40-5" aria-hidden="true" tabindex="-1"></a>slim <span class="ot">&lt;-</span> <span class="fu">getOBOCollection</span>(gseabase_files)</span>
+<span id="cb40-6"><a href="#cb40-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb40-7"><a href="#cb40-7" aria-hidden="true" tabindex="-1"></a><span class="fu">str</span>(slim)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<pre><code>Formal class 'OBOCollection' [package "GSEABase"] with 7 slots
+  ..@ .stanza     :'data.frame':    153 obs. of  1 variable:
+  .. ..$ value: chr [1:153] "Root" "Term" "Term" "Term" ...
+  ..@ .subset     :'data.frame':    22 obs. of  1 variable:
+  .. ..$ value: chr [1:22] "Rhea list of ChEBI terms representing the major species at pH 7.3." "Term not to be used for direct annotation" "Terms planned for obsoletion" "AGR slim" ...
+  ..@ .kv         :'data.frame':    2110 obs. of  3 variables:
+  .. ..$ stanza_id: chr [1:2110] ".__Root__" ".__Root__" ".__Root__" ".__Root__" ...
+  .. ..$ key      : chr [1:2110] "format-version" "data-version" "synonymtypedef" "synonymtypedef" ...
+  .. ..$ value    : chr [1:2110] "1.2" "go/releases/2025-06-01/subsets/goslim_generic.owl" "syngo_official_label \"label approved by the SynGO project\"" "systematic_synonym \"Systematic synonym\" EXACT" ...
+  ..@ evidenceCode: chr [1:26] "EXP" "IDA" "IPI" "IMP" ...
+  ..@ ontology    : chr NA
+  ..@ ids         : chr [1:141] "GO:0000228" "GO:0000278" "GO:0000910" "GO:0001618" ...
+  ..@ type        : chr "OBO"</code></pre>
+</section>
+<section id="biological-process-goslims" class="level2">
+<h2 class="anchored" data-anchor-id="biological-process-goslims">6.11 Biological Process GOslims</h2>
+<div class="sourceCode" id="cb42"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb42-1"><a href="#cb42-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Retrieve Biological Process (BP) GOslims</span></span>
+<span id="cb42-2"><a href="#cb42-2" aria-hidden="true" tabindex="-1"></a>slimdf <span class="ot">&lt;-</span> <span class="fu">goSlim</span>(myCollection, slim, <span class="st">"BP"</span>, verbose)</span>
+<span id="cb42-3"><a href="#cb42-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb42-4"><a href="#cb42-4" aria-hidden="true" tabindex="-1"></a><span class="fu">str</span>(slimdf)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<pre><code>'data.frame':   72 obs. of  3 variables:
+ $ Count  : int  86 19 19 417 51 85 20 4 88 55 ...
+ $ Percent: num  1.077 0.238 0.238 5.224 0.639 ...
+ $ Term   : chr  "mitotic cell cycle" "cytokinesis" "cytoplasmic translation" "immune system process" ...</code></pre>
+</section>
+<section id="map-go-to-goslims" class="level2">
+<h2 class="anchored" data-anchor-id="map-go-to-goslims">6.12 Map GO to GOslims</h2>
+<div class="sourceCode" id="cb44"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb44-1"><a href="#cb44-1" aria-hidden="true" tabindex="-1"></a><span class="co"># List of GOslims and all GO IDs from `go_ids`</span></span>
+<span id="cb44-2"><a href="#cb44-2" aria-hidden="true" tabindex="-1"></a>gomap <span class="ot">&lt;-</span> <span class="fu">as.list</span>(GOBPOFFSPRING[<span class="fu">rownames</span>(slimdf)])</span>
+<span id="cb44-3"><a href="#cb44-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb44-4"><a href="#cb44-4" aria-hidden="true" tabindex="-1"></a><span class="co"># Maps `go_ids` to matching GOslims</span></span>
+<span id="cb44-5"><a href="#cb44-5" aria-hidden="true" tabindex="-1"></a>mapped <span class="ot">&lt;-</span> <span class="fu">lapply</span>(gomap, intersect, <span class="fu">ids</span>(myCollection))</span>
+<span id="cb44-6"><a href="#cb44-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb44-7"><a href="#cb44-7" aria-hidden="true" tabindex="-1"></a><span class="co"># Append all mapped GO IDs to `slimdf`</span></span>
+<span id="cb44-8"><a href="#cb44-8" aria-hidden="true" tabindex="-1"></a><span class="co"># `sapply` needed to apply paste() to create semi-colon delimited values</span></span>
+<span id="cb44-9"><a href="#cb44-9" aria-hidden="true" tabindex="-1"></a>slimdf<span class="sc">$</span>GO.IDs <span class="ot">&lt;-</span> <span class="fu">sapply</span>(<span class="fu">lapply</span>(gomap, intersect, <span class="fu">ids</span>(myCollection)), paste, <span class="at">collapse=</span><span class="st">";"</span>)</span>
+<span id="cb44-10"><a href="#cb44-10" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb44-11"><a href="#cb44-11" aria-hidden="true" tabindex="-1"></a><span class="co"># Remove "character(0) string from "GO.IDs" column</span></span>
+<span id="cb44-12"><a href="#cb44-12" aria-hidden="true" tabindex="-1"></a>slimdf<span class="sc">$</span>GO.IDs[slimdf<span class="sc">$</span>GO.IDs <span class="sc">==</span> <span class="st">"character(0)"</span>] <span class="ot">&lt;-</span> <span class="st">""</span></span>
+<span id="cb44-13"><a href="#cb44-13" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb44-14"><a href="#cb44-14" aria-hidden="true" tabindex="-1"></a><span class="co"># Add self-matching GOIDs to "GO.IDs" column, if not present</span></span>
+<span id="cb44-15"><a href="#cb44-15" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> (go_id <span class="cf">in</span> go_ids) {</span>
+<span id="cb44-16"><a href="#cb44-16" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Check if the go_id is present in the row names</span></span>
+<span id="cb44-17"><a href="#cb44-17" aria-hidden="true" tabindex="-1"></a>  <span class="cf">if</span> (go_id <span class="sc">%in%</span> <span class="fu">rownames</span>(slimdf)) {</span>
+<span id="cb44-18"><a href="#cb44-18" aria-hidden="true" tabindex="-1"></a>    <span class="co"># Check if the go_id is not present in the GO.IDs column</span></span>
+<span id="cb44-19"><a href="#cb44-19" aria-hidden="true" tabindex="-1"></a>    <span class="co"># Also removes white space "trimws()" and converts all to upper case to handle</span></span>
+<span id="cb44-20"><a href="#cb44-20" aria-hidden="true" tabindex="-1"></a>    <span class="co"># any weird, "invisible" formatting issues.</span></span>
+<span id="cb44-21"><a href="#cb44-21" aria-hidden="true" tabindex="-1"></a>    <span class="cf">if</span> (<span class="sc">!</span>go_id <span class="sc">%in%</span> <span class="fu">trimws</span>(<span class="fu">toupper</span>(<span class="fu">strsplit</span>(slimdf[go_id, <span class="st">"GO.IDs"</span>], <span class="st">";"</span>)[[<span class="dv">1</span>]]))) {</span>
+<span id="cb44-22"><a href="#cb44-22" aria-hidden="true" tabindex="-1"></a>      <span class="co"># Append the go_id to the GO.IDs column with a semi-colon separator</span></span>
+<span id="cb44-23"><a href="#cb44-23" aria-hidden="true" tabindex="-1"></a>      <span class="cf">if</span> (<span class="fu">length</span>(slimdf<span class="sc">$</span>GO.IDs) <span class="sc">&gt;</span> <span class="dv">0</span> <span class="sc">&amp;&amp;</span> <span class="fu">nchar</span>(slimdf<span class="sc">$</span>GO.IDs[<span class="fu">nrow</span>(slimdf)]) <span class="sc">&gt;</span> <span class="dv">0</span>) {</span>
+<span id="cb44-24"><a href="#cb44-24" aria-hidden="true" tabindex="-1"></a>        slimdf[go_id, <span class="st">"GO.IDs"</span>] <span class="ot">&lt;-</span> <span class="fu">paste0</span>(slimdf[go_id, <span class="st">"GO.IDs"</span>], <span class="st">"; "</span>, go_id)</span>
+<span id="cb44-25"><a href="#cb44-25" aria-hidden="true" tabindex="-1"></a>      } <span class="cf">else</span> {</span>
+<span id="cb44-26"><a href="#cb44-26" aria-hidden="true" tabindex="-1"></a>        slimdf[go_id, <span class="st">"GO.IDs"</span>] <span class="ot">&lt;-</span> go_id</span>
+<span id="cb44-27"><a href="#cb44-27" aria-hidden="true" tabindex="-1"></a>      }</span>
+<span id="cb44-28"><a href="#cb44-28" aria-hidden="true" tabindex="-1"></a>    }</span>
+<span id="cb44-29"><a href="#cb44-29" aria-hidden="true" tabindex="-1"></a>  }</span>
+<span id="cb44-30"><a href="#cb44-30" aria-hidden="true" tabindex="-1"></a>}</span>
+<span id="cb44-31"><a href="#cb44-31" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb44-32"><a href="#cb44-32" aria-hidden="true" tabindex="-1"></a><span class="fu">str</span>(slimdf)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<pre><code>'data.frame':   72 obs. of  4 variables:
+ $ Count  : int  86 19 19 417 51 85 20 4 88 55 ...
+ $ Percent: num  1.077 0.238 0.238 5.224 0.639 ...
+ $ Term   : chr  "mitotic cell cycle" "cytokinesis" "cytoplasmic translation" "immune system process" ...
+ $ GO.IDs : chr  "GO:0000022;GO:0000070;GO:0000082;GO:0000086;GO:0000132;GO:0000281;GO:0007052;GO:0007064;GO:0007076;GO:0007079;G"| __truncated__ "GO:0000281;GO:0000915;GO:0007110;GO:0007111;GO:0007112;GO:0032465;GO:0032466;GO:0032467;GO:0036089;GO:0036090;G"| __truncated__ "GO:0001731;GO:0001732;GO:0002182;GO:0002183;GO:0002184;GO:0002188;GO:0002191;GO:0017183;GO:0140708;GO:1900248;G"| __truncated__ "GO:0001771;GO:0001774;GO:0001776;GO:0001777;GO:0001779;GO:0001780;GO:0001782;GO:0001805;GO:0001807;GO:0001812;G"| __truncated__ ...</code></pre>
+</section>
+<section id="flatten-goslims" class="level2">
+<h2 class="anchored" data-anchor-id="flatten-goslims">6.13 Flatten GOslims</h2>
+<div class="sourceCode" id="cb46"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb46-1"><a href="#cb46-1" aria-hidden="true" tabindex="-1"></a><span class="co"># "Flatten" file so each row is single GO ID with corresponding GOslim</span></span>
+<span id="cb46-2"><a href="#cb46-2" aria-hidden="true" tabindex="-1"></a><span class="co"># rownames_to_column needed to retain row name info</span></span>
+<span id="cb46-3"><a href="#cb46-3" aria-hidden="true" tabindex="-1"></a>slimdf_separated <span class="ot">&lt;-</span> <span class="fu">as.data.frame</span>(slimdf <span class="sc">%&gt;%</span></span>
+<span id="cb46-4"><a href="#cb46-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">rownames_to_column</span>(<span class="st">'GOslim'</span>) <span class="sc">%&gt;%</span></span>
+<span id="cb46-5"><a href="#cb46-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">separate_rows</span>(GO.IDs, <span class="at">sep =</span> <span class="st">";"</span>))</span>
+<span id="cb46-6"><a href="#cb46-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb46-7"><a href="#cb46-7" aria-hidden="true" tabindex="-1"></a><span class="co"># Group by unique GO ID</span></span>
+<span id="cb46-8"><a href="#cb46-8" aria-hidden="true" tabindex="-1"></a>grouped_slimdf <span class="ot">&lt;-</span> slimdf_separated <span class="sc">%&gt;%</span></span>
+<span id="cb46-9"><a href="#cb46-9" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(<span class="sc">!</span><span class="fu">is.na</span>(GO.IDs) <span class="sc">&amp;</span> GO.IDs <span class="sc">!=</span> <span class="st">""</span>) <span class="sc">%&gt;%</span></span>
+<span id="cb46-10"><a href="#cb46-10" aria-hidden="true" tabindex="-1"></a>  <span class="fu">group_by</span>(GO.IDs) <span class="sc">%&gt;%</span></span>
+<span id="cb46-11"><a href="#cb46-11" aria-hidden="true" tabindex="-1"></a>  <span class="fu">summarize</span>(<span class="at">GOslim =</span> <span class="fu">paste</span>(GOslim, <span class="at">collapse =</span> <span class="st">";"</span>),</span>
+<span id="cb46-12"><a href="#cb46-12" aria-hidden="true" tabindex="-1"></a>            <span class="at">Term =</span> <span class="fu">paste</span>(Term, <span class="at">collapse =</span> <span class="st">";"</span>))</span>
+<span id="cb46-13"><a href="#cb46-13" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb46-14"><a href="#cb46-14" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb46-15"><a href="#cb46-15" aria-hidden="true" tabindex="-1"></a><span class="fu">str</span>(grouped_slimdf)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<pre><code>tibble [5,531 × 3] (S3: tbl_df/tbl/data.frame)
+ $ GO.IDs: chr [1:5531] " GO:0000278" " GO:0002181" " GO:0002376" " GO:0003014" ...
+ $ GOslim: chr [1:5531] "GO:0000278" "GO:0002181" "GO:0002376" "GO:0003014" ...
+ $ Term  : chr [1:5531] "mitotic cell cycle" "cytoplasmic translation" "immune system process" "renal system process" ...</code></pre>
+</section>
+<section id="counts-of-goslims" class="level2">
+<h2 class="anchored" data-anchor-id="counts-of-goslims">6.14 Counts of GOslims</h2>
+<div class="sourceCode" id="cb48"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb48-1"><a href="#cb48-1" aria-hidden="true" tabindex="-1"></a>slimdf.sorted <span class="ot">&lt;-</span> slimdf <span class="sc">%&gt;%</span> <span class="fu">arrange</span>(<span class="fu">desc</span>(Count))</span>
+<span id="cb48-2"><a href="#cb48-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb48-3"><a href="#cb48-3" aria-hidden="true" tabindex="-1"></a>slim.count.df <span class="ot">&lt;-</span> slimdf.sorted <span class="sc">%&gt;%</span> </span>
+<span id="cb48-4"><a href="#cb48-4" aria-hidden="true" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">select</span>(Term, Count, Percent)</span>
+<span id="cb48-5"><a href="#cb48-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb48-6"><a href="#cb48-6" aria-hidden="true" tabindex="-1"></a><span class="fu">str</span>(slim.count.df)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<pre><code>'data.frame':   72 obs. of  3 variables:
+ $ Term   : chr  "anatomical structure development" "signaling" "cell differentiation" "immune system process" ...
+ $ Count  : int  1696 727 714 417 273 257 243 206 198 186 ...
+ $ Percent: num  21.25 9.11 8.94 5.22 3.42 ...</code></pre>
+<section id="write-goslims-to-file" class="level3">
+<h3 class="anchored" data-anchor-id="write-goslims-to-file">6.14.1 Write GOslims to file</h3>
+<p>Need to create a column name for GOslimIDs from data frame rownames.</p>
+<div class="sourceCode" id="cb50"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb50-1"><a href="#cb50-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Create header vector</span></span>
+<span id="cb50-2"><a href="#cb50-2" aria-hidden="true" tabindex="-1"></a>header <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="st">"GOslimID"</span>, <span class="fu">colnames</span>(slim.count.df))</span>
+<span id="cb50-3"><a href="#cb50-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb50-4"><a href="#cb50-4" aria-hidden="true" tabindex="-1"></a><span class="co"># Write header to file</span></span>
+<span id="cb50-5"><a href="#cb50-5" aria-hidden="true" tabindex="-1"></a><span class="fu">writeLines</span>(<span class="fu">paste</span>(header, <span class="at">collapse =</span> <span class="st">"</span><span class="sc">\t</span><span class="st">"</span>), </span>
+<span id="cb50-6"><a href="#cb50-6" aria-hidden="true" tabindex="-1"></a>           <span class="fu">file.path</span>(output_dir, <span class="st">"GOslim-counts.tsv"</span>))</span>
+<span id="cb50-7"><a href="#cb50-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb50-8"><a href="#cb50-8" aria-hidden="true" tabindex="-1"></a><span class="co"># Append data frame contents to existing file, which contains header info</span></span>
+<span id="cb50-9"><a href="#cb50-9" aria-hidden="true" tabindex="-1"></a><span class="fu">write.table</span>(</span>
+<span id="cb50-10"><a href="#cb50-10" aria-hidden="true" tabindex="-1"></a>  slim.count.df,</span>
+<span id="cb50-11"><a href="#cb50-11" aria-hidden="true" tabindex="-1"></a>  <span class="at">file =</span> <span class="fu">file.path</span>(output_dir, <span class="st">"GOslim-counts.tsv"</span>),</span>
+<span id="cb50-12"><a href="#cb50-12" aria-hidden="true" tabindex="-1"></a>  <span class="at">sep =</span> <span class="st">"</span><span class="sc">\t</span><span class="st">"</span>,</span>
+<span id="cb50-13"><a href="#cb50-13" aria-hidden="true" tabindex="-1"></a>  <span class="at">row.names =</span> <span class="cn">TRUE</span>,</span>
+<span id="cb50-14"><a href="#cb50-14" aria-hidden="true" tabindex="-1"></a>  <span class="at">quote =</span> <span class="cn">FALSE</span>,</span>
+<span id="cb50-15"><a href="#cb50-15" aria-hidden="true" tabindex="-1"></a>  <span class="at">col.names =</span> <span class="cn">FALSE</span>,</span>
+<span id="cb50-16"><a href="#cb50-16" aria-hidden="true" tabindex="-1"></a>  <span class="at">append =</span> <span class="cn">TRUE</span></span>
+<span id="cb50-17"><a href="#cb50-17" aria-hidden="true" tabindex="-1"></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</section>
+</section>
+</section>
+<section id="references" class="level1">
+<h1>7 REFERENCES</h1>
+
+
+</section>
+
+</main> <!-- /main -->
+<script id="quarto-html-after-body" type="application/javascript">
+window.document.addEventListener("DOMContentLoaded", function (event) {
+  const toggleBodyColorMode = (bsSheetEl) => {
+    const mode = bsSheetEl.getAttribute("data-mode");
+    const bodyEl = window.document.querySelector("body");
+    if (mode === "dark") {
+      bodyEl.classList.add("quarto-dark");
+      bodyEl.classList.remove("quarto-light");
+    } else {
+      bodyEl.classList.add("quarto-light");
+      bodyEl.classList.remove("quarto-dark");
+    }
+  }
+  const toggleBodyColorPrimary = () => {
+    const bsSheetEl = window.document.querySelector("link#quarto-bootstrap");
+    if (bsSheetEl) {
+      toggleBodyColorMode(bsSheetEl);
+    }
+  }
+  toggleBodyColorPrimary();  
+  const icon = "";
+  const anchorJS = new window.AnchorJS();
+  anchorJS.options = {
+    placement: 'right',
+    icon: icon
+  };
+  anchorJS.add('.anchored');
+  const isCodeAnnotation = (el) => {
+    for (const clz of el.classList) {
+      if (clz.startsWith('code-annotation-')) {                     
+        return true;
+      }
+    }
+    return false;
+  }
+  const onCopySuccess = function(e) {
+    // button target
+    const button = e.trigger;
+    // don't keep focus
+    button.blur();
+    // flash "checked"
+    button.classList.add('code-copy-button-checked');
+    var currentTitle = button.getAttribute("title");
+    button.setAttribute("title", "Copied!");
+    let tooltip;
+    if (window.bootstrap) {
+      button.setAttribute("data-bs-toggle", "tooltip");
+      button.setAttribute("data-bs-placement", "left");
+      button.setAttribute("data-bs-title", "Copied!");
+      tooltip = new bootstrap.Tooltip(button, 
+        { trigger: "manual", 
+          customClass: "code-copy-button-tooltip",
+          offset: [0, -8]});
+      tooltip.show();    
+    }
+    setTimeout(function() {
+      if (tooltip) {
+        tooltip.hide();
+        button.removeAttribute("data-bs-title");
+        button.removeAttribute("data-bs-toggle");
+        button.removeAttribute("data-bs-placement");
+      }
+      button.setAttribute("title", currentTitle);
+      button.classList.remove('code-copy-button-checked');
+    }, 1000);
+    // clear code selection
+    e.clearSelection();
+  }
+  const getTextToCopy = function(trigger) {
+      const codeEl = trigger.previousElementSibling.cloneNode(true);
+      for (const childEl of codeEl.children) {
+        if (isCodeAnnotation(childEl)) {
+          childEl.remove();
+        }
+      }
+      return codeEl.innerText;
+  }
+  const clipboard = new window.ClipboardJS('.code-copy-button:not([data-in-quarto-modal])', {
+    text: getTextToCopy
+  });
+  clipboard.on('success', onCopySuccess);
+  if (window.document.getElementById('quarto-embedded-source-code-modal')) {
+    const clipboardModal = new window.ClipboardJS('.code-copy-button[data-in-quarto-modal]', {
+      text: getTextToCopy,
+      container: window.document.getElementById('quarto-embedded-source-code-modal')
+    });
+    clipboardModal.on('success', onCopySuccess);
+  }
+    var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
+    var mailtoRegex = new RegExp(/^mailto:/);
+      var filterRegex = new RegExp("https:\/\/robertslab\.github\.io\/sams-notebook");
+    var isInternal = (href) => {
+        return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
+    }
+    // Inspect non-navigation links and adorn them if external
+ 	var links = window.document.querySelectorAll('a[href]:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item):not(.quarto-navigation-tool):not(.about-link)');
+    for (var i=0; i<links.length; i++) {
+      const link = links[i];
+      if (!isInternal(link.href)) {
+        // undo the damage that might have been done by quarto-nav.js in the case of
+        // links that we want to consider external
+        if (link.dataset.originalHref !== undefined) {
+          link.href = link.dataset.originalHref;
+        }
+      }
+    }
+  function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
+    const config = {
+      allowHTML: true,
+      maxWidth: 500,
+      delay: 100,
+      arrow: false,
+      appendTo: function(el) {
+          return el.parentElement;
+      },
+      interactive: true,
+      interactiveBorder: 10,
+      theme: 'quarto',
+      placement: 'bottom-start',
+    };
+    if (contentFn) {
+      config.content = contentFn;
+    }
+    if (onTriggerFn) {
+      config.onTrigger = onTriggerFn;
+    }
+    if (onUntriggerFn) {
+      config.onUntrigger = onUntriggerFn;
+    }
+    window.tippy(el, config); 
+  }
+  const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+  for (var i=0; i<noterefs.length; i++) {
+    const ref = noterefs[i];
+    tippyHover(ref, function() {
+      // use id or data attribute instead here
+      let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+      try { href = new URL(href).hash; } catch {}
+      const id = href.replace(/^#\/?/, "");
+      const note = window.document.getElementById(id);
+      if (note) {
+        return note.innerHTML;
+      } else {
+        return "";
+      }
+    });
+  }
+  const xrefs = window.document.querySelectorAll('a.quarto-xref');
+  const processXRef = (id, note) => {
+    // Strip column container classes
+    const stripColumnClz = (el) => {
+      el.classList.remove("page-full", "page-columns");
+      if (el.children) {
+        for (const child of el.children) {
+          stripColumnClz(child);
+        }
+      }
+    }
+    stripColumnClz(note)
+    if (id === null || id.startsWith('sec-')) {
+      // Special case sections, only their first couple elements
+      const container = document.createElement("div");
+      if (note.children && note.children.length > 2) {
+        container.appendChild(note.children[0].cloneNode(true));
+        for (let i = 1; i < note.children.length; i++) {
+          const child = note.children[i];
+          if (child.tagName === "P" && child.innerText === "") {
+            continue;
+          } else {
+            container.appendChild(child.cloneNode(true));
+            break;
+          }
+        }
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(container);
+        }
+        return container.innerHTML
+      } else {
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(note);
+        }
+        return note.innerHTML;
+      }
+    } else {
+      // Remove any anchor links if they are present
+      const anchorLink = note.querySelector('a.anchorjs-link');
+      if (anchorLink) {
+        anchorLink.remove();
+      }
+      if (window.Quarto?.typesetMath) {
+        window.Quarto.typesetMath(note);
+      }
+      if (note.classList.contains("callout")) {
+        return note.outerHTML;
+      } else {
+        return note.innerHTML;
+      }
+    }
+  }
+  for (var i=0; i<xrefs.length; i++) {
+    const xref = xrefs[i];
+    tippyHover(xref, undefined, function(instance) {
+      instance.disable();
+      let url = xref.getAttribute('href');
+      let hash = undefined; 
+      if (url.startsWith('#')) {
+        hash = url;
+      } else {
+        try { hash = new URL(url).hash; } catch {}
+      }
+      if (hash) {
+        const id = hash.replace(/^#\/?/, "");
+        const note = window.document.getElementById(id);
+        if (note !== null) {
+          try {
+            const html = processXRef(id, note.cloneNode(true));
+            instance.setContent(html);
+          } finally {
+            instance.enable();
+            instance.show();
+          }
+        } else {
+          // See if we can fetch this
+          fetch(url.split('#')[0])
+          .then(res => res.text())
+          .then(html => {
+            const parser = new DOMParser();
+            const htmlDoc = parser.parseFromString(html, "text/html");
+            const note = htmlDoc.getElementById(id);
+            if (note !== null) {
+              const html = processXRef(id, note);
+              instance.setContent(html);
+            } 
+          }).finally(() => {
+            instance.enable();
+            instance.show();
+          });
+        }
+      } else {
+        // See if we can fetch a full url (with no hash to target)
+        // This is a special case and we should probably do some content thinning / targeting
+        fetch(url)
+        .then(res => res.text())
+        .then(html => {
+          const parser = new DOMParser();
+          const htmlDoc = parser.parseFromString(html, "text/html");
+          const note = htmlDoc.querySelector('main.content');
+          if (note !== null) {
+            // This should only happen for chapter cross references
+            // (since there is no id in the URL)
+            // remove the first header
+            if (note.children.length > 0 && note.children[0].tagName === "HEADER") {
+              note.children[0].remove();
+            }
+            const html = processXRef(null, note);
+            instance.setContent(html);
+          } 
+        }).finally(() => {
+          instance.enable();
+          instance.show();
+        });
+      }
+    }, function(instance) {
+    });
+  }
+      let selectedAnnoteEl;
+      const selectorForAnnotation = ( cell, annotation) => {
+        let cellAttr = 'data-code-cell="' + cell + '"';
+        let lineAttr = 'data-code-annotation="' +  annotation + '"';
+        const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+        return selector;
+      }
+      const selectCodeLines = (annoteEl) => {
+        const doc = window.document;
+        const targetCell = annoteEl.getAttribute("data-target-cell");
+        const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+        const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+        const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+        const lineIds = lines.map((line) => {
+          return targetCell + "-" + line;
+        })
+        let top = null;
+        let height = null;
+        let parent = null;
+        if (lineIds.length > 0) {
+            //compute the position of the single el (top and bottom and make a div)
+            const el = window.document.getElementById(lineIds[0]);
+            top = el.offsetTop;
+            height = el.offsetHeight;
+            parent = el.parentElement.parentElement;
+          if (lineIds.length > 1) {
+            const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+            const bottom = lastEl.offsetTop + lastEl.offsetHeight;
+            height = bottom - top;
+          }
+          if (top !== null && height !== null && parent !== null) {
+            // cook up a div (if necessary) and position it 
+            let div = window.document.getElementById("code-annotation-line-highlight");
+            if (div === null) {
+              div = window.document.createElement("div");
+              div.setAttribute("id", "code-annotation-line-highlight");
+              div.style.position = 'absolute';
+              parent.appendChild(div);
+            }
+            div.style.top = top - 2 + "px";
+            div.style.height = height + 4 + "px";
+            div.style.left = 0;
+            let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+            if (gutterDiv === null) {
+              gutterDiv = window.document.createElement("div");
+              gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+              gutterDiv.style.position = 'absolute';
+              const codeCell = window.document.getElementById(targetCell);
+              const gutter = codeCell.querySelector('.code-annotation-gutter');
+              gutter.appendChild(gutterDiv);
+            }
+            gutterDiv.style.top = top - 2 + "px";
+            gutterDiv.style.height = height + 4 + "px";
+          }
+          selectedAnnoteEl = annoteEl;
+        }
+      };
+      const unselectCodeLines = () => {
+        const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+        elementsIds.forEach((elId) => {
+          const div = window.document.getElementById(elId);
+          if (div) {
+            div.remove();
+          }
+        });
+        selectedAnnoteEl = undefined;
+      };
+        // Handle positioning of the toggle
+    window.addEventListener(
+      "resize",
+      throttle(() => {
+        elRect = undefined;
+        if (selectedAnnoteEl) {
+          selectCodeLines(selectedAnnoteEl);
+        }
+      }, 10)
+    );
+    function throttle(fn, ms) {
+    let throttle = false;
+    let timer;
+      return (...args) => {
+        if(!throttle) { // first call gets through
+            fn.apply(this, args);
+            throttle = true;
+        } else { // all the others get throttled
+            if(timer) clearTimeout(timer); // cancel #2
+            timer = setTimeout(() => {
+              fn.apply(this, args);
+              timer = throttle = false;
+            }, ms);
+        }
+      };
+    }
+      // Attach click handler to the DT
+      const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
+      for (const annoteDlNode of annoteDls) {
+        annoteDlNode.addEventListener('click', (event) => {
+          const clickedEl = event.target;
+          if (clickedEl !== selectedAnnoteEl) {
+            unselectCodeLines();
+            const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
+            if (activeEl) {
+              activeEl.classList.remove('code-annotation-active');
+            }
+            selectCodeLines(clickedEl);
+            clickedEl.classList.add('code-annotation-active');
+          } else {
+            // Unselect the line
+            unselectCodeLines();
+            clickedEl.classList.remove('code-annotation-active');
+          }
+        });
+      }
+  const findCites = (el) => {
+    const parentEl = el.parentElement;
+    if (parentEl) {
+      const cites = parentEl.dataset.cites;
+      if (cites) {
+        return {
+          el,
+          cites: cites.split(' ')
+        };
+      } else {
+        return findCites(el.parentElement)
+      }
+    } else {
+      return undefined;
+    }
+  };
+  var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+  for (var i=0; i<bibliorefs.length; i++) {
+    const ref = bibliorefs[i];
+    const citeInfo = findCites(ref);
+    if (citeInfo) {
+      tippyHover(citeInfo.el, function() {
+        var popup = window.document.createElement('div');
+        citeInfo.cites.forEach(function(cite) {
+          var citeDiv = window.document.createElement('div');
+          citeDiv.classList.add('hanging-indent');
+          citeDiv.classList.add('csl-entry');
+          var biblioDiv = window.document.getElementById('ref-' + cite);
+          if (biblioDiv) {
+            citeDiv.innerHTML = biblioDiv.innerHTML;
+          }
+          popup.appendChild(citeDiv);
+        });
+        return popup.innerHTML;
+      });
+    }
+  }
+});
+</script>
+</div> <!-- /content -->
+
+
+
+
+</body></html>
