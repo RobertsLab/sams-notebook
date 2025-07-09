@@ -745,6 +745,59 @@ write.table(
 )
 ```
 
+# RESULTS
+
+Multispecies barplots were created of the top 10 GOslims with the highest GO term counts.
+
+
+![Multispecies barplots of top 10 GOslims by GO term counts.](./20250620-GOslim-GO_counts-multispecies-barplots.png)
+
+
+Plots were generated with the following code:
+
+```r
+# Define file paths and species names
+files <- list(
+  "D-Apul" = "~/gitrepos/urol-e5/deep-dive-expression/D-Apul/output/30.00-Apul-transcriptome-GOslims/GOslim-counts.tsv",
+  "E-Peve" = "~/gitrepos/urol-e5/deep-dive-expression/E-Peve/output/30.00-Peve-transcriptome-GOslims/GOslim-counts.tsv",
+  "F-Ptuh" = "~/gitrepos/urol-e5/deep-dive-expression/F-Ptuh/output/30.00-Ptua-transcriptome-GOslims/GOslim-counts.tsv"
+)
+
+# Read and combine data
+goslim_data <- map2_dfr(
+  files,
+  names(files),
+  ~ read_tsv(.x, show_col_types = FALSE) %>%
+    mutate(Species = .y)
+)
+
+
+# Find the top 10 Terms by Count for each species
+top_terms <- goslim_data %>%
+  group_by(Species) %>%
+  slice_max(order_by = Count, n = 10, with_ties = FALSE) %>%
+  ungroup() %>%
+  distinct(Term)
+
+# Filter the data to only include these Terms
+goslim_top <- goslim_data %>%
+  filter(Term %in% top_terms$Term)
+
+# Plot: Term on Y, Count on X
+ggplot(goslim_top, aes(y = fct_reorder(Term, Count), x = Count, fill = Species)) +
+  geom_bar(stat = "identity", position = position_dodge(width = 0.8)) +
+  labs(
+    title = "Top GOslim Term Counts by Species",
+    y = "GOslim Term",
+    x = "Count"
+  ) +
+  theme_bw() +
+  theme(
+    axis.text.y = element_text(size = 8),
+    plot.title = element_text(hjust = 0.5)
+  )
+  ```
+
 # 7 REFERENCES
 
 <div id="refs" class="references csl-bib-body hanging-indent">

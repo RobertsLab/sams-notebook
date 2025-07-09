@@ -764,4 +764,106 @@ write.table(
 )
 ```
 
+# RESULTS
+
+Multispecies barplots were created of the top 10 GOslims with the highest GO term counts.
+
+
+![Multispecies barplots of top 10 GOslims by GO term counts.](./20250620-GOslim-GO_counts-multispecies-barplots.png)
+
+
+Plots were generated with the following code:
+
+```r
+# Define file paths and species names
+files <- list(
+  "D-Apul" = "~/gitrepos/urol-e5/deep-dive-expression/D-Apul/output/30.00-Apul-transcriptome-GOslims/GOslim-counts.tsv",
+  "E-Peve" = "~/gitrepos/urol-e5/deep-dive-expression/E-Peve/output/30.00-Peve-transcriptome-GOslims/GOslim-counts.tsv",
+  "F-Ptuh" = "~/gitrepos/urol-e5/deep-dive-expression/F-Ptuh/output/30.00-Ptua-transcriptome-GOslims/GOslim-counts.tsv"
+)
+
+# Read and combine data
+goslim_data <- map2_dfr(
+  files,
+  names(files),
+  ~ read_tsv(.x, show_col_types = FALSE) %>%
+    mutate(Species = .y)
+)
+
+
+# Find the top 10 Terms by Count for each species
+top_terms <- goslim_data %>%
+  group_by(Species) %>%
+  slice_max(order_by = Count, n = 10, with_ties = FALSE) %>%
+  ungroup() %>%
+  distinct(Term)
+
+# Filter the data to only include these Terms
+goslim_top <- goslim_data %>%
+  filter(Term %in% top_terms$Term)
+
+# Plot: Term on Y, Count on X
+ggplot(goslim_top, aes(y = fct_reorder(Term, Count), x = Count, fill = Species)) +
+  geom_bar(stat = "identity", position = position_dodge(width = 0.8)) +
+  labs(
+    title = "Top GOslim Term Counts by Species",
+    y = "GOslim Term",
+    x = "Count"
+  ) +
+  theme_bw() +
+  theme(
+    axis.text.y = element_text(size = 8),
+    plot.title = element_text(hjust = 0.5)
+  )
+  ```
+
 # 7 REFERENCES
+
+<div id="refs" class="references csl-bib-body hanging-indent">
+
+<div id="ref-buchfink2021" class="csl-entry">
+
+Buchfink, Benjamin, Klaus Reuter, and Hajk-Georg Drost. 2021. “Sensitive
+Protein Alignments at Tree-of-Life Scale Using DIAMOND.” *Nature
+Methods* 18 (4): 366–68. <https://doi.org/10.1038/s41592-021-01101-x>.
+
+</div>
+
+<div id="ref-carlson2017" class="csl-entry">
+
+Carlson, Marc. 2017. “GO.db.” <https://doi.org/10.18129/B9.BIOC.GO.DB>.
+
+</div>
+
+<div id="ref-danecek2021" class="csl-entry">
+
+Danecek, Petr, James K Bonfield, Jennifer Liddle, John Marshall, Valeriu
+Ohan, Martin O Pollard, Andrew Whitwham, et al. 2021. “Twelve Years of
+SAMtools and BCFtools.” *GigaScience* 10 (2).
+<https://doi.org/10.1093/gigascience/giab008>.
+
+</div>
+
+<div id="ref-h.pagès2017" class="csl-entry">
+
+H. Pagès, P. Aboyoun. 2017. “Biostrings.”
+<https://doi.org/10.18129/B9.BIOC.BIOSTRINGS>.
+
+</div>
+
+<div id="ref-martinmorgan2017" class="csl-entry">
+
+Martin Morgan, Seth Falcon. 2017. “GSEABase.”
+<https://doi.org/10.18129/B9.BIOC.GSEABASE>.
+
+</div>
+
+<div id="ref-quinlan2010" class="csl-entry">
+
+Quinlan, Aaron R., and Ira M. Hall. 2010. “BEDTools: A Flexible Suite of
+Utilities for Comparing Genomic Features.” *Bioinformatics* 26 (6):
+841–42. <https://doi.org/10.1093/bioinformatics/btq033>.
+
+</div>
+
+</div>
