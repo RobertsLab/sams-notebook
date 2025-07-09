@@ -56,7 +56,26 @@ div.sourceCode
 @media screen {
 pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
 }
-</style>
+/* CSS for citations */
+div.csl-bib-body { }
+div.csl-entry {
+  clear: both;
+}
+.hanging-indent div.csl-entry {
+  margin-left:2em;
+  text-indent:-2em;
+}
+div.csl-left-margin {
+  min-width:2em;
+  float:left;
+}
+div.csl-right-inline {
+  margin-left:2em;
+  padding-left:1em;
+}
+div.csl-indent {
+  margin-left: 2em;
+}</style>
 
 
 <script src="../../../site_libs/quarto-nav/quarto-nav.js"></script>
@@ -307,6 +326,7 @@ gtag('config', 'G-7483T61T11', { 'anonymize_ip': true});
   <li><a href="#write-goslims-to-file" id="toc-write-goslims-to-file" class="nav-link" data-scroll-target="#write-goslims-to-file">6.14.1 Write GOslims to file</a></li>
   </ul></li>
   </ul></li>
+  <li><a href="#results" id="toc-results" class="nav-link" data-scroll-target="#results">RESULTS</a></li>
   <li><a href="#references" id="toc-references" class="nav-link" data-scroll-target="#references">7 REFERENCES</a></li>
   </ul>
 </nav>
@@ -983,8 +1003,79 @@ A0A0R4ITC5
 </section>
 </section>
 </section>
+<section id="results" class="level1">
+<h1>RESULTS</h1>
+<p>Multispecies barplots were created of the top 10 GOslims with the highest GO term counts.</p>
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="./20250620-GOslim-GO_counts-multispecies-barplots.png" class="img-fluid figure-img"></p>
+<figcaption>Multispecies barplots of top 10 GOslims by GO term counts.</figcaption>
+</figure>
+</div>
+<p>Plots were generated with the following code:</p>
+<div class="sourceCode" id="cb51"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb51-1"><a href="#cb51-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Define file paths and species names</span></span>
+<span id="cb51-2"><a href="#cb51-2" aria-hidden="true" tabindex="-1"></a>files <span class="ot">&lt;-</span> <span class="fu">list</span>(</span>
+<span id="cb51-3"><a href="#cb51-3" aria-hidden="true" tabindex="-1"></a>  <span class="st">"D-Apul"</span> <span class="ot">=</span> <span class="st">"~/gitrepos/urol-e5/deep-dive-expression/D-Apul/output/30.00-Apul-transcriptome-GOslims/GOslim-counts.tsv"</span>,</span>
+<span id="cb51-4"><a href="#cb51-4" aria-hidden="true" tabindex="-1"></a>  <span class="st">"E-Peve"</span> <span class="ot">=</span> <span class="st">"~/gitrepos/urol-e5/deep-dive-expression/E-Peve/output/30.00-Peve-transcriptome-GOslims/GOslim-counts.tsv"</span>,</span>
+<span id="cb51-5"><a href="#cb51-5" aria-hidden="true" tabindex="-1"></a>  <span class="st">"F-Ptuh"</span> <span class="ot">=</span> <span class="st">"~/gitrepos/urol-e5/deep-dive-expression/F-Ptuh/output/30.00-Ptua-transcriptome-GOslims/GOslim-counts.tsv"</span></span>
+<span id="cb51-6"><a href="#cb51-6" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb51-7"><a href="#cb51-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb51-8"><a href="#cb51-8" aria-hidden="true" tabindex="-1"></a><span class="co"># Read and combine data</span></span>
+<span id="cb51-9"><a href="#cb51-9" aria-hidden="true" tabindex="-1"></a>goslim_data <span class="ot">&lt;-</span> <span class="fu">map2_dfr</span>(</span>
+<span id="cb51-10"><a href="#cb51-10" aria-hidden="true" tabindex="-1"></a>  files,</span>
+<span id="cb51-11"><a href="#cb51-11" aria-hidden="true" tabindex="-1"></a>  <span class="fu">names</span>(files),</span>
+<span id="cb51-12"><a href="#cb51-12" aria-hidden="true" tabindex="-1"></a>  <span class="sc">~</span> <span class="fu">read_tsv</span>(.x, <span class="at">show_col_types =</span> <span class="cn">FALSE</span>) <span class="sc">%&gt;%</span></span>
+<span id="cb51-13"><a href="#cb51-13" aria-hidden="true" tabindex="-1"></a>    <span class="fu">mutate</span>(<span class="at">Species =</span> .y)</span>
+<span id="cb51-14"><a href="#cb51-14" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb51-15"><a href="#cb51-15" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb51-16"><a href="#cb51-16" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb51-17"><a href="#cb51-17" aria-hidden="true" tabindex="-1"></a><span class="co"># Find the top 10 Terms by Count for each species</span></span>
+<span id="cb51-18"><a href="#cb51-18" aria-hidden="true" tabindex="-1"></a>top_terms <span class="ot">&lt;-</span> goslim_data <span class="sc">%&gt;%</span></span>
+<span id="cb51-19"><a href="#cb51-19" aria-hidden="true" tabindex="-1"></a>  <span class="fu">group_by</span>(Species) <span class="sc">%&gt;%</span></span>
+<span id="cb51-20"><a href="#cb51-20" aria-hidden="true" tabindex="-1"></a>  <span class="fu">slice_max</span>(<span class="at">order_by =</span> Count, <span class="at">n =</span> <span class="dv">10</span>, <span class="at">with_ties =</span> <span class="cn">FALSE</span>) <span class="sc">%&gt;%</span></span>
+<span id="cb51-21"><a href="#cb51-21" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ungroup</span>() <span class="sc">%&gt;%</span></span>
+<span id="cb51-22"><a href="#cb51-22" aria-hidden="true" tabindex="-1"></a>  <span class="fu">distinct</span>(Term)</span>
+<span id="cb51-23"><a href="#cb51-23" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb51-24"><a href="#cb51-24" aria-hidden="true" tabindex="-1"></a><span class="co"># Filter the data to only include these Terms</span></span>
+<span id="cb51-25"><a href="#cb51-25" aria-hidden="true" tabindex="-1"></a>goslim_top <span class="ot">&lt;-</span> goslim_data <span class="sc">%&gt;%</span></span>
+<span id="cb51-26"><a href="#cb51-26" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(Term <span class="sc">%in%</span> top_terms<span class="sc">$</span>Term)</span>
+<span id="cb51-27"><a href="#cb51-27" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb51-28"><a href="#cb51-28" aria-hidden="true" tabindex="-1"></a><span class="co"># Plot: Term on Y, Count on X</span></span>
+<span id="cb51-29"><a href="#cb51-29" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(goslim_top, <span class="fu">aes</span>(<span class="at">y =</span> <span class="fu">fct_reorder</span>(Term, Count), <span class="at">x =</span> Count, <span class="at">fill =</span> Species)) <span class="sc">+</span></span>
+<span id="cb51-30"><a href="#cb51-30" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_bar</span>(<span class="at">stat =</span> <span class="st">"identity"</span>, <span class="at">position =</span> <span class="fu">position_dodge</span>(<span class="at">width =</span> <span class="fl">0.8</span>)) <span class="sc">+</span></span>
+<span id="cb51-31"><a href="#cb51-31" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(</span>
+<span id="cb51-32"><a href="#cb51-32" aria-hidden="true" tabindex="-1"></a>    <span class="at">title =</span> <span class="st">"Top GOslim Term Counts by Species"</span>,</span>
+<span id="cb51-33"><a href="#cb51-33" aria-hidden="true" tabindex="-1"></a>    <span class="at">y =</span> <span class="st">"GOslim Term"</span>,</span>
+<span id="cb51-34"><a href="#cb51-34" aria-hidden="true" tabindex="-1"></a>    <span class="at">x =</span> <span class="st">"Count"</span></span>
+<span id="cb51-35"><a href="#cb51-35" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">+</span></span>
+<span id="cb51-36"><a href="#cb51-36" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_bw</span>() <span class="sc">+</span></span>
+<span id="cb51-37"><a href="#cb51-37" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme</span>(</span>
+<span id="cb51-38"><a href="#cb51-38" aria-hidden="true" tabindex="-1"></a>    <span class="at">axis.text.y =</span> <span class="fu">element_text</span>(<span class="at">size =</span> <span class="dv">8</span>),</span>
+<span id="cb51-39"><a href="#cb51-39" aria-hidden="true" tabindex="-1"></a>    <span class="at">plot.title =</span> <span class="fu">element_text</span>(<span class="at">hjust =</span> <span class="fl">0.5</span>)</span>
+<span id="cb51-40"><a href="#cb51-40" aria-hidden="true" tabindex="-1"></a>  )</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</section>
 <section id="references" class="level1">
 <h1>7 REFERENCES</h1>
+<div id="refs" class="references csl-bib-body hanging-indent" role="list">
+<div id="ref-buchfink2021" class="csl-entry" role="listitem">
+Buchfink, Benjamin, Klaus Reuter, and Hajk-Georg Drost. 2021. “Sensitive Protein Alignments at Tree-of-Life Scale Using DIAMOND.” <em>Nature Methods</em> 18 (4): 366–68. <a href="https://doi.org/10.1038/s41592-021-01101-x" class="uri">https://doi.org/10.1038/s41592-021-01101-x</a>.
+</div>
+<div id="ref-carlson2017" class="csl-entry" role="listitem">
+Carlson, Marc. 2017. “GO.db.” <a href="https://doi.org/10.18129/B9.BIOC.GO.DB" class="uri">https://doi.org/10.18129/B9.BIOC.GO.DB</a>.
+</div>
+<div id="ref-danecek2021" class="csl-entry" role="listitem">
+Danecek, Petr, James K Bonfield, Jennifer Liddle, John Marshall, Valeriu Ohan, Martin O Pollard, Andrew Whitwham, et al.&nbsp;2021. “Twelve Years of SAMtools and BCFtools.” <em>GigaScience</em> 10 (2). <a href="https://doi.org/10.1093/gigascience/giab008" class="uri">https://doi.org/10.1093/gigascience/giab008</a>.
+</div>
+<div id="ref-h.pagès2017" class="csl-entry" role="listitem">
+H. Pagès, P. Aboyoun. 2017. “Biostrings.” <a href="https://doi.org/10.18129/B9.BIOC.BIOSTRINGS" class="uri">https://doi.org/10.18129/B9.BIOC.BIOSTRINGS</a>.
+</div>
+<div id="ref-martinmorgan2017" class="csl-entry" role="listitem">
+Martin Morgan, Seth Falcon. 2017. “GSEABase.” <a href="https://doi.org/10.18129/B9.BIOC.GSEABASE" class="uri">https://doi.org/10.18129/B9.BIOC.GSEABASE</a>.
+</div>
+<div id="ref-quinlan2010" class="csl-entry" role="listitem">
+Quinlan, Aaron R., and Ira M. Hall. 2010. “BEDTools: A Flexible Suite of Utilities for Comparing Genomic Features.” <em>Bioinformatics</em> 26 (6): 841–42. <a href="https://doi.org/10.1093/bioinformatics/btq033" class="uri">https://doi.org/10.1093/bioinformatics/btq033</a>.
+</div>
+</div>
 
 
 </section>
