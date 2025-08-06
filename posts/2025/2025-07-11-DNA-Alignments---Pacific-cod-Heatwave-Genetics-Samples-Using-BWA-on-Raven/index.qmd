@@ -1,0 +1,349 @@
+---
+author: Sam White
+toc-title: Contents
+toc-depth: 5
+toc-location: left
+title: DNA Alignments - Pacific cod Heatwave Genetics Samples Using BWA on Raven
+date: '2025-07-11'
+draft: false
+engine: knitr
+categories: 
+  - "2025"
+  - "BWA"
+  - "raven"
+  - "Pacific cod"
+  - "Gadus macrocephalus"
+---
+# INTRO
+
+Steven and Laura [tasked me with running BWA alignments on the Pacific cod heatwave data](https://github.com/RobertsLab/resources/issues/2232) (GitHub Issue) that Laura previously received. She also previously trimmed that data, but I don't have a link to the code she used to do that.
+
+This is part of the [`RobertsLab/project-cod-temperature`](https://github.com/RobertsLab/project-cod-temperature) (GitHub).
+
+The alignment process was run on Raven and took _weeks_! I opted for this approach, instead of attempting to run the process on Hyak using arrays of nodes because I thought I'd save time by being able to quickly run the job with simpler code on Raven. To run on Hyak, I was going to need to add software to our Singularity container, re-build it, test it, and then adapt code for running node arrays. As it turns out, I should have spent a day or two doing that! The process would've been significantly faster splitting it across multiple computing nodes!!
+
+::: {.callout-note}
+Code below was knitted from [`14.00-heatwave-genetics-trimmed-bwa-alignments.Rmd`](https://github.com/RobertsLab/project-cod-temperature/blob/main/code/14.00-heatwave-genetics-trimmed-bwa-alignments.Rmd) (GitHub)
+:::
+
+---
+
+# 1 BACKGROUND
+
+This Rmd file will perform the following:
+
+1.  Create BWA genome index using [BWA](https://github.com/lh3/bwa) (Li
+    2013), if needed.
+
+2.  Align trimmed FastQs (previously performed by Laura Spencer) to the
+    *G.macrocepahlus* genome ([NCBI
+    GCF_031168955.1_ASM3116895v1](https://www.ncbi.nlm.nih.gov/datasets/genome/GCF_031168955.1/))
+    using [BWA](https://github.com/lh3/bwa) (Li 2013).
+
+3.  Use [picard](https://github.com/broadinstitute/picard) (“Picard
+    Toolkit” 2019) to remove duplicates.
+
+4.  Use [bamUtil](https://github.com/statgen/bamUtil) (Jun et al. 2015)
+    to remove overlaps.
+
+5.  Use [samtools](https://www.htslib.org/doc/samtools-depth.html)
+    (Danecek et al. 2021) to compute depth.
+
+# 2 INPUTS
+
+- Genome FastA
+- BWA genome FastA index
+
+# 3 OUTPUTS
+
+- Deduplicated, sorted, clipped BAM files
+- samtools depth file
+- BAM index files
+
+NOTE: Due to the size of the output files, they are not included in the
+repository. Instead, you can find them in the here:
+
+- <https://gannet.fish.washington.edu/gitrepos/project-cod-temperature/output/14.00-heatwave-genetics-trimmed-bwa-alignments/>
+
+# 4 VARIABLES
+
+``` r
+# DIRECTORIES
+top_output_dir <- file.path("..", "output")
+output_dir <- file.path(top_output_dir, "14.00-heatwave-genetics-trimmed-bwa-alignments")
+data_dir <- file.path("..", "data")
+trimmed_reads_dir <- file.path(data_dir, "trimmed-fastqs-heatwave-genetics")
+
+# PROGRAMS
+programs_dir <- file.path("", "home", "shared")
+bamUtil_dir <- file.path(programs_dir, "bamUtil-1.0.15", "bin")
+bwa <- file.path(programs_dir, "bwa-0.7.17", "bwa")
+picard_dir <- file.path(programs_dir, "picard-3.4.0-6-g80ca98e2a", "build", "libs")
+picard <- file.path(picard_dir, "picard.jar")
+R1_suffix <- "_trimmed_clipped_R1_paired.fq.gz"
+R2_suffix <- "_trimmed_clipped_R2_paired.fq.gz"
+samtools_dir <- file.path(programs_dir, "samtools-1.12")
+samtools <- file.path(samtools_dir, "samtools")
+
+
+
+# FILES
+genome_fasta <- file.path(data_dir, "GCF_031168955.1_ASM3116895v1_genomic.fna")
+bwa_index <- file.path(data_dir, "bwa-GCF_031168955.1_ASM3116895v1_genomic")
+
+# THREADS
+threads <- "40"
+
+
+# FORMATTING
+line <- "-----------------------------------------------"
+
+# Export these as environment variables for bash chunks.
+Sys.setenv(
+  bamUtil_dir = bamUtil_dir,
+  bwa = bwa,
+  bwa_index = bwa_index,
+  data_dir = data_dir,
+  genome_fasta = genome_fasta,
+  line = line,
+  output_dir = output_dir,
+  picard_dir = picard_dir,
+  picard = picard,
+  top_output_dir = top_output_dir,
+  R1_suffix = R1_suffix,
+  R2_suffix = R2_suffix,
+  samtools = samtools,
+  threads = threads,
+  trimmed_reads_dir = trimmed_reads_dir
+)
+```
+
+# 5 ALIGNMENTS
+
+## 5.1 Create BWA Index
+
+``` bash
+# Check if BWA index file exists
+if [[ ! -f "bwa-GCF_031168955.1_ASM3116895v1_genomic.bwt" ]]; then
+    echo "BWA index file not found. Creating BWA index..."
+    ${bwa} index -p ${data_dir}/${bwa_index} ${data_dir}/${genome_fasta}
+else
+    echo "BWA index file already exists. Skipping index creation."
+fi
+```
+
+## 5.2 Check FastQs
+
+``` bash
+
+ls -1 "${trimmed_reads_dir}/"*.fq.gz | wc -l
+```
+
+    ls: cannot access '../data/trimmed-fastqs-heatwave-genetics/*.fq.gz': No such file or directory
+    0
+
+## 5.3 Align with BWA
+
+This step will produced sorted BAM files.
+
+Alignment is done with the `-M` option, which does the following:
+
+> Mark shorter split hits as secondary (for Picard compatibility).
+
+`samtools view` is run with the `-F 4`. This will exclude unmapped
+reads.
+
+See <https://broadinstitute.github.io/picard/explain-flags.html> and
+<https://www.htslib.org/doc/samtools-view.html> for more explanation.
+
+``` bash
+# Make output directory, if it doesn't exist
+mkdir --parents ${output_dir}
+
+# Declare arrays
+R1_array=()
+R2_array=()
+
+# Populate arrays
+R1_array=("${trimmed_reads_dir}"/*"${R1_suffix}")
+R2_array=("${trimmed_reads_dir}"/*"${R2_suffix}")
+
+# Run BWA
+time \
+for fastq in "${!R1_array[@]}"
+do
+  # Remove path from FastQ
+  sample_no_path=${R1_array[fastq]##*/}
+  
+  # Capture just samples name (string before first `_`)
+  sample=${sample_no_path%%_*}
+  
+  echo "${fastq}"
+  echo "${sample}"
+  
+  # Run BWA
+  ${bwa} mem \
+  -M \
+  -t ${threads} \
+  ${bwa_index} \
+  ${R1_array[fastq]} \
+  ${R2_array[fastq]} \
+  2> ${output_dir}/${sample}-bwa.stderr \
+  | samtools view -@ 20 -bS -F 4 \
+  | samtools sort -@ 20 -o ${output_dir}/${sample}.sorted.bam
+done
+```
+
+# 6 MARK DUPLICATES
+
+## 6.1 Set read groups
+
+Downstream analysis with Picard requires BAM files to have read groups,
+but these were not set earlier.
+
+``` bash
+for bam in ${output_dir}/*.sorted.bam
+do
+  # Remove path from BAM
+  sample_no_path=${bam##*/}
+  
+  # Capture just samples name (string before first `.`)
+  sample=${sample_no_path%%.*}
+  
+  # Check read group
+  echo ""
+  echo "Read group for ${bam} before samtools:"
+  ${samtools} view -H ${bam} | grep '@RG'
+  echo ""
+  
+  ${samtools} addreplacerg \
+  -r "@RG\tID:RG1\tSM:${sample}" \
+  -o ${output_dir}/${sample}-RG.sorted.bam \
+  --threads ${threads} \
+  ${bam}
+  
+  echo "Read group for ${output_dir}/${sample}-RG.sorted.bam:"
+  ${samtools} view -H ${output_dir}/${sample}-RG.sorted.bam | grep '@RG'
+  echo ""
+done
+```
+
+## 6.2 Picard MarkDuplicates
+
+Use Picard to mark duplicates
+
+``` bash
+for bam in ${output_dir}/*RG.sorted.bam
+do
+  # Remove path from BAM
+  sample_no_path=${bam##*/}
+  
+  # Capture just samples name (string before first `.`)
+  sample=${sample_no_path%%.*}
+  
+  java -jar ${picard} \
+  MarkDuplicates \
+  I=${bam} \
+  O=${output_dir}/${sample}.sorted.dedup.bam \
+  M=${output_dir}/${sample}-picard_dups.log \
+  VALIDATION_STRINGENCY=SILENT \
+  REMOVE_DUPLICATES=true \
+  2> ${output_dir}/${sample}-picard_dups.stderr
+done
+```
+
+# 7 CLIP OVERLAPS
+
+``` bash
+for bam in ${output_dir}/*.sorted.dedup.bam
+do
+  # Remove path from BAM
+  sample_no_path=${bam##*/}
+  
+  # Capture just samples name (string before first `.`)
+  sample=${sample_no_path%%.*}
+  
+  # Run BamUtils to clip overlaps
+  ${bamUtil_dir}/bam \
+  clipOverlap \
+  --in ${bam} \
+  --out ${output_dir}/${sample}.sorted.dedup.clipped.bam \
+  --stats \
+  2> ${output_dir}/${sample}.sorted.dedup.clipped-bamUtil.stats
+done
+```
+
+# 8 SAMTOOLS DEPTH
+
+``` bash
+for bam in ${output_dir}/*.sorted.dedup.clipped.bam
+do
+  # Remove path from BAM
+  sample_no_path=${bam##*/}
+  
+  # Capture filename without .bam (string before last `.`)
+  sample=${sample_no_path%.*}
+  
+  # Run BamUtils to clip overlaps
+  ${samtools} depth \
+  -aa \
+  ${bam} \
+  | cut -f 3 \
+  | gzip \
+  > ${output_dir}/${sample}.depth.gz
+
+done
+```
+
+# 9 INDEX BAMS
+
+``` bash
+
+cd ${output_dir}
+
+for bam in *.sorted.dedup.clipped.bam
+do
+  ${samtools} index \
+  ${bam} \
+  --threads ${threads}
+
+done
+```
+
+# 10 REFERENCES
+
+<div id="refs" class="references csl-bib-body hanging-indent">
+
+<div id="ref-danecek2021" class="csl-entry">
+
+Danecek, Petr, James K Bonfield, Jennifer Liddle, John Marshall, Valeriu
+Ohan, Martin O Pollard, Andrew Whitwham, et al. 2021. “Twelve Years of
+SAMtools and BCFtools.” *GigaScience* 10 (2).
+<https://doi.org/10.1093/gigascience/giab008>.
+
+</div>
+
+<div id="ref-jun2015" class="csl-entry">
+
+Jun, Goo, Mary Kate Wing, Gonçalo R. Abecasis, and Hyun Min Kang. 2015.
+“An Efficient and Scalable Analysis Framework for Variant Extraction and
+Refinement from Population-Scale DNA Sequence Data.” *Genome Research*
+25 (6): 918–25. <https://doi.org/10.1101/gr.176552.114>.
+
+</div>
+
+<div id="ref-li2013" class="csl-entry">
+
+Li, Heng. 2013. “Aligning Sequence Reads, Clone Sequences and Assembly
+Contigs with BWA-MEM.” <https://doi.org/10.48550/ARXIV.1303.3997>.
+
+</div>
+
+<div id="ref-Picard2019toolkit" class="csl-entry">
+
+“Picard Toolkit.” 2019. *Broad Institute, GitHub Repository*.
+<https://broadinstitute.github.io/picard/>; Broad Institute.
+
+</div>
+
+</div>
