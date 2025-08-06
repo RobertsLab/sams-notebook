@@ -536,6 +536,1158 @@ Table&nbsp;2: Pool 2 Barcodes
   <pubDate>Sat, 02 Aug 2025 07:00:00 GMT</pubDate>
 </item>
 <item>
+  <title>DNA Alignments - Pacific cod Heatwave Genetics Samples Using BWA on Raven</title>
+  <dc:creator>Sam White</dc:creator>
+  <link>https://robertslab.github.io/sams-notebook/posts/2025/2025-07-11-DNA-Alignments---Pacific-cod-Heatwave-Genetics-Samples-Using-BWA-on-Raven/</link>
+  <description><![CDATA[ 
+
+
+
+
+
+<section id="intro" class="level1">
+<h1>INTRO</h1>
+<p>Steven and Laura <a href="https://github.com/RobertsLab/resources/issues/2232">tasked me with running BWA alignments on the Pacific cod heatwave data</a> (GitHub Issue) that Laura previously received. She also previously trimmed that data, but I don’t have a link to the code she used to do that.</p>
+<p>This is part of the <a href="https://github.com/RobertsLab/project-cod-temperature"><code>RobertsLab/project-cod-temperature</code></a> (GitHub).</p>
+<p>The alignment process was run on Raven and took <em>weeks</em>! I opted for this approach, instead of attempting to run the process on Hyak using arrays of nodes because I thought I’d save time by being able to quickly run the job with simpler code on Raven. To run on Hyak, I was going to need to add software to our Singularity container, re-build it, test it, and then adapt code for running node arrays. As it turns out, I should have spent a day or two doing that! The process would’ve been significantly faster splitting it across multiple computing nodes!!</p>
+<div class="callout callout-style-default callout-note callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Note
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>Code below was knitted from <a href="https://github.com/RobertsLab/project-cod-temperature/blob/main/code/14.00-heatwave-genetics-trimmed-bwa-alignments.Rmd"><code>14.00-heatwave-genetics-trimmed-bwa-alignments.Rmd</code></a> (GitHub)</p>
+</div>
+</div>
+<hr>
+</section>
+<section id="background" class="level1">
+<h1>1 BACKGROUND</h1>
+<p>This Rmd file will perform the following:</p>
+<ol type="1">
+<li><p>Create BWA genome index using <a href="https://github.com/lh3/bwa">BWA</a> (Li 2013), if needed.</p></li>
+<li><p>Align trimmed FastQs (previously performed by Laura Spencer) to the <em>G.macrocepahlus</em> genome (<a href="https://www.ncbi.nlm.nih.gov/datasets/genome/GCF_031168955.1/">NCBI GCF_031168955.1_ASM3116895v1</a>) using <a href="https://github.com/lh3/bwa">BWA</a> (Li 2013).</p></li>
+<li><p>Use <a href="https://github.com/broadinstitute/picard">picard</a> (“Picard Toolkit” 2019) to remove duplicates.</p></li>
+<li><p>Use <a href="https://github.com/statgen/bamUtil">bamUtil</a> (Jun et al.&nbsp;2015) to remove overlaps.</p></li>
+<li><p>Use <a href="https://www.htslib.org/doc/samtools-depth.html">samtools</a> (Danecek et al.&nbsp;2021) to compute depth.</p></li>
+</ol>
+</section>
+<section id="inputs" class="level1">
+<h1>2 INPUTS</h1>
+<ul>
+<li>Genome FastA</li>
+<li>BWA genome FastA index</li>
+</ul>
+</section>
+<section id="outputs" class="level1">
+<h1>3 OUTPUTS</h1>
+<ul>
+<li>Deduplicated, sorted, clipped BAM files</li>
+<li>samtools depth file</li>
+<li>BAM index files</li>
+</ul>
+<p>NOTE: Due to the size of the output files, they are not included in the repository. Instead, you can find them in the here:</p>
+<ul>
+<li><a href="https://gannet.fish.washington.edu/gitrepos/project-cod-temperature/output/14.00-heatwave-genetics-trimmed-bwa-alignments/" class="uri">https://gannet.fish.washington.edu/gitrepos/project-cod-temperature/output/14.00-heatwave-genetics-trimmed-bwa-alignments/</a></li>
+</ul>
+</section>
+<section id="variables" class="level1">
+<h1>4 VARIABLES</h1>
+<div class="sourceCode" id="cb1" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># DIRECTORIES</span></span>
+<span id="cb1-2">top_output_dir <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">file.path</span>(<span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">".."</span>, <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"output"</span>)</span>
+<span id="cb1-3">output_dir <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">file.path</span>(top_output_dir, <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"14.00-heatwave-genetics-trimmed-bwa-alignments"</span>)</span>
+<span id="cb1-4">data_dir <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">file.path</span>(<span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">".."</span>, <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"data"</span>)</span>
+<span id="cb1-5">trimmed_reads_dir <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">file.path</span>(data_dir, <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"trimmed-fastqs-heatwave-genetics"</span>)</span>
+<span id="cb1-6"></span>
+<span id="cb1-7"><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># PROGRAMS</span></span>
+<span id="cb1-8">programs_dir <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">file.path</span>(<span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">""</span>, <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"home"</span>, <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"shared"</span>)</span>
+<span id="cb1-9">bamUtil_dir <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">file.path</span>(programs_dir, <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"bamUtil-1.0.15"</span>, <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"bin"</span>)</span>
+<span id="cb1-10">bwa <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">file.path</span>(programs_dir, <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"bwa-0.7.17"</span>, <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"bwa"</span>)</span>
+<span id="cb1-11">picard_dir <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">file.path</span>(programs_dir, <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"picard-3.4.0-6-g80ca98e2a"</span>, <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"build"</span>, <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"libs"</span>)</span>
+<span id="cb1-12">picard <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">file.path</span>(picard_dir, <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"picard.jar"</span>)</span>
+<span id="cb1-13">R1_suffix <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"_trimmed_clipped_R1_paired.fq.gz"</span></span>
+<span id="cb1-14">R2_suffix <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"_trimmed_clipped_R2_paired.fq.gz"</span></span>
+<span id="cb1-15">samtools_dir <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">file.path</span>(programs_dir, <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"samtools-1.12"</span>)</span>
+<span id="cb1-16">samtools <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">file.path</span>(samtools_dir, <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"samtools"</span>)</span>
+<span id="cb1-17"></span>
+<span id="cb1-18"></span>
+<span id="cb1-19"></span>
+<span id="cb1-20"><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># FILES</span></span>
+<span id="cb1-21">genome_fasta <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">file.path</span>(data_dir, <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"GCF_031168955.1_ASM3116895v1_genomic.fna"</span>)</span>
+<span id="cb1-22">bwa_index <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">file.path</span>(data_dir, <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"bwa-GCF_031168955.1_ASM3116895v1_genomic"</span>)</span>
+<span id="cb1-23"></span>
+<span id="cb1-24"><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># THREADS</span></span>
+<span id="cb1-25">threads <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"40"</span></span>
+<span id="cb1-26"></span>
+<span id="cb1-27"></span>
+<span id="cb1-28"><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># FORMATTING</span></span>
+<span id="cb1-29">line <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"-----------------------------------------------"</span></span>
+<span id="cb1-30"></span>
+<span id="cb1-31"><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># Export these as environment variables for bash chunks.</span></span>
+<span id="cb1-32"><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">Sys.setenv</span>(</span>
+<span id="cb1-33">  <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">bamUtil_dir =</span> bamUtil_dir,</span>
+<span id="cb1-34">  <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">bwa =</span> bwa,</span>
+<span id="cb1-35">  <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">bwa_index =</span> bwa_index,</span>
+<span id="cb1-36">  <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">data_dir =</span> data_dir,</span>
+<span id="cb1-37">  <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">genome_fasta =</span> genome_fasta,</span>
+<span id="cb1-38">  <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">line =</span> line,</span>
+<span id="cb1-39">  <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">output_dir =</span> output_dir,</span>
+<span id="cb1-40">  <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">picard_dir =</span> picard_dir,</span>
+<span id="cb1-41">  <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">picard =</span> picard,</span>
+<span id="cb1-42">  <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">top_output_dir =</span> top_output_dir,</span>
+<span id="cb1-43">  <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">R1_suffix =</span> R1_suffix,</span>
+<span id="cb1-44">  <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">R2_suffix =</span> R2_suffix,</span>
+<span id="cb1-45">  <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">samtools =</span> samtools,</span>
+<span id="cb1-46">  <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">threads =</span> threads,</span>
+<span id="cb1-47">  <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">trimmed_reads_dir =</span> trimmed_reads_dir</span>
+<span id="cb1-48">)</span></code></pre></div>
+</section>
+<section id="alignments" class="level1">
+<h1>5 ALIGNMENTS</h1>
+<section id="create-bwa-index" class="level2">
+<h2 class="anchored" data-anchor-id="create-bwa-index">5.1 Create BWA Index</h2>
+<div class="sourceCode" id="cb2" style="background: #f1f3f5;"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb2-1"><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># Check if BWA index file exists</span></span>
+<span id="cb2-2"><span class="cf" style="color: #003B4F;
+background-color: null;
+font-weight: bold;
+font-style: inherit;">if</span> <span class="kw" style="color: #003B4F;
+background-color: null;
+font-weight: bold;
+font-style: inherit;">[[</span> <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">!</span> <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">-f</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"bwa-GCF_031168955.1_ASM3116895v1_genomic.bwt"</span> <span class="kw" style="color: #003B4F;
+background-color: null;
+font-weight: bold;
+font-style: inherit;">]];</span> <span class="cf" style="color: #003B4F;
+background-color: null;
+font-weight: bold;
+font-style: inherit;">then</span></span>
+<span id="cb2-3">    <span class="bu" style="color: null;
+background-color: null;
+font-style: inherit;">echo</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"BWA index file not found. Creating BWA index..."</span></span>
+<span id="cb2-4">    <span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">${bwa}</span> index <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">-p</span> <span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">${data_dir}</span>/<span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">${bwa_index}</span> <span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">${data_dir}</span>/<span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">${genome_fasta}</span></span>
+<span id="cb2-5"><span class="cf" style="color: #003B4F;
+background-color: null;
+font-weight: bold;
+font-style: inherit;">else</span></span>
+<span id="cb2-6">    <span class="bu" style="color: null;
+background-color: null;
+font-style: inherit;">echo</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"BWA index file already exists. Skipping index creation."</span></span>
+<span id="cb2-7"><span class="cf" style="color: #003B4F;
+background-color: null;
+font-weight: bold;
+font-style: inherit;">fi</span></span></code></pre></div>
+</section>
+<section id="check-fastqs" class="level2">
+<h2 class="anchored" data-anchor-id="check-fastqs">5.2 Check FastQs</h2>
+<div class="sourceCode" id="cb3" style="background: #f1f3f5;"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb3-1"></span>
+<span id="cb3-2"><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">ls</span> <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">-1</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"</span><span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">${trimmed_reads_dir}</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">/"</span><span class="pp" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">*</span>.fq.gz <span class="kw" style="color: #003B4F;
+background-color: null;
+font-weight: bold;
+font-style: inherit;">|</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">wc</span> <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">-l</span></span></code></pre></div>
+<pre><code>ls: cannot access '../data/trimmed-fastqs-heatwave-genetics/*.fq.gz': No such file or directory
+0</code></pre>
+</section>
+<section id="align-with-bwa" class="level2">
+<h2 class="anchored" data-anchor-id="align-with-bwa">5.3 Align with BWA</h2>
+<p>This step will produced sorted BAM files.</p>
+<p>Alignment is done with the <code>-M</code> option, which does the following:</p>
+<blockquote class="blockquote">
+<p>Mark shorter split hits as secondary (for Picard compatibility).</p>
+</blockquote>
+<p><code>samtools view</code> is run with the <code>-F 4</code>. This will exclude unmapped reads.</p>
+<p>See <a href="https://broadinstitute.github.io/picard/explain-flags.html" class="uri">https://broadinstitute.github.io/picard/explain-flags.html</a> and <a href="https://www.htslib.org/doc/samtools-view.html" class="uri">https://www.htslib.org/doc/samtools-view.html</a> for more explanation.</p>
+<div class="sourceCode" id="cb5" style="background: #f1f3f5;"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb5-1"><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># Make output directory, if it doesn't exist</span></span>
+<span id="cb5-2"><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">mkdir</span> <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">--parents</span> <span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">${output_dir}</span></span>
+<span id="cb5-3"></span>
+<span id="cb5-4"><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># Declare arrays</span></span>
+<span id="cb5-5"><span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">R1_array</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span><span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">()</span></span>
+<span id="cb5-6"><span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">R2_array</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span><span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">()</span></span>
+<span id="cb5-7"></span>
+<span id="cb5-8"><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># Populate arrays</span></span>
+<span id="cb5-9"><span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">R1_array</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span><span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">(</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"</span><span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">${trimmed_reads_dir}</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"</span>/<span class="pp" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">*</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"</span><span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">${R1_suffix}</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"</span><span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">)</span></span>
+<span id="cb5-10"><span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">R2_array</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span><span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">(</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"</span><span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">${trimmed_reads_dir}</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"</span>/<span class="pp" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">*</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"</span><span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">${R2_suffix}</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"</span><span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">)</span></span>
+<span id="cb5-11"></span>
+<span id="cb5-12"><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># Run BWA</span></span>
+<span id="cb5-13"><span class="bu" style="color: null;
+background-color: null;
+font-style: inherit;">time</span> <span class="dt" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">\</span></span>
+<span id="cb5-14">for fastq in <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"</span><span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">${</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">!</span><span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">R1_array</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">[@]</span><span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">}</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"</span></span>
+<span id="cb5-15"><span class="cf" style="color: #003B4F;
+background-color: null;
+font-weight: bold;
+font-style: inherit;">do</span></span>
+<span id="cb5-16">  <span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># Remove path from FastQ</span></span>
+<span id="cb5-17">  <span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">sample_no_path</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span><span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">${R1_array</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">[</span>fastq<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">]##</span><span class="pp" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">*</span>/<span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">}</span></span>
+<span id="cb5-18">  </span>
+<span id="cb5-19">  <span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># Capture just samples name (string before first `_`)</span></span>
+<span id="cb5-20">  <span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">sample</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span><span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">${sample_no_path</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">%%</span>_<span class="pp" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">*</span><span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">}</span></span>
+<span id="cb5-21">  </span>
+<span id="cb5-22">  <span class="bu" style="color: null;
+background-color: null;
+font-style: inherit;">echo</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"</span><span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">${fastq}</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"</span></span>
+<span id="cb5-23">  <span class="bu" style="color: null;
+background-color: null;
+font-style: inherit;">echo</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"</span><span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">${sample}</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"</span></span>
+<span id="cb5-24">  </span>
+<span id="cb5-25">  <span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># Run BWA</span></span>
+<span id="cb5-26">  <span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">${bwa}</span> mem <span class="dt" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">\</span></span>
+<span id="cb5-27">  <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">-M</span> <span class="dt" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">\</span></span>
+<span id="cb5-28">  <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">-t</span> <span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">${threads}</span> <span class="dt" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">\</span></span>
+<span id="cb5-29">  <span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">${bwa_index}</span> <span class="dt" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">\</span></span>
+<span id="cb5-30">  <span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">${R1_array</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">[</span>fastq<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">]</span><span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">}</span> <span class="dt" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">\</span></span>
+<span id="cb5-31">  <span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">${R2_array</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">[</span>fastq<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">]</span><span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">}</span> <span class="dt" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">\</span></span>
+<span id="cb5-32">  <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">2</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">&gt;</span> <span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">${output_dir}</span>/<span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">${sample}</span>-bwa.stderr <span class="dt" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">\</span></span>
+<span id="cb5-33">  <span class="kw" style="color: #003B4F;
+background-color: null;
+font-weight: bold;
+font-style: inherit;">|</span> <span class="ex" style="color: null;
+background-color: null;
+font-style: inherit;">samtools</span> view <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">-@</span> 20 <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">-bS</span> <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">-F</span> 4 <span class="dt" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">\</span></span>
+<span id="cb5-34">  <span class="kw" style="color: #003B4F;
+background-color: null;
+font-weight: bold;
+font-style: inherit;">|</span> <span class="ex" style="color: null;
+background-color: null;
+font-style: inherit;">samtools</span> sort <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">-@</span> 20 <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">-o</span> <span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">${output_dir}</span>/<span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">${sample}</span>.sorted.bam</span>
+<span id="cb5-35"><span class="cf" style="color: #003B4F;
+background-color: null;
+font-weight: bold;
+font-style: inherit;">done</span></span></code></pre></div>
+</section>
+</section>
+<section id="mark-duplicates" class="level1">
+<h1>6 MARK DUPLICATES</h1>
+<section id="set-read-groups" class="level2">
+<h2 class="anchored" data-anchor-id="set-read-groups">6.1 Set read groups</h2>
+<p>Downstream analysis with Picard requires BAM files to have read groups, but these were not set earlier.</p>
+<div class="sourceCode" id="cb6" style="background: #f1f3f5;"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb6-1"><span class="cf" style="color: #003B4F;
+background-color: null;
+font-weight: bold;
+font-style: inherit;">for</span> bam <span class="kw" style="color: #003B4F;
+background-color: null;
+font-weight: bold;
+font-style: inherit;">in</span> <span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">${output_dir}</span>/<span class="pp" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">*</span>.sorted.bam</span>
+<span id="cb6-2"><span class="cf" style="color: #003B4F;
+background-color: null;
+font-weight: bold;
+font-style: inherit;">do</span></span>
+<span id="cb6-3">  <span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># Remove path from BAM</span></span>
+<span id="cb6-4">  <span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">sample_no_path</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span><span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">${bam</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">##</span><span class="pp" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">*</span>/<span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">}</span></span>
+<span id="cb6-5">  </span>
+<span id="cb6-6">  <span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># Capture just samples name (string before first `.`)</span></span>
+<span id="cb6-7">  <span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">sample</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span><span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">${sample_no_path</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">%%</span>.<span class="pp" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">*</span><span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">}</span></span>
+<span id="cb6-8">  </span>
+<span id="cb6-9">  <span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># Check read group</span></span>
+<span id="cb6-10">  <span class="bu" style="color: null;
+background-color: null;
+font-style: inherit;">echo</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">""</span></span>
+<span id="cb6-11">  <span class="bu" style="color: null;
+background-color: null;
+font-style: inherit;">echo</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"Read group for </span><span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">${bam}</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;"> before samtools:"</span></span>
+<span id="cb6-12">  <span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">${samtools}</span> view <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">-H</span> <span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">${bam}</span> <span class="kw" style="color: #003B4F;
+background-color: null;
+font-weight: bold;
+font-style: inherit;">|</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">grep</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">'@RG'</span></span>
+<span id="cb6-13">  <span class="bu" style="color: null;
+background-color: null;
+font-style: inherit;">echo</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">""</span></span>
+<span id="cb6-14">  </span>
+<span id="cb6-15">  <span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">${samtools}</span> addreplacerg <span class="dt" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">\</span></span>
+<span id="cb6-16">  <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">-r</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"@RG\tID:RG1\tSM:</span><span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">${sample}</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"</span> <span class="dt" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">\</span></span>
+<span id="cb6-17">  <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">-o</span> <span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">${output_dir}</span>/<span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">${sample}</span>-RG.sorted.bam <span class="dt" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">\</span></span>
+<span id="cb6-18">  <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">--threads</span> <span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">${threads}</span> <span class="dt" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">\</span></span>
+<span id="cb6-19">  <span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">${bam}</span></span>
+<span id="cb6-20">  </span>
+<span id="cb6-21">  <span class="bu" style="color: null;
+background-color: null;
+font-style: inherit;">echo</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"Read group for </span><span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">${output_dir}</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">/</span><span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">${sample}</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">-RG.sorted.bam:"</span></span>
+<span id="cb6-22">  <span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">${samtools}</span> view <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">-H</span> <span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">${output_dir}</span>/<span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">${sample}</span>-RG.sorted.bam <span class="kw" style="color: #003B4F;
+background-color: null;
+font-weight: bold;
+font-style: inherit;">|</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">grep</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">'@RG'</span></span>
+<span id="cb6-23">  <span class="bu" style="color: null;
+background-color: null;
+font-style: inherit;">echo</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">""</span></span>
+<span id="cb6-24"><span class="cf" style="color: #003B4F;
+background-color: null;
+font-weight: bold;
+font-style: inherit;">done</span></span></code></pre></div>
+</section>
+<section id="picard-markduplicates" class="level2">
+<h2 class="anchored" data-anchor-id="picard-markduplicates">6.2 Picard MarkDuplicates</h2>
+<p>Use Picard to mark duplicates</p>
+<div class="sourceCode" id="cb7" style="background: #f1f3f5;"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb7-1"><span class="cf" style="color: #003B4F;
+background-color: null;
+font-weight: bold;
+font-style: inherit;">for</span> bam <span class="kw" style="color: #003B4F;
+background-color: null;
+font-weight: bold;
+font-style: inherit;">in</span> <span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">${output_dir}</span>/<span class="pp" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">*</span>RG.sorted.bam</span>
+<span id="cb7-2"><span class="cf" style="color: #003B4F;
+background-color: null;
+font-weight: bold;
+font-style: inherit;">do</span></span>
+<span id="cb7-3">  <span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># Remove path from BAM</span></span>
+<span id="cb7-4">  <span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">sample_no_path</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span><span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">${bam</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">##</span><span class="pp" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">*</span>/<span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">}</span></span>
+<span id="cb7-5">  </span>
+<span id="cb7-6">  <span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># Capture just samples name (string before first `.`)</span></span>
+<span id="cb7-7">  <span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">sample</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span><span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">${sample_no_path</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">%%</span>.<span class="pp" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">*</span><span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">}</span></span>
+<span id="cb7-8">  </span>
+<span id="cb7-9">  <span class="ex" style="color: null;
+background-color: null;
+font-style: inherit;">java</span> <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">-jar</span> <span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">${picard}</span> <span class="dt" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">\</span></span>
+<span id="cb7-10">  MarkDuplicates <span class="dt" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">\</span></span>
+<span id="cb7-11">  I=<span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">${bam}</span> <span class="dt" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">\</span></span>
+<span id="cb7-12">  O=<span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">${output_dir}</span>/<span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">${sample}</span>.sorted.dedup.bam <span class="dt" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">\</span></span>
+<span id="cb7-13">  M=<span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">${output_dir}</span>/<span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">${sample}</span>-picard_dups.log <span class="dt" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">\</span></span>
+<span id="cb7-14">  VALIDATION_STRINGENCY=SILENT <span class="dt" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">\</span></span>
+<span id="cb7-15">  REMOVE_DUPLICATES=true <span class="dt" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">\</span></span>
+<span id="cb7-16">  <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">2</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">&gt;</span> <span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">${output_dir}</span>/<span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">${sample}</span>-picard_dups.stderr</span>
+<span id="cb7-17"><span class="cf" style="color: #003B4F;
+background-color: null;
+font-weight: bold;
+font-style: inherit;">done</span></span></code></pre></div>
+</section>
+</section>
+<section id="clip-overlaps" class="level1">
+<h1>7 CLIP OVERLAPS</h1>
+<div class="sourceCode" id="cb8" style="background: #f1f3f5;"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb8-1"><span class="cf" style="color: #003B4F;
+background-color: null;
+font-weight: bold;
+font-style: inherit;">for</span> bam <span class="kw" style="color: #003B4F;
+background-color: null;
+font-weight: bold;
+font-style: inherit;">in</span> <span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">${output_dir}</span>/<span class="pp" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">*</span>.sorted.dedup.bam</span>
+<span id="cb8-2"><span class="cf" style="color: #003B4F;
+background-color: null;
+font-weight: bold;
+font-style: inherit;">do</span></span>
+<span id="cb8-3">  <span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># Remove path from BAM</span></span>
+<span id="cb8-4">  <span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">sample_no_path</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span><span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">${bam</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">##</span><span class="pp" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">*</span>/<span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">}</span></span>
+<span id="cb8-5">  </span>
+<span id="cb8-6">  <span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># Capture just samples name (string before first `.`)</span></span>
+<span id="cb8-7">  <span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">sample</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span><span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">${sample_no_path</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">%%</span>.<span class="pp" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">*</span><span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">}</span></span>
+<span id="cb8-8">  </span>
+<span id="cb8-9">  <span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># Run BamUtils to clip overlaps</span></span>
+<span id="cb8-10">  <span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">${bamUtil_dir}</span><span class="ex" style="color: null;
+background-color: null;
+font-style: inherit;">/bam</span> <span class="dt" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">\</span></span>
+<span id="cb8-11">  clipOverlap <span class="dt" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">\</span></span>
+<span id="cb8-12">  <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">--in</span> <span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">${bam}</span> <span class="dt" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">\</span></span>
+<span id="cb8-13">  <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">--out</span> <span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">${output_dir}</span>/<span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">${sample}</span>.sorted.dedup.clipped.bam <span class="dt" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">\</span></span>
+<span id="cb8-14">  <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">--stats</span> <span class="dt" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">\</span></span>
+<span id="cb8-15">  <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">2</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">&gt;</span> <span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">${output_dir}</span>/<span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">${sample}</span>.sorted.dedup.clipped-bamUtil.stats</span>
+<span id="cb8-16"><span class="cf" style="color: #003B4F;
+background-color: null;
+font-weight: bold;
+font-style: inherit;">done</span></span></code></pre></div>
+</section>
+<section id="samtools-depth" class="level1">
+<h1>8 SAMTOOLS DEPTH</h1>
+<div class="sourceCode" id="cb9" style="background: #f1f3f5;"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb9-1"><span class="cf" style="color: #003B4F;
+background-color: null;
+font-weight: bold;
+font-style: inherit;">for</span> bam <span class="kw" style="color: #003B4F;
+background-color: null;
+font-weight: bold;
+font-style: inherit;">in</span> <span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">${output_dir}</span>/<span class="pp" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">*</span>.sorted.dedup.clipped.bam</span>
+<span id="cb9-2"><span class="cf" style="color: #003B4F;
+background-color: null;
+font-weight: bold;
+font-style: inherit;">do</span></span>
+<span id="cb9-3">  <span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># Remove path from BAM</span></span>
+<span id="cb9-4">  <span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">sample_no_path</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span><span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">${bam</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">##</span><span class="pp" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">*</span>/<span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">}</span></span>
+<span id="cb9-5">  </span>
+<span id="cb9-6">  <span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># Capture filename without .bam (string before last `.`)</span></span>
+<span id="cb9-7">  <span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">sample</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span><span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">${sample_no_path</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">%</span>.<span class="pp" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">*</span><span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">}</span></span>
+<span id="cb9-8">  </span>
+<span id="cb9-9">  <span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># Run BamUtils to clip overlaps</span></span>
+<span id="cb9-10">  <span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">${samtools}</span> depth <span class="dt" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">\</span></span>
+<span id="cb9-11">  <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">-aa</span> <span class="dt" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">\</span></span>
+<span id="cb9-12">  <span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">${bam}</span> <span class="dt" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">\</span></span>
+<span id="cb9-13">  <span class="kw" style="color: #003B4F;
+background-color: null;
+font-weight: bold;
+font-style: inherit;">|</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">cut</span> <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">-f</span> 3 <span class="dt" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">\</span></span>
+<span id="cb9-14">  <span class="kw" style="color: #003B4F;
+background-color: null;
+font-weight: bold;
+font-style: inherit;">|</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">gzip</span> <span class="dt" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">\</span></span>
+<span id="cb9-15">  <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">&gt;</span> <span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">${output_dir}</span>/<span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">${sample}</span>.depth.gz</span>
+<span id="cb9-16"></span>
+<span id="cb9-17"><span class="cf" style="color: #003B4F;
+background-color: null;
+font-weight: bold;
+font-style: inherit;">done</span></span></code></pre></div>
+</section>
+<section id="index-bams" class="level1">
+<h1>9 INDEX BAMS</h1>
+<div class="sourceCode" id="cb10" style="background: #f1f3f5;"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb10-1"></span>
+<span id="cb10-2"><span class="bu" style="color: null;
+background-color: null;
+font-style: inherit;">cd</span> <span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">${output_dir}</span></span>
+<span id="cb10-3"></span>
+<span id="cb10-4"><span class="cf" style="color: #003B4F;
+background-color: null;
+font-weight: bold;
+font-style: inherit;">for</span> bam <span class="kw" style="color: #003B4F;
+background-color: null;
+font-weight: bold;
+font-style: inherit;">in</span> <span class="pp" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">*</span>.sorted.dedup.clipped.bam</span>
+<span id="cb10-5"><span class="cf" style="color: #003B4F;
+background-color: null;
+font-weight: bold;
+font-style: inherit;">do</span></span>
+<span id="cb10-6">  <span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">${samtools}</span> index <span class="dt" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">\</span></span>
+<span id="cb10-7">  <span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">${bam}</span> <span class="dt" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">\</span></span>
+<span id="cb10-8">  <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">--threads</span> <span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">${threads}</span></span>
+<span id="cb10-9"></span>
+<span id="cb10-10"><span class="cf" style="color: #003B4F;
+background-color: null;
+font-weight: bold;
+font-style: inherit;">done</span></span></code></pre></div>
+</section>
+<section id="references" class="level1">
+<h1>10 REFERENCES</h1>
+<div id="refs" class="references csl-bib-body hanging-indent">
+<div id="ref-danecek2021" class="csl-entry">
+Danecek, Petr, James K Bonfield, Jennifer Liddle, John Marshall, Valeriu Ohan, Martin O Pollard, Andrew Whitwham, et al.&nbsp;2021. “Twelve Years of SAMtools and BCFtools.” <em>GigaScience</em> 10 (2). <a href="https://doi.org/10.1093/gigascience/giab008" class="uri">https://doi.org/10.1093/gigascience/giab008</a>.
+</div>
+<div id="ref-jun2015" class="csl-entry">
+Jun, Goo, Mary Kate Wing, Gonçalo R. Abecasis, and Hyun Min Kang. 2015. “An Efficient and Scalable Analysis Framework for Variant Extraction and Refinement from Population-Scale DNA Sequence Data.” <em>Genome Research</em> 25 (6): 918–25. <a href="https://doi.org/10.1101/gr.176552.114" class="uri">https://doi.org/10.1101/gr.176552.114</a>.
+</div>
+<div id="ref-li2013" class="csl-entry">
+Li, Heng. 2013. “Aligning Sequence Reads, Clone Sequences and Assembly Contigs with BWA-MEM.” <a href="https://doi.org/10.48550/ARXIV.1303.3997" class="uri">https://doi.org/10.48550/ARXIV.1303.3997</a>.
+</div>
+<div id="ref-Picard2019toolkit" class="csl-entry">
+“Picard Toolkit.” 2019. <em>Broad Institute, GitHub Repository</em>. <a href="https://broadinstitute.github.io/picard/" class="uri">https://broadinstitute.github.io/picard/</a>; Broad Institute.
+</div>
+</div>
+
+
+</section>
+
+ ]]></description>
+  <category>2025</category>
+  <category>BWA</category>
+  <category>raven</category>
+  <category>Pacific cod</category>
+  <category>Gadus macrocephalus</category>
+  <guid>https://robertslab.github.io/sams-notebook/posts/2025/2025-07-11-DNA-Alignments---Pacific-cod-Heatwave-Genetics-Samples-Using-BWA-on-Raven/</guid>
+  <pubDate>Fri, 11 Jul 2025 07:00:00 GMT</pubDate>
+</item>
+<item>
   <title>DNA Isolation Quantification and Concentration - S.namaycush Siscowet Liver Samples Using Zymo Quick-DNA RNA MiniPrep Plus Kit</title>
   <dc:creator>Sam White</dc:creator>
   <link>https://robertslab.github.io/sams-notebook/posts/2025/2025-07-08-DNA-Isolation-Quantification-and-Concentration---S.namaycush-Siscowet-Liver-Samples-Using-Zymo-Quick-DNA-RNA-MiniPrep-Plus-Kit/</link>
@@ -10350,98 +11502,6 @@ Note
   <category>Qubit</category>
   <guid>https://robertslab.github.io/sams-notebook/posts/2025/2025-05-02-DNA-RNA-Isolation-and-Quantification---G.macrocephalus-Blood-Using-Bullet-Blender-and-Zymo-Quick-DNA-RNA-MiniPrep/</guid>
   <pubDate>Fri, 02 May 2025 07:00:00 GMT</pubDate>
-</item>
-<item>
-  <title>DIAMOND BLAST Database - NCBI NR Database and Taxonomy Nodes on Raven</title>
-  <dc:creator>Sam White</dc:creator>
-  <link>https://robertslab.github.io/sams-notebook/posts/2025/2025-04-29-DIAMOND-BLAST-Database---NCBI-NR-Database-and-Taxonomy-Nodes-on-Raven/</link>
-  <description><![CDATA[ 
-
-
-
-
-
-<section id="intro" class="level1">
-<h1>INTRO</h1>
-<p><a href="https://github.com/RobertsLab/resources/issues/2185">Steven asked me</a> (GitHub Issue) to generate a <a href="https://github.com/bbuchfink/diamond"><code>DIAMOND</code></a> BLAST database for use with his class, as well as our lab, since we didn’t currently have one set up.</p>
-</section>
-<section id="materials-methods" class="level1">
-<h1>MATERIALS &amp; METHODS</h1>
-<p>Downloaded NCBI NR FastA from here:</p>
-<ul>
-<li><p>https://ftp.ncbi.nlm.nih.gov/blast/db/FASTA/nr.gz</p></li>
-<li><p>Confirmed MD5 sum was okay (not shown)</p></li>
-<li><p>Renamed the unzipped FastA to match download date: <code>ncbi-nr-20250429.fasta</code></p></li>
-</ul>
-<div class="callout callout-style-default callout-caution callout-titled">
-<div class="callout-header d-flex align-content-center">
-<div class="callout-icon-container">
-<i class="callout-icon"></i>
-</div>
-<div class="callout-title-container flex-fill">
-Caution
-</div>
-</div>
-<div class="callout-body-container callout-body">
-<p>This is a <em>huge</em> FastA file. Unzipped, it will be ~350GB in size!</p>
-</div>
-</div>
-<p>Downloaded NCBI Taxonomy info from here:</p>
-<ul>
-<li><p>https://ftp.ncbi.nlm.nih.gov/pub/taxonomy/taxdmp.zip</p></li>
-<li><p>Confirmed MD5 sum was okay (not shown)</p></li>
-</ul>
-<p>Before creating the DIAMOND BLAST database, I had to manipulate some of the NCBI files first.</p>
-<p>Had to replace <code>superkingdom</code> designation in NCBI NR <code>node.dmp</code>, as this is a recent change at NCBI and <a href="https://github.com/bbuchfink/diamond"><code>DIAMOND</code></a> does not yet have a release to handle this change in nomenclature.</p>
-<p><code>sed -i 's/domain/superkingdom/g' nodes.dmp</code></p>
-<p>And, I actually had to replace all the new ranks (“domain”, “realm”, “acellular root”, and “cellular root”) in <code>nodes.dmp</code> and <code>names.dmp</code> with “superkingdom” (figured out due to <a href="https://github.com/bbuchfink/diamond/issues/866#issuecomment-2792526476">this comment in this GitHub issue</a>).</p>
-<section id="make-the-database" class="level2">
-<h2 class="anchored" data-anchor-id="make-the-database">Make the Database</h2>
-<p>Ran this command to make the database:</p>
-<div class="sourceCode" id="cb1" style="background: #f1f3f5;"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb1-1"><span class="ex" style="color: null;
-background-color: null;
-font-style: inherit;">/home/shared/diamond-2.1.8</span> makedb <span class="dt" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">\</span></span>
-<span id="cb1-2">--in ncbi-nr-20250429.fasta <span class="dt" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">\</span></span>
-<span id="cb1-3">--db ncbi-nr-20250429 <span class="dt" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">\</span></span>
-<span id="cb1-4">--taxonmap prot.accession2taxid <span class="dt" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">\</span></span>
-<span id="cb1-5">--taxonnodes nodes.dmp <span class="dt" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">\</span></span>
-<span id="cb1-6">--taxonnames names.dmp <span class="dt" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">\</span></span>
-<span id="cb1-7">--threads 40</span></code></pre></div>
-<p>The <code>--db ncbi-nr-20250429</code> simply specifies the output file name to be used for the resulting database.</p>
-</section>
-</section>
-<section id="results" class="level1">
-<h1>RESULTS</h1>
-<p>The final database is located here:</p>
-<p><code>/home/shared/16TB_HDD_01/sam/databases/blastdbs/ncbi-nr-20250429.dmnd</code></p>
-<p>The database is <em>349GB</em>!</p>
-</section>
-<section id="summary" class="level1">
-<h1>SUMMARY</h1>
-<p>Overall, the entire process of downloading, unzipping, and creating the database took nearly 6hrs.</p>
-
-
-</section>
-
- ]]></description>
-  <category>2025</category>
-  <category>DIAMOND</category>
-  <category>BLAST</category>
-  <category>Raven</category>
-  <guid>https://robertslab.github.io/sams-notebook/posts/2025/2025-04-29-DIAMOND-BLAST-Database---NCBI-NR-Database-and-Taxonomy-Nodes-on-Raven/</guid>
-  <pubDate>Tue, 29 Apr 2025 07:00:00 GMT</pubDate>
 </item>
 </channel>
 </rss>
