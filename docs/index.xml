@@ -10,7 +10,44 @@
 <atom:link href="https://robertslab.github.io/sams-notebook/index.xml" rel="self" type="application/rss+xml"/>
 <description></description>
 <generator>quarto-1.6.42</generator>
-<lastBuildDate>Tue, 05 Aug 2025 07:00:00 GMT</lastBuildDate>
+<lastBuildDate>Wed, 13 Aug 2025 07:00:00 GMT</lastBuildDate>
+<item>
+  <title>Data Management - Deletion of Amazon AWS S3 Glacier Archives</title>
+  <dc:creator>Sam White</dc:creator>
+  <link>https://robertslab.github.io/sams-notebook/posts/2025/2025-08-13-Data-Management---Deletion-of-Amazon-AWS-S3-Glacier-Archives/</link>
+  <description><![CDATA[ 
+
+
+
+
+
+<p>Wow! After literal <em>months</em> of trying to delete all of our Amazon AWS S3 Glacier Archives, I finally managed to succeed! Seriously, <em>MONTHS</em>! Crazy!</p>
+<p>Here’s the backstory.</p>
+<ol type="1">
+<li><p>Glacier archives were created using the Synology Glacier app many years ago to archive all of our next generation sequencing data. It was a LOT of data: <em>terabytes</em>! Amazon Glacier provided a relatively affordable way to keep all of this data backed up: ~$500 - $600/yr. This was cheaper than purchasing a dedicated server with the capacity to provide the necessary storage to backup our data. Additionally, the Synology Glacier app provided a simple, automated means to perform the backup.</p></li>
+<li><p>Decided we didn’t want to keep paying for the storage, we were having problems with the Synology Glacier app’s ability to actually perform the backups (consistently started failing, with an error message that didn’t provide much help), and newer versions of the Synology Disk Station Manager (DSM) no longer included a Glacier app to perform these backups.</p></li>
+<li><p>You cannot delete an S3 Glacier Vault if it contains <em>any</em> files. Vaults have to be empty before they can be deleted. However, our vaults consisted of terabytes of data and <em>millions</em> of archive files. Delting these manually would be virtually impossible.</p></li>
+<li><p>First attempt at automated deletion repeatedly failed. This involved using the Amazon AWS command line and the virtual terminal. Due to the massive quantity of archives, the process consistently failed due to memory constratints. Additionally, spinning up other types of AWS EC2 instances with significantly larger amounts of memory also failed - due to memory constraints.</p></li>
+<li><p>I discovered a promising program called <a href="https://fastglacier.com/">FastGlacier</a>. This is a Windows-based GUI. It worked well at deleting small numbers of files. This was great in the beginning because many of the archives were multiple gigaytes in size. However, trying to select and delete the remaining <em>millions</em> of archives always caused the program to lockup. Trying to perform deletions in chunks of ~100 files sort of worked, but the program still frequently locked up and crashed.</p></li>
+<li><p>Yesterday, I finally came <a href="https://github.com/aws-solutions-library-samples/guidance-for-automated-deletion-of-vault-archives-in-amazon-s3-glacier">across another solution</a> (GitHub), this one designed by Amazon AWS themselves! It’s a step-by-step guide to setting up a “Stack” in “AWS CloudTrail” to automatically delete archives in a vault. I have no idea what any of it really means, but I followed the instructions and the remaining ~2M files were deleted in ~12hrs!!!!</p></li>
+</ol>
+<p>At last, we are free of Amazon S3 Glacier!!!</p>
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="https://robertslab.github.io/sams-notebook/posts/2025/2025-08-13-Data-Management---Deletion-of-Amazon-AWS-S3-Glacier-Archives/20250813-aws-glacier-deletion.png" class="img-fluid figure-img"></p>
+<figcaption>Screenshot of Amazon AWS confirming deletion of last S3 Glacier vault.</figcaption>
+</figure>
+</div>
+
+
+
+ ]]></description>
+  <category>2025</category>
+  <category>AWS</category>
+  <category>glacier</category>
+  <guid>https://robertslab.github.io/sams-notebook/posts/2025/2025-08-13-Data-Management---Deletion-of-Amazon-AWS-S3-Glacier-Archives/</guid>
+  <pubDate>Wed, 13 Aug 2025 07:00:00 GMT</pubDate>
+</item>
 <item>
   <title>Data Received - Pacific cod RNA-seq from Psomagen Project AN00025268</title>
   <dc:creator>Sam White</dc:creator>
@@ -11020,55 +11057,6 @@ Note
   <category>Direct-zol RNA MiniPrep Plus Kit</category>
   <category>Magallana gigas</category>
   <guid>https://robertslab.github.io/sams-notebook/posts/2025/2025-05-12-RNA-Isolation---C.gigas-Lifestage-Carryover-Samples-Using-Direct-zol-RNA-MiniPrep-Plus-Kit/</guid>
-  <pubDate>Mon, 12 May 2025 07:00:00 GMT</pubDate>
-</item>
-<item>
-  <title>Sample Homogenization - C.gigas Lifestage Carryover Samples Using TriZol and Bullet Blender</title>
-  <dc:creator>Sam White</dc:creator>
-  <link>https://robertslab.github.io/sams-notebook/posts/2025/2025-05-12-Sample-Homogenization---C.gigas-Lifestage-Carryover-Samples-Using-TriZol-and-Bullet-Blender/</link>
-  <description><![CDATA[ 
-
-
-
-
-
-<section id="intro" class="level1">
-<h1>INTRO</h1>
-<p>I was <a href="https://github.com/RobertsLab/resources/issues/2062">asked to isolate RNA from a list of 60 samples</a> (GitHub Issue) from a number of <a href="http://en.wikipedia.org/wiki/Pacific_oyster"><em>Crassostrea gigas</em> (Pacific oyster)</a> spat and seed that had been collected as part of the <a href="https://github.com/RobertsLab/project-gigas-carryover/tree/main/lifestage_carryover"><code>project-gigas-carryover</code></a> (GitHub repo).</p>
-</section>
-<section id="materials-methods" class="level1">
-<h1>MATERIALS &amp; METHODS</h1>
-<p>Oysters had been previously preserved in RNAlater (Ambion), supernatant removed, and then frozen @ -80<sup>o</sup>C. All samples were treated in the following fashion. Here’s the full <a href="https://github.com/RobertsLab/project-gigas-carryover/blob/main/lifestage_carryover/data/sampling_metadata/20241230_rna_extractions.csv">list of samples</a> (GitHub).</p>
-<p>Samples were transferred to 1.5mL SafeLock (Eppendorf) microcentrifuge tubes containig ~100uL of 0.5mm zirconium oxide beads and 250uL of TriZol. Samples were homogenized using the Roberts Lab Bullet Blender 5E Gold + (NextAdvance) with 1.5mL tube adapters for 5mins at speed 12. The Bullet Blender was pre-cooled, and cooled, using dry ice.</p>
-<p>Samples with shells which did not appear to fully homogenize were manually disrupted in the existing tube using a disposable microfuge pestle.</p>
-<p>After homogenization, 500uL of TriZol was added to each tube, vortexed, incubated at room temperature for ~10mins, and subsequently processed for RNA isolation.</p>
-<div class="callout callout-style-default callout-note callout-titled">
-<div class="callout-header d-flex align-content-center">
-<div class="callout-icon-container">
-<i class="callout-icon"></i>
-</div>
-<div class="callout-title-container flex-fill">
-Note
-</div>
-</div>
-<div class="callout-body-container callout-body">
-<p>Due to time constraints, the following samples were stored overnight at -20<sup>o</sup>C:</p>
-<p><code>78</code> <code>79</code> <code>81</code> <code>83</code> <code>86</code> <code>88</code> <code>89</code> <code>92</code> <code>93</code> <code>96</code> <code>97</code> <code>98</code></p>
-</div>
-</div>
-
-
-</section>
-
- ]]></description>
-  <category>2025</category>
-  <category>Bullet Blender</category>
-  <category>homogenization</category>
-  <category>TriZol</category>
-  <category>Crassostrea gigas</category>
-  <category>Pacific oyster</category>
-  <category>Magallana gigas</category>
-  <guid>https://robertslab.github.io/sams-notebook/posts/2025/2025-05-12-Sample-Homogenization---C.gigas-Lifestage-Carryover-Samples-Using-TriZol-and-Bullet-Blender/</guid>
   <pubDate>Mon, 12 May 2025 07:00:00 GMT</pubDate>
 </item>
 </channel>
