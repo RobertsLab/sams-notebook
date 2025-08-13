@@ -1,0 +1,33 @@
+---
+author: Sam White
+toc-title: Contents
+toc-depth: 5
+toc-location: left
+title: Data Management - Deletion of Amazon AWS S3 Glacier Archives
+date: '2025-08-13'
+draft: false
+engine: knitr
+categories: 
+  - "2025"
+  - "AWS"
+  - "glacier"
+---
+Wow! After literal _months_ of trying to delete all of our Amazon AWS S3 Glacier Archives, I finally managed to succeed! Seriously, _MONTHS_! Crazy!
+
+Here's the backstory.
+
+1. Glacier archives were created using the Synology Glacier app many years ago to archive all of our next generation sequencing data. It was a LOT of data: _terabytes_! Amazon Glacier provided a relatively affordable way to keep all of this data backed up: ~$500 - $600/yr. This was cheaper than purchasing a dedicated server with the capacity to provide the necessary storage to backup our data. Additionally, the Synology Glacier app provided a simple, automated means to perform the backup.
+
+2. Decided we didn't want to keep paying for the storage, we were having problems with the Synology Glacier app's ability to actually perform the backups (consistently started failing, with an error message that didn't provide much help), and newer versions of the Synology Disk Station Manager (DSM) no longer included a Glacier app to perform these backups.
+
+3. You cannot delete an S3 Glacier Vault if it contains _any_ files. Vaults have to be empty before they can be deleted. However, our vaults consisted of terabytes of data and _millions_ of archive files. Delting these manually would be virtually impossible.
+
+4. First attempt at automated deletion repeatedly failed. This involved using the Amazon AWS command line and the virtual terminal. Due to the massive quantity of archives, the process consistently failed due to memory constratints. Additionally, spinning up other types of AWS EC2 instances with significantly larger amounts of memory also failed - due to memory constraints.
+
+5. I discovered a promising program called [FastGlacier](https://fastglacier.com/). This is a Windows-based GUI. It worked well at deleting small numbers of files. This was great in the beginning because many of the archives were multiple gigaytes in size. However, trying to select and delete the remaining _millions_ of archives always caused the program to lockup. Trying to perform deletions in chunks of ~100 files sort of worked, but the program still frequently locked up and crashed.
+
+6. Yesterday, I finally came [across another solution](https://github.com/aws-solutions-library-samples/guidance-for-automated-deletion-of-vault-archives-in-amazon-s3-glacier) (GitHub), this one designed by Amazon AWS themselves! It's a step-by-step guide to setting up a "Stack" in "AWS CloudTrail" to automatically delete archives in a vault. I have no idea what any of it really means, but I followed the instructions and the remaining ~2M files were deleted in ~12hrs!!!!
+
+At last, we are free of Amazon S3 Glacier!!!
+
+![Screenshot of Amazon AWS confirming deletion of last S3 Glacier vault.](./20250813-aws-glacier-deletion.png)
