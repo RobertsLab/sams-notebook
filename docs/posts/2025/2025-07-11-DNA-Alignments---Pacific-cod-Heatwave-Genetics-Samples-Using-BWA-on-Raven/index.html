@@ -276,21 +276,30 @@ gtag('config', 'G-7483T61T11', { 'anonymize_ip': true});
   <li><a href="#inputs" id="toc-inputs" class="nav-link" data-scroll-target="#inputs">2 INPUTS</a></li>
   <li><a href="#outputs" id="toc-outputs" class="nav-link" data-scroll-target="#outputs">3 OUTPUTS</a></li>
   <li><a href="#variables" id="toc-variables" class="nav-link" data-scroll-target="#variables">4 VARIABLES</a></li>
-  <li><a href="#alignments" id="toc-alignments" class="nav-link" data-scroll-target="#alignments">5 ALIGNMENTS</a>
+  <li><a href="#load-conda-environment" id="toc-load-conda-environment" class="nav-link" data-scroll-target="#load-conda-environment">5 Load Conda environment</a></li>
+  <li><a href="#alignments" id="toc-alignments" class="nav-link" data-scroll-target="#alignments">6 ALIGNMENTS</a>
   <ul>
-  <li><a href="#create-bwa-index" id="toc-create-bwa-index" class="nav-link" data-scroll-target="#create-bwa-index">5.1 Create BWA Index</a></li>
-  <li><a href="#check-fastqs" id="toc-check-fastqs" class="nav-link" data-scroll-target="#check-fastqs">5.2 Check FastQs</a></li>
-  <li><a href="#align-with-bwa" id="toc-align-with-bwa" class="nav-link" data-scroll-target="#align-with-bwa">5.3 Align with BWA</a></li>
+  <li><a href="#create-bwa-index" id="toc-create-bwa-index" class="nav-link" data-scroll-target="#create-bwa-index">6.1 Create BWA Index</a></li>
+  <li><a href="#check-fastqs" id="toc-check-fastqs" class="nav-link" data-scroll-target="#check-fastqs">6.2 Check FastQs</a></li>
+  <li><a href="#align-with-bwa" id="toc-align-with-bwa" class="nav-link" data-scroll-target="#align-with-bwa">6.3 Align with BWA</a></li>
   </ul></li>
-  <li><a href="#mark-duplicates" id="toc-mark-duplicates" class="nav-link" data-scroll-target="#mark-duplicates">6 MARK DUPLICATES</a>
+  <li><a href="#mark-duplicates" id="toc-mark-duplicates" class="nav-link" data-scroll-target="#mark-duplicates">7 MARK DUPLICATES</a>
   <ul>
-  <li><a href="#set-read-groups" id="toc-set-read-groups" class="nav-link" data-scroll-target="#set-read-groups">6.1 Set read groups</a></li>
-  <li><a href="#picard-markduplicates" id="toc-picard-markduplicates" class="nav-link" data-scroll-target="#picard-markduplicates">6.2 Picard MarkDuplicates</a></li>
+  <li><a href="#set-read-groups" id="toc-set-read-groups" class="nav-link" data-scroll-target="#set-read-groups">7.1 Set read groups</a></li>
+  <li><a href="#picard-markduplicates" id="toc-picard-markduplicates" class="nav-link" data-scroll-target="#picard-markduplicates">7.2 Picard MarkDuplicates</a></li>
   </ul></li>
-  <li><a href="#clip-overlaps" id="toc-clip-overlaps" class="nav-link" data-scroll-target="#clip-overlaps">7 CLIP OVERLAPS</a></li>
-  <li><a href="#samtools-depth" id="toc-samtools-depth" class="nav-link" data-scroll-target="#samtools-depth">8 SAMTOOLS DEPTH</a></li>
-  <li><a href="#index-bams" id="toc-index-bams" class="nav-link" data-scroll-target="#index-bams">9 INDEX BAMS</a></li>
-  <li><a href="#references" id="toc-references" class="nav-link" data-scroll-target="#references">10 REFERENCES</a></li>
+  <li><a href="#clip-overlaps" id="toc-clip-overlaps" class="nav-link" data-scroll-target="#clip-overlaps">8 CLIP OVERLAPS</a></li>
+  <li><a href="#depths" id="toc-depths" class="nav-link" data-scroll-target="#depths">9 DEPTHS</a>
+  <ul>
+  <li><a href="#samtools-depth" id="toc-samtools-depth" class="nav-link" data-scroll-target="#samtools-depth">9.1 samtools depth</a></li>
+  <li><a href="#mean-depths" id="toc-mean-depths" class="nav-link" data-scroll-target="#mean-depths">9.2 Mean depths</a></li>
+  </ul></li>
+  <li><a href="#index-bams" id="toc-index-bams" class="nav-link" data-scroll-target="#index-bams">10 INDEX BAMS</a></li>
+  <li><a href="#stats-files" id="toc-stats-files" class="nav-link" data-scroll-target="#stats-files">11 STATS FILES</a>
+  <ul>
+  <li><a href="#multiqc-on-picard-markdduplicates-and-samtools-statsflagstat-files" id="toc-multiqc-on-picard-markdduplicates-and-samtools-statsflagstat-files" class="nav-link" data-scroll-target="#multiqc-on-picard-markdduplicates-and-samtools-statsflagstat-files">11.1 MultiQC on Picard MarkdDuplicates and samtools stats/flagstat files</a></li>
+  </ul></li>
+  <li><a href="#references" id="toc-references" class="nav-link" data-scroll-target="#references">12 REFERENCES</a></li>
   </ul>
 </nav>
 </nav>
@@ -349,6 +358,8 @@ Note
 <li>Deduplicated, sorted, clipped BAM files</li>
 <li>samtools depth file</li>
 <li>BAM index files</li>
+<li>samtools stats file for BWA alignments</li>
+<li>samtools flagstat file for BWA alignments</li>
 </ul>
 <p>NOTE: Due to the size of the output files, they are not included in the repository. Instead, you can find them in the here:</p>
 <ul>
@@ -367,66 +378,89 @@ Note
 <span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a>programs_dir <span class="ot">&lt;-</span> <span class="fu">file.path</span>(<span class="st">""</span>, <span class="st">"home"</span>, <span class="st">"shared"</span>)</span>
 <span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a>bamUtil_dir <span class="ot">&lt;-</span> <span class="fu">file.path</span>(programs_dir, <span class="st">"bamUtil-1.0.15"</span>, <span class="st">"bin"</span>)</span>
 <span id="cb1-10"><a href="#cb1-10" aria-hidden="true" tabindex="-1"></a>bwa <span class="ot">&lt;-</span> <span class="fu">file.path</span>(programs_dir, <span class="st">"bwa-0.7.17"</span>, <span class="st">"bwa"</span>)</span>
-<span id="cb1-11"><a href="#cb1-11" aria-hidden="true" tabindex="-1"></a>picard_dir <span class="ot">&lt;-</span> <span class="fu">file.path</span>(programs_dir, <span class="st">"picard-3.4.0-6-g80ca98e2a"</span>, <span class="st">"build"</span>, <span class="st">"libs"</span>)</span>
-<span id="cb1-12"><a href="#cb1-12" aria-hidden="true" tabindex="-1"></a>picard <span class="ot">&lt;-</span> <span class="fu">file.path</span>(picard_dir, <span class="st">"picard.jar"</span>)</span>
-<span id="cb1-13"><a href="#cb1-13" aria-hidden="true" tabindex="-1"></a>R1_suffix <span class="ot">&lt;-</span> <span class="st">"_trimmed_clipped_R1_paired.fq.gz"</span></span>
-<span id="cb1-14"><a href="#cb1-14" aria-hidden="true" tabindex="-1"></a>R2_suffix <span class="ot">&lt;-</span> <span class="st">"_trimmed_clipped_R2_paired.fq.gz"</span></span>
-<span id="cb1-15"><a href="#cb1-15" aria-hidden="true" tabindex="-1"></a>samtools_dir <span class="ot">&lt;-</span> <span class="fu">file.path</span>(programs_dir, <span class="st">"samtools-1.12"</span>)</span>
-<span id="cb1-16"><a href="#cb1-16" aria-hidden="true" tabindex="-1"></a>samtools <span class="ot">&lt;-</span> <span class="fu">file.path</span>(samtools_dir, <span class="st">"samtools"</span>)</span>
-<span id="cb1-17"><a href="#cb1-17" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-18"><a href="#cb1-18" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-19"><a href="#cb1-19" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-20"><a href="#cb1-20" aria-hidden="true" tabindex="-1"></a><span class="co"># FILES</span></span>
-<span id="cb1-21"><a href="#cb1-21" aria-hidden="true" tabindex="-1"></a>genome_fasta <span class="ot">&lt;-</span> <span class="fu">file.path</span>(data_dir, <span class="st">"GCF_031168955.1_ASM3116895v1_genomic.fna"</span>)</span>
-<span id="cb1-22"><a href="#cb1-22" aria-hidden="true" tabindex="-1"></a>bwa_index <span class="ot">&lt;-</span> <span class="fu">file.path</span>(data_dir, <span class="st">"bwa-GCF_031168955.1_ASM3116895v1_genomic"</span>)</span>
+<span id="cb1-11"><a href="#cb1-11" aria-hidden="true" tabindex="-1"></a>conda_env_name <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="st">"base"</span>)</span>
+<span id="cb1-12"><a href="#cb1-12" aria-hidden="true" tabindex="-1"></a>conda_path <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="st">"/home/sam/programs/mambaforge/condabin/conda"</span>)</span>
+<span id="cb1-13"><a href="#cb1-13" aria-hidden="true" tabindex="-1"></a>mean_depths <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="st">"/home/shared/16TB_HDD_01/sam/gitrepos/WGSfqs-to-genolikelihoods/mean_cov_ind.py"</span>)</span>
+<span id="cb1-14"><a href="#cb1-14" aria-hidden="true" tabindex="-1"></a>multiqc <span class="ot">&lt;-</span> <span class="fu">file.path</span>(<span class="st">""</span>, <span class="st">"home"</span>, <span class="st">"sam"</span>, <span class="st">"programs"</span>, <span class="st">"mambaforge"</span>, <span class="st">"bin"</span>, <span class="st">"multiqc"</span>)</span>
+<span id="cb1-15"><a href="#cb1-15" aria-hidden="true" tabindex="-1"></a>picard_dir <span class="ot">&lt;-</span> <span class="fu">file.path</span>(programs_dir, <span class="st">"picard-3.4.0-6-g80ca98e2a"</span>, <span class="st">"build"</span>, <span class="st">"libs"</span>)</span>
+<span id="cb1-16"><a href="#cb1-16" aria-hidden="true" tabindex="-1"></a>picard <span class="ot">&lt;-</span> <span class="fu">file.path</span>(picard_dir, <span class="st">"picard.jar"</span>)</span>
+<span id="cb1-17"><a href="#cb1-17" aria-hidden="true" tabindex="-1"></a>R1_suffix <span class="ot">&lt;-</span> <span class="st">"_trimmed_clipped_R1_paired.fq.gz"</span></span>
+<span id="cb1-18"><a href="#cb1-18" aria-hidden="true" tabindex="-1"></a>R2_suffix <span class="ot">&lt;-</span> <span class="st">"_trimmed_clipped_R2_paired.fq.gz"</span></span>
+<span id="cb1-19"><a href="#cb1-19" aria-hidden="true" tabindex="-1"></a>samtools_dir <span class="ot">&lt;-</span> <span class="fu">file.path</span>(programs_dir, <span class="st">"samtools-1.12"</span>)</span>
+<span id="cb1-20"><a href="#cb1-20" aria-hidden="true" tabindex="-1"></a>samtools <span class="ot">&lt;-</span> <span class="fu">file.path</span>(samtools_dir, <span class="st">"samtools"</span>)</span>
+<span id="cb1-21"><a href="#cb1-21" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-22"><a href="#cb1-22" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb1-23"><a href="#cb1-23" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-24"><a href="#cb1-24" aria-hidden="true" tabindex="-1"></a><span class="co"># THREADS</span></span>
-<span id="cb1-25"><a href="#cb1-25" aria-hidden="true" tabindex="-1"></a>threads <span class="ot">&lt;-</span> <span class="st">"40"</span></span>
-<span id="cb1-26"><a href="#cb1-26" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-24"><a href="#cb1-24" aria-hidden="true" tabindex="-1"></a><span class="co"># FILES</span></span>
+<span id="cb1-25"><a href="#cb1-25" aria-hidden="true" tabindex="-1"></a>genome_fasta <span class="ot">&lt;-</span> <span class="fu">file.path</span>(data_dir, <span class="st">"GCF_031168955.1_ASM3116895v1_genomic.fna"</span>)</span>
+<span id="cb1-26"><a href="#cb1-26" aria-hidden="true" tabindex="-1"></a>bwa_index <span class="ot">&lt;-</span> <span class="fu">file.path</span>(data_dir, <span class="st">"bwa-GCF_031168955.1_ASM3116895v1_genomic"</span>)</span>
 <span id="cb1-27"><a href="#cb1-27" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-28"><a href="#cb1-28" aria-hidden="true" tabindex="-1"></a><span class="co"># FORMATTING</span></span>
-<span id="cb1-29"><a href="#cb1-29" aria-hidden="true" tabindex="-1"></a>line <span class="ot">&lt;-</span> <span class="st">"-----------------------------------------------"</span></span>
+<span id="cb1-28"><a href="#cb1-28" aria-hidden="true" tabindex="-1"></a><span class="co"># THREADS</span></span>
+<span id="cb1-29"><a href="#cb1-29" aria-hidden="true" tabindex="-1"></a>threads <span class="ot">&lt;-</span> <span class="st">"40"</span></span>
 <span id="cb1-30"><a href="#cb1-30" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-31"><a href="#cb1-31" aria-hidden="true" tabindex="-1"></a><span class="co"># Export these as environment variables for bash chunks.</span></span>
-<span id="cb1-32"><a href="#cb1-32" aria-hidden="true" tabindex="-1"></a><span class="fu">Sys.setenv</span>(</span>
-<span id="cb1-33"><a href="#cb1-33" aria-hidden="true" tabindex="-1"></a>  <span class="at">bamUtil_dir =</span> bamUtil_dir,</span>
-<span id="cb1-34"><a href="#cb1-34" aria-hidden="true" tabindex="-1"></a>  <span class="at">bwa =</span> bwa,</span>
-<span id="cb1-35"><a href="#cb1-35" aria-hidden="true" tabindex="-1"></a>  <span class="at">bwa_index =</span> bwa_index,</span>
-<span id="cb1-36"><a href="#cb1-36" aria-hidden="true" tabindex="-1"></a>  <span class="at">data_dir =</span> data_dir,</span>
-<span id="cb1-37"><a href="#cb1-37" aria-hidden="true" tabindex="-1"></a>  <span class="at">genome_fasta =</span> genome_fasta,</span>
-<span id="cb1-38"><a href="#cb1-38" aria-hidden="true" tabindex="-1"></a>  <span class="at">line =</span> line,</span>
-<span id="cb1-39"><a href="#cb1-39" aria-hidden="true" tabindex="-1"></a>  <span class="at">output_dir =</span> output_dir,</span>
-<span id="cb1-40"><a href="#cb1-40" aria-hidden="true" tabindex="-1"></a>  <span class="at">picard_dir =</span> picard_dir,</span>
-<span id="cb1-41"><a href="#cb1-41" aria-hidden="true" tabindex="-1"></a>  <span class="at">picard =</span> picard,</span>
-<span id="cb1-42"><a href="#cb1-42" aria-hidden="true" tabindex="-1"></a>  <span class="at">top_output_dir =</span> top_output_dir,</span>
-<span id="cb1-43"><a href="#cb1-43" aria-hidden="true" tabindex="-1"></a>  <span class="at">R1_suffix =</span> R1_suffix,</span>
-<span id="cb1-44"><a href="#cb1-44" aria-hidden="true" tabindex="-1"></a>  <span class="at">R2_suffix =</span> R2_suffix,</span>
-<span id="cb1-45"><a href="#cb1-45" aria-hidden="true" tabindex="-1"></a>  <span class="at">samtools =</span> samtools,</span>
-<span id="cb1-46"><a href="#cb1-46" aria-hidden="true" tabindex="-1"></a>  <span class="at">threads =</span> threads,</span>
-<span id="cb1-47"><a href="#cb1-47" aria-hidden="true" tabindex="-1"></a>  <span class="at">trimmed_reads_dir =</span> trimmed_reads_dir</span>
-<span id="cb1-48"><a href="#cb1-48" aria-hidden="true" tabindex="-1"></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span id="cb1-31"><a href="#cb1-31" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-32"><a href="#cb1-32" aria-hidden="true" tabindex="-1"></a><span class="co"># FORMATTING</span></span>
+<span id="cb1-33"><a href="#cb1-33" aria-hidden="true" tabindex="-1"></a>line <span class="ot">&lt;-</span> <span class="st">"-----------------------------------------------"</span></span>
+<span id="cb1-34"><a href="#cb1-34" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-35"><a href="#cb1-35" aria-hidden="true" tabindex="-1"></a><span class="co"># Export these as environment variables for bash chunks.</span></span>
+<span id="cb1-36"><a href="#cb1-36" aria-hidden="true" tabindex="-1"></a><span class="fu">Sys.setenv</span>(</span>
+<span id="cb1-37"><a href="#cb1-37" aria-hidden="true" tabindex="-1"></a>  <span class="at">bamUtil_dir =</span> bamUtil_dir,</span>
+<span id="cb1-38"><a href="#cb1-38" aria-hidden="true" tabindex="-1"></a>  <span class="at">bwa =</span> bwa,</span>
+<span id="cb1-39"><a href="#cb1-39" aria-hidden="true" tabindex="-1"></a>  <span class="at">bwa_index =</span> bwa_index,</span>
+<span id="cb1-40"><a href="#cb1-40" aria-hidden="true" tabindex="-1"></a>  <span class="at">data_dir =</span> data_dir,</span>
+<span id="cb1-41"><a href="#cb1-41" aria-hidden="true" tabindex="-1"></a>  <span class="at">genome_fasta =</span> genome_fasta,</span>
+<span id="cb1-42"><a href="#cb1-42" aria-hidden="true" tabindex="-1"></a>  <span class="at">line =</span> line,</span>
+<span id="cb1-43"><a href="#cb1-43" aria-hidden="true" tabindex="-1"></a>  <span class="at">mean_depths =</span> mean_depths,</span>
+<span id="cb1-44"><a href="#cb1-44" aria-hidden="true" tabindex="-1"></a>  <span class="at">multiqc =</span> multiqc,</span>
+<span id="cb1-45"><a href="#cb1-45" aria-hidden="true" tabindex="-1"></a>  <span class="at">output_dir =</span> output_dir,</span>
+<span id="cb1-46"><a href="#cb1-46" aria-hidden="true" tabindex="-1"></a>  <span class="at">picard_dir =</span> picard_dir,</span>
+<span id="cb1-47"><a href="#cb1-47" aria-hidden="true" tabindex="-1"></a>  <span class="at">picard =</span> picard,</span>
+<span id="cb1-48"><a href="#cb1-48" aria-hidden="true" tabindex="-1"></a>  <span class="at">top_output_dir =</span> top_output_dir,</span>
+<span id="cb1-49"><a href="#cb1-49" aria-hidden="true" tabindex="-1"></a>  <span class="at">R1_suffix =</span> R1_suffix,</span>
+<span id="cb1-50"><a href="#cb1-50" aria-hidden="true" tabindex="-1"></a>  <span class="at">R2_suffix =</span> R2_suffix,</span>
+<span id="cb1-51"><a href="#cb1-51" aria-hidden="true" tabindex="-1"></a>  <span class="at">samtools =</span> samtools,</span>
+<span id="cb1-52"><a href="#cb1-52" aria-hidden="true" tabindex="-1"></a>  <span class="at">threads =</span> threads,</span>
+<span id="cb1-53"><a href="#cb1-53" aria-hidden="true" tabindex="-1"></a>  <span class="at">trimmed_reads_dir =</span> trimmed_reads_dir</span>
+<span id="cb1-54"><a href="#cb1-54" aria-hidden="true" tabindex="-1"></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</section>
+<section id="load-conda-environment" class="level1">
+<h1>5 Load Conda environment</h1>
+<p>This is needed to have access to Python3.</p>
+<p>If this is successful, the first line of output should show that Python being used.</p>
+<p>E.g.</p>
+<p><code>python:         /home/sam/programs/mambaforge/envs/mirmachine_env/bin/python</code></p>
+<div class="sourceCode" id="cb2"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="fu">use_condaenv</span>(<span class="at">condaenv =</span> conda_env_name, <span class="at">conda =</span> conda_path)</span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a><span class="co"># Check successful env loading</span></span>
+<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a><span class="fu">py_config</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<pre><code>python:         /home/sam/programs/mambaforge/bin/python
+libpython:      /home/sam/programs/mambaforge/lib/libpython3.10.so
+pythonhome:     /home/sam/programs/mambaforge:/home/sam/programs/mambaforge
+version:        3.10.10 | packaged by conda-forge | (main, Mar 24 2023, 20:08:06) [GCC 11.3.0]
+numpy:          /home/sam/programs/mambaforge/lib/python3.10/site-packages/numpy
+numpy_version:  1.24.3
+
+NOTE: Python version was forced by use_python() function</code></pre>
 </section>
 <section id="alignments" class="level1">
-<h1>5 ALIGNMENTS</h1>
+<h1>6 ALIGNMENTS</h1>
 <section id="create-bwa-index" class="level2">
-<h2 class="anchored" data-anchor-id="create-bwa-index">5.1 Create BWA Index</h2>
-<div class="sourceCode" id="cb2"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Check if BWA index file exists</span></span>
-<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a><span class="cf">if</span> <span class="kw">[[</span> <span class="ot">!</span> <span class="ot">-f</span> <span class="st">"bwa-GCF_031168955.1_ASM3116895v1_genomic.bwt"</span> <span class="kw">]];</span> <span class="cf">then</span></span>
-<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a>    <span class="bu">echo</span> <span class="st">"BWA index file not found. Creating BWA index..."</span></span>
-<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a>    <span class="va">${bwa}</span> index <span class="at">-p</span> <span class="va">${data_dir}</span>/<span class="va">${bwa_index}</span> <span class="va">${data_dir}</span>/<span class="va">${genome_fasta}</span></span>
-<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a><span class="cf">else</span></span>
-<span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a>    <span class="bu">echo</span> <span class="st">"BWA index file already exists. Skipping index creation."</span></span>
-<span id="cb2-7"><a href="#cb2-7" aria-hidden="true" tabindex="-1"></a><span class="cf">fi</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<h2 class="anchored" data-anchor-id="create-bwa-index">6.1 Create BWA Index</h2>
+<div class="sourceCode" id="cb4"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Check if BWA index file exists</span></span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a><span class="cf">if</span> <span class="kw">[[</span> <span class="ot">!</span> <span class="ot">-f</span> <span class="st">"bwa-GCF_031168955.1_ASM3116895v1_genomic.bwt"</span> <span class="kw">]];</span> <span class="cf">then</span></span>
+<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a>    <span class="bu">echo</span> <span class="st">"BWA index file not found. Creating BWA index..."</span></span>
+<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a>    <span class="va">${bwa}</span> index <span class="at">-p</span> <span class="va">${data_dir}</span>/<span class="va">${bwa_index}</span> <span class="va">${data_dir}</span>/<span class="va">${genome_fasta}</span></span>
+<span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a><span class="cf">else</span></span>
+<span id="cb4-6"><a href="#cb4-6" aria-hidden="true" tabindex="-1"></a>    <span class="bu">echo</span> <span class="st">"BWA index file already exists. Skipping index creation."</span></span>
+<span id="cb4-7"><a href="#cb4-7" aria-hidden="true" tabindex="-1"></a><span class="cf">fi</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </section>
 <section id="check-fastqs" class="level2">
-<h2 class="anchored" data-anchor-id="check-fastqs">5.2 Check FastQs</h2>
-<div class="sourceCode" id="cb3"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a><span class="fu">ls</span> <span class="at">-1</span> <span class="st">"</span><span class="va">${trimmed_reads_dir}</span><span class="st">/"</span><span class="pp">*</span>.fq.gz <span class="kw">|</span> <span class="fu">wc</span> <span class="at">-l</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<pre><code>ls: cannot access '../data/trimmed-fastqs-heatwave-genetics/*.fq.gz': No such file or directory
-0</code></pre>
+<h2 class="anchored" data-anchor-id="check-fastqs">6.2 Check FastQs</h2>
+<div class="sourceCode" id="cb5"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a><span class="fu">ls</span> <span class="at">-1</span> <span class="st">"</span><span class="va">${trimmed_reads_dir}</span><span class="st">/"</span><span class="pp">*</span>.fq.gz <span class="kw">|</span> <span class="fu">wc</span> <span class="at">-l</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </section>
 <section id="align-with-bwa" class="level2">
-<h2 class="anchored" data-anchor-id="align-with-bwa">5.3 Align with BWA</h2>
+<h2 class="anchored" data-anchor-id="align-with-bwa">6.3 Align with BWA</h2>
 <p>This step will produced sorted BAM files.</p>
 <p>Alignment is done with the <code>-M</code> option, which does the following:</p>
 <blockquote class="blockquote">
@@ -434,77 +468,49 @@ Note
 </blockquote>
 <p><code>samtools view</code> is run with the <code>-F 4</code>. This will exclude unmapped reads.</p>
 <p>See <a href="https://broadinstitute.github.io/picard/explain-flags.html" class="uri">https://broadinstitute.github.io/picard/explain-flags.html</a> and <a href="https://www.htslib.org/doc/samtools-view.html" class="uri">https://www.htslib.org/doc/samtools-view.html</a> for more explanation.</p>
-<div class="sourceCode" id="cb5"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Make output directory, if it doesn't exist</span></span>
-<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a><span class="fu">mkdir</span> <span class="at">--parents</span> <span class="va">${output_dir}</span></span>
-<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a><span class="co"># Declare arrays</span></span>
-<span id="cb5-5"><a href="#cb5-5" aria-hidden="true" tabindex="-1"></a><span class="va">R1_array</span><span class="op">=</span><span class="va">()</span></span>
-<span id="cb5-6"><a href="#cb5-6" aria-hidden="true" tabindex="-1"></a><span class="va">R2_array</span><span class="op">=</span><span class="va">()</span></span>
-<span id="cb5-7"><a href="#cb5-7" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb5-8"><a href="#cb5-8" aria-hidden="true" tabindex="-1"></a><span class="co"># Populate arrays</span></span>
-<span id="cb5-9"><a href="#cb5-9" aria-hidden="true" tabindex="-1"></a><span class="va">R1_array</span><span class="op">=</span><span class="va">(</span><span class="st">"</span><span class="va">${trimmed_reads_dir}</span><span class="st">"</span>/<span class="pp">*</span><span class="st">"</span><span class="va">${R1_suffix}</span><span class="st">"</span><span class="va">)</span></span>
-<span id="cb5-10"><a href="#cb5-10" aria-hidden="true" tabindex="-1"></a><span class="va">R2_array</span><span class="op">=</span><span class="va">(</span><span class="st">"</span><span class="va">${trimmed_reads_dir}</span><span class="st">"</span>/<span class="pp">*</span><span class="st">"</span><span class="va">${R2_suffix}</span><span class="st">"</span><span class="va">)</span></span>
-<span id="cb5-11"><a href="#cb5-11" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb5-12"><a href="#cb5-12" aria-hidden="true" tabindex="-1"></a><span class="co"># Run BWA</span></span>
-<span id="cb5-13"><a href="#cb5-13" aria-hidden="true" tabindex="-1"></a><span class="bu">time</span> <span class="dt">\</span></span>
-<span id="cb5-14"><a href="#cb5-14" aria-hidden="true" tabindex="-1"></a>for fastq in <span class="st">"</span><span class="va">${</span><span class="op">!</span><span class="va">R1_array</span><span class="op">[@]</span><span class="va">}</span><span class="st">"</span></span>
-<span id="cb5-15"><a href="#cb5-15" aria-hidden="true" tabindex="-1"></a><span class="cf">do</span></span>
-<span id="cb5-16"><a href="#cb5-16" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Remove path from FastQ</span></span>
-<span id="cb5-17"><a href="#cb5-17" aria-hidden="true" tabindex="-1"></a>  <span class="va">sample_no_path</span><span class="op">=</span><span class="va">${R1_array</span><span class="op">[</span>fastq<span class="op">]##</span><span class="pp">*</span>/<span class="va">}</span></span>
-<span id="cb5-18"><a href="#cb5-18" aria-hidden="true" tabindex="-1"></a>  </span>
-<span id="cb5-19"><a href="#cb5-19" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Capture just samples name (string before first `_`)</span></span>
-<span id="cb5-20"><a href="#cb5-20" aria-hidden="true" tabindex="-1"></a>  <span class="va">sample</span><span class="op">=</span><span class="va">${sample_no_path</span><span class="op">%%</span>_<span class="pp">*</span><span class="va">}</span></span>
-<span id="cb5-21"><a href="#cb5-21" aria-hidden="true" tabindex="-1"></a>  </span>
-<span id="cb5-22"><a href="#cb5-22" aria-hidden="true" tabindex="-1"></a>  <span class="bu">echo</span> <span class="st">"</span><span class="va">${fastq}</span><span class="st">"</span></span>
-<span id="cb5-23"><a href="#cb5-23" aria-hidden="true" tabindex="-1"></a>  <span class="bu">echo</span> <span class="st">"</span><span class="va">${sample}</span><span class="st">"</span></span>
-<span id="cb5-24"><a href="#cb5-24" aria-hidden="true" tabindex="-1"></a>  </span>
-<span id="cb5-25"><a href="#cb5-25" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Run BWA</span></span>
-<span id="cb5-26"><a href="#cb5-26" aria-hidden="true" tabindex="-1"></a>  <span class="va">${bwa}</span> mem <span class="dt">\</span></span>
-<span id="cb5-27"><a href="#cb5-27" aria-hidden="true" tabindex="-1"></a>  <span class="at">-M</span> <span class="dt">\</span></span>
-<span id="cb5-28"><a href="#cb5-28" aria-hidden="true" tabindex="-1"></a>  <span class="at">-t</span> <span class="va">${threads}</span> <span class="dt">\</span></span>
-<span id="cb5-29"><a href="#cb5-29" aria-hidden="true" tabindex="-1"></a>  <span class="va">${bwa_index}</span> <span class="dt">\</span></span>
-<span id="cb5-30"><a href="#cb5-30" aria-hidden="true" tabindex="-1"></a>  <span class="va">${R1_array</span><span class="op">[</span>fastq<span class="op">]</span><span class="va">}</span> <span class="dt">\</span></span>
-<span id="cb5-31"><a href="#cb5-31" aria-hidden="true" tabindex="-1"></a>  <span class="va">${R2_array</span><span class="op">[</span>fastq<span class="op">]</span><span class="va">}</span> <span class="dt">\</span></span>
-<span id="cb5-32"><a href="#cb5-32" aria-hidden="true" tabindex="-1"></a>  <span class="dv">2</span><span class="op">&gt;</span> <span class="va">${output_dir}</span>/<span class="va">${sample}</span>-bwa.stderr <span class="dt">\</span></span>
-<span id="cb5-33"><a href="#cb5-33" aria-hidden="true" tabindex="-1"></a>  <span class="kw">|</span> <span class="ex">samtools</span> view <span class="at">-@</span> 20 <span class="at">-bS</span> <span class="at">-F</span> 4 <span class="dt">\</span></span>
-<span id="cb5-34"><a href="#cb5-34" aria-hidden="true" tabindex="-1"></a>  <span class="kw">|</span> <span class="ex">samtools</span> sort <span class="at">-@</span> 20 <span class="at">-o</span> <span class="va">${output_dir}</span>/<span class="va">${sample}</span>.sorted.bam</span>
-<span id="cb5-35"><a href="#cb5-35" aria-hidden="true" tabindex="-1"></a><span class="cf">done</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode" id="cb6"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Make output directory, if it doesn't exist</span></span>
+<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a><span class="fu">mkdir</span> <span class="at">--parents</span> <span class="va">${output_dir}</span></span>
+<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-4"><a href="#cb6-4" aria-hidden="true" tabindex="-1"></a><span class="co"># Declare arrays</span></span>
+<span id="cb6-5"><a href="#cb6-5" aria-hidden="true" tabindex="-1"></a><span class="va">R1_array</span><span class="op">=</span><span class="va">()</span></span>
+<span id="cb6-6"><a href="#cb6-6" aria-hidden="true" tabindex="-1"></a><span class="va">R2_array</span><span class="op">=</span><span class="va">()</span></span>
+<span id="cb6-7"><a href="#cb6-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-8"><a href="#cb6-8" aria-hidden="true" tabindex="-1"></a><span class="co"># Populate arrays</span></span>
+<span id="cb6-9"><a href="#cb6-9" aria-hidden="true" tabindex="-1"></a><span class="va">R1_array</span><span class="op">=</span><span class="va">(</span><span class="st">"</span><span class="va">${trimmed_reads_dir}</span><span class="st">"</span>/<span class="pp">*</span><span class="st">"</span><span class="va">${R1_suffix}</span><span class="st">"</span><span class="va">)</span></span>
+<span id="cb6-10"><a href="#cb6-10" aria-hidden="true" tabindex="-1"></a><span class="va">R2_array</span><span class="op">=</span><span class="va">(</span><span class="st">"</span><span class="va">${trimmed_reads_dir}</span><span class="st">"</span>/<span class="pp">*</span><span class="st">"</span><span class="va">${R2_suffix}</span><span class="st">"</span><span class="va">)</span></span>
+<span id="cb6-11"><a href="#cb6-11" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-12"><a href="#cb6-12" aria-hidden="true" tabindex="-1"></a><span class="co"># Run BWA</span></span>
+<span id="cb6-13"><a href="#cb6-13" aria-hidden="true" tabindex="-1"></a><span class="bu">time</span> <span class="dt">\</span></span>
+<span id="cb6-14"><a href="#cb6-14" aria-hidden="true" tabindex="-1"></a>for fastq in <span class="st">"</span><span class="va">${</span><span class="op">!</span><span class="va">R1_array</span><span class="op">[@]</span><span class="va">}</span><span class="st">"</span></span>
+<span id="cb6-15"><a href="#cb6-15" aria-hidden="true" tabindex="-1"></a><span class="cf">do</span></span>
+<span id="cb6-16"><a href="#cb6-16" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Remove path from FastQ</span></span>
+<span id="cb6-17"><a href="#cb6-17" aria-hidden="true" tabindex="-1"></a>  <span class="va">sample_no_path</span><span class="op">=</span><span class="va">${R1_array</span><span class="op">[</span>fastq<span class="op">]##</span><span class="pp">*</span>/<span class="va">}</span></span>
+<span id="cb6-18"><a href="#cb6-18" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb6-19"><a href="#cb6-19" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Capture just samples name (string before first `_`)</span></span>
+<span id="cb6-20"><a href="#cb6-20" aria-hidden="true" tabindex="-1"></a>  <span class="va">sample</span><span class="op">=</span><span class="va">${sample_no_path</span><span class="op">%%</span>_<span class="pp">*</span><span class="va">}</span></span>
+<span id="cb6-21"><a href="#cb6-21" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb6-22"><a href="#cb6-22" aria-hidden="true" tabindex="-1"></a>  <span class="bu">echo</span> <span class="st">"</span><span class="va">${fastq}</span><span class="st">"</span></span>
+<span id="cb6-23"><a href="#cb6-23" aria-hidden="true" tabindex="-1"></a>  <span class="bu">echo</span> <span class="st">"</span><span class="va">${sample}</span><span class="st">"</span></span>
+<span id="cb6-24"><a href="#cb6-24" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb6-25"><a href="#cb6-25" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Run BWA</span></span>
+<span id="cb6-26"><a href="#cb6-26" aria-hidden="true" tabindex="-1"></a>  <span class="va">${bwa}</span> mem <span class="dt">\</span></span>
+<span id="cb6-27"><a href="#cb6-27" aria-hidden="true" tabindex="-1"></a>  <span class="at">-M</span> <span class="dt">\</span></span>
+<span id="cb6-28"><a href="#cb6-28" aria-hidden="true" tabindex="-1"></a>  <span class="at">-t</span> <span class="va">${threads}</span> <span class="dt">\</span></span>
+<span id="cb6-29"><a href="#cb6-29" aria-hidden="true" tabindex="-1"></a>  <span class="va">${bwa_index}</span> <span class="dt">\</span></span>
+<span id="cb6-30"><a href="#cb6-30" aria-hidden="true" tabindex="-1"></a>  <span class="va">${R1_array</span><span class="op">[</span>fastq<span class="op">]</span><span class="va">}</span> <span class="dt">\</span></span>
+<span id="cb6-31"><a href="#cb6-31" aria-hidden="true" tabindex="-1"></a>  <span class="va">${R2_array</span><span class="op">[</span>fastq<span class="op">]</span><span class="va">}</span> <span class="dt">\</span></span>
+<span id="cb6-32"><a href="#cb6-32" aria-hidden="true" tabindex="-1"></a>  <span class="dv">2</span><span class="op">&gt;</span> <span class="va">${output_dir}</span>/<span class="va">${sample}</span>-bwa.stderr <span class="dt">\</span></span>
+<span id="cb6-33"><a href="#cb6-33" aria-hidden="true" tabindex="-1"></a>  <span class="kw">|</span> <span class="ex">samtools</span> view <span class="at">-@</span> 20 <span class="at">-bS</span> <span class="at">-F</span> 4 <span class="dt">\</span></span>
+<span id="cb6-34"><a href="#cb6-34" aria-hidden="true" tabindex="-1"></a>  <span class="kw">|</span> <span class="ex">samtools</span> sort <span class="at">-@</span> 20 <span class="at">-o</span> <span class="va">${output_dir}</span>/<span class="va">${sample}</span>.sorted.bam</span>
+<span id="cb6-35"><a href="#cb6-35" aria-hidden="true" tabindex="-1"></a><span class="cf">done</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </section>
 </section>
 <section id="mark-duplicates" class="level1">
-<h1>6 MARK DUPLICATES</h1>
+<h1>7 MARK DUPLICATES</h1>
 <section id="set-read-groups" class="level2">
-<h2 class="anchored" data-anchor-id="set-read-groups">6.1 Set read groups</h2>
+<h2 class="anchored" data-anchor-id="set-read-groups">7.1 Set read groups</h2>
 <p>Downstream analysis with Picard requires BAM files to have read groups, but these were not set earlier.</p>
-<div class="sourceCode" id="cb6"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> bam <span class="kw">in</span> <span class="va">${output_dir}</span>/<span class="pp">*</span>.sorted.bam</span>
-<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a><span class="cf">do</span></span>
-<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Remove path from BAM</span></span>
-<span id="cb6-4"><a href="#cb6-4" aria-hidden="true" tabindex="-1"></a>  <span class="va">sample_no_path</span><span class="op">=</span><span class="va">${bam</span><span class="op">##</span><span class="pp">*</span>/<span class="va">}</span></span>
-<span id="cb6-5"><a href="#cb6-5" aria-hidden="true" tabindex="-1"></a>  </span>
-<span id="cb6-6"><a href="#cb6-6" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Capture just samples name (string before first `.`)</span></span>
-<span id="cb6-7"><a href="#cb6-7" aria-hidden="true" tabindex="-1"></a>  <span class="va">sample</span><span class="op">=</span><span class="va">${sample_no_path</span><span class="op">%%</span>.<span class="pp">*</span><span class="va">}</span></span>
-<span id="cb6-8"><a href="#cb6-8" aria-hidden="true" tabindex="-1"></a>  </span>
-<span id="cb6-9"><a href="#cb6-9" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Check read group</span></span>
-<span id="cb6-10"><a href="#cb6-10" aria-hidden="true" tabindex="-1"></a>  <span class="bu">echo</span> <span class="st">""</span></span>
-<span id="cb6-11"><a href="#cb6-11" aria-hidden="true" tabindex="-1"></a>  <span class="bu">echo</span> <span class="st">"Read group for </span><span class="va">${bam}</span><span class="st"> before samtools:"</span></span>
-<span id="cb6-12"><a href="#cb6-12" aria-hidden="true" tabindex="-1"></a>  <span class="va">${samtools}</span> view <span class="at">-H</span> <span class="va">${bam}</span> <span class="kw">|</span> <span class="fu">grep</span> <span class="st">'@RG'</span></span>
-<span id="cb6-13"><a href="#cb6-13" aria-hidden="true" tabindex="-1"></a>  <span class="bu">echo</span> <span class="st">""</span></span>
-<span id="cb6-14"><a href="#cb6-14" aria-hidden="true" tabindex="-1"></a>  </span>
-<span id="cb6-15"><a href="#cb6-15" aria-hidden="true" tabindex="-1"></a>  <span class="va">${samtools}</span> addreplacerg <span class="dt">\</span></span>
-<span id="cb6-16"><a href="#cb6-16" aria-hidden="true" tabindex="-1"></a>  <span class="at">-r</span> <span class="st">"@RG\tID:RG1\tSM:</span><span class="va">${sample}</span><span class="st">"</span> <span class="dt">\</span></span>
-<span id="cb6-17"><a href="#cb6-17" aria-hidden="true" tabindex="-1"></a>  <span class="at">-o</span> <span class="va">${output_dir}</span>/<span class="va">${sample}</span>-RG.sorted.bam <span class="dt">\</span></span>
-<span id="cb6-18"><a href="#cb6-18" aria-hidden="true" tabindex="-1"></a>  <span class="at">--threads</span> <span class="va">${threads}</span> <span class="dt">\</span></span>
-<span id="cb6-19"><a href="#cb6-19" aria-hidden="true" tabindex="-1"></a>  <span class="va">${bam}</span></span>
-<span id="cb6-20"><a href="#cb6-20" aria-hidden="true" tabindex="-1"></a>  </span>
-<span id="cb6-21"><a href="#cb6-21" aria-hidden="true" tabindex="-1"></a>  <span class="bu">echo</span> <span class="st">"Read group for </span><span class="va">${output_dir}</span><span class="st">/</span><span class="va">${sample}</span><span class="st">-RG.sorted.bam:"</span></span>
-<span id="cb6-22"><a href="#cb6-22" aria-hidden="true" tabindex="-1"></a>  <span class="va">${samtools}</span> view <span class="at">-H</span> <span class="va">${output_dir}</span>/<span class="va">${sample}</span>-RG.sorted.bam <span class="kw">|</span> <span class="fu">grep</span> <span class="st">'@RG'</span></span>
-<span id="cb6-23"><a href="#cb6-23" aria-hidden="true" tabindex="-1"></a>  <span class="bu">echo</span> <span class="st">""</span></span>
-<span id="cb6-24"><a href="#cb6-24" aria-hidden="true" tabindex="-1"></a><span class="cf">done</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-</section>
-<section id="picard-markduplicates" class="level2">
-<h2 class="anchored" data-anchor-id="picard-markduplicates">6.2 Picard MarkDuplicates</h2>
-<p>Use Picard to mark duplicates</p>
-<div class="sourceCode" id="cb7"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> bam <span class="kw">in</span> <span class="va">${output_dir}</span>/<span class="pp">*</span>RG.sorted.bam</span>
+<div class="sourceCode" id="cb7"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> bam <span class="kw">in</span> <span class="va">${output_dir}</span>/<span class="pp">*</span>.sorted.bam</span>
 <span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a><span class="cf">do</span></span>
 <span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Remove path from BAM</span></span>
 <span id="cb7-4"><a href="#cb7-4" aria-hidden="true" tabindex="-1"></a>  <span class="va">sample_no_path</span><span class="op">=</span><span class="va">${bam</span><span class="op">##</span><span class="pp">*</span>/<span class="va">}</span></span>
@@ -512,20 +518,27 @@ Note
 <span id="cb7-6"><a href="#cb7-6" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Capture just samples name (string before first `.`)</span></span>
 <span id="cb7-7"><a href="#cb7-7" aria-hidden="true" tabindex="-1"></a>  <span class="va">sample</span><span class="op">=</span><span class="va">${sample_no_path</span><span class="op">%%</span>.<span class="pp">*</span><span class="va">}</span></span>
 <span id="cb7-8"><a href="#cb7-8" aria-hidden="true" tabindex="-1"></a>  </span>
-<span id="cb7-9"><a href="#cb7-9" aria-hidden="true" tabindex="-1"></a>  <span class="ex">java</span> <span class="at">-jar</span> <span class="va">${picard}</span> <span class="dt">\</span></span>
-<span id="cb7-10"><a href="#cb7-10" aria-hidden="true" tabindex="-1"></a>  MarkDuplicates <span class="dt">\</span></span>
-<span id="cb7-11"><a href="#cb7-11" aria-hidden="true" tabindex="-1"></a>  I=<span class="va">${bam}</span> <span class="dt">\</span></span>
-<span id="cb7-12"><a href="#cb7-12" aria-hidden="true" tabindex="-1"></a>  O=<span class="va">${output_dir}</span>/<span class="va">${sample}</span>.sorted.dedup.bam <span class="dt">\</span></span>
-<span id="cb7-13"><a href="#cb7-13" aria-hidden="true" tabindex="-1"></a>  M=<span class="va">${output_dir}</span>/<span class="va">${sample}</span>-picard_dups.log <span class="dt">\</span></span>
-<span id="cb7-14"><a href="#cb7-14" aria-hidden="true" tabindex="-1"></a>  VALIDATION_STRINGENCY=SILENT <span class="dt">\</span></span>
-<span id="cb7-15"><a href="#cb7-15" aria-hidden="true" tabindex="-1"></a>  REMOVE_DUPLICATES=true <span class="dt">\</span></span>
-<span id="cb7-16"><a href="#cb7-16" aria-hidden="true" tabindex="-1"></a>  <span class="dv">2</span><span class="op">&gt;</span> <span class="va">${output_dir}</span>/<span class="va">${sample}</span>-picard_dups.stderr</span>
-<span id="cb7-17"><a href="#cb7-17" aria-hidden="true" tabindex="-1"></a><span class="cf">done</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span id="cb7-9"><a href="#cb7-9" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Check read group</span></span>
+<span id="cb7-10"><a href="#cb7-10" aria-hidden="true" tabindex="-1"></a>  <span class="bu">echo</span> <span class="st">""</span></span>
+<span id="cb7-11"><a href="#cb7-11" aria-hidden="true" tabindex="-1"></a>  <span class="bu">echo</span> <span class="st">"Read group for </span><span class="va">${bam}</span><span class="st"> before samtools:"</span></span>
+<span id="cb7-12"><a href="#cb7-12" aria-hidden="true" tabindex="-1"></a>  <span class="va">${samtools}</span> view <span class="at">-H</span> <span class="va">${bam}</span> <span class="kw">|</span> <span class="fu">grep</span> <span class="st">'@RG'</span></span>
+<span id="cb7-13"><a href="#cb7-13" aria-hidden="true" tabindex="-1"></a>  <span class="bu">echo</span> <span class="st">""</span></span>
+<span id="cb7-14"><a href="#cb7-14" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb7-15"><a href="#cb7-15" aria-hidden="true" tabindex="-1"></a>  <span class="va">${samtools}</span> addreplacerg <span class="dt">\</span></span>
+<span id="cb7-16"><a href="#cb7-16" aria-hidden="true" tabindex="-1"></a>  <span class="at">-r</span> <span class="st">"@RG\tID:RG1\tSM:</span><span class="va">${sample}</span><span class="st">"</span> <span class="dt">\</span></span>
+<span id="cb7-17"><a href="#cb7-17" aria-hidden="true" tabindex="-1"></a>  <span class="at">-o</span> <span class="va">${output_dir}</span>/<span class="va">${sample}</span>-RG.sorted.bam <span class="dt">\</span></span>
+<span id="cb7-18"><a href="#cb7-18" aria-hidden="true" tabindex="-1"></a>  <span class="at">--threads</span> <span class="va">${threads}</span> <span class="dt">\</span></span>
+<span id="cb7-19"><a href="#cb7-19" aria-hidden="true" tabindex="-1"></a>  <span class="va">${bam}</span></span>
+<span id="cb7-20"><a href="#cb7-20" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb7-21"><a href="#cb7-21" aria-hidden="true" tabindex="-1"></a>  <span class="bu">echo</span> <span class="st">"Read group for </span><span class="va">${output_dir}</span><span class="st">/</span><span class="va">${sample}</span><span class="st">-RG.sorted.bam:"</span></span>
+<span id="cb7-22"><a href="#cb7-22" aria-hidden="true" tabindex="-1"></a>  <span class="va">${samtools}</span> view <span class="at">-H</span> <span class="va">${output_dir}</span>/<span class="va">${sample}</span>-RG.sorted.bam <span class="kw">|</span> <span class="fu">grep</span> <span class="st">'@RG'</span></span>
+<span id="cb7-23"><a href="#cb7-23" aria-hidden="true" tabindex="-1"></a>  <span class="bu">echo</span> <span class="st">""</span></span>
+<span id="cb7-24"><a href="#cb7-24" aria-hidden="true" tabindex="-1"></a><span class="cf">done</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </section>
-</section>
-<section id="clip-overlaps" class="level1">
-<h1>7 CLIP OVERLAPS</h1>
-<div class="sourceCode" id="cb8"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> bam <span class="kw">in</span> <span class="va">${output_dir}</span>/<span class="pp">*</span>.sorted.dedup.bam</span>
+<section id="picard-markduplicates" class="level2">
+<h2 class="anchored" data-anchor-id="picard-markduplicates">7.2 Picard MarkDuplicates</h2>
+<p>Use Picard to mark duplicates</p>
+<div class="sourceCode" id="cb8"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> bam <span class="kw">in</span> <span class="va">${output_dir}</span>/<span class="pp">*</span>RG.sorted.bam</span>
 <span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a><span class="cf">do</span></span>
 <span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Remove path from BAM</span></span>
 <span id="cb8-4"><a href="#cb8-4" aria-hidden="true" tabindex="-1"></a>  <span class="va">sample_no_path</span><span class="op">=</span><span class="va">${bam</span><span class="op">##</span><span class="pp">*</span>/<span class="va">}</span></span>
@@ -533,50 +546,143 @@ Note
 <span id="cb8-6"><a href="#cb8-6" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Capture just samples name (string before first `.`)</span></span>
 <span id="cb8-7"><a href="#cb8-7" aria-hidden="true" tabindex="-1"></a>  <span class="va">sample</span><span class="op">=</span><span class="va">${sample_no_path</span><span class="op">%%</span>.<span class="pp">*</span><span class="va">}</span></span>
 <span id="cb8-8"><a href="#cb8-8" aria-hidden="true" tabindex="-1"></a>  </span>
-<span id="cb8-9"><a href="#cb8-9" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Run BamUtils to clip overlaps</span></span>
-<span id="cb8-10"><a href="#cb8-10" aria-hidden="true" tabindex="-1"></a>  <span class="va">${bamUtil_dir}</span><span class="ex">/bam</span> <span class="dt">\</span></span>
-<span id="cb8-11"><a href="#cb8-11" aria-hidden="true" tabindex="-1"></a>  clipOverlap <span class="dt">\</span></span>
-<span id="cb8-12"><a href="#cb8-12" aria-hidden="true" tabindex="-1"></a>  <span class="at">--in</span> <span class="va">${bam}</span> <span class="dt">\</span></span>
-<span id="cb8-13"><a href="#cb8-13" aria-hidden="true" tabindex="-1"></a>  <span class="at">--out</span> <span class="va">${output_dir}</span>/<span class="va">${sample}</span>.sorted.dedup.clipped.bam <span class="dt">\</span></span>
-<span id="cb8-14"><a href="#cb8-14" aria-hidden="true" tabindex="-1"></a>  <span class="at">--stats</span> <span class="dt">\</span></span>
-<span id="cb8-15"><a href="#cb8-15" aria-hidden="true" tabindex="-1"></a>  <span class="dv">2</span><span class="op">&gt;</span> <span class="va">${output_dir}</span>/<span class="va">${sample}</span>.sorted.dedup.clipped-bamUtil.stats</span>
-<span id="cb8-16"><a href="#cb8-16" aria-hidden="true" tabindex="-1"></a><span class="cf">done</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span id="cb8-9"><a href="#cb8-9" aria-hidden="true" tabindex="-1"></a>  <span class="ex">java</span> <span class="at">-jar</span> <span class="va">${picard}</span> <span class="dt">\</span></span>
+<span id="cb8-10"><a href="#cb8-10" aria-hidden="true" tabindex="-1"></a>  MarkDuplicates <span class="dt">\</span></span>
+<span id="cb8-11"><a href="#cb8-11" aria-hidden="true" tabindex="-1"></a>  I=<span class="va">${bam}</span> <span class="dt">\</span></span>
+<span id="cb8-12"><a href="#cb8-12" aria-hidden="true" tabindex="-1"></a>  O=<span class="va">${output_dir}</span>/<span class="va">${sample}</span>.sorted.dedup.bam <span class="dt">\</span></span>
+<span id="cb8-13"><a href="#cb8-13" aria-hidden="true" tabindex="-1"></a>  M=<span class="va">${output_dir}</span>/<span class="va">${sample}</span>-picard_dups.log <span class="dt">\</span></span>
+<span id="cb8-14"><a href="#cb8-14" aria-hidden="true" tabindex="-1"></a>  VALIDATION_STRINGENCY=SILENT <span class="dt">\</span></span>
+<span id="cb8-15"><a href="#cb8-15" aria-hidden="true" tabindex="-1"></a>  REMOVE_DUPLICATES=true <span class="dt">\</span></span>
+<span id="cb8-16"><a href="#cb8-16" aria-hidden="true" tabindex="-1"></a>  <span class="dv">2</span><span class="op">&gt;</span> <span class="va">${output_dir}</span>/<span class="va">${sample}</span>-picard_dups.stderr</span>
+<span id="cb8-17"><a href="#cb8-17" aria-hidden="true" tabindex="-1"></a><span class="cf">done</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </section>
-<section id="samtools-depth" class="level1">
-<h1>8 SAMTOOLS DEPTH</h1>
-<div class="sourceCode" id="cb9"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> bam <span class="kw">in</span> <span class="va">${output_dir}</span>/<span class="pp">*</span>.sorted.dedup.clipped.bam</span>
+</section>
+<section id="clip-overlaps" class="level1">
+<h1>8 CLIP OVERLAPS</h1>
+<div class="sourceCode" id="cb9"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> bam <span class="kw">in</span> <span class="va">${output_dir}</span>/<span class="pp">*</span>.sorted.dedup.bam</span>
 <span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a><span class="cf">do</span></span>
 <span id="cb9-3"><a href="#cb9-3" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Remove path from BAM</span></span>
 <span id="cb9-4"><a href="#cb9-4" aria-hidden="true" tabindex="-1"></a>  <span class="va">sample_no_path</span><span class="op">=</span><span class="va">${bam</span><span class="op">##</span><span class="pp">*</span>/<span class="va">}</span></span>
 <span id="cb9-5"><a href="#cb9-5" aria-hidden="true" tabindex="-1"></a>  </span>
-<span id="cb9-6"><a href="#cb9-6" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Capture filename without .bam (string before last `.`)</span></span>
-<span id="cb9-7"><a href="#cb9-7" aria-hidden="true" tabindex="-1"></a>  <span class="va">sample</span><span class="op">=</span><span class="va">${sample_no_path</span><span class="op">%</span>.<span class="pp">*</span><span class="va">}</span></span>
+<span id="cb9-6"><a href="#cb9-6" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Capture just samples name (string before first `.`)</span></span>
+<span id="cb9-7"><a href="#cb9-7" aria-hidden="true" tabindex="-1"></a>  <span class="va">sample</span><span class="op">=</span><span class="va">${sample_no_path</span><span class="op">%%</span>.<span class="pp">*</span><span class="va">}</span></span>
 <span id="cb9-8"><a href="#cb9-8" aria-hidden="true" tabindex="-1"></a>  </span>
 <span id="cb9-9"><a href="#cb9-9" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Run BamUtils to clip overlaps</span></span>
-<span id="cb9-10"><a href="#cb9-10" aria-hidden="true" tabindex="-1"></a>  <span class="va">${samtools}</span> depth <span class="dt">\</span></span>
-<span id="cb9-11"><a href="#cb9-11" aria-hidden="true" tabindex="-1"></a>  <span class="at">-aa</span> <span class="dt">\</span></span>
-<span id="cb9-12"><a href="#cb9-12" aria-hidden="true" tabindex="-1"></a>  <span class="va">${bam}</span> <span class="dt">\</span></span>
-<span id="cb9-13"><a href="#cb9-13" aria-hidden="true" tabindex="-1"></a>  <span class="kw">|</span> <span class="fu">cut</span> <span class="at">-f</span> 3 <span class="dt">\</span></span>
-<span id="cb9-14"><a href="#cb9-14" aria-hidden="true" tabindex="-1"></a>  <span class="kw">|</span> <span class="fu">gzip</span> <span class="dt">\</span></span>
-<span id="cb9-15"><a href="#cb9-15" aria-hidden="true" tabindex="-1"></a>  <span class="op">&gt;</span> <span class="va">${output_dir}</span>/<span class="va">${sample}</span>.depth.gz</span>
-<span id="cb9-16"><a href="#cb9-16" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb9-17"><a href="#cb9-17" aria-hidden="true" tabindex="-1"></a><span class="cf">done</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span id="cb9-10"><a href="#cb9-10" aria-hidden="true" tabindex="-1"></a>  <span class="va">${bamUtil_dir}</span><span class="ex">/bam</span> <span class="dt">\</span></span>
+<span id="cb9-11"><a href="#cb9-11" aria-hidden="true" tabindex="-1"></a>  clipOverlap <span class="dt">\</span></span>
+<span id="cb9-12"><a href="#cb9-12" aria-hidden="true" tabindex="-1"></a>  <span class="at">--in</span> <span class="va">${bam}</span> <span class="dt">\</span></span>
+<span id="cb9-13"><a href="#cb9-13" aria-hidden="true" tabindex="-1"></a>  <span class="at">--out</span> <span class="va">${output_dir}</span>/<span class="va">${sample}</span>.sorted.dedup.clipped.bam <span class="dt">\</span></span>
+<span id="cb9-14"><a href="#cb9-14" aria-hidden="true" tabindex="-1"></a>  <span class="at">--stats</span> <span class="dt">\</span></span>
+<span id="cb9-15"><a href="#cb9-15" aria-hidden="true" tabindex="-1"></a>  <span class="dv">2</span><span class="op">&gt;</span> <span class="va">${output_dir}</span>/<span class="va">${sample}</span>.sorted.dedup.clipped-bamUtil.stats</span>
+<span id="cb9-16"><a href="#cb9-16" aria-hidden="true" tabindex="-1"></a><span class="cf">done</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</section>
+<section id="depths" class="level1">
+<h1>9 DEPTHS</h1>
+<section id="samtools-depth" class="level2">
+<h2 class="anchored" data-anchor-id="samtools-depth">9.1 samtools depth</h2>
+<div class="sourceCode" id="cb10"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> bam <span class="kw">in</span> <span class="va">${output_dir}</span>/<span class="pp">*</span>.sorted.dedup.clipped.bam</span>
+<span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a><span class="cf">do</span></span>
+<span id="cb10-3"><a href="#cb10-3" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Remove path from BAM</span></span>
+<span id="cb10-4"><a href="#cb10-4" aria-hidden="true" tabindex="-1"></a>  <span class="va">sample_no_path</span><span class="op">=</span><span class="va">${bam</span><span class="op">##</span><span class="pp">*</span>/<span class="va">}</span></span>
+<span id="cb10-5"><a href="#cb10-5" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb10-6"><a href="#cb10-6" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Capture filename without .bam (string before last `.`)</span></span>
+<span id="cb10-7"><a href="#cb10-7" aria-hidden="true" tabindex="-1"></a>  <span class="va">sample</span><span class="op">=</span><span class="va">${sample_no_path</span><span class="op">%</span>.<span class="pp">*</span><span class="va">}</span></span>
+<span id="cb10-8"><a href="#cb10-8" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb10-9"><a href="#cb10-9" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Run BamUtils to clip overlaps</span></span>
+<span id="cb10-10"><a href="#cb10-10" aria-hidden="true" tabindex="-1"></a>  <span class="va">${samtools}</span> depth <span class="dt">\</span></span>
+<span id="cb10-11"><a href="#cb10-11" aria-hidden="true" tabindex="-1"></a>  <span class="at">-aa</span> <span class="dt">\</span></span>
+<span id="cb10-12"><a href="#cb10-12" aria-hidden="true" tabindex="-1"></a>  <span class="va">${bam}</span> <span class="dt">\</span></span>
+<span id="cb10-13"><a href="#cb10-13" aria-hidden="true" tabindex="-1"></a>  <span class="kw">|</span> <span class="fu">cut</span> <span class="at">-f</span> 3 <span class="dt">\</span></span>
+<span id="cb10-14"><a href="#cb10-14" aria-hidden="true" tabindex="-1"></a>  <span class="kw">|</span> <span class="fu">gzip</span> <span class="dt">\</span></span>
+<span id="cb10-15"><a href="#cb10-15" aria-hidden="true" tabindex="-1"></a>  <span class="op">&gt;</span> <span class="va">${output_dir}</span>/<span class="va">${sample}</span>.depth.gz</span>
+<span id="cb10-16"><a href="#cb10-16" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb10-17"><a href="#cb10-17" aria-hidden="true" tabindex="-1"></a><span class="cf">done</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</section>
+<section id="mean-depths" class="level2">
+<h2 class="anchored" data-anchor-id="mean-depths">9.2 Mean depths</h2>
+<p>Uses <code>mean_cov_ind.py</code> Python script from <a href="https://github.com/letimm/WGSfqs-to-genolikelihoods/tree/main" class="uri">https://github.com/letimm/WGSfqs-to-genolikelihoods/tree/main</a></p>
+<div class="sourceCode" id="cb11"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a><span class="bu">cd</span> <span class="va">${output_dir}</span></span>
+<span id="cb11-3"><a href="#cb11-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb11-4"><a href="#cb11-4" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> depth_file <span class="kw">in</span> <span class="pp">*</span>-RG.sorted.dedup.clipped.depth.gz</span>
+<span id="cb11-5"><a href="#cb11-5" aria-hidden="true" tabindex="-1"></a><span class="cf">do</span></span>
+<span id="cb11-6"><a href="#cb11-6" aria-hidden="true" tabindex="-1"></a>  <span class="va">${mean_depths}</span> <span class="dt">\</span></span>
+<span id="cb11-7"><a href="#cb11-7" aria-hidden="true" tabindex="-1"></a>  <span class="at">--infile</span> <span class="va">${depth_file}</span> <span class="dt">\</span></span>
+<span id="cb11-8"><a href="#cb11-8" aria-hidden="true" tabindex="-1"></a>  <span class="at">--outfile</span> mean-coverage.tab</span>
+<span id="cb11-9"><a href="#cb11-9" aria-hidden="true" tabindex="-1"></a><span class="cf">done</span></span>
+<span id="cb11-10"><a href="#cb11-10" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb11-11"><a href="#cb11-11" aria-hidden="true" tabindex="-1"></a><span class="fu">head</span> mean-coverage.tab</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<pre><code>MHW001-RG.sorted.dedup.clipped.depth.gz 1.990901406579994
+MHW002-RG.sorted.dedup.clipped.depth.gz 2.4325807984518892
+MHW003-RG.sorted.dedup.clipped.depth.gz 10.735153890842785
+MHW004-RG.sorted.dedup.clipped.depth.gz 8.894250537520717
+MHW005-RG.sorted.dedup.clipped.depth.gz 3.3115601503387313
+MHW006-RG.sorted.dedup.clipped.depth.gz 2.671577399430869
+MHW007-RG.sorted.dedup.clipped.depth.gz 8.092257537557492
+MHW008-RG.sorted.dedup.clipped.depth.gz 7.779096441098513
+MHW009-RG.sorted.dedup.clipped.depth.gz 11.925061778018813
+MHW010-RG.sorted.dedup.clipped.depth.gz 12.765145869286487</code></pre>
+</section>
 </section>
 <section id="index-bams" class="level1">
-<h1>9 INDEX BAMS</h1>
-<div class="sourceCode" id="cb10"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a><span class="bu">cd</span> <span class="va">${output_dir}</span></span>
-<span id="cb10-3"><a href="#cb10-3" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb10-4"><a href="#cb10-4" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> bam <span class="kw">in</span> <span class="pp">*</span>.sorted.dedup.clipped.bam</span>
-<span id="cb10-5"><a href="#cb10-5" aria-hidden="true" tabindex="-1"></a><span class="cf">do</span></span>
-<span id="cb10-6"><a href="#cb10-6" aria-hidden="true" tabindex="-1"></a>  <span class="va">${samtools}</span> index <span class="dt">\</span></span>
-<span id="cb10-7"><a href="#cb10-7" aria-hidden="true" tabindex="-1"></a>  <span class="va">${bam}</span> <span class="dt">\</span></span>
-<span id="cb10-8"><a href="#cb10-8" aria-hidden="true" tabindex="-1"></a>  <span class="at">--threads</span> <span class="va">${threads}</span></span>
-<span id="cb10-9"><a href="#cb10-9" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb10-10"><a href="#cb10-10" aria-hidden="true" tabindex="-1"></a><span class="cf">done</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<h1>10 INDEX BAMS</h1>
+<div class="sourceCode" id="cb13"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb13-2"><a href="#cb13-2" aria-hidden="true" tabindex="-1"></a><span class="bu">cd</span> <span class="va">${output_dir}</span></span>
+<span id="cb13-3"><a href="#cb13-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb13-4"><a href="#cb13-4" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> bam <span class="kw">in</span> <span class="pp">*</span>.sorted.dedup.clipped.bam</span>
+<span id="cb13-5"><a href="#cb13-5" aria-hidden="true" tabindex="-1"></a><span class="cf">do</span></span>
+<span id="cb13-6"><a href="#cb13-6" aria-hidden="true" tabindex="-1"></a>  <span class="va">${samtools}</span> index <span class="dt">\</span></span>
+<span id="cb13-7"><a href="#cb13-7" aria-hidden="true" tabindex="-1"></a>  <span class="va">${bam}</span> <span class="dt">\</span></span>
+<span id="cb13-8"><a href="#cb13-8" aria-hidden="true" tabindex="-1"></a>  <span class="at">--threads</span> <span class="va">${threads}</span></span>
+<span id="cb13-9"><a href="#cb13-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb13-10"><a href="#cb13-10" aria-hidden="true" tabindex="-1"></a><span class="cf">done</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</section>
+<section id="stats-files" class="level1">
+<h1>11 STATS FILES</h1>
+<p>Generate <code>samtools stats</code> and <code>samtools flagstat</code> for BWA alignments.</p>
+<div class="sourceCode" id="cb14"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb14-2"><a href="#cb14-2" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> bam <span class="kw">in</span> <span class="va">${output_dir}</span>/<span class="pp">*</span>-RG.sorted.bam</span>
+<span id="cb14-3"><a href="#cb14-3" aria-hidden="true" tabindex="-1"></a><span class="cf">do</span></span>
+<span id="cb14-4"><a href="#cb14-4" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Remove path from BAM</span></span>
+<span id="cb14-5"><a href="#cb14-5" aria-hidden="true" tabindex="-1"></a>  <span class="va">sample_no_path</span><span class="op">=</span><span class="va">${bam</span><span class="op">##</span><span class="pp">*</span>/<span class="va">}</span></span>
+<span id="cb14-6"><a href="#cb14-6" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb14-7"><a href="#cb14-7" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Capture just samples name (string before first `.`)</span></span>
+<span id="cb14-8"><a href="#cb14-8" aria-hidden="true" tabindex="-1"></a>  <span class="va">sample</span><span class="op">=</span><span class="va">${sample_no_path</span><span class="op">%%</span>.<span class="pp">*</span><span class="va">}</span></span>
+<span id="cb14-9"><a href="#cb14-9" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb14-10"><a href="#cb14-10" aria-hidden="true" tabindex="-1"></a>  <span class="co"># samtools stats</span></span>
+<span id="cb14-11"><a href="#cb14-11" aria-hidden="true" tabindex="-1"></a>  <span class="va">${samtools}</span> stats <span class="dt">\</span></span>
+<span id="cb14-12"><a href="#cb14-12" aria-hidden="true" tabindex="-1"></a>  <span class="va">${bam}</span> <span class="dt">\</span></span>
+<span id="cb14-13"><a href="#cb14-13" aria-hidden="true" tabindex="-1"></a>  <span class="at">-@</span> <span class="va">${threads}</span> <span class="dt">\</span></span>
+<span id="cb14-14"><a href="#cb14-14" aria-hidden="true" tabindex="-1"></a>  <span class="op">&gt;</span> <span class="va">${output_dir}</span>/<span class="st">"</span><span class="va">${sample_no_path}</span><span class="st">.stats"</span></span>
+<span id="cb14-15"><a href="#cb14-15" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb14-16"><a href="#cb14-16" aria-hidden="true" tabindex="-1"></a>  <span class="co"># samtools flagstat</span></span>
+<span id="cb14-17"><a href="#cb14-17" aria-hidden="true" tabindex="-1"></a>  <span class="va">${samtools}</span> flagstat <span class="dt">\</span></span>
+<span id="cb14-18"><a href="#cb14-18" aria-hidden="true" tabindex="-1"></a>  <span class="va">${bam}</span> <span class="dt">\</span></span>
+<span id="cb14-19"><a href="#cb14-19" aria-hidden="true" tabindex="-1"></a>  <span class="at">-@</span> {threads} <span class="dt">\</span></span>
+<span id="cb14-20"><a href="#cb14-20" aria-hidden="true" tabindex="-1"></a>  <span class="op">&gt;</span> <span class="va">${output_dir}</span>/<span class="st">"</span><span class="va">${sample_no_path}</span><span class="st">.flagstat"</span></span>
+<span id="cb14-21"><a href="#cb14-21" aria-hidden="true" tabindex="-1"></a><span class="cf">done</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<section id="multiqc-on-picard-markdduplicates-and-samtools-statsflagstat-files" class="level2">
+<h2 class="anchored" data-anchor-id="multiqc-on-picard-markdduplicates-and-samtools-statsflagstat-files">11.1 MultiQC on Picard MarkdDuplicates and samtools stats/flagstat files</h2>
+<div class="sourceCode" id="cb15"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb15-2"><a href="#cb15-2" aria-hidden="true" tabindex="-1"></a><span class="bu">cd</span> <span class="va">${output_dir}</span></span>
+<span id="cb15-3"><a href="#cb15-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb15-4"><a href="#cb15-4" aria-hidden="true" tabindex="-1"></a><span class="va">${multiqc}</span> <span class="at">--interactive</span> .</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<pre><code>  /// MultiQC 🔍 | v1.14
+
+|           multiqc | MultiQC Version v1.30 now available!
+|           multiqc | Search path : /home/shared/16TB_HDD_01/sam/gitrepos/RobertsLab/project-cod-temperature/output/14.00-heatwave-genetics-trimmed-bwa-alignments
+|         searching | ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 100% 4131/4131  
+|            picard | Found 344 MarkDuplicates reports
+|          samtools | Found 344 stats reports
+|          samtools | Found 344 flagstat reports
+|           multiqc | Compressing plot data
+|           multiqc | Report      : multiqc_report.html
+|           multiqc | Data        : multiqc_data
+|           multiqc | MultiQC complete</code></pre>
+</section>
 </section>
 <section id="references" class="level1">
-<h1>10 REFERENCES</h1>
+<h1>12 REFERENCES</h1>
 <div id="refs" class="references csl-bib-body hanging-indent" role="list">
 <div id="ref-danecek2021" class="csl-entry" role="listitem">
 Danecek, Petr, James K Bonfield, Jennifer Liddle, John Marshall, Valeriu Ohan, Martin O Pollard, Andrew Whitwham, et al.&nbsp;2021. “Twelve Years of SAMtools and BCFtools.” <em>GigaScience</em> 10 (2). <a href="https://doi.org/10.1093/gigascience/giab008" class="uri">https://doi.org/10.1093/gigascience/giab008</a>.
