@@ -13,6 +13,7 @@ categories:
   - "raven"
   - "Pacific cod"
   - "Gadus macrocephalus"
+image: "/posts/2025/2025-07-11-DNA-Alignments---Pacific-cod-Heatwave-Genetics-Samples-Using-BWA-on-Raven/20250711-gmac-multiqc-picard_deduplication.png"
 ---
 # INTRO
 
@@ -59,6 +60,8 @@ This Rmd file will perform the following:
 - Deduplicated, sorted, clipped BAM files
 - samtools depth file
 - BAM index files
+- samtools stats file for BWA alignments
+- samtools flagstat file for BWA alignments
 
 NOTE: Due to the size of the output files, they are not included in the
 repository. Instead, you can find them in the here:
@@ -78,6 +81,10 @@ trimmed_reads_dir <- file.path(data_dir, "trimmed-fastqs-heatwave-genetics")
 programs_dir <- file.path("", "home", "shared")
 bamUtil_dir <- file.path(programs_dir, "bamUtil-1.0.15", "bin")
 bwa <- file.path(programs_dir, "bwa-0.7.17", "bwa")
+conda_env_name <- c("base")
+conda_path <- c("/home/sam/programs/mambaforge/condabin/conda")
+mean_depths <- c("/home/shared/16TB_HDD_01/sam/gitrepos/WGSfqs-to-genolikelihoods/mean_cov_ind.py")
+multiqc <- file.path("", "home", "sam", "programs", "mambaforge", "bin", "multiqc")
 picard_dir <- file.path(programs_dir, "picard-3.4.0-6-g80ca98e2a", "build", "libs")
 picard <- file.path(picard_dir, "picard.jar")
 R1_suffix <- "_trimmed_clipped_R1_paired.fq.gz"
@@ -106,6 +113,8 @@ Sys.setenv(
   data_dir = data_dir,
   genome_fasta = genome_fasta,
   line = line,
+  mean_depths = mean_depths,
+  multiqc = multiqc,
   output_dir = output_dir,
   picard_dir = picard_dir,
   picard = picard,
@@ -118,9 +127,36 @@ Sys.setenv(
 )
 ```
 
-# 5 ALIGNMENTS
+# 5 Load Conda environment
 
-## 5.1 Create BWA Index
+This is needed to have access to Python3.
+
+If this is successful, the first line of output should show that Python
+being used.
+
+E.g.
+
+`python:         /home/sam/programs/mambaforge/envs/mirmachine_env/bin/python`
+
+``` r
+use_condaenv(condaenv = conda_env_name, conda = conda_path)
+
+# Check successful env loading
+py_config()
+```
+
+    python:         /home/sam/programs/mambaforge/bin/python
+    libpython:      /home/sam/programs/mambaforge/lib/libpython3.10.so
+    pythonhome:     /home/sam/programs/mambaforge:/home/sam/programs/mambaforge
+    version:        3.10.10 | packaged by conda-forge | (main, Mar 24 2023, 20:08:06) [GCC 11.3.0]
+    numpy:          /home/sam/programs/mambaforge/lib/python3.10/site-packages/numpy
+    numpy_version:  1.24.3
+
+    NOTE: Python version was forced by use_python() function
+
+# 6 ALIGNMENTS
+
+## 6.1 Create BWA Index
 
 ``` bash
 # Check if BWA index file exists
@@ -132,17 +168,14 @@ else
 fi
 ```
 
-## 5.2 Check FastQs
+## 6.2 Check FastQs
 
 ``` bash
 
 ls -1 "${trimmed_reads_dir}/"*.fq.gz | wc -l
 ```
 
-    ls: cannot access '../data/trimmed-fastqs-heatwave-genetics/*.fq.gz': No such file or directory
-    0
-
-## 5.3 Align with BWA
+## 6.3 Align with BWA
 
 This step will produced sorted BAM files.
 
@@ -194,9 +227,9 @@ do
 done
 ```
 
-# 6 MARK DUPLICATES
+# 7 MARK DUPLICATES
 
-## 6.1 Set read groups
+## 7.1 Set read groups
 
 Downstream analysis with Picard requires BAM files to have read groups,
 but these were not set earlier.
@@ -228,7 +261,7 @@ do
 done
 ```
 
-## 6.2 Picard MarkDuplicates
+## 7.2 Picard MarkDuplicates
 
 Use Picard to mark duplicates
 
@@ -252,7 +285,7 @@ do
 done
 ```
 
-# 7 CLIP OVERLAPS
+# 8 CLIP OVERLAPS
 
 ``` bash
 for bam in ${output_dir}/*.sorted.dedup.bam
@@ -273,7 +306,9 @@ do
 done
 ```
 
-# 8 SAMTOOLS DEPTH
+# 9 DEPTHS
+
+## 9.1 samtools depth
 
 ``` bash
 for bam in ${output_dir}/*.sorted.dedup.clipped.bam
@@ -295,7 +330,37 @@ do
 done
 ```
 
-# 9 INDEX BAMS
+## 9.2 Mean depths
+
+Uses `mean_cov_ind.py` Python script from
+<https://github.com/letimm/WGSfqs-to-genolikelihoods/tree/main>
+
+``` bash
+
+cd ${output_dir}
+
+for depth_file in *-RG.sorted.dedup.clipped.depth.gz
+do
+  ${mean_depths} \
+  --infile ${depth_file} \
+  --outfile mean-coverage.tab
+done
+
+head mean-coverage.tab
+```
+
+    MHW001-RG.sorted.dedup.clipped.depth.gz 1.990901406579994
+    MHW002-RG.sorted.dedup.clipped.depth.gz 2.4325807984518892
+    MHW003-RG.sorted.dedup.clipped.depth.gz 10.735153890842785
+    MHW004-RG.sorted.dedup.clipped.depth.gz 8.894250537520717
+    MHW005-RG.sorted.dedup.clipped.depth.gz 3.3115601503387313
+    MHW006-RG.sorted.dedup.clipped.depth.gz 2.671577399430869
+    MHW007-RG.sorted.dedup.clipped.depth.gz 8.092257537557492
+    MHW008-RG.sorted.dedup.clipped.depth.gz 7.779096441098513
+    MHW009-RG.sorted.dedup.clipped.depth.gz 11.925061778018813
+    MHW010-RG.sorted.dedup.clipped.depth.gz 12.765145869286487
+
+# 10 INDEX BAMS
 
 ``` bash
 
@@ -310,7 +375,57 @@ do
 done
 ```
 
-# 10 REFERENCES
+# 11 STATS FILES
+
+Generate `samtools stats` and `samtools flagstat` for BWA alignments.
+
+``` bash
+
+for bam in ${output_dir}/*-RG.sorted.bam
+do
+  # Remove path from BAM
+  sample_no_path=${bam##*/}
+  
+  # Capture just samples name (string before first `.`)
+  sample=${sample_no_path%%.*}
+  
+  # samtools stats
+  ${samtools} stats \
+  ${bam} \
+  -@ ${threads} \
+  > ${output_dir}/"${sample_no_path}.stats"
+  
+  # samtools flagstat
+  ${samtools} flagstat \
+  ${bam} \
+  -@ {threads} \
+  > ${output_dir}/"${sample_no_path}.flagstat"
+done
+```
+
+## 11.1 MultiQC on Picard MarkdDuplicates and samtools stats/flagstat files
+
+``` bash
+
+cd ${output_dir}
+
+${multiqc} --interactive .
+```
+
+      /// MultiQC 🔍 | v1.14
+
+    |           multiqc | MultiQC Version v1.30 now available!
+    |           multiqc | Search path : /home/shared/16TB_HDD_01/sam/gitrepos/RobertsLab/project-cod-temperature/output/14.00-heatwave-genetics-trimmed-bwa-alignments
+    |         searching | ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 100% 4131/4131  
+    |            picard | Found 344 MarkDuplicates reports
+    |          samtools | Found 344 stats reports
+    |          samtools | Found 344 flagstat reports
+    |           multiqc | Compressing plot data
+    |           multiqc | Report      : multiqc_report.html
+    |           multiqc | Data        : multiqc_data
+    |           multiqc | MultiQC complete
+
+# 12 REFERENCES
 
 <div id="refs" class="references csl-bib-body hanging-indent">
 
