@@ -5,7 +5,7 @@ toc-depth: 5
 toc-location: left
 title: Shiny Server - Configuration on Gannet Using Synology Container Manager
 date: '2025-08-29'
-draft: true
+draft: false
 engine: knitr
 categories: 
   - "2025"
@@ -18,26 +18,71 @@ categories:
 # INTRO
 Steven has created a [Shiny app](https://shiny.posit.co/) (website) that will allow the public to plot/interact with some of the resazurin data that the lab's been collecting. He [assigned me to tackle getting a Shiny server set up on one our lab servers](https://github.com/RobertsLab/resources/issues/2302) so that we don't have to rely on free options, which can be limited.
 
+This post documents the process of deploying a Shiny Server using Synology's Container Manager on Gannet (Synology server). The goal was to host a custom Shiny app for public data visualization, using the official Rocker image and mounting the necessary volumes for persistent app storage.
+
+## Step-by-Step Instructions
+
+1. **Open Synology Container Manager and search for the Rocker image on DockerHub.**  
+  ![](./20250829-syno-container_mgr-dockerhub-screenshot.png){fig-alt="DockerHub search for Rocker image in Synology Container Manager. Shows the available Rocker images for selection."}
+
+2. **Select the appropriate Rocker image for Shiny Server.**
+
+  In this case, I selected `rocker/shiny-verse`. This includes Shiny server, as well as the `tidyverse` package.
+  ![](./20250829-syno-container_mgr-rocker_image-screenshot.png){fig-alt="Selection of the Rocker image for Shiny Server in Synology Container Manager. Highlights the chosen image for deployment."}
+
+3. **Create and configure a new container using the selected image.**
+
+Check the boxes shown in the image below and leave the default port settings (`3838` and `HTTP`).
+
+  ![](./20250829-syno-container_mgr-run-image-screenshot.png){fig-alt="Container creation screen in Synology Container Manager. Shows configuration options for the new container."}
+
+4. **Set up volume mounts to link the app code and data to the container.**
+
+To do this, I cloned the [`vims-resazurin` GitHub repo](https://github.com/RobertsLab/vims-resazurin) to the following Synology location: `/volume2/docker/shiny-verse/`.
+
+When setting the volumes, we'll need _two_ locations for this particular Shiny app. The reason for this is the [Shiny app](https://github.com/RobertsLab/vims-resazurin/blob/main/code/shiny-app/app.R) (GitHub) uses relative paths to access other files within the repo. Otherwise, if all the files referenced were in the same directory as the Shiny app, we could mount just that location.
+
+So, I mounted (bound) the following two locations. These are listed Synology location, followed by container location.
+
+  1. `/volume2/docker/shiny-verse/vims-resazurin/main` to `/srv/shiny-server`.
+    This shares all files within the `vims-resazurin` repo with the Shiny server location in the container.
+
+  2. `/volume2/docker/shiny-verse/vims-resazurin/main/code/shiny-app` to `/srv/shiny-server/resazurin`.
+
+    This shares the Shiny app location on the Synology with the Shiny server in the container and provides it with a custom name. In this case, `resazurin`.
+
+  ![](./20250829-syno-container_mgr-run-image-volumes-screenshot.png){fig-alt="Volume mount configuration in Synology Container Manager. Demonstrates how host directories are mapped to container paths."}
+
+5. **Configure web portal settings for external access.**
+
+  The HTTPS port number can really be any value you'd like. There are some reserved ports, but it's a small quantity, so feel free to pick whatever.
+
+  ![](./20250829-syno-container_mgr-run-image-web_portal-screenshot.png){fig-alt="Web portal and network settings for the Shiny Server container. Shows how to enable external access."}
+
+6. **Open a terminal in the running container to install required R packages.**
+
+  The Shiny app requires additional R packages which aren't in the container by default. To install them, you have to open a terminal in the container. Pick "Terminal" from this dropdown menu:
+
+  ![](./20250829-syno-container_mgr-run-image-open_terminal-screenshot.png){fig-alt="Opening a terminal session in the running container. Prepares for R package installation."}
+
+7. **Run the R command to install all necessary packages for the app.**
+
+  Here's the full command:
+
+  ```r
+  R -e "install.packages(c('shiny', 'shinythemes', 'readxl', 'tidyverse', 'tools', 'DT', 'plotly', 'pracma', 'stringr'))"
+  ```
+  ![](./20250829-syno-container_mgr-run-image-R_terminal_commands-screenshot.png){fig-alt="R terminal command for installing required packages. Shows the command input in the container terminal."}
+
+8. **Monitor the installation process to ensure all packages are installed successfully.**  
+  ![](./20250829-syno-container_mgr-run-image-R_terminal_commands-running-screenshot.png){fig-alt="R package installation in progress. Displays the output and progress of the installation process."}
+
+9. **Access the running Shiny app via the web interface to confirm functionality.**
+
+  This becomes accessible at our existing domain (gannet.fish.washington.edu), followed by the port number we set in Step 5 above (`4444`), followed by the custom name we set (`resazurin`) in Step 4 during mounting/binding volumes to the container.
+  ![](./20250829-functional-shiny-app-webpage.png){fig-alt="Functional Shiny app webpage. Confirms successful deployment and public accessibility of the app."}
 
 
-Volume mounting:
-
-```
-/volume2/docker/shiny-verse/vims-resazurin-main/:/srv/shiny-server
-/volume2/docker/shiny-verse/vims-resazurin-main/code/shiny-app/app.R:/srv/shiny-server/resazurin
-```
-
-Install required packages.
-
-![](./20250829-syno-container_mgr-run-image-R_terminal_commands-screenshot.png)
-
-![](./20250829-syno-container_mgr-run-image-R_terminal_commands-running-screenshot.png)
-
-Terminal command
-
-```r
-R -e "install.packages(c('shiny', 'shinythemes', 'readxl', 'tidyverse', 'tools', 'DT', 'plotly', 'pracma', 'stringr'))"
-```
 
 
 
