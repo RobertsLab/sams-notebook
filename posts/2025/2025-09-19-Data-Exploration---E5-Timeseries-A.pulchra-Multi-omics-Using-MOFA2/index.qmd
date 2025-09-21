@@ -5,7 +5,7 @@ toc-depth: 5
 toc-location: left
 title: Data Exploration - E5 Timeseries A.pulchra Multi-omics Using MOFA2
 date: '2025-09-19'
-draft: true
+draft: false
 engine: knitr
 categories: 
   - "2025"
@@ -13,93 +13,30 @@ categories:
   - "Acropora pulchra"
   - "E5"
   - "coral"
+  - "timeseries_molecular"
 ---
 #INTRO
 
-This notebook annotated expressed genes with gene ontologies, assigned them to GOslims, and generated corresponding counts of GOs in each GOslim category, as part of [`urol-e5/timeseries_molecular`](https://github.com/urol-e5/timeseries_molecular) (GitHub repo).
+This notebook is an introductory exploration of the E5 coral [`urol-e5/timeseries_molecular`](https://github.com/urol-e5/timeseries_molecular) (GitHub repo) data using a multi-omics approach, using [MOFA2](https://biofam.github.io/MOFA2/index.html).
 
+I started using MOFA2 after attempting to use a different multi-omics software, called barnacle. Barnacle employs the use of tensor decomposition, which was appealing. However, I ran into difficulties trying to analyze data with different numbers of features (e.g. number of genes and number of methylated CpGs). Barnacle was unhappy.
+
+Switching to MOFA2 allowed me to get around that limitation. Additionally, MOFA2 is really, really well-documented, including a number of tutorials to walk the user through analysis. It's very nice.
+
+Since I was just starting out and kicking the tires, I kept things simple and only analyzed the following:
+
+- gene expression counts
+- transcript expression counts
+- CpG methylation counts
+
+I have not yet incorporated the actual timeseries aspect of this project into the analysis! Additionally, I have not incorporated the miRNA data. Both of these components were not in a ready-to-use format, so I'll address them at a later date.
+
+---
 
 ::: {.callout-note}
 The contents below are from markdown knitted from [`22.20-Apul-multiomics-MOFA2.md`](https://github.com/urol-e5/timeseries_molecular/blob/2d757a67e7c291e1e95c22e2fdae2354cb451ca8/D-Apul/code/22.20-Apul-multiomics-MOFA2.md) (commit `2d757a6`).
 :::
 
-
-
-22.20-Apul-multiomics-MOFA2
-================
-Sam White
-2025-09-15
-
-- <a href="#1-summary" id="toc-1-summary">1 SUMMARY</a>
-- <a href="#2-background" id="toc-2-background">2 BACKGROUND</a>
-- <a href="#3-setup" id="toc-3-setup">3 Setup</a>
-  - <a href="#31-libraries" id="toc-31-libraries">3.1 Libraries</a>
-  - <a href="#32-variables" id="toc-32-variables">3.2 Variables</a>
-- <a href="#4-data-structure-overview"
-  id="toc-4-data-structure-overview">4 Data Structure Overview</a>
-- <a href="#5-data-prep-for-mofa2" id="toc-5-data-prep-for-mofa2">5 DATA
-  PREP FOR MOFA2</a>
-  - <a href="#51-view-data-structures" id="toc-51-view-data-structures">5.1
-    View data structures</a>
-  - <a href="#52-compare-column-names-across-input-data"
-    id="toc-52-compare-column-names-across-input-data">5.2 Compare Column
-    Names Across Input Data</a>
-  - <a href="#53-harmonize-columns-across-data-frames"
-    id="toc-53-harmonize-columns-across-data-frames">5.3 Harmonize Columns
-    Across Data Frames</a>
-  - <a href="#54-remove-zero-variance-features"
-    id="toc-54-remove-zero-variance-features">5.4 Remove Zero-Variance
-    Features</a>
-  - <a href="#55-create-matrices-after-zero-variance-removal"
-    id="toc-55-create-matrices-after-zero-variance-removal">5.5 Create
-    Matrices After Zero-Variance Removal</a>
-- <a href="#6-create-mofa2-object" id="toc-6-create-mofa2-object">6 CREATE
-  MOFA2 OBJECT</a>
-  - <a href="#61-plot-data-overview" id="toc-61-plot-data-overview">6.1 Plot
-    data overview</a>
-- <a href="#7-define-mofa2-options" id="toc-7-define-mofa2-options">7
-  DEFINE MOFA2 OPTIONS</a>
-  - <a href="#71-data-options" id="toc-71-data-options">7.1 Data options</a>
-  - <a href="#72-model-options" id="toc-72-model-options">7.2 Model
-    options</a>
-  - <a href="#73-training-options" id="toc-73-training-options">7.3 Training
-    options</a>
-- <a href="#8-train-mofa2-object" id="toc-8-train-mofa2-object">8 TRAIN
-  MOFA2 OBJECT</a>
-  - <a href="#81-load-saved-mofa-objects-from-disk"
-    id="toc-81-load-saved-mofa-objects-from-disk">8.1 Load saved MOFA
-    objects from disk</a>
-  - <a href="#82-train-mofa-objects-for-different-numbers-of-factors"
-    id="toc-82-train-mofa-objects-for-different-numbers-of-factors">8.2
-    Train MOFA objects for different numbers of factors</a>
-- <a href="#9-plots" id="toc-9-plots">9 PLOTS</a>
-  - <a href="#91-factor-correlation" id="toc-91-factor-correlation">9.1
-    Factor correlation</a>
-  - <a href="#92-variance-decomposition"
-    id="toc-92-variance-decomposition">9.2 Variance decomposition</a>
-- <a href="#10-factor-6-characterization"
-  id="toc-10-factor-6-characterization">10 FACTOR 6 CHARACTERIZATION</a>
-  - <a href="#101-factor-6-variance-decomposition"
-    id="toc-101-factor-6-variance-decomposition">10.1 Factor 6 Variance
-    decomposition</a>
-  - <a href="#102-plot-variance-explained-per-view"
-    id="toc-102-plot-variance-explained-per-view">10.2 Plot variance
-    explained per view</a>
-  - <a href="#103-print-percent-variance-explained-per-view-as-a-table"
-    id="toc-103-print-percent-variance-explained-per-view-as-a-table">10.3
-    Print percent variance explained per view as a table</a>
-  - <a href="#104-plot-factor-6-values"
-    id="toc-104-plot-factor-6-values">10.4 Plot Factor 6 values</a>
-  - <a href="#105-plot-factor-6-weights"
-    id="toc-105-plot-factor-6-weights">10.5 Plot Factor 6 weights</a>
-    - <a href="#1051-genes" id="toc-1051-genes">10.5.1 Genes</a>
-    - <a href="#1052-transcripts" id="toc-1052-transcripts">10.5.2
-      Transcripts</a>
-    - <a href="#1053-lncrna" id="toc-1053-lncrna">10.5.3 lncRNA</a>
-    - <a href="#1054-methylation" id="toc-1054-methylation">10.5.4
-      Methylation</a>
-- <a href="#11-session-info" id="toc-11-session-info">11 SESSION INFO</a>
-- <a href="#12-references" id="toc-12-references">12 REFERENCES</a>
 
 # 1 SUMMARY
 
