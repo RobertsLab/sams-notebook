@@ -14,13 +14,14 @@ categories:
   - "E5"
   - "coral"
   - "timeseries_molecular"
+image: "/posts/2025/2025-09-19-Data-Exploration---E5-Timeseries-A.pulchra-Multi-omics-Using-MOFA2/plot-lncRNA-weights-1.png"
 ---
 # INTRO
 
 This notebook is an introductory exploration of the E5 coral [`urol-e5/timeseries_molecular`](https://github.com/urol-e5/timeseries_molecular) (GitHub repo) data using a multi-omics approach, using [MOFA2](https://biofam.github.io/MOFA2/index.html).
 
 ::: {.callout-tip}
-You may want to skip ahead to [the various plots](#plots), of which there are many. But, if you want to explore the nitty gritty, just scroll on through!
+You may want to skip ahead to [the various plots](#factor-6-characterization), of which there are many. But, if you want to explore the nitty gritty, just scroll on through!
 :::
 
 I started using MOFA2 after attempting to use a different multi-omics software, called barnacle. Barnacle employs the use of tensor decomposition, which was appealing. However, I ran into difficulties trying to analyze data with different numbers of features (e.g. number of genes and number of methylated CpGs). Barnacle was unhappy.
@@ -39,45 +40,11 @@ I have not yet incorporated the actual timeseries aspect of this project into th
 ---
 
 ::: {.callout-note}
-The contents below are from markdown knitted from [`22.20-Apul-multiomics-MOFA2.md`](https://github.com/urol-e5/timeseries_molecular/blob/2d757a67e7c291e1e95c22e2fdae2354cb451ca8/D-Apul/code/22.20-Apul-multiomics-MOFA2.md) (commit `2d757a6`).
+The contents below are from knitted markdown [`22.20-Apul-multiomics-MOFA2.md`](https://github.com/urol-e5/timeseries_molecular/blob/fa95a5a62200051e4f709f59894345b502396e6a/D-Apul/code/22.20-Apul-multiomics-MOFA2.md) (commit `fa95a5a`).
 :::
 
 
-# 1 SUMMARY
-
-This script performs multiomics data integration and analysis for *A.
-pulchra* using the MOFA2 framework ([MOFA2
-documentation](https://biofam.github.io/MOFA2/)).
-
-**Software:** - MOFA2: Multi-Omics Factor Analysis v2, a statistical
-framework for comprehensive integration of multi-modal data (Argelaguet
-et al. 2020).
-
-**Input files:** - Genes:
-[apul-gene_count_matrix.csv](https://gannet.fish.washington.edu/gitrepos/urol-e5/timeseries_molecular/D-Apul/output/02.20-D-Apul-RNAseq-alignment-HiSat2/apul-gene_count_matrix.csv) -
-Transcripts:
-[apul-transcript_count_matrix.csv](https://gannet.fish.washington.edu/gitrepos/urol-e5/timeseries_molecular/D-Apul/output/02.20-D-Apul-RNAseq-alignment-HiSat2/apul-transcript_count_matrix.csv) -
-lncRNA:
-[lncRNA_counts.clean.filtered.txt](https://gannet.fish.washington.edu/v1_web/owlshell/bu-github/timeseries_molecular/D-Apul/output/31.5-Apul-lncRNA-discovery/lncRNA_counts.clean.filtered.txt) -
-Methylated CpGs:
-[merged-WGBS-CpG-counts_filtered.csv](https://gannet.fish.washington.edu/metacarcinus/E5/20250903_meth_Apul/merged-WGBS-CpG-counts_filtered.csv)
-
-**Output files:** - MOFA2 model HDF5 files:
-`MOFA2_model_factors-<N>.hdf5` (where `<N>` is the number of factors,
-e.g. 10-15) - MOFA2 model RDS files: `MOFA2_model_factors-<N>.rds`
-(where `<N>` is the number of factors, e.g. 10-15) - Output files are
-written to: `../output/22.20-Apul-multiomics-MOFA2/`
-
-**Script workflow:** - Loads and harmonizes multiomics input data (gene,
-transcript, lncRNA, methylation counts) - Preprocesses data (removes
-zero-variance features, harmonizes sample columns) - Trains MOFA2 models
-for a range of factor numbers (10-15) or loads pre-trained models from
-disk - Performs downstream analysis and visualization of MOFA2 results
-(variance explained, factor characterization, feature weights)
-
-**MOFA2 reference:** See (Argelaguet et al. 2020) for details. —
-
-# 2 BACKGROUND
+# 1 BACKGROUND
 
 This script performs multi-omics data integration and analysis for *A.
 pulchra* using the MOFA2 framework ([MOFA2
@@ -100,11 +67,25 @@ wiki](https://github.com/urol-e5/timeseries_molecular/wiki/02%E2%80%90Expression
 - Methylated CpGs:
   [merged-WGBS-CpG-counts_filtered.csv](https://gannet.fish.washington.edu/metacarcinus/E5/20250903_meth_Apul/merged-WGBS-CpG-counts_filtered.csv)
 
-**Output files:** - MOFA2 model HDF5 files:
-`MOFA2_model_factors-<N>.hdf5` (where `<N>` is the number of factors,
-e.g. 10-15) - MOFA2 model RDS files: `MOFA2_model_factors-<N>.rds`
-(where `<N>` is the number of factors, e.g. 10-15) - Output files are
-written to: `../output/22.20-Apul-multiomics-MOFA2/`
+**Output files:**
+
+NOTE: Due to the large file sizes of the output files, they are not
+uploaded to GitHub.
+
+They are available here:
+<https://gannet.fish.washington.edu/gitrepos/urol-e5/timeseries_molecular/D-Apul/output/22.20-Apul-multiomics-MOFA2/>
+
+Creating these files (MOFA2 model HDF5 and RDS files) requires running
+the MOFA2 training steps in this script, which can take several hours
+depending on the number of factors and computational resources. It will
+be faster to download these output files from the above link and then
+run this script.
+
+- Output files are written to: `../output/22.20-Apul-multiomics-MOFA2/`
+  - MOFA2 model HDF5 files: `MOFA2_model_factors-<N>.hdf5` (where `<N>`
+    is the number of factors, e.g. 10-15)
+  - MOFA2 model RDS files: `MOFA2_model_factors-<N>.rds` (where `<N>` is
+    the number of factors, e.g. 10-15)
 
 **Script workflow:** - Loads and harmonizes multi-omics input data
 (gene, transcript, lncRNA, methylation counts) - Preprocesses data
@@ -114,18 +95,15 @@ models from disk - Performs downstream analysis and visualization of
 MOFA2 results (variance explained, factor characterization, feature
 weights)
 
-# 3 Setup
+# 2 Setup
 
-## 3.1 Libraries
+## 2.1 Libraries
 
-## 3.2 Variables
+## 2.2 Variables
 
 ``` r
 # Output directory
 output_dir <- "../output/22.20-Apul-multiomics-MOFA2"
-
-# Set factors used in model options
-number_of_factors <- 11
 
 # Model seed
 model_seed <- 42
@@ -139,7 +117,7 @@ data_files <- list(
 )
 ```
 
-# 4 Data Structure Overview
+# 3 Data Structure Overview
 
 ``` r
 # Show structure and preview of each data file in the data folder using tidyverse/dplyr
@@ -875,9 +853,9 @@ for (name in names(data_files)) {
     2:           0    2.631579           0           0          NA
     3:           0    2.439024           0           0          NA
 
-# 5 DATA PREP FOR MOFA2
+# 4 DATA PREP FOR MOFA2
 
-## 5.1 View data structures
+## 4.1 View data structures
 
 Primarily converts data to tibbles for easier viewing/compatability with
 tidyverse.
@@ -1261,7 +1239,7 @@ print(methylation_counts %>% slice_head(n = 3))
     #   `ACR-237-TP3` <dbl>, `ACR-265-TP1` <dbl>, `ACR-186-TP3` <dbl>,
     #   `ACR-229-TP1` <dbl>, `ACR-229-TP2` <dbl>, `ACR-150-TP3` <dbl>, …
 
-## 5.2 Compare Column Names Across Input Data
+## 4.2 Compare Column Names Across Input Data
 
 ``` r
 # List of all data frames
@@ -1304,7 +1282,7 @@ cat("\nColumn name comparison complete.\n")
 
     Column name comparison complete.
 
-## 5.3 Harmonize Columns Across Data Frames
+## 4.3 Harmonize Columns Across Data Frames
 
 ``` r
 # Use the intersection of all sample columns (excluding feature/ID column)
@@ -1571,7 +1549,7 @@ print(str(methylation_counts))
      $ ACR-265-TP4: num [1:6566306] 0 0 0 NA 0 ...
     NULL
 
-## 5.4 Remove Zero-Variance Features
+## 4.4 Remove Zero-Variance Features
 
 MOFA2 model training recommends removing features with no variance.
 
@@ -2039,7 +2017,7 @@ print(str(methylation_counts_zero_removed))
      $ ACR-265-TP4: num [1:1027017] 0 0 0 NA NA NA NA NA NA NA ...
     NULL
 
-## 5.5 Create Matrices After Zero-Variance Removal
+## 4.5 Create Matrices After Zero-Variance Removal
 
 ``` r
 # Create matrices from filtered data frames
@@ -2086,7 +2064,7 @@ cat("\nList of matrices after zero-variance feature removal ready for MOFA2 obje
 
     List of matrices after zero-variance feature removal ready for MOFA2 object creation.
 
-# 6 CREATE MOFA2 OBJECT
+# 5 CREATE MOFA2 OBJECT
 
 ``` r
 # Create a MOFA object from the list of matrices
@@ -2111,7 +2089,7 @@ cat("\nMOFA object created.\n")
 
     MOFA object created.
 
-## 6.1 Plot data overview
+## 5.1 Plot data overview
 
 ``` r
 plot_data_overview(MOFAobject)
@@ -2119,9 +2097,9 @@ plot_data_overview(MOFAobject)
 
 ![](22.20-Apul-multiomics-MOFA2_files/figure-gfm/plot-data-overview-1.png)<!-- -->
 
-# 7 DEFINE MOFA2 OPTIONS
+# 6 DEFINE MOFA2 OPTIONS
 
-## 7.1 Data options
+## 6.1 Data options
 
 ``` r
 data_opts <- get_default_data_options(MOFAobject)
@@ -2146,11 +2124,11 @@ data_opts
     $groups
     [1] "group1"
 
-## 7.2 Model options
+## 6.2 Model options
 
 ``` r
 model_opts <- get_default_model_options(MOFAobject)
-model_opts$num_factors <- number_of_factors
+model_opts$num_factors <- 10
 
 model_opts
 ```
@@ -2160,7 +2138,7 @@ model_opts
      "gaussian"  "gaussian"  "gaussian"  "gaussian" 
 
     $num_factors
-    [1] 11
+    [1] 10
 
     $spikeslab_factors
     [1] FALSE
@@ -2174,7 +2152,7 @@ model_opts
     $ard_weights
     [1] TRUE
 
-## 7.3 Training options
+## 6.3 Training options
 
 ``` r
 train_opts <- get_default_training_options(MOFAobject)
@@ -2220,11 +2198,11 @@ train_opts
     $save_interrupted
     [1] FALSE
 
-# 8 TRAIN MOFA2 OBJECT
+# 7 TRAIN MOFA2 OBJECT
 
 A range from 10 - 15 factors is recommended by the developers.
 
-## 8.1 Load saved MOFA objects from disk
+## 7.1 Load saved MOFA objects from disk
 
 If this has been previously run, this will load existing, trained
 models.
@@ -2243,7 +2221,7 @@ for (nf in 10:15) {
 }
 ```
 
-## 8.2 Train MOFA objects for different numbers of factors
+## 7.2 Train MOFA objects for different numbers of factors
 
 If this is the first time running this, this will train the models.
 
@@ -2283,9 +2261,9 @@ for (nf in 10:15) {
 }
 ```
 
-# 9 PLOTS
+# 8 PLOTS
 
-## 9.1 Factor correlation
+## 8.1 Factor correlation
 
 ``` r
 for (obj_name in names(mofa_objects)) {
@@ -3544,7 +3522,7 @@ for (obj_name in names(mofa_objects)) {
     $arg$type
     [1] "full"
 
-## 9.2 Variance decomposition
+## 8.2 Variance decomposition
 
 ``` r
 for (obj_name in names(mofa_objects)) {
@@ -3578,14 +3556,14 @@ for (obj_name in names(mofa_objects)) {
 ![](22.20-Apul-multiomics-MOFA2_files/figure-gfm/plot-variance-decomposition-all-6.png)<!-- -->
 
 Looks like the MOFA object with Factor count of `10` is the most
-informative. It shows a variance range in methylation (i.e. variation
+informative. It shows a variance range in methylation (i.e. variation
 percentage isn’t pegged at the max/min colors across all factors), as
 well as some possible effects in Factor 6 within `gene`, `transcript`,
 and `lncRNA`.
 
-# 10 FACTOR 6 CHARACTERIZATION
+# 9 FACTOR 6 CHARACTERIZATION
 
-## 10.1 Factor 6 Variance decomposition
+## 9.1 Factor 6 Variance decomposition
 
 Let’s reduce the `max_r2` value (percent variation) to see if we can
 better see an effect from the methylation view on the other views.
@@ -3602,7 +3580,7 @@ print(plot_variance_explained(mofa_objects[["MOFAobject_factors10"]], max_r2=4))
 
 ![](22.20-Apul-multiomics-MOFA2_files/figure-gfm/plot-variance-decomposition-10factors-1.png)<!-- -->
 
-## 10.2 Plot variance explained per view
+## 9.2 Plot variance explained per view
 
 ``` r
 cat("\nVariance explained per view for MOFAobject_factors10:\n")
@@ -3616,7 +3594,7 @@ print(plot_variance_explained(mofa_objects[["MOFAobject_factors10"]], plot_total
 
 ![](22.20-Apul-multiomics-MOFA2_files/figure-gfm/plot-variance-explained-view-1.png)<!-- -->
 
-## 10.3 Print percent variance explained per view as a table
+## 9.3 Print percent variance explained per view as a table
 
 ``` r
 var_list <- plot_variance_explained(mofa_objects[["MOFAobject_factors10"]], plot_total = TRUE)
@@ -3633,7 +3611,7 @@ print(var_df)
     3  1.506209      lncRNA group1
     4 94.758272 methylation group1
 
-## 10.4 Plot Factor 6 values
+## 9.4 Plot Factor 6 values
 
 ``` r
 plot_factor(mofa_objects[["MOFAobject_factors10"]], 
@@ -3644,9 +3622,9 @@ plot_factor(mofa_objects[["MOFAobject_factors10"]],
 
 ![](22.20-Apul-multiomics-MOFA2_files/figure-gfm/plot-factor-values-1.png)<!-- -->
 
-## 10.5 Plot Factor 6 weights
+## 9.5 Plot Factor 6 weights
 
-### 10.5.1 Genes
+### 9.5.1 Genes
 
 ``` r
 plot_weights(mofa_objects[["MOFAobject_factors10"]],
@@ -3659,7 +3637,7 @@ plot_weights(mofa_objects[["MOFAobject_factors10"]],
 
 ![](22.20-Apul-multiomics-MOFA2_files/figure-gfm/plot-gene-weights-1.png)<!-- -->
 
-#### 10.5.1.1 Plot top weights
+#### 9.5.1.1 Plot top weights
 
 ``` r
 plot_top_weights(mofa_objects[["MOFAobject_factors10"]],
@@ -3672,7 +3650,7 @@ plot_top_weights(mofa_objects[["MOFAobject_factors10"]],
 
 ![](22.20-Apul-multiomics-MOFA2_files/figure-gfm/plot-top-gene-weights-1.png)<!-- -->
 
-#### 10.5.1.2 Print top 10 weights
+#### 9.5.1.2 Print top 10 weights
 
 ``` r
 # Print top 10 gene features (by absolute weight) and their actual weights for factor 6
@@ -3701,7 +3679,7 @@ print(top_df)
     FUN_007766 FUN_007766 10.20227
     FUN_010626 FUN_010626 10.18359
 
-#### 10.5.1.3 Plot heatmap
+#### 9.5.1.3 Plot heatmap
 
 ``` r
 plot_data_heatmap(mofa_objects[["MOFAobject_factors10"]], 
@@ -3717,7 +3695,7 @@ plot_data_heatmap(mofa_objects[["MOFAobject_factors10"]],
 
 ![](22.20-Apul-multiomics-MOFA2_files/figure-gfm/plot-heatmap-gene-1.png)<!-- -->
 
-#### 10.5.1.4 Plot top gene
+#### 9.5.1.4 Plot top gene
 
 ``` r
 # Programmatically get top gene by absolute weight for factor 6
@@ -3743,7 +3721,7 @@ plot_factor(mofa_objects[["MOFAobject_factors10"]],
 
 ![](22.20-Apul-multiomics-MOFA2_files/figure-gfm/plot-top-gene-factor6-1.png)<!-- -->
 
-#### 10.5.1.5 Plot gene by transcript scatter
+#### 9.5.1.5 Plot gene by transcript scatter
 
 ``` r
 plot_data_scatter(mofa_objects[["MOFAobject_factors10"]], 
@@ -3757,7 +3735,7 @@ plot_data_scatter(mofa_objects[["MOFAobject_factors10"]],
 
 ![](22.20-Apul-multiomics-MOFA2_files/figure-gfm/plot-top-gene-by-transcript-1.png)<!-- -->
 
-#### 10.5.1.6 Plot gene by lncRNA scatter
+#### 9.5.1.6 Plot gene by lncRNA scatter
 
 ``` r
 plot_data_scatter(mofa_objects[["MOFAobject_factors10"]], 
@@ -3771,7 +3749,7 @@ plot_data_scatter(mofa_objects[["MOFAobject_factors10"]],
 
 ![](22.20-Apul-multiomics-MOFA2_files/figure-gfm/plot-top-gene-by-lncRNA-1.png)<!-- -->
 
-#### 10.5.1.7 Plot gene by methylation scatter
+#### 9.5.1.7 Plot gene by methylation scatter
 
 ``` r
 plot_data_scatter(mofa_objects[["MOFAobject_factors10"]], 
@@ -3785,7 +3763,7 @@ plot_data_scatter(mofa_objects[["MOFAobject_factors10"]],
 
 ![](22.20-Apul-multiomics-MOFA2_files/figure-gfm/plot-top-gene-by-methylation-1.png)<!-- -->
 
-### 10.5.2 Transcripts
+### 9.5.2 Transcripts
 
 ``` r
 plot_weights(mofa_objects[["MOFAobject_factors10"]],
@@ -3798,7 +3776,7 @@ plot_weights(mofa_objects[["MOFAobject_factors10"]],
 
 ![](22.20-Apul-multiomics-MOFA2_files/figure-gfm/plot-transcripts-weights-1.png)<!-- -->
 
-#### 10.5.2.1 Plot top weights
+#### 9.5.2.1 Plot top weights
 
 ``` r
 plot_top_weights(mofa_objects[["MOFAobject_factors10"]],
@@ -3811,7 +3789,7 @@ plot_top_weights(mofa_objects[["MOFAobject_factors10"]],
 
 ![](22.20-Apul-multiomics-MOFA2_files/figure-gfm/plot-top-transcripts-weights-1.png)<!-- -->
 
-#### 10.5.2.2 Print top 10 weights
+#### 9.5.2.2 Print top 10 weights
 
 ``` r
 # Print top 10 transcripts features (by absolute weight) and their actual weights for factor 6
@@ -3840,7 +3818,7 @@ print(top_df)
     FUN_007766-T1 FUN_007766-T1 10.20227
     FUN_010626-T1 FUN_010626-T1 10.18359
 
-#### 10.5.2.3 Plot heatmap
+#### 9.5.2.3 Plot heatmap
 
 ``` r
 plot_data_heatmap(mofa_objects[["MOFAobject_factors10"]], 
@@ -3856,7 +3834,7 @@ plot_data_heatmap(mofa_objects[["MOFAobject_factors10"]],
 
 ![](22.20-Apul-multiomics-MOFA2_files/figure-gfm/plot-heatmap-transcripts-1.png)<!-- -->
 
-#### 10.5.2.4 Plot top transcript
+#### 9.5.2.4 Plot top transcript
 
 ``` r
 # Programmatically get top transcripts by absolute weight for factor 6
@@ -3882,7 +3860,7 @@ plot_factor(mofa_objects[["MOFAobject_factors10"]],
 
 ![](22.20-Apul-multiomics-MOFA2_files/figure-gfm/plot-top-transcripts-factor01-1.png)<!-- -->
 
-#### 10.5.2.5 Plot transcript by gene scatter
+#### 9.5.2.5 Plot transcript by gene scatter
 
 ``` r
 plot_data_scatter(mofa_objects[["MOFAobject_factors10"]], 
@@ -3896,7 +3874,7 @@ plot_data_scatter(mofa_objects[["MOFAobject_factors10"]],
 
 ![](22.20-Apul-multiomics-MOFA2_files/figure-gfm/plot-top-transcript-by-gene-1.png)<!-- -->
 
-#### 10.5.2.6 Plot transcript by lncRNA scatter
+#### 9.5.2.6 Plot transcript by lncRNA scatter
 
 ``` r
 plot_data_scatter(mofa_objects[["MOFAobject_factors10"]], 
@@ -3910,7 +3888,7 @@ plot_data_scatter(mofa_objects[["MOFAobject_factors10"]],
 
 ![](22.20-Apul-multiomics-MOFA2_files/figure-gfm/plot-top-transcript-by-lncRNA-1.png)<!-- -->
 
-#### 10.5.2.7 Plot transcript by methylation scatter
+#### 9.5.2.7 Plot transcript by methylation scatter
 
 ``` r
 plot_data_scatter(mofa_objects[["MOFAobject_factors10"]], 
@@ -3924,9 +3902,9 @@ plot_data_scatter(mofa_objects[["MOFAobject_factors10"]],
 
 ![](22.20-Apul-multiomics-MOFA2_files/figure-gfm/plot-top-transcript-by-methylation-1.png)<!-- -->
 
-### 10.5.3 lncRNA
+### 9.5.3 lncRNA
 
-#### 10.5.3.1 Plot weights
+#### 9.5.3.1 Plot weights
 
 ``` r
 plot_weights(mofa_objects[["MOFAobject_factors10"]], 
@@ -3938,7 +3916,7 @@ plot_weights(mofa_objects[["MOFAobject_factors10"]],
 
 ![](22.20-Apul-multiomics-MOFA2_files/figure-gfm/plot-lncRNA-weights-1.png)<!-- -->
 
-#### 10.5.3.2 Plot top weights
+#### 9.5.3.2 Plot top weights
 
 ``` r
 plot_top_weights(mofa_objects[["MOFAobject_factors10"]],
@@ -3951,7 +3929,7 @@ plot_top_weights(mofa_objects[["MOFAobject_factors10"]],
 
 ![](22.20-Apul-multiomics-MOFA2_files/figure-gfm/plot-top-lncRNA-weights-1.png)<!-- -->
 
-#### 10.5.3.3 Print top 10 weights
+#### 9.5.3.3 Print top 10 weights
 
 ``` r
 # Print top 10 lncRNA features (by absolute weight) and their actual weights for factor 6
@@ -3980,7 +3958,7 @@ print(top_df)
     lncRNA_46598 lncRNA_46598  28.83803
     lncRNA_3048   lncRNA_3048  28.63909
 
-#### 10.5.3.4 Plot heatmap
+#### 9.5.3.4 Plot heatmap
 
 ``` r
 plot_data_heatmap(mofa_objects[["MOFAobject_factors10"]], 
@@ -3996,7 +3974,7 @@ plot_data_heatmap(mofa_objects[["MOFAobject_factors10"]],
 
 ![](22.20-Apul-multiomics-MOFA2_files/figure-gfm/plot-heatmap-lncRNA-1.png)<!-- -->
 
-#### 10.5.3.5 Plot top lncRNA
+#### 9.5.3.5 Plot top lncRNA
 
 ``` r
 # Programmatically get top lncRNA by absolute weight for factor 6
@@ -4022,7 +4000,7 @@ plot_factor(mofa_objects[["MOFAobject_factors10"]],
 
 ![](22.20-Apul-multiomics-MOFA2_files/figure-gfm/plot-top-lncRNA-factor01-1.png)<!-- -->
 
-#### 10.5.3.6 Plot lncRNA by gene scatter
+#### 9.5.3.6 Plot lncRNA by gene scatter
 
 ``` r
 plot_data_scatter(mofa_objects[["MOFAobject_factors10"]], 
@@ -4036,7 +4014,7 @@ plot_data_scatter(mofa_objects[["MOFAobject_factors10"]],
 
 ![](22.20-Apul-multiomics-MOFA2_files/figure-gfm/plot-top-lncRNA-by-gene-1.png)<!-- -->
 
-#### 10.5.3.7 Plot lncRNA by transcript scatter
+#### 9.5.3.7 Plot lncRNA by transcript scatter
 
 ``` r
 plot_data_scatter(mofa_objects[["MOFAobject_factors10"]], 
@@ -4050,7 +4028,7 @@ plot_data_scatter(mofa_objects[["MOFAobject_factors10"]],
 
 ![](22.20-Apul-multiomics-MOFA2_files/figure-gfm/plot-top-lncRNA-by-transcript-1.png)<!-- -->
 
-#### 10.5.3.8 Plot lncRNA by methylation scatter
+#### 9.5.3.8 Plot lncRNA by methylation scatter
 
 ``` r
 plot_data_scatter(mofa_objects[["MOFAobject_factors10"]], 
@@ -4064,9 +4042,9 @@ plot_data_scatter(mofa_objects[["MOFAobject_factors10"]],
 
 ![](22.20-Apul-multiomics-MOFA2_files/figure-gfm/plot-top-lncRNA-by-methylation-1.png)<!-- -->
 
-### 10.5.4 Methylation
+### 9.5.4 Methylation
 
-#### 10.5.4.1 Plot weights
+#### 9.5.4.1 Plot weights
 
 ``` r
 plot_weights(mofa_objects[["MOFAobject_factors10"]], 
@@ -4078,7 +4056,7 @@ plot_weights(mofa_objects[["MOFAobject_factors10"]],
 
 ![](22.20-Apul-multiomics-MOFA2_files/figure-gfm/plot-methylation-weights-1.png)<!-- -->
 
-#### 10.5.4.2 Plot top weights
+#### 9.5.4.2 Plot top weights
 
 ``` r
 plot_top_weights(mofa_objects[["MOFAobject_factors10"]],
@@ -4091,7 +4069,7 @@ plot_top_weights(mofa_objects[["MOFAobject_factors10"]],
 
 ![](22.20-Apul-multiomics-MOFA2_files/figure-gfm/plot-top-methylation-weights-1.png)<!-- -->
 
-#### 10.5.4.3 Print top 10 weights
+#### 9.5.4.3 Print top 10 weights
 
 ``` r
 # Print top 10 methylation features (by absolute weight) and their actual weights for factor 6
@@ -4120,7 +4098,7 @@ print(top_df)
     CpG_ptg000026l_8778144   CpG_ptg000026l_8778144  1.352686
     CpG_ptg000017l_3148268   CpG_ptg000017l_3148268  1.351798
 
-#### 10.5.4.4 Plot heatmap
+#### 9.5.4.4 Plot heatmap
 
 ``` r
 plot_data_heatmap(mofa_objects[["MOFAobject_factors10"]], 
@@ -4136,7 +4114,7 @@ plot_data_heatmap(mofa_objects[["MOFAobject_factors10"]],
 
 ![](22.20-Apul-multiomics-MOFA2_files/figure-gfm/plot-heatmap-methylation-1.png)<!-- -->
 
-#### 10.5.4.5 Plot top methylation
+#### 9.5.4.5 Plot top methylation
 
 ``` r
 # Programmatically get top methylation by absolute weight for factor 6
@@ -4162,7 +4140,7 @@ plot_factor(mofa_objects[["MOFAobject_factors10"]],
 
 ![](22.20-Apul-multiomics-MOFA2_files/figure-gfm/plot-top-methylation-factor6-1.png)<!-- -->
 
-#### 10.5.4.6 Plot methylation by gene scatter
+#### 9.5.4.6 Plot methylation by gene scatter
 
 ``` r
 plot_data_scatter(mofa_objects[["MOFAobject_factors10"]], 
@@ -4176,7 +4154,7 @@ plot_data_scatter(mofa_objects[["MOFAobject_factors10"]],
 
 ![](22.20-Apul-multiomics-MOFA2_files/figure-gfm/plot-top-methylation-by-gene-1.png)<!-- -->
 
-#### 10.5.4.7 Plot methylation by transcript scatter
+#### 9.5.4.7 Plot methylation by transcript scatter
 
 ``` r
 plot_data_scatter(mofa_objects[["MOFAobject_factors10"]], 
@@ -4190,7 +4168,7 @@ plot_data_scatter(mofa_objects[["MOFAobject_factors10"]],
 
 ![](22.20-Apul-multiomics-MOFA2_files/figure-gfm/plot-top-methylation-by-transcript-1.png)<!-- -->
 
-#### 10.5.4.8 Plot methylation by lncRNA scatter
+#### 9.5.4.8 Plot methylation by lncRNA scatter
 
 ``` r
 plot_data_scatter(mofa_objects[["MOFAobject_factors10"]], 
@@ -4204,7 +4182,7 @@ plot_data_scatter(mofa_objects[["MOFAobject_factors10"]],
 
 ![](22.20-Apul-multiomics-MOFA2_files/figure-gfm/plot-top-methylation-by-lncRNA-1.png)<!-- -->
 
-# 11 SESSION INFO
+# 10 SESSION INFO
 
 ``` r
 sessionInfo()
@@ -4262,17 +4240,4 @@ sessionInfo()
     [70] parallel_4.2.3        Rcpp_1.1.0            vctrs_0.6.5          
     [73] png_0.1-8             tidyselect_1.2.1      xfun_0.53            
 
-# 12 REFERENCES
-
-<div id="refs" class="references csl-bib-body hanging-indent">
-
-<div id="ref-Argelaguet2020" class="csl-entry">
-
-Argelaguet, R., D. Arnol, D. Bredikhin, Y. Deloro, B. Velten, J. C.
-Marioni, and O. Stegle. 2020. “MOFA+: A Statistical Framework for
-Comprehensive Integration of Multi-Modal Single-Cell Data.” *Genome
-Biology* 21 (1): 111.
-
-</div>
-
-</div>
+# 11 REFERENCES
