@@ -24,10 +24,10 @@ In preparation for RNA-seq analysis for [urol-e5/timeseries_molecular](https://g
 This notebook details the RNA-seq alignment using [`HISAT2`](https://daehwankimlab.github.io/hisat2/) and [`StringTie`](https://ccb.jhu.edu/software/stringtie/) to generate DESeq2-formatted count matrices. These will be linked on [the `timeseries_molecular` Wiki Page](https://github.com/urol-e5/timeseries_molecular/wiki).
 
 ::: {.callout-note}
-The contents below are from markdown knitted from [`02.20-E-Peve-RNAseq-alignment-HiSat2.Rmd`](https://github.com/urol-e5/timeseries_molecular/blob/461f679b6c42f014e7a9c3138d38d6db1d477eee/E-Peve/code/02.20-E-Peve-RNAseq-alignment-HiSat2.Rmd) (commit `461f679`).
+The contents below are from markdown knitted from [`02.20-E-Peve-RNAseq-alignment-HiSat2.Rmd`](https://github.com/urol-e5/timeseries_molecular/blob/3963266a6d2db1b2dd4c9f424fdd85c5ff1a3f1b/E-Peve/code/02.20-E-Peve-RNAseq-alignment-HiSat2.Rmd) (commit `3963266`).
 :::
 
-0
+
 # 1 Background
 
 This notebook will align trimmed *P.evermanni* RNA-seq data to the
@@ -38,7 +38,7 @@ Follwed by
 (Pertea et al. 2015, 2016) for transcript assembly/identification and
 count matrices for downstream expression analysis with
 [DESeq2](https://github.com/thelovelab/DESeq2) and/or
-[Ballgown](https://github.com/alyssafrazee/ballgown).
+$$Ballgown$$(<https://github.com/alyssafrazee/ballgown>.
 
 Since the BAM files produced by this notebook are too large for GitHub,
 they can be accessed on our server here:
@@ -65,6 +65,9 @@ Outputs:
 
   - `peve-transcript_count_matrix.csv`: Transcript count matrix for use
     in [DESeq2](https://github.com/thelovelab/DESeq2).
+
+  - `peve-transcript_count_matrix_with_gene_ids.csv`: Transcript count
+    matrix which includes corresponding gene IDs.
 
   - `prepDE-sample_list.txt`: Sample file list provided as input to
     StringTie for DESeq2 count matrix generation. Also serves as
@@ -128,7 +131,7 @@ echo "#### Assign Variables ####"
 echo ""
 
 echo "# Data directories"
-echo 'export timeseries_dir=/home/shared/8TB_HDD_01/sam/gitrepos/urol-e5/timeseries_molecular'
+echo 'export timeseries_dir=/home/shared/16TB_HDD_01/sam/gitrepos/urol-e5/timeseries_molecular'
 echo 'export genome_dir="${timeseries_dir}/E-Peve/data"'
 echo 'export genome_index_dir="${timeseries_dir}/E-Peve/output/02.10-E-Peve-RNAseq-genome-index-HiSat2"'
 echo 'export output_dir_top="${timeseries_dir}/E-Peve/output/02.20-E-Peve-RNAseq-alignment-HiSat2"'
@@ -211,7 +214,7 @@ cat .bashvars
     #### Assign Variables ####
 
     # Data directories
-    export timeseries_dir=/home/shared/8TB_HDD_01/sam/gitrepos/urol-e5/timeseries_molecular
+    export timeseries_dir=/home/shared/16TB_HDD_01/sam/gitrepos/urol-e5/timeseries_molecular
     export genome_dir="${timeseries_dir}/E-Peve/data"
     export genome_index_dir="${timeseries_dir}/E-Peve/output/02.10-E-Peve-RNAseq-genome-index-HiSat2"
     export output_dir_top="${timeseries_dir}/E-Peve/output/02.20-E-Peve-RNAseq-alignment-HiSat2"
@@ -430,559 +433,446 @@ cd "${output_dir_top}"
 tree --du -h
 ```
 
-    .
-    ├── [ 592]  checksums.md5
-    ├── [5.3K]  gtf_list.txt
-    ├── [301K]  multiqc_data
-    │   ├── [5.0K]  multiqc_bowtie2.txt
-    │   ├── [ 307]  multiqc_citations.txt
-    │   ├── [262K]  multiqc_data.json
-    │   ├── [3.1K]  multiqc_general_stats.txt
-    │   ├── [4.1K]  multiqc.log
-    │   ├── [7.7K]  multiqc_samtools_flagstat.txt
-    │   └── [ 15K]  multiqc_sources.txt
-    ├── [1.1M]  multiqc_report.html
-    ├── [4.6M]  peve-gene_count_matrix.csv
-    ├── [4.3M]  peve-transcript_count_matrix.csv
-    ├── [1.7G]  POR-216-TP1
-    │   ├── [2.8M]  e2t.ctab
-    │   ├── [ 20M]  e_data.ctab
-    │   ├── [2.3M]  i2t.ctab
-    │   ├── [ 11M]  i_data.ctab
-    │   ├── [ 400]  input_fastqs_checksums.md5
-    │   ├── [ 601]  POR-216-TP1_checksums.md5
-    │   ├── [4.2M]  POR-216-TP1.cov_refs.gtf
-    │   ├── [ 42M]  POR-216-TP1.gtf
-    │   ├── [ 450]  POR-216-TP1-hisat2_output.flagstat
-    │   ├── [ 639]  POR-216-TP1_hisat2.stats
-    │   ├── [1.6G]  POR-216-TP1.sorted.bam
-    │   ├── [1.2M]  POR-216-TP1.sorted.bam.bai
-    │   └── [4.1M]  t_data.ctab
-    ├── [1.6G]  POR-216-TP2
-    │   ├── [2.8M]  e2t.ctab
-    │   ├── [ 21M]  e_data.ctab
-    │   ├── [2.3M]  i2t.ctab
-    │   ├── [ 11M]  i_data.ctab
-    │   ├── [ 400]  input_fastqs_checksums.md5
-    │   ├── [ 601]  POR-216-TP2_checksums.md5
-    │   ├── [5.2M]  POR-216-TP2.cov_refs.gtf
-    │   ├── [ 42M]  POR-216-TP2.gtf
-    │   ├── [ 449]  POR-216-TP2-hisat2_output.flagstat
-    │   ├── [ 639]  POR-216-TP2_hisat2.stats
-    │   ├── [1.5G]  POR-216-TP2.sorted.bam
-    │   ├── [1.1M]  POR-216-TP2.sorted.bam.bai
-    │   └── [4.1M]  t_data.ctab
-    ├── [1.4G]  POR-216-TP3
-    │   ├── [2.8M]  e2t.ctab
-    │   ├── [ 20M]  e_data.ctab
-    │   ├── [2.3M]  i2t.ctab
-    │   ├── [ 11M]  i_data.ctab
-    │   ├── [ 400]  input_fastqs_checksums.md5
-    │   ├── [ 601]  POR-216-TP3_checksums.md5
-    │   ├── [3.8M]  POR-216-TP3.cov_refs.gtf
-    │   ├── [ 42M]  POR-216-TP3.gtf
-    │   ├── [ 449]  POR-216-TP3-hisat2_output.flagstat
-    │   ├── [ 636]  POR-216-TP3_hisat2.stats
-    │   ├── [1.3G]  POR-216-TP3.sorted.bam
-    │   ├── [1.1M]  POR-216-TP3.sorted.bam.bai
-    │   └── [4.1M]  t_data.ctab
-    ├── [1.8G]  POR-216-TP4
-    │   ├── [2.8M]  e2t.ctab
-    │   ├── [ 20M]  e_data.ctab
-    │   ├── [2.3M]  i2t.ctab
-    │   ├── [ 11M]  i_data.ctab
-    │   ├── [ 400]  input_fastqs_checksums.md5
-    │   ├── [ 601]  POR-216-TP4_checksums.md5
-    │   ├── [2.7M]  POR-216-TP4.cov_refs.gtf
-    │   ├── [ 42M]  POR-216-TP4.gtf
-    │   ├── [ 450]  POR-216-TP4-hisat2_output.flagstat
-    │   ├── [ 640]  POR-216-TP4_hisat2.stats
-    │   ├── [1.7G]  POR-216-TP4.sorted.bam
-    │   ├── [1.1M]  POR-216-TP4.sorted.bam.bai
-    │   └── [4.1M]  t_data.ctab
-    ├── [1.8G]  POR-236-TP1
-    │   ├── [2.8M]  e2t.ctab
-    │   ├── [ 21M]  e_data.ctab
-    │   ├── [2.3M]  i2t.ctab
-    │   ├── [ 11M]  i_data.ctab
-    │   ├── [ 400]  input_fastqs_checksums.md5
-    │   ├── [ 601]  POR-236-TP1_checksums.md5
-    │   ├── [4.9M]  POR-236-TP1.cov_refs.gtf
-    │   ├── [ 42M]  POR-236-TP1.gtf
-    │   ├── [ 449]  POR-236-TP1-hisat2_output.flagstat
-    │   ├── [ 640]  POR-236-TP1_hisat2.stats
-    │   ├── [1.7G]  POR-236-TP1.sorted.bam
-    │   ├── [1.1M]  POR-236-TP1.sorted.bam.bai
-    │   └── [4.1M]  t_data.ctab
-    ├── [1.7G]  POR-236-TP2
-    │   ├── [2.8M]  e2t.ctab
-    │   ├── [ 20M]  e_data.ctab
-    │   ├── [2.3M]  i2t.ctab
-    │   ├── [ 11M]  i_data.ctab
-    │   ├── [ 400]  input_fastqs_checksums.md5
-    │   ├── [ 601]  POR-236-TP2_checksums.md5
-    │   ├── [3.7M]  POR-236-TP2.cov_refs.gtf
-    │   ├── [ 42M]  POR-236-TP2.gtf
-    │   ├── [ 450]  POR-236-TP2-hisat2_output.flagstat
-    │   ├── [ 640]  POR-236-TP2_hisat2.stats
-    │   ├── [1.6G]  POR-236-TP2.sorted.bam
-    │   ├── [1.1M]  POR-236-TP2.sorted.bam.bai
-    │   └── [4.1M]  t_data.ctab
-    ├── [1.7G]  POR-245-TP1
-    │   ├── [2.8M]  e2t.ctab
-    │   ├── [ 20M]  e_data.ctab
-    │   ├── [2.3M]  i2t.ctab
-    │   ├── [ 11M]  i_data.ctab
-    │   ├── [ 400]  input_fastqs_checksums.md5
-    │   ├── [ 601]  POR-245-TP1_checksums.md5
-    │   ├── [4.8M]  POR-245-TP1.cov_refs.gtf
-    │   ├── [ 42M]  POR-245-TP1.gtf
-    │   ├── [ 449]  POR-245-TP1-hisat2_output.flagstat
-    │   ├── [ 639]  POR-245-TP1_hisat2.stats
-    │   ├── [1.6G]  POR-245-TP1.sorted.bam
-    │   ├── [1.1M]  POR-245-TP1.sorted.bam.bai
-    │   └── [4.1M]  t_data.ctab
-    ├── [1.4G]  POR-245-TP2
-    │   ├── [2.8M]  e2t.ctab
-    │   ├── [ 20M]  e_data.ctab
-    │   ├── [2.3M]  i2t.ctab
-    │   ├── [ 11M]  i_data.ctab
-    │   ├── [ 400]  input_fastqs_checksums.md5
-    │   ├── [ 601]  POR-245-TP2_checksums.md5
-    │   ├── [3.6M]  POR-245-TP2.cov_refs.gtf
-    │   ├── [ 42M]  POR-245-TP2.gtf
-    │   ├── [ 449]  POR-245-TP2-hisat2_output.flagstat
-    │   ├── [ 639]  POR-245-TP2_hisat2.stats
-    │   ├── [1.4G]  POR-245-TP2.sorted.bam
-    │   ├── [1.0M]  POR-245-TP2.sorted.bam.bai
-    │   └── [4.1M]  t_data.ctab
-    ├── [1.6G]  POR-245-TP3
-    │   ├── [2.8M]  e2t.ctab
-    │   ├── [ 20M]  e_data.ctab
-    │   ├── [2.3M]  i2t.ctab
-    │   ├── [ 11M]  i_data.ctab
-    │   ├── [ 400]  input_fastqs_checksums.md5
-    │   ├── [ 601]  POR-245-TP3_checksums.md5
-    │   ├── [2.8M]  POR-245-TP3.cov_refs.gtf
-    │   ├── [ 41M]  POR-245-TP3.gtf
-    │   ├── [ 450]  POR-245-TP3-hisat2_output.flagstat
-    │   ├── [ 640]  POR-245-TP3_hisat2.stats
-    │   ├── [1.5G]  POR-245-TP3.sorted.bam
-    │   ├── [1.1M]  POR-245-TP3.sorted.bam.bai
-    │   └── [4.1M]  t_data.ctab
-    ├── [1.5G]  POR-245-TP4
-    │   ├── [2.8M]  e2t.ctab
-    │   ├── [ 20M]  e_data.ctab
-    │   ├── [2.3M]  i2t.ctab
-    │   ├── [ 11M]  i_data.ctab
-    │   ├── [ 400]  input_fastqs_checksums.md5
-    │   ├── [ 601]  POR-245-TP4_checksums.md5
-    │   ├── [4.5M]  POR-245-TP4.cov_refs.gtf
-    │   ├── [ 42M]  POR-245-TP4.gtf
-    │   ├── [ 450]  POR-245-TP4-hisat2_output.flagstat
-    │   ├── [ 639]  POR-245-TP4_hisat2.stats
-    │   ├── [1.4G]  POR-245-TP4.sorted.bam
-    │   ├── [1.1M]  POR-245-TP4.sorted.bam.bai
-    │   └── [4.1M]  t_data.ctab
-    ├── [1.5G]  POR-260-TP1
-    │   ├── [2.8M]  e2t.ctab
-    │   ├── [ 21M]  e_data.ctab
-    │   ├── [2.3M]  i2t.ctab
-    │   ├── [ 12M]  i_data.ctab
-    │   ├── [ 400]  input_fastqs_checksums.md5
-    │   ├── [ 601]  POR-260-TP1_checksums.md5
-    │   ├── [5.7M]  POR-260-TP1.cov_refs.gtf
-    │   ├── [ 42M]  POR-260-TP1.gtf
-    │   ├── [ 450]  POR-260-TP1-hisat2_output.flagstat
-    │   ├── [ 639]  POR-260-TP1_hisat2.stats
-    │   ├── [1.4G]  POR-260-TP1.sorted.bam
-    │   ├── [1.1M]  POR-260-TP1.sorted.bam.bai
-    │   └── [4.1M]  t_data.ctab
-    ├── [1.5G]  POR-260-TP2
-    │   ├── [2.8M]  e2t.ctab
-    │   ├── [ 20M]  e_data.ctab
-    │   ├── [2.3M]  i2t.ctab
-    │   ├── [ 11M]  i_data.ctab
-    │   ├── [ 400]  input_fastqs_checksums.md5
-    │   ├── [ 601]  POR-260-TP2_checksums.md5
-    │   ├── [3.7M]  POR-260-TP2.cov_refs.gtf
-    │   ├── [ 42M]  POR-260-TP2.gtf
-    │   ├── [ 449]  POR-260-TP2-hisat2_output.flagstat
-    │   ├── [ 640]  POR-260-TP2_hisat2.stats
-    │   ├── [1.4G]  POR-260-TP2.sorted.bam
-    │   ├── [1.0M]  POR-260-TP2.sorted.bam.bai
-    │   └── [4.1M]  t_data.ctab
-    ├── [1.5G]  POR-260-TP3
-    │   ├── [2.8M]  e2t.ctab
-    │   ├── [ 20M]  e_data.ctab
-    │   ├── [2.3M]  i2t.ctab
-    │   ├── [ 11M]  i_data.ctab
-    │   ├── [ 400]  input_fastqs_checksums.md5
-    │   ├── [ 601]  POR-260-TP3_checksums.md5
-    │   ├── [3.7M]  POR-260-TP3.cov_refs.gtf
-    │   ├── [ 42M]  POR-260-TP3.gtf
-    │   ├── [ 449]  POR-260-TP3-hisat2_output.flagstat
-    │   ├── [ 639]  POR-260-TP3_hisat2.stats
-    │   ├── [1.4G]  POR-260-TP3.sorted.bam
-    │   ├── [1.1M]  POR-260-TP3.sorted.bam.bai
-    │   └── [4.1M]  t_data.ctab
-    ├── [1.7G]  POR-260-TP4
-    │   ├── [2.8M]  e2t.ctab
-    │   ├── [ 20M]  e_data.ctab
-    │   ├── [2.3M]  i2t.ctab
-    │   ├── [ 11M]  i_data.ctab
-    │   ├── [ 400]  input_fastqs_checksums.md5
-    │   ├── [ 601]  POR-260-TP4_checksums.md5
-    │   ├── [4.0M]  POR-260-TP4.cov_refs.gtf
-    │   ├── [ 42M]  POR-260-TP4.gtf
-    │   ├── [ 449]  POR-260-TP4-hisat2_output.flagstat
-    │   ├── [ 640]  POR-260-TP4_hisat2.stats
-    │   ├── [1.6G]  POR-260-TP4.sorted.bam
-    │   ├── [1.1M]  POR-260-TP4.sorted.bam.bai
-    │   └── [4.1M]  t_data.ctab
-    ├── [1.7G]  POR-262-TP1
-    │   ├── [2.8M]  e2t.ctab
-    │   ├── [ 20M]  e_data.ctab
-    │   ├── [2.3M]  i2t.ctab
-    │   ├── [ 11M]  i_data.ctab
-    │   ├── [ 400]  input_fastqs_checksums.md5
-    │   ├── [ 601]  POR-262-TP1_checksums.md5
-    │   ├── [4.0M]  POR-262-TP1.cov_refs.gtf
-    │   ├── [ 42M]  POR-262-TP1.gtf
-    │   ├── [ 449]  POR-262-TP1-hisat2_output.flagstat
-    │   ├── [ 640]  POR-262-TP1_hisat2.stats
-    │   ├── [1.7G]  POR-262-TP1.sorted.bam
-    │   ├── [1.1M]  POR-262-TP1.sorted.bam.bai
-    │   └── [4.1M]  t_data.ctab
-    ├── [1.8G]  POR-262-TP2
-    │   ├── [2.8M]  e2t.ctab
-    │   ├── [ 21M]  e_data.ctab
-    │   ├── [2.3M]  i2t.ctab
-    │   ├── [ 11M]  i_data.ctab
-    │   ├── [ 400]  input_fastqs_checksums.md5
-    │   ├── [ 601]  POR-262-TP2_checksums.md5
-    │   ├── [5.3M]  POR-262-TP2.cov_refs.gtf
-    │   ├── [ 42M]  POR-262-TP2.gtf
-    │   ├── [ 449]  POR-262-TP2-hisat2_output.flagstat
-    │   ├── [ 639]  POR-262-TP2_hisat2.stats
-    │   ├── [1.7G]  POR-262-TP2.sorted.bam
-    │   ├── [1.1M]  POR-262-TP2.sorted.bam.bai
-    │   └── [4.1M]  t_data.ctab
-    ├── [1.9G]  POR-262-TP3
-    │   ├── [2.8M]  e2t.ctab
-    │   ├── [ 20M]  e_data.ctab
-    │   ├── [2.3M]  i2t.ctab
-    │   ├── [ 11M]  i_data.ctab
-    │   ├── [ 400]  input_fastqs_checksums.md5
-    │   ├── [ 601]  POR-262-TP3_checksums.md5
-    │   ├── [5.2M]  POR-262-TP3.cov_refs.gtf
-    │   ├── [ 42M]  POR-262-TP3.gtf
-    │   ├── [ 450]  POR-262-TP3-hisat2_output.flagstat
-    │   ├── [ 640]  POR-262-TP3_hisat2.stats
-    │   ├── [1.8G]  POR-262-TP3.sorted.bam
-    │   ├── [1.1M]  POR-262-TP3.sorted.bam.bai
-    │   └── [4.1M]  t_data.ctab
-    ├── [1.5G]  POR-262-TP4
-    │   ├── [2.8M]  e2t.ctab
-    │   ├── [ 20M]  e_data.ctab
-    │   ├── [2.3M]  i2t.ctab
-    │   ├── [ 11M]  i_data.ctab
-    │   ├── [ 400]  input_fastqs_checksums.md5
-    │   ├── [ 601]  POR-262-TP4_checksums.md5
-    │   ├── [4.4M]  POR-262-TP4.cov_refs.gtf
-    │   ├── [ 42M]  POR-262-TP4.gtf
-    │   ├── [ 449]  POR-262-TP4-hisat2_output.flagstat
-    │   ├── [ 640]  POR-262-TP4_hisat2.stats
-    │   ├── [1.4G]  POR-262-TP4.sorted.bam
-    │   ├── [1.1M]  POR-262-TP4.sorted.bam.bai
-    │   └── [4.1M]  t_data.ctab
-    ├── [1.9G]  POR-69-TP1
-    │   ├── [2.8M]  e2t.ctab
-    │   ├── [ 20M]  e_data.ctab
-    │   ├── [2.3M]  i2t.ctab
-    │   ├── [ 11M]  i_data.ctab
-    │   ├── [ 398]  input_fastqs_checksums.md5
-    │   ├── [ 595]  POR-69-TP1_checksums.md5
-    │   ├── [4.1M]  POR-69-TP1.cov_refs.gtf
-    │   ├── [ 42M]  POR-69-TP1.gtf
-    │   ├── [ 450]  POR-69-TP1-hisat2_output.flagstat
-    │   ├── [ 640]  POR-69-TP1_hisat2.stats
-    │   ├── [1.8G]  POR-69-TP1.sorted.bam
-    │   ├── [1.1M]  POR-69-TP1.sorted.bam.bai
-    │   └── [4.1M]  t_data.ctab
-    ├── [1.7G]  POR-69-TP2
-    │   ├── [2.8M]  e2t.ctab
-    │   ├── [ 20M]  e_data.ctab
-    │   ├── [2.3M]  i2t.ctab
-    │   ├── [ 11M]  i_data.ctab
-    │   ├── [ 398]  input_fastqs_checksums.md5
-    │   ├── [ 595]  POR-69-TP2_checksums.md5
-    │   ├── [4.5M]  POR-69-TP2.cov_refs.gtf
-    │   ├── [ 42M]  POR-69-TP2.gtf
-    │   ├── [ 450]  POR-69-TP2-hisat2_output.flagstat
-    │   ├── [ 639]  POR-69-TP2_hisat2.stats
-    │   ├── [1.6G]  POR-69-TP2.sorted.bam
-    │   ├── [1.1M]  POR-69-TP2.sorted.bam.bai
-    │   └── [4.1M]  t_data.ctab
-    ├── [1.8G]  POR-69-TP3
-    │   ├── [2.8M]  e2t.ctab
-    │   ├── [ 20M]  e_data.ctab
-    │   ├── [2.3M]  i2t.ctab
-    │   ├── [ 11M]  i_data.ctab
-    │   ├── [ 398]  input_fastqs_checksums.md5
-    │   ├── [ 595]  POR-69-TP3_checksums.md5
-    │   ├── [3.9M]  POR-69-TP3.cov_refs.gtf
-    │   ├── [ 42M]  POR-69-TP3.gtf
-    │   ├── [ 450]  POR-69-TP3-hisat2_output.flagstat
-    │   ├── [ 640]  POR-69-TP3_hisat2.stats
-    │   ├── [1.8G]  POR-69-TP3.sorted.bam
-    │   ├── [1.1M]  POR-69-TP3.sorted.bam.bai
-    │   └── [4.1M]  t_data.ctab
-    ├── [1.5G]  POR-69-TP4
-    │   ├── [2.8M]  e2t.ctab
-    │   ├── [ 20M]  e_data.ctab
-    │   ├── [2.3M]  i2t.ctab
-    │   ├── [ 11M]  i_data.ctab
-    │   ├── [ 398]  input_fastqs_checksums.md5
-    │   ├── [ 595]  POR-69-TP4_checksums.md5
-    │   ├── [3.5M]  POR-69-TP4.cov_refs.gtf
-    │   ├── [ 41M]  POR-69-TP4.gtf
-    │   ├── [ 449]  POR-69-TP4-hisat2_output.flagstat
-    │   ├── [ 640]  POR-69-TP4_hisat2.stats
-    │   ├── [1.4G]  POR-69-TP4.sorted.bam
-    │   ├── [1.1M]  POR-69-TP4.sorted.bam.bai
-    │   └── [4.1M]  t_data.ctab
-    ├── [1.4G]  POR-72-TP1
-    │   ├── [2.8M]  e2t.ctab
-    │   ├── [ 20M]  e_data.ctab
-    │   ├── [2.3M]  i2t.ctab
-    │   ├── [ 11M]  i_data.ctab
-    │   ├── [ 398]  input_fastqs_checksums.md5
-    │   ├── [ 595]  POR-72-TP1_checksums.md5
-    │   ├── [3.7M]  POR-72-TP1.cov_refs.gtf
-    │   ├── [ 42M]  POR-72-TP1.gtf
-    │   ├── [ 449]  POR-72-TP1-hisat2_output.flagstat
-    │   ├── [ 637]  POR-72-TP1_hisat2.stats
-    │   ├── [1.3G]  POR-72-TP1.sorted.bam
-    │   ├── [1.1M]  POR-72-TP1.sorted.bam.bai
-    │   └── [4.1M]  t_data.ctab
-    ├── [1.5G]  POR-72-TP2
-    │   ├── [2.8M]  e2t.ctab
-    │   ├── [ 20M]  e_data.ctab
-    │   ├── [2.3M]  i2t.ctab
-    │   ├── [ 11M]  i_data.ctab
-    │   ├── [ 398]  input_fastqs_checksums.md5
-    │   ├── [ 595]  POR-72-TP2_checksums.md5
-    │   ├── [3.9M]  POR-72-TP2.cov_refs.gtf
-    │   ├── [ 42M]  POR-72-TP2.gtf
-    │   ├── [ 449]  POR-72-TP2-hisat2_output.flagstat
-    │   ├── [ 636]  POR-72-TP2_hisat2.stats
-    │   ├── [1.5G]  POR-72-TP2.sorted.bam
-    │   ├── [1.1M]  POR-72-TP2.sorted.bam.bai
-    │   └── [4.1M]  t_data.ctab
-    ├── [1.7G]  POR-72-TP3
-    │   ├── [2.8M]  e2t.ctab
-    │   ├── [ 20M]  e_data.ctab
-    │   ├── [2.3M]  i2t.ctab
-    │   ├── [ 11M]  i_data.ctab
-    │   ├── [ 398]  input_fastqs_checksums.md5
-    │   ├── [ 595]  POR-72-TP3_checksums.md5
-    │   ├── [4.1M]  POR-72-TP3.cov_refs.gtf
-    │   ├── [ 42M]  POR-72-TP3.gtf
-    │   ├── [ 449]  POR-72-TP3-hisat2_output.flagstat
-    │   ├── [ 640]  POR-72-TP3_hisat2.stats
-    │   ├── [1.7G]  POR-72-TP3.sorted.bam
-    │   ├── [1.1M]  POR-72-TP3.sorted.bam.bai
-    │   └── [4.1M]  t_data.ctab
-    ├── [2.0G]  POR-72-TP4
-    │   ├── [2.8M]  e2t.ctab
-    │   ├── [ 21M]  e_data.ctab
-    │   ├── [2.3M]  i2t.ctab
-    │   ├── [ 11M]  i_data.ctab
-    │   ├── [ 398]  input_fastqs_checksums.md5
-    │   ├── [ 595]  POR-72-TP4_checksums.md5
-    │   ├── [5.2M]  POR-72-TP4.cov_refs.gtf
-    │   ├── [ 42M]  POR-72-TP4.gtf
-    │   ├── [ 451]  POR-72-TP4-hisat2_output.flagstat
-    │   ├── [ 640]  POR-72-TP4_hisat2.stats
-    │   ├── [1.9G]  POR-72-TP4.sorted.bam
-    │   ├── [1.2M]  POR-72-TP4.sorted.bam.bai
-    │   └── [4.1M]  t_data.ctab
-    ├── [1.7G]  POR-73-TP1
-    │   ├── [2.8M]  e2t.ctab
-    │   ├── [ 20M]  e_data.ctab
-    │   ├── [2.3M]  i2t.ctab
-    │   ├── [ 11M]  i_data.ctab
-    │   ├── [ 398]  input_fastqs_checksums.md5
-    │   ├── [ 595]  POR-73-TP1_checksums.md5
-    │   ├── [3.3M]  POR-73-TP1.cov_refs.gtf
-    │   ├── [ 41M]  POR-73-TP1.gtf
-    │   ├── [ 450]  POR-73-TP1-hisat2_output.flagstat
-    │   ├── [ 638]  POR-73-TP1_hisat2.stats
-    │   ├── [1.6G]  POR-73-TP1.sorted.bam
-    │   ├── [1.1M]  POR-73-TP1.sorted.bam.bai
-    │   └── [4.1M]  t_data.ctab
-    ├── [1.9G]  POR-73-TP2
-    │   ├── [2.8M]  e2t.ctab
-    │   ├── [ 20M]  e_data.ctab
-    │   ├── [2.3M]  i2t.ctab
-    │   ├── [ 11M]  i_data.ctab
-    │   ├── [ 398]  input_fastqs_checksums.md5
-    │   ├── [ 595]  POR-73-TP2_checksums.md5
-    │   ├── [3.1M]  POR-73-TP2.cov_refs.gtf
-    │   ├── [ 41M]  POR-73-TP2.gtf
-    │   ├── [ 450]  POR-73-TP2-hisat2_output.flagstat
-    │   ├── [ 640]  POR-73-TP2_hisat2.stats
-    │   ├── [1.8G]  POR-73-TP2.sorted.bam
-    │   ├── [1.1M]  POR-73-TP2.sorted.bam.bai
-    │   └── [4.1M]  t_data.ctab
-    ├── [1.7G]  POR-73-TP3
-    │   ├── [2.8M]  e2t.ctab
-    │   ├── [ 20M]  e_data.ctab
-    │   ├── [2.3M]  i2t.ctab
-    │   ├── [ 11M]  i_data.ctab
-    │   ├── [ 398]  input_fastqs_checksums.md5
-    │   ├── [ 595]  POR-73-TP3_checksums.md5
-    │   ├── [2.5M]  POR-73-TP3.cov_refs.gtf
-    │   ├── [ 41M]  POR-73-TP3.gtf
-    │   ├── [ 450]  POR-73-TP3-hisat2_output.flagstat
-    │   ├── [ 640]  POR-73-TP3_hisat2.stats
-    │   ├── [1.6G]  POR-73-TP3.sorted.bam
-    │   ├── [1.1M]  POR-73-TP3.sorted.bam.bai
-    │   └── [4.1M]  t_data.ctab
-    ├── [1.6G]  POR-73-TP4
-    │   ├── [2.8M]  e2t.ctab
-    │   ├── [ 20M]  e_data.ctab
-    │   ├── [2.3M]  i2t.ctab
-    │   ├── [ 11M]  i_data.ctab
-    │   ├── [ 398]  input_fastqs_checksums.md5
-    │   ├── [ 595]  POR-73-TP4_checksums.md5
-    │   ├── [3.2M]  POR-73-TP4.cov_refs.gtf
-    │   ├── [ 42M]  POR-73-TP4.gtf
-    │   ├── [ 449]  POR-73-TP4-hisat2_output.flagstat
-    │   ├── [ 638]  POR-73-TP4_hisat2.stats
-    │   ├── [1.5G]  POR-73-TP4.sorted.bam
-    │   ├── [1.1M]  POR-73-TP4.sorted.bam.bai
-    │   └── [4.1M]  t_data.ctab
-    ├── [1.6G]  POR-74-TP1
-    │   ├── [2.8M]  e2t.ctab
-    │   ├── [ 20M]  e_data.ctab
-    │   ├── [2.3M]  i2t.ctab
-    │   ├── [ 11M]  i_data.ctab
-    │   ├── [ 398]  input_fastqs_checksums.md5
-    │   ├── [ 595]  POR-74-TP1_checksums.md5
-    │   ├── [4.1M]  POR-74-TP1.cov_refs.gtf
-    │   ├── [ 42M]  POR-74-TP1.gtf
-    │   ├── [ 449]  POR-74-TP1-hisat2_output.flagstat
-    │   ├── [ 639]  POR-74-TP1_hisat2.stats
-    │   ├── [1.5G]  POR-74-TP1.sorted.bam
-    │   ├── [1.1M]  POR-74-TP1.sorted.bam.bai
-    │   └── [4.1M]  t_data.ctab
-    ├── [1.5G]  POR-74-TP2
-    │   ├── [2.8M]  e2t.ctab
-    │   ├── [ 20M]  e_data.ctab
-    │   ├── [2.3M]  i2t.ctab
-    │   ├── [ 11M]  i_data.ctab
-    │   ├── [ 398]  input_fastqs_checksums.md5
-    │   ├── [ 595]  POR-74-TP2_checksums.md5
-    │   ├── [3.4M]  POR-74-TP2.cov_refs.gtf
-    │   ├── [ 42M]  POR-74-TP2.gtf
-    │   ├── [ 449]  POR-74-TP2-hisat2_output.flagstat
-    │   ├── [ 639]  POR-74-TP2_hisat2.stats
-    │   ├── [1.5G]  POR-74-TP2.sorted.bam
-    │   ├── [1.1M]  POR-74-TP2.sorted.bam.bai
-    │   └── [4.1M]  t_data.ctab
-    ├── [2.0G]  POR-74-TP3
-    │   ├── [2.8M]  e2t.ctab
-    │   ├── [ 20M]  e_data.ctab
-    │   ├── [2.3M]  i2t.ctab
-    │   ├── [ 11M]  i_data.ctab
-    │   ├── [ 398]  input_fastqs_checksums.md5
-    │   ├── [ 595]  POR-74-TP3_checksums.md5
-    │   ├── [4.4M]  POR-74-TP3.cov_refs.gtf
-    │   ├── [ 42M]  POR-74-TP3.gtf
-    │   ├── [ 450]  POR-74-TP3-hisat2_output.flagstat
-    │   ├── [ 640]  POR-74-TP3_hisat2.stats
-    │   ├── [1.9G]  POR-74-TP3.sorted.bam
-    │   ├── [1.2M]  POR-74-TP3.sorted.bam.bai
-    │   └── [4.1M]  t_data.ctab
-    ├── [1.7G]  POR-74-TP4
-    │   ├── [2.8M]  e2t.ctab
-    │   ├── [ 20M]  e_data.ctab
-    │   ├── [2.3M]  i2t.ctab
-    │   ├── [ 11M]  i_data.ctab
-    │   ├── [ 398]  input_fastqs_checksums.md5
-    │   ├── [ 595]  POR-74-TP4_checksums.md5
-    │   ├── [3.0M]  POR-74-TP4.cov_refs.gtf
-    │   ├── [ 41M]  POR-74-TP4.gtf
-    │   ├── [ 450]  POR-74-TP4-hisat2_output.flagstat
-    │   ├── [ 640]  POR-74-TP4_hisat2.stats
-    │   ├── [1.6G]  POR-74-TP4.sorted.bam
-    │   ├── [1.1M]  POR-74-TP4.sorted.bam.bai
-    │   └── [4.1M]  t_data.ctab
-    ├── [1.6G]  POR-83-TP1
-    │   ├── [2.8M]  e2t.ctab
-    │   ├── [ 20M]  e_data.ctab
-    │   ├── [2.3M]  i2t.ctab
-    │   ├── [ 11M]  i_data.ctab
-    │   ├── [ 398]  input_fastqs_checksums.md5
-    │   ├── [ 595]  POR-83-TP1_checksums.md5
-    │   ├── [4.7M]  POR-83-TP1.cov_refs.gtf
-    │   ├── [ 42M]  POR-83-TP1.gtf
-    │   ├── [ 449]  POR-83-TP1-hisat2_output.flagstat
-    │   ├── [ 640]  POR-83-TP1_hisat2.stats
-    │   ├── [1.5G]  POR-83-TP1.sorted.bam
-    │   ├── [1.1M]  POR-83-TP1.sorted.bam.bai
-    │   └── [4.1M]  t_data.ctab
-    ├── [1.7G]  POR-83-TP2
-    │   ├── [2.8M]  e2t.ctab
-    │   ├── [ 20M]  e_data.ctab
-    │   ├── [2.3M]  i2t.ctab
-    │   ├── [ 11M]  i_data.ctab
-    │   ├── [ 398]  input_fastqs_checksums.md5
-    │   ├── [ 595]  POR-83-TP2_checksums.md5
-    │   ├── [3.6M]  POR-83-TP2.cov_refs.gtf
-    │   ├── [ 42M]  POR-83-TP2.gtf
-    │   ├── [ 450]  POR-83-TP2-hisat2_output.flagstat
-    │   ├── [ 640]  POR-83-TP2_hisat2.stats
-    │   ├── [1.6G]  POR-83-TP2.sorted.bam
-    │   ├── [1.1M]  POR-83-TP2.sorted.bam.bai
-    │   └── [4.1M]  t_data.ctab
-    ├── [1.6G]  POR-83-TP3
-    │   ├── [2.8M]  e2t.ctab
-    │   ├── [ 20M]  e_data.ctab
-    │   ├── [2.3M]  i2t.ctab
-    │   ├── [ 11M]  i_data.ctab
-    │   ├── [ 398]  input_fastqs_checksums.md5
-    │   ├── [ 595]  POR-83-TP3_checksums.md5
-    │   ├── [3.2M]  POR-83-TP3.cov_refs.gtf
-    │   ├── [ 41M]  POR-83-TP3.gtf
-    │   ├── [ 450]  POR-83-TP3-hisat2_output.flagstat
-    │   ├── [ 640]  POR-83-TP3_hisat2.stats
-    │   ├── [1.5G]  POR-83-TP3.sorted.bam
-    │   ├── [1.1M]  POR-83-TP3.sorted.bam.bai
-    │   └── [4.1M]  t_data.ctab
-    ├── [2.1G]  POR-83-TP4
-    │   ├── [2.8M]  e2t.ctab
-    │   ├── [ 20M]  e_data.ctab
-    │   ├── [2.3M]  i2t.ctab
-    │   ├── [ 11M]  i_data.ctab
-    │   ├── [ 398]  input_fastqs_checksums.md5
-    │   ├── [ 595]  POR-83-TP4_checksums.md5
-    │   ├── [3.0M]  POR-83-TP4.cov_refs.gtf
-    │   ├── [ 41M]  POR-83-TP4.gtf
-    │   ├── [ 450]  POR-83-TP4-hisat2_output.flagstat
-    │   ├── [ 640]  POR-83-TP4_hisat2.stats
-    │   ├── [2.0G]  POR-83-TP4.sorted.bam
-    │   ├── [1.2M]  POR-83-TP4.sorted.bam.bai
-    │   └── [4.1M]  t_data.ctab
-    ├── [ 43M]  Porites_evermanni_v1.stringtie.gtf
-    ├── [5.8K]  prepDE-sample_list.txt
-    ├── [1.3K]  sorted_bams.list
-    ├── [ 59G]  sorted-bams-merged.bam
-    └── [8.6M]  sorted-bams-merged.bam.bai
+    [1.6G]  [01;34m.[0m
+    ├── [ 592]  [00mchecksums.md5[0m
+    ├── [5.3K]  [00mgtf_list.txt[0m
+    ├── [301K]  [01;34mmultiqc_data[0m
+    │   ├── [5.0K]  [00mmultiqc_bowtie2.txt[0m
+    │   ├── [ 307]  [00mmultiqc_citations.txt[0m
+    │   ├── [262K]  [00mmultiqc_data.json[0m
+    │   ├── [3.1K]  [00mmultiqc_general_stats.txt[0m
+    │   ├── [4.1K]  [00mmultiqc.log[0m
+    │   ├── [7.7K]  [00mmultiqc_samtools_flagstat.txt[0m
+    │   └── [ 15K]  [00mmultiqc_sources.txt[0m
+    ├── [1.1M]  [00mmultiqc_report.html[0m
+    ├── [4.6M]  [00mpeve-gene_count_matrix.csv[0m
+    ├── [4.3M]  [00mpeve-transcript_count_matrix.csv[0m
+    ├── [5.0M]  [00mpeve-transcript_count_matrix_with_gene_ids.csv[0m
+    ├── [ 42M]  [01;34mPOR-216-TP1[0m
+    │   ├── [2.8M]  [00me2t.ctab[0m
+    │   ├── [ 20M]  [00me_data.ctab[0m
+    │   ├── [2.3M]  [00mi2t.ctab[0m
+    │   ├── [ 11M]  [00mi_data.ctab[0m
+    │   ├── [ 400]  [00minput_fastqs_checksums.md5[0m
+    │   ├── [ 601]  [00mPOR-216-TP1_checksums.md5[0m
+    │   ├── [ 450]  [00mPOR-216-TP1-hisat2_output.flagstat[0m
+    │   ├── [ 639]  [00mPOR-216-TP1_hisat2.stats[0m
+    │   ├── [1.2M]  [00mPOR-216-TP1.sorted.bam.bai[0m
+    │   └── [4.1M]  [00mt_data.ctab[0m
+    ├── [ 42M]  [01;34mPOR-216-TP2[0m
+    │   ├── [2.8M]  [00me2t.ctab[0m
+    │   ├── [ 21M]  [00me_data.ctab[0m
+    │   ├── [2.3M]  [00mi2t.ctab[0m
+    │   ├── [ 11M]  [00mi_data.ctab[0m
+    │   ├── [ 400]  [00minput_fastqs_checksums.md5[0m
+    │   ├── [ 601]  [00mPOR-216-TP2_checksums.md5[0m
+    │   ├── [ 449]  [00mPOR-216-TP2-hisat2_output.flagstat[0m
+    │   ├── [ 639]  [00mPOR-216-TP2_hisat2.stats[0m
+    │   ├── [1.1M]  [00mPOR-216-TP2.sorted.bam.bai[0m
+    │   └── [4.1M]  [00mt_data.ctab[0m
+    ├── [ 42M]  [01;34mPOR-216-TP3[0m
+    │   ├── [2.8M]  [00me2t.ctab[0m
+    │   ├── [ 20M]  [00me_data.ctab[0m
+    │   ├── [2.3M]  [00mi2t.ctab[0m
+    │   ├── [ 11M]  [00mi_data.ctab[0m
+    │   ├── [ 400]  [00minput_fastqs_checksums.md5[0m
+    │   ├── [ 601]  [00mPOR-216-TP3_checksums.md5[0m
+    │   ├── [ 449]  [00mPOR-216-TP3-hisat2_output.flagstat[0m
+    │   ├── [ 636]  [00mPOR-216-TP3_hisat2.stats[0m
+    │   ├── [1.1M]  [00mPOR-216-TP3.sorted.bam.bai[0m
+    │   └── [4.1M]  [00mt_data.ctab[0m
+    ├── [ 42M]  [01;34mPOR-216-TP4[0m
+    │   ├── [2.8M]  [00me2t.ctab[0m
+    │   ├── [ 20M]  [00me_data.ctab[0m
+    │   ├── [2.3M]  [00mi2t.ctab[0m
+    │   ├── [ 11M]  [00mi_data.ctab[0m
+    │   ├── [ 400]  [00minput_fastqs_checksums.md5[0m
+    │   ├── [ 601]  [00mPOR-216-TP4_checksums.md5[0m
+    │   ├── [ 450]  [00mPOR-216-TP4-hisat2_output.flagstat[0m
+    │   ├── [ 640]  [00mPOR-216-TP4_hisat2.stats[0m
+    │   ├── [1.1M]  [00mPOR-216-TP4.sorted.bam.bai[0m
+    │   └── [4.1M]  [00mt_data.ctab[0m
+    ├── [ 42M]  [01;34mPOR-236-TP1[0m
+    │   ├── [2.8M]  [00me2t.ctab[0m
+    │   ├── [ 21M]  [00me_data.ctab[0m
+    │   ├── [2.3M]  [00mi2t.ctab[0m
+    │   ├── [ 11M]  [00mi_data.ctab[0m
+    │   ├── [ 400]  [00minput_fastqs_checksums.md5[0m
+    │   ├── [ 601]  [00mPOR-236-TP1_checksums.md5[0m
+    │   ├── [ 449]  [00mPOR-236-TP1-hisat2_output.flagstat[0m
+    │   ├── [ 640]  [00mPOR-236-TP1_hisat2.stats[0m
+    │   ├── [1.1M]  [00mPOR-236-TP1.sorted.bam.bai[0m
+    │   └── [4.1M]  [00mt_data.ctab[0m
+    ├── [ 42M]  [01;34mPOR-236-TP2[0m
+    │   ├── [2.8M]  [00me2t.ctab[0m
+    │   ├── [ 20M]  [00me_data.ctab[0m
+    │   ├── [2.3M]  [00mi2t.ctab[0m
+    │   ├── [ 11M]  [00mi_data.ctab[0m
+    │   ├── [ 400]  [00minput_fastqs_checksums.md5[0m
+    │   ├── [ 601]  [00mPOR-236-TP2_checksums.md5[0m
+    │   ├── [ 450]  [00mPOR-236-TP2-hisat2_output.flagstat[0m
+    │   ├── [ 640]  [00mPOR-236-TP2_hisat2.stats[0m
+    │   ├── [1.1M]  [00mPOR-236-TP2.sorted.bam.bai[0m
+    │   └── [4.1M]  [00mt_data.ctab[0m
+    ├── [ 42M]  [01;34mPOR-245-TP1[0m
+    │   ├── [2.8M]  [00me2t.ctab[0m
+    │   ├── [ 20M]  [00me_data.ctab[0m
+    │   ├── [2.3M]  [00mi2t.ctab[0m
+    │   ├── [ 11M]  [00mi_data.ctab[0m
+    │   ├── [ 400]  [00minput_fastqs_checksums.md5[0m
+    │   ├── [ 601]  [00mPOR-245-TP1_checksums.md5[0m
+    │   ├── [ 449]  [00mPOR-245-TP1-hisat2_output.flagstat[0m
+    │   ├── [ 639]  [00mPOR-245-TP1_hisat2.stats[0m
+    │   ├── [1.1M]  [00mPOR-245-TP1.sorted.bam.bai[0m
+    │   └── [4.1M]  [00mt_data.ctab[0m
+    ├── [ 42M]  [01;34mPOR-245-TP2[0m
+    │   ├── [2.8M]  [00me2t.ctab[0m
+    │   ├── [ 20M]  [00me_data.ctab[0m
+    │   ├── [2.3M]  [00mi2t.ctab[0m
+    │   ├── [ 11M]  [00mi_data.ctab[0m
+    │   ├── [ 400]  [00minput_fastqs_checksums.md5[0m
+    │   ├── [ 601]  [00mPOR-245-TP2_checksums.md5[0m
+    │   ├── [ 449]  [00mPOR-245-TP2-hisat2_output.flagstat[0m
+    │   ├── [ 639]  [00mPOR-245-TP2_hisat2.stats[0m
+    │   ├── [1.0M]  [00mPOR-245-TP2.sorted.bam.bai[0m
+    │   └── [4.1M]  [00mt_data.ctab[0m
+    ├── [ 42M]  [01;34mPOR-245-TP3[0m
+    │   ├── [2.8M]  [00me2t.ctab[0m
+    │   ├── [ 20M]  [00me_data.ctab[0m
+    │   ├── [2.3M]  [00mi2t.ctab[0m
+    │   ├── [ 11M]  [00mi_data.ctab[0m
+    │   ├── [ 400]  [00minput_fastqs_checksums.md5[0m
+    │   ├── [ 601]  [00mPOR-245-TP3_checksums.md5[0m
+    │   ├── [ 450]  [00mPOR-245-TP3-hisat2_output.flagstat[0m
+    │   ├── [ 640]  [00mPOR-245-TP3_hisat2.stats[0m
+    │   ├── [1.1M]  [00mPOR-245-TP3.sorted.bam.bai[0m
+    │   └── [4.1M]  [00mt_data.ctab[0m
+    ├── [ 42M]  [01;34mPOR-245-TP4[0m
+    │   ├── [2.8M]  [00me2t.ctab[0m
+    │   ├── [ 20M]  [00me_data.ctab[0m
+    │   ├── [2.3M]  [00mi2t.ctab[0m
+    │   ├── [ 11M]  [00mi_data.ctab[0m
+    │   ├── [ 400]  [00minput_fastqs_checksums.md5[0m
+    │   ├── [ 601]  [00mPOR-245-TP4_checksums.md5[0m
+    │   ├── [ 450]  [00mPOR-245-TP4-hisat2_output.flagstat[0m
+    │   ├── [ 639]  [00mPOR-245-TP4_hisat2.stats[0m
+    │   ├── [1.1M]  [00mPOR-245-TP4.sorted.bam.bai[0m
+    │   └── [4.1M]  [00mt_data.ctab[0m
+    ├── [ 42M]  [01;34mPOR-260-TP1[0m
+    │   ├── [2.8M]  [00me2t.ctab[0m
+    │   ├── [ 21M]  [00me_data.ctab[0m
+    │   ├── [2.3M]  [00mi2t.ctab[0m
+    │   ├── [ 12M]  [00mi_data.ctab[0m
+    │   ├── [ 400]  [00minput_fastqs_checksums.md5[0m
+    │   ├── [ 601]  [00mPOR-260-TP1_checksums.md5[0m
+    │   ├── [ 450]  [00mPOR-260-TP1-hisat2_output.flagstat[0m
+    │   ├── [ 639]  [00mPOR-260-TP1_hisat2.stats[0m
+    │   ├── [1.1M]  [00mPOR-260-TP1.sorted.bam.bai[0m
+    │   └── [4.1M]  [00mt_data.ctab[0m
+    ├── [ 42M]  [01;34mPOR-260-TP2[0m
+    │   ├── [2.8M]  [00me2t.ctab[0m
+    │   ├── [ 20M]  [00me_data.ctab[0m
+    │   ├── [2.3M]  [00mi2t.ctab[0m
+    │   ├── [ 11M]  [00mi_data.ctab[0m
+    │   ├── [ 400]  [00minput_fastqs_checksums.md5[0m
+    │   ├── [ 601]  [00mPOR-260-TP2_checksums.md5[0m
+    │   ├── [ 449]  [00mPOR-260-TP2-hisat2_output.flagstat[0m
+    │   ├── [ 640]  [00mPOR-260-TP2_hisat2.stats[0m
+    │   ├── [1.0M]  [00mPOR-260-TP2.sorted.bam.bai[0m
+    │   └── [4.1M]  [00mt_data.ctab[0m
+    ├── [ 42M]  [01;34mPOR-260-TP3[0m
+    │   ├── [2.8M]  [00me2t.ctab[0m
+    │   ├── [ 20M]  [00me_data.ctab[0m
+    │   ├── [2.3M]  [00mi2t.ctab[0m
+    │   ├── [ 11M]  [00mi_data.ctab[0m
+    │   ├── [ 400]  [00minput_fastqs_checksums.md5[0m
+    │   ├── [ 601]  [00mPOR-260-TP3_checksums.md5[0m
+    │   ├── [ 449]  [00mPOR-260-TP3-hisat2_output.flagstat[0m
+    │   ├── [ 639]  [00mPOR-260-TP3_hisat2.stats[0m
+    │   ├── [1.1M]  [00mPOR-260-TP3.sorted.bam.bai[0m
+    │   └── [4.1M]  [00mt_data.ctab[0m
+    ├── [ 42M]  [01;34mPOR-260-TP4[0m
+    │   ├── [2.8M]  [00me2t.ctab[0m
+    │   ├── [ 20M]  [00me_data.ctab[0m
+    │   ├── [2.3M]  [00mi2t.ctab[0m
+    │   ├── [ 11M]  [00mi_data.ctab[0m
+    │   ├── [ 400]  [00minput_fastqs_checksums.md5[0m
+    │   ├── [ 601]  [00mPOR-260-TP4_checksums.md5[0m
+    │   ├── [ 449]  [00mPOR-260-TP4-hisat2_output.flagstat[0m
+    │   ├── [ 640]  [00mPOR-260-TP4_hisat2.stats[0m
+    │   ├── [1.1M]  [00mPOR-260-TP4.sorted.bam.bai[0m
+    │   └── [4.1M]  [00mt_data.ctab[0m
+    ├── [ 42M]  [01;34mPOR-262-TP1[0m
+    │   ├── [2.8M]  [00me2t.ctab[0m
+    │   ├── [ 20M]  [00me_data.ctab[0m
+    │   ├── [2.3M]  [00mi2t.ctab[0m
+    │   ├── [ 11M]  [00mi_data.ctab[0m
+    │   ├── [ 400]  [00minput_fastqs_checksums.md5[0m
+    │   ├── [ 601]  [00mPOR-262-TP1_checksums.md5[0m
+    │   ├── [ 449]  [00mPOR-262-TP1-hisat2_output.flagstat[0m
+    │   ├── [ 640]  [00mPOR-262-TP1_hisat2.stats[0m
+    │   ├── [1.1M]  [00mPOR-262-TP1.sorted.bam.bai[0m
+    │   └── [4.1M]  [00mt_data.ctab[0m
+    ├── [ 42M]  [01;34mPOR-262-TP2[0m
+    │   ├── [2.8M]  [00me2t.ctab[0m
+    │   ├── [ 21M]  [00me_data.ctab[0m
+    │   ├── [2.3M]  [00mi2t.ctab[0m
+    │   ├── [ 11M]  [00mi_data.ctab[0m
+    │   ├── [ 400]  [00minput_fastqs_checksums.md5[0m
+    │   ├── [ 601]  [00mPOR-262-TP2_checksums.md5[0m
+    │   ├── [ 449]  [00mPOR-262-TP2-hisat2_output.flagstat[0m
+    │   ├── [ 639]  [00mPOR-262-TP2_hisat2.stats[0m
+    │   ├── [1.1M]  [00mPOR-262-TP2.sorted.bam.bai[0m
+    │   └── [4.1M]  [00mt_data.ctab[0m
+    ├── [ 42M]  [01;34mPOR-262-TP3[0m
+    │   ├── [2.8M]  [00me2t.ctab[0m
+    │   ├── [ 20M]  [00me_data.ctab[0m
+    │   ├── [2.3M]  [00mi2t.ctab[0m
+    │   ├── [ 11M]  [00mi_data.ctab[0m
+    │   ├── [ 400]  [00minput_fastqs_checksums.md5[0m
+    │   ├── [ 601]  [00mPOR-262-TP3_checksums.md5[0m
+    │   ├── [ 450]  [00mPOR-262-TP3-hisat2_output.flagstat[0m
+    │   ├── [ 640]  [00mPOR-262-TP3_hisat2.stats[0m
+    │   ├── [1.1M]  [00mPOR-262-TP3.sorted.bam.bai[0m
+    │   └── [4.1M]  [00mt_data.ctab[0m
+    ├── [ 42M]  [01;34mPOR-262-TP4[0m
+    │   ├── [2.8M]  [00me2t.ctab[0m
+    │   ├── [ 20M]  [00me_data.ctab[0m
+    │   ├── [2.3M]  [00mi2t.ctab[0m
+    │   ├── [ 11M]  [00mi_data.ctab[0m
+    │   ├── [ 400]  [00minput_fastqs_checksums.md5[0m
+    │   ├── [ 601]  [00mPOR-262-TP4_checksums.md5[0m
+    │   ├── [ 449]  [00mPOR-262-TP4-hisat2_output.flagstat[0m
+    │   ├── [ 640]  [00mPOR-262-TP4_hisat2.stats[0m
+    │   ├── [1.1M]  [00mPOR-262-TP4.sorted.bam.bai[0m
+    │   └── [4.1M]  [00mt_data.ctab[0m
+    ├── [ 42M]  [01;34mPOR-69-TP1[0m
+    │   ├── [2.8M]  [00me2t.ctab[0m
+    │   ├── [ 20M]  [00me_data.ctab[0m
+    │   ├── [2.3M]  [00mi2t.ctab[0m
+    │   ├── [ 11M]  [00mi_data.ctab[0m
+    │   ├── [ 398]  [00minput_fastqs_checksums.md5[0m
+    │   ├── [ 595]  [00mPOR-69-TP1_checksums.md5[0m
+    │   ├── [ 450]  [00mPOR-69-TP1-hisat2_output.flagstat[0m
+    │   ├── [ 640]  [00mPOR-69-TP1_hisat2.stats[0m
+    │   ├── [1.1M]  [00mPOR-69-TP1.sorted.bam.bai[0m
+    │   └── [4.1M]  [00mt_data.ctab[0m
+    ├── [ 42M]  [01;34mPOR-69-TP2[0m
+    │   ├── [2.8M]  [00me2t.ctab[0m
+    │   ├── [ 20M]  [00me_data.ctab[0m
+    │   ├── [2.3M]  [00mi2t.ctab[0m
+    │   ├── [ 11M]  [00mi_data.ctab[0m
+    │   ├── [ 398]  [00minput_fastqs_checksums.md5[0m
+    │   ├── [ 595]  [00mPOR-69-TP2_checksums.md5[0m
+    │   ├── [ 450]  [00mPOR-69-TP2-hisat2_output.flagstat[0m
+    │   ├── [ 639]  [00mPOR-69-TP2_hisat2.stats[0m
+    │   ├── [1.1M]  [00mPOR-69-TP2.sorted.bam.bai[0m
+    │   └── [4.1M]  [00mt_data.ctab[0m
+    ├── [ 42M]  [01;34mPOR-69-TP3[0m
+    │   ├── [2.8M]  [00me2t.ctab[0m
+    │   ├── [ 20M]  [00me_data.ctab[0m
+    │   ├── [2.3M]  [00mi2t.ctab[0m
+    │   ├── [ 11M]  [00mi_data.ctab[0m
+    │   ├── [ 398]  [00minput_fastqs_checksums.md5[0m
+    │   ├── [ 595]  [00mPOR-69-TP3_checksums.md5[0m
+    │   ├── [ 450]  [00mPOR-69-TP3-hisat2_output.flagstat[0m
+    │   ├── [ 640]  [00mPOR-69-TP3_hisat2.stats[0m
+    │   ├── [1.1M]  [00mPOR-69-TP3.sorted.bam.bai[0m
+    │   └── [4.1M]  [00mt_data.ctab[0m
+    ├── [ 42M]  [01;34mPOR-69-TP4[0m
+    │   ├── [2.8M]  [00me2t.ctab[0m
+    │   ├── [ 20M]  [00me_data.ctab[0m
+    │   ├── [2.3M]  [00mi2t.ctab[0m
+    │   ├── [ 11M]  [00mi_data.ctab[0m
+    │   ├── [ 398]  [00minput_fastqs_checksums.md5[0m
+    │   ├── [ 595]  [00mPOR-69-TP4_checksums.md5[0m
+    │   ├── [ 449]  [00mPOR-69-TP4-hisat2_output.flagstat[0m
+    │   ├── [ 640]  [00mPOR-69-TP4_hisat2.stats[0m
+    │   ├── [1.1M]  [00mPOR-69-TP4.sorted.bam.bai[0m
+    │   └── [4.1M]  [00mt_data.ctab[0m
+    ├── [ 42M]  [01;34mPOR-72-TP1[0m
+    │   ├── [2.8M]  [00me2t.ctab[0m
+    │   ├── [ 20M]  [00me_data.ctab[0m
+    │   ├── [2.3M]  [00mi2t.ctab[0m
+    │   ├── [ 11M]  [00mi_data.ctab[0m
+    │   ├── [ 398]  [00minput_fastqs_checksums.md5[0m
+    │   ├── [ 595]  [00mPOR-72-TP1_checksums.md5[0m
+    │   ├── [ 449]  [00mPOR-72-TP1-hisat2_output.flagstat[0m
+    │   ├── [ 637]  [00mPOR-72-TP1_hisat2.stats[0m
+    │   ├── [1.1M]  [00mPOR-72-TP1.sorted.bam.bai[0m
+    │   └── [4.1M]  [00mt_data.ctab[0m
+    ├── [ 42M]  [01;34mPOR-72-TP2[0m
+    │   ├── [2.8M]  [00me2t.ctab[0m
+    │   ├── [ 20M]  [00me_data.ctab[0m
+    │   ├── [2.3M]  [00mi2t.ctab[0m
+    │   ├── [ 11M]  [00mi_data.ctab[0m
+    │   ├── [ 398]  [00minput_fastqs_checksums.md5[0m
+    │   ├── [ 595]  [00mPOR-72-TP2_checksums.md5[0m
+    │   ├── [ 449]  [00mPOR-72-TP2-hisat2_output.flagstat[0m
+    │   ├── [ 636]  [00mPOR-72-TP2_hisat2.stats[0m
+    │   ├── [1.1M]  [00mPOR-72-TP2.sorted.bam.bai[0m
+    │   └── [4.1M]  [00mt_data.ctab[0m
+    ├── [ 42M]  [01;34mPOR-72-TP3[0m
+    │   ├── [2.8M]  [00me2t.ctab[0m
+    │   ├── [ 20M]  [00me_data.ctab[0m
+    │   ├── [2.3M]  [00mi2t.ctab[0m
+    │   ├── [ 11M]  [00mi_data.ctab[0m
+    │   ├── [ 398]  [00minput_fastqs_checksums.md5[0m
+    │   ├── [ 595]  [00mPOR-72-TP3_checksums.md5[0m
+    │   ├── [ 449]  [00mPOR-72-TP3-hisat2_output.flagstat[0m
+    │   ├── [ 640]  [00mPOR-72-TP3_hisat2.stats[0m
+    │   ├── [1.1M]  [00mPOR-72-TP3.sorted.bam.bai[0m
+    │   └── [4.1M]  [00mt_data.ctab[0m
+    ├── [ 42M]  [01;34mPOR-72-TP4[0m
+    │   ├── [2.8M]  [00me2t.ctab[0m
+    │   ├── [ 21M]  [00me_data.ctab[0m
+    │   ├── [2.3M]  [00mi2t.ctab[0m
+    │   ├── [ 11M]  [00mi_data.ctab[0m
+    │   ├── [ 398]  [00minput_fastqs_checksums.md5[0m
+    │   ├── [ 595]  [00mPOR-72-TP4_checksums.md5[0m
+    │   ├── [ 451]  [00mPOR-72-TP4-hisat2_output.flagstat[0m
+    │   ├── [ 640]  [00mPOR-72-TP4_hisat2.stats[0m
+    │   ├── [1.2M]  [00mPOR-72-TP4.sorted.bam.bai[0m
+    │   └── [4.1M]  [00mt_data.ctab[0m
+    ├── [ 42M]  [01;34mPOR-73-TP1[0m
+    │   ├── [2.8M]  [00me2t.ctab[0m
+    │   ├── [ 20M]  [00me_data.ctab[0m
+    │   ├── [2.3M]  [00mi2t.ctab[0m
+    │   ├── [ 11M]  [00mi_data.ctab[0m
+    │   ├── [ 398]  [00minput_fastqs_checksums.md5[0m
+    │   ├── [ 595]  [00mPOR-73-TP1_checksums.md5[0m
+    │   ├── [ 450]  [00mPOR-73-TP1-hisat2_output.flagstat[0m
+    │   ├── [ 638]  [00mPOR-73-TP1_hisat2.stats[0m
+    │   ├── [1.1M]  [00mPOR-73-TP1.sorted.bam.bai[0m
+    │   └── [4.1M]  [00mt_data.ctab[0m
+    ├── [ 42M]  [01;34mPOR-73-TP2[0m
+    │   ├── [2.8M]  [00me2t.ctab[0m
+    │   ├── [ 20M]  [00me_data.ctab[0m
+    │   ├── [2.3M]  [00mi2t.ctab[0m
+    │   ├── [ 11M]  [00mi_data.ctab[0m
+    │   ├── [ 398]  [00minput_fastqs_checksums.md5[0m
+    │   ├── [ 595]  [00mPOR-73-TP2_checksums.md5[0m
+    │   ├── [ 450]  [00mPOR-73-TP2-hisat2_output.flagstat[0m
+    │   ├── [ 640]  [00mPOR-73-TP2_hisat2.stats[0m
+    │   ├── [1.1M]  [00mPOR-73-TP2.sorted.bam.bai[0m
+    │   └── [4.1M]  [00mt_data.ctab[0m
+    ├── [ 42M]  [01;34mPOR-73-TP3[0m
+    │   ├── [2.8M]  [00me2t.ctab[0m
+    │   ├── [ 20M]  [00me_data.ctab[0m
+    │   ├── [2.3M]  [00mi2t.ctab[0m
+    │   ├── [ 11M]  [00mi_data.ctab[0m
+    │   ├── [ 398]  [00minput_fastqs_checksums.md5[0m
+    │   ├── [ 595]  [00mPOR-73-TP3_checksums.md5[0m
+    │   ├── [ 450]  [00mPOR-73-TP3-hisat2_output.flagstat[0m
+    │   ├── [ 640]  [00mPOR-73-TP3_hisat2.stats[0m
+    │   ├── [1.1M]  [00mPOR-73-TP3.sorted.bam.bai[0m
+    │   └── [4.1M]  [00mt_data.ctab[0m
+    ├── [ 42M]  [01;34mPOR-73-TP4[0m
+    │   ├── [2.8M]  [00me2t.ctab[0m
+    │   ├── [ 20M]  [00me_data.ctab[0m
+    │   ├── [2.3M]  [00mi2t.ctab[0m
+    │   ├── [ 11M]  [00mi_data.ctab[0m
+    │   ├── [ 398]  [00minput_fastqs_checksums.md5[0m
+    │   ├── [ 595]  [00mPOR-73-TP4_checksums.md5[0m
+    │   ├── [ 449]  [00mPOR-73-TP4-hisat2_output.flagstat[0m
+    │   ├── [ 638]  [00mPOR-73-TP4_hisat2.stats[0m
+    │   ├── [1.1M]  [00mPOR-73-TP4.sorted.bam.bai[0m
+    │   └── [4.1M]  [00mt_data.ctab[0m
+    ├── [ 42M]  [01;34mPOR-74-TP1[0m
+    │   ├── [2.8M]  [00me2t.ctab[0m
+    │   ├── [ 20M]  [00me_data.ctab[0m
+    │   ├── [2.3M]  [00mi2t.ctab[0m
+    │   ├── [ 11M]  [00mi_data.ctab[0m
+    │   ├── [ 398]  [00minput_fastqs_checksums.md5[0m
+    │   ├── [ 595]  [00mPOR-74-TP1_checksums.md5[0m
+    │   ├── [ 449]  [00mPOR-74-TP1-hisat2_output.flagstat[0m
+    │   ├── [ 639]  [00mPOR-74-TP1_hisat2.stats[0m
+    │   ├── [1.1M]  [00mPOR-74-TP1.sorted.bam.bai[0m
+    │   └── [4.1M]  [00mt_data.ctab[0m
+    ├── [ 42M]  [01;34mPOR-74-TP2[0m
+    │   ├── [2.8M]  [00me2t.ctab[0m
+    │   ├── [ 20M]  [00me_data.ctab[0m
+    │   ├── [2.3M]  [00mi2t.ctab[0m
+    │   ├── [ 11M]  [00mi_data.ctab[0m
+    │   ├── [ 398]  [00minput_fastqs_checksums.md5[0m
+    │   ├── [ 595]  [00mPOR-74-TP2_checksums.md5[0m
+    │   ├── [ 449]  [00mPOR-74-TP2-hisat2_output.flagstat[0m
+    │   ├── [ 639]  [00mPOR-74-TP2_hisat2.stats[0m
+    │   ├── [1.1M]  [00mPOR-74-TP2.sorted.bam.bai[0m
+    │   └── [4.1M]  [00mt_data.ctab[0m
+    ├── [ 42M]  [01;34mPOR-74-TP3[0m
+    │   ├── [2.8M]  [00me2t.ctab[0m
+    │   ├── [ 20M]  [00me_data.ctab[0m
+    │   ├── [2.3M]  [00mi2t.ctab[0m
+    │   ├── [ 11M]  [00mi_data.ctab[0m
+    │   ├── [ 398]  [00minput_fastqs_checksums.md5[0m
+    │   ├── [ 595]  [00mPOR-74-TP3_checksums.md5[0m
+    │   ├── [ 450]  [00mPOR-74-TP3-hisat2_output.flagstat[0m
+    │   ├── [ 640]  [00mPOR-74-TP3_hisat2.stats[0m
+    │   ├── [1.2M]  [00mPOR-74-TP3.sorted.bam.bai[0m
+    │   └── [4.1M]  [00mt_data.ctab[0m
+    ├── [ 42M]  [01;34mPOR-74-TP4[0m
+    │   ├── [2.8M]  [00me2t.ctab[0m
+    │   ├── [ 20M]  [00me_data.ctab[0m
+    │   ├── [2.3M]  [00mi2t.ctab[0m
+    │   ├── [ 11M]  [00mi_data.ctab[0m
+    │   ├── [ 398]  [00minput_fastqs_checksums.md5[0m
+    │   ├── [ 595]  [00mPOR-74-TP4_checksums.md5[0m
+    │   ├── [ 450]  [00mPOR-74-TP4-hisat2_output.flagstat[0m
+    │   ├── [ 640]  [00mPOR-74-TP4_hisat2.stats[0m
+    │   ├── [1.1M]  [00mPOR-74-TP4.sorted.bam.bai[0m
+    │   └── [4.1M]  [00mt_data.ctab[0m
+    ├── [ 42M]  [01;34mPOR-83-TP1[0m
+    │   ├── [2.8M]  [00me2t.ctab[0m
+    │   ├── [ 20M]  [00me_data.ctab[0m
+    │   ├── [2.3M]  [00mi2t.ctab[0m
+    │   ├── [ 11M]  [00mi_data.ctab[0m
+    │   ├── [ 398]  [00minput_fastqs_checksums.md5[0m
+    │   ├── [ 595]  [00mPOR-83-TP1_checksums.md5[0m
+    │   ├── [ 449]  [00mPOR-83-TP1-hisat2_output.flagstat[0m
+    │   ├── [ 640]  [00mPOR-83-TP1_hisat2.stats[0m
+    │   ├── [1.1M]  [00mPOR-83-TP1.sorted.bam.bai[0m
+    │   └── [4.1M]  [00mt_data.ctab[0m
+    ├── [ 42M]  [01;34mPOR-83-TP2[0m
+    │   ├── [2.8M]  [00me2t.ctab[0m
+    │   ├── [ 20M]  [00me_data.ctab[0m
+    │   ├── [2.3M]  [00mi2t.ctab[0m
+    │   ├── [ 11M]  [00mi_data.ctab[0m
+    │   ├── [ 398]  [00minput_fastqs_checksums.md5[0m
+    │   ├── [ 595]  [00mPOR-83-TP2_checksums.md5[0m
+    │   ├── [ 450]  [00mPOR-83-TP2-hisat2_output.flagstat[0m
+    │   ├── [ 640]  [00mPOR-83-TP2_hisat2.stats[0m
+    │   ├── [1.1M]  [00mPOR-83-TP2.sorted.bam.bai[0m
+    │   └── [4.1M]  [00mt_data.ctab[0m
+    ├── [ 42M]  [01;34mPOR-83-TP3[0m
+    │   ├── [2.8M]  [00me2t.ctab[0m
+    │   ├── [ 20M]  [00me_data.ctab[0m
+    │   ├── [2.3M]  [00mi2t.ctab[0m
+    │   ├── [ 11M]  [00mi_data.ctab[0m
+    │   ├── [ 398]  [00minput_fastqs_checksums.md5[0m
+    │   ├── [ 595]  [00mPOR-83-TP3_checksums.md5[0m
+    │   ├── [ 450]  [00mPOR-83-TP3-hisat2_output.flagstat[0m
+    │   ├── [ 640]  [00mPOR-83-TP3_hisat2.stats[0m
+    │   ├── [1.1M]  [00mPOR-83-TP3.sorted.bam.bai[0m
+    │   └── [4.1M]  [00mt_data.ctab[0m
+    ├── [ 42M]  [01;34mPOR-83-TP4[0m
+    │   ├── [2.8M]  [00me2t.ctab[0m
+    │   ├── [ 20M]  [00me_data.ctab[0m
+    │   ├── [2.3M]  [00mi2t.ctab[0m
+    │   ├── [ 11M]  [00mi_data.ctab[0m
+    │   ├── [ 398]  [00minput_fastqs_checksums.md5[0m
+    │   ├── [ 595]  [00mPOR-83-TP4_checksums.md5[0m
+    │   ├── [ 450]  [00mPOR-83-TP4-hisat2_output.flagstat[0m
+    │   ├── [ 640]  [00mPOR-83-TP4_hisat2.stats[0m
+    │   ├── [1.2M]  [00mPOR-83-TP4.sorted.bam.bai[0m
+    │   └── [4.1M]  [00mt_data.ctab[0m
+    ├── [ 43M]  [00mPorites_evermanni_v1.stringtie.gtf[0m
+    ├── [5.8K]  [00mprepDE-sample_list.txt[0m
+    ├── [3.3K]  [00mREADME.md[0m
+    ├── [1.3K]  [00msorted_bams.list[0m
+    └── [8.6M]  [00msorted-bams-merged.bam.bai[0m
 
-     122G used in 39 directories, 511 files
+     3.2G used in 40 directories, 398 files
 
 ## 3.2 MultiQC alignment rates
 
@@ -1048,16 +938,34 @@ cd "${output_dir_top}"
 # Load bash variables into memory
 source .bashvars
 
-# Change to ouput directory
+# Change to output directory
 cd "${output_dir_top}"
 
-# Create file list for prepDE.py
-while read -r line
-do
-  sample_no_path=${line##*/}
-  sample=${sample_no_path%.*}
-  echo ${sample} ${line}
-done < gtf_list.txt >> prepDE-sample_list.txt
+# Check if prepDE-sample_list.txt exists
+if [ -f prepDE-sample_list.txt ]; then
+  gtf_lines=$(wc -l < gtf_list.txt)
+  prepde_lines=$(wc -l < prepDE-sample_list.txt)
+  if [ "$gtf_lines" -eq "$prepde_lines" ]; then
+    echo "prepDE-sample_list.txt exists and line count matches gtf_list.txt. Skipping sample list creation."
+  else
+    echo "prepDE-sample_list.txt exists but line count does not match. Regenerating sample list."
+    rm prepDE-sample_list.txt
+    while read -r line
+    do
+      sample_no_path=${line##*/}
+      sample=${sample_no_path%.*}
+      echo ${sample} ${line}
+    done < gtf_list.txt >> prepDE-sample_list.txt
+  fi
+else
+  echo "prepDE-sample_list.txt does not exist. Creating sample list."
+  while read -r line
+  do
+    sample_no_path=${line##*/}
+    sample=${sample_no_path%.*}
+    echo ${sample} ${line}
+  done < gtf_list.txt >> prepDE-sample_list.txt
+fi
 
 # Create count matrices for genes and transcripts
 # Compatible with import to DESeq2
@@ -1068,7 +976,122 @@ python3 "${programs_array[prepDE]}" \
 --length=${read_length}
 ```
 
-# 7 Generate checksums
+    prepDE-sample_list.txt exists and line count matches gtf_list.txt. Skipping sample list creation.
+    /home/shared/stringtie-2.2.1.Linux_x86_64/prepDE.py3:69: SyntaxWarning: invalid escape sequence '\-'
+      RE_COVERAGE=re.compile('cov "([\-\+\d\.]+)"')
+    /home/shared/stringtie-2.2.1.Linux_x86_64/prepDE.py3:72: SyntaxWarning: invalid escape sequence '\-'
+      RE_GFILE=re.compile('\-G\s*(\S+)') #assume filepath without spaces..
+
+# 7 Add Gene IDs to Transcript Count Matrix
+
+Create an enhanced version of the transcript count matrix that includes
+the corresponding gene ID for each transcript.
+
+``` bash
+# Load bash variables into memory
+source .bashvars
+
+# Change to output directory
+cd "${output_dir_top}"
+
+# Extract transcript_id to ref_gene_id mapping from GTF file
+echo "Extracting transcript to gene ID mappings from GTF file..."
+
+grep -E $'\ttranscript\t' "${genome_index_name}.stringtie.gtf" | \
+awk -F'\t' '{
+    # Extract transcript_id
+    match($9, /transcript_id "([^"]+)"/, transcript_arr)
+    transcript_id = transcript_arr[1]
+    
+    # Extract ref_gene_id
+    match($9, /ref_gene_id "([^"]+)"/, gene_arr)
+    ref_gene_id = gene_arr[1]
+    
+    # Print mapping if both IDs found
+    if (transcript_id && ref_gene_id) {
+        print transcript_id "\t" ref_gene_id
+    }
+}' > transcript_gene_mapping.txt
+
+# Check if mapping file was created successfully
+if [ ! -s transcript_gene_mapping.txt ]; then
+    echo "Error: Failed to create transcript-gene mapping file"
+    exit 1
+fi
+
+echo "Found $(wc -l < transcript_gene_mapping.txt) transcript-gene mappings"
+
+# Create enhanced transcript count matrix with gene IDs
+echo "Creating enhanced transcript count matrix with gene IDs..."
+
+# Read header from original transcript count matrix
+head -1 peve-transcript_count_matrix.csv > temp_header.txt
+
+# Add ref_gene_id to header (insert after transcript_id column)
+sed 's/transcript_id,/transcript_id,ref_gene_id,/' temp_header.txt > peve-transcript_count_matrix_with_gene_ids.csv
+
+# Process data rows
+tail -n +2 peve-transcript_count_matrix.csv | while IFS=',' read -r transcript_id rest_of_line; do
+    # Look up gene ID for this transcript
+    gene_id=$(grep "^${transcript_id}[[:space:]]" transcript_gene_mapping.txt | cut -f2)
+    
+    # If no gene ID found, use empty field
+    if [ -z "$gene_id" ]; then
+        gene_id=""
+    fi
+    
+    # Output line with gene ID inserted after transcript ID
+    echo "${transcript_id},${gene_id},${rest_of_line}"
+done >> peve-transcript_count_matrix_with_gene_ids.csv
+
+# Generate summary statistics
+echo ""
+echo "Summary of enhanced transcript count matrix:"
+original_lines=$(wc -l < peve-transcript_count_matrix.csv)
+enhanced_lines=$(wc -l < peve-transcript_count_matrix_with_gene_ids.csv)
+echo "Original transcript count matrix lines: $original_lines"
+echo "Enhanced transcript count matrix lines: $enhanced_lines"
+
+# Count transcripts with and without gene ID mappings
+transcripts_with_genes=$(tail -n +2 peve-transcript_count_matrix_with_gene_ids.csv | awk -F',' '$2 != ""' | wc -l)
+transcripts_without_genes=$(tail -n +2 peve-transcript_count_matrix_with_gene_ids.csv | awk -F',' '$2 == ""' | wc -l)
+
+echo "Number of transcripts with gene ID mappings: $transcripts_with_genes"
+echo "Number of transcripts without gene ID mappings: $transcripts_without_genes"
+
+# Display first few lines of enhanced matrix
+echo ""
+echo "First 5 rows of enhanced transcript count matrix (first 5 columns):"
+head -6 peve-transcript_count_matrix_with_gene_ids.csv | cut -d',' -f1-5
+
+# Clean up temporary files
+rm temp_header.txt transcript_gene_mapping.txt
+
+echo ""
+echo "Enhanced transcript count matrix saved as: peve-transcript_count_matrix_with_gene_ids.csv"
+```
+
+    Extracting transcript to gene ID mappings from GTF file...
+    Found 40389 transcript-gene mappings
+    Creating enhanced transcript count matrix with gene IDs...
+
+    Summary of enhanced transcript count matrix:
+    Original transcript count matrix lines: 40390
+    Enhanced transcript count matrix lines: 40390
+    Number of transcripts with gene ID mappings: 40389
+    Number of transcripts without gene ID mappings: 0
+
+    First 5 rows of enhanced transcript count matrix (first 5 columns):
+    transcript_id,ref_gene_id,POR-216-TP1,POR-216-TP2,POR-216-TP3
+    mrna-00031,gene-Peve_00000032,29,75,63
+    mrna-00116,gene-Peve_00000122,0,1,0
+    mrna-00008,gene-Peve_00000008,0,0,0
+    mrna-00111,gene-Peve_00000117,13,13,0
+    mrna-00013,gene-Peve_00000013,105,114,164
+
+    Enhanced transcript count matrix saved as: peve-transcript_count_matrix_with_gene_ids.csv
+
+# 8 Generate checksums
 
 ``` bash
 # Load bash variables into memory
@@ -1083,7 +1106,7 @@ find . -maxdepth 1 -type f -exec md5sum {} + \
 | tee --append checksums.md5
 ```
 
-# 8 References
+# 9 References
 
 <div id="refs" class="references csl-bib-body hanging-indent">
 
