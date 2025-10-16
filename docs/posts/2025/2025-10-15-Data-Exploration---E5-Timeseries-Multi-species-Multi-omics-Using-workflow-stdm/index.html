@@ -2,7 +2,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
 
 <meta charset="utf-8">
-<meta name="generator" content="quarto-1.6.42">
+<meta name="generator" content="quarto-1.5.57">
 
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
@@ -72,10 +72,10 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <script src="../../../site_libs/quarto-html/tippy.umd.min.js"></script>
 <script src="../../../site_libs/quarto-html/anchor.min.js"></script>
 <link href="../../../site_libs/quarto-html/tippy.css" rel="stylesheet">
-<link href="../../../site_libs/quarto-html/quarto-syntax-highlighting-dark-b53751a350365c71b6c909e95f209ed1.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<link href="../../../site_libs/quarto-html/quarto-syntax-highlighting-dark.css" rel="stylesheet" id="quarto-text-highlighting-styles">
 <script src="../../../site_libs/bootstrap/bootstrap.min.js"></script>
 <link href="../../../site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
-<link href="../../../site_libs/bootstrap/bootstrap-e518e50a9807db09b51ea894c4c266f8.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="dark">
+<link href="../../../site_libs/bootstrap/bootstrap.min.css" rel="stylesheet" id="quarto-bootstrap" data-mode="dark">
 <script id="quarto-search-options" type="application/json">{
   "location": "navbar",
   "copy-button": true,
@@ -311,8 +311,18 @@ gtag('config', 'G-7483T61T11', { 'anonymize_ip': true});
 <section id="intro" class="level1">
 <h1>INTRO</h1>
 <p>This notebook is an introductory exploration of the E5 coral <a href="https://github.com/urol-e5/timeseries_molecular"><code>urol-e5/timeseries_molecular</code></a> (GitHub repo) multi-species data using a tensor decomposition approach, using <a href="https://github.com/sr320/workflow-stdm"><code>workflow-stdm</code></a> (GitHub Repo), a tensor decomposition package Steven created using an AI agent.</p>
-<p>The goal was to simply</p>
-<p>This analysis is likely similar to that of using <a href="https://github.com/blasks/barnacle">barnacle</a> (GitHub Repo) for this multi-omics analysis <a href="../../../posts/2025/2025-10-08-Data-Exploration---E5-Timeseries-A.pulchra-Multi-species-Multi-omics-Using-Barnacle/index.html">that I ran on 20251008</a> (notebook entry). Both greatly differ than <a href="../../../posts/2025/2025-09-19-Data-Exploration---E5-Timeseries-A.pulchra-Multi-omics-Using-MOFA2/index.html">the analysis I messed around with using MOFA2</a> (notebook entry).</p>
+<p>I misunderstood what the goal was, until well after I went through the trouble of running this.</p>
+<p>The primary goal was simply to run the package and see what types of files/visualizations it generated. It successfully generates the expected output files; primarily numpy binary files for each factor:</p>
+<ul>
+<li><code>gene_factors.npy</code></li>
+<li><code>recontstructed_tensory.npy</code></li>
+<li><code>species_factorys.npy</code></li>
+<li><code>summary.json</code></li>
+<li><code>time_factors.npy</code></li>
+</ul>
+<p>I think Steven would’ve liked if this package had also output some simple tables of the results that were human-readable and could be used to easy glance at the results, instead of all these numpy binary files.</p>
+<p>Not realizing this at the time, I ran the package and worked heavily to assess/process the output data into something understandable. In the notebook below, I added steps to improve the input data formatting, process a range of ranks, compare those ranks, and select the “best” rank. Additionally, I added a number of visualizations to help better understand the results. However, like the default settings of the package, I did <em>not</em> add any steps to output results in any sort of table formats.</p>
+<p>Overall, this analysis is likely similar to that of using <a href="https://github.com/blasks/barnacle">barnacle</a> (GitHub Repo) for this multi-omics analysis <a href="../../../posts/2025/2025-10-08-Data-Exploration---E5-Timeseries-A.pulchra-Multi-species-Multi-omics-Using-Barnacle/index.html">that I ran on 20251008</a> (notebook entry). Both greatly differ than <a href="../../../posts/2025/2025-09-19-Data-Exploration---E5-Timeseries-A.pulchra-Multi-omics-Using-MOFA2/index.html">the analysis I messed around with using MOFA2</a> (notebook entry).</p>
 <div class="callout callout-style-default callout-note callout-titled">
 <div class="callout-header d-flex align-content-center">
 <div class="callout-icon-container">
@@ -3500,6 +3510,8 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
   });
   clipboard.on('success', onCopySuccess);
   if (window.document.getElementById('quarto-embedded-source-code-modal')) {
+    // For code content inside modals, clipBoardJS needs to be initialized with a container option
+    // TODO: Check when it could be a function (https://github.com/zenorocha/clipboard.js/issues/860)
     const clipboardModal = new window.ClipboardJS('.code-copy-button[data-in-quarto-modal]', {
       text: getTextToCopy,
       container: window.document.getElementById('quarto-embedded-source-code-modal')
@@ -3610,6 +3622,7 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
       if (window.Quarto?.typesetMath) {
         window.Quarto.typesetMath(note);
       }
+      // TODO in 1.5, we should make sure this works without a callout special case
       if (note.classList.contains("callout")) {
         return note.outerHTML;
       } else {
