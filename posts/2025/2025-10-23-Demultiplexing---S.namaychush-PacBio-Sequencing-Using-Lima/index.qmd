@@ -1,0 +1,193 @@
+---
+author: Sam White
+toc-title: Contents
+toc-depth: 5
+toc-location: left
+title: Demultiplexing - S.namaychush PacBio Sequencing Using Lima
+date: '2025-10-23'
+draft: false
+engine: knitr
+categories: 
+  - "2025"
+  - "PacBio"
+  - "lima"
+  - "Salvelinus namaycush"
+  - "Lake Trout"
+---
+# INTRO
+
+The [data we received on 20250804](../2025-08-04-Data-Received---S.namaycush-PacBio-from-Angie-Schmoldt-at-Univ.-of-Wisconsin-Milwaukee/index.qmd) was received as two pools of data and had not been demultiplexed. Steven [assigned the task of demultiplexing to me](https://github.com/RobertsLab/resources/issues/2354) (GitHub Issue).
+
+# MATERIALS & METHODS
+
+I installed the [PacBio software, `lima`](https://github.com/PacificBiosciences/pbbioconda)(GitHub repo) on Raven in a mamba/conda environment:
+
+`mamba create -n pacbio_lima_env lima -c bioconda -y`
+
+Using this environment, I demultiplexed the data into both BAM files and FastQ files.
+
+::: {.callout-tip}
+Although labelled as BAMs, these are not alignment files. I believe the BAM format allows for better compression and the usage of [SAM tags](https://pacbiofileformats.readthedocs.io/en/latest/BAM.html#use-of-read-tags-for-per-read-base-base-modifications) (PacBio methylation tag explanation) to allow for data annotation (e.g. marking methylation).
+:::
+
+
+## POOL1
+
+### BAMs
+
+Created BAM outputs in `/home/shared/16TB_HDD_01/sam/data/S_namaychush/Pool1/hifi_reads/demultiplexed/bams`:
+
+```bash
+lima ../../m84082_250614_081210_s3.hifi_reads.bam \
+../../barcodes.fasta \
+m84082_250614_081210_s3.hifi_reads.demux.bam \
+--hifi-preset SYMMETRIC \
+--split-named \
+--split-subdirs
+```
+
+### FastQs
+
+Created FastQ outputs in `/home/shared/16TB_HDD_01/sam/data/S_namaychush/Pool1/hifi_reads/demultiplexed/fastqs`:
+
+```bash
+lima ../../m84082_250614_081210_s3.hifi_reads.fast \
+../../barcodes.fasta \
+m84082_250614_081210_s3.hifi_reads.demux.fastq \
+--hifi-preset SYMMETRIC \
+--split-named \
+--split-subdirs
+```
+
+```bash
+cat ../../barcodes.fasta 
+>bc2041
+TATGATCACTGAGTAT
+>bc2071
+CGAGTCTAGCGAGTAT
+>bc2072
+TATCAGTAGTGAGTAT
+```
+
+
+
+## POOL2
+
+### BAMs
+
+Created BAM outputs in `/home/shared/16TB_HDD_01/sam/data/S_namaychush/Pool2/hifi_reads/demultiplexed/bams`:
+
+```bash
+lima ../../m84082_250614_101514_s4.hifi_reads.bam ../../barcodes.fasta m84082_250614_101514_s4.hifi_reads.demux.bam --hifi-preset SYMMETRIC --split-named --split-subdirs
+```
+
+### FastQs
+
+Created FastQ outputs in `/home/shared/16TB_HDD_01/sam/data/S_namaychush/Pool2/hifi_reads/demultiplexed/fastqs`:
+
+```bash
+lima ../../m84082_250614_101514_s4.hifi_reads.bam ../../barcodes.fasta m84082_250614_101514_s4.hifi_reads.demux.fastq --hifi-preset SYMMETRIC --split-named --split-subdirs
+```
+
+```bash
+cat ../../barcodes.fasta 
+>bc2069
+TCTATGACATGAGTAT
+>bc2070
+TACTGCTCACGAGTAT
+>bc2073
+ATCACTAGTCGAGTAT
+```
+
+# RESULTS
+
+Data was rsync'd to Owl:
+
+- [https://owl.fish.washington.edu/nightingales/S_namaycush/LakeTrout/Pool1/hifi_reads/demultiplexed/](https://owl.fish.washington.edu/nightingales/S_namaycush/LakeTrout/Pool1/hifi_reads/demultiplexed/)
+
+- [https://owl.fish.washington.edu/nightingales/S_namaycush/LakeTrout/Pool2/hifi_reads/demultiplexed/](https://owl.fish.washington.edu/nightingales/S_namaycush/LakeTrout/Pool2/hifi_reads/demultiplexed/)
+
+
+## Pool1 Directory Layout
+
+::: {.callout-note}
+This is truncated to focus on the demultiplexing.
+:::
+
+```bash
+├── [4.0K]  fail_reads
+│   ├── [5.8G]  m84082_250614_081210_s3.fail_reads.bam
+│   └── [ 20M]  m84082_250614_081210_s3.fail_reads.bam.pbi
+├── [4.0K]  hifi_reads
+│   ├── [  76]  barcodes.fasta
+│   ├── [4.0K]  demultiplexed
+│   │   ├── [4.0K]  bams
+│   │   │   ├── [4.0K]  bc2041--bc2041
+│   │   │   │   ├── [9.0G]  m84082_250614_081210_s3.hifi_reads.demux.bc2041--bc2041.bam
+│   │   │   │   ├── [ 35M]  m84082_250614_081210_s3.hifi_reads.demux.bc2041--bc2041.bam.pbi
+│   │   │   │   └── [2.2K]  m84082_250614_081210_s3.hifi_reads.demux.bc2041--bc2041.consensusreadset.xml
+│   │   │   ├── [4.0K]  bc2071--bc2071
+│   │   │   │   ├── [7.6G]  m84082_250614_081210_s3.hifi_reads.demux.bc2071--bc2071.bam
+│   │   │   │   ├── [ 36M]  m84082_250614_081210_s3.hifi_reads.demux.bc2071--bc2071.bam.pbi
+│   │   │   │   └── [2.2K]  m84082_250614_081210_s3.hifi_reads.demux.bc2071--bc2071.consensusreadset.xml
+│   │   │   ├── [4.0K]  bc2072--bc2072
+│   │   │   │   ├── [5.5G]  m84082_250614_081210_s3.hifi_reads.demux.bc2072--bc2072.bam
+│   │   │   │   ├── [ 25M]  m84082_250614_081210_s3.hifi_reads.demux.bc2072--bc2072.bam.pbi
+│   │   │   │   └── [2.2K]  m84082_250614_081210_s3.hifi_reads.demux.bc2072--bc2072.consensusreadset.xml
+│   │   │   ├── [5.9K]  m84082_250614_081210_s3.hifi_reads.demux.consensusreadset.xml
+│   │   │   ├── [1.6K]  m84082_250614_081210_s3.hifi_reads.demux.json
+│   │   │   ├── [ 156]  m84082_250614_081210_s3.hifi_reads.demux.lima.counts
+│   │   │   ├── [1.8G]  m84082_250614_081210_s3.hifi_reads.demux.lima.report
+│   │   │   └── [ 845]  m84082_250614_081210_s3.hifi_reads.demux.lima.summary
+│   │   └── [4.0K]  fastqs
+│   │       ├── [4.0K]  bc2041--bc2041
+│   │       │   └── [ 25G]  m84082_250614_081210_s3.hifi_reads.demux.bc2041--bc2041.fastq
+│   │       ├── [4.0K]  bc2071--bc2071
+│   │       │   └── [ 21G]  m84082_250614_081210_s3.hifi_reads.demux.bc2071--bc2071.fastq
+│   │       ├── [4.0K]  bc2072--bc2072
+│   │       │   └── [ 15G]  m84082_250614_081210_s3.hifi_reads.demux.bc2072--bc2072.fastq
+│   │       ├── [   0]  m84082_250614_081210_s3.hifi_reads.demux.lima.counts
+│   │       ├── [1.0G]  m84082_250614_081210_s3.hifi_reads.demux.lima.report
+│   │       └── [   0]  m84082_250614_081210_s3.hifi_reads.demux.lima.summary
+│   ├── [ 21G]  m84082_250614_081210_s3.hifi_reads.bam
+│   └── [ 93M]  m84082_250614_081210_s3.hifi_reads.bam.pbi
+```
+
+## Pool2 Directory Layout
+
+```bash
+├── [4.0K]  fail_reads
+├── [4.0K]  hifi_reads
+│   ├── [  75]  barcodes.fasta
+│   ├── [4.0K]  demultiplexed
+│   │   ├── [4.0K]  bams
+│   │   │   ├── [4.0K]  bc2069--bc2069
+│   │   │   │   ├── [3.5G]  m84082_250614_101514_s4.hifi_reads.demux.bc2069--bc2069.bam
+│   │   │   │   ├── [ 14M]  m84082_250614_101514_s4.hifi_reads.demux.bc2069--bc2069.bam.pbi
+│   │   │   │   └── [2.2K]  m84082_250614_101514_s4.hifi_reads.demux.bc2069--bc2069.consensusreadset.xml
+│   │   │   ├── [4.0K]  bc2070--bc2070
+│   │   │   │   ├── [6.9G]  m84082_250614_101514_s4.hifi_reads.demux.bc2070--bc2070.bam
+│   │   │   │   ├── [ 32M]  m84082_250614_101514_s4.hifi_reads.demux.bc2070--bc2070.bam.pbi
+│   │   │   │   └── [2.2K]  m84082_250614_101514_s4.hifi_reads.demux.bc2070--bc2070.consensusreadset.xml
+│   │   │   ├── [4.0K]  bc2073--bc2073
+│   │   │   │   ├── [8.8G]  m84082_250614_101514_s4.hifi_reads.demux.bc2073--bc2073.bam
+│   │   │   │   ├── [ 39M]  m84082_250614_101514_s4.hifi_reads.demux.bc2073--bc2073.bam.pbi
+│   │   │   │   └── [2.2K]  m84082_250614_101514_s4.hifi_reads.demux.bc2073--bc2073.consensusreadset.xml
+│   │   │   ├── [5.9K]  m84082_250614_101514_s4.hifi_reads.demux.consensusreadset.xml
+│   │   │   ├── [1.6K]  m84082_250614_101514_s4.hifi_reads.demux.json
+│   │   │   ├── [ 156]  m84082_250614_101514_s4.hifi_reads.demux.lima.counts
+│   │   │   ├── [1.6G]  m84082_250614_101514_s4.hifi_reads.demux.lima.report
+│   │   │   └── [ 843]  m84082_250614_101514_s4.hifi_reads.demux.lima.summary
+│   │   └── [4.0K]  fastqs
+│   │       ├── [4.0K]  bc2069--bc2069
+│   │       │   └── [ 13G]  m84082_250614_101514_s4.hifi_reads.demux.bc2069--bc2069.fastq
+│   │       ├── [4.0K]  bc2070--bc2070
+│   │       │   └── [ 26G]  m84082_250614_101514_s4.hifi_reads.demux.bc2070--bc2070.fastq
+│   │       ├── [4.0K]  bc2073--bc2073
+│   │       │   └── [ 33G]  m84082_250614_101514_s4.hifi_reads.demux.bc2073--bc2073.fastq
+│   │       ├── [   0]  m84082_250614_101514_s4.hifi_reads.demux.lima.counts
+│   │       ├── [1.2G]  m84082_250614_101514_s4.hifi_reads.demux.lima.report
+│   │       └── [   0]  m84082_250614_101514_s4.hifi_reads.demux.lima.summary
+│   ├── [ 18G]  m84082_250614_101514_s4.hifi_reads.bam
+│   └── [ 83M]  m84082_250614_101514_s4.hifi_reads.bam.pbi
+```
