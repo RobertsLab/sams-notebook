@@ -5,7 +5,7 @@ toc-depth: 5
 toc-location: left
 title: Glycogen Assay - Glycogen-Glo Dilution Testing with M.gigas Ctenidia Homogenate
 date: '2026-01-12'
-draft: true
+draft: false
 engine: knitr
 categories: 
   - "2026"
@@ -62,6 +62,12 @@ The assay was set up to measure the following:
 All dilutions were performed using a 2:1:1 mixture of PBS, 0.3N HCl, and TRIS Buffer (the latter two are supplied with the kit).
 
 The A2 dilutions were performed in duplicate; primarily due to my poor calculations on the amount of the dilution buffer needed. Ugh.
+
+::: {.callout-warning}
+The 25mg tissue equivalents were highly inconsistent due to pipetting issues and should be disregarded! This was caused by insoluble debris.
+
+For future sample handling, sample homogenate should be thawed, vortexed, and centrifuged prior to pipetting to avoid this issue.
+:::
 
 The standard curves were each performed in triplicate.
 
@@ -128,6 +134,8 @@ After incubating, luminescence was measured on the Roberts Lab Synergy HTX (Agil
 ## Glycogen Standard Curve
 
 ```{r glycogen-std-curve}
+#| results: hold
+
 library(ggplot2)
 
 # Glycogen standard curve data from rows E, F, G, columns 1-5
@@ -197,11 +205,11 @@ plot <- ggplot(summary_data, aes(x = concentration, y = mean_luminescence)) +
                                 "0.25 mg" = 18,
                                 "0.025 mg" = 8,
                                 "0 mg" = 4)) +
-  annotate("label", x = max(summary_data$concentration) * 0.7, 
-           y = max(summary_data$mean_luminescence) * 0.2,
+  annotate("label", x = max(summary_data$concentration) * 1.2, 
+           y = max(summary_data$mean_luminescence) * 0.15,
            label = sprintf("y = %.2fx + %.2f\nR² = %.4f", slope, intercept, r_squared),
-           size = 5, fontface = "bold", fill = "white", 
-           color = "coral", label.padding = unit(0.5, "lines")) +
+           size = 3.5, fontface = "bold", fill = "white", 
+           color = "coral", label.padding = unit(0.3, "lines")) +
   labs(
     title = "Glycogen Standard Curve",
     x = "Glycogen Concentration (µg/µL)",
@@ -236,6 +244,8 @@ for (i in 1:nrow(summary_data)) {
 ## Glucose Standard Curve
 
 ```{r glucose-std-curve}
+#| results: hold
+
 library(ggplot2)
 
 # Glucose standard curve data from rows E, F, G, columns 8-12
@@ -308,8 +318,8 @@ plot_glu <- ggplot(summary_data_glu, aes(x = concentration, y = mean_luminescenc
   annotate("label", x = max(summary_data_glu$concentration) * 0.7, 
            y = max(summary_data_glu$mean_luminescence) * 0.2,
            label = sprintf("y = %.2fx + %.2f\nR² = %.4f", slope_glu, intercept_glu, r_squared_glu),
-           size = 5, fontface = "bold", fill = "white", 
-           color = "coral", label.padding = unit(0.5, "lines")) +
+           size = 3.5, fontface = "bold", fill = "white", 
+           color = "coral", label.padding = unit(0.3, "lines")) +
   labs(
     title = "Glucose Standard Curve",
     x = "Glucose Concentration (mM)",
@@ -340,3 +350,131 @@ for (i in 1:nrow(summary_data_glu)) {
   cat(sprintf("  CV%%: %.2f%%\n\n", summary_data_glu$cv[i]))
 }
 ```
+## Sample A2 Quantification
+
+```{r sample-quantification}
+#| results: hold
+
+# Function to calculate concentration from luminescence using linear model
+# Returns concentration or "OUT OF RANGE" message
+calculate_concentration <- function(luminescence, slope, intercept, min_conc, max_conc, units) {
+  # Calculate concentration from y = mx + b -> x = (y - b) / m
+  concentration <- (luminescence - intercept) / slope
+  
+  # Check if within range
+  if (concentration < min_conc) {
+    return("OUT OF RANGE - TOO LOW")
+  } else if (concentration > max_conc) {
+    return("OUT OF RANGE - TOO HIGH")
+  } else {
+    return(sprintf("%.4f %s", concentration, units))
+  }
+}
+
+# Glycogen calculations
+cat("GLYCOGEN ASSAY RESULTS (Sample A2):\n")
+cat(rep("=", 70), "\n", sep = "")
+cat(sprintf("%-15s %-20s %s\n", "Tissue Amount", "Luminescence", "Calculated Glycogen"))
+cat(rep("-", 70), "\n", sep = "")
+
+glycogen_min <- min(concentrations)
+glycogen_max <- max(concentrations)
+
+for (i in 1:nrow(sample_data)) {
+  result <- calculate_concentration(
+    sample_data$luminescence[i],
+    slope,
+    intercept,
+    glycogen_min,
+    glycogen_max,
+    "µg/µL"
+  )
+  cat(sprintf("%-15s %-20.0f %s\n", 
+              sample_data$label[i], 
+              sample_data$luminescence[i], 
+              result))
+}
+
+cat("\n\n")
+
+# Glucose calculations
+cat("GLUCOSE ASSAY RESULTS (Sample A2):\n")
+cat(rep("=", 70), "\n", sep = "")
+cat(sprintf("%-15s %-20s %s\n", "Tissue Amount", "Luminescence", "Calculated Glucose"))
+cat(rep("-", 70), "\n", sep = "")
+
+glucose_min <- min(concentrations_glu)
+glucose_max <- max(concentrations_glu)
+
+for (i in 1:nrow(sample_data_glu)) {
+  result <- calculate_concentration(
+    sample_data_glu$luminescence[i],
+    slope_glu,
+    intercept_glu,
+    glucose_min,
+    glucose_max,
+    "mM"
+  )
+  cat(sprintf("%-15s %-20.0f %s\n", 
+              sample_data_glu$label[i], 
+              sample_data_glu$luminescence[i], 
+              result))
+}
+```
+
+
+# DISCUSSION
+
+## Recommended Tissue Amounts
+
+
+```{r tissue-range-recommendation}
+#| results: hold
+
+# Calculate the luminescence range for the glycogen standard curve
+std_curve_min_lum <- min(summary_data$mean_luminescence)
+std_curve_max_lum <- max(summary_data$mean_luminescence)
+
+cat("GLYCOGEN STANDARD CURVE RANGE:\n")
+cat(rep("=", 60), "\n", sep = "")
+cat(sprintf("Minimum luminescence: %.2f (at %g µg/µL glycogen)\n", 
+            std_curve_min_lum, min(concentrations)))
+cat(sprintf("Maximum luminescence: %.2f (at %g µg/µL glycogen)\n\n", 
+            std_curve_max_lum, max(concentrations)))
+
+# Use the linear regression to predict tissue amounts that would fall within the standard curve range
+# Using the equation: tissue_amount = (luminescence - intercept) / slope
+predicted_min_tissue <- (std_curve_min_lum - intercept) / slope
+predicted_max_tissue <- (std_curve_max_lum - intercept) / slope
+
+cat("PREDICTED TISSUE AMOUNTS USING STANDARD CURVE:\n")
+cat(rep("=", 60), "\n", sep = "")
+cat(sprintf("Equation: y = %.2fx + %.2f\n\n", slope, intercept))
+cat(sprintf("Minimum tissue amount: %.4f mg\n", predicted_min_tissue))
+cat(sprintf("  (produces luminescence: %.2f)\n\n", std_curve_min_lum))
+cat(sprintf("Maximum tissue amount: %.2f mg\n", predicted_max_tissue))
+cat(sprintf("  (produces luminescence: %.2f)\n\n", std_curve_max_lum))
+
+cat(rep("=", 60), "\n", sep = "")
+cat("RECOMMENDED TISSUE RANGE FOR FUTURE ASSAYS:\n")
+cat(sprintf("%.4f mg to %.2f mg\n", predicted_min_tissue, predicted_max_tissue))
+cat(rep("=", 60), "\n", sep = "")
+
+# Create formatted values for inline use
+max_tissue_formatted <- paste0("`", round(predicted_max_tissue, 2), "mg`")
+min_tissue_formatted <- paste0("`", round(predicted_min_tissue, 4), "mg`")
+```
+
+Although this is _far_ from an absolute determination, due to the lack of replicates and poor pipetting, we can still use these numbers as a rough guideline to determine whether or not a sample will likely need to be diluted before assaying or can be used directly without dilution.
+
+## SUMMARY
+
+Things we've learned:
+
+1. Pellet insoluble material before pipetting.
+
+2. Glucose does not really appear to be present (detectable) in ctenidia tissue. This suggests that we can skip running this aspect of the assay going forward. However, some additional testing would be beneficial.
+
+3. Roughly, the maximum tissue amount to use undiluted is: `r max_tissue_formatted`.
+
+4. Roughly, the minimum tissue amount to detect glycogen is: `r min_tissue_formatted`.
