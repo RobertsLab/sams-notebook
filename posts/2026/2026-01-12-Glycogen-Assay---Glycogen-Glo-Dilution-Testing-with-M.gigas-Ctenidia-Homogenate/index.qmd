@@ -201,3 +201,85 @@ for (i in 1:nrow(summary_data)) {
   cat(sprintf("  CV%%: %.2f%%\n\n", summary_data$cv[i]))
 }
 ```
+
+## Glucose Standard Curve
+
+```{r glucose-std-curve}
+library(ggplot2)
+
+# Glucose standard curve data from rows E, F, G, columns 8-12
+# Concentrations in mM
+concentrations_glu <- c(100, 10, 1, 0.1, 0)
+
+# Luminescence values for each replicate
+row_E_glu <- c(117932, 12389, 1703, 673, 606)
+row_F_glu <- c(122103, 12418, 1748, 638, 499)
+row_G_glu <- c(121056, 12415, 1629, 480, 356)
+
+# Calculate mean and standard error for each concentration
+means_glu <- numeric(5)
+std_errors_glu <- numeric(5)
+std_devs_glu <- numeric(5)
+
+for (i in 1:5) {
+  values <- c(row_E_glu[i], row_F_glu[i], row_G_glu[i])
+  means_glu[i] <- mean(values)
+  std_devs_glu[i] <- sd(values)
+  std_errors_glu[i] <- sd(values) / sqrt(length(values))
+}
+
+# Create data frame for plotting
+summary_data_glu <- data.frame(
+  concentration = concentrations_glu,
+  mean_luminescence = means_glu,
+  se = std_errors_glu,
+  sd = std_devs_glu,
+  cv = (std_devs_glu / means_glu) * 100
+)
+
+# Calculate linear regression and R-squared
+lm_model_glu <- lm(mean_luminescence ~ concentration, data = summary_data_glu)
+r_squared_glu <- summary(lm_model_glu)$r.squared
+
+# Create the plot
+plot_glu <- ggplot(summary_data_glu, aes(x = concentration, y = mean_luminescence)) +
+  geom_smooth(method = "lm", se = FALSE, linetype = "dashed", 
+              color = "coral", linewidth = 1) +
+  geom_errorbar(aes(ymin = mean_luminescence - se, ymax = mean_luminescence + se),
+                width = 0.1, linewidth = 1, color = "darkblue") +
+  geom_line(color = "steelblue", linewidth = 1) +
+  geom_point(color = "steelblue", size = 4) +
+  annotate("label", x = max(summary_data_glu$concentration) * 0.7, 
+           y = max(summary_data_glu$mean_luminescence) * 0.2,
+           label = sprintf("R² = %.4f", r_squared_glu),
+           size = 5, fontface = "bold", fill = "white", 
+           color = "coral", label.padding = unit(0.5, "lines")) +
+  labs(
+    title = "Glucose Standard Curve",
+    x = "Glucose Concentration (mM)",
+    y = "Luminescence"
+  ) +
+  scale_x_continuous(breaks = concentrations_glu) +
+  theme_bw() +
+  theme(
+    plot.title = element_text(size = 14, face = "bold"),
+    axis.title = element_text(size = 12, face = "bold"),
+    panel.grid.minor = element_line(linetype = "dashed", color = "grey70")
+  )
+
+# Save the plot
+ggsave("glucose-std-curve.png", plot_glu, width = 10, height = 6, dpi = 300)
+
+# Display the plot
+plot_glu
+
+# Print summary statistics
+cat("Glucose Standard Curve Summary:\n")
+cat(rep("=", 50), "\n", sep = "")
+for (i in 1:nrow(summary_data_glu)) {
+  cat(sprintf("Concentration: %g mM\n", summary_data_glu$concentration[i]))
+  cat(sprintf("  Mean Luminescence: %.2f\n", summary_data_glu$mean_luminescence[i]))
+  cat(sprintf("  Standard Error: %.2f\n", summary_data_glu$se[i]))
+  cat(sprintf("  CV%%: %.2f%%\n\n", summary_data_glu$cv[i]))
+}
+```
