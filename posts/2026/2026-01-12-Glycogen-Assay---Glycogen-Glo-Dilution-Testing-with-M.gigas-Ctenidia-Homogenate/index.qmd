@@ -141,28 +141,144 @@ After incubating, luminescence was measured on the Roberts Lab Synergy HTX (Agil
 | G | 102674 | 10001  | 1815  | 1126  | 963   |      |   | 121056 | 12415 | 1629 | 480 | 356 |
 | H |        |        |       |       |       |      |   |        |       |      |     |     |
 
-## Glycogen Standard Curve
+::: {.callout}
+The following information was generated from [`00.00-mgig-A2-dilutions_tests.Rmd`](https://github.com/RobertsLab/sormi-assay-development/blob/0729abc85f25cc4b552a031fa8ed7aac72591a63/Glycogen/code/00.00-mgig-A2-dilutions_tests.Rmd) (GitHub) commit `0729abc`).
+:::
 
-```{r glycogen-std-curve}
-#| results: hold
+---
 
+# 1 BACKGROUND
+
+This was the initial testing of the [Glycogen-Glo Assay
+(Promega)](https://github.com/RobertsLab/resources/blob/master/protocols/Commercial_Protocols/Promega_Glycogen_Glo_Assay.pdf)
+(GitHub; PDF) using *M.gigas* (Pacific oyster) ctenidia homegenate from
+[20251210](https://robertslab.github.io/sams-notebook/posts/2025/2025-12-10-Tissue-Collection-and-Homogenization---M.gigas-Ctenidia-for-Glycogen-Glo-Assay/) (notebook entry).
+
+The idea was to identify a range (i.e. a very rough min/max) of starting
+tissue amounts that will fall within the range of the Glycogen-Glo
+standard curves. Additionally, this was an initial walk-through of using
+this kit to help figure out a general protocol that identified any
+tips/tricks/pitfalls to aid in developing a Standard Operating Protocol
+(SOP) for the [Roberts Lab
+Handbook](https://robertslab.github.io/resources/).
+
+## 1.1 Important note(s)
+
+Insoluble material was *not* pelleted prior to beginning assay, which
+led to pipetting issues. Dilution factor `2` was skipped in this
+analysis due to some of these issues.
+
+``` r
+library(knitr)
 library(ggplot2)
+library(dplyr)
+```
 
-# Glycogen standard curve data from rows E, F, G, columns 1-5
-# Concentrations in ug/uL
-concentrations <- c(20, 2, 0.2, 0.02, 0)
+    ## 
+    ## Attaching package: 'dplyr'
 
-# Luminescence values for each replicate
-row_E <- c(107660, 9963, 1968, 1277, 1164)
-row_F <- c(110174, 10220, 1875, 1256, 737)
-row_G <- c(102674, 10001, 1815, 1126, 963)
+    ## The following objects are masked from 'package:stats':
+    ## 
+    ##     filter, lag
 
+    ## The following objects are masked from 'package:base':
+    ## 
+    ##     intersect, setdiff, setequal, union
+
+``` r
+knitr::opts_chunk$set(
+  echo = TRUE,         # Display code chunks
+  eval = FALSE,        # Evaluate code chunks
+  warning = FALSE,     # Hide warnings
+  message = FALSE,     # Hide messages
+  comment = ""         # Prevents appending '##' to beginning of lines in code output
+)
+```
+
+# 2 DATA
+
+Data contains two CSV files: 1. Plate layout: Specifies the contents of
+each well in the 96-well plate. 2. Raw luminescence readings: Contains
+the luminescence values measured from the plate.
+
+There are two standard curves on the plate. Both curves have three
+replicates each: - Glycogen Standard Curve: Rows E, F, G (5, 6, 7),
+Columns 1-5 - Glucose Standard Curve: Rows E, F, G (5, 6, 7), Columns
+8-12
+
+There is a single sample (`A2`) with six dilution factors for both
+glycogen and glucose measurements. Dilutions were run in duplicate: -
+Glycogen Samples: Rows A and B (1, 2), Columns 1-6 - Glucose Samples:
+Rows C and D (3, 4), Columns 1-6
+
+Sample name layouts are as follows:
+
+- `<sample>-<analyte>-<tissue amount in mg>-df.<dilution factor>`
+
+E.g. `A2-glyc-50-df.10`
+
+Where: - `<sample>`: Sample identifier (e.g., A2) - `<analyte>`: Either
+“glyc” for glycogen or “gluc” for glucose - `<tissue amount in mg>`:
+Amount of tissue *originally collected* in mg. - `<dilution factor>`:
+Dilution factor applied during sample preparation. E.g a dilution factor
+of `1` means no dilution, `10` means a 1:10 dilution, etc.
+
+``` r
+plate_layout <- read.csv("https://raw.githubusercontent.com/RobertsLab/sormi-assay-development/refs/heads/main/Glycogen/data/raw_luminescence/layout-Gen5-20260112-mgig-glycogen_glo-dilutions_test.csv", header = FALSE)
+raw_luminescence <- read.csv("https://raw.githubusercontent.com/RobertsLab/sormi-assay-development/refs/heads/main/Glycogen/data/raw_luminescence/raw_lum-Gen5-20260112-mgig-glycogen_glo-dilutions_test.csv", header = FALSE)
+
+print("Plate layout:")
+str(plate_layout)
+
+cat("\n\n")
+
+print("Raw luminescence:")
+str(raw_luminescence)
+```
+
+# 3 STANDARD CURVES
+
+## 3.1 Glycogen Standard Curve
+
+### 3.1.1 Extract luminescence data
+
+``` r
+# Extract glycogen standard curve data from plate layout and raw luminescence.
+# Rows E, F, G (rows 5, 6, 7) correspond to glycogen standards
+# Columns 1-5 contain the standard curve concentrations
+
+# Extract concentration values from plate layout (row 5, columns 1-5)
+# Parse concentration from labels like "STD-glyc-20" -> 20
+concentrations <- as.numeric(gsub("STD-glyc-", "", plate_layout[5, 1:5]))
+
+# Extract standard curve luminescence values for each replicate from raw_luminescence
+row_E <- as.numeric(raw_luminescence[5, 1:5])  # Row 5 (E)
+row_F <- as.numeric(raw_luminescence[6, 1:5])  # Row 6 (F)
+row_G <- as.numeric(raw_luminescence[7, 1:5])  # Row 7 (G)
+
+# Extract sample data from rows A and B (columns 1, 3, 4, 5, 6)
+# Parse dilution factors from labels like "A2-glyc-50-df.10" -> 10
+# Skip column 2 (df.2)
+sample_cols <- c(1, 3, 4, 5, 6)
+dilution_factors_row_A <- as.numeric(gsub(".*-df\\.", "", plate_layout[1, sample_cols]))
+dilution_factors_row_B <- as.numeric(gsub(".*-df\\.", "", plate_layout[2, sample_cols]))
+sample_luminescence_row_A <- as.numeric(raw_luminescence[1, sample_cols])
+sample_luminescence_row_B <- as.numeric(raw_luminescence[2, sample_cols])
+
+# Combine the two rows of samples
+dilution_factors <- c(dilution_factors_row_A, dilution_factors_row_B)
+sample_luminescence <- c(sample_luminescence_row_A, sample_luminescence_row_B)
+```
+
+### 3.1.2 Calculate summary statistics and linear regression
+
+``` r
 # Calculate mean and standard error for each concentration
-means <- numeric(5)
-std_errors <- numeric(5)
-std_devs <- numeric(5)
+means <- numeric(length(concentrations))
+std_errors <- numeric(length(concentrations))
+std_devs <- numeric(length(concentrations))
 
-for (i in 1:5) {
+for (i in 1:length(concentrations)) {
   values <- c(row_E[i], row_F[i], row_G[i])
   means[i] <- mean(values)
   std_devs[i] <- sd(values)
@@ -170,7 +286,7 @@ for (i in 1:5) {
 }
 
 # Create data frame for plotting
-summary_data <- data.frame(
+glycogen_summary_data <- data.frame(
   concentration = concentrations,
   mean_luminescence = means,
   se = std_errors,
@@ -179,44 +295,78 @@ summary_data <- data.frame(
 )
 
 # Calculate linear regression and R-squared
-lm_model <- lm(mean_luminescence ~ concentration, data = summary_data)
+lm_model <- lm(mean_luminescence ~ concentration, data = glycogen_summary_data)
 r_squared <- summary(lm_model)$r.squared
 slope <- coef(lm_model)[2]
 intercept <- coef(lm_model)[1]
 
-# Sample data from row A (columns 1, 3, 4, 5, 6)
-sample_data <- data.frame(
-  tissue_mg = c(50, 2.5, 0.25, 0.025, 0),
-  luminescence = c(185099, 61687, 7654, 1762, 813),
-  label = c("50 mg", "2.5 mg", "0.25 mg", "0.025 mg", "0 mg")
-)
+# Create sample data frame
+# Calculate glycogen concentration from luminescence using the standard curve equation
+# Rearranging y = mx + b to solve for x: x = (y - b) / m
 
+# Get unique dilution factors
+unique_dilution_factors <- unique(dilution_factors_row_A)
+
+# Calculate mean and SE for each dilution factor across replicates
+sample_mean_lum <- numeric(length(unique_dilution_factors))
+sample_se_lum <- numeric(length(unique_dilution_factors))
+sample_mean_glyc_conc <- numeric(length(unique_dilution_factors))
+
+for (i in 1:length(unique_dilution_factors)) {
+  df_val <- unique_dilution_factors[i]
+  # Get luminescence values for this dilution factor from both rows
+  lum_values <- c(sample_luminescence_row_A[dilution_factors_row_A == df_val],
+                  sample_luminescence_row_B[dilution_factors_row_B == df_val])
+  sample_mean_lum[i] <- mean(lum_values)
+  sample_se_lum[i] <- sd(lum_values) / sqrt(length(lum_values))
+  # Calculate concentration from mean luminescence
+  sample_mean_glyc_conc[i] <- (sample_mean_lum[i] - intercept) / slope
+}
+
+sample_data <- data.frame(
+  dilution_factor = unique_dilution_factors,
+  mean_luminescence = sample_mean_lum,
+  se = sample_se_lum,
+  glycogen_conc = sample_mean_glyc_conc,
+  label = paste0("df.", unique_dilution_factors)
+)
+```
+
+### 3.1.3 Plot Glycogen Standard Curve with Sample Points
+
+``` r
 # Create the plot
-plot <- ggplot(summary_data, aes(x = concentration, y = mean_luminescence)) +
-  geom_smooth(method = "lm", se = FALSE, linetype = "dashed", 
+plot <- ggplot(glycogen_summary_data, aes(x = concentration, y = mean_luminescence)) +
+  geom_smooth(aes(linetype = "Std Curve Best Fit Line"), method = "lm", se = FALSE, 
               color = "coral", linewidth = 1) +
   geom_errorbar(aes(ymin = mean_luminescence - se, ymax = mean_luminescence + se),
                 width = 0.1, linewidth = 1, color = "darkblue") +
-  geom_line(color = "steelblue", linewidth = 1) +
   geom_point(aes(color = "Standard Curve", shape = "Standard Curve"), size = 4) +
-  geom_point(data = sample_data, aes(x = tissue_mg, y = luminescence,
+  geom_errorbar(data = sample_data, aes(x = glycogen_conc, y = mean_luminescence,
+                ymin = mean_luminescence - se, ymax = mean_luminescence + se,
+                color = label), width = 0.1, linewidth = 1) +
+  geom_point(data = sample_data, aes(x = glycogen_conc, y = mean_luminescence,
              color = label, shape = label), size = 4) +
   scale_color_manual(name = "",
                      values = c("Standard Curve" = "steelblue",
-                                "50 mg" = "darkred",
-                                "2.5 mg" = "darkorange",
-                                "0.25 mg" = "darkgreen",
-                                "0.025 mg" = "purple",
-                                "0 mg" = "brown")) +
+                                "df.1" = "darkred",
+                                "df.2" = "darkorange",
+                                "df.20" = "darkgreen",
+                                "df.200" = "purple",
+                                "df.2000" = "brown",
+                                "df.0" = "pink")) +
   scale_shape_manual(name = "",
                      values = c("Standard Curve" = 16,
-                                "50 mg" = 17,
-                                "2.5 mg" = 15,
-                                "0.25 mg" = 18,
-                                "0.025 mg" = 8,
-                                "0 mg" = 4)) +
-  annotate("label", x = max(summary_data$concentration) * 1.2, 
-           y = max(summary_data$mean_luminescence) * 0.15,
+                                "df.1" = 17,
+                                "df.2" = 15,
+                                "df.20" = 18,
+                                "df.200" = 8,
+                                "df.2000" = 4,
+                                "df.0" = 3)) +
+  scale_linetype_manual(name = "",
+                        values = c("Std Curve Best Fit Line" = "dashed")) +
+  annotate("label", x = max(glycogen_summary_data$concentration) * 0.75, 
+           y = max(glycogen_summary_data$mean_luminescence) * 0.15,
            label = sprintf("y = %.2fx + %.2f\nR² = %.4f", slope, intercept, r_squared),
            size = 3.5, fontface = "bold", fill = "white", 
            color = "coral", label.padding = unit(0.3, "lines")) +
@@ -235,7 +385,7 @@ plot <- ggplot(summary_data, aes(x = concentration, y = mean_luminescence)) +
   )
 
 # Save the plot
-ggsave("glycogen_standard_curve.png", plot, width = 10, height = 6, dpi = 300)
+ggsave("../output/00.00-mgig-A2-dilutions_tests.Rmd/glycogen_plot.png", plot, width = 10, height = 6, dpi = 300)
 
 # Display the plot
 plot
@@ -243,100 +393,151 @@ plot
 # Print summary statistics
 cat("Glycogen Standard Curve Summary:\n")
 cat(rep("=", 50), "\n", sep = "")
-for (i in 1:nrow(summary_data)) {
-  cat(sprintf("Concentration: %g µg/µL\n", summary_data$concentration[i]))
-  cat(sprintf("  Mean Luminescence: %.2f\n", summary_data$mean_luminescence[i]))
-  cat(sprintf("  Standard Error: %.2f\n", summary_data$se[i]))
-  cat(sprintf("  CV%%: %.2f%%\n\n", summary_data$cv[i]))
+for (i in 1:nrow(glycogen_summary_data)) {
+  cat(sprintf("Concentration: %g µg/µL\n", glycogen_summary_data$concentration[i]))
+  cat(sprintf("  Mean Luminescence: %.2f\n", glycogen_summary_data$mean_luminescence[i]))
+  cat(sprintf("  Standard Error: %.2f\n", glycogen_summary_data$se[i]))
+  cat(sprintf("  CV%%: %.2f%%\n\n", glycogen_summary_data$cv[i]))
 }
 ```
 
-## Glucose Standard Curve
+## 3.2 Glucose Standard Curve
 
-```{r glucose-std-curve}
-#| results: hold
+### 3.2.1 Extract luminescence data
 
-library(ggplot2)
+``` r
+# Extract glucose standard curve data from plate layout and raw luminescence.
+# Rows E, F, G (rows 5, 6, 7) correspond to glucose standards
+# Columns 8-12 contain the standard curve concentrations
 
-# Glucose standard curve data from rows E, F, G, columns 8-12
-# Concentrations in µM
-concentrations_glu <- c(100, 10, 1, 0.1, 0)
+# Extract concentration values from plate layout (row 5, columns 8-12)
+# Parse concentration from labels like "STD-gluc-100" -> 100
+gluc_concentrations <- as.numeric(gsub("STD-gluc-", "", plate_layout[5, 8:12]))
 
-# Luminescence values for each replicate
-row_E_glu <- c(117932, 12389, 1703, 673, 606)
-row_F_glu <- c(122103, 12418, 1748, 638, 499)
-row_G_glu <- c(121056, 12415, 1629, 480, 356)
+# Extract standard curve luminescence values for each replicate from raw_luminescence
+gluc_row_E <- as.numeric(raw_luminescence[5, 8:12])  # Row 5 (E)
+gluc_row_F <- as.numeric(raw_luminescence[6, 8:12])  # Row 6 (F)
+gluc_row_G <- as.numeric(raw_luminescence[7, 8:12])  # Row 7 (G)
 
+# Extract sample data from rows C and D (rows 3 and 4, columns 1, 3, 4, 5, 6)
+# Parse dilution factors from labels like "A2-gluc-50-df.10" -> 10
+# Skip column 2 (df.2)
+gluc_sample_cols <- c(1, 3, 4, 5, 6)
+gluc_dilution_factors_row_C <- as.numeric(gsub(".*-df\\.", "", plate_layout[3, gluc_sample_cols]))
+gluc_dilution_factors_row_D <- as.numeric(gsub(".*-df\\.", "", plate_layout[4, gluc_sample_cols]))
+gluc_sample_luminescence_row_C <- as.numeric(raw_luminescence[3, gluc_sample_cols])
+gluc_sample_luminescence_row_D <- as.numeric(raw_luminescence[4, gluc_sample_cols])
+
+# Combine the two rows of samples
+gluc_dilution_factors <- c(gluc_dilution_factors_row_C, gluc_dilution_factors_row_D)
+gluc_sample_luminescence <- c(gluc_sample_luminescence_row_C, gluc_sample_luminescence_row_D)
+```
+
+### 3.2.2 Calculate summary statistics and linear regression
+
+``` r
 # Calculate mean and standard error for each concentration
-means_glu <- numeric(5)
-std_errors_glu <- numeric(5)
-std_devs_glu <- numeric(5)
+gluc_means <- numeric(length(gluc_concentrations))
+gluc_std_errors <- numeric(length(gluc_concentrations))
+gluc_std_devs <- numeric(length(gluc_concentrations))
 
-for (i in 1:5) {
-  values <- c(row_E_glu[i], row_F_glu[i], row_G_glu[i])
-  means_glu[i] <- mean(values)
-  std_devs_glu[i] <- sd(values)
-  std_errors_glu[i] <- sd(values) / sqrt(length(values))
+for (i in 1:length(gluc_concentrations)) {
+  values <- c(gluc_row_E[i], gluc_row_F[i], gluc_row_G[i])
+  gluc_means[i] <- mean(values)
+  gluc_std_devs[i] <- sd(values)
+  gluc_std_errors[i] <- sd(values) / sqrt(length(values))
 }
 
 # Create data frame for plotting
-summary_data_glu <- data.frame(
-  concentration = concentrations_glu,
-  mean_luminescence = means_glu,
-  se = std_errors_glu,
-  sd = std_devs_glu,
-  cv = (std_devs_glu / means_glu) * 100
+glucose_summary_data <- data.frame(
+  concentration = gluc_concentrations,
+  mean_luminescence = gluc_means,
+  se = gluc_std_errors,
+  sd = gluc_std_devs,
+  cv = (gluc_std_devs / gluc_means) * 100
 )
 
 # Calculate linear regression and R-squared
-lm_model_glu <- lm(mean_luminescence ~ concentration, data = summary_data_glu)
-r_squared_glu <- summary(lm_model_glu)$r.squared
-slope_glu <- coef(lm_model_glu)[2]
-intercept_glu <- coef(lm_model_glu)[1]
+gluc_lm_model <- lm(mean_luminescence ~ concentration, data = glucose_summary_data)
+gluc_r_squared <- summary(gluc_lm_model)$r.squared
+gluc_slope <- coef(gluc_lm_model)[2]
+gluc_intercept <- coef(gluc_lm_model)[1]
 
-# Sample data from row C (columns 1, 3, 4, 5, 6)
-sample_data_glu <- data.frame(
-  tissue_mg = c(50, 2.5, 0.25, 0.025, 0),
-  luminescence = c(843, 421, 237, 227, 689),
-  label = c("50 mg", "2.5 mg", "0.25 mg", "0.025 mg", "0 mg")
+# Create sample data frame
+# Calculate glucose concentration from luminescence using the standard curve equation
+# Rearranging y = mx + b to solve for x: x = (y - b) / m
+
+# Get unique dilution factors
+gluc_unique_dilution_factors <- unique(gluc_dilution_factors_row_C)
+
+# Calculate mean and SE for each dilution factor across replicates
+gluc_sample_mean_lum <- numeric(length(gluc_unique_dilution_factors))
+gluc_sample_se_lum <- numeric(length(gluc_unique_dilution_factors))
+gluc_sample_mean_conc <- numeric(length(gluc_unique_dilution_factors))
+
+for (i in 1:length(gluc_unique_dilution_factors)) {
+  df_val <- gluc_unique_dilution_factors[i]
+  # Get luminescence values for this dilution factor from both rows
+  lum_values <- c(gluc_sample_luminescence_row_C[gluc_dilution_factors_row_C == df_val],
+                  gluc_sample_luminescence_row_D[gluc_dilution_factors_row_D == df_val])
+  gluc_sample_mean_lum[i] <- mean(lum_values)
+  gluc_sample_se_lum[i] <- sd(lum_values) / sqrt(length(lum_values))
+  # Calculate concentration from mean luminescence
+  gluc_sample_mean_conc[i] <- (gluc_sample_mean_lum[i] - gluc_intercept) / gluc_slope
+}
+
+gluc_sample_data <- data.frame(
+  dilution_factor = gluc_unique_dilution_factors,
+  mean_luminescence = gluc_sample_mean_lum,
+  se = gluc_sample_se_lum,
+  glucose_conc = gluc_sample_mean_conc,
+  label = paste0("df.", gluc_unique_dilution_factors)
 )
+```
 
+### 3.2.3 Plot Glucose Standard Curve with Sample Points
+
+``` r
 # Create the plot
-plot_glu <- ggplot(summary_data_glu, aes(x = concentration, y = mean_luminescence)) +
-  geom_smooth(method = "lm", se = FALSE, linetype = "dashed", 
+gluc_plot <- ggplot(glucose_summary_data, aes(x = concentration, y = mean_luminescence)) +
+  geom_smooth(aes(linetype = "Std Curve Best Fit Line"), method = "lm", se = FALSE, 
               color = "coral", linewidth = 1) +
   geom_errorbar(aes(ymin = mean_luminescence - se, ymax = mean_luminescence + se),
                 width = 0.1, linewidth = 1, color = "darkblue") +
-  geom_line(color = "steelblue", linewidth = 1) +
   geom_point(aes(color = "Standard Curve", shape = "Standard Curve"), size = 4) +
-  geom_point(data = sample_data_glu, aes(x = tissue_mg, y = luminescence,
+  geom_errorbar(data = gluc_sample_data, aes(x = glucose_conc, y = mean_luminescence,
+                ymin = mean_luminescence - se, ymax = mean_luminescence + se,
+                color = label), width = 0.1, linewidth = 1) +
+  geom_point(data = gluc_sample_data, aes(x = glucose_conc, y = mean_luminescence,
              color = label, shape = label), size = 4) +
   scale_color_manual(name = "",
                      values = c("Standard Curve" = "steelblue",
-                                "50 mg" = "darkred",
-                                "2.5 mg" = "darkorange",
-                                "0.25 mg" = "darkgreen",
-                                "0.025 mg" = "purple",
-                                "0 mg" = "brown")) +
+                                "df.1" = "darkred",
+                                "df.20" = "darkgreen",
+                                "df.200" = "purple",
+                                "df.2000" = "brown",
+                                "df.0" = "pink")) +
   scale_shape_manual(name = "",
                      values = c("Standard Curve" = 16,
-                                "50 mg" = 17,
-                                "2.5 mg" = 15,
-                                "0.25 mg" = 18,
-                                "0.025 mg" = 8,
-                                "0 mg" = 4)) +
-  annotate("label", x = max(summary_data_glu$concentration) * 0.7, 
-           y = max(summary_data_glu$mean_luminescence) * 0.2,
-           label = sprintf("y = %.2fx + %.2f\nR² = %.4f", slope_glu, intercept_glu, r_squared_glu),
+                                "df.1" = 17,
+                                "df.20" = 18,
+                                "df.200" = 8,
+                                "df.2000" = 4,
+                                "df.0" = 3)) +
+  scale_linetype_manual(name = "",
+                        values = c("Std Curve Best Fit Line" = "dashed")) +
+  annotate("label", x = max(glucose_summary_data$concentration) * 0.75, 
+           y = max(glucose_summary_data$mean_luminescence) * 0.15,
+           label = sprintf("y = %.2fx + %.2f\nR² = %.4f", gluc_slope, gluc_intercept, gluc_r_squared),
            size = 3.5, fontface = "bold", fill = "white", 
            color = "coral", label.padding = unit(0.3, "lines")) +
   labs(
     title = "Glucose Standard Curve",
-    x = "Glucose Concentration (µM)",
+    x = "Glucose Concentration (µg/µL)",
     y = "Luminescence",
     caption = "Error bars represent standard error of the mean (SEM)"
   ) +
-  scale_x_continuous(breaks = concentrations_glu) +
+  scale_x_continuous(breaks = gluc_concentrations) +
   theme_bw() +
   theme(
     plot.title = element_text(size = 14, face = "bold"),
@@ -345,26 +546,29 @@ plot_glu <- ggplot(summary_data_glu, aes(x = concentration, y = mean_luminescenc
   )
 
 # Save the plot
-ggsave("glucose-std-curve.png", plot_glu, width = 10, height = 6, dpi = 300)
+ggsave("../output/00.00-mgig-A2-dilutions_tests.Rmd/glucose_plot.png", gluc_plot, width = 10, height = 6, dpi = 300)
 
 # Display the plot
-plot_glu
+gluc_plot
 
 # Print summary statistics
 cat("Glucose Standard Curve Summary:\n")
 cat(rep("=", 50), "\n", sep = "")
-for (i in 1:nrow(summary_data_glu)) {
-  cat(sprintf("Concentration: %g µM\n", summary_data_glu$concentration[i]))
-  cat(sprintf("  Mean Luminescence: %.2f\n", summary_data_glu$mean_luminescence[i]))
-  cat(sprintf("  Standard Error: %.2f\n", summary_data_glu$se[i]))
-  cat(sprintf("  CV%%: %.2f%%\n\n", summary_data_glu$cv[i]))
+for (i in 1:nrow(glucose_summary_data)) {
+  cat(sprintf("Concentration: %g µg/µL\n", glucose_summary_data$concentration[i]))
+  cat(sprintf("  Mean Luminescence: %.2f\n", glucose_summary_data$mean_luminescence[i]))
+  cat(sprintf("  Standard Error: %.2f\n", glucose_summary_data$se[i]))
+  cat(sprintf("  CV%%: %.2f%%\n\n", glucose_summary_data$cv[i]))
 }
 ```
-## Sample A2 Quantification
 
-```{r sample-quantification}
-#| results: hold
+# 4 SAMPLE A2 QUANTIFICATION
 
+The results here (Total glycogen) reflect the poor pipetting - the
+numbers aren’t particularly close. In fact, the 2000 dilution factor is
+an order of magnitude higher than the others.
+
+``` r
 # Function to calculate concentration from luminescence using linear model
 # Returns concentration or "OUT OF RANGE" message
 calculate_concentration <- function(luminescence, slope, intercept, min_conc, max_conc, units) {
@@ -383,97 +587,106 @@ calculate_concentration <- function(luminescence, slope, intercept, min_conc, ma
 
 # Glycogen calculations
 cat("GLYCOGEN ASSAY RESULTS (Sample A2):\n")
-cat(rep("=", 70), "\n", sep = "")
-cat(sprintf("%-15s %-20s %s\n", "Tissue Amount", "Luminescence", "Calculated Glycogen"))
-cat(rep("-", 70), "\n", sep = "")
+cat(rep("=", 100), "\n", sep = "")
+cat(sprintf("%-15s %-20s %-25s %s\n", "Dilution Factor", "Luminescence", "Calculated Glycogen", "Total Glycogen"))
+cat(rep("-", 100), "\n", sep = "")
 
 glycogen_min <- min(concentrations)
 glycogen_max <- max(concentrations)
 
-for (i in 1:nrow(sample_data)) {
+# Sort by dilution factor
+sample_data_sorted <- sample_data[order(sample_data$dilution_factor), ]
+
+for (i in 1:nrow(sample_data_sorted)) {
   result <- calculate_concentration(
-    sample_data$luminescence[i],
+    sample_data_sorted$mean_luminescence[i],
     slope,
     intercept,
     glycogen_min,
     glycogen_max,
     "µg/µL"
   )
-  cat(sprintf("%-15s %-20.0f %s\n", 
-              sample_data$label[i], 
-              sample_data$luminescence[i], 
-              result))
+  
+  # Calculate total glycogen (concentration in original sample before dilution)
+  conc <- (sample_data_sorted$mean_luminescence[i] - intercept) / slope
+  df <- sample_data_sorted$dilution_factor[i]
+  # Handle division by zero for df=0
+  if (df == 0) {
+    total_result <- "N/A"
+  } else {
+    total_glyc <- conc * df
+    # Check if within range after accounting for dilution
+    if (total_glyc < glycogen_min * df) {
+      total_result <- "OUT OF RANGE - TOO LOW"
+    } else if (total_glyc > glycogen_max * df) {
+      total_result <- "OUT OF RANGE - TOO HIGH"
+    } else {
+      total_result <- sprintf("%.4f µg/µL", total_glyc)
+    }
+  }
+  
+  cat(sprintf("%-15s %-20.0f %-25s %s\n", 
+              sample_data_sorted$label[i], 
+              sample_data_sorted$mean_luminescence[i], 
+              result,
+              total_result))
 }
 
 cat("\n\n")
 
 # Glucose calculations
 cat("GLUCOSE ASSAY RESULTS (Sample A2):\n")
-cat(rep("=", 70), "\n", sep = "")
-cat(sprintf("%-15s %-20s %s\n", "Tissue Amount", "Luminescence", "Calculated Glucose"))
-cat(rep("-", 70), "\n", sep = "")
+cat(rep("=", 100), "\n", sep = "")
+cat(sprintf("%-15s %-20s %-25s %s\n", "Dilution Factor", "Luminescence", "Calculated Glucose", "Total Glucose"))
+cat(rep("-", 100), "\n", sep = "")
 
-glucose_min <- min(concentrations_glu)
-glucose_max <- max(concentrations_glu)
+glucose_min <- min(gluc_concentrations)
+glucose_max <- max(gluc_concentrations)
 
-for (i in 1:nrow(sample_data_glu)) {
+# Sort by dilution factor
+gluc_sample_data_sorted <- gluc_sample_data[order(gluc_sample_data$dilution_factor), ]
+
+for (i in 1:nrow(gluc_sample_data_sorted)) {
   result <- calculate_concentration(
-    sample_data_glu$luminescence[i],
-    slope_glu,
-    intercept_glu,
+    gluc_sample_data_sorted$mean_luminescence[i],
+    gluc_slope,
+    gluc_intercept,
     glucose_min,
     glucose_max,
     "µM"
   )
-  cat(sprintf("%-15s %-20.0f %s\n", 
-              sample_data_glu$label[i], 
-              sample_data_glu$luminescence[i], 
-              result))
+  
+  # Calculate total glucose (concentration in original sample before dilution)
+  conc <- (gluc_sample_data_sorted$mean_luminescence[i] - gluc_intercept) / gluc_slope
+  df <- gluc_sample_data_sorted$dilution_factor[i]
+  # Handle division by zero for df=0
+  if (df == 0) {
+    total_result <- "N/A"
+  } else {
+    total_gluc <- conc * df
+    # Check if within range after accounting for dilution
+    if (total_gluc < glucose_min * df) {
+      total_result <- "OUT OF RANGE - TOO LOW"
+    } else if (total_gluc > glucose_max * df) {
+      total_result <- "OUT OF RANGE - TOO HIGH"
+    } else {
+      total_result <- sprintf("%.4f µM", total_gluc)
+    }
+  }
+  
+  cat(sprintf("%-15s %-20.0f %-25s %s\n", 
+              gluc_sample_data_sorted$label[i], 
+              gluc_sample_data_sorted$mean_luminescence[i], 
+              result,
+              total_result))
 }
 ```
+
+---
 
 
 # DISCUSSION
 
-## Recommended Tissue Amounts
-
-
-```{r tissue-range-recommendation}
-#| results: hold
-
-# Calculate the luminescence range for the glycogen standard curve
-std_curve_min_lum <- min(summary_data$mean_luminescence)
-std_curve_max_lum <- max(summary_data$mean_luminescence)
-
-cat("GLYCOGEN STANDARD CURVE RANGE:\n")
-cat(rep("=", 60), "\n", sep = "")
-cat(sprintf("Minimum luminescence: %.2f (at %g µg/µL glycogen)\n", 
-            std_curve_min_lum, min(concentrations)))
-cat(sprintf("Maximum luminescence: %.2f (at %g µg/µL glycogen)\n\n", 
-            std_curve_max_lum, max(concentrations)))
-
-# Use the linear regression to predict tissue amounts that would fall within the standard curve range
-# Using the equation: tissue_amount = (luminescence - intercept) / slope
-predicted_min_tissue <- (std_curve_min_lum - intercept) / slope
-predicted_max_tissue <- (std_curve_max_lum - intercept) / slope
-
-cat("PREDICTED TISSUE AMOUNTS USING STANDARD CURVE:\n")
-cat(rep("=", 60), "\n", sep = "")
-cat(sprintf("Equation: y = %.2fx + %.2f\n\n", slope, intercept))
-cat(sprintf("Minimum tissue amount: %.4f mg\n", predicted_min_tissue))
-cat(sprintf("  (produces luminescence: %.2f)\n\n", std_curve_min_lum))
-cat(sprintf("Maximum tissue amount: %.2f mg\n", predicted_max_tissue))
-cat(sprintf("  (produces luminescence: %.2f)\n\n", std_curve_max_lum))
-
-cat(rep("=", 60), "\n", sep = "")
-cat("RECOMMENDED TISSUE RANGE FOR FUTURE ASSAYS:\n")
-cat(sprintf("%.4f mg to %.2f mg\n", predicted_min_tissue, predicted_max_tissue))
-cat(rep("=", 60), "\n", sep = "")
-
-# Create formatted values for inline use
-max_tissue_formatted <- paste0("`", round(predicted_max_tissue, 2), "mg`")
-min_tissue_formatted <- paste0("`", round(predicted_min_tissue, 4), "mg`")
-```
 
 Although this is _far_ from an absolute determination, due to the lack of replicates and poor pipetting, we can still use these numbers as a rough guideline to determine whether or not a sample will likely need to be diluted before assaying or can be used directly without dilution.
 
@@ -484,7 +697,3 @@ Things we've learned:
 1. Pellet insoluble material before pipetting.
 
 2. Glucose does not really appear to be present (detectable) in ctenidia tissue. This suggests that we can skip running this aspect of the assay going forward. However, some additional testing would be beneficial.
-
-3. Roughly, the maximum tissue amount to use undiluted is: `r max_tissue_formatted`.
-
-4. Roughly, the minimum tissue amount to detect glycogen is: `r min_tissue_formatted`.
