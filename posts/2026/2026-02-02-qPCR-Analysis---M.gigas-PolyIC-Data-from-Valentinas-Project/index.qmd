@@ -14,3 +14,90 @@ categories:
   - "Magallana gigas"
   - "Crassostrea gigas"
 ---
+
+
+```{r setup}
+#| label: setup
+knitr::opts_chunk$set(
+  echo = TRUE,         # Display code chunks
+  eval = TRUE,        # Evaluate code chunks
+  warning = FALSE,     # Hide warnings
+  message = FALSE,     # Hide messages
+  comment = ""         # Prevents appending '##' to beginning of lines in code output
+)
+
+library(tidyverse)
+library(ggplot2)
+```
+
+```{r load-data}
+#| label: load-data
+# Load qPCR data
+
+# CITRATE SYNTHASE
+citrate_synthase_01 <- read.csv("https://raw.githubusercontent.com/RobertsLab/sams-notebook/refs/heads/master/posts/2026/2026-01-27-qPCRs---M.gigas-Valentina-PolyIC-cGAS-citrate_synthase-and-DNMT1/sam_2026-01-27_15-32-08_Connect-citrate_synthase-01--Quantification-Cq_Results.csv") %>%
+  mutate(Target = "Citrate.Synthase")
+citrate_synthase_02 <- read.csv("https://raw.githubusercontent.com/RobertsLab/sams-notebook/refs/heads/master/posts/2026/2026-01-27-qPCRs---M.gigas-Valentina-PolyIC-cGAS-citrate_synthase-and-DNMT1/sam_2026-01-27_15-30-47_CFX96-citrate_synthase-02-Quantification-Cq_Results.csv") %>%
+  mutate(Target = "Citrate.Synthase")
+citrate_synthase_03 <- read.csv("https://raw.githubusercontent.com/RobertsLab/sams-notebook/refs/heads/master/posts/2026/2026-01-27-qPCRs---M.gigas-Valentina-PolyIC-cGAS-citrate_synthase-and-DNMT1/sam_2026-01-27_16-31-12_Connect-citrate_synthase-03-Quantification-Cq_Results.csv") %>%
+  mutate(Target = "Citrate.Synthase")
+
+# DNMT1
+DNMT1_01 <- read.csv("https://raw.githubusercontent.com/RobertsLab/sams-notebook/refs/heads/master/posts/2026/2026-01-27-qPCRs---M.gigas-Valentina-PolyIC-cGAS-citrate_synthase-and-DNMT1/sam_2026-01-27_13-34-02_Connect-DNMT1-01-Quantification-Cq_Results.csv")
+DNMT1_02 <- read.csv("https://raw.githubusercontent.com/RobertsLab/sams-notebook/refs/heads/master/posts/2026/2026-01-27-qPCRs---M.gigas-Valentina-PolyIC-cGAS-citrate_synthase-and-DNMT1/sam_2026-01-27_13-29-34_CFX96-DNMT1-02%20Quantification-Cq_Results.csv")
+DNMT1_03 <- read.csv("https://raw.githubusercontent.com/RobertsLab/sams-notebook/refs/heads/master/posts/2026/2026-01-27-qPCRs---M.gigas-Valentina-PolyIC-cGAS-citrate_synthase-and-DNMT1/sam_2026-01-27_14-33-31_Connect-DNMT1-03-Quantification-Cq_Results.csv")
+
+# cGAS
+cGAS_01 <- read.csv("https://raw.githubusercontent.com/RobertsLab/sams-notebook/refs/heads/master/posts/2026/2026-01-27-qPCRs---M.gigas-Valentina-PolyIC-cGAS-citrate_synthase-and-DNMT1/sam_2026-01-27_11-25-14_Connect-cGAS-01-Quantification-Cq_Results.csv")
+cGAS_02 <- read.csv("https://raw.githubusercontent.com/RobertsLab/sams-notebook/refs/heads/master/posts/2026/2026-01-27-qPCRs---M.gigas-Valentina-PolyIC-cGAS-citrate_synthase-and-DNMT1/sam_2026-01-27_11-49-08_CFX96-cGAS-02-Quantification-Cq_Results.csv")
+cGAS_03 <- read.csv("https://raw.githubusercontent.com/RobertsLab/sams-notebook/refs/heads/master/posts/2026/2026-01-27-qPCRs---M.gigas-Valentina-PolyIC-cGAS-citrate_synthase-and-DNMT1/sam_2026-01-27_12-35-04_Connect-cGAS-03-QuantificationCq_Results.csv")
+
+# ATP SYNTHASE
+ATP_synthase_01 <- read.csv("https://raw.githubusercontent.com/RobertsLab/sams-notebook/refs/heads/master/posts/2026/2026-01-28-qPCRs---M.gigas-Valentina-PolyIC-ATP-synthase-GAPDH-HSP70-and-HSP90/sam_2026-01-28_09-56-00_Connect-ATP_synthase-01-QuantificationCq_Results.csv")
+ATP_synthase_02 <- read.csv("https://raw.githubusercontent.com/RobertsLab/sams-notebook/refs/heads/master/posts/2026/2026-01-28-qPCRs---M.gigas-Valentina-PolyIC-ATP-synthase-GAPDH-HSP70-and-HSP90/sam_2026-01-28_10-13-15_CFX96-ATP_synthase-02-Quantification-Cq_Results.csv")
+ATP_synthase_03 <- read.csv("https://raw.githubusercontent.com/RobertsLab/sams-notebook/refs/heads/master/posts/2026/2026-01-28-qPCRs---M.gigas-Valentina-PolyIC-ATP-synthase-GAPDH-HSP70-and-HSP90/sam_2026-01-28_10-55-49_Connect-ATP_synthase-03-Quantification-Cq_Results.csv")
+
+# GAPDH
+GAPDH_01 <- read.csv("https://raw.githubusercontent.com/RobertsLab/sams-notebook/refs/heads/master/posts/2026/2026-01-28-qPCRs---M.gigas-Valentina-PolyIC-ATP-synthase-GAPDH-HSP70-and-HSP90/sam_2026-01-28_12-06-16_Connect-GAPDH-01-Quantification-Cq_Results.csv") %>%
+  mutate(Target = "GAPDH")
+GAPDH_02 <- read.csv("https://raw.githubusercontent.com/RobertsLab/sams-notebook/refs/heads/master/posts/2026/2026-01-28-qPCRs---M.gigas-Valentina-PolyIC-ATP-synthase-GAPDH-HSP70-and-HSP90/sam_2026-01-28_12-07-20_CFX96-GAPDH-02-Quantification-Cq_Results.csv") %>%
+  mutate(Target = "GAPDH")
+GAPDH_03 <- read.csv("https://raw.githubusercontent.com/RobertsLab/sams-notebook/refs/heads/master/posts/2026/2026-01-28-qPCRs---M.gigas-Valentina-PolyIC-ATP-synthase-GAPDH-HSP70-and-HSP90/sam_2026-01-28_13-05-59_Connect-GAPDH-03-Quantification-Cq_Results.csv") %>%
+  mutate(Target = "GAPDH")
+
+# HSP70
+HSP70_01 <- read.csv("https://raw.githubusercontent.com/RobertsLab/sams-notebook/refs/heads/master/posts/2026/2026-01-28-qPCRs---M.gigas-Valentina-PolyIC-ATP-synthase-GAPDH-HSP70-and-HSP90/sam_2026-01-28_14-03-35_Connect-HSP70-01-Quantification-Cq_Results.csv") %>%
+  mutate(Target = "HSP70")
+HSP70_02 <- read.csv("https://raw.githubusercontent.com/RobertsLab/sams-notebook/refs/heads/master/posts/2026/2026-01-28-qPCRs---M.gigas-Valentina-PolyIC-ATP-synthase-GAPDH-HSP70-and-HSP90/sam_2026-01-28_14-25-31_CFX96-HSP70-02-Quantification-Cq_Results.csv") %>%
+  mutate(Target = "HSP70")
+HSP70_03 <- read.csv("https://raw.githubusercontent.com/RobertsLab/sams-notebook/refs/heads/master/posts/2026/2026-01-28-qPCRs---M.gigas-Valentina-PolyIC-ATP-synthase-GAPDH-HSP70-and-HSP90/sam_2026-01-28_15-00-57_Connect-HSP70-03-Quantification-Cq_Results.csv") %>%
+  mutate(Target = "HSP70")
+
+# HSP90
+HSP90_01 <- read.csv("https://raw.githubusercontent.com/RobertsLab/sams-notebook/refs/heads/master/posts/2026/2026-01-28-qPCRs---M.gigas-Valentina-PolyIC-ATP-synthase-GAPDH-HSP70-and-HSP90/sam_2026-01-28-16-06-43_Connect-HSP90-01-QuantificationCq_Results.csv")
+HSP90_02 <- read.csv("https://raw.githubusercontent.com/RobertsLab/sams-notebook/refs/heads/master/posts/2026/2026-01-28-qPCRs---M.gigas-Valentina-PolyIC-ATP-synthase-GAPDH-HSP70-and-HSP90/sam_2026-01-28_16-07-47_CFX96-HSP90-02-Quantification-Cq_Results.csv")
+HSP90_03 <- read.csv("https://raw.githubusercontent.com/RobertsLab/sams-notebook/refs/heads/master/posts/2026/2026-01-28-qPCRs---M.gigas-Valentina-PolyIC-ATP-synthase-GAPDH-HSP70-and-HSP90/sam_2026-01-28_17-07-09_Connect-HSP90-03-Quantification-Cq_Results.csv")
+
+# VIPERIN
+VIPERIN_01 <- read.csv("https://raw.githubusercontent.com/RobertsLab/sams-notebook/refs/heads/master/posts/2026/2026-01-29-qPCR---M.gigas-Valentina-PolyIC-VIPERIN/sam_2026-01-29_07-21-16_Connect-VIPERIN-01-QuantificationCq_Results.csv")
+VIPERIN_02 <- read.csv("https://raw.githubusercontent.com/RobertsLab/sams-notebook/refs/heads/master/posts/2026/2026-01-29-qPCR---M.gigas-Valentina-PolyIC-VIPERIN/sam_2026-01-29_07-39-06_CFX96-VIPERIN-02-Quantification-Cq_Results.csv")
+VIPERIN_03 <- read.csv("https://raw.githubusercontent.com/RobertsLab/sams-notebook/refs/heads/master/posts/2026/2026-01-29-qPCR---M.gigas-Valentina-PolyIC-VIPERIN/sam_2026-01-29_08-24-59_Connect-VIPERIN-03-QuantificationCq_Results.csv")
+
+```
+
+
+# Functions
+
+## Calculate delta Cq
+
+Normalized to designated normalizing gene
+```{r function-delta-Cq, eval=TRUE}
+calculate_delta_Cq <- function(df) {
+  df <- df %>%
+    group_by(Sample) %>%
+    mutate(delta_Cq = Cq.Mean - Cq.Mean[Target == "GAPDH"]) %>%
+    ungroup()
+  
+  return(df)
+}
+```
