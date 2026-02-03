@@ -482,7 +482,58 @@ if(nrow(sig_genes_comp3) > 0) {
 #| fig.width: 10
 #| fig.height: 6
 
-no_polyIC_data %>%
+# Prepare significance annotations from t-test results
+if(exists("sig_genes_comp1") && nrow(sig_genes_comp1) > 0) {
+  # Extract significant genes for Temperature
+  sig_temp_genes <- sig_genes_comp1 %>%
+    filter(comparison == "Control vs Temperature") %>%
+    pull(Target)
+  
+  # Extract significant genes for Mechanical
+  sig_mech_genes <- sig_genes_comp1 %>%
+    filter(comparison == "Control vs Mechanical") %>%
+    pull(Target)
+  
+  # Create annotation data
+  sig_annotations_comp1 <- data.frame(
+    Target = character(),
+    stress_type = character(),
+    label = character(),
+    stringsAsFactors = FALSE
+  )
+  
+  # Add Temperature annotations
+  if(length(sig_temp_genes) > 0) {
+    sig_annotations_comp1 <- rbind(sig_annotations_comp1,
+      data.frame(Target = sig_temp_genes,
+                 stress_type = "Temperature",
+                 label = "*"))
+  }
+  
+  # Add Mechanical annotations
+  if(length(sig_mech_genes) > 0) {
+    sig_annotations_comp1 <- rbind(sig_annotations_comp1,
+      data.frame(Target = sig_mech_genes,
+                 stress_type = "Mechanical",
+                 label = "*"))
+  }
+  
+  # Get y positions for annotations
+  if(nrow(sig_annotations_comp1) > 0) {
+    y_pos_comp1 <- no_polyIC_data %>%
+      group_by(Target, stress_type) %>%
+      summarise(max_y = max(delta_Cq, na.rm = TRUE), .groups = "drop")
+    
+    sig_annotations_comp1 <- sig_annotations_comp1 %>%
+      left_join(y_pos_comp1, by = c("Target", "stress_type")) %>%
+      mutate(y_pos = max_y + 0.5)
+  }
+} else {
+  sig_annotations_comp1 <- data.frame()
+}
+
+# Create plot
+p <- no_polyIC_data %>%
   ggplot(aes(x = stress_type, y = delta_Cq, fill = stress_type)) +
   geom_boxplot() +
   facet_wrap(~Target, scales = "free_y") +
@@ -495,6 +546,20 @@ no_polyIC_data %>%
     fill = "Stress Type"
   ) +
   theme(axis.text.x = element_text(angle = 45, hjust = 1))
+
+# Add annotations if any exist
+if(nrow(sig_annotations_comp1) > 0) {
+  p <- p + 
+    geom_text(data = sig_annotations_comp1, 
+              aes(x = stress_type, y = y_pos, label = label),
+              inherit.aes = FALSE, size = 6, vjust = 0, color = "darkorange") +
+    labs(subtitle = "Asterisks (*) indicate significant differences from Control (t-test p ≤ 0.05)",
+         caption = paste("Significant comparisons:", paste(unique(sig_genes_comp1$Target), collapse = ", ")))
+} else {
+  p <- p + labs(subtitle = "No significant differences detected in t-tests (all p > 0.05)")
+}
+
+print(p)
 ```
 
 ### Comparison 2: Control vs PolyIC Control
@@ -505,7 +570,29 @@ no_polyIC_data %>%
 #| fig.width: 10
 #| fig.height: 6
 
-control_data %>%
+# Prepare significance annotations from t-test results
+if(exists("sig_genes_comp2") && nrow(sig_genes_comp2) > 0) {
+  sig_annotations_comp2 <- data.frame(
+    Target = sig_genes_comp2$Target,
+    polyIC = "PolyIC",
+    label = "*",
+    stringsAsFactors = FALSE
+  )
+  
+  # Get y positions for annotations
+  y_pos_comp2 <- control_data %>%
+    group_by(Target, polyIC) %>%
+    summarise(max_y = max(delta_Cq, na.rm = TRUE), .groups = "drop")
+  
+  sig_annotations_comp2 <- sig_annotations_comp2 %>%
+    left_join(y_pos_comp2, by = c("Target", "polyIC")) %>%
+    mutate(y_pos = max_y + 0.5)
+} else {
+  sig_annotations_comp2 <- data.frame()
+}
+
+# Create plot
+p <- control_data %>%
   ggplot(aes(x = polyIC, y = delta_Cq, fill = polyIC)) +
   geom_boxplot() +
   facet_wrap(~Target, scales = "free_y") +
@@ -518,6 +605,20 @@ control_data %>%
     fill = "Treatment"
   ) +
   theme(axis.text.x = element_text(angle = 45, hjust = 1))
+
+# Add annotations if any exist
+if(nrow(sig_annotations_comp2) > 0) {
+  p <- p + 
+    geom_text(data = sig_annotations_comp2, 
+              aes(x = polyIC, y = y_pos, label = label),
+              inherit.aes = FALSE, size = 6, vjust = 0, color = "darkorange") +
+    labs(subtitle = "Asterisks (*) indicate significant differences (t-test p ≤ 0.05)",
+         caption = paste("Genes with significant PolyIC effect:", paste(sig_genes_comp2$Target, collapse = ", ")))
+} else {
+  p <- p + labs(subtitle = "No significant differences detected in t-tests (all p > 0.05)")
+}
+
+print(p)
 ```
 
 ### Comparison 3: PolyIC Control vs PolyIC Stressors
@@ -528,7 +629,58 @@ control_data %>%
 #| fig.width: 10
 #| fig.height: 6
 
-polyIC_data %>%
+# Prepare significance annotations from t-test results
+if(exists("sig_genes_comp3") && nrow(sig_genes_comp3) > 0) {
+  # Extract significant genes for Temperature
+  sig_temp_genes <- sig_genes_comp3 %>%
+    filter(comparison == "PolyIC Control vs Temperature") %>%
+    pull(Target)
+  
+  # Extract significant genes for Mechanical
+  sig_mech_genes <- sig_genes_comp3 %>%
+    filter(comparison == "PolyIC Control vs Mechanical") %>%
+    pull(Target)
+  
+  # Create annotation data
+  sig_annotations_comp3 <- data.frame(
+    Target = character(),
+    stress_type = character(),
+    label = character(),
+    stringsAsFactors = FALSE
+  )
+  
+  # Add Temperature annotations
+  if(length(sig_temp_genes) > 0) {
+    sig_annotations_comp3 <- rbind(sig_annotations_comp3,
+      data.frame(Target = sig_temp_genes,
+                 stress_type = "Temperature",
+                 label = "*"))
+  }
+  
+  # Add Mechanical annotations
+  if(length(sig_mech_genes) > 0) {
+    sig_annotations_comp3 <- rbind(sig_annotations_comp3,
+      data.frame(Target = sig_mech_genes,
+                 stress_type = "Mechanical",
+                 label = "*"))
+  }
+  
+  # Get y positions for annotations
+  if(nrow(sig_annotations_comp3) > 0) {
+    y_pos_comp3 <- polyIC_data %>%
+      group_by(Target, stress_type) %>%
+      summarise(max_y = max(delta_Cq, na.rm = TRUE), .groups = "drop")
+    
+    sig_annotations_comp3 <- sig_annotations_comp3 %>%
+      left_join(y_pos_comp3, by = c("Target", "stress_type")) %>%
+      mutate(y_pos = max_y + 0.5)
+  }
+} else {
+  sig_annotations_comp3 <- data.frame()
+}
+
+# Create plot
+p <- polyIC_data %>%
   ggplot(aes(x = stress_type, y = delta_Cq, fill = stress_type)) +
   geom_boxplot() +
   facet_wrap(~Target, scales = "free_y") +
@@ -541,6 +693,20 @@ polyIC_data %>%
     fill = "Stress Type"
   ) +
   theme(axis.text.x = element_text(angle = 45, hjust = 1))
+
+# Add annotations if any exist
+if(nrow(sig_annotations_comp3) > 0) {
+  p <- p + 
+    geom_text(data = sig_annotations_comp3, 
+              aes(x = stress_type, y = y_pos, label = label),
+              inherit.aes = FALSE, size = 6, vjust = 0, color = "darkorange") +
+    labs(subtitle = "Asterisks (*) indicate significant differences from PolyIC Control (t-test p ≤ 0.05)",
+         caption = paste("Significant comparisons:", paste(unique(sig_genes_comp3$Target), collapse = ", ")))
+} else {
+  p <- p + labs(subtitle = "No significant differences detected in t-tests (all p > 0.05)")
+}
+
+print(p)
 ```
 
 ## All treatments comparison
@@ -1574,19 +1740,53 @@ Visualize delta Cq values by treatment group for each target.
 #| fig.width: 12
 #| fig.height: 10
 
+# Create significance annotation data
+sig_annotations <- data.frame(
+  Target = c("ATP.Synthase", "ATP.Synthase", "ATP.Synthase", 
+             "HSP70", "HSP70", "HSP70", "HSP70", "HSP70",
+             "HSP90", "HSP90", "HSP90",
+             "VIPERIN"),
+  label = c("*", "***", "*",
+            "***", "***", "***", "***", "***",
+            "***", "***", "***",
+            "*"),
+  stress_type = c("Mechanical", "Temperature", "Temperature",
+                  "Temperature", "Temperature", "Temperature", "Temperature", "Temperature",
+                  "Temperature", "Temperature", "Temperature",
+                  "Control"),
+  polyIC = c("PolyIC", "PolyIC", "No_PolyIC",
+             "No_PolyIC", "PolyIC", "No_PolyIC", "PolyIC", "PolyIC",
+             "PolyIC", "PolyIC", "PolyIC",
+             "PolyIC")
+)
+
+# Calculate y positions for annotations (above max values)
+y_positions <- delta_Cq_df %>%
+  group_by(Target, stress_type, polyIC) %>%
+  summarise(max_y = max(delta_Cq, na.rm = TRUE), .groups = "drop")
+
+sig_annotations <- sig_annotations %>%
+  left_join(y_positions, by = c("Target", "stress_type", "polyIC")) %>%
+  mutate(y_pos = max_y + 0.3)
+
 delta_Cq_df %>%
   ggplot(aes(x = stress_type, y = delta_Cq, fill = polyIC)) +
   geom_boxplot(position = position_dodge(0.8), alpha = 0.7) +
   geom_point(position = position_dodge(0.8), alpha = 0.5, size = 1) +
+  geom_text(data = sig_annotations, 
+            aes(x = stress_type, y = y_pos, label = label, group = polyIC),
+            position = position_dodge(0.8), size = 5, vjust = 0, color = "darkorange") +
   facet_wrap(~Target, scales = "free_y", ncol = 2) +
   scale_fill_manual(values = c("No_PolyIC" = "darkgray", "PolyIC" = "salmon")) +
   geom_hline(yintercept = 0, linetype = "dashed", alpha = 0.5) +
   theme_bw() +
   labs(
-    title = "Delta Cq by Treatment Group",
+    title = "Delta Cq by Treatment Group with ANOVA Significance",
+    subtitle = "Asterisks indicate significant pairwise contrasts from ANOVA post-hoc tests\n* p ≤ 0.05, ** p ≤ 0.01, *** p ≤ 0.001",
     x = "Stress Type",
     y = "Delta Cq",
-    fill = "PolyIC Treatment"
+    fill = "PolyIC Treatment",
+    caption = "Significant contrasts: ATP Synthase (4), HSP70 (8), HSP90 (3), VIPERIN (1). See ANOVA sections for details."
   ) +
   theme(
     axis.text.x = element_text(angle = 45, hjust = 1),
