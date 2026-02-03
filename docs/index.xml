@@ -2317,10 +2317,254 @@ font-style: inherit;">"No genes had p-values ≤ 0.05"</span>)</span>
 <div class="cell" data-hold="true">
 <details open="" class="code-fold">
 <summary>Code</summary>
-<div class="sourceCode cell-code" id="cb35" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb35-1">no_polyIC_data <span class="sc" style="color: #5E5E5E;
+<div class="sourceCode cell-code" id="cb35" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb35-1"><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># Prepare significance annotations from t-test results</span></span>
+<span id="cb35-2"><span class="cf" style="color: #003B4F;
+background-color: null;
+font-weight: bold;
+font-style: inherit;">if</span>(<span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">exists</span>(<span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"sig_genes_comp1"</span>) <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">&amp;&amp;</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">nrow</span>(sig_genes_comp1) <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">&gt;</span> <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">0</span>) {</span>
+<span id="cb35-3">  <span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># Extract significant genes for Temperature</span></span>
+<span id="cb35-4">  sig_temp_genes <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> sig_genes_comp1 <span class="sc" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;">%&gt;%</span></span>
-<span id="cb35-2">  <span class="fu" style="color: #4758AB;
+<span id="cb35-5">    <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">filter</span>(comparison <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">==</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"Control vs Temperature"</span>) <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">%&gt;%</span></span>
+<span id="cb35-6">    <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">pull</span>(Target)</span>
+<span id="cb35-7">  </span>
+<span id="cb35-8">  <span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># Extract significant genes for Mechanical</span></span>
+<span id="cb35-9">  sig_mech_genes <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> sig_genes_comp1 <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">%&gt;%</span></span>
+<span id="cb35-10">    <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">filter</span>(comparison <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">==</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"Control vs Mechanical"</span>) <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">%&gt;%</span></span>
+<span id="cb35-11">    <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">pull</span>(Target)</span>
+<span id="cb35-12">  </span>
+<span id="cb35-13">  <span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># Create annotation data</span></span>
+<span id="cb35-14">  sig_annotations_comp1 <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">data.frame</span>(</span>
+<span id="cb35-15">    <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">Target =</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">character</span>(),</span>
+<span id="cb35-16">    <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">stress_type =</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">character</span>(),</span>
+<span id="cb35-17">    <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">label =</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">character</span>(),</span>
+<span id="cb35-18">    <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">stringsAsFactors =</span> <span class="cn" style="color: #8f5902;
+background-color: null;
+font-style: inherit;">FALSE</span></span>
+<span id="cb35-19">  )</span>
+<span id="cb35-20">  </span>
+<span id="cb35-21">  <span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># Add Temperature annotations</span></span>
+<span id="cb35-22">  <span class="cf" style="color: #003B4F;
+background-color: null;
+font-weight: bold;
+font-style: inherit;">if</span>(<span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">length</span>(sig_temp_genes) <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">&gt;</span> <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">0</span>) {</span>
+<span id="cb35-23">    sig_annotations_comp1 <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">rbind</span>(sig_annotations_comp1,</span>
+<span id="cb35-24">      <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">data.frame</span>(<span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">Target =</span> sig_temp_genes,</span>
+<span id="cb35-25">                 <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">stress_type =</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"Temperature"</span>,</span>
+<span id="cb35-26">                 <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">label =</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"*"</span>))</span>
+<span id="cb35-27">  }</span>
+<span id="cb35-28">  </span>
+<span id="cb35-29">  <span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># Add Mechanical annotations</span></span>
+<span id="cb35-30">  <span class="cf" style="color: #003B4F;
+background-color: null;
+font-weight: bold;
+font-style: inherit;">if</span>(<span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">length</span>(sig_mech_genes) <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">&gt;</span> <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">0</span>) {</span>
+<span id="cb35-31">    sig_annotations_comp1 <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">rbind</span>(sig_annotations_comp1,</span>
+<span id="cb35-32">      <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">data.frame</span>(<span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">Target =</span> sig_mech_genes,</span>
+<span id="cb35-33">                 <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">stress_type =</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"Mechanical"</span>,</span>
+<span id="cb35-34">                 <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">label =</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"*"</span>))</span>
+<span id="cb35-35">  }</span>
+<span id="cb35-36">  </span>
+<span id="cb35-37">  <span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># Get y positions for annotations</span></span>
+<span id="cb35-38">  <span class="cf" style="color: #003B4F;
+background-color: null;
+font-weight: bold;
+font-style: inherit;">if</span>(<span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">nrow</span>(sig_annotations_comp1) <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">&gt;</span> <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">0</span>) {</span>
+<span id="cb35-39">    y_pos_comp1 <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> no_polyIC_data <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">%&gt;%</span></span>
+<span id="cb35-40">      <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">group_by</span>(Target, stress_type) <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">%&gt;%</span></span>
+<span id="cb35-41">      <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">summarise</span>(<span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">max_y =</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">max</span>(delta_Cq, <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">na.rm =</span> <span class="cn" style="color: #8f5902;
+background-color: null;
+font-style: inherit;">TRUE</span>), <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">.groups =</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"drop"</span>)</span>
+<span id="cb35-42">    </span>
+<span id="cb35-43">    sig_annotations_comp1 <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> sig_annotations_comp1 <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">%&gt;%</span></span>
+<span id="cb35-44">      <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">left_join</span>(y_pos_comp1, <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">by =</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">c</span>(<span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"Target"</span>, <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"stress_type"</span>)) <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">%&gt;%</span></span>
+<span id="cb35-45">      <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">mutate</span>(<span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">y_pos =</span> max_y <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">+</span> <span class="fl" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">0.5</span>)</span>
+<span id="cb35-46">  }</span>
+<span id="cb35-47">} <span class="cf" style="color: #003B4F;
+background-color: null;
+font-weight: bold;
+font-style: inherit;">else</span> {</span>
+<span id="cb35-48">  sig_annotations_comp1 <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">data.frame</span>()</span>
+<span id="cb35-49">}</span>
+<span id="cb35-50"></span>
+<span id="cb35-51"><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># Create plot</span></span>
+<span id="cb35-52">p <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> no_polyIC_data <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">%&gt;%</span></span>
+<span id="cb35-53">  <span class="fu" style="color: #4758AB;
 background-color: null;
 font-style: inherit;">ggplot</span>(<span class="fu" style="color: #4758AB;
 background-color: null;
@@ -2333,12 +2577,12 @@ background-color: null;
 font-style: inherit;">fill =</span> stress_type)) <span class="sc" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;">+</span></span>
-<span id="cb35-3">  <span class="fu" style="color: #4758AB;
+<span id="cb35-54">  <span class="fu" style="color: #4758AB;
 background-color: null;
 font-style: inherit;">geom_boxplot</span>() <span class="sc" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;">+</span></span>
-<span id="cb35-4">  <span class="fu" style="color: #4758AB;
+<span id="cb35-55">  <span class="fu" style="color: #4758AB;
 background-color: null;
 font-style: inherit;">facet_wrap</span>(<span class="sc" style="color: #5E5E5E;
 background-color: null;
@@ -2349,7 +2593,7 @@ background-color: null;
 font-style: inherit;">"free_y"</span>) <span class="sc" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;">+</span></span>
-<span id="cb35-5">  <span class="fu" style="color: #4758AB;
+<span id="cb35-56">  <span class="fu" style="color: #4758AB;
 background-color: null;
 font-style: inherit;">scale_fill_manual</span>(<span class="at" style="color: #657422;
 background-color: null;
@@ -2376,38 +2620,38 @@ background-color: null;
 font-style: inherit;">"steelblue"</span>)) <span class="sc" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;">+</span></span>
-<span id="cb35-6">  <span class="fu" style="color: #4758AB;
+<span id="cb35-57">  <span class="fu" style="color: #4758AB;
 background-color: null;
 font-style: inherit;">theme_bw</span>() <span class="sc" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;">+</span></span>
-<span id="cb35-7">  <span class="fu" style="color: #4758AB;
+<span id="cb35-58">  <span class="fu" style="color: #4758AB;
 background-color: null;
 font-style: inherit;">labs</span>(</span>
-<span id="cb35-8">    <span class="at" style="color: #657422;
+<span id="cb35-59">    <span class="at" style="color: #657422;
 background-color: null;
 font-style: inherit;">title =</span> <span class="st" style="color: #20794D;
 background-color: null;
 font-style: inherit;">"Delta Cq: Control vs Stressors (No PolyIC Treatment)"</span>,</span>
-<span id="cb35-9">    <span class="at" style="color: #657422;
+<span id="cb35-60">    <span class="at" style="color: #657422;
 background-color: null;
 font-style: inherit;">x =</span> <span class="st" style="color: #20794D;
 background-color: null;
 font-style: inherit;">"Stress Type"</span>,</span>
-<span id="cb35-10">    <span class="at" style="color: #657422;
+<span id="cb35-61">    <span class="at" style="color: #657422;
 background-color: null;
 font-style: inherit;">y =</span> <span class="st" style="color: #20794D;
 background-color: null;
 font-style: inherit;">"Delta Cq"</span>,</span>
-<span id="cb35-11">    <span class="at" style="color: #657422;
+<span id="cb35-62">    <span class="at" style="color: #657422;
 background-color: null;
 font-style: inherit;">fill =</span> <span class="st" style="color: #20794D;
 background-color: null;
 font-style: inherit;">"Stress Type"</span></span>
-<span id="cb35-12">  ) <span class="sc" style="color: #5E5E5E;
+<span id="cb35-63">  ) <span class="sc" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;">+</span></span>
-<span id="cb35-13">  <span class="fu" style="color: #4758AB;
+<span id="cb35-64">  <span class="fu" style="color: #4758AB;
 background-color: null;
 font-style: inherit;">theme</span>(<span class="at" style="color: #657422;
 background-color: null;
@@ -2421,7 +2665,103 @@ font-style: inherit;">45</span>, <span class="at" style="color: #657422;
 background-color: null;
 font-style: inherit;">hjust =</span> <span class="dv" style="color: #AD0000;
 background-color: null;
-font-style: inherit;">1</span>))</span></code></pre></div>
+font-style: inherit;">1</span>))</span>
+<span id="cb35-65"></span>
+<span id="cb35-66"><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># Add annotations if any exist</span></span>
+<span id="cb35-67"><span class="cf" style="color: #003B4F;
+background-color: null;
+font-weight: bold;
+font-style: inherit;">if</span>(<span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">nrow</span>(sig_annotations_comp1) <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">&gt;</span> <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">0</span>) {</span>
+<span id="cb35-68">  p <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> p <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">+</span> </span>
+<span id="cb35-69">    <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">geom_text</span>(<span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">data =</span> sig_annotations_comp1, </span>
+<span id="cb35-70">              <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">aes</span>(<span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">x =</span> stress_type, <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">y =</span> y_pos, <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">label =</span> label),</span>
+<span id="cb35-71">              <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">inherit.aes =</span> <span class="cn" style="color: #8f5902;
+background-color: null;
+font-style: inherit;">FALSE</span>, <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">size =</span> <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">6</span>, <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">vjust =</span> <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">0</span>, <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">color =</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"darkorange"</span>) <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">+</span></span>
+<span id="cb35-72">    <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">labs</span>(<span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">subtitle =</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"Asterisks (*) indicate significant differences from Control (t-test p ≤ 0.05)"</span>,</span>
+<span id="cb35-73">         <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">caption =</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">paste</span>(<span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"Significant comparisons:"</span>, <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">paste</span>(<span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">unique</span>(sig_genes_comp1<span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">$</span>Target), <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">collapse =</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">", "</span>)))</span>
+<span id="cb35-74">} <span class="cf" style="color: #003B4F;
+background-color: null;
+font-weight: bold;
+font-style: inherit;">else</span> {</span>
+<span id="cb35-75">  p <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> p <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">+</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">labs</span>(<span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">subtitle =</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"No significant differences detected in t-tests (all p &gt; 0.05)"</span>)</span>
+<span id="cb35-76">}</span>
+<span id="cb35-77"></span>
+<span id="cb35-78"><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">print</span>(p)</span></code></pre></div>
 </details>
 <div class="cell-output-display">
 <div>
@@ -2437,10 +2777,128 @@ font-style: inherit;">1</span>))</span></code></pre></div>
 <div class="cell" data-hold="true">
 <details open="" class="code-fold">
 <summary>Code</summary>
-<div class="sourceCode cell-code" id="cb36" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb36-1">control_data <span class="sc" style="color: #5E5E5E;
+<div class="sourceCode cell-code" id="cb36" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb36-1"><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># Prepare significance annotations from t-test results</span></span>
+<span id="cb36-2"><span class="cf" style="color: #003B4F;
+background-color: null;
+font-weight: bold;
+font-style: inherit;">if</span>(<span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">exists</span>(<span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"sig_genes_comp2"</span>) <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">&amp;&amp;</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">nrow</span>(sig_genes_comp2) <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">&gt;</span> <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">0</span>) {</span>
+<span id="cb36-3">  sig_annotations_comp2 <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">data.frame</span>(</span>
+<span id="cb36-4">    <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">Target =</span> sig_genes_comp2<span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">$</span>Target,</span>
+<span id="cb36-5">    <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">polyIC =</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"PolyIC"</span>,</span>
+<span id="cb36-6">    <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">label =</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"*"</span>,</span>
+<span id="cb36-7">    <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">stringsAsFactors =</span> <span class="cn" style="color: #8f5902;
+background-color: null;
+font-style: inherit;">FALSE</span></span>
+<span id="cb36-8">  )</span>
+<span id="cb36-9">  </span>
+<span id="cb36-10">  <span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># Get y positions for annotations</span></span>
+<span id="cb36-11">  y_pos_comp2 <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> control_data <span class="sc" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;">%&gt;%</span></span>
-<span id="cb36-2">  <span class="fu" style="color: #4758AB;
+<span id="cb36-12">    <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">group_by</span>(Target, polyIC) <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">%&gt;%</span></span>
+<span id="cb36-13">    <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">summarise</span>(<span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">max_y =</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">max</span>(delta_Cq, <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">na.rm =</span> <span class="cn" style="color: #8f5902;
+background-color: null;
+font-style: inherit;">TRUE</span>), <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">.groups =</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"drop"</span>)</span>
+<span id="cb36-14">  </span>
+<span id="cb36-15">  sig_annotations_comp2 <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> sig_annotations_comp2 <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">%&gt;%</span></span>
+<span id="cb36-16">    <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">left_join</span>(y_pos_comp2, <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">by =</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">c</span>(<span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"Target"</span>, <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"polyIC"</span>)) <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">%&gt;%</span></span>
+<span id="cb36-17">    <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">mutate</span>(<span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">y_pos =</span> max_y <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">+</span> <span class="fl" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">0.5</span>)</span>
+<span id="cb36-18">} <span class="cf" style="color: #003B4F;
+background-color: null;
+font-weight: bold;
+font-style: inherit;">else</span> {</span>
+<span id="cb36-19">  sig_annotations_comp2 <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">data.frame</span>()</span>
+<span id="cb36-20">}</span>
+<span id="cb36-21"></span>
+<span id="cb36-22"><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># Create plot</span></span>
+<span id="cb36-23">p <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> control_data <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">%&gt;%</span></span>
+<span id="cb36-24">  <span class="fu" style="color: #4758AB;
 background-color: null;
 font-style: inherit;">ggplot</span>(<span class="fu" style="color: #4758AB;
 background-color: null;
@@ -2453,12 +2911,12 @@ background-color: null;
 font-style: inherit;">fill =</span> polyIC)) <span class="sc" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;">+</span></span>
-<span id="cb36-3">  <span class="fu" style="color: #4758AB;
+<span id="cb36-25">  <span class="fu" style="color: #4758AB;
 background-color: null;
 font-style: inherit;">geom_boxplot</span>() <span class="sc" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;">+</span></span>
-<span id="cb36-4">  <span class="fu" style="color: #4758AB;
+<span id="cb36-26">  <span class="fu" style="color: #4758AB;
 background-color: null;
 font-style: inherit;">facet_wrap</span>(<span class="sc" style="color: #5E5E5E;
 background-color: null;
@@ -2469,7 +2927,7 @@ background-color: null;
 font-style: inherit;">"free_y"</span>) <span class="sc" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;">+</span></span>
-<span id="cb36-5">  <span class="fu" style="color: #4758AB;
+<span id="cb36-27">  <span class="fu" style="color: #4758AB;
 background-color: null;
 font-style: inherit;">scale_fill_manual</span>(<span class="at" style="color: #657422;
 background-color: null;
@@ -2490,38 +2948,38 @@ background-color: null;
 font-style: inherit;">"salmon"</span>)) <span class="sc" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;">+</span></span>
-<span id="cb36-6">  <span class="fu" style="color: #4758AB;
+<span id="cb36-28">  <span class="fu" style="color: #4758AB;
 background-color: null;
 font-style: inherit;">theme_bw</span>() <span class="sc" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;">+</span></span>
-<span id="cb36-7">  <span class="fu" style="color: #4758AB;
+<span id="cb36-29">  <span class="fu" style="color: #4758AB;
 background-color: null;
 font-style: inherit;">labs</span>(</span>
-<span id="cb36-8">    <span class="at" style="color: #657422;
+<span id="cb36-30">    <span class="at" style="color: #657422;
 background-color: null;
 font-style: inherit;">title =</span> <span class="st" style="color: #20794D;
 background-color: null;
 font-style: inherit;">"Delta Cq: Basic Control vs PolyIC Control"</span>,</span>
-<span id="cb36-9">    <span class="at" style="color: #657422;
+<span id="cb36-31">    <span class="at" style="color: #657422;
 background-color: null;
 font-style: inherit;">x =</span> <span class="st" style="color: #20794D;
 background-color: null;
 font-style: inherit;">"PolyIC Treatment"</span>,</span>
-<span id="cb36-10">    <span class="at" style="color: #657422;
+<span id="cb36-32">    <span class="at" style="color: #657422;
 background-color: null;
 font-style: inherit;">y =</span> <span class="st" style="color: #20794D;
 background-color: null;
 font-style: inherit;">"Delta Cq"</span>,</span>
-<span id="cb36-11">    <span class="at" style="color: #657422;
+<span id="cb36-33">    <span class="at" style="color: #657422;
 background-color: null;
 font-style: inherit;">fill =</span> <span class="st" style="color: #20794D;
 background-color: null;
 font-style: inherit;">"Treatment"</span></span>
-<span id="cb36-12">  ) <span class="sc" style="color: #5E5E5E;
+<span id="cb36-34">  ) <span class="sc" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;">+</span></span>
-<span id="cb36-13">  <span class="fu" style="color: #4758AB;
+<span id="cb36-35">  <span class="fu" style="color: #4758AB;
 background-color: null;
 font-style: inherit;">theme</span>(<span class="at" style="color: #657422;
 background-color: null;
@@ -2535,7 +2993,101 @@ font-style: inherit;">45</span>, <span class="at" style="color: #657422;
 background-color: null;
 font-style: inherit;">hjust =</span> <span class="dv" style="color: #AD0000;
 background-color: null;
-font-style: inherit;">1</span>))</span></code></pre></div>
+font-style: inherit;">1</span>))</span>
+<span id="cb36-36"></span>
+<span id="cb36-37"><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># Add annotations if any exist</span></span>
+<span id="cb36-38"><span class="cf" style="color: #003B4F;
+background-color: null;
+font-weight: bold;
+font-style: inherit;">if</span>(<span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">nrow</span>(sig_annotations_comp2) <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">&gt;</span> <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">0</span>) {</span>
+<span id="cb36-39">  p <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> p <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">+</span> </span>
+<span id="cb36-40">    <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">geom_text</span>(<span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">data =</span> sig_annotations_comp2, </span>
+<span id="cb36-41">              <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">aes</span>(<span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">x =</span> polyIC, <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">y =</span> y_pos, <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">label =</span> label),</span>
+<span id="cb36-42">              <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">inherit.aes =</span> <span class="cn" style="color: #8f5902;
+background-color: null;
+font-style: inherit;">FALSE</span>, <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">size =</span> <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">6</span>, <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">vjust =</span> <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">0</span>, <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">color =</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"darkorange"</span>) <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">+</span></span>
+<span id="cb36-43">    <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">labs</span>(<span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">subtitle =</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"Asterisks (*) indicate significant differences (t-test p ≤ 0.05)"</span>,</span>
+<span id="cb36-44">         <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">caption =</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">paste</span>(<span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"Genes with significant PolyIC effect:"</span>, <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">paste</span>(sig_genes_comp2<span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">$</span>Target, <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">collapse =</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">", "</span>)))</span>
+<span id="cb36-45">} <span class="cf" style="color: #003B4F;
+background-color: null;
+font-weight: bold;
+font-style: inherit;">else</span> {</span>
+<span id="cb36-46">  p <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> p <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">+</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">labs</span>(<span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">subtitle =</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"No significant differences detected in t-tests (all p &gt; 0.05)"</span>)</span>
+<span id="cb36-47">}</span>
+<span id="cb36-48"></span>
+<span id="cb36-49"><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">print</span>(p)</span></code></pre></div>
 </details>
 <div class="cell-output-display">
 <div>
@@ -2551,10 +3103,254 @@ font-style: inherit;">1</span>))</span></code></pre></div>
 <div class="cell" data-hold="true">
 <details open="" class="code-fold">
 <summary>Code</summary>
-<div class="sourceCode cell-code" id="cb37" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb37-1">polyIC_data <span class="sc" style="color: #5E5E5E;
+<div class="sourceCode cell-code" id="cb37" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb37-1"><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># Prepare significance annotations from t-test results</span></span>
+<span id="cb37-2"><span class="cf" style="color: #003B4F;
+background-color: null;
+font-weight: bold;
+font-style: inherit;">if</span>(<span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">exists</span>(<span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"sig_genes_comp3"</span>) <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">&amp;&amp;</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">nrow</span>(sig_genes_comp3) <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">&gt;</span> <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">0</span>) {</span>
+<span id="cb37-3">  <span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># Extract significant genes for Temperature</span></span>
+<span id="cb37-4">  sig_temp_genes <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> sig_genes_comp3 <span class="sc" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;">%&gt;%</span></span>
-<span id="cb37-2">  <span class="fu" style="color: #4758AB;
+<span id="cb37-5">    <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">filter</span>(comparison <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">==</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"PolyIC Control vs Temperature"</span>) <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">%&gt;%</span></span>
+<span id="cb37-6">    <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">pull</span>(Target)</span>
+<span id="cb37-7">  </span>
+<span id="cb37-8">  <span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># Extract significant genes for Mechanical</span></span>
+<span id="cb37-9">  sig_mech_genes <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> sig_genes_comp3 <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">%&gt;%</span></span>
+<span id="cb37-10">    <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">filter</span>(comparison <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">==</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"PolyIC Control vs Mechanical"</span>) <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">%&gt;%</span></span>
+<span id="cb37-11">    <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">pull</span>(Target)</span>
+<span id="cb37-12">  </span>
+<span id="cb37-13">  <span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># Create annotation data</span></span>
+<span id="cb37-14">  sig_annotations_comp3 <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">data.frame</span>(</span>
+<span id="cb37-15">    <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">Target =</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">character</span>(),</span>
+<span id="cb37-16">    <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">stress_type =</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">character</span>(),</span>
+<span id="cb37-17">    <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">label =</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">character</span>(),</span>
+<span id="cb37-18">    <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">stringsAsFactors =</span> <span class="cn" style="color: #8f5902;
+background-color: null;
+font-style: inherit;">FALSE</span></span>
+<span id="cb37-19">  )</span>
+<span id="cb37-20">  </span>
+<span id="cb37-21">  <span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># Add Temperature annotations</span></span>
+<span id="cb37-22">  <span class="cf" style="color: #003B4F;
+background-color: null;
+font-weight: bold;
+font-style: inherit;">if</span>(<span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">length</span>(sig_temp_genes) <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">&gt;</span> <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">0</span>) {</span>
+<span id="cb37-23">    sig_annotations_comp3 <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">rbind</span>(sig_annotations_comp3,</span>
+<span id="cb37-24">      <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">data.frame</span>(<span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">Target =</span> sig_temp_genes,</span>
+<span id="cb37-25">                 <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">stress_type =</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"Temperature"</span>,</span>
+<span id="cb37-26">                 <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">label =</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"*"</span>))</span>
+<span id="cb37-27">  }</span>
+<span id="cb37-28">  </span>
+<span id="cb37-29">  <span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># Add Mechanical annotations</span></span>
+<span id="cb37-30">  <span class="cf" style="color: #003B4F;
+background-color: null;
+font-weight: bold;
+font-style: inherit;">if</span>(<span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">length</span>(sig_mech_genes) <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">&gt;</span> <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">0</span>) {</span>
+<span id="cb37-31">    sig_annotations_comp3 <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">rbind</span>(sig_annotations_comp3,</span>
+<span id="cb37-32">      <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">data.frame</span>(<span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">Target =</span> sig_mech_genes,</span>
+<span id="cb37-33">                 <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">stress_type =</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"Mechanical"</span>,</span>
+<span id="cb37-34">                 <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">label =</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"*"</span>))</span>
+<span id="cb37-35">  }</span>
+<span id="cb37-36">  </span>
+<span id="cb37-37">  <span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># Get y positions for annotations</span></span>
+<span id="cb37-38">  <span class="cf" style="color: #003B4F;
+background-color: null;
+font-weight: bold;
+font-style: inherit;">if</span>(<span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">nrow</span>(sig_annotations_comp3) <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">&gt;</span> <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">0</span>) {</span>
+<span id="cb37-39">    y_pos_comp3 <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> polyIC_data <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">%&gt;%</span></span>
+<span id="cb37-40">      <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">group_by</span>(Target, stress_type) <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">%&gt;%</span></span>
+<span id="cb37-41">      <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">summarise</span>(<span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">max_y =</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">max</span>(delta_Cq, <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">na.rm =</span> <span class="cn" style="color: #8f5902;
+background-color: null;
+font-style: inherit;">TRUE</span>), <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">.groups =</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"drop"</span>)</span>
+<span id="cb37-42">    </span>
+<span id="cb37-43">    sig_annotations_comp3 <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> sig_annotations_comp3 <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">%&gt;%</span></span>
+<span id="cb37-44">      <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">left_join</span>(y_pos_comp3, <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">by =</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">c</span>(<span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"Target"</span>, <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"stress_type"</span>)) <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">%&gt;%</span></span>
+<span id="cb37-45">      <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">mutate</span>(<span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">y_pos =</span> max_y <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">+</span> <span class="fl" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">0.5</span>)</span>
+<span id="cb37-46">  }</span>
+<span id="cb37-47">} <span class="cf" style="color: #003B4F;
+background-color: null;
+font-weight: bold;
+font-style: inherit;">else</span> {</span>
+<span id="cb37-48">  sig_annotations_comp3 <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">data.frame</span>()</span>
+<span id="cb37-49">}</span>
+<span id="cb37-50"></span>
+<span id="cb37-51"><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># Create plot</span></span>
+<span id="cb37-52">p <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> polyIC_data <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">%&gt;%</span></span>
+<span id="cb37-53">  <span class="fu" style="color: #4758AB;
 background-color: null;
 font-style: inherit;">ggplot</span>(<span class="fu" style="color: #4758AB;
 background-color: null;
@@ -2567,12 +3363,12 @@ background-color: null;
 font-style: inherit;">fill =</span> stress_type)) <span class="sc" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;">+</span></span>
-<span id="cb37-3">  <span class="fu" style="color: #4758AB;
+<span id="cb37-54">  <span class="fu" style="color: #4758AB;
 background-color: null;
 font-style: inherit;">geom_boxplot</span>() <span class="sc" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;">+</span></span>
-<span id="cb37-4">  <span class="fu" style="color: #4758AB;
+<span id="cb37-55">  <span class="fu" style="color: #4758AB;
 background-color: null;
 font-style: inherit;">facet_wrap</span>(<span class="sc" style="color: #5E5E5E;
 background-color: null;
@@ -2583,7 +3379,7 @@ background-color: null;
 font-style: inherit;">"free_y"</span>) <span class="sc" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;">+</span></span>
-<span id="cb37-5">  <span class="fu" style="color: #4758AB;
+<span id="cb37-56">  <span class="fu" style="color: #4758AB;
 background-color: null;
 font-style: inherit;">scale_fill_manual</span>(<span class="at" style="color: #657422;
 background-color: null;
@@ -2610,38 +3406,38 @@ background-color: null;
 font-style: inherit;">"steelblue"</span>)) <span class="sc" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;">+</span></span>
-<span id="cb37-6">  <span class="fu" style="color: #4758AB;
+<span id="cb37-57">  <span class="fu" style="color: #4758AB;
 background-color: null;
 font-style: inherit;">theme_bw</span>() <span class="sc" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;">+</span></span>
-<span id="cb37-7">  <span class="fu" style="color: #4758AB;
+<span id="cb37-58">  <span class="fu" style="color: #4758AB;
 background-color: null;
 font-style: inherit;">labs</span>(</span>
-<span id="cb37-8">    <span class="at" style="color: #657422;
+<span id="cb37-59">    <span class="at" style="color: #657422;
 background-color: null;
 font-style: inherit;">title =</span> <span class="st" style="color: #20794D;
 background-color: null;
 font-style: inherit;">"Delta Cq: PolyIC Control vs PolyIC Stressors"</span>,</span>
-<span id="cb37-9">    <span class="at" style="color: #657422;
+<span id="cb37-60">    <span class="at" style="color: #657422;
 background-color: null;
 font-style: inherit;">x =</span> <span class="st" style="color: #20794D;
 background-color: null;
 font-style: inherit;">"Stress Type"</span>,</span>
-<span id="cb37-10">    <span class="at" style="color: #657422;
+<span id="cb37-61">    <span class="at" style="color: #657422;
 background-color: null;
 font-style: inherit;">y =</span> <span class="st" style="color: #20794D;
 background-color: null;
 font-style: inherit;">"Delta Cq"</span>,</span>
-<span id="cb37-11">    <span class="at" style="color: #657422;
+<span id="cb37-62">    <span class="at" style="color: #657422;
 background-color: null;
 font-style: inherit;">fill =</span> <span class="st" style="color: #20794D;
 background-color: null;
 font-style: inherit;">"Stress Type"</span></span>
-<span id="cb37-12">  ) <span class="sc" style="color: #5E5E5E;
+<span id="cb37-63">  ) <span class="sc" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;">+</span></span>
-<span id="cb37-13">  <span class="fu" style="color: #4758AB;
+<span id="cb37-64">  <span class="fu" style="color: #4758AB;
 background-color: null;
 font-style: inherit;">theme</span>(<span class="at" style="color: #657422;
 background-color: null;
@@ -2655,7 +3451,103 @@ font-style: inherit;">45</span>, <span class="at" style="color: #657422;
 background-color: null;
 font-style: inherit;">hjust =</span> <span class="dv" style="color: #AD0000;
 background-color: null;
-font-style: inherit;">1</span>))</span></code></pre></div>
+font-style: inherit;">1</span>))</span>
+<span id="cb37-65"></span>
+<span id="cb37-66"><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># Add annotations if any exist</span></span>
+<span id="cb37-67"><span class="cf" style="color: #003B4F;
+background-color: null;
+font-weight: bold;
+font-style: inherit;">if</span>(<span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">nrow</span>(sig_annotations_comp3) <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">&gt;</span> <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">0</span>) {</span>
+<span id="cb37-68">  p <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> p <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">+</span> </span>
+<span id="cb37-69">    <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">geom_text</span>(<span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">data =</span> sig_annotations_comp3, </span>
+<span id="cb37-70">              <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">aes</span>(<span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">x =</span> stress_type, <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">y =</span> y_pos, <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">label =</span> label),</span>
+<span id="cb37-71">              <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">inherit.aes =</span> <span class="cn" style="color: #8f5902;
+background-color: null;
+font-style: inherit;">FALSE</span>, <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">size =</span> <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">6</span>, <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">vjust =</span> <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">0</span>, <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">color =</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"darkorange"</span>) <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">+</span></span>
+<span id="cb37-72">    <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">labs</span>(<span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">subtitle =</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"Asterisks (*) indicate significant differences from PolyIC Control (t-test p ≤ 0.05)"</span>,</span>
+<span id="cb37-73">         <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">caption =</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">paste</span>(<span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"Significant comparisons:"</span>, <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">paste</span>(<span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">unique</span>(sig_genes_comp3<span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">$</span>Target), <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">collapse =</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">", "</span>)))</span>
+<span id="cb37-74">} <span class="cf" style="color: #003B4F;
+background-color: null;
+font-weight: bold;
+font-style: inherit;">else</span> {</span>
+<span id="cb37-75">  p <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> p <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">+</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">labs</span>(<span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">subtitle =</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"No significant differences detected in t-tests (all p &gt; 0.05)"</span>)</span>
+<span id="cb37-76">}</span>
+<span id="cb37-77"></span>
+<span id="cb37-78"><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">print</span>(p)</span></code></pre></div>
 </details>
 <div class="cell-output-display">
 <div>
@@ -8501,10 +9393,207 @@ font-style: inherit;">"</span>)</span>
 <div class="cell" data-hold="true">
 <details open="" class="code-fold">
 <summary>Code</summary>
-<div class="sourceCode cell-code" id="cb232" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb232-1">delta_Cq_df <span class="sc" style="color: #5E5E5E;
+<div class="sourceCode cell-code" id="cb232" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb232-1"><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># Create significance annotation data</span></span>
+<span id="cb232-2">sig_annotations <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">data.frame</span>(</span>
+<span id="cb232-3">  <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">Target =</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">c</span>(<span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"ATP.Synthase"</span>, <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"ATP.Synthase"</span>, <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"ATP.Synthase"</span>, </span>
+<span id="cb232-4">             <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"HSP70"</span>, <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"HSP70"</span>, <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"HSP70"</span>, <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"HSP70"</span>, <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"HSP70"</span>,</span>
+<span id="cb232-5">             <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"HSP90"</span>, <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"HSP90"</span>, <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"HSP90"</span>,</span>
+<span id="cb232-6">             <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"VIPERIN"</span>),</span>
+<span id="cb232-7">  <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">label =</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">c</span>(<span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"*"</span>, <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"***"</span>, <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"*"</span>,</span>
+<span id="cb232-8">            <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"***"</span>, <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"***"</span>, <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"***"</span>, <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"***"</span>, <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"***"</span>,</span>
+<span id="cb232-9">            <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"***"</span>, <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"***"</span>, <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"***"</span>,</span>
+<span id="cb232-10">            <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"*"</span>),</span>
+<span id="cb232-11">  <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">stress_type =</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">c</span>(<span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"Mechanical"</span>, <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"Temperature"</span>, <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"Temperature"</span>,</span>
+<span id="cb232-12">                  <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"Temperature"</span>, <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"Temperature"</span>, <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"Temperature"</span>, <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"Temperature"</span>, <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"Temperature"</span>,</span>
+<span id="cb232-13">                  <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"Temperature"</span>, <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"Temperature"</span>, <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"Temperature"</span>,</span>
+<span id="cb232-14">                  <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"Control"</span>),</span>
+<span id="cb232-15">  <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">polyIC =</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">c</span>(<span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"PolyIC"</span>, <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"PolyIC"</span>, <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"No_PolyIC"</span>,</span>
+<span id="cb232-16">             <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"No_PolyIC"</span>, <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"PolyIC"</span>, <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"No_PolyIC"</span>, <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"PolyIC"</span>, <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"PolyIC"</span>,</span>
+<span id="cb232-17">             <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"PolyIC"</span>, <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"PolyIC"</span>, <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"PolyIC"</span>,</span>
+<span id="cb232-18">             <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"PolyIC"</span>)</span>
+<span id="cb232-19">)</span>
+<span id="cb232-20"></span>
+<span id="cb232-21"><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># Calculate y positions for annotations (above max values)</span></span>
+<span id="cb232-22">y_positions <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> delta_Cq_df <span class="sc" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;">%&gt;%</span></span>
-<span id="cb232-2">  <span class="fu" style="color: #4758AB;
+<span id="cb232-23">  <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">group_by</span>(Target, stress_type, polyIC) <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">%&gt;%</span></span>
+<span id="cb232-24">  <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">summarise</span>(<span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">max_y =</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">max</span>(delta_Cq, <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">na.rm =</span> <span class="cn" style="color: #8f5902;
+background-color: null;
+font-style: inherit;">TRUE</span>), <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">.groups =</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"drop"</span>)</span>
+<span id="cb232-25"></span>
+<span id="cb232-26">sig_annotations <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> sig_annotations <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">%&gt;%</span></span>
+<span id="cb232-27">  <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">left_join</span>(y_positions, <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">by =</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">c</span>(<span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"Target"</span>, <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"stress_type"</span>, <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"polyIC"</span>)) <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">%&gt;%</span></span>
+<span id="cb232-28">  <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">mutate</span>(<span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">y_pos =</span> max_y <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">+</span> <span class="fl" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">0.3</span>)</span>
+<span id="cb232-29"></span>
+<span id="cb232-30">delta_Cq_df <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">%&gt;%</span></span>
+<span id="cb232-31">  <span class="fu" style="color: #4758AB;
 background-color: null;
 font-style: inherit;">ggplot</span>(<span class="fu" style="color: #4758AB;
 background-color: null;
@@ -8517,7 +9606,7 @@ background-color: null;
 font-style: inherit;">fill =</span> polyIC)) <span class="sc" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;">+</span></span>
-<span id="cb232-3">  <span class="fu" style="color: #4758AB;
+<span id="cb232-32">  <span class="fu" style="color: #4758AB;
 background-color: null;
 font-style: inherit;">geom_boxplot</span>(<span class="at" style="color: #657422;
 background-color: null;
@@ -8532,7 +9621,7 @@ background-color: null;
 font-style: inherit;">0.7</span>) <span class="sc" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;">+</span></span>
-<span id="cb232-4">  <span class="fu" style="color: #4758AB;
+<span id="cb232-33">  <span class="fu" style="color: #4758AB;
 background-color: null;
 font-style: inherit;">geom_point</span>(<span class="at" style="color: #657422;
 background-color: null;
@@ -8551,7 +9640,44 @@ background-color: null;
 font-style: inherit;">1</span>) <span class="sc" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;">+</span></span>
-<span id="cb232-5">  <span class="fu" style="color: #4758AB;
+<span id="cb232-34">  <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">geom_text</span>(<span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">data =</span> sig_annotations, </span>
+<span id="cb232-35">            <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">aes</span>(<span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">x =</span> stress_type, <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">y =</span> y_pos, <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">label =</span> label, <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">group =</span> polyIC),</span>
+<span id="cb232-36">            <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">position =</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">position_dodge</span>(<span class="fl" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">0.8</span>), <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">size =</span> <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">5</span>, <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">vjust =</span> <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">0</span>, <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">color =</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"darkorange"</span>) <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">+</span></span>
+<span id="cb232-37">  <span class="fu" style="color: #4758AB;
 background-color: null;
 font-style: inherit;">facet_wrap</span>(<span class="sc" style="color: #5E5E5E;
 background-color: null;
@@ -8566,7 +9692,7 @@ background-color: null;
 font-style: inherit;">2</span>) <span class="sc" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;">+</span></span>
-<span id="cb232-6">  <span class="fu" style="color: #4758AB;
+<span id="cb232-38">  <span class="fu" style="color: #4758AB;
 background-color: null;
 font-style: inherit;">scale_fill_manual</span>(<span class="at" style="color: #657422;
 background-color: null;
@@ -8587,7 +9713,7 @@ background-color: null;
 font-style: inherit;">"salmon"</span>)) <span class="sc" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;">+</span></span>
-<span id="cb232-7">  <span class="fu" style="color: #4758AB;
+<span id="cb232-39">  <span class="fu" style="color: #4758AB;
 background-color: null;
 font-style: inherit;">geom_hline</span>(<span class="at" style="color: #657422;
 background-color: null;
@@ -8604,41 +9730,55 @@ background-color: null;
 font-style: inherit;">0.5</span>) <span class="sc" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;">+</span></span>
-<span id="cb232-8">  <span class="fu" style="color: #4758AB;
+<span id="cb232-40">  <span class="fu" style="color: #4758AB;
 background-color: null;
 font-style: inherit;">theme_bw</span>() <span class="sc" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;">+</span></span>
-<span id="cb232-9">  <span class="fu" style="color: #4758AB;
+<span id="cb232-41">  <span class="fu" style="color: #4758AB;
 background-color: null;
 font-style: inherit;">labs</span>(</span>
-<span id="cb232-10">    <span class="at" style="color: #657422;
+<span id="cb232-42">    <span class="at" style="color: #657422;
 background-color: null;
 font-style: inherit;">title =</span> <span class="st" style="color: #20794D;
 background-color: null;
-font-style: inherit;">"Delta Cq by Treatment Group"</span>,</span>
-<span id="cb232-11">    <span class="at" style="color: #657422;
+font-style: inherit;">"Delta Cq by Treatment Group with ANOVA Significance"</span>,</span>
+<span id="cb232-43">    <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">subtitle =</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"Asterisks indicate significant pairwise contrasts from ANOVA post-hoc tests</span><span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">\n</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">* p ≤ 0.05, ** p ≤ 0.01, *** p ≤ 0.001"</span>,</span>
+<span id="cb232-44">    <span class="at" style="color: #657422;
 background-color: null;
 font-style: inherit;">x =</span> <span class="st" style="color: #20794D;
 background-color: null;
 font-style: inherit;">"Stress Type"</span>,</span>
-<span id="cb232-12">    <span class="at" style="color: #657422;
+<span id="cb232-45">    <span class="at" style="color: #657422;
 background-color: null;
 font-style: inherit;">y =</span> <span class="st" style="color: #20794D;
 background-color: null;
 font-style: inherit;">"Delta Cq"</span>,</span>
-<span id="cb232-13">    <span class="at" style="color: #657422;
+<span id="cb232-46">    <span class="at" style="color: #657422;
 background-color: null;
 font-style: inherit;">fill =</span> <span class="st" style="color: #20794D;
 background-color: null;
-font-style: inherit;">"PolyIC Treatment"</span></span>
-<span id="cb232-14">  ) <span class="sc" style="color: #5E5E5E;
+font-style: inherit;">"PolyIC Treatment"</span>,</span>
+<span id="cb232-47">    <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">caption =</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"Significant contrasts: ATP Synthase (4), HSP70 (8), HSP90 (3), VIPERIN (1). See ANOVA sections for details."</span></span>
+<span id="cb232-48">  ) <span class="sc" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;">+</span></span>
-<span id="cb232-15">  <span class="fu" style="color: #4758AB;
+<span id="cb232-49">  <span class="fu" style="color: #4758AB;
 background-color: null;
 font-style: inherit;">theme</span>(</span>
-<span id="cb232-16">    <span class="at" style="color: #657422;
+<span id="cb232-50">    <span class="at" style="color: #657422;
 background-color: null;
 font-style: inherit;">axis.text.x =</span> <span class="fu" style="color: #4758AB;
 background-color: null;
@@ -8651,12 +9791,12 @@ background-color: null;
 font-style: inherit;">hjust =</span> <span class="dv" style="color: #AD0000;
 background-color: null;
 font-style: inherit;">1</span>),</span>
-<span id="cb232-17">    <span class="at" style="color: #657422;
+<span id="cb232-51">    <span class="at" style="color: #657422;
 background-color: null;
 font-style: inherit;">legend.position =</span> <span class="st" style="color: #20794D;
 background-color: null;
 font-style: inherit;">"bottom"</span></span>
-<span id="cb232-18">  )</span></code></pre></div>
+<span id="cb232-52">  )</span></code></pre></div>
 </details>
 <div class="cell-output-display">
 <div>

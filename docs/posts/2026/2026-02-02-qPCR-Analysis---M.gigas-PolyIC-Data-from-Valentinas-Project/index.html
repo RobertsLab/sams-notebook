@@ -1258,19 +1258,84 @@ gtag('config', 'G-7483T61T11', { 'anonymize_ip': true});
 <div class="cell" data-hold="true">
 <details open="" class="code-fold">
 <summary>Code</summary>
-<div class="sourceCode cell-code" id="cb35"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb35-1"><a href="#cb35-1" aria-hidden="true" tabindex="-1"></a>no_polyIC_data <span class="sc">%&gt;%</span></span>
-<span id="cb35-2"><a href="#cb35-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ggplot</span>(<span class="fu">aes</span>(<span class="at">x =</span> stress_type, <span class="at">y =</span> delta_Cq, <span class="at">fill =</span> stress_type)) <span class="sc">+</span></span>
-<span id="cb35-3"><a href="#cb35-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_boxplot</span>() <span class="sc">+</span></span>
-<span id="cb35-4"><a href="#cb35-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">facet_wrap</span>(<span class="sc">~</span>Target, <span class="at">scales =</span> <span class="st">"free_y"</span>) <span class="sc">+</span></span>
-<span id="cb35-5"><a href="#cb35-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_fill_manual</span>(<span class="at">values =</span> <span class="fu">c</span>(<span class="st">"Control"</span> <span class="ot">=</span> <span class="st">"darkgray"</span>, <span class="st">"Temperature"</span> <span class="ot">=</span> <span class="st">"salmon"</span>, <span class="st">"Mechanical"</span> <span class="ot">=</span> <span class="st">"steelblue"</span>)) <span class="sc">+</span></span>
-<span id="cb35-6"><a href="#cb35-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_bw</span>() <span class="sc">+</span></span>
-<span id="cb35-7"><a href="#cb35-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(</span>
-<span id="cb35-8"><a href="#cb35-8" aria-hidden="true" tabindex="-1"></a>    <span class="at">title =</span> <span class="st">"Delta Cq: Control vs Stressors (No PolyIC Treatment)"</span>,</span>
-<span id="cb35-9"><a href="#cb35-9" aria-hidden="true" tabindex="-1"></a>    <span class="at">x =</span> <span class="st">"Stress Type"</span>,</span>
-<span id="cb35-10"><a href="#cb35-10" aria-hidden="true" tabindex="-1"></a>    <span class="at">y =</span> <span class="st">"Delta Cq"</span>,</span>
-<span id="cb35-11"><a href="#cb35-11" aria-hidden="true" tabindex="-1"></a>    <span class="at">fill =</span> <span class="st">"Stress Type"</span></span>
-<span id="cb35-12"><a href="#cb35-12" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">+</span></span>
-<span id="cb35-13"><a href="#cb35-13" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme</span>(<span class="at">axis.text.x =</span> <span class="fu">element_text</span>(<span class="at">angle =</span> <span class="dv">45</span>, <span class="at">hjust =</span> <span class="dv">1</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb35"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb35-1"><a href="#cb35-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Prepare significance annotations from t-test results</span></span>
+<span id="cb35-2"><a href="#cb35-2" aria-hidden="true" tabindex="-1"></a><span class="cf">if</span>(<span class="fu">exists</span>(<span class="st">"sig_genes_comp1"</span>) <span class="sc">&amp;&amp;</span> <span class="fu">nrow</span>(sig_genes_comp1) <span class="sc">&gt;</span> <span class="dv">0</span>) {</span>
+<span id="cb35-3"><a href="#cb35-3" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Extract significant genes for Temperature</span></span>
+<span id="cb35-4"><a href="#cb35-4" aria-hidden="true" tabindex="-1"></a>  sig_temp_genes <span class="ot">&lt;-</span> sig_genes_comp1 <span class="sc">%&gt;%</span></span>
+<span id="cb35-5"><a href="#cb35-5" aria-hidden="true" tabindex="-1"></a>    <span class="fu">filter</span>(comparison <span class="sc">==</span> <span class="st">"Control vs Temperature"</span>) <span class="sc">%&gt;%</span></span>
+<span id="cb35-6"><a href="#cb35-6" aria-hidden="true" tabindex="-1"></a>    <span class="fu">pull</span>(Target)</span>
+<span id="cb35-7"><a href="#cb35-7" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb35-8"><a href="#cb35-8" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Extract significant genes for Mechanical</span></span>
+<span id="cb35-9"><a href="#cb35-9" aria-hidden="true" tabindex="-1"></a>  sig_mech_genes <span class="ot">&lt;-</span> sig_genes_comp1 <span class="sc">%&gt;%</span></span>
+<span id="cb35-10"><a href="#cb35-10" aria-hidden="true" tabindex="-1"></a>    <span class="fu">filter</span>(comparison <span class="sc">==</span> <span class="st">"Control vs Mechanical"</span>) <span class="sc">%&gt;%</span></span>
+<span id="cb35-11"><a href="#cb35-11" aria-hidden="true" tabindex="-1"></a>    <span class="fu">pull</span>(Target)</span>
+<span id="cb35-12"><a href="#cb35-12" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb35-13"><a href="#cb35-13" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Create annotation data</span></span>
+<span id="cb35-14"><a href="#cb35-14" aria-hidden="true" tabindex="-1"></a>  sig_annotations_comp1 <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(</span>
+<span id="cb35-15"><a href="#cb35-15" aria-hidden="true" tabindex="-1"></a>    <span class="at">Target =</span> <span class="fu">character</span>(),</span>
+<span id="cb35-16"><a href="#cb35-16" aria-hidden="true" tabindex="-1"></a>    <span class="at">stress_type =</span> <span class="fu">character</span>(),</span>
+<span id="cb35-17"><a href="#cb35-17" aria-hidden="true" tabindex="-1"></a>    <span class="at">label =</span> <span class="fu">character</span>(),</span>
+<span id="cb35-18"><a href="#cb35-18" aria-hidden="true" tabindex="-1"></a>    <span class="at">stringsAsFactors =</span> <span class="cn">FALSE</span></span>
+<span id="cb35-19"><a href="#cb35-19" aria-hidden="true" tabindex="-1"></a>  )</span>
+<span id="cb35-20"><a href="#cb35-20" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb35-21"><a href="#cb35-21" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Add Temperature annotations</span></span>
+<span id="cb35-22"><a href="#cb35-22" aria-hidden="true" tabindex="-1"></a>  <span class="cf">if</span>(<span class="fu">length</span>(sig_temp_genes) <span class="sc">&gt;</span> <span class="dv">0</span>) {</span>
+<span id="cb35-23"><a href="#cb35-23" aria-hidden="true" tabindex="-1"></a>    sig_annotations_comp1 <span class="ot">&lt;-</span> <span class="fu">rbind</span>(sig_annotations_comp1,</span>
+<span id="cb35-24"><a href="#cb35-24" aria-hidden="true" tabindex="-1"></a>      <span class="fu">data.frame</span>(<span class="at">Target =</span> sig_temp_genes,</span>
+<span id="cb35-25"><a href="#cb35-25" aria-hidden="true" tabindex="-1"></a>                 <span class="at">stress_type =</span> <span class="st">"Temperature"</span>,</span>
+<span id="cb35-26"><a href="#cb35-26" aria-hidden="true" tabindex="-1"></a>                 <span class="at">label =</span> <span class="st">"*"</span>))</span>
+<span id="cb35-27"><a href="#cb35-27" aria-hidden="true" tabindex="-1"></a>  }</span>
+<span id="cb35-28"><a href="#cb35-28" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb35-29"><a href="#cb35-29" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Add Mechanical annotations</span></span>
+<span id="cb35-30"><a href="#cb35-30" aria-hidden="true" tabindex="-1"></a>  <span class="cf">if</span>(<span class="fu">length</span>(sig_mech_genes) <span class="sc">&gt;</span> <span class="dv">0</span>) {</span>
+<span id="cb35-31"><a href="#cb35-31" aria-hidden="true" tabindex="-1"></a>    sig_annotations_comp1 <span class="ot">&lt;-</span> <span class="fu">rbind</span>(sig_annotations_comp1,</span>
+<span id="cb35-32"><a href="#cb35-32" aria-hidden="true" tabindex="-1"></a>      <span class="fu">data.frame</span>(<span class="at">Target =</span> sig_mech_genes,</span>
+<span id="cb35-33"><a href="#cb35-33" aria-hidden="true" tabindex="-1"></a>                 <span class="at">stress_type =</span> <span class="st">"Mechanical"</span>,</span>
+<span id="cb35-34"><a href="#cb35-34" aria-hidden="true" tabindex="-1"></a>                 <span class="at">label =</span> <span class="st">"*"</span>))</span>
+<span id="cb35-35"><a href="#cb35-35" aria-hidden="true" tabindex="-1"></a>  }</span>
+<span id="cb35-36"><a href="#cb35-36" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb35-37"><a href="#cb35-37" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Get y positions for annotations</span></span>
+<span id="cb35-38"><a href="#cb35-38" aria-hidden="true" tabindex="-1"></a>  <span class="cf">if</span>(<span class="fu">nrow</span>(sig_annotations_comp1) <span class="sc">&gt;</span> <span class="dv">0</span>) {</span>
+<span id="cb35-39"><a href="#cb35-39" aria-hidden="true" tabindex="-1"></a>    y_pos_comp1 <span class="ot">&lt;-</span> no_polyIC_data <span class="sc">%&gt;%</span></span>
+<span id="cb35-40"><a href="#cb35-40" aria-hidden="true" tabindex="-1"></a>      <span class="fu">group_by</span>(Target, stress_type) <span class="sc">%&gt;%</span></span>
+<span id="cb35-41"><a href="#cb35-41" aria-hidden="true" tabindex="-1"></a>      <span class="fu">summarise</span>(<span class="at">max_y =</span> <span class="fu">max</span>(delta_Cq, <span class="at">na.rm =</span> <span class="cn">TRUE</span>), <span class="at">.groups =</span> <span class="st">"drop"</span>)</span>
+<span id="cb35-42"><a href="#cb35-42" aria-hidden="true" tabindex="-1"></a>    </span>
+<span id="cb35-43"><a href="#cb35-43" aria-hidden="true" tabindex="-1"></a>    sig_annotations_comp1 <span class="ot">&lt;-</span> sig_annotations_comp1 <span class="sc">%&gt;%</span></span>
+<span id="cb35-44"><a href="#cb35-44" aria-hidden="true" tabindex="-1"></a>      <span class="fu">left_join</span>(y_pos_comp1, <span class="at">by =</span> <span class="fu">c</span>(<span class="st">"Target"</span>, <span class="st">"stress_type"</span>)) <span class="sc">%&gt;%</span></span>
+<span id="cb35-45"><a href="#cb35-45" aria-hidden="true" tabindex="-1"></a>      <span class="fu">mutate</span>(<span class="at">y_pos =</span> max_y <span class="sc">+</span> <span class="fl">0.5</span>)</span>
+<span id="cb35-46"><a href="#cb35-46" aria-hidden="true" tabindex="-1"></a>  }</span>
+<span id="cb35-47"><a href="#cb35-47" aria-hidden="true" tabindex="-1"></a>} <span class="cf">else</span> {</span>
+<span id="cb35-48"><a href="#cb35-48" aria-hidden="true" tabindex="-1"></a>  sig_annotations_comp1 <span class="ot">&lt;-</span> <span class="fu">data.frame</span>()</span>
+<span id="cb35-49"><a href="#cb35-49" aria-hidden="true" tabindex="-1"></a>}</span>
+<span id="cb35-50"><a href="#cb35-50" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb35-51"><a href="#cb35-51" aria-hidden="true" tabindex="-1"></a><span class="co"># Create plot</span></span>
+<span id="cb35-52"><a href="#cb35-52" aria-hidden="true" tabindex="-1"></a>p <span class="ot">&lt;-</span> no_polyIC_data <span class="sc">%&gt;%</span></span>
+<span id="cb35-53"><a href="#cb35-53" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ggplot</span>(<span class="fu">aes</span>(<span class="at">x =</span> stress_type, <span class="at">y =</span> delta_Cq, <span class="at">fill =</span> stress_type)) <span class="sc">+</span></span>
+<span id="cb35-54"><a href="#cb35-54" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_boxplot</span>() <span class="sc">+</span></span>
+<span id="cb35-55"><a href="#cb35-55" aria-hidden="true" tabindex="-1"></a>  <span class="fu">facet_wrap</span>(<span class="sc">~</span>Target, <span class="at">scales =</span> <span class="st">"free_y"</span>) <span class="sc">+</span></span>
+<span id="cb35-56"><a href="#cb35-56" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_fill_manual</span>(<span class="at">values =</span> <span class="fu">c</span>(<span class="st">"Control"</span> <span class="ot">=</span> <span class="st">"darkgray"</span>, <span class="st">"Temperature"</span> <span class="ot">=</span> <span class="st">"salmon"</span>, <span class="st">"Mechanical"</span> <span class="ot">=</span> <span class="st">"steelblue"</span>)) <span class="sc">+</span></span>
+<span id="cb35-57"><a href="#cb35-57" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_bw</span>() <span class="sc">+</span></span>
+<span id="cb35-58"><a href="#cb35-58" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(</span>
+<span id="cb35-59"><a href="#cb35-59" aria-hidden="true" tabindex="-1"></a>    <span class="at">title =</span> <span class="st">"Delta Cq: Control vs Stressors (No PolyIC Treatment)"</span>,</span>
+<span id="cb35-60"><a href="#cb35-60" aria-hidden="true" tabindex="-1"></a>    <span class="at">x =</span> <span class="st">"Stress Type"</span>,</span>
+<span id="cb35-61"><a href="#cb35-61" aria-hidden="true" tabindex="-1"></a>    <span class="at">y =</span> <span class="st">"Delta Cq"</span>,</span>
+<span id="cb35-62"><a href="#cb35-62" aria-hidden="true" tabindex="-1"></a>    <span class="at">fill =</span> <span class="st">"Stress Type"</span></span>
+<span id="cb35-63"><a href="#cb35-63" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">+</span></span>
+<span id="cb35-64"><a href="#cb35-64" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme</span>(<span class="at">axis.text.x =</span> <span class="fu">element_text</span>(<span class="at">angle =</span> <span class="dv">45</span>, <span class="at">hjust =</span> <span class="dv">1</span>))</span>
+<span id="cb35-65"><a href="#cb35-65" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb35-66"><a href="#cb35-66" aria-hidden="true" tabindex="-1"></a><span class="co"># Add annotations if any exist</span></span>
+<span id="cb35-67"><a href="#cb35-67" aria-hidden="true" tabindex="-1"></a><span class="cf">if</span>(<span class="fu">nrow</span>(sig_annotations_comp1) <span class="sc">&gt;</span> <span class="dv">0</span>) {</span>
+<span id="cb35-68"><a href="#cb35-68" aria-hidden="true" tabindex="-1"></a>  p <span class="ot">&lt;-</span> p <span class="sc">+</span> </span>
+<span id="cb35-69"><a href="#cb35-69" aria-hidden="true" tabindex="-1"></a>    <span class="fu">geom_text</span>(<span class="at">data =</span> sig_annotations_comp1, </span>
+<span id="cb35-70"><a href="#cb35-70" aria-hidden="true" tabindex="-1"></a>              <span class="fu">aes</span>(<span class="at">x =</span> stress_type, <span class="at">y =</span> y_pos, <span class="at">label =</span> label),</span>
+<span id="cb35-71"><a href="#cb35-71" aria-hidden="true" tabindex="-1"></a>              <span class="at">inherit.aes =</span> <span class="cn">FALSE</span>, <span class="at">size =</span> <span class="dv">6</span>, <span class="at">vjust =</span> <span class="dv">0</span>, <span class="at">color =</span> <span class="st">"darkorange"</span>) <span class="sc">+</span></span>
+<span id="cb35-72"><a href="#cb35-72" aria-hidden="true" tabindex="-1"></a>    <span class="fu">labs</span>(<span class="at">subtitle =</span> <span class="st">"Asterisks (*) indicate significant differences from Control (t-test p ≤ 0.05)"</span>,</span>
+<span id="cb35-73"><a href="#cb35-73" aria-hidden="true" tabindex="-1"></a>         <span class="at">caption =</span> <span class="fu">paste</span>(<span class="st">"Significant comparisons:"</span>, <span class="fu">paste</span>(<span class="fu">unique</span>(sig_genes_comp1<span class="sc">$</span>Target), <span class="at">collapse =</span> <span class="st">", "</span>)))</span>
+<span id="cb35-74"><a href="#cb35-74" aria-hidden="true" tabindex="-1"></a>} <span class="cf">else</span> {</span>
+<span id="cb35-75"><a href="#cb35-75" aria-hidden="true" tabindex="-1"></a>  p <span class="ot">&lt;-</span> p <span class="sc">+</span> <span class="fu">labs</span>(<span class="at">subtitle =</span> <span class="st">"No significant differences detected in t-tests (all p &gt; 0.05)"</span>)</span>
+<span id="cb35-76"><a href="#cb35-76" aria-hidden="true" tabindex="-1"></a>}</span>
+<span id="cb35-77"><a href="#cb35-77" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb35-78"><a href="#cb35-78" aria-hidden="true" tabindex="-1"></a><span class="fu">print</span>(p)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 <div class="cell-output-display">
 <div>
@@ -1286,19 +1351,55 @@ gtag('config', 'G-7483T61T11', { 'anonymize_ip': true});
 <div class="cell" data-hold="true">
 <details open="" class="code-fold">
 <summary>Code</summary>
-<div class="sourceCode cell-code" id="cb36"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb36-1"><a href="#cb36-1" aria-hidden="true" tabindex="-1"></a>control_data <span class="sc">%&gt;%</span></span>
-<span id="cb36-2"><a href="#cb36-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ggplot</span>(<span class="fu">aes</span>(<span class="at">x =</span> polyIC, <span class="at">y =</span> delta_Cq, <span class="at">fill =</span> polyIC)) <span class="sc">+</span></span>
-<span id="cb36-3"><a href="#cb36-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_boxplot</span>() <span class="sc">+</span></span>
-<span id="cb36-4"><a href="#cb36-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">facet_wrap</span>(<span class="sc">~</span>Target, <span class="at">scales =</span> <span class="st">"free_y"</span>) <span class="sc">+</span></span>
-<span id="cb36-5"><a href="#cb36-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_fill_manual</span>(<span class="at">values =</span> <span class="fu">c</span>(<span class="st">"No_PolyIC"</span> <span class="ot">=</span> <span class="st">"darkgray"</span>, <span class="st">"PolyIC"</span> <span class="ot">=</span> <span class="st">"salmon"</span>)) <span class="sc">+</span></span>
-<span id="cb36-6"><a href="#cb36-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_bw</span>() <span class="sc">+</span></span>
-<span id="cb36-7"><a href="#cb36-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(</span>
-<span id="cb36-8"><a href="#cb36-8" aria-hidden="true" tabindex="-1"></a>    <span class="at">title =</span> <span class="st">"Delta Cq: Basic Control vs PolyIC Control"</span>,</span>
-<span id="cb36-9"><a href="#cb36-9" aria-hidden="true" tabindex="-1"></a>    <span class="at">x =</span> <span class="st">"PolyIC Treatment"</span>,</span>
-<span id="cb36-10"><a href="#cb36-10" aria-hidden="true" tabindex="-1"></a>    <span class="at">y =</span> <span class="st">"Delta Cq"</span>,</span>
-<span id="cb36-11"><a href="#cb36-11" aria-hidden="true" tabindex="-1"></a>    <span class="at">fill =</span> <span class="st">"Treatment"</span></span>
-<span id="cb36-12"><a href="#cb36-12" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">+</span></span>
-<span id="cb36-13"><a href="#cb36-13" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme</span>(<span class="at">axis.text.x =</span> <span class="fu">element_text</span>(<span class="at">angle =</span> <span class="dv">45</span>, <span class="at">hjust =</span> <span class="dv">1</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb36"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb36-1"><a href="#cb36-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Prepare significance annotations from t-test results</span></span>
+<span id="cb36-2"><a href="#cb36-2" aria-hidden="true" tabindex="-1"></a><span class="cf">if</span>(<span class="fu">exists</span>(<span class="st">"sig_genes_comp2"</span>) <span class="sc">&amp;&amp;</span> <span class="fu">nrow</span>(sig_genes_comp2) <span class="sc">&gt;</span> <span class="dv">0</span>) {</span>
+<span id="cb36-3"><a href="#cb36-3" aria-hidden="true" tabindex="-1"></a>  sig_annotations_comp2 <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(</span>
+<span id="cb36-4"><a href="#cb36-4" aria-hidden="true" tabindex="-1"></a>    <span class="at">Target =</span> sig_genes_comp2<span class="sc">$</span>Target,</span>
+<span id="cb36-5"><a href="#cb36-5" aria-hidden="true" tabindex="-1"></a>    <span class="at">polyIC =</span> <span class="st">"PolyIC"</span>,</span>
+<span id="cb36-6"><a href="#cb36-6" aria-hidden="true" tabindex="-1"></a>    <span class="at">label =</span> <span class="st">"*"</span>,</span>
+<span id="cb36-7"><a href="#cb36-7" aria-hidden="true" tabindex="-1"></a>    <span class="at">stringsAsFactors =</span> <span class="cn">FALSE</span></span>
+<span id="cb36-8"><a href="#cb36-8" aria-hidden="true" tabindex="-1"></a>  )</span>
+<span id="cb36-9"><a href="#cb36-9" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb36-10"><a href="#cb36-10" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Get y positions for annotations</span></span>
+<span id="cb36-11"><a href="#cb36-11" aria-hidden="true" tabindex="-1"></a>  y_pos_comp2 <span class="ot">&lt;-</span> control_data <span class="sc">%&gt;%</span></span>
+<span id="cb36-12"><a href="#cb36-12" aria-hidden="true" tabindex="-1"></a>    <span class="fu">group_by</span>(Target, polyIC) <span class="sc">%&gt;%</span></span>
+<span id="cb36-13"><a href="#cb36-13" aria-hidden="true" tabindex="-1"></a>    <span class="fu">summarise</span>(<span class="at">max_y =</span> <span class="fu">max</span>(delta_Cq, <span class="at">na.rm =</span> <span class="cn">TRUE</span>), <span class="at">.groups =</span> <span class="st">"drop"</span>)</span>
+<span id="cb36-14"><a href="#cb36-14" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb36-15"><a href="#cb36-15" aria-hidden="true" tabindex="-1"></a>  sig_annotations_comp2 <span class="ot">&lt;-</span> sig_annotations_comp2 <span class="sc">%&gt;%</span></span>
+<span id="cb36-16"><a href="#cb36-16" aria-hidden="true" tabindex="-1"></a>    <span class="fu">left_join</span>(y_pos_comp2, <span class="at">by =</span> <span class="fu">c</span>(<span class="st">"Target"</span>, <span class="st">"polyIC"</span>)) <span class="sc">%&gt;%</span></span>
+<span id="cb36-17"><a href="#cb36-17" aria-hidden="true" tabindex="-1"></a>    <span class="fu">mutate</span>(<span class="at">y_pos =</span> max_y <span class="sc">+</span> <span class="fl">0.5</span>)</span>
+<span id="cb36-18"><a href="#cb36-18" aria-hidden="true" tabindex="-1"></a>} <span class="cf">else</span> {</span>
+<span id="cb36-19"><a href="#cb36-19" aria-hidden="true" tabindex="-1"></a>  sig_annotations_comp2 <span class="ot">&lt;-</span> <span class="fu">data.frame</span>()</span>
+<span id="cb36-20"><a href="#cb36-20" aria-hidden="true" tabindex="-1"></a>}</span>
+<span id="cb36-21"><a href="#cb36-21" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb36-22"><a href="#cb36-22" aria-hidden="true" tabindex="-1"></a><span class="co"># Create plot</span></span>
+<span id="cb36-23"><a href="#cb36-23" aria-hidden="true" tabindex="-1"></a>p <span class="ot">&lt;-</span> control_data <span class="sc">%&gt;%</span></span>
+<span id="cb36-24"><a href="#cb36-24" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ggplot</span>(<span class="fu">aes</span>(<span class="at">x =</span> polyIC, <span class="at">y =</span> delta_Cq, <span class="at">fill =</span> polyIC)) <span class="sc">+</span></span>
+<span id="cb36-25"><a href="#cb36-25" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_boxplot</span>() <span class="sc">+</span></span>
+<span id="cb36-26"><a href="#cb36-26" aria-hidden="true" tabindex="-1"></a>  <span class="fu">facet_wrap</span>(<span class="sc">~</span>Target, <span class="at">scales =</span> <span class="st">"free_y"</span>) <span class="sc">+</span></span>
+<span id="cb36-27"><a href="#cb36-27" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_fill_manual</span>(<span class="at">values =</span> <span class="fu">c</span>(<span class="st">"No_PolyIC"</span> <span class="ot">=</span> <span class="st">"darkgray"</span>, <span class="st">"PolyIC"</span> <span class="ot">=</span> <span class="st">"salmon"</span>)) <span class="sc">+</span></span>
+<span id="cb36-28"><a href="#cb36-28" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_bw</span>() <span class="sc">+</span></span>
+<span id="cb36-29"><a href="#cb36-29" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(</span>
+<span id="cb36-30"><a href="#cb36-30" aria-hidden="true" tabindex="-1"></a>    <span class="at">title =</span> <span class="st">"Delta Cq: Basic Control vs PolyIC Control"</span>,</span>
+<span id="cb36-31"><a href="#cb36-31" aria-hidden="true" tabindex="-1"></a>    <span class="at">x =</span> <span class="st">"PolyIC Treatment"</span>,</span>
+<span id="cb36-32"><a href="#cb36-32" aria-hidden="true" tabindex="-1"></a>    <span class="at">y =</span> <span class="st">"Delta Cq"</span>,</span>
+<span id="cb36-33"><a href="#cb36-33" aria-hidden="true" tabindex="-1"></a>    <span class="at">fill =</span> <span class="st">"Treatment"</span></span>
+<span id="cb36-34"><a href="#cb36-34" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">+</span></span>
+<span id="cb36-35"><a href="#cb36-35" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme</span>(<span class="at">axis.text.x =</span> <span class="fu">element_text</span>(<span class="at">angle =</span> <span class="dv">45</span>, <span class="at">hjust =</span> <span class="dv">1</span>))</span>
+<span id="cb36-36"><a href="#cb36-36" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb36-37"><a href="#cb36-37" aria-hidden="true" tabindex="-1"></a><span class="co"># Add annotations if any exist</span></span>
+<span id="cb36-38"><a href="#cb36-38" aria-hidden="true" tabindex="-1"></a><span class="cf">if</span>(<span class="fu">nrow</span>(sig_annotations_comp2) <span class="sc">&gt;</span> <span class="dv">0</span>) {</span>
+<span id="cb36-39"><a href="#cb36-39" aria-hidden="true" tabindex="-1"></a>  p <span class="ot">&lt;-</span> p <span class="sc">+</span> </span>
+<span id="cb36-40"><a href="#cb36-40" aria-hidden="true" tabindex="-1"></a>    <span class="fu">geom_text</span>(<span class="at">data =</span> sig_annotations_comp2, </span>
+<span id="cb36-41"><a href="#cb36-41" aria-hidden="true" tabindex="-1"></a>              <span class="fu">aes</span>(<span class="at">x =</span> polyIC, <span class="at">y =</span> y_pos, <span class="at">label =</span> label),</span>
+<span id="cb36-42"><a href="#cb36-42" aria-hidden="true" tabindex="-1"></a>              <span class="at">inherit.aes =</span> <span class="cn">FALSE</span>, <span class="at">size =</span> <span class="dv">6</span>, <span class="at">vjust =</span> <span class="dv">0</span>, <span class="at">color =</span> <span class="st">"darkorange"</span>) <span class="sc">+</span></span>
+<span id="cb36-43"><a href="#cb36-43" aria-hidden="true" tabindex="-1"></a>    <span class="fu">labs</span>(<span class="at">subtitle =</span> <span class="st">"Asterisks (*) indicate significant differences (t-test p ≤ 0.05)"</span>,</span>
+<span id="cb36-44"><a href="#cb36-44" aria-hidden="true" tabindex="-1"></a>         <span class="at">caption =</span> <span class="fu">paste</span>(<span class="st">"Genes with significant PolyIC effect:"</span>, <span class="fu">paste</span>(sig_genes_comp2<span class="sc">$</span>Target, <span class="at">collapse =</span> <span class="st">", "</span>)))</span>
+<span id="cb36-45"><a href="#cb36-45" aria-hidden="true" tabindex="-1"></a>} <span class="cf">else</span> {</span>
+<span id="cb36-46"><a href="#cb36-46" aria-hidden="true" tabindex="-1"></a>  p <span class="ot">&lt;-</span> p <span class="sc">+</span> <span class="fu">labs</span>(<span class="at">subtitle =</span> <span class="st">"No significant differences detected in t-tests (all p &gt; 0.05)"</span>)</span>
+<span id="cb36-47"><a href="#cb36-47" aria-hidden="true" tabindex="-1"></a>}</span>
+<span id="cb36-48"><a href="#cb36-48" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb36-49"><a href="#cb36-49" aria-hidden="true" tabindex="-1"></a><span class="fu">print</span>(p)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 <div class="cell-output-display">
 <div>
@@ -1314,19 +1415,84 @@ gtag('config', 'G-7483T61T11', { 'anonymize_ip': true});
 <div class="cell" data-hold="true">
 <details open="" class="code-fold">
 <summary>Code</summary>
-<div class="sourceCode cell-code" id="cb37"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb37-1"><a href="#cb37-1" aria-hidden="true" tabindex="-1"></a>polyIC_data <span class="sc">%&gt;%</span></span>
-<span id="cb37-2"><a href="#cb37-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ggplot</span>(<span class="fu">aes</span>(<span class="at">x =</span> stress_type, <span class="at">y =</span> delta_Cq, <span class="at">fill =</span> stress_type)) <span class="sc">+</span></span>
-<span id="cb37-3"><a href="#cb37-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_boxplot</span>() <span class="sc">+</span></span>
-<span id="cb37-4"><a href="#cb37-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">facet_wrap</span>(<span class="sc">~</span>Target, <span class="at">scales =</span> <span class="st">"free_y"</span>) <span class="sc">+</span></span>
-<span id="cb37-5"><a href="#cb37-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_fill_manual</span>(<span class="at">values =</span> <span class="fu">c</span>(<span class="st">"Control"</span> <span class="ot">=</span> <span class="st">"darkgray"</span>, <span class="st">"Temperature"</span> <span class="ot">=</span> <span class="st">"salmon"</span>, <span class="st">"Mechanical"</span> <span class="ot">=</span> <span class="st">"steelblue"</span>)) <span class="sc">+</span></span>
-<span id="cb37-6"><a href="#cb37-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_bw</span>() <span class="sc">+</span></span>
-<span id="cb37-7"><a href="#cb37-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(</span>
-<span id="cb37-8"><a href="#cb37-8" aria-hidden="true" tabindex="-1"></a>    <span class="at">title =</span> <span class="st">"Delta Cq: PolyIC Control vs PolyIC Stressors"</span>,</span>
-<span id="cb37-9"><a href="#cb37-9" aria-hidden="true" tabindex="-1"></a>    <span class="at">x =</span> <span class="st">"Stress Type"</span>,</span>
-<span id="cb37-10"><a href="#cb37-10" aria-hidden="true" tabindex="-1"></a>    <span class="at">y =</span> <span class="st">"Delta Cq"</span>,</span>
-<span id="cb37-11"><a href="#cb37-11" aria-hidden="true" tabindex="-1"></a>    <span class="at">fill =</span> <span class="st">"Stress Type"</span></span>
-<span id="cb37-12"><a href="#cb37-12" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">+</span></span>
-<span id="cb37-13"><a href="#cb37-13" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme</span>(<span class="at">axis.text.x =</span> <span class="fu">element_text</span>(<span class="at">angle =</span> <span class="dv">45</span>, <span class="at">hjust =</span> <span class="dv">1</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb37"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb37-1"><a href="#cb37-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Prepare significance annotations from t-test results</span></span>
+<span id="cb37-2"><a href="#cb37-2" aria-hidden="true" tabindex="-1"></a><span class="cf">if</span>(<span class="fu">exists</span>(<span class="st">"sig_genes_comp3"</span>) <span class="sc">&amp;&amp;</span> <span class="fu">nrow</span>(sig_genes_comp3) <span class="sc">&gt;</span> <span class="dv">0</span>) {</span>
+<span id="cb37-3"><a href="#cb37-3" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Extract significant genes for Temperature</span></span>
+<span id="cb37-4"><a href="#cb37-4" aria-hidden="true" tabindex="-1"></a>  sig_temp_genes <span class="ot">&lt;-</span> sig_genes_comp3 <span class="sc">%&gt;%</span></span>
+<span id="cb37-5"><a href="#cb37-5" aria-hidden="true" tabindex="-1"></a>    <span class="fu">filter</span>(comparison <span class="sc">==</span> <span class="st">"PolyIC Control vs Temperature"</span>) <span class="sc">%&gt;%</span></span>
+<span id="cb37-6"><a href="#cb37-6" aria-hidden="true" tabindex="-1"></a>    <span class="fu">pull</span>(Target)</span>
+<span id="cb37-7"><a href="#cb37-7" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb37-8"><a href="#cb37-8" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Extract significant genes for Mechanical</span></span>
+<span id="cb37-9"><a href="#cb37-9" aria-hidden="true" tabindex="-1"></a>  sig_mech_genes <span class="ot">&lt;-</span> sig_genes_comp3 <span class="sc">%&gt;%</span></span>
+<span id="cb37-10"><a href="#cb37-10" aria-hidden="true" tabindex="-1"></a>    <span class="fu">filter</span>(comparison <span class="sc">==</span> <span class="st">"PolyIC Control vs Mechanical"</span>) <span class="sc">%&gt;%</span></span>
+<span id="cb37-11"><a href="#cb37-11" aria-hidden="true" tabindex="-1"></a>    <span class="fu">pull</span>(Target)</span>
+<span id="cb37-12"><a href="#cb37-12" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb37-13"><a href="#cb37-13" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Create annotation data</span></span>
+<span id="cb37-14"><a href="#cb37-14" aria-hidden="true" tabindex="-1"></a>  sig_annotations_comp3 <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(</span>
+<span id="cb37-15"><a href="#cb37-15" aria-hidden="true" tabindex="-1"></a>    <span class="at">Target =</span> <span class="fu">character</span>(),</span>
+<span id="cb37-16"><a href="#cb37-16" aria-hidden="true" tabindex="-1"></a>    <span class="at">stress_type =</span> <span class="fu">character</span>(),</span>
+<span id="cb37-17"><a href="#cb37-17" aria-hidden="true" tabindex="-1"></a>    <span class="at">label =</span> <span class="fu">character</span>(),</span>
+<span id="cb37-18"><a href="#cb37-18" aria-hidden="true" tabindex="-1"></a>    <span class="at">stringsAsFactors =</span> <span class="cn">FALSE</span></span>
+<span id="cb37-19"><a href="#cb37-19" aria-hidden="true" tabindex="-1"></a>  )</span>
+<span id="cb37-20"><a href="#cb37-20" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb37-21"><a href="#cb37-21" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Add Temperature annotations</span></span>
+<span id="cb37-22"><a href="#cb37-22" aria-hidden="true" tabindex="-1"></a>  <span class="cf">if</span>(<span class="fu">length</span>(sig_temp_genes) <span class="sc">&gt;</span> <span class="dv">0</span>) {</span>
+<span id="cb37-23"><a href="#cb37-23" aria-hidden="true" tabindex="-1"></a>    sig_annotations_comp3 <span class="ot">&lt;-</span> <span class="fu">rbind</span>(sig_annotations_comp3,</span>
+<span id="cb37-24"><a href="#cb37-24" aria-hidden="true" tabindex="-1"></a>      <span class="fu">data.frame</span>(<span class="at">Target =</span> sig_temp_genes,</span>
+<span id="cb37-25"><a href="#cb37-25" aria-hidden="true" tabindex="-1"></a>                 <span class="at">stress_type =</span> <span class="st">"Temperature"</span>,</span>
+<span id="cb37-26"><a href="#cb37-26" aria-hidden="true" tabindex="-1"></a>                 <span class="at">label =</span> <span class="st">"*"</span>))</span>
+<span id="cb37-27"><a href="#cb37-27" aria-hidden="true" tabindex="-1"></a>  }</span>
+<span id="cb37-28"><a href="#cb37-28" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb37-29"><a href="#cb37-29" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Add Mechanical annotations</span></span>
+<span id="cb37-30"><a href="#cb37-30" aria-hidden="true" tabindex="-1"></a>  <span class="cf">if</span>(<span class="fu">length</span>(sig_mech_genes) <span class="sc">&gt;</span> <span class="dv">0</span>) {</span>
+<span id="cb37-31"><a href="#cb37-31" aria-hidden="true" tabindex="-1"></a>    sig_annotations_comp3 <span class="ot">&lt;-</span> <span class="fu">rbind</span>(sig_annotations_comp3,</span>
+<span id="cb37-32"><a href="#cb37-32" aria-hidden="true" tabindex="-1"></a>      <span class="fu">data.frame</span>(<span class="at">Target =</span> sig_mech_genes,</span>
+<span id="cb37-33"><a href="#cb37-33" aria-hidden="true" tabindex="-1"></a>                 <span class="at">stress_type =</span> <span class="st">"Mechanical"</span>,</span>
+<span id="cb37-34"><a href="#cb37-34" aria-hidden="true" tabindex="-1"></a>                 <span class="at">label =</span> <span class="st">"*"</span>))</span>
+<span id="cb37-35"><a href="#cb37-35" aria-hidden="true" tabindex="-1"></a>  }</span>
+<span id="cb37-36"><a href="#cb37-36" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb37-37"><a href="#cb37-37" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Get y positions for annotations</span></span>
+<span id="cb37-38"><a href="#cb37-38" aria-hidden="true" tabindex="-1"></a>  <span class="cf">if</span>(<span class="fu">nrow</span>(sig_annotations_comp3) <span class="sc">&gt;</span> <span class="dv">0</span>) {</span>
+<span id="cb37-39"><a href="#cb37-39" aria-hidden="true" tabindex="-1"></a>    y_pos_comp3 <span class="ot">&lt;-</span> polyIC_data <span class="sc">%&gt;%</span></span>
+<span id="cb37-40"><a href="#cb37-40" aria-hidden="true" tabindex="-1"></a>      <span class="fu">group_by</span>(Target, stress_type) <span class="sc">%&gt;%</span></span>
+<span id="cb37-41"><a href="#cb37-41" aria-hidden="true" tabindex="-1"></a>      <span class="fu">summarise</span>(<span class="at">max_y =</span> <span class="fu">max</span>(delta_Cq, <span class="at">na.rm =</span> <span class="cn">TRUE</span>), <span class="at">.groups =</span> <span class="st">"drop"</span>)</span>
+<span id="cb37-42"><a href="#cb37-42" aria-hidden="true" tabindex="-1"></a>    </span>
+<span id="cb37-43"><a href="#cb37-43" aria-hidden="true" tabindex="-1"></a>    sig_annotations_comp3 <span class="ot">&lt;-</span> sig_annotations_comp3 <span class="sc">%&gt;%</span></span>
+<span id="cb37-44"><a href="#cb37-44" aria-hidden="true" tabindex="-1"></a>      <span class="fu">left_join</span>(y_pos_comp3, <span class="at">by =</span> <span class="fu">c</span>(<span class="st">"Target"</span>, <span class="st">"stress_type"</span>)) <span class="sc">%&gt;%</span></span>
+<span id="cb37-45"><a href="#cb37-45" aria-hidden="true" tabindex="-1"></a>      <span class="fu">mutate</span>(<span class="at">y_pos =</span> max_y <span class="sc">+</span> <span class="fl">0.5</span>)</span>
+<span id="cb37-46"><a href="#cb37-46" aria-hidden="true" tabindex="-1"></a>  }</span>
+<span id="cb37-47"><a href="#cb37-47" aria-hidden="true" tabindex="-1"></a>} <span class="cf">else</span> {</span>
+<span id="cb37-48"><a href="#cb37-48" aria-hidden="true" tabindex="-1"></a>  sig_annotations_comp3 <span class="ot">&lt;-</span> <span class="fu">data.frame</span>()</span>
+<span id="cb37-49"><a href="#cb37-49" aria-hidden="true" tabindex="-1"></a>}</span>
+<span id="cb37-50"><a href="#cb37-50" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb37-51"><a href="#cb37-51" aria-hidden="true" tabindex="-1"></a><span class="co"># Create plot</span></span>
+<span id="cb37-52"><a href="#cb37-52" aria-hidden="true" tabindex="-1"></a>p <span class="ot">&lt;-</span> polyIC_data <span class="sc">%&gt;%</span></span>
+<span id="cb37-53"><a href="#cb37-53" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ggplot</span>(<span class="fu">aes</span>(<span class="at">x =</span> stress_type, <span class="at">y =</span> delta_Cq, <span class="at">fill =</span> stress_type)) <span class="sc">+</span></span>
+<span id="cb37-54"><a href="#cb37-54" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_boxplot</span>() <span class="sc">+</span></span>
+<span id="cb37-55"><a href="#cb37-55" aria-hidden="true" tabindex="-1"></a>  <span class="fu">facet_wrap</span>(<span class="sc">~</span>Target, <span class="at">scales =</span> <span class="st">"free_y"</span>) <span class="sc">+</span></span>
+<span id="cb37-56"><a href="#cb37-56" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_fill_manual</span>(<span class="at">values =</span> <span class="fu">c</span>(<span class="st">"Control"</span> <span class="ot">=</span> <span class="st">"darkgray"</span>, <span class="st">"Temperature"</span> <span class="ot">=</span> <span class="st">"salmon"</span>, <span class="st">"Mechanical"</span> <span class="ot">=</span> <span class="st">"steelblue"</span>)) <span class="sc">+</span></span>
+<span id="cb37-57"><a href="#cb37-57" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_bw</span>() <span class="sc">+</span></span>
+<span id="cb37-58"><a href="#cb37-58" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(</span>
+<span id="cb37-59"><a href="#cb37-59" aria-hidden="true" tabindex="-1"></a>    <span class="at">title =</span> <span class="st">"Delta Cq: PolyIC Control vs PolyIC Stressors"</span>,</span>
+<span id="cb37-60"><a href="#cb37-60" aria-hidden="true" tabindex="-1"></a>    <span class="at">x =</span> <span class="st">"Stress Type"</span>,</span>
+<span id="cb37-61"><a href="#cb37-61" aria-hidden="true" tabindex="-1"></a>    <span class="at">y =</span> <span class="st">"Delta Cq"</span>,</span>
+<span id="cb37-62"><a href="#cb37-62" aria-hidden="true" tabindex="-1"></a>    <span class="at">fill =</span> <span class="st">"Stress Type"</span></span>
+<span id="cb37-63"><a href="#cb37-63" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">+</span></span>
+<span id="cb37-64"><a href="#cb37-64" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme</span>(<span class="at">axis.text.x =</span> <span class="fu">element_text</span>(<span class="at">angle =</span> <span class="dv">45</span>, <span class="at">hjust =</span> <span class="dv">1</span>))</span>
+<span id="cb37-65"><a href="#cb37-65" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb37-66"><a href="#cb37-66" aria-hidden="true" tabindex="-1"></a><span class="co"># Add annotations if any exist</span></span>
+<span id="cb37-67"><a href="#cb37-67" aria-hidden="true" tabindex="-1"></a><span class="cf">if</span>(<span class="fu">nrow</span>(sig_annotations_comp3) <span class="sc">&gt;</span> <span class="dv">0</span>) {</span>
+<span id="cb37-68"><a href="#cb37-68" aria-hidden="true" tabindex="-1"></a>  p <span class="ot">&lt;-</span> p <span class="sc">+</span> </span>
+<span id="cb37-69"><a href="#cb37-69" aria-hidden="true" tabindex="-1"></a>    <span class="fu">geom_text</span>(<span class="at">data =</span> sig_annotations_comp3, </span>
+<span id="cb37-70"><a href="#cb37-70" aria-hidden="true" tabindex="-1"></a>              <span class="fu">aes</span>(<span class="at">x =</span> stress_type, <span class="at">y =</span> y_pos, <span class="at">label =</span> label),</span>
+<span id="cb37-71"><a href="#cb37-71" aria-hidden="true" tabindex="-1"></a>              <span class="at">inherit.aes =</span> <span class="cn">FALSE</span>, <span class="at">size =</span> <span class="dv">6</span>, <span class="at">vjust =</span> <span class="dv">0</span>, <span class="at">color =</span> <span class="st">"darkorange"</span>) <span class="sc">+</span></span>
+<span id="cb37-72"><a href="#cb37-72" aria-hidden="true" tabindex="-1"></a>    <span class="fu">labs</span>(<span class="at">subtitle =</span> <span class="st">"Asterisks (*) indicate significant differences from PolyIC Control (t-test p ≤ 0.05)"</span>,</span>
+<span id="cb37-73"><a href="#cb37-73" aria-hidden="true" tabindex="-1"></a>         <span class="at">caption =</span> <span class="fu">paste</span>(<span class="st">"Significant comparisons:"</span>, <span class="fu">paste</span>(<span class="fu">unique</span>(sig_genes_comp3<span class="sc">$</span>Target), <span class="at">collapse =</span> <span class="st">", "</span>)))</span>
+<span id="cb37-74"><a href="#cb37-74" aria-hidden="true" tabindex="-1"></a>} <span class="cf">else</span> {</span>
+<span id="cb37-75"><a href="#cb37-75" aria-hidden="true" tabindex="-1"></a>  p <span class="ot">&lt;-</span> p <span class="sc">+</span> <span class="fu">labs</span>(<span class="at">subtitle =</span> <span class="st">"No significant differences detected in t-tests (all p &gt; 0.05)"</span>)</span>
+<span id="cb37-76"><a href="#cb37-76" aria-hidden="true" tabindex="-1"></a>}</span>
+<span id="cb37-77"><a href="#cb37-77" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb37-78"><a href="#cb37-78" aria-hidden="true" tabindex="-1"></a><span class="fu">print</span>(p)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 <div class="cell-output-display">
 <div>
@@ -3092,24 +3258,58 @@ Significant contrasts (p ≤ 0.05):
 <div class="cell" data-hold="true">
 <details open="" class="code-fold">
 <summary>Code</summary>
-<div class="sourceCode cell-code" id="cb232"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb232-1"><a href="#cb232-1" aria-hidden="true" tabindex="-1"></a>delta_Cq_df <span class="sc">%&gt;%</span></span>
-<span id="cb232-2"><a href="#cb232-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ggplot</span>(<span class="fu">aes</span>(<span class="at">x =</span> stress_type, <span class="at">y =</span> delta_Cq, <span class="at">fill =</span> polyIC)) <span class="sc">+</span></span>
-<span id="cb232-3"><a href="#cb232-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_boxplot</span>(<span class="at">position =</span> <span class="fu">position_dodge</span>(<span class="fl">0.8</span>), <span class="at">alpha =</span> <span class="fl">0.7</span>) <span class="sc">+</span></span>
-<span id="cb232-4"><a href="#cb232-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_point</span>(<span class="at">position =</span> <span class="fu">position_dodge</span>(<span class="fl">0.8</span>), <span class="at">alpha =</span> <span class="fl">0.5</span>, <span class="at">size =</span> <span class="dv">1</span>) <span class="sc">+</span></span>
-<span id="cb232-5"><a href="#cb232-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">facet_wrap</span>(<span class="sc">~</span>Target, <span class="at">scales =</span> <span class="st">"free_y"</span>, <span class="at">ncol =</span> <span class="dv">2</span>) <span class="sc">+</span></span>
-<span id="cb232-6"><a href="#cb232-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_fill_manual</span>(<span class="at">values =</span> <span class="fu">c</span>(<span class="st">"No_PolyIC"</span> <span class="ot">=</span> <span class="st">"darkgray"</span>, <span class="st">"PolyIC"</span> <span class="ot">=</span> <span class="st">"salmon"</span>)) <span class="sc">+</span></span>
-<span id="cb232-7"><a href="#cb232-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_hline</span>(<span class="at">yintercept =</span> <span class="dv">0</span>, <span class="at">linetype =</span> <span class="st">"dashed"</span>, <span class="at">alpha =</span> <span class="fl">0.5</span>) <span class="sc">+</span></span>
-<span id="cb232-8"><a href="#cb232-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_bw</span>() <span class="sc">+</span></span>
-<span id="cb232-9"><a href="#cb232-9" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(</span>
-<span id="cb232-10"><a href="#cb232-10" aria-hidden="true" tabindex="-1"></a>    <span class="at">title =</span> <span class="st">"Delta Cq by Treatment Group"</span>,</span>
-<span id="cb232-11"><a href="#cb232-11" aria-hidden="true" tabindex="-1"></a>    <span class="at">x =</span> <span class="st">"Stress Type"</span>,</span>
-<span id="cb232-12"><a href="#cb232-12" aria-hidden="true" tabindex="-1"></a>    <span class="at">y =</span> <span class="st">"Delta Cq"</span>,</span>
-<span id="cb232-13"><a href="#cb232-13" aria-hidden="true" tabindex="-1"></a>    <span class="at">fill =</span> <span class="st">"PolyIC Treatment"</span></span>
-<span id="cb232-14"><a href="#cb232-14" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">+</span></span>
-<span id="cb232-15"><a href="#cb232-15" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme</span>(</span>
-<span id="cb232-16"><a href="#cb232-16" aria-hidden="true" tabindex="-1"></a>    <span class="at">axis.text.x =</span> <span class="fu">element_text</span>(<span class="at">angle =</span> <span class="dv">45</span>, <span class="at">hjust =</span> <span class="dv">1</span>),</span>
-<span id="cb232-17"><a href="#cb232-17" aria-hidden="true" tabindex="-1"></a>    <span class="at">legend.position =</span> <span class="st">"bottom"</span></span>
-<span id="cb232-18"><a href="#cb232-18" aria-hidden="true" tabindex="-1"></a>  )</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb232"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb232-1"><a href="#cb232-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Create significance annotation data</span></span>
+<span id="cb232-2"><a href="#cb232-2" aria-hidden="true" tabindex="-1"></a>sig_annotations <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(</span>
+<span id="cb232-3"><a href="#cb232-3" aria-hidden="true" tabindex="-1"></a>  <span class="at">Target =</span> <span class="fu">c</span>(<span class="st">"ATP.Synthase"</span>, <span class="st">"ATP.Synthase"</span>, <span class="st">"ATP.Synthase"</span>, </span>
+<span id="cb232-4"><a href="#cb232-4" aria-hidden="true" tabindex="-1"></a>             <span class="st">"HSP70"</span>, <span class="st">"HSP70"</span>, <span class="st">"HSP70"</span>, <span class="st">"HSP70"</span>, <span class="st">"HSP70"</span>,</span>
+<span id="cb232-5"><a href="#cb232-5" aria-hidden="true" tabindex="-1"></a>             <span class="st">"HSP90"</span>, <span class="st">"HSP90"</span>, <span class="st">"HSP90"</span>,</span>
+<span id="cb232-6"><a href="#cb232-6" aria-hidden="true" tabindex="-1"></a>             <span class="st">"VIPERIN"</span>),</span>
+<span id="cb232-7"><a href="#cb232-7" aria-hidden="true" tabindex="-1"></a>  <span class="at">label =</span> <span class="fu">c</span>(<span class="st">"*"</span>, <span class="st">"***"</span>, <span class="st">"*"</span>,</span>
+<span id="cb232-8"><a href="#cb232-8" aria-hidden="true" tabindex="-1"></a>            <span class="st">"***"</span>, <span class="st">"***"</span>, <span class="st">"***"</span>, <span class="st">"***"</span>, <span class="st">"***"</span>,</span>
+<span id="cb232-9"><a href="#cb232-9" aria-hidden="true" tabindex="-1"></a>            <span class="st">"***"</span>, <span class="st">"***"</span>, <span class="st">"***"</span>,</span>
+<span id="cb232-10"><a href="#cb232-10" aria-hidden="true" tabindex="-1"></a>            <span class="st">"*"</span>),</span>
+<span id="cb232-11"><a href="#cb232-11" aria-hidden="true" tabindex="-1"></a>  <span class="at">stress_type =</span> <span class="fu">c</span>(<span class="st">"Mechanical"</span>, <span class="st">"Temperature"</span>, <span class="st">"Temperature"</span>,</span>
+<span id="cb232-12"><a href="#cb232-12" aria-hidden="true" tabindex="-1"></a>                  <span class="st">"Temperature"</span>, <span class="st">"Temperature"</span>, <span class="st">"Temperature"</span>, <span class="st">"Temperature"</span>, <span class="st">"Temperature"</span>,</span>
+<span id="cb232-13"><a href="#cb232-13" aria-hidden="true" tabindex="-1"></a>                  <span class="st">"Temperature"</span>, <span class="st">"Temperature"</span>, <span class="st">"Temperature"</span>,</span>
+<span id="cb232-14"><a href="#cb232-14" aria-hidden="true" tabindex="-1"></a>                  <span class="st">"Control"</span>),</span>
+<span id="cb232-15"><a href="#cb232-15" aria-hidden="true" tabindex="-1"></a>  <span class="at">polyIC =</span> <span class="fu">c</span>(<span class="st">"PolyIC"</span>, <span class="st">"PolyIC"</span>, <span class="st">"No_PolyIC"</span>,</span>
+<span id="cb232-16"><a href="#cb232-16" aria-hidden="true" tabindex="-1"></a>             <span class="st">"No_PolyIC"</span>, <span class="st">"PolyIC"</span>, <span class="st">"No_PolyIC"</span>, <span class="st">"PolyIC"</span>, <span class="st">"PolyIC"</span>,</span>
+<span id="cb232-17"><a href="#cb232-17" aria-hidden="true" tabindex="-1"></a>             <span class="st">"PolyIC"</span>, <span class="st">"PolyIC"</span>, <span class="st">"PolyIC"</span>,</span>
+<span id="cb232-18"><a href="#cb232-18" aria-hidden="true" tabindex="-1"></a>             <span class="st">"PolyIC"</span>)</span>
+<span id="cb232-19"><a href="#cb232-19" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb232-20"><a href="#cb232-20" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb232-21"><a href="#cb232-21" aria-hidden="true" tabindex="-1"></a><span class="co"># Calculate y positions for annotations (above max values)</span></span>
+<span id="cb232-22"><a href="#cb232-22" aria-hidden="true" tabindex="-1"></a>y_positions <span class="ot">&lt;-</span> delta_Cq_df <span class="sc">%&gt;%</span></span>
+<span id="cb232-23"><a href="#cb232-23" aria-hidden="true" tabindex="-1"></a>  <span class="fu">group_by</span>(Target, stress_type, polyIC) <span class="sc">%&gt;%</span></span>
+<span id="cb232-24"><a href="#cb232-24" aria-hidden="true" tabindex="-1"></a>  <span class="fu">summarise</span>(<span class="at">max_y =</span> <span class="fu">max</span>(delta_Cq, <span class="at">na.rm =</span> <span class="cn">TRUE</span>), <span class="at">.groups =</span> <span class="st">"drop"</span>)</span>
+<span id="cb232-25"><a href="#cb232-25" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb232-26"><a href="#cb232-26" aria-hidden="true" tabindex="-1"></a>sig_annotations <span class="ot">&lt;-</span> sig_annotations <span class="sc">%&gt;%</span></span>
+<span id="cb232-27"><a href="#cb232-27" aria-hidden="true" tabindex="-1"></a>  <span class="fu">left_join</span>(y_positions, <span class="at">by =</span> <span class="fu">c</span>(<span class="st">"Target"</span>, <span class="st">"stress_type"</span>, <span class="st">"polyIC"</span>)) <span class="sc">%&gt;%</span></span>
+<span id="cb232-28"><a href="#cb232-28" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">y_pos =</span> max_y <span class="sc">+</span> <span class="fl">0.3</span>)</span>
+<span id="cb232-29"><a href="#cb232-29" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb232-30"><a href="#cb232-30" aria-hidden="true" tabindex="-1"></a>delta_Cq_df <span class="sc">%&gt;%</span></span>
+<span id="cb232-31"><a href="#cb232-31" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ggplot</span>(<span class="fu">aes</span>(<span class="at">x =</span> stress_type, <span class="at">y =</span> delta_Cq, <span class="at">fill =</span> polyIC)) <span class="sc">+</span></span>
+<span id="cb232-32"><a href="#cb232-32" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_boxplot</span>(<span class="at">position =</span> <span class="fu">position_dodge</span>(<span class="fl">0.8</span>), <span class="at">alpha =</span> <span class="fl">0.7</span>) <span class="sc">+</span></span>
+<span id="cb232-33"><a href="#cb232-33" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_point</span>(<span class="at">position =</span> <span class="fu">position_dodge</span>(<span class="fl">0.8</span>), <span class="at">alpha =</span> <span class="fl">0.5</span>, <span class="at">size =</span> <span class="dv">1</span>) <span class="sc">+</span></span>
+<span id="cb232-34"><a href="#cb232-34" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_text</span>(<span class="at">data =</span> sig_annotations, </span>
+<span id="cb232-35"><a href="#cb232-35" aria-hidden="true" tabindex="-1"></a>            <span class="fu">aes</span>(<span class="at">x =</span> stress_type, <span class="at">y =</span> y_pos, <span class="at">label =</span> label, <span class="at">group =</span> polyIC),</span>
+<span id="cb232-36"><a href="#cb232-36" aria-hidden="true" tabindex="-1"></a>            <span class="at">position =</span> <span class="fu">position_dodge</span>(<span class="fl">0.8</span>), <span class="at">size =</span> <span class="dv">5</span>, <span class="at">vjust =</span> <span class="dv">0</span>, <span class="at">color =</span> <span class="st">"darkorange"</span>) <span class="sc">+</span></span>
+<span id="cb232-37"><a href="#cb232-37" aria-hidden="true" tabindex="-1"></a>  <span class="fu">facet_wrap</span>(<span class="sc">~</span>Target, <span class="at">scales =</span> <span class="st">"free_y"</span>, <span class="at">ncol =</span> <span class="dv">2</span>) <span class="sc">+</span></span>
+<span id="cb232-38"><a href="#cb232-38" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_fill_manual</span>(<span class="at">values =</span> <span class="fu">c</span>(<span class="st">"No_PolyIC"</span> <span class="ot">=</span> <span class="st">"darkgray"</span>, <span class="st">"PolyIC"</span> <span class="ot">=</span> <span class="st">"salmon"</span>)) <span class="sc">+</span></span>
+<span id="cb232-39"><a href="#cb232-39" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_hline</span>(<span class="at">yintercept =</span> <span class="dv">0</span>, <span class="at">linetype =</span> <span class="st">"dashed"</span>, <span class="at">alpha =</span> <span class="fl">0.5</span>) <span class="sc">+</span></span>
+<span id="cb232-40"><a href="#cb232-40" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_bw</span>() <span class="sc">+</span></span>
+<span id="cb232-41"><a href="#cb232-41" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(</span>
+<span id="cb232-42"><a href="#cb232-42" aria-hidden="true" tabindex="-1"></a>    <span class="at">title =</span> <span class="st">"Delta Cq by Treatment Group with ANOVA Significance"</span>,</span>
+<span id="cb232-43"><a href="#cb232-43" aria-hidden="true" tabindex="-1"></a>    <span class="at">subtitle =</span> <span class="st">"Asterisks indicate significant pairwise contrasts from ANOVA post-hoc tests</span><span class="sc">\n</span><span class="st">* p ≤ 0.05, ** p ≤ 0.01, *** p ≤ 0.001"</span>,</span>
+<span id="cb232-44"><a href="#cb232-44" aria-hidden="true" tabindex="-1"></a>    <span class="at">x =</span> <span class="st">"Stress Type"</span>,</span>
+<span id="cb232-45"><a href="#cb232-45" aria-hidden="true" tabindex="-1"></a>    <span class="at">y =</span> <span class="st">"Delta Cq"</span>,</span>
+<span id="cb232-46"><a href="#cb232-46" aria-hidden="true" tabindex="-1"></a>    <span class="at">fill =</span> <span class="st">"PolyIC Treatment"</span>,</span>
+<span id="cb232-47"><a href="#cb232-47" aria-hidden="true" tabindex="-1"></a>    <span class="at">caption =</span> <span class="st">"Significant contrasts: ATP Synthase (4), HSP70 (8), HSP90 (3), VIPERIN (1). See ANOVA sections for details."</span></span>
+<span id="cb232-48"><a href="#cb232-48" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">+</span></span>
+<span id="cb232-49"><a href="#cb232-49" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme</span>(</span>
+<span id="cb232-50"><a href="#cb232-50" aria-hidden="true" tabindex="-1"></a>    <span class="at">axis.text.x =</span> <span class="fu">element_text</span>(<span class="at">angle =</span> <span class="dv">45</span>, <span class="at">hjust =</span> <span class="dv">1</span>),</span>
+<span id="cb232-51"><a href="#cb232-51" aria-hidden="true" tabindex="-1"></a>    <span class="at">legend.position =</span> <span class="st">"bottom"</span></span>
+<span id="cb232-52"><a href="#cb232-52" aria-hidden="true" tabindex="-1"></a>  )</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 <div class="cell-output-display">
 <div>
