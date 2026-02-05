@@ -476,6 +476,81 @@ if(nrow(sig_genes_comp3) > 0) {
 }
 ```
 
+## ANOVA Models
+
+Two-way ANOVA (PolyIC × Stress Type) for each gene to comprehensively test treatment effects and interactions.
+
+```{r anova-models-run}
+#| hold: true
+#| label: anova-models-run
+# Load required packages for ANOVA
+library(car)
+library(emmeans)
+library(multcomp)
+
+# Run ANOVA models for all genes and store emmeans objects for plotting
+# Detailed diagnostics and interpretations are in the "ANOVA Models" section below
+
+# ATP Synthase
+model_atp <- delta_Cq_df %>%
+  filter(Target == "ATP.Synthase") %>%
+  aov(delta_Cq ~ polyIC * stress_type, data = .)
+if(any(summary(model_atp)[[1]][["Pr(>F)"]][1:3] < 0.05, na.rm = TRUE)) {
+  emm_atp <- emmeans(model_atp, ~ polyIC * stress_type)
+}
+
+# Citrate Synthase
+model_citrate <- delta_Cq_df %>%
+  filter(Target == "Citrate.Synthase") %>%
+  aov(delta_Cq ~ polyIC * stress_type, data = .)
+if(any(summary(model_citrate)[[1]][["Pr(>F)"]][1:3] < 0.05, na.rm = TRUE)) {
+  emm_citrate <- emmeans(model_citrate, ~ polyIC * stress_type)
+}
+
+# DNMT1
+model_dnmt1 <- delta_Cq_df %>%
+  filter(Target == "DNMT1") %>%
+  aov(delta_Cq ~ polyIC * stress_type, data = .)
+if(any(summary(model_dnmt1)[[1]][["Pr(>F)"]][1:3] < 0.05, na.rm = TRUE)) {
+  emm_dnmt1 <- emmeans(model_dnmt1, ~ polyIC * stress_type)
+}
+
+# HSP70
+model_hsp70 <- delta_Cq_df %>%
+  filter(Target == "HSP70") %>%
+  aov(delta_Cq ~ polyIC * stress_type, data = .)
+if(any(summary(model_hsp70)[[1]][["Pr(>F)"]][1:3] < 0.05, na.rm = TRUE)) {
+  emm_hsp70 <- emmeans(model_hsp70, ~ polyIC * stress_type)
+}
+
+# HSP90
+model_hsp90 <- delta_Cq_df %>%
+  filter(Target == "HSP90") %>%
+  aov(delta_Cq ~ polyIC * stress_type, data = .)
+if(any(summary(model_hsp90)[[1]][["Pr(>F)"]][1:3] < 0.05, na.rm = TRUE)) {
+  emm_hsp90 <- emmeans(model_hsp90, ~ polyIC * stress_type)
+}
+
+# cGAS
+model_cgas <- delta_Cq_df %>%
+  filter(Target == "cGAS") %>%
+  aov(delta_Cq ~ polyIC * stress_type, data = .)
+if(any(summary(model_cgas)[[1]][["Pr(>F)"]][1:3] < 0.05, na.rm = TRUE)) {
+  emm_cgas <- emmeans(model_cgas, ~ polyIC * stress_type)
+}
+
+# VIPERIN
+model_viperin <- delta_Cq_df %>%
+  filter(Target == "VIPERIN") %>%
+  aov(delta_Cq ~ polyIC * stress_type, data = .)
+if(any(summary(model_viperin)[[1]][["Pr(>F)"]][1:3] < 0.05, na.rm = TRUE)) {
+  emm_viperin <- emmeans(model_viperin, ~ polyIC * stress_type)
+}
+
+cat("ANOVA models created for all genes. Emmeans objects stored for post-hoc testing and plotting.\n")
+cat("See 'ANOVA Models' section below for detailed results, diagnostics, and interpretations.\n")
+```
+
 # Visualizations
 
 ## Delta Cq Boxplots
@@ -723,11 +798,71 @@ print(p)
 #| fig.width: 12
 #| fig.height: 8
 
-delta_Cq_df %>%
+# Use emmeans objects created in Statistical Comparisons section
+all_treat_annotations <- data.frame()
+
+# ATP Synthase
+if(exists("emm_atp")) {
+  cld_temp <- cld(emm_atp, Letters = letters, alpha = 0.05)
+  cld_df <- as.data.frame(cld_temp)
+  cld_df$Target <- "ATP.Synthase"
+  cld_df$label <- trimws(cld_df$.group)
+  cld_df$treatment_group <- paste(cld_df$polyIC, cld_df$stress_type, sep = "_")
+  all_treat_annotations <- rbind(all_treat_annotations, 
+                                 cld_df[, c("Target", "treatment_group", "label")])
+}
+
+# HSP70
+if(exists("emm_hsp70")) {
+  cld_temp <- cld(emm_hsp70, Letters = letters, alpha = 0.05)
+  cld_df <- as.data.frame(cld_temp)
+  cld_df$Target <- "HSP70"
+  cld_df$label <- trimws(cld_df$.group)
+  cld_df$treatment_group <- paste(cld_df$polyIC, cld_df$stress_type, sep = "_")
+  all_treat_annotations <- rbind(all_treat_annotations, 
+                                 cld_df[, c("Target", "treatment_group", "label")])
+}
+
+# HSP90
+if(exists("emm_hsp90")) {
+  cld_temp <- cld(emm_hsp90, Letters = letters, alpha = 0.05)
+  cld_df <- as.data.frame(cld_temp)
+  cld_df$Target <- "HSP90"
+  cld_df$label <- trimws(cld_df$.group)
+  cld_df$treatment_group <- paste(cld_df$polyIC, cld_df$stress_type, sep = "_")
+  all_treat_annotations <- rbind(all_treat_annotations, 
+                                 cld_df[, c("Target", "treatment_group", "label")])
+}
+
+# VIPERIN
+if(exists("emm_viperin")) {
+  cld_temp <- cld(emm_viperin, Letters = letters, alpha = 0.05)
+  cld_df <- as.data.frame(cld_temp)
+  cld_df$Target <- "VIPERIN"
+  cld_df$label <- trimws(cld_df$.group)
+  cld_df$treatment_group <- paste(cld_df$polyIC, cld_df$stress_type, sep = "_")
+  all_treat_annotations <- rbind(all_treat_annotations, 
+                                 cld_df[, c("Target", "treatment_group", "label")])
+}
+
+# Calculate y positions if annotations exist
+if(nrow(all_treat_annotations) > 0) {
+  y_pos_all <- delta_Cq_df %>%
+    group_by(Target, treatment_group) %>%
+    summarise(max_y = max(delta_Cq, na.rm = TRUE), .groups = "drop")
+  
+  all_treat_annotations <- all_treat_annotations %>%
+    left_join(y_pos_all, by = c("Target", "treatment_group")) %>%
+    mutate(y_pos = max_y + 2.0)  # Increased offset to prevent cutoff
+}
+
+# Create plot
+p <- delta_Cq_df %>%
   ggplot(aes(x = treatment_group, y = delta_Cq, fill = polyIC)) +
   geom_boxplot() +
   facet_wrap(~Target, scales = "free_y", ncol = 2) +
   scale_fill_manual(values = c("No_PolyIC" = "darkgray", "PolyIC" = "salmon")) +
+  scale_y_continuous(expand = expansion(mult = c(0.05, 0.15))) +  # Extra space at top for annotations
   theme_bw() +
   labs(
     title = "Delta Cq Across All Treatment Groups",
@@ -736,6 +871,19 @@ delta_Cq_df %>%
     fill = "PolyIC"
   ) +
   theme(axis.text.x = element_text(angle = 45, hjust = 1))
+
+# Add annotations if they exist
+if(nrow(all_treat_annotations) > 0) {
+  p <- p +
+    geom_text(data = all_treat_annotations,
+              aes(x = treatment_group, y = y_pos, label = label),
+              inherit.aes = FALSE, size = 4, vjust = 0, 
+              color = "darkorange", fontface = "bold") +
+    labs(subtitle = "Letters show statistical groupings (p ≤ 0.05). Groups sharing a letter are NOT significantly different from each other",
+         caption = "Compact Letter Display shown for genes with significant ANOVA effects. See ANOVA Models section for detailed statistics.")
+}
+
+print(p)
 ```
 
 # Delta Delta Cq and Fold Change Analysis
@@ -916,14 +1064,11 @@ fold_change_polyIC %>%
 
 # ANOVA Models
 
+# ANOVA Models
+
 Run ANOVA models to test for effects of PolyIC treatment and stress type on delta Cq values for each target gene.
 
-```{r anova-setup}
-#| hold: true
-#| label: anova-setup
-library(car)
-library(emmeans)
-```
+**Note:** ANOVA models were created in the Statistical Comparisons section above. This section provides detailed diagnostics and interpretations for each gene.
 
 ## Data distribution check
 
@@ -1746,58 +1891,95 @@ Visualize delta Cq values by treatment group for each target.
 #| fig.width: 12
 #| fig.height: 10
 
-# Create significance annotation data
-sig_annotations <- data.frame(
-  Target = c("ATP.Synthase", "ATP.Synthase", "ATP.Synthase", 
-             "HSP70", "HSP70", "HSP70", "HSP70", "HSP70",
-             "HSP90", "HSP90", "HSP90",
-             "VIPERIN"),
-  label = c("*", "***", "*",
-            "***", "***", "***", "***", "***",
-            "***", "***", "***",
-            "*"),
-  stress_type = c("Mechanical", "Temperature", "Temperature",
-                  "Temperature", "Temperature", "Temperature", "Temperature", "Temperature",
-                  "Temperature", "Temperature", "Temperature",
-                  "Control"),
-  polyIC = c("PolyIC", "PolyIC", "No_PolyIC",
-             "No_PolyIC", "PolyIC", "No_PolyIC", "PolyIC", "PolyIC",
-             "PolyIC", "PolyIC", "PolyIC",
-             "PolyIC")
-)
+# Generate Compact Letter Display (CLD) for each gene with significant effects
+# CLD shows which groups are significantly different: groups sharing a letter are NOT significantly different
+
+cld_annotations <- data.frame()
+
+# ATP Synthase
+if(exists("emm_atp")) {
+  cld_atp <- cld(emm_atp, Letters = letters, alpha = 0.05)
+  cld_atp_df <- as.data.frame(cld_atp)
+  cld_atp_df$Target <- "ATP.Synthase"
+  cld_atp_df$label <- trimws(cld_atp_df$.group)
+  cld_atp_df <- cld_atp_df[, c("Target", "polyIC", "stress_type", "label")]
+  cld_annotations <- rbind(cld_annotations, cld_atp_df)
+}
+
+# HSP70
+if(exists("emm_hsp70")) {
+  cld_hsp70 <- cld(emm_hsp70, Letters = letters, alpha = 0.05)
+  cld_hsp70_df <- as.data.frame(cld_hsp70)
+  cld_hsp70_df$Target <- "HSP70"
+  cld_hsp70_df$label <- trimws(cld_hsp70_df$.group)
+  cld_hsp70_df <- cld_hsp70_df[, c("Target", "polyIC", "stress_type", "label")]
+  cld_annotations <- rbind(cld_annotations, cld_hsp70_df)
+}
+
+# HSP90
+if(exists("emm_hsp90")) {
+  cld_hsp90 <- cld(emm_hsp90, Letters = letters, alpha = 0.05)
+  cld_hsp90_df <- as.data.frame(cld_hsp90)
+  cld_hsp90_df$Target <- "HSP90"
+  cld_hsp90_df$label <- trimws(cld_hsp90_df$.group)
+  cld_hsp90_df <- cld_hsp90_df[, c("Target", "polyIC", "stress_type", "label")]
+  cld_annotations <- rbind(cld_annotations, cld_hsp90_df)
+}
+
+# VIPERIN
+if(exists("emm_viperin")) {
+  cld_viperin <- cld(emm_viperin, Letters = letters, alpha = 0.05)
+  cld_viperin_df <- as.data.frame(cld_viperin)
+  cld_viperin_df$Target <- "VIPERIN"
+  cld_viperin_df$label <- trimws(cld_viperin_df$.group)
+  cld_viperin_df <- cld_viperin_df[, c("Target", "polyIC", "stress_type", "label")]
+  cld_annotations <- rbind(cld_annotations, cld_viperin_df)
+}
 
 # Calculate y positions for annotations (above max values)
-y_positions <- delta_Cq_df %>%
-  group_by(Target, stress_type, polyIC) %>%
-  summarise(max_y = max(delta_Cq, na.rm = TRUE), .groups = "drop")
+if(nrow(cld_annotations) > 0) {
+  y_positions <- delta_Cq_df %>%
+    group_by(Target, stress_type, polyIC) %>%
+    summarise(max_y = max(delta_Cq, na.rm = TRUE), .groups = "drop")
+  
+  cld_annotations <- cld_annotations %>%
+    left_join(y_positions, by = c("Target", "stress_type", "polyIC")) %>%
+    mutate(y_pos = max_y + 5.0)  # Increased offset to prevent cutoff
+}
 
-sig_annotations <- sig_annotations %>%
-  left_join(y_positions, by = c("Target", "stress_type", "polyIC")) %>%
-  mutate(y_pos = max_y + 0.3)
-
-delta_Cq_df %>%
+# Create plot
+p <- delta_Cq_df %>%
   ggplot(aes(x = stress_type, y = delta_Cq, fill = polyIC)) +
   geom_boxplot(position = position_dodge(0.8), alpha = 0.7) +
   geom_point(position = position_dodge(0.8), alpha = 0.5, size = 1) +
-  geom_text(data = sig_annotations, 
-            aes(x = stress_type, y = y_pos, label = label, group = polyIC),
-            position = position_dodge(0.8), size = 5, vjust = 0, color = "darkorange") +
   facet_wrap(~Target, scales = "free_y", ncol = 2) +
   scale_fill_manual(values = c("No_PolyIC" = "darkgray", "PolyIC" = "salmon")) +
+  scale_y_continuous(expand = expansion(mult = c(0.05, 0.15))) +  # Extra space at top for annotations
   geom_hline(yintercept = 0, linetype = "dashed", alpha = 0.5) +
   theme_bw() +
   labs(
     title = "Delta Cq by Treatment Group with ANOVA Significance",
-    subtitle = "Asterisks indicate significant pairwise contrasts from ANOVA post-hoc tests\n* p ≤ 0.05, ** p ≤ 0.01, *** p ≤ 0.001",
     x = "Stress Type",
     y = "Delta Cq",
-    fill = "PolyIC Treatment",
-    caption = "Significant contrasts: ATP Synthase (4), HSP70 (8), HSP90 (3), VIPERIN (1). See ANOVA sections for details."
+    fill = "PolyIC Treatment"
   ) +
   theme(
     axis.text.x = element_text(angle = 45, hjust = 1),
     legend.position = "bottom"
   )
+
+# Add CLD annotations if any exist
+if(nrow(cld_annotations) > 0) {
+  p <- p + 
+    geom_text(data = cld_annotations, 
+              aes(x = stress_type, y = y_pos, label = label, group = polyIC),
+              position = position_dodge(0.8), size = 4, vjust = 0, 
+              color = "darkorange", fontface = "bold") +
+    labs(subtitle = "Letters show statistical groupings (p ≤ 0.05). Groups sharing a letter are NOT significantly different from each other",
+         caption = "Compact Letter Display shown for: ATP Synthase, HSP70, HSP90, and VIPERIN. See individual ANOVA sections for detailed p-values.")
+}
+
+print(p)
 ```
 
 
@@ -1960,3 +2142,12 @@ This analysis examined gene expression responses in *Magallana gigas* to PolyIC 
 - This indicates the VIPERIN response is triggered by PolyIC recognition itself, independent of other stressors
 - Stress type (temperature/mechanical) does not enhance or suppress the PolyIC-induced VIPERIN response
 - As an antiviral effector, VIPERIN appropriately recognizes PolyIC as a viral mimic
+
+
+# R SESSION INFO
+
+```{r session-info}
+#| hold: true
+#| label: session-info
+sessionInfo()
+```
