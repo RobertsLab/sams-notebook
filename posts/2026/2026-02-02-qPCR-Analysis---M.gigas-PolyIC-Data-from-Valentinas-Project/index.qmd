@@ -186,6 +186,7 @@ str(qpcr_data)
 
 ```{r check-std-dev}
 #| hold: true
+#| results: hold
 #| label: check-std-dev
 # Filter out rows where Cq.Std..Dev is NA
 qpcr_data <- qpcr_data[!is.na(qpcr_data$Cq.Std..Dev), ]
@@ -209,6 +210,34 @@ qpcr_filtered <- qpcr_data %>%
   ungroup()
 
 str(qpcr_filtered)
+```
+
+### Samples excluded due to quality control
+
+```{r excluded-samples}
+#| hold: true
+#| results: hold
+#| label: excluded-samples
+# Identify samples that were filtered out
+all_samples <- qpcr_data %>%
+  dplyr::select(Sample, Target) %>%
+  distinct()
+
+retained_samples <- qpcr_filtered %>%
+  dplyr::select(Sample, Target) %>%
+  distinct()
+
+excluded_samples <- all_samples %>%
+  anti_join(retained_samples, by = c("Sample", "Target"))
+
+if(nrow(excluded_samples) > 0) {
+  cat("Samples excluded from analysis due to high standard deviation (> 0.5):\n\n")
+  excluded_samples %>%
+    arrange(Target, Sample) %>%
+    knitr::kable()
+} else {
+  cat("No samples were excluded from the analysis.\n")
+}
 ```
 
 # Group and Summarize Data
@@ -298,6 +327,229 @@ delta_Cq_df <- delta_Cq_df %>%
 str(delta_Cq_df)
 ```
 
+## Missing samples analysis
+
+```{r missing-samples-analysis}
+#| hold: true
+#| results: hold
+#| label: missing-samples-analysis
+
+# Get all unique sample names from the data that made it to delta_Cq_df
+available_samples <- delta_Cq_df %>%
+  dplyr::select(Sample, Target, treatment_group, polyIC, stress_type) %>%
+  distinct()
+
+# Expected samples based on the naming pattern
+# From the view-groups output, we know the expected samples
+expected_no_polyIC <- c(paste0(rep(LETTERS[1:4], each=5), rep(1:5, 4), "C"),
+                        paste0(rep(LETTERS[1:4], each=5), rep(1:5, 4), "T"),
+                        paste0(rep(LETTERS[1:4], each=5), rep(1:5, 4), "M"))
+
+expected_polyIC <- c(paste0(rep(LETTERS[1:4], each=5), rep(1:5, 4), "PC"),
+                     paste0(rep(LETTERS[1:4], each=5), rep(1:5, 4), "PT"),
+                     paste0(rep(LETTERS[1:4], each=5), rep(1:5, 4), "PM"))
+
+all_expected_samples <- c(expected_no_polyIC, expected_polyIC)
+
+# Get all genes
+all_genes <- unique(delta_Cq_df$Target)
+
+# Create expected sample-gene combinations
+expected_combinations <- expand.grid(
+  Sample = all_expected_samples,
+  Target = all_genes,
+  stringsAsFactors = FALSE
+)
+
+# Find missing combinations
+actual_combinations <- delta_Cq_df %>%
+  dplyr::select(Sample, Target) %>%
+  distinct()
+
+missing_combinations <- expected_combinations %>%
+  anti_join(actual_combinations, by = c("Sample", "Target"))
+
+# Summarize by treatment group and gene
+# Parse treatment info for missing samples
+missing_combinations_parsed <- missing_combinations %>%
+  mutate(
+    polyIC = ifelse(grepl("P", substr(Sample, nchar(Sample)-1, nchar(Sample))), "PolyIC", "No_PolyIC"),
+    stress_type = case_when(
+      grepl("C$", Sample) | grepl("PC$", Sample) ~ "Control",
+      grepl("T$", Sample) | grepl("PT$", Sample) ~ "Temperature",
+      grepl("M$", Sample) | grepl("PM$", Sample) ~ "Mechanical",
+      TRUE ~ "Unknown"
+    ),
+    treatment_group = paste(polyIC, stress_type, sep = "_")
+  )
+
+# Summary table
+cat("\n=== MISSING SAMPLES SUMMARY BY TREATMENT GROUP ===\n\n")
+missing_summary <- missing_combinations_parsed %>%
+  group_by(treatment_group, Target) %>%
+  summarise(n_missing = n(), .groups = "drop") %>%
+  tidyr::pivot_wider(names_from = Target, values_from = n_missing, values_fill = 0) %>%
+  arrange(treatment_group)
+
+print(missing_summary)
+
+# Detailed list of missing samples
+cat("\n\n=== DETAILED LIST OF MISSING SAMPLES ===\n\n")
+cat("Total missing sample-gene combinations:", nrow(missing_combinations), "\n\n")
+
+missing_by_gene <- missing_combinations_parsed %>%
+  arrange(Target, treatment_group, Sample)
+
+for(gene in sort(unique(missing_by_gene$Target))) {
+  gene_missing <- missing_by_gene %>% filter(Target == gene)
+  if(nrow(gene_missing) > 0) {
+    cat("\n**", gene, "** (", nrow(gene_missing), " missing samples):\n", sep = "")
+    for(trt in unique(gene_missing$treatment_group)) {
+      samples <- gene_missing %>% filter(treatment_group == trt) %>% pull(Sample)
+      if(length(samples) > 0) {
+        cat("  ", trt, ": ", paste(samples, collapse = ", "), "\n", sep = "")
+      }
+    }
+  }
+}
+
+# Comprehensive list of all problematic samples
+cat("\n\n=== ALL SAMPLES EXCLUDED OR MISSING FROM ANALYSIS ===\n\n")
+
+# Get samples that failed QC by gene
+cat("**Samples that Failed QC (high standard deviation > 0.5) by Gene:**\n\n")
+if(nrow(excluded_samples) > 0) {
+  failed_qc_by_gene <- excluded_samples %>%
+    arrange(Target, Sample)
+  
+  for(gene in unique(failed_qc_by_gene$Target)) {
+    gene_failed <- failed_qc_by_gene %>% filter(Target == gene) %>% pull(Sample)
+    cat("  ", gene, " (", length(gene_failed), " samples): ", paste(sort(gene_failed), collapse = ", "), "\n", sep = "")
+  }
+  
+  failed_qc_samples <- unique(excluded_samples$Sample)
+  cat("\n  Total unique samples that failed QC: ", length(failed_qc_samples), "\n", sep = "")
+  cat("  All failed QC samples: ", paste(sort(failed_qc_samples), collapse = ", "), "\n", sep = "")
+} else {
+  failed_qc_samples <- character(0)
+  cat("  No samples failed QC.\n")
+}
+
+# Get unique samples that are missing
+missing_sample_names <- unique(missing_combinations$Sample)
+
+cat("\n**Missing from data (never run/loaded):** ", length(missing_sample_names), " unique samples\n", sep = "")
+if(length(missing_sample_names) > 0) {
+  cat("  ", paste(sort(missing_sample_names), collapse = ", "), "\n")
+}
+
+# Combine and get all unique
+all_problematic_samples <- unique(c(failed_qc_samples, missing_sample_names))
+
+cat("\n**Summary:**\n")
+cat("  Total unique samples with issues: ", length(all_problematic_samples), "\n", sep = "")
+cat("  All unique sample names (failed QC + missing): ", paste(sort(all_problematic_samples), collapse = ", "), "\n", sep = "")
+```
+
+## GAPDH Impact Analysis
+
+```{r gapdh-impact-analysis}
+#| hold: true
+#| results: hold
+#| label: gapdh-impact-analysis
+
+cat("\n=== GAPDH QC FAILURES AND THEIR CASCADE EFFECTS ===\n\n")
+
+# Get samples where GAPDH passed QC
+gapdh_passed <- grouped_df %>%
+  filter(Target == "GAPDH") %>%
+  dplyr::select(Sample) %>%
+  distinct() %>%
+  pull(Sample)
+
+# Get samples where genes of interest passed QC
+genes_of_interest <- grouped_df %>%
+  filter(Target != "GAPDH") %>%
+  dplyr::select(Sample, Target) %>%
+  distinct()
+
+# Find samples that have gene data but missing GAPDH
+samples_with_gene_but_no_gapdh <- genes_of_interest %>%
+  filter(!Sample %in% gapdh_passed) %>%
+  arrange(Sample, Target)
+
+if(nrow(samples_with_gene_but_no_gapdh) > 0) {
+  cat("**Samples with good gene measurements but failed/missing GAPDH:**\n")
+  cat("(These samples CANNOT be normalized and are excluded from analysis)\n\n")
+  
+  # Count by sample
+  sample_counts <- samples_with_gene_but_no_gapdh %>%
+    group_by(Sample) %>%
+    summarise(n_genes_lost = n(), .groups = "drop") %>%
+    arrange(desc(n_genes_lost), Sample)
+  
+  cat("Total samples affected:", nrow(sample_counts), "\n")
+  cat("Total gene measurements lost:", nrow(samples_with_gene_but_no_gapdh), "\n\n")
+  
+  # Detailed breakdown
+  for(i in 1:nrow(sample_counts)) {
+    samp <- sample_counts$Sample[i]
+    genes_lost <- samples_with_gene_but_no_gapdh %>%
+      filter(Sample == samp) %>%
+      pull(Target)
+    cat("  ", samp, " (", sample_counts$n_genes_lost[i], " genes lost): ", 
+        paste(genes_lost, collapse = ", "), "\n", sep = "")
+  }
+} else {
+  cat("**Good news!** All samples with gene measurements also have valid GAPDH.\n")
+}
+
+# Check if GAPDH itself failed QC for any samples
+gapdh_failed_qc <- excluded_samples %>%
+  filter(Target == "GAPDH") %>%
+  pull(Sample) %>%
+  unique()
+
+if(length(gapdh_failed_qc) > 0) {
+  cat("\n\n**GAPDH samples that failed QC (Std Dev > 0.5):** ", length(gapdh_failed_qc), " samples\n", sep = "")
+  cat("  ", paste(sort(gapdh_failed_qc), collapse = ", "), "\n", sep = "")
+  cat("\nNote: These GAPDH failures prevent normalization for ALL genes in these samples,\n")
+  cat("even if those genes had good quality measurements.\n")
+} else {
+  cat("\n\n**No GAPDH samples failed QC.**\n")
+}
+
+# Identify which "missing" samples in the final analysis are due to GAPDH issues
+cat("\n\n**Analysis of 'Missing' Samples:**\n\n")
+
+# Get samples that made it to grouped_df (passed initial QC)
+all_passed_qc <- grouped_df %>%
+  dplyr::select(Sample, Target) %>%
+  distinct()
+
+# For each "missing" sample in delta_Cq_df, check if the gene passed QC but GAPDH didn't
+missing_due_to_gapdh <- missing_combinations %>%
+  inner_join(all_passed_qc, by = c("Sample", "Target")) %>%
+  filter(!Sample %in% gapdh_passed)
+
+if(nrow(missing_due_to_gapdh) > 0) {
+  cat("Gene measurements lost due to GAPDH failure/missing: ", nrow(missing_due_to_gapdh), " sample-gene combinations\n\n", sep = "")
+  
+  missing_gapdh_summary <- missing_due_to_gapdh %>%
+    group_by(Target) %>%
+    summarise(n = n(), .groups = "drop") %>%
+    arrange(desc(n))
+  
+  cat("Breakdown by gene:\n")
+  for(i in 1:nrow(missing_gapdh_summary)) {
+    cat("  ", missing_gapdh_summary$Target[i], ": ", missing_gapdh_summary$n[i], " samples\n", sep = "")
+  }
+} else {
+  cat("None of the 'missing' samples are due to GAPDH QC failures.\n")
+  cat("(They were never run/loaded for those genes)\n")
+}
+```
+
 # Statistical Comparisons
 
 ## T-tests for treatment comparisons
@@ -306,6 +558,7 @@ str(delta_Cq_df)
 
 ```{r ttest-control-vs-stress-no-polyIC}
 #| hold: true
+#| results: hold
 #| label: ttest-control-vs-stress-no-polyIC
 # Filter data for samples without PolyIC treatment
 no_polyIC_data <- delta_Cq_df %>%
@@ -338,6 +591,7 @@ print(comparison1_results)
 
 ```{r sig-genes-no-polyIC}
 #| hold: true
+#| results: hold
 #| label: sig-genes-no-polyIC
 # Identify genes with significant p-values for Temperature comparison
 sig_temp <- comparison1_results %>%
@@ -407,6 +661,7 @@ print(comparison2_results)
 
 ```{r sig-genes-polyIC-control}
 #| hold: true
+#| results: hold
 #| label: sig-genes-polyIC-control
 # Identify genes with significant p-values
 sig_genes_comp2 <- comparison2_results %>%
@@ -427,6 +682,7 @@ if(nrow(sig_genes_comp2) > 0) {
 
 ```{r ttest-polyIC-control-vs-stress}
 #| hold: true
+#| results: hold
 #| label: ttest-polyIC-control-vs-stress
 # Filter data for PolyIC samples only
 polyIC_data <- delta_Cq_df %>%
@@ -459,6 +715,7 @@ print(comparison3_results)
 
 ```{r sig-genes-polyIC-stress}
 #| hold: true
+#| results: hold
 #| label: sig-genes-polyIC-stress
 # Identify genes with significant p-values for Temperature comparison
 sig_temp_polyIC <- comparison3_results %>%
@@ -494,6 +751,7 @@ Two-way ANOVA (PolyIC × Stress Type) for each gene to comprehensively test trea
 
 ```{r anova-models-run}
 #| hold: true
+#| results: hold
 #| label: anova-models-run
 
 # Run ANOVA models for all genes and store emmeans objects for plotting
@@ -922,6 +1180,7 @@ print(p)
 
 ```{r delta-delta-cq-no-polyIC}
 #| hold: true
+#| results: hold
 #| label: delta-delta-cq-no-polyIC
 
 # Calculate delta delta Cq for Temperature vs Control (No PolyIC)
@@ -957,6 +1216,7 @@ print(delta_delta_mech_no_polyIC)
 
 ```{r delta-delta-cq-polyIC-control}
 #| hold: true
+#| results: hold
 #| label: delta-delta-cq-polyIC-control
 
 delta_delta_polyIC_control <- control_data %>%
@@ -977,6 +1237,7 @@ print(delta_delta_polyIC_control)
 
 ```{r delta-delta-cq-polyIC-stress}
 #| hold: true
+#| results: hold
 #| label: delta-delta-cq-polyIC-stress
 
 # Calculate delta delta Cq for Temperature vs Control (PolyIC)
@@ -1182,6 +1443,7 @@ if(any(summary(model_atp)[[1]][["Pr(>F)"]][1:3] < 0.05, na.rm = TRUE)) {
 ### ATP Synthase ANOVA Interpretation
 
 ```{r anova-atp-synthase-interpret}
+#| hold: true
 #| results: hold
 #| label: anova-atp-synthase-interpret
 anova_results <- summary(model_atp)[[1]]
@@ -1297,6 +1559,7 @@ if(any(summary(model_citrate)[[1]][["Pr(>F)"]][1:3] < 0.05, na.rm = TRUE)) {
 ### Citrate Synthase ANOVA Interpretation
 
 ```{r anova-citrate-synthase-interpret}
+#| hold: true
 #| results: hold
 #| label: anova-citrate-synthase-interpret
 anova_results <- summary(model_citrate)[[1]]
@@ -1410,6 +1673,7 @@ if(any(summary(model_dnmt1)[[1]][["Pr(>F)"]][1:3] < 0.05, na.rm = TRUE)) {
 ### DNMT1 ANOVA Interpretation
 
 ```{r anova-dnmt1-interpret}
+#| hold: true
 #| results: hold
 #| label: anova-dnmt1-interpret
 anova_results <- summary(model_dnmt1)[[1]]
@@ -1523,6 +1787,7 @@ if(any(summary(model_hsp70)[[1]][["Pr(>F)"]][1:3] < 0.05, na.rm = TRUE)) {
 ### HSP70 ANOVA Interpretation
 
 ```{r anova-hsp70-interpret}
+#| hold: true
 #| results: hold
 #| label: anova-hsp70-interpret
 anova_results <- summary(model_hsp70)[[1]]
@@ -1636,6 +1901,7 @@ if(any(summary(model_hsp90)[[1]][["Pr(>F)"]][1:3] < 0.05, na.rm = TRUE)) {
 ### HSP90 ANOVA Interpretation
 
 ```{r anova-hsp90-interpret}
+#| hold: true
 #| results: hold
 #| label: anova-hsp90-interpret
 anova_results <- summary(model_hsp90)[[1]]
@@ -1749,6 +2015,7 @@ if(any(summary(model_cgas)[[1]][["Pr(>F)"]][1:3] < 0.05, na.rm = TRUE)) {
 ### cGAS ANOVA Interpretation
 
 ```{r anova-cgas-interpret}
+#| hold: true
 #| results: hold
 #| label: anova-cgas-interpret
 anova_results <- summary(model_cgas)[[1]]
@@ -1862,6 +2129,7 @@ if(any(summary(model_viperin)[[1]][["Pr(>F)"]][1:3] < 0.05, na.rm = TRUE)) {
 ### VIPERIN ANOVA Interpretation
 
 ```{r anova-viperin-interpret}
+#| hold: true
 #| results: hold
 #| label: anova-viperin-interpret
 anova_results <- summary(model_viperin)[[1]]
