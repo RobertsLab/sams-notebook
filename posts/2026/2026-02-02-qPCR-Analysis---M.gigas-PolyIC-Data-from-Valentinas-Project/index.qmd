@@ -44,6 +44,7 @@ I have not taken the time to evaluate the qPCRs run by Aakriti in detail. I've r
 ```{r setup}
 #| hold: true
 #| label: setup
+#| results: hold
 knitr::opts_chunk$set(
   echo = TRUE,         # Display code chunks
   eval = TRUE,        # Evaluate code chunks
@@ -59,112 +60,95 @@ library(emmeans)
 library(multcomp)
 ```
 
+# LOAD DATA
 ```{r load-data}
 #| hold: true
+#| results: hold
 #| label: load-data
 # Load qPCR data
 
-# CITRATE SYNTHASE
-citrate_synthase_01 <- read.csv("https://raw.githubusercontent.com/RobertsLab/sams-notebook/refs/heads/master/posts/2026/2026-01-27-qPCRs---M.gigas-Valentina-PolyIC-cGAS-citrate_synthase-and-DNMT1/sam_2026-01-27_15-32-08_Connect-citrate_synthase-01--Quantification-Cq_Results.csv") %>%
-  mutate(Target = "Citrate.Synthase")
-citrate_synthase_02 <- read.csv("https://raw.githubusercontent.com/RobertsLab/sams-notebook/refs/heads/master/posts/2026/2026-01-27-qPCRs---M.gigas-Valentina-PolyIC-cGAS-citrate_synthase-and-DNMT1/sam_2026-01-27_15-30-47_CFX96-citrate_synthase-02-Quantification-Cq_Results.csv") %>%
-  mutate(Target = "Citrate.Synthase")
-citrate_synthase_03 <- read.csv("https://raw.githubusercontent.com/RobertsLab/sams-notebook/refs/heads/master/posts/2026/2026-01-27-qPCRs---M.gigas-Valentina-PolyIC-cGAS-citrate_synthase-and-DNMT1/sam_2026-01-27_16-31-12_Connect-citrate_synthase-03-Quantification-Cq_Results.csv") %>%
-  mutate(Target = "Citrate.Synthase")
-citrate_synthase_04 <- read.csv("https://raw.githubusercontent.com/RobertsLab/sams-notebook/refs/heads/master/posts/2026/2026-02-02-qPCR-Analysis---M.gigas-PolyIC-Data-from-Valentinas-Project/admin_2025-08-12%2011-18-15_Connect_citrate_VV-SJW-Quantification-Cq_Results.csv") %>%
-  mutate(Target = "Citrate.Synthase")
-
-# DNMT1
-DNMT1_01 <- read.csv("https://raw.githubusercontent.com/RobertsLab/sams-notebook/refs/heads/master/posts/2026/2026-01-27-qPCRs---M.gigas-Valentina-PolyIC-cGAS-citrate_synthase-and-DNMT1/sam_2026-01-27_13-34-02_Connect-DNMT1-01-Quantification-Cq_Results.csv") %>%
-  mutate(Target = "DNMT1")
-DNMT1_02 <- read.csv("https://raw.githubusercontent.com/RobertsLab/sams-notebook/refs/heads/master/posts/2026/2026-01-27-qPCRs---M.gigas-Valentina-PolyIC-cGAS-citrate_synthase-and-DNMT1/sam_2026-01-27_13-29-34_CFX96-DNMT1-02%20Quantification-Cq_Results.csv") %>%
-  mutate(Target = "DNMT1")
-DNMT1_03 <- read.csv("https://raw.githubusercontent.com/RobertsLab/sams-notebook/refs/heads/master/posts/2026/2026-01-27-qPCRs---M.gigas-Valentina-PolyIC-cGAS-citrate_synthase-and-DNMT1/sam_2026-01-27_14-33-31_Connect-DNMT1-03-Quantification-Cq_Results.csv") %>%
-  mutate(Target = "DNMT1")
-
-# cGAS
-cGAS_01 <- read.csv("https://raw.githubusercontent.com/RobertsLab/sams-notebook/refs/heads/master/posts/2026/2026-01-27-qPCRs---M.gigas-Valentina-PolyIC-cGAS-citrate_synthase-and-DNMT1/sam_2026-01-27_11-25-14_Connect-cGAS-01-Quantification-Cq_Results.csv") %>%
-  mutate(Target = "cGAS")
-cGAS_02 <- read.csv("https://raw.githubusercontent.com/RobertsLab/sams-notebook/refs/heads/master/posts/2026/2026-01-27-qPCRs---M.gigas-Valentina-PolyIC-cGAS-citrate_synthase-and-DNMT1/sam_2026-01-27_11-49-08_CFX96-cGAS-02-Quantification-Cq_Results.csv") %>%
-  mutate(Target = "cGAS")
-cGAS_03 <- read.csv("https://raw.githubusercontent.com/RobertsLab/sams-notebook/refs/heads/master/posts/2026/2026-01-27-qPCRs---M.gigas-Valentina-PolyIC-cGAS-citrate_synthase-and-DNMT1/sam_2026-01-27_12-35-04_Connect-cGAS-03-QuantificationCq_Results.csv") %>%
-  mutate(Target = "cGAS")
-
-# ATP SYNTHASE
-ATP_synthase_01 <- read.csv("https://raw.githubusercontent.com/RobertsLab/sams-notebook/refs/heads/master/posts/2026/2026-01-28-qPCRs---M.gigas-Valentina-PolyIC-ATP-synthase-GAPDH-HSP70-and-HSP90/sam_2026-01-28_09-56-00_Connect-ATP_synthase-01-QuantificationCq_Results.csv") %>%
-  mutate(Target = "ATP.Synthase")
-ATP_synthase_02 <- read.csv("https://raw.githubusercontent.com/RobertsLab/sams-notebook/refs/heads/master/posts/2026/2026-01-28-qPCRs---M.gigas-Valentina-PolyIC-ATP-synthase-GAPDH-HSP70-and-HSP90/sam_2026-01-28_10-13-15_CFX96-ATP_synthase-02-Quantification-Cq_Results.csv") %>%
-  mutate(Target = "ATP.Synthase")
-ATP_synthase_03 <- read.csv("https://raw.githubusercontent.com/RobertsLab/sams-notebook/refs/heads/master/posts/2026/2026-01-28-qPCRs---M.gigas-Valentina-PolyIC-ATP-synthase-GAPDH-HSP70-and-HSP90/sam_2026-01-28_10-55-49_Connect-ATP_synthase-03-Quantification-Cq_Results.csv") %>%
-  mutate(Target = "ATP.Synthase")
-ATP_synthase_04 <- read.csv("https://raw.githubusercontent.com/RobertsLab/sams-notebook/refs/heads/master/posts/2026/2026-02-02-qPCR-Analysis---M.gigas-PolyIC-Data-from-Valentinas-Project/admin_2025-08-14%2011-11-18_Connect_ATPase_vv-SJW-Quantification-Cq_Results.csv") %>%
-  mutate(Target = "ATP.Synthase")
-
-# GAPDH
-GAPDH_01 <- read.csv("https://raw.githubusercontent.com/RobertsLab/sams-notebook/refs/heads/master/posts/2026/2026-01-28-qPCRs---M.gigas-Valentina-PolyIC-ATP-synthase-GAPDH-HSP70-and-HSP90/sam_2026-01-28_12-06-16_Connect-GAPDH-01-Quantification-Cq_Results.csv") %>%
-  mutate(Target = "GAPDH")
-GAPDH_02 <- read.csv("https://raw.githubusercontent.com/RobertsLab/sams-notebook/refs/heads/master/posts/2026/2026-01-28-qPCRs---M.gigas-Valentina-PolyIC-ATP-synthase-GAPDH-HSP70-and-HSP90/sam_2026-01-28_12-07-20_CFX96-GAPDH-02-Quantification-Cq_Results.csv") %>%
-  mutate(Target = "GAPDH")
-GAPDH_03 <- read.csv("https://raw.githubusercontent.com/RobertsLab/sams-notebook/refs/heads/master/posts/2026/2026-01-28-qPCRs---M.gigas-Valentina-PolyIC-ATP-synthase-GAPDH-HSP70-and-HSP90/sam_2026-01-28_13-05-59_Connect-GAPDH-03-Quantification-Cq_Results.csv") %>%
-  mutate(Target = "GAPDH")
-GAPDH_04 <- read.csv("https://raw.githubusercontent.com/RobertsLab/sams-notebook/refs/heads/master/posts/2026/2026-02-02-qPCR-Analysis---M.gigas-PolyIC-Data-from-Valentinas-Project/admin_2025-08-08%2014-18-00_Connect_GAPD-SJW-Quantification-Cq_Results.csv") %>%
-  mutate(Target = "GAPDH")
-
-# HSP70
-HSP70_01 <- read.csv("https://raw.githubusercontent.com/RobertsLab/sams-notebook/refs/heads/master/posts/2026/2026-01-28-qPCRs---M.gigas-Valentina-PolyIC-ATP-synthase-GAPDH-HSP70-and-HSP90/sam_2026-01-28_14-03-35_Connect-HSP70-01-Quantification-Cq_Results.csv") %>%
-  mutate(Target = "HSP70")
-HSP70_02 <- read.csv("https://raw.githubusercontent.com/RobertsLab/sams-notebook/refs/heads/master/posts/2026/2026-01-28-qPCRs---M.gigas-Valentina-PolyIC-ATP-synthase-GAPDH-HSP70-and-HSP90/sam_2026-01-28_14-25-31_CFX96-HSP70-02-Quantification-Cq_Results.csv") %>%
-  mutate(Target = "HSP70")
-HSP70_03 <- read.csv("https://raw.githubusercontent.com/RobertsLab/sams-notebook/refs/heads/master/posts/2026/2026-01-28-qPCRs---M.gigas-Valentina-PolyIC-ATP-synthase-GAPDH-HSP70-and-HSP90/sam_2026-01-28_15-00-57_Connect-HSP70-03-Quantification-Cq_Results.csv") %>%
-  mutate(Target = "HSP70")
-HSP70_04 <- read.csv("https://raw.githubusercontent.com/RobertsLab/sams-notebook/refs/heads/master/posts/2026/2026-02-02-qPCR-Analysis---M.gigas-PolyIC-Data-from-Valentinas-Project/admin_2025-08-12%2014-19-37_Connect_HSP70_vv-SJW-Quantification-Cq_Results.csv") %>%
-  mutate(Target = "HSP70")
-
-# HSP90
-HSP90_01 <- read.csv("https://raw.githubusercontent.com/RobertsLab/sams-notebook/refs/heads/master/posts/2026/2026-01-28-qPCRs---M.gigas-Valentina-PolyIC-ATP-synthase-GAPDH-HSP70-and-HSP90/sam_2026-01-28-16-06-43_Connect-HSP90-01-QuantificationCq_Results.csv") %>%
-  mutate(Target = "HSP90")
-HSP90_02 <- read.csv("https://raw.githubusercontent.com/RobertsLab/sams-notebook/refs/heads/master/posts/2026/2026-01-28-qPCRs---M.gigas-Valentina-PolyIC-ATP-synthase-GAPDH-HSP70-and-HSP90/sam_2026-01-28_16-07-47_CFX96-HSP90-02-Quantification-Cq_Results.csv") %>%
-  mutate(Target = "HSP90")
-HSP90_03 <- read.csv("https://raw.githubusercontent.com/RobertsLab/sams-notebook/refs/heads/master/posts/2026/2026-01-28-qPCRs---M.gigas-Valentina-PolyIC-ATP-synthase-GAPDH-HSP70-and-HSP90/sam_2026-01-28_17-07-09_Connect-HSP90-03-Quantification-Cq_Results.csv") %>%
-  mutate(Target = "HSP90")
-
-# VIPERIN
-VIPERIN_01 <- read.csv("https://raw.githubusercontent.com/RobertsLab/sams-notebook/refs/heads/master/posts/2026/2026-01-29-qPCR---M.gigas-Valentina-PolyIC-VIPERIN/sam_2026-01-29_07-21-16_Connect-VIPERIN-01-QuantificationCq_Results.csv") %>%
-  mutate(Target = "VIPERIN")
-VIPERIN_02 <- read.csv("https://raw.githubusercontent.com/RobertsLab/sams-notebook/refs/heads/master/posts/2026/2026-01-29-qPCR---M.gigas-Valentina-PolyIC-VIPERIN/sam_2026-01-29_07-39-06_CFX96-VIPERIN-02-Quantification-Cq_Results.csv") %>%
-  mutate(Target = "VIPERIN")
-VIPERIN_03 <- read.csv("https://raw.githubusercontent.com/RobertsLab/sams-notebook/refs/heads/master/posts/2026/2026-01-29-qPCR---M.gigas-Valentina-PolyIC-VIPERIN/sam_2026-01-29_08-24-59_Connect-VIPERIN-03-QuantificationCq_Results.csv") %>%
-  mutate(Target = "VIPERIN")
-```
-
-```{r combine-plates}
-#| hold: true
-#| label: combine-plates
-# Combine plate replicates for each gene
-citrate_synthase <- bind_rows(citrate_synthase_01, citrate_synthase_02, citrate_synthase_03)
-DNMT1 <- bind_rows(DNMT1_01, DNMT1_02, DNMT1_03)
-cGAS <- bind_rows(cGAS_01, cGAS_02, cGAS_03)
-ATP_synthase <- bind_rows(ATP_synthase_01, ATP_synthase_02, ATP_synthase_03)
-GAPDH <- bind_rows(GAPDH_01, GAPDH_02, GAPDH_03)
-HSP70 <- bind_rows(HSP70_01, HSP70_02, HSP70_03)
-HSP90 <- bind_rows(HSP90_01, HSP90_02, HSP90_03)
-VIPERIN <- bind_rows(VIPERIN_01, VIPERIN_02, VIPERIN_03)
-
-# Combine all genes into single dataframe
-qpcr_data <- bind_rows(
-  citrate_synthase,
-  DNMT1,
-  cGAS,
-  ATP_synthase,
-  GAPDH,
-  HSP70,
-  HSP90,
-  VIPERIN
+# Define file URLs and target names in a structured format
+file_list <- list(
+  # CITRATE SYNTHASE
+  list(url = "https://raw.githubusercontent.com/RobertsLab/sams-notebook/refs/heads/master/posts/2026/2026-01-27-qPCRs---M.gigas-Valentina-PolyIC-cGAS-citrate_synthase-and-DNMT1/sam_2026-01-27_15-32-08_Connect-citrate_synthase-01--Quantification-Cq_Results.csv", 
+       target = "Citrate.Synthase", gene = "citrate_synthase"),
+  list(url = "https://raw.githubusercontent.com/RobertsLab/sams-notebook/refs/heads/master/posts/2026/2026-01-27-qPCRs---M.gigas-Valentina-PolyIC-cGAS-citrate_synthase-and-DNMT1/sam_2026-01-27_15-30-47_CFX96-citrate_synthase-02-Quantification-Cq_Results.csv", 
+       target = "Citrate.Synthase", gene = "citrate_synthase"),
+  list(url = "https://raw.githubusercontent.com/RobertsLab/sams-notebook/refs/heads/master/posts/2026/2026-01-27-qPCRs---M.gigas-Valentina-PolyIC-cGAS-citrate_synthase-and-DNMT1/sam_2026-01-27_16-31-12_Connect-citrate_synthase-03-Quantification-Cq_Results.csv", 
+       target = "Citrate.Synthase", gene = "citrate_synthase"),
+  list(url = "https://raw.githubusercontent.com/RobertsLab/sams-notebook/refs/heads/master/posts/2026/2026-02-02-qPCR-Analysis---M.gigas-PolyIC-Data-from-Valentinas-Project/admin_2025-08-12%2011-18-15_Connect_citrate_VV-SJW-Quantification-Cq_Results.csv", 
+       target = "Citrate.Synthase", gene = "citrate_synthase"),
+  
+  # DNMT1
+  list(url = "https://raw.githubusercontent.com/RobertsLab/sams-notebook/refs/heads/master/posts/2026/2026-01-27-qPCRs---M.gigas-Valentina-PolyIC-cGAS-citrate_synthase-and-DNMT1/sam_2026-01-27_13-34-02_Connect-DNMT1-01-Quantification-Cq_Results.csv", 
+       target = "DNMT1", gene = "DNMT1"),
+  list(url = "https://raw.githubusercontent.com/RobertsLab/sams-notebook/refs/heads/master/posts/2026/2026-01-27-qPCRs---M.gigas-Valentina-PolyIC-cGAS-citrate_synthase-and-DNMT1/sam_2026-01-27_13-29-34_CFX96-DNMT1-02%20Quantification-Cq_Results.csv", 
+       target = "DNMT1", gene = "DNMT1"),
+  list(url = "https://raw.githubusercontent.com/RobertsLab/sams-notebook/refs/heads/master/posts/2026/2026-01-27-qPCRs---M.gigas-Valentina-PolyIC-cGAS-citrate_synthase-and-DNMT1/sam_2026-01-27_14-33-31_Connect-DNMT1-03-Quantification-Cq_Results.csv", 
+       target = "DNMT1", gene = "DNMT1"),
+  
+  # cGAS
+  list(url = "https://raw.githubusercontent.com/RobertsLab/sams-notebook/refs/heads/master/posts/2026/2026-01-27-qPCRs---M.gigas-Valentina-PolyIC-cGAS-citrate_synthase-and-DNMT1/sam_2026-01-27_11-25-14_Connect-cGAS-01-Quantification-Cq_Results.csv", 
+       target = "cGAS", gene = "cGAS"),
+  list(url = "https://raw.githubusercontent.com/RobertsLab/sams-notebook/refs/heads/master/posts/2026/2026-01-27-qPCRs---M.gigas-Valentina-PolyIC-cGAS-citrate_synthase-and-DNMT1/sam_2026-01-27_11-49-08_CFX96-cGAS-02-Quantification-Cq_Results.csv", 
+       target = "cGAS", gene = "cGAS"),
+  list(url = "https://raw.githubusercontent.com/RobertsLab/sams-notebook/refs/heads/master/posts/2026/2026-01-27-qPCRs---M.gigas-Valentina-PolyIC-cGAS-citrate_synthase-and-DNMT1/sam_2026-01-27_12-35-04_Connect-cGAS-03-QuantificationCq_Results.csv", 
+       target = "cGAS", gene = "cGAS"),
+  
+  # ATP SYNTHASE
+  list(url = "https://raw.githubusercontent.com/RobertsLab/sams-notebook/refs/heads/master/posts/2026/2026-01-28-qPCRs---M.gigas-Valentina-PolyIC-ATP-synthase-GAPDH-HSP70-and-HSP90/sam_2026-01-28_09-56-00_Connect-ATP_synthase-01-QuantificationCq_Results.csv", 
+       target = "ATP.Synthase", gene = "ATP_synthase"),
+  list(url = "https://raw.githubusercontent.com/RobertsLab/sams-notebook/refs/heads/master/posts/2026/2026-01-28-qPCRs---M.gigas-Valentina-PolyIC-ATP-synthase-GAPDH-HSP70-and-HSP90/sam_2026-01-28_10-13-15_CFX96-ATP_synthase-02-Quantification-Cq_Results.csv", 
+       target = "ATP.Synthase", gene = "ATP_synthase"),
+  list(url = "https://raw.githubusercontent.com/RobertsLab/sams-notebook/refs/heads/master/posts/2026/2026-01-28-qPCRs---M.gigas-Valentina-PolyIC-ATP-synthase-GAPDH-HSP70-and-HSP90/sam_2026-01-28_10-55-49_Connect-ATP_synthase-03-Quantification-Cq_Results.csv", 
+       target = "ATP.Synthase", gene = "ATP_synthase"),
+  list(url = "https://raw.githubusercontent.com/RobertsLab/sams-notebook/refs/heads/master/posts/2026/2026-02-02-qPCR-Analysis---M.gigas-PolyIC-Data-from-Valentinas-Project/admin_2025-08-14%2011-11-18_Connect_ATPase_vv-SJW-Quantification-Cq_Results.csv", 
+       target = "ATP.Synthase", gene = "ATP_synthase"),
+  
+  # GAPDH
+  list(url = "https://raw.githubusercontent.com/RobertsLab/sams-notebook/refs/heads/master/posts/2026/2026-01-28-qPCRs---M.gigas-Valentina-PolyIC-ATP-synthase-GAPDH-HSP70-and-HSP90/sam_2026-01-28_12-06-16_Connect-GAPDH-01-Quantification-Cq_Results.csv", 
+       target = "GAPDH", gene = "GAPDH"),
+  list(url = "https://raw.githubusercontent.com/RobertsLab/sams-notebook/refs/heads/master/posts/2026/2026-01-28-qPCRs---M.gigas-Valentina-PolyIC-ATP-synthase-GAPDH-HSP70-and-HSP90/sam_2026-01-28_12-07-20_CFX96-GAPDH-02-Quantification-Cq_Results.csv", 
+       target = "GAPDH", gene = "GAPDH"),
+  list(url = "https://raw.githubusercontent.com/RobertsLab/sams-notebook/refs/heads/master/posts/2026/2026-01-28-qPCRs---M.gigas-Valentina-PolyIC-ATP-synthase-GAPDH-HSP70-and-HSP90/sam_2026-01-28_13-05-59_Connect-GAPDH-03-Quantification-Cq_Results.csv", 
+       target = "GAPDH", gene = "GAPDH"),
+  list(url = "https://raw.githubusercontent.com/RobertsLab/sams-notebook/refs/heads/master/posts/2026/2026-02-02-qPCR-Analysis---M.gigas-PolyIC-Data-from-Valentinas-Project/admin_2025-08-08%2014-18-00_Connect_GAPD-SJW-Quantification-Cq_Results.csv", 
+       target = "GAPDH", gene = "GAPDH"),
+  
+  # HSP70
+  list(url = "https://raw.githubusercontent.com/RobertsLab/sams-notebook/refs/heads/master/posts/2026/2026-01-28-qPCRs---M.gigas-Valentina-PolyIC-ATP-synthase-GAPDH-HSP70-and-HSP90/sam_2026-01-28_14-03-35_Connect-HSP70-01-Quantification-Cq_Results.csv", 
+       target = "HSP70", gene = "HSP70"),
+  list(url = "https://raw.githubusercontent.com/RobertsLab/sams-notebook/refs/heads/master/posts/2026/2026-01-28-qPCRs---M.gigas-Valentina-PolyIC-ATP-synthase-GAPDH-HSP70-and-HSP90/sam_2026-01-28_14-25-31_CFX96-HSP70-02-Quantification-Cq_Results.csv", 
+       target = "HSP70", gene = "HSP70"),
+  list(url = "https://raw.githubusercontent.com/RobertsLab/sams-notebook/refs/heads/master/posts/2026/2026-01-28-qPCRs---M.gigas-Valentina-PolyIC-ATP-synthase-GAPDH-HSP70-and-HSP90/sam_2026-01-28_15-00-57_Connect-HSP70-03-Quantification-Cq_Results.csv", 
+       target = "HSP70", gene = "HSP70"),
+  list(url = "https://raw.githubusercontent.com/RobertsLab/sams-notebook/refs/heads/master/posts/2026/2026-02-02-qPCR-Analysis---M.gigas-PolyIC-Data-from-Valentinas-Project/admin_2025-08-12%2014-19-37_Connect_HSP70_vv-SJW-Quantification-Cq_Results.csv", 
+       target = "HSP70", gene = "HSP70"),
+  
+  # HSP90
+  list(url = "https://raw.githubusercontent.com/RobertsLab/sams-notebook/refs/heads/master/posts/2026/2026-01-28-qPCRs---M.gigas-Valentina-PolyIC-ATP-synthase-GAPDH-HSP70-and-HSP90/sam_2026-01-28-16-06-43_Connect-HSP90-01-QuantificationCq_Results.csv", 
+       target = "HSP90", gene = "HSP90"),
+  list(url = "https://raw.githubusercontent.com/RobertsLab/sams-notebook/refs/heads/master/posts/2026/2026-01-28-qPCRs---M.gigas-Valentina-PolyIC-ATP-synthase-GAPDH-HSP70-and-HSP90/sam_2026-01-28_16-07-47_CFX96-HSP90-02-Quantification-Cq_Results.csv", 
+       target = "HSP90", gene = "HSP90"),
+  list(url = "https://raw.githubusercontent.com/RobertsLab/sams-notebook/refs/heads/master/posts/2026/2026-01-28-qPCRs---M.gigas-Valentina-PolyIC-ATP-synthase-GAPDH-HSP70-and-HSP90/sam_2026-01-28_17-07-09_Connect-HSP90-03-Quantification-Cq_Results.csv", 
+       target = "HSP90", gene = "HSP90"),
+  
+  # VIPERIN
+  list(url = "https://raw.githubusercontent.com/RobertsLab/sams-notebook/refs/heads/master/posts/2026/2026-01-29-qPCR---M.gigas-Valentina-PolyIC-VIPERIN/sam_2026-01-29_07-21-16_Connect-VIPERIN-01-QuantificationCq_Results.csv", 
+       target = "VIPERIN", gene = "VIPERIN"),
+  list(url = "https://raw.githubusercontent.com/RobertsLab/sams-notebook/refs/heads/master/posts/2026/2026-01-29-qPCR---M.gigas-Valentina-PolyIC-VIPERIN/sam_2026-01-29_07-39-06_CFX96-VIPERIN-02-Quantification-Cq_Results.csv", 
+       target = "VIPERIN", gene = "VIPERIN"),
+  list(url = "https://raw.githubusercontent.com/RobertsLab/sams-notebook/refs/heads/master/posts/2026/2026-01-29-qPCR---M.gigas-Valentina-PolyIC-VIPERIN/sam_2026-01-29_08-24-59_Connect-VIPERIN-03-QuantificationCq_Results.csv", 
+       target = "VIPERIN", gene = "VIPERIN")
 )
 
-str(qpcr_data)
-```
+# Load all files and combine automatically
+qpcr_data <- map_df(file_list, function(file_info) {
+  read.csv(file_info$url) %>%
+    mutate(Target = file_info$target)
+})
 
+```
 
 # Functions
 
@@ -357,19 +341,21 @@ print(comparison1_results)
 #| label: sig-genes-no-polyIC
 # Identify genes with significant p-values for Temperature comparison
 sig_temp <- comparison1_results %>%
+  ungroup() %>%
   filter(temp_pvalue <= 0.05 & !is.na(temp_pvalue)) %>%
-  select(Target, temp_pvalue) %>%
+  dplyr::select(Target, pvalue = temp_pvalue) %>%
   mutate(comparison = "Control vs Temperature")
 
 # Identify genes with significant p-values for Mechanical comparison
 sig_mech <- comparison1_results %>%
+  ungroup() %>%
   filter(mech_pvalue <= 0.05 & !is.na(mech_pvalue)) %>%
-  select(Target, pvalue = mech_pvalue) %>%
+  dplyr::select(Target, pvalue = mech_pvalue) %>%
   mutate(comparison = "Control vs Mechanical")
 
 # Combine and display
 sig_genes_comp1 <- bind_rows(
-  sig_temp %>% rename(pvalue = temp_pvalue),
+  sig_temp,
   sig_mech
 )
 
@@ -387,6 +373,7 @@ if(nrow(sig_genes_comp1) > 0) {
 
 ```{r ttest-control-vs-polyIC-control}
 #| hold: true
+#| results: hold
 #| label: ttest-control-vs-polyIC-control
 # Filter data for control samples only (with and without PolyIC)
 control_data <- delta_Cq_df %>%
@@ -396,13 +383,19 @@ control_data <- delta_Cq_df %>%
 comparison2_results <- control_data %>%
   group_by(Target) %>%
   summarise(
+    n_no_polyIC = sum(polyIC == "No_PolyIC"),
+    n_polyIC = sum(polyIC == "PolyIC"),
+    
     pvalue = if(sum(polyIC == "No_PolyIC") > 0 & sum(polyIC == "PolyIC") > 0) {
       t.test(delta_Cq[polyIC == "No_PolyIC"], 
              delta_Cq[polyIC == "PolyIC"])$p.value
     } else NA_real_,
     
     mean_no_polyIC = mean(delta_Cq[polyIC == "No_PolyIC"], na.rm = TRUE),
+    sd_no_polyIC = sd(delta_Cq[polyIC == "No_PolyIC"], na.rm = TRUE),
     mean_polyIC = mean(delta_Cq[polyIC == "PolyIC"], na.rm = TRUE),
+    sd_polyIC = sd(delta_Cq[polyIC == "PolyIC"], na.rm = TRUE),
+    mean_diff = mean_polyIC - mean_no_polyIC,
     
     .groups = 'drop'
   )
@@ -418,7 +411,7 @@ print(comparison2_results)
 # Identify genes with significant p-values
 sig_genes_comp2 <- comparison2_results %>%
   filter(pvalue <= 0.05 & !is.na(pvalue)) %>%
-  select(Target, pvalue)
+  dplyr::select(Target, pvalue)
 
 if(nrow(sig_genes_comp2) > 0) {
   print("Genes with p ≤ 0.05:")
@@ -470,18 +463,18 @@ print(comparison3_results)
 # Identify genes with significant p-values for Temperature comparison
 sig_temp_polyIC <- comparison3_results %>%
   filter(temp_pvalue <= 0.05 & !is.na(temp_pvalue)) %>%
-  select(Target, temp_pvalue) %>%
+  dplyr::select(Target, pvalue = temp_pvalue) %>%
   mutate(comparison = "PolyIC Control vs Temperature")
 
 # Identify genes with significant p-values for Mechanical comparison
 sig_mech_polyIC <- comparison3_results %>%
   filter(mech_pvalue <= 0.05 & !is.na(mech_pvalue)) %>%
-  select(Target, pvalue = mech_pvalue) %>%
+  dplyr::select(Target, pvalue = mech_pvalue) %>%
   mutate(comparison = "PolyIC Control vs Mechanical")
 
 # Combine and display
 sig_genes_comp3 <- bind_rows(
-  sig_temp_polyIC %>% rename(pvalue = temp_pvalue),
+  sig_temp_polyIC,
   sig_mech_polyIC
 )
 
@@ -693,6 +686,7 @@ p <- control_data %>%
   geom_boxplot() +
   facet_wrap(~Target, scales = "free_y") +
   scale_fill_manual(values = c("No_PolyIC" = "darkgray", "PolyIC" = "salmon")) +
+  coord_cartesian(clip = "off") +
   theme_bw() +
   labs(
     title = "Delta Cq: Basic Control vs PolyIC Control",
@@ -700,11 +694,24 @@ p <- control_data %>%
     y = "Delta Cq",
     fill = "Treatment"
   ) +
-  theme(axis.text.x = element_text(angle = 45, hjust = 1))
+  theme(
+    axis.text.x = element_text(angle = 45, hjust = 1),
+    plot.margin = margin(t = 20, r = 10, b = 10, l = 10)
+  )
 
 # Add annotations if any exist
 if(nrow(sig_annotations_comp2) > 0) {
+  # Expand y-axis limits to ensure annotations are visible
+  y_limits_comp2 <- control_data %>%
+    group_by(Target) %>%
+    summarise(
+      y_min = min(delta_Cq, na.rm = TRUE) - 0.5,
+      y_max = max(delta_Cq, na.rm = TRUE) + 1.5,
+      .groups = "drop"
+    )
+  
   p <- p + 
+    geom_blank(data = y_limits_comp2, aes(x = 1, y = y_max), inherit.aes = FALSE) +
     geom_text(data = sig_annotations_comp2, 
               aes(x = polyIC, y = y_pos, label = label),
               inherit.aes = FALSE, size = 6, vjust = 0, color = "darkorange") +
