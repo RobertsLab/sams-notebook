@@ -88,12 +88,10 @@ Tensors naturally represent datasets where the measurement (expression) depends 
 
 ## What Is Tensor Decomposition?
 
-CP (CANDECOMP/PARAFAC) decomposition models the tensor as a **sum of rank-1 components**:
-
-$$\hat{\mathbf{Y}} = \sum_{r=1}^{R} \mathbf{f}_r^{(genes)} \otimes \mathbf{f}_r^{(samples)} \otimes \mathbf{f}_r^{(time)}$$
+Tensor decomposition breaks a complex dataset into a set of simpler, distinct components — each representing one independent biological program.
 
 ::: {.fragment}
-Each component $r$ produces **three linked factor vectors**:
+Each component contains **three linked factor vectors**:
 
 - **Gene factor** — which orthologs define this program
 - **Sample factor** — which species/samples express it
@@ -108,22 +106,20 @@ Think of it like audio source separation: one jumbled recording → individual s
 
 ## The "Sparse" Part
 
-Barnacle adds an $\ell_1$ (lasso-style) sparsity penalty to the decomposition:
-
-$$\|\mathbf{Y} - \hat{\mathbf{Y}}\|^2 + \lambda_0 \|\mathbf{F}_0\|_1 + \cdots + \lambda_i \|\mathbf{F}_i\|_1$$
+Barnacle applies a **sparsity constraint** that pushes most gene weights toward zero, keeping only the strongest signals.
 
 ::: columns
 ::: {.column width="50%"}
 **Without sparsity**
 
-- Every gene has a non-zero loading
+- Every gene has a non-zero weight
 - Background noise mixed with signal
 - Hard to define meaningful gene sets
 :::
 ::: {.column width="50%"}
 **With sparsity** ✓
 
-- Most gene loadings driven to zero
+- Most gene weights driven to zero
 - Non-zero genes = true signal
 - Component gene sets emerge naturally
 :::
@@ -132,6 +128,36 @@ $$\|\mathbf{Y} - \hat{\mathbf{Y}}\|^2 + \lambda_0 \|\mathbf{F}_0\|_1 + \cdots + 
 ::: {.fragment}
 Sparsity = interpretability. No arbitrary threshold needed to extract a gene list from a component.
 :::
+
+---
+
+## What Is "Rank"?
+
+**Rank** is the number of components (factors) the model extracts from the tensor.
+
+- Each component = one distinct biological program
+- Rank 1: the entire dataset described by a single pattern
+- Rank 5: five independent co-expression programs
+- Higher rank → more nuanced signal, but more complexity to estimate
+
+> Think of rank as the number of "channels" you are asking the model to separate the data into. The goal is to find the smallest number of channels that still captures all the real biology.
+
+---
+
+## Selecting the Best Rank
+
+Too low → real biological signals merged or missed.  
+Too high → noise fit as signal; components become unstable and uninterpretable.
+
+**Barnacle's approach — cross-validated bootstrap grid search:**
+
+1. Fit models across a range of candidate ranks (e.g., 1 through 10) with no sparsity penalty
+2. For each rank, perform split-half bootstrap cross-validation across many random 50/50 train/test splits
+3. Measure prediction error on held-out test data, averaged across splits
+4. Apply the **1SE rule**: select the **smallest rank** whose prediction error is statistically equivalent to the best-performing rank
+5. This enforces a **parsimony principle** — prefer the simplest model that explains the data equally well
+
+> The 1SE rule is objective, unlike the PCA "scree plot elbow" or WGCNA soft-thresholding power selection, both of which rely on subjective visual inspection.
 
 ---
 
@@ -151,7 +177,7 @@ Sparsity = interpretability. No arbitrary threshold needed to extract a gene lis
 
 ## vs. PCA
 
-PCA is a rank-$R$ **matrix** decomposition — to use it you must first **flatten the tensor**:
+PCA is a **matrix** decomposition — to use it you must first **flatten the tensor**:
 
 ::: columns
 ::: {.column width="50%"}
@@ -167,7 +193,7 @@ PCA is a rank-$R$ **matrix** decomposition — to use it you must first **flatte
 
 - Native 3D structure preserved
 - Three linked factor matrices remain jointly meaningful
-- $\ell_1$ sparsity replaces arbitrary cutoffs
+- Sparsity constraint replaces arbitrary cutoffs
 - No orthogonality forced
 :::
 :::
@@ -200,7 +226,7 @@ Any conserved pattern across species and timepoints is only findable after the f
 ::: {.fragment}
 With sparse tensor decomposition, **cross-species conservation is directly encoded**:
 
-> If a factor has high loadings for orthologs in the gene mode **and** high loadings for all three species in the sample mode, that *is* the mathematical definition of a conserved cross-species expression program.
+> If a factor has high weights for orthologs in the gene axis **and** high weights for all three species in the sample axis, that factor directly represents a conserved cross-species expression program.
 :::
 
 ---
@@ -213,7 +239,7 @@ With sparse tensor decomposition, **cross-species conservation is directly encod
 
 3. **Temporal trajectory as a factor** — full TP1→TP4 dynamics captured as a factor vector, not just a trait correlation
 
-4. **Sparsity = interpretability** — $\ell_1$ regularization drives most gene loadings to zero; gene sets emerge without threshold tuning
+4. **Sparsity = interpretability** — sparsity constraint drives most gene weights to zero; gene sets emerge without threshold tuning
 
 ---
 
@@ -221,7 +247,7 @@ With sparse tensor decomposition, **cross-species conservation is directly encod
 
 5. **Fully unsupervised** — no phenotype labels or predefined contrasts; uncharacterized "dark matter" genes included
 
-6. **Principled parameter selection** — rank $R$ and sparsity $\lambda$ jointly optimized via cross-validated bootstrap grid search (1SE rule)
+6. **Principled parameter selection** — rank and sparsity level jointly optimized via cross-validated bootstrap grid search (1SE rule)
 
 7. **Identifiability metric** — Factor Match Score (FMS) formally quantifies component reproducibility across random initializations
 
@@ -229,24 +255,24 @@ With sparse tensor decomposition, **cross-species conservation is directly encod
 
 ## Principled Parameter Selection
 
-Two-stage bootstrap grid search (Stage 4 of this analysis):
+Two-stage bootstrap grid search:
 
 ::: columns
 ::: {.column width="50%"}
-**Stage 4a — Rank selection** (at λ = 0)
+**Stage 1 — Rank selection**
 
 1. Fit models across candidate ranks
-2. Cross-validation SSE across bootstrap splits
-3. Select smallest rank within 1SE of minimum SSE
+2. Measure prediction error across bootstrap splits
+3. Select smallest rank within statistical equivalence of best
 4. *Parsimony principle*
 :::
 ::: {.column width="50%"}
-**Stage 4b — λ selection** (at optimal rank)
+**Stage 2 — Sparsity selection**
 
-1. Fit models across candidate λ values
-2. Factor Match Score across bootstrap splits
-3. Select maximum λ within 1SE of max FMS
-4. *Maximum sparsity while stable*
+1. Fit models across candidate sparsity levels
+2. Measure component stability (Factor Match Score) across splits
+3. Select maximum sparsity that remains stable
+4. *Maximum interpretability while stable*
 :::
 :::
 
@@ -258,7 +284,7 @@ This is a key advantage over WGCNA (soft-thresholding power choice) and PCA (scr
 
 ## What a Factor Looks Like
 
-Each of the $R$ components simultaneously describes:
+Each component simultaneously describes:
 
 ```
 Component k:
