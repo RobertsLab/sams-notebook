@@ -1,0 +1,310 @@
+---
+title: "Sparse Tensor Decomposition for Multi-Species Gene Expression Analysis"
+subtitle: "Benefits vs. Pairwise Comparisons, PCA, and WGCNA"
+author: "Sam White"
+date: "2026-02-25"
+format:
+  revealjs:
+    theme: dark
+    slide-number: true
+    toc: false
+    incremental: false
+    transition: slide
+    smaller: true
+    code-fold: false
+    fig-align: center
+    footer: "Sparse Tensor Decomposition — E5 Timeseries Molecular"
+    logo: ""
+    css: |
+      .reveal table {
+        font-size: 0.6em;
+      }
+      .reveal .small {
+        font-size: 0.7em;
+      }
+      .reveal p, .reveal li {
+        font-size: 0.85em;
+        line-height: 1.3em;
+      }
+      .reveal h2 {
+        font-size: 1.2em;
+      }
+bibliography: references.bib
+---
+
+## The Problem: Three Simultaneous Axes of Variation {.center}
+
+Our coral data has structure that classical methods cannot natively capture:
+
+:::: {.columns}
+::: {.column width="33%"}
+**Axis 1: Genes**
+
+Ortholog groups shared across species
+:::
+::: {.column width="33%"}
+**Axis 2: Samples**
+
+Three species × biological replicates
+:::
+::: {.column width="33%"}
+**Axis 3: Time**
+
+TP1 → TP2 → TP3 → TP4
+:::
+::::
+
+::: {.fragment}
+> Every classical method **flattens or ignores** at least one of these axes.
+:::
+
+---
+
+## What Is a Tensor? {.center}
+
+A tensor is a **multidimensional array** — a generalization of a matrix.
+
+::: columns
+::: {.column width="50%"}
+- Scalar = 0th-order tensor
+- Vector = 1st-order tensor
+- Matrix = 2nd-order tensor
+- **3D array = 3rd-order tensor** ← our data
+:::
+::: {.column width="50%"}
+| Mode | This analysis |
+|------|--------------|
+| Axis 1 | Ortholog groups |
+| Axis 2 | Species-samples |
+| Axis 3 | Timepoints (TP1–4) |
+:::
+:::
+
+::: {.fragment}
+Tensors naturally represent datasets where the measurement (expression) depends on **multilinear combinations** of multiple variables simultaneously.
+:::
+
+---
+
+## What Is Tensor Decomposition?
+
+CP (CANDECOMP/PARAFAC) decomposition models the tensor as a **sum of rank-1 components**:
+
+$$\hat{\mathbf{Y}} = \sum_{r=1}^{R} \mathbf{f}_r^{(genes)} \otimes \mathbf{f}_r^{(samples)} \otimes \mathbf{f}_r^{(time)}$$
+
+::: {.fragment}
+Each component $r$ produces **three linked factor vectors**:
+
+- **Gene factor** — which orthologs define this program
+- **Sample factor** — which species/samples express it
+- **Time factor** — the temporal trajectory of the program
+:::
+
+::: {.fragment}
+Think of it like audio source separation: one jumbled recording → individual speakers' voices isolated into distinct channels.
+:::
+
+---
+
+## The "Sparse" Part
+
+Barnacle adds an $\ell_1$ (lasso-style) sparsity penalty to the decomposition:
+
+$$\|\mathbf{Y} - \hat{\mathbf{Y}}\|^2 + \lambda_0 \|\mathbf{F}_0\|_1 + \cdots + \lambda_i \|\mathbf{F}_i\|_1$$
+
+::: columns
+::: {.column width="50%"}
+**Without sparsity**
+
+- Every gene has a non-zero loading
+- Background noise mixed with signal
+- Hard to define meaningful gene sets
+:::
+::: {.column width="50%"}
+**With sparsity** ✓
+
+- Most gene loadings driven to zero
+- Non-zero genes = true signal
+- Component gene sets emerge naturally
+:::
+:::
+
+::: {.fragment}
+Sparsity = interpretability. No arbitrary threshold needed to extract a gene list from a component.
+:::
+
+---
+
+## vs. Pairwise Comparisons (DESeq2 / edgeR)
+
+| Aspect | Pairwise | Sparse Tensor |
+|---|---|---|
+| Data structure | 2D: genes × samples | 3D: genes × samples × time |
+| Contrasts | One predefined contrast at a time | All axes simultaneously |
+| Cross-species | Separate tests; post-hoc overlap | All species in one joint model |
+| Temporal pattern | Interaction terms or repeated tests | Time is a native dimension |
+| Output | Binary gene lists | Continuous loadings across all axes |
+
+> Pairwise approaches require **multiple tests + arbitrary overlap thresholding** and cannot capture temporal trajectories as a unit.
+
+---
+
+## vs. PCA
+
+PCA is a rank-$R$ **matrix** decomposition — to use it you must first **flatten the tensor**:
+
+::: columns
+::: {.column width="50%"}
+**Problems with flattening**
+
+- Collapsing time into samples conflates temporal variation with inter-individual variation
+- Running PCA per species gives no shared latent space
+- Dense loadings require post-hoc thresholding
+- Orthogonality constraint may not match biology
+:::
+::: {.column width="50%"}
+**Tensor advantage**
+
+- Native 3D structure preserved
+- Three linked factor matrices remain jointly meaningful
+- $\ell_1$ sparsity replaces arbitrary cutoffs
+- No orthogonality forced
+:::
+:::
+
+---
+
+## vs. WGCNA
+
+WGCNA also discovers co-expression modules without predefined contrasts — but operates only on 2D matrices.
+
+| Aspect | WGCNA | Sparse Tensor (Barnacle) |
+|---|---|---|
+| Data structure | 2D: gene × sample | 3D: gene × sample × time |
+| Multi-species | Per-species; post-hoc comparison | All species in one decomposition |
+| Temporal data | Time encoded as a trait | Time is a first-class axis |
+| Module definition | Topological overlap + clustering | Sparsity-constrained optimization |
+| "Dark matter" genes | Often filtered out | Included; placed by co-variation |
+| Supervised element | Module–trait correlations required | Fully unsupervised |
+
+---
+
+## The WGCNA Cross-Species Problem
+
+::: {.callout-important}
+WGCNA requires a **separate run per species**, then **manual post-hoc comparison** of module gene lists.
+:::
+
+Any conserved pattern across species and timepoints is only findable after the fact.
+
+::: {.fragment}
+With sparse tensor decomposition, **cross-species conservation is directly encoded**:
+
+> If a factor has high loadings for orthologs in the gene mode **and** high loadings for all three species in the sample mode, that *is* the mathematical definition of a conserved cross-species expression program.
+:::
+
+---
+
+## Key Advantages (1 of 2)
+
+1. **Native multi-way structure** — genes, samples, and time are first-class dimensions; no flattening required
+
+2. **Single joint model** — all three coral species analyzed simultaneously; conservation is a direct output, not post-hoc
+
+3. **Temporal trajectory as a factor** — full TP1→TP4 dynamics captured as a factor vector, not just a trait correlation
+
+4. **Sparsity = interpretability** — $\ell_1$ regularization drives most gene loadings to zero; gene sets emerge without threshold tuning
+
+---
+
+## Key Advantages (2 of 2)
+
+5. **Fully unsupervised** — no phenotype labels or predefined contrasts; uncharacterized "dark matter" genes included
+
+6. **Principled parameter selection** — rank $R$ and sparsity $\lambda$ jointly optimized via cross-validated bootstrap grid search (1SE rule)
+
+7. **Identifiability metric** — Factor Match Score (FMS) formally quantifies component reproducibility across random initializations
+
+---
+
+## Principled Parameter Selection
+
+Two-stage bootstrap grid search (Stage 4 of this analysis):
+
+::: columns
+::: {.column width="50%"}
+**Stage 4a — Rank selection** (at λ = 0)
+
+1. Fit models across candidate ranks
+2. Cross-validation SSE across bootstrap splits
+3. Select smallest rank within 1SE of minimum SSE
+4. *Parsimony principle*
+:::
+::: {.column width="50%"}
+**Stage 4b — λ selection** (at optimal rank)
+
+1. Fit models across candidate λ values
+2. Factor Match Score across bootstrap splits
+3. Select maximum λ within 1SE of max FMS
+4. *Maximum sparsity while stable*
+:::
+:::
+
+::: {.fragment}
+This is a key advantage over WGCNA (soft-thresholding power choice) and PCA (scree plot elbow) — both of which rely on subjective visual inspection.
+:::
+
+---
+
+## What a Factor Looks Like
+
+Each of the $R$ components simultaneously describes:
+
+```
+Component k:
+  Gene factor:   [0, 0, 0.83, 0, 0, 0.61, 0, 0, 0.44, ...]  ← sparse gene set
+  Sample factor: [0.71, 0.68, 0, 0.73, 0.69, 0, 0.65, ...]   ← which species/samples
+  Time factor:   [0.12, 0.87, 0.84, 0.15]                    ← TP1-low, TP2-3-high
+```
+
+::: {.fragment}
+Reading this factor: a **sparse set of orthologs** is up-regulated in **two of the three coral species** with a **peak at TP2–TP3** — a conserved, time-resolved co-expression program discovered without any labels.
+:::
+
+---
+
+## Application: E5 Timeseries Coral Data
+
+:::: {.columns}
+::: {.column width="60%"}
+**Tensor dimensions:**
+
+- Axis 1: Ortholog groups (*A. pulchra* × *P. evermanni* × *P. tuahiniensis*)
+- Axis 2: Combined species-samples (all replicates)
+- Axis 3: TP1, TP2, TP3, TP4
+
+**Normalization:** sctransform (regularized negative binomial)
+
+**Tool:** [Barnacle](https://github.com/blasks/barnacle) [@blaskowski2024]
+:::
+::: {.column width="40%"}
+**Scientific question:**
+
+> Which gene expression programs are conserved across evolutionarily divergent coral species at the same developmental timepoints?
+
+This question is **not directly answerable** by pairwise tests, PCA, or per-species WGCNA.
+:::
+::::
+
+---
+
+## References {.smaller}
+
+::: {#refs}
+:::
+
+::: {.small}
+- Blaskowski S, Roald M, Berube PM, Braakman R, Armbrust EV. "Simultaneous acclimation to nitrogen and iron scarcity in open ocean cyanobacteria revealed by sparse tensor decomposition of metatranscriptomes." *Science Advances* 11(14), 2025. <https://doi.org/10.1126/sciadv.adr4310>
+- Kolda TG, Bader BW. "Tensor decompositions and applications." *SIAM Review* 51(3):455–500, 2009. <https://doi.org/10.1137/07070111X>
+- Barnacle documentation: <https://barnacle-py.readthedocs.io>
+:::
