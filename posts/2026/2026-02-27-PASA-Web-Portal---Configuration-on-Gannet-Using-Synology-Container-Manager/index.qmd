@@ -1,0 +1,109 @@
+---
+author: Sam White
+toc-title: Contents
+toc-depth: 5
+toc-location: left
+title: PASA Web Portal - Configuration on Gannet Using Synology Container Manager
+date: '2026-02-27'
+draft: true
+engine: knitr
+categories: 
+  - "gannet"
+  - "MySQL"
+  - "PASA"
+  - "2026"
+---
+# INTRO
+
+# METHODS
+
+# 1. Build the image (if not already done)
+cd /home/shared/8TB_HDD_01/sam/gitrepos/urol-e5/timeseries_molecular/E-Peve/output/00.30-E-Peve-transcriptome-assembly-Trinity/PASA
+sudo docker build -t pasapipeline-fixed:latest -f Dockerfile.pasaweb .
+
+# 2. Save the image to a tar file
+sudo docker save pasapipeline-fixed:latest > /home/sam/pasapipeline-fixed.tar
+
+# 3. Transfer to Synology (replace with your Synology details)
+rsync -avP pasapipeline-fixed.tar gannet:/volume2/docker/PASA_web_portal/
+
+
+On Synology, load the image into Docker:
+
+# Load the pre-built image
+cd /volume2/docker/PASA_web_portal
+sudo docker load -i pasapipeline-fixed.tar
+
+2. In Container Manager, create a new container with these settings:
+
+In Container Manager:
+
+Go to the "Image" tab
+You should see pasapipeline-fixed:latest in the list of images
+Click on the image, then click "Launch" or "Run"
+This opens the container creation wizard where you configure:
+Container name
+Port mappings
+Volume mounts
+Environment variables
+Execution Command: `bash -c "cp /pasa_data/conf.txt /usr/local/src/PASApipeline/pasa_conf/conf.txt && /usr/local/src/PASApipeline/run_PasaWeb.pl 9000"`
+Port Settings:
+
+Local Port: 9000
+Container Port: 9000
+Type: TCP
+Volume Mappings:
+
+
+
+Host: /volume1/path/to/PASA/directory
+Container: /pasa_data
+Network:
+
+Use bridge mode
+
+Working Directory:
+
+3. Grant MySQL permissions (if not already done):
+
+```bash
+mysql -u root -p<password>
+```
+
+```sql
+GRANT SELECT ON peve_pasa.* TO 'pasa_access'@'localhost';
+GRANT SELECT ON apul_pasa.* TO 'pasa_access'@'localhost';
+GRANT SELECT ON ptua_pasa.* TO 'pasa_access'@'localhost';
+FLUSH PRIVILEGES;
+```
+
+
+4. Create/import databases (if not already done):
+
+```bash
+mysql -u root -p -h127.0.0.1 -P3307 <<'EOF'
+CREATE DATABASE IF NOT EXISTS peve_pasa;
+EOF
+```
+
+## Fix collation issue in the SQL dump file (if needed):
+```bash
+sed -i 's/utf8mb4_0900_ai_ci/utf8mb4_general_ci/g' '/volume2/web/gitrepos/urol-e5/timeseries_molecular/E-Peve/output/00.30-E-Peve-transcriptome-assembly-Trinity/PASA/peve_pasa_backup.sql'
+```
+
+## Load the SQL dump into the database:
+```bash
+mysql -u root -p<password> -h127.0.0.1 -P3307 peve_pasa \
+  < /volume2/web/gitrepos/urol-e5/timeseries_molecular/E-Peve/output/00.30-E-Peve-transcriptome-assembly-Trinity/PASA/peve_pasa_backup.sql
+```
+
+4. Access:
+
+::: {.callout-important}
+`http` is used instead of `https` because the PASA web portal does not support SSL/TLS. Ensure that your network is secure and consider using a VPN if accessing remotely.
+:::
+
+http://gannet.fish.washington.edu:9000
+Enter database name when prompted (e.g., peve_pasa)
+
+
