@@ -144,20 +144,90 @@ Sparsity = interpretability. No arbitrary threshold needed to extract a gene lis
 
 ---
 
-## Selecting the Best Rank
+## How Does Barnacle Find the Components?
 
-Too low → real biological signals merged or missed.  
-Too high → noise fit as signal; components become unstable and uninterpretable.
+**Core idea:** Search for combinations of genes, species, and timepoints that consistently rise and fall together — across all three axes at once.
 
-**Barnacle's approach — cross-validated bootstrap grid search:**
+::: {.fragment}
+**The fitting process — iterative refinement:**
 
-1. Fit models across a range of candidate ranks (e.g., 1 through 10) with no sparsity penalty
-2. For each rank, perform split-half bootstrap cross-validation across many random 50/50 train/test splits
-3. Measure prediction error on held-out test data, averaged across splits
-4. Apply the **1SE rule**: select the **smallest rank** whose prediction error is statistically equivalent to the best-performing rank
-5. This enforces a **parsimony principle** — prefer the simplest model that explains the data equally well
+Think of it like focusing a blurry photograph. The model:
 
-> The 1SE rule is objective, unlike the PCA "scree plot elbow" or WGCNA soft-thresholding power selection, both of which rely on subjective visual inspection.
+1. Starts with a rough random guess for each component
+2. Asks: *"Given the current time and species patterns, which genes best match the data?"* → refines the gene list
+3. Asks: *"Given the updated genes and time patterns, which species/samples best match?"* → refines the sample weights
+4. Asks: *"Given the updated genes and samples, which time trajectory best fits?"* → refines the time curve
+5. Cycles through steps 2–4 until the components stop changing — the picture is "in focus"
+:::
+
+::: {.fragment}
+**Two additional safeguards:**
+
+- This is repeated many times from different random starting points — the best result across all starts is kept, avoiding accidental local solutions
+- The **sparsity constraint** is enforced at step 2 each cycle: gene weights that aren't strongly supported get pushed to zero, so only the clearest signals survive
+:::
+
+---
+
+## Stage 1: Selecting the Best Rank
+
+**The question:** How many distinct biological programs are actually present in the data — not too few, not too many?
+
+::: {.fragment}
+**Analogy:** Imagine grouping thousands of news articles by topic. Grouping into 3 topics (politics, sports, other) loses real distinctions. Grouping into 500 creates artificial sub-categories that won't appear in next week's news. The right number captures real, recurring themes.
+:::
+
+::: {.fragment}
+**How it works — "study half, test half":**
+
+1. Randomly split the data into a training half and a held-back test half
+2. Fit the model on the training half
+3. Measure how accurately it reconstructs the held-back data — *lower error = the model captured real signal, not memorized noise*
+4. Repeat across many random splits and average the error; do this for every candidate rank
+:::
+
+::: {.fragment}
+**Parsimony rule:** When a simpler model is statistically just as accurate as a more complex one, always prefer the simpler one — it generalizes better and is less likely to be fitting noise.
+
+> This is objective, unlike the PCA "scree plot elbow" or WGCNA soft-thresholding power selection, both of which rely on subjective visual inspection.
+:::
+
+---
+
+## Stage 2: Selecting the Best Sparsity Level
+
+**Key distinction from rank:** Rank asked *how many* co-expression programs exist. Sparsity asks *which genes truly belong to each one*.
+
+::: {.fragment}
+Every gene gets a score for every component. Without sparsity, even weakly-associated genes keep a non-zero weight, blurring the boundaries between programs. Sparsity sets a **commitment threshold** — genes that don't meet it are dropped to zero; only genes that strongly and consistently define a component remain.
+:::
+
+::: {.fragment}
+**Analogy:** Think of assembling project teams within a company. Rank decided there are 35 teams. Now sparsity determines who actually counts as a team member.
+
+- A *loose* threshold includes anyone who ever attended a meeting — team lists are long, overlapping, and hard to characterize
+- A *strict* threshold keeps only core contributors — smaller, cleaner, more meaningful teams
+- Too *strict* → you've excluded people who genuinely do the work
+:::
+
+::: {.fragment}
+**How it works — "do both halves name the same core members?":**
+
+The model tries many different commitment thresholds. For each one:
+
+1. Split the data into two independent halves
+2. Fit the model separately on each half
+3. Ask: *do both halves identify the same core genes for each component?*
+   - If yes → the threshold is keeping real, reproducible members
+   - If no → the threshold is too strict; it's dropping genes that genuinely define the pattern
+4. Repeat across many random splits and average the agreement
+:::
+
+::: {.fragment}
+**Selecting the ideal setting:** Pick the *strictest* threshold where component gene sets still reliably match across splits — the smallest, cleanest gene sets that remain reproducible.
+
+**After the final model is fit**, each of the 35 components also gets its own individual agreement score — an extra quality-control check unavailable in WGCNA or PCA.
+:::
 
 ---
 
