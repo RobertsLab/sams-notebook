@@ -13,3 +13,94 @@ categories:
   - "annotation"
   - "workflow-annotation"
 ---
+# INTRO
+
+Steven asked me to test out his [`workflow-annoation` pipeline](https://github.com/sr320/workflow-annotation/tree/main) (GitHub) after Hannah encountered an issue yesterday and we [implemented a potential fix](https://github.com/RobertsLab/resources/issues/2404#issuecomment-4000199854) (GitHub Issue).
+
+The pipeline was designed to take nucleotide sequences all the way through gene ontology annotation. As input, I used a small FastA file provided by Hannah (see code below).
+
+## METHODS
+
+### Set up Conda environment
+
+## Create Mamba/Conda environment
+
+::: {.callout-important}
+Be sure to deactivate any current Python/Conda environments!
+
+`deactivate`
+
+and/or
+
+`conda deactivate`
+:::
+
+```bash
+mamba create \
+-n sr320-workflow-annotation \
+python=3.11 \
+diamond \
+requests \
+pandas \
+goatools \
+matplotlib \
+-c bioconda \
+-c conda-forge \
+-y
+```
+
+## R setup
+
+```{r setup, include=TRUE}
+library(reticulate)
+```
+
+## Set R variables
+
+Specifically, sets Conda paths/environments to be used throughout this notebook.
+```{r R-variables, eval=TRUE}
+# CONDA
+conda_env_name <- c("/home/sam/programs/mambaforge/envs/sr320-workflow-annotation")
+conda_path <- c("/opt/anaconda/anaconda3/bin/conda")
+```
+
+## Load [worfkflow-annotation](https://github.com/sr320/workflow-annotation/tree/main) conda environment
+
+If this is successful, the first line of output should show that the Python being used is the one in your [worfkflow-annotation](https://github.com/sr320/workflow-annotation/tree/main) conda environment path.
+
+E.g.
+
+`python:         /home/sam/programs/mambaforge/envs/sr320-workflow-annotation/bin/python`
+
+```{r load-barnacle-conda-env, eval=TRUE}
+use_condaenv(condaenv = conda_env_name, conda = conda_path)
+py_config()
+```
+
+
+### Clone the workflow-annotation pipeline
+
+```{r download-pipeline, engine='bash'}
+git clone git@github.com:sr320/workflow-annotation.git
+```
+
+### Download the FastA
+```{r download-fasta, engine='bash'}
+cd workflow-annotation
+
+wget --quiet --continue https://raw.githubusercontent.com/hannahnowers/Seastar-capstone/refs/heads/main/data/derm-protein.fa
+
+ls -ltrh
+```
+
+### Execute the annotation script
+
+```{r annotate, engine='bash'}
+cd workflow-annotation
+
+bash blast2slim.sh \
+-i derm-protein.fa
+--protein
+> blast_run.log 2>&1
+
+```
