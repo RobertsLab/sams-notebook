@@ -1,0 +1,1120 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.6.42">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+<meta name="author" content="Sam White">
+<meta name="dcterms.date" content="2026-03-05">
+
+<title>Software Testing - Stevens workflow-annotation Pipeline – Sam’s Notebook</title>
+<style>
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: min(4vw, 1.5em);}
+div.column{flex: auto; overflow-x: auto;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+  vertical-align: middle;
+}
+/* CSS for syntax highlighting */
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { display: inline-block; text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+</style>
+
+
+<script src="../../../site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="../../../site_libs/quarto-nav/headroom.min.js"></script>
+<script src="../../../site_libs/clipboard/clipboard.min.js"></script>
+<script src="../../../site_libs/quarto-search/autocomplete.umd.js"></script>
+<script src="../../../site_libs/quarto-search/fuse.min.js"></script>
+<script src="../../../site_libs/quarto-search/quarto-search.js"></script>
+<meta name="quarto:offset" content="../../../">
+<link href="../../..//images/favicon.ico" rel="icon">
+<script src="../../../site_libs/quarto-html/quarto.js"></script>
+<script src="../../../site_libs/quarto-html/popper.min.js"></script>
+<script src="../../../site_libs/quarto-html/tippy.umd.min.js"></script>
+<script src="../../../site_libs/quarto-html/anchor.min.js"></script>
+<link href="../../../site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="../../../site_libs/quarto-html/quarto-syntax-highlighting-dark-b53751a350365c71b6c909e95f209ed1.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="../../../site_libs/bootstrap/bootstrap.min.js"></script>
+<link href="../../../site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="../../../site_libs/bootstrap/bootstrap-e518e50a9807db09b51ea894c4c266f8.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="dark">
+<script id="quarto-search-options" type="application/json">{
+  "location": "navbar",
+  "copy-button": true,
+  "collapse-after": 2,
+  "panel-placement": "end",
+  "type": "textbox",
+  "limit": 100,
+  "keyboard-shortcut": [
+    "f",
+    "/",
+    "s"
+  ],
+  "language": {
+    "search-no-results-text": "No results",
+    "search-matching-documents-text": "matching documents",
+    "search-copy-link-title": "Copy link to search",
+    "search-hide-matches-text": "Hide additional matches",
+    "search-more-match-text": "more match in this document",
+    "search-more-matches-text": "more matches in this document",
+    "search-clear-button-title": "Clear",
+    "search-text-placeholder": "",
+    "search-detached-cancel-button-title": "Cancel",
+    "search-submit-button-title": "Submit",
+    "search-label": "Search"
+  }
+}</script>
+<script async="" src="https://www.googletagmanager.com/gtag/js?id=G-7483T61T11"></script>
+
+<script type="text/javascript">
+
+window.dataLayer = window.dataLayer || [];
+function gtag(){dataLayer.push(arguments);}
+gtag('js', new Date());
+gtag('config', 'G-7483T61T11', { 'anonymize_ip': true});
+</script>
+
+
+<link rel="stylesheet" href="../../../styles.css">
+</head>
+
+<body class="floating nav-fixed">
+
+<div id="quarto-search-results"></div>
+  <header id="quarto-header" class="headroom fixed-top quarto-banner">
+    <nav class="navbar navbar-expand-lg " data-bs-theme="dark">
+      <div class="navbar-container container-fluid">
+      <div class="navbar-brand-container mx-auto">
+    <a class="navbar-brand" href="../../../index.html">
+    <span class="navbar-title">Sam’s Notebook</span>
+    </a>
+  </div>
+            <div id="quarto-search" class="" title="Search"></div>
+          <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarCollapse" aria-controls="navbarCollapse" role="menu" aria-expanded="false" aria-label="Toggle navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+  <span class="navbar-toggler-icon"></span>
+</button>
+          <div class="collapse navbar-collapse" id="navbarCollapse">
+            <ul class="navbar-nav navbar-nav-scroll ms-auto">
+  <li class="nav-item dropdown ">
+    <a class="nav-link dropdown-toggle" href="#" id="nav-menu-bi-hdd-network" role="link" data-bs-toggle="dropdown" aria-expanded="false">
+      <i class="bi bi-hdd-network" role="img">
+</i> 
+ <span class="menu-text"></span>
+    </a>
+    <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="nav-menu-bi-hdd-network">    
+        <li>
+    <a class="dropdown-item" href="http://raven.fish.washington.edu:8787" target="_blank">
+ <span class="dropdown-text">Rstudio Server - Raven</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="https://gannet.fish.washington.edu/Atumefaciens/" target="_blank">
+ <span class="dropdown-text">My Gannet Directory</span></a>
+  </li>  
+    </ul>
+  </li>
+  <li class="nav-item dropdown ">
+    <a class="nav-link dropdown-toggle" href="#" id="nav-menu-bi-journal-code" role="link" data-bs-toggle="dropdown" aria-expanded="false">
+      <i class="bi bi-journal-code" role="img">
+</i> 
+ <span class="menu-text"></span>
+    </a>
+    <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="nav-menu-bi-journal-code">    
+        <li>
+    <a class="dropdown-item" href="https://sr320.github.io/tumbling-oysters/" target="_blank">
+ <span class="dropdown-text">Steven’s Notebook</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="https://shedurkin.github.io/Roberts-LabNotebook/" target="_blank">
+ <span class="dropdown-text">Kathleen’s Notebook</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="https://meganewing.github.io/mewing-notebook/" target="_blank">
+ <span class="dropdown-text">Megan’s Notebook</span></a>
+  </li>  
+    </ul>
+  </li>
+  <li class="nav-item dropdown ">
+    <a class="nav-link dropdown-toggle" href="#" id="nav-menu-bi-github" role="link" data-bs-toggle="dropdown" aria-expanded="false">
+      <i class="bi bi-github" role="img">
+</i> 
+ <span class="menu-text"></span>
+    </a>
+    <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="nav-menu-bi-github">    
+        <li>
+    <a class="dropdown-item" href="https://github.com/RobertsLab/sams-notebook" target="_blank">
+ <span class="dropdown-text">Notebook repo</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="https://github.com/RobertsLab" target="_blank">
+ <span class="dropdown-text">Lab Organization (GitHub)</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="https://github.com/RobertsLab/lab-website" target="_blank">
+ <span class="dropdown-text">Edit Roberts Lab website</span></a>
+  </li>  
+    </ul>
+  </li>
+  <li class="nav-item compact">
+    <a class="nav-link" href="https://calendar.google.com/calendar/embed?src=mrc305@gmail.com&amp;ctz=America/Vancouver" target="_blank"> <i class="bi bi-calendar-week" role="img">
+</i> 
+<span class="menu-text"></span></a>
+  </li>  
+  <li class="nav-item compact">
+    <a class="nav-link" href="../../../index.xml"> <i class="bi bi-rss" role="img">
+</i> 
+<span class="menu-text"></span></a>
+  </li>  
+</ul>
+          </div> <!-- /navcollapse -->
+            <div class="quarto-navbar-tools">
+</div>
+      </div> <!-- /container-fluid -->
+    </nav>
+</header>
+<!-- content -->
+<header id="title-block-header" class="quarto-title-block default toc-left page-columns page-full">
+  <div class="quarto-title-banner page-columns page-full">
+    <div class="quarto-title column-page-right">
+      <h1 class="title">Software Testing - Stevens workflow-annotation Pipeline</h1>
+                                <div class="quarto-categories">
+                <div class="quarto-category">2026</div>
+                <div class="quarto-category">software</div>
+                <div class="quarto-category">annotation</div>
+                <div class="quarto-category">workflow-annotation</div>
+              </div>
+                  </div>
+  </div>
+    
+  
+  <div class="quarto-title-meta column-page-right">
+
+      <div>
+      <div class="quarto-title-meta-heading">Author</div>
+      <div class="quarto-title-meta-contents">
+               <p>Sam White </p>
+            </div>
+    </div>
+      
+      <div>
+      <div class="quarto-title-meta-heading">Published</div>
+      <div class="quarto-title-meta-contents">
+        <p class="date">March 5, 2026</p>
+      </div>
+    </div>
+    
+      
+    </div>
+    
+  
+  </header><div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-full page-navbar">
+<!-- sidebar -->
+  <nav id="quarto-sidebar" class="sidebar collapse collapse-horizontal quarto-sidebar-collapse-item sidebar-navigation floating overflow-auto">
+    <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">Contents</h2>
+   
+  <ul>
+  <li><a href="#intro" id="toc-intro" class="nav-link active" data-scroll-target="#intro">INTRO</a></li>
+  <li><a href="#methods" id="toc-methods" class="nav-link" data-scroll-target="#methods">METHODS</a>
+  <ul>
+  <li><a href="#set-up-conda-environment" id="toc-set-up-conda-environment" class="nav-link" data-scroll-target="#set-up-conda-environment">Set up Conda environment</a></li>
+  <li><a href="#create-mambaconda-environment" id="toc-create-mambaconda-environment" class="nav-link" data-scroll-target="#create-mambaconda-environment">Create Mamba/Conda environment</a></li>
+  <li><a href="#r-setup" id="toc-r-setup" class="nav-link" data-scroll-target="#r-setup">R setup</a></li>
+  <li><a href="#set-r-variables" id="toc-set-r-variables" class="nav-link" data-scroll-target="#set-r-variables">Set R variables</a></li>
+  <li><a href="#load-worfkflow-annotation-conda-environment" id="toc-load-worfkflow-annotation-conda-environment" class="nav-link" data-scroll-target="#load-worfkflow-annotation-conda-environment">Load worfkflow-annotation conda environment</a>
+  <ul>
+  <li><a href="#clone-the-workflow-annotation-pipeline" id="toc-clone-the-workflow-annotation-pipeline" class="nav-link" data-scroll-target="#clone-the-workflow-annotation-pipeline">Clone the workflow-annotation pipeline</a></li>
+  <li><a href="#download-the-fasta" id="toc-download-the-fasta" class="nav-link" data-scroll-target="#download-the-fasta">Download the FastA</a></li>
+  <li><a href="#execute-the-annotation-script" id="toc-execute-the-annotation-script" class="nav-link" data-scroll-target="#execute-the-annotation-script">Execute the annotation script</a></li>
+  </ul></li>
+  </ul></li>
+  <li><a href="#results" id="toc-results" class="nav-link" data-scroll-target="#results">RESULTS</a>
+  <ul>
+  <li><a href="#check-log" id="toc-check-log" class="nav-link" data-scroll-target="#check-log">Check log</a></li>
+  <li><a href="#confirm-expected-output-files" id="toc-confirm-expected-output-files" class="nav-link" data-scroll-target="#confirm-expected-output-files">Confirm expected output files</a></li>
+  <li><a href="#peek-at-output-files" id="toc-peek-at-output-files" class="nav-link" data-scroll-target="#peek-at-output-files">Peek at output files</a></li>
+  </ul></li>
+  <li><a href="#discussion" id="toc-discussion" class="nav-link" data-scroll-target="#discussion">DISCUSSION</a></li>
+  </ul>
+</nav>
+</nav>
+<div id="quarto-sidebar-glass" class="quarto-sidebar-collapse-item" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item"></div>
+<!-- margin-sidebar -->
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar zindex-bottom">
+    </div>
+<!-- main -->
+<main class="content quarto-banner-title-block column-page-right" id="quarto-document-content">
+
+
+
+
+
+<section id="intro" class="level1">
+<h1>INTRO</h1>
+<p>Steven asked me to test out his <a href="https://github.com/sr320/workflow-annotation/tree/main"><code>workflow-annoation</code> pipeline</a> (GitHub) after Hannah encountered an issue yesterday and we <a href="https://github.com/RobertsLab/resources/issues/2404#issuecomment-4000199854">implemented a potential fix</a> (GitHub Issue).</p>
+<p>The pipeline was designed to take nucleotide sequences all the way through gene ontology annotation.</p>
+<p>After some back-and-forth attempts at troubleshooting, I resorted to asking the Gemini 3 Flash (preview) gAI agent. The suggestion was the lack of an <code>User-Agent</code> in the URL request header was causing the 403 permission denied error Hannah (and I) encountered.</p>
+<p>I implemented the suggested changes and tested them.</p>
+</section>
+<section id="methods" class="level1">
+<h1>METHODS</h1>
+<p>As input, I used a subset of a FastA file provided by Hannah (see code below).</p>
+<section id="set-up-conda-environment" class="level3">
+<h3 class="anchored" data-anchor-id="set-up-conda-environment">Set up Conda environment</h3>
+</section>
+<section id="create-mambaconda-environment" class="level2">
+<h2 class="anchored" data-anchor-id="create-mambaconda-environment">Create Mamba/Conda environment</h2>
+<div class="callout callout-style-default callout-important callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Important
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>Be sure to deactivate any current Python/Conda environments!</p>
+<p><code>deactivate</code></p>
+<p>and/or</p>
+<p><code>conda deactivate</code></p>
+</div>
+</div>
+<div class="sourceCode" id="cb1"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="ex">mamba</span> create <span class="dt">\</span></span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a>-n sr320-workflow-annotation <span class="dt">\</span></span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a>python=3.11 <span class="dt">\</span></span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a>diamond <span class="dt">\</span></span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a>blast <span class="dt">\</span></span>
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a>requests <span class="dt">\</span></span>
+<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a>pandas <span class="dt">\</span></span>
+<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a>goatools <span class="dt">\</span></span>
+<span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a>matplotlib <span class="dt">\</span></span>
+<span id="cb1-10"><a href="#cb1-10" aria-hidden="true" tabindex="-1"></a>-c bioconda <span class="dt">\</span></span>
+<span id="cb1-11"><a href="#cb1-11" aria-hidden="true" tabindex="-1"></a>-c conda-forge <span class="dt">\</span></span>
+<span id="cb1-12"><a href="#cb1-12" aria-hidden="true" tabindex="-1"></a>-y</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</section>
+<section id="r-setup" class="level2">
+<h2 class="anchored" data-anchor-id="r-setup">R setup</h2>
+<div class="cell">
+<details class="code-fold">
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb2"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(reticulate)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+</div>
+</section>
+<section id="set-r-variables" class="level2">
+<h2 class="anchored" data-anchor-id="set-r-variables">Set R variables</h2>
+<p>Specifically, sets Conda paths/environments to be used throughout this notebook.</p>
+<div class="callout callout-style-default callout-important callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Important
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>This was run on my laptop, so the paths are specific to my system. Adjust as needed for your system.</p>
+</div>
+</div>
+<div class="cell">
+<details class="code-fold">
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb3"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="co"># CONDA</span></span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a>conda_env_name <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="st">"/home/sam/programs/miniforge3/envs/sr320-workflow-annotation"</span>)</span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a>conda_path <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="st">"/home/sam/programs/miniforge3/bin/conda"</span>)</span>
+<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a><span class="co"># WORKING DIRECTORY</span></span>
+<span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a>working_dir <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="st">"/home/sam/gitrepos/RobertsLab/sams-notebook/posts/2026/2026-03-05-Software-Testing---Stevens-workflow-annotation-Pipeline/"</span>)</span>
+<span id="cb3-7"><a href="#cb3-7" aria-hidden="true" tabindex="-1"></a><span class="fu">Sys.setenv</span>(<span class="at">working_dir =</span> working_dir)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+</div>
+</section>
+<section id="load-worfkflow-annotation-conda-environment" class="level2">
+<h2 class="anchored" data-anchor-id="load-worfkflow-annotation-conda-environment">Load <a href="https://github.com/sr320/workflow-annotation/tree/main">worfkflow-annotation</a> conda environment</h2>
+<p>If this is successful, the first line of output should show that the Python being used is the one in your <a href="https://github.com/sr320/workflow-annotation/tree/main">worfkflow-annotation</a> conda environment path.</p>
+<p>E.g.</p>
+<p><code>python:         /home/sam/programs/miniforge3/envs/sr320-workflow-annotation/bin/python</code></p>
+<div class="cell">
+<details class="code-fold">
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb4"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="fu">use_condaenv</span>(<span class="at">condaenv =</span> conda_env_name, <span class="at">conda =</span> conda_path)</span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a><span class="fu">py_config</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output cell-output-stdout">
+<pre><code>python:         /home/sam/programs/miniforge3/envs/sr320-workflow-annotation/bin/python
+libpython:      /home/sam/programs/miniforge3/envs/sr320-workflow-annotation/lib/libpython3.11.so
+pythonhome:     /home/sam/programs/miniforge3/envs/sr320-workflow-annotation:/home/sam/programs/miniforge3/envs/sr320-workflow-annotation
+version:        3.11.15 | packaged by conda-forge | (main, Mar  5 2026, 16:45:40) [GCC 14.3.0]
+numpy:          /home/sam/programs/miniforge3/envs/sr320-workflow-annotation/lib/python3.11/site-packages/numpy
+numpy_version:  2.4.2
+
+NOTE: Python version was forced by use_python() function</code></pre>
+</div>
+</div>
+<section id="clone-the-workflow-annotation-pipeline" class="level3">
+<h3 class="anchored" data-anchor-id="clone-the-workflow-annotation-pipeline">Clone the workflow-annotation pipeline</h3>
+<div class="sourceCode" id="cb6"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="fu">git</span> clone git@github.com:kubu4/workflow-annotation.git</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</section>
+<section id="download-the-fasta" class="level3">
+<h3 class="anchored" data-anchor-id="download-the-fasta">Download the FastA</h3>
+<div class="callout callout-style-default callout-note callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Note
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>The full FastA was not utilized. I created a subset for quick testing.</p>
+</div>
+</div>
+<div class="sourceCode" id="cb7"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="bu">cd</span> <span class="st">"/home/sam/gitrepos/RobertsLab/sams-notebook/posts/2026/2026-03-05-Software-Testing---Stevens-workflow-annotation-Pipeline/"</span></span>
+<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a><span class="fu">git</span> clone git@github.com:kubu4/workflow-annotation.git</span>
+<span id="cb7-4"><a href="#cb7-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-5"><a href="#cb7-5" aria-hidden="true" tabindex="-1"></a><span class="bu">cd</span> workflow-annotation</span>
+<span id="cb7-6"><a href="#cb7-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-7"><a href="#cb7-7" aria-hidden="true" tabindex="-1"></a><span class="fu">wget</span> <span class="at">--quiet</span> <span class="at">--continue</span> https://raw.githubusercontent.com/hannahnowers/Seastar-capstone/refs/heads/main/data/derm-protein.fa</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell">
+<details class="code-fold">
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb8"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="bu">cd</span> <span class="st">"/home/sam/gitrepos/RobertsLab/sams-notebook/posts/2026/2026-03-05-Software-Testing---Stevens-workflow-annotation-Pipeline/workflow-annotation"</span></span>
+<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a><span class="fu">cat</span> subset-derm-protein.fa</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output cell-output-stdout">
+<pre><code>&gt;g7941.t1
+MQYLPFRGVLCVFWGFLLIETFRPANAGDFALVADLRNGTIYAGSIGQSLADIAPLPLTG
+VIRPLAVEYDPVEKMVYWTDVNSLPSPKITRAHVNGSGQMTLVDQLHLPDGLALDVESRL
+VYWTDGVLGYIGRTRMNGTGARETIVVGLDQPRAIITDSGFIYWTDWGNSSRIERAGLDG
+SNRTTLITGNLVWPNGLFKDGNNLYWCDAKLDKIERSDLLGNNREIVIDLTSYPQIHPFD
+LAVYDEYIYWTDWGYTTLIRVHTSGRGEQNYGPSVFQQSGGLHIQKEPNYCNSSPCQNGA
+ICIDVINGFSCICPSEHQGITRSENPSGSGPCVNGGTCTTIPGGFTCQCPAGYDGPTCTI
+EFIVKKRDREIAGKCKRLH*
+&gt;g7942.t1
+MVVQVTKTSRDYGKINPELLQNLLDERLRDTFQTEDYPNLLYETYESITTSVLDEICPVT
+TRVRTVKPRLPWYDNTIQEERRIPRRLERNWRKSRLDTDYDAFLTQENNV*
+&gt;g7943.t1
+MKSTSSAILCLFGLFGLGYCGPCETLDPCENGAQCLDFDSIPGYFFCYCPYTFYGTRCEN
+RNAACDDNPCMFGGTCLVFNERYECECPSGIYGNHCQANGCANDPCMNGGTCWPFGFSYT
+CICSPGYRGENCDE*
+&gt;g7944.t1
+MATIPIDTCKRHASTKSAETVGVKHLRRRIQTTGPLTIADYMREVLTNPLTGYYMNKDVF
+GNKGDFITSPEISQMFGELIALWIIHEWTQLGQMTPLQVVELGPGRGTLADDMLRVFKQF
+QHITGNSLSLHLVEVSPKMSQLQEEKLTGQQQSKTDMDQPSVSQDSPAGRCEGDTVAERG
+SLSSAYKTSISKTGMPVSWYQSLKEVPKGVSCFIAHEFFDALPIHQFKKTEKGWREVLVD
+VDSDDAGSNHLRFVLSPAATPASTVYPQGSDSRGQIEVCPEGGVIVQEMAHRISEHGGMS
+LIVDYGHDGTKTDTLRGFKKHKLHDVLCEPGTADLTADVDFSYFRQVVQGKVSTHGPITQ
+ESFLKAMGIETRLKMLLKSATGEQRNSLITGCRMLTDPAQMGERFKFFAMMPLNQGTESG
+QAKARTPAGFPSVC*</code></pre>
+</div>
+</div>
+</section>
+<section id="execute-the-annotation-script" class="level3">
+<h3 class="anchored" data-anchor-id="execute-the-annotation-script">Execute the annotation script</h3>
+<div class="cell">
+<details class="code-fold">
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb10"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a><span class="bu">cd</span> <span class="st">"/home/sam/gitrepos/RobertsLab/sams-notebook/posts/2026/2026-03-05-Software-Testing---Stevens-workflow-annotation-Pipeline/workflow-annotation"</span> <span class="kw">&amp;&amp;</span> <span class="dt">\</span></span>
+<span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a><span class="bu">export</span> <span class="va">PATH</span><span class="op">=</span><span class="st">"/home/sam/programs/miniforge3/envs/sr320-workflow-annotation/bin:</span><span class="va">$PATH</span><span class="st">"</span> <span class="kw">&amp;&amp;</span> <span class="dt">\</span></span>
+<span id="cb10-3"><a href="#cb10-3" aria-hidden="true" tabindex="-1"></a><span class="ex">./blast2slim.sh</span> <span class="dt">\</span></span>
+<span id="cb10-4"><a href="#cb10-4" aria-hidden="true" tabindex="-1"></a>-i subset-derm-protein.fa <span class="dt">\</span></span>
+<span id="cb10-5"><a href="#cb10-5" aria-hidden="true" tabindex="-1"></a>--diamond <span class="dt">\</span></span>
+<span id="cb10-6"><a href="#cb10-6" aria-hidden="true" tabindex="-1"></a>--protein <span class="dt">\</span></span>
+<span id="cb10-7"><a href="#cb10-7" aria-hidden="true" tabindex="-1"></a><span class="op">&gt;</span> blast_run.log <span class="dv">2</span><span class="op">&gt;&amp;</span><span class="dv">1</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+</div>
+</section>
+</section>
+</section>
+<section id="results" class="level1">
+<h1>RESULTS</h1>
+<section id="check-log" class="level3">
+<h3 class="anchored" data-anchor-id="check-log">Check log</h3>
+<div class="cell">
+<details class="code-fold">
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb11"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a><span class="fu">cat</span> <span class="st">"/home/sam/gitrepos/RobertsLab/sams-notebook/posts/2026/2026-03-05-Software-Testing---Stevens-workflow-annotation-Pipeline/workflow-annotation/blast_run.log"</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output cell-output-stdout">
+<pre><code>[INFO] Output directory: output/run_20260306_113912
+[INFO] Running DIAMOND BLASTP...
+diamond v2.1.23.177 (C) Max Planck Society for the Advancement of Science, Benjamin J. Buchfink, University of Tuebingen
+Documentation, support and updates available at http://www.diamondsearch.org
+Please cite: http://dx.doi.org/10.1038/s41592-021-01101-x Nature Methods (2021)
+
+#CPU threads: 40
+Scoring parameters: (Matrix=BLOSUM62 Lambda=0.267 K=0.041 Penalties=11/1)
+Temporary directory: output/run_20260306_113912
+#Target sequences to report alignments for: 1
+Opening the database...  [0.138s]
+Database: blastdb/uniprot_sprot.dmnd (type: Diamond database, sequences: 574627, letters: 208482574)
+Block size = 2000000000
+Opening the input file...  [0s]
+Opening the output file...  [0s]
+Loading query sequences...  [0s]
+Masking queries...  [0.029s]
+Algorithm: Double-indexed
+Building query histograms...  [0.006s]
+Seeking in database...  [0s]
+Loading reference sequences...  [0.668s]
+Masking reference...  [4.332s]
+Initializing temporary storage...  [0.001s]
+Building reference histograms...  [4.859s]
+Allocating buffers...  [0s]
+Processing query block 1, reference block 1/1, shape 1/2, index chunk 1/4.
+Building reference seed array...  [1.264s]
+Building query seed array...  [0.011s]
+Computing hash join...  [0.073s]
+Masking low complexity seeds...  [0.007s]
+Searching alignments...  [0.005s]
+Deallocating memory...  [0s]
+Processing query block 1, reference block 1/1, shape 1/2, index chunk 2/4.
+Building reference seed array...  [1.617s]
+Building query seed array...  [0.007s]
+Computing hash join...  [0.068s]
+Masking low complexity seeds...  [0.006s]
+Searching alignments...  [0.004s]
+Deallocating memory...  [0s]
+Processing query block 1, reference block 1/1, shape 1/2, index chunk 3/4.
+Building reference seed array...  [1.373s]
+Building query seed array...  [0.009s]
+Computing hash join...  [0.068s]
+Masking low complexity seeds...  [0.004s]
+Searching alignments...  [0.004s]
+Deallocating memory...  [0s]
+Processing query block 1, reference block 1/1, shape 1/2, index chunk 4/4.
+Building reference seed array...  [1.101s]
+Building query seed array...  [0.012s]
+Computing hash join...  [0.075s]
+Masking low complexity seeds...  [0.003s]
+Searching alignments...  [0.003s]
+Deallocating memory...  [0s]
+Processing query block 1, reference block 1/1, shape 2/2, index chunk 1/4.
+Building reference seed array...  [1.253s]
+Building query seed array...  [0.006s]
+Computing hash join...  [0.066s]
+Masking low complexity seeds...  [0.003s]
+Searching alignments...  [0.006s]
+Deallocating memory...  [0s]
+Processing query block 1, reference block 1/1, shape 2/2, index chunk 2/4.
+Building reference seed array...  [1.683s]
+Building query seed array...  [0.006s]
+Computing hash join...  [0.065s]
+Masking low complexity seeds...  [0.004s]
+Searching alignments...  [0.005s]
+Deallocating memory...  [0s]
+Processing query block 1, reference block 1/1, shape 2/2, index chunk 3/4.
+Building reference seed array...  [1.558s]
+Building query seed array...  [0.009s]
+Computing hash join...  [0.06s]
+Masking low complexity seeds...  [0.003s]
+Searching alignments...  [0.005s]
+Deallocating memory...  [0s]
+Processing query block 1, reference block 1/1, shape 2/2, index chunk 4/4.
+Building reference seed array...  [0.802s]
+Building query seed array...  [0.007s]
+Computing hash join...  [0.048s]
+Masking low complexity seeds...  [0.002s]
+Searching alignments...  [0.003s]
+Deallocating memory...  [0s]
+Deallocating buffers...  [0.033s]
+Clearing query masking...  [0s]
+Computing alignments...  [0.057s]
+Deallocating reference...  [0.024s]
+Loading reference sequences...  [0s]
+Deallocating buffers...  [0s]
+Deallocating queries...  [0s]
+Loading query sequences...  [0s]
+Closing the input file...  [0s]
+Closing the output file...  [0s]
+Closing the database...  [0.005s]
+Cleaning up...  [0s]
+Total time = 21.498s
+Reported 2 pairwise alignments, 2 HSPs.
+2 queries aligned.
+deps ok
+output/run_20260306_113912/go-basic.obo: fmt(1.2) rel(2026-01-23) 42,036 Terms; optional_attrs(relationship)
+output/run_20260306_113912/goslim_generic.obo: fmt(1.2) rel(go/2026-01-23/subsets/goslim_generic.owl) 207 Terms; optional_attrs(relationship)
+[DONE] Wrote:
+ - output/run_20260306_113912/annotation_full_go.tsv
+ - output/run_20260306_113912/annotation_with_goslim.tsv
+[INFO] Summary stats: 2/2 BLAST hits, 2 GO annotations, 2 GO-Slim mappings
+[INFO] Generated GO-Slim chart: goslim_chart.png
+[INFO] Generated summary report: summary.md
+[OK] All done. See output/run_20260306_113912/annotation_with_goslim.tsv and output/run_20260306_113912/summary.md</code></pre>
+</div>
+</div>
+</section>
+<section id="confirm-expected-output-files" class="level3">
+<h3 class="anchored" data-anchor-id="confirm-expected-output-files">Confirm expected output files</h3>
+<div class="cell">
+<details class="code-fold">
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb13"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a><span class="bu">cd</span> <span class="st">"/home/sam/gitrepos/RobertsLab/sams-notebook/posts/2026/2026-03-05-Software-Testing---Stevens-workflow-annotation-Pipeline/workflow-annotation"</span></span>
+<span id="cb13-2"><a href="#cb13-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb13-3"><a href="#cb13-3" aria-hidden="true" tabindex="-1"></a><span class="fu">ls</span> <span class="at">-ltrh</span> output/run_<span class="pp">*</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output cell-output-stdout">
+<pre><code>total 31M
+-rw-rw-r-- 1 sam sam  339 Mar  6 11:39 subset-derm-protein.blast.tsv
+-rw-rw-r-- 1 sam sam 9.0K Mar  6 11:39 postprocess_uniprot_go.py
+-rw-rw-r-- 1 sam sam 2.8K Mar  6 11:39 annotation_full_go.tsv
+-rw-rw-r-- 1 sam sam  31M Mar  6 11:39 go-basic.obo
+-rw-rw-r-- 1 sam sam 122K Mar  6 11:39 goslim_generic.obo
+-rw-rw-r-- 1 sam sam 3.2K Mar  6 11:39 annotation_with_goslim.tsv
+-rw-rw-r-- 1 sam sam  296 Mar  6 11:39 summary_stats.json
+-rw-rw-r-- 1 sam sam  51K Mar  6 11:39 goslim_chart.png
+-rw-rw-r-- 1 sam sam 1.2K Mar  6 11:39 summary.md</code></pre>
+</div>
+</div>
+</section>
+<section id="peek-at-output-files" class="level3">
+<h3 class="anchored" data-anchor-id="peek-at-output-files">Peek at output files</h3>
+<div class="cell">
+<details class="code-fold">
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb15"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a><span class="bu">cd</span> <span class="st">"/home/sam/gitrepos/RobertsLab/sams-notebook/posts/2026/2026-03-05-Software-Testing---Stevens-workflow-annotation-Pipeline/workflow-annotation/output"</span></span>
+<span id="cb15-2"><a href="#cb15-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb15-3"><a href="#cb15-3" aria-hidden="true" tabindex="-1"></a><span class="fu">find</span> run_<span class="pp">*</span>/ <span class="at">-maxdepth</span> 1 <span class="at">-type</span> f ! <span class="at">-name</span> <span class="st">"*.png"</span> <span class="at">-exec</span> head {} +</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output cell-output-stdout">
+<pre><code>==&gt; run_20260306_113912/annotation_with_goslim.tsv &lt;==
+query   accession   id  reviewed    protein_name    organism    pident  length  evalue  bitscore    title   go_ids  go_bp   go_cc   go_mf   goslim_ids  goslim_names
+g7941.t1    C0HL13  LRP2_PIG        Low-density lipoprotein receptor-related protein 2 (LRP-2) (Glycoprotein 330) (gp330) (Megalin) Sus scrofa (Pig)    28.9    294 2.34e-31    129 sp|C0HL13|LRP2_PIG Low-density lipoprotein receptor-related protein 2 OS=Sus scrofa OX=9823 GN=LRP2 PE=1 SV=1   GO:0001843; GO:0003139; GO:0003148; GO:0003223; GO:0005509; GO:0005905; GO:0006898; GO:0007605; GO:0008584; GO:0009897; GO:0016324; GO:0017124; GO:0030001; GO:0030424; GO:0030425; GO:0030514; GO:0031526; GO:0031904; GO:0043235; GO:0050769; GO:0051087; GO:0060068; GO:0060982; GO:0061156; GO:0070447; GO:0140058; GO:1904447; GO:1905167  coronary artery morphogenesis [GO:0060982]; folate import across plasma membrane [GO:1904447]; male gonad development [GO:0008584]; metal ion transport [GO:0030001]; negative regulation of BMP signaling pathway [GO:0030514]; neural tube closure [GO:0001843]; neuron projection arborization [GO:0140058]; outflow tract septum morphogenesis [GO:0003148]; positive regulation of lysosomal protein catabolic process [GO:1905167]; positive regulation of neurogenesis [GO:0050769]; positive regulation of oligodendrocyte progenitor proliferation [GO:0070447]; pulmonary artery morphogenesis [GO:0061156]; receptor-mediated endocytosis [GO:0006898]; secondary heart field specification [GO:0003139]; sensory perception of sound [GO:0007605]; vagina development [GO:0060068]; ventricular compact myocardium morphogenesis [GO:0003223]   apical plasma membrane [GO:0016324]; axon [GO:0030424]; brush border membrane [GO:0031526]; clathrin-coated pit [GO:0005905]; dendrite [GO:0030425]; endosome lumen [GO:0031904]; external side of plasma membrane [GO:0009897]; receptor complex [GO:0043235]  calcium ion binding [GO:0005509]; protein-folding chaperone binding [GO:0051087]; SH3 domain binding [GO:0017124]   GO:0016192; GO:0022414; GO:0048856; GO:0050877; GO:0055085  vesicle-mediated transport; reproductive process; anatomical structure development; nervous system process; transmembrane transport
+g7944.t1    Q7L592  NDUF7_HUMAN     Protein arginine methyltransferase NDUFAF7, mitochondrial (EC 2.1.1.320) (NADH dehydrogenase [ubiquinone] complex I, assembly factor 7) (Protein midA homolog)  Homo sapiens (Human)    51.8    415 8.529999999999999e-141  412 sp|Q7L592|NDUF7_HUMAN Protein arginine methyltransferase NDUFAF7, mitochondrial OS=Homo sapiens OX=9606 GN=NDUFAF7 PE=1 SV=1    GO:0005615; GO:0005739; GO:0005759; GO:0008168; GO:0019899; GO:0019918; GO:0032981; GO:0035243  mitochondrial respiratory chain complex I assembly [GO:0032981]; peptidyl-arginine methylation, to symmetrical-dimethyl arginine [GO:0019918]   extracellular space [GO:0005615]; mitochondrial matrix [GO:0005759]; mitochondrion [GO:0005739] enzyme binding [GO:0019899]; methyltransferase activity [GO:0008168]; protein-arginine omega-N symmetric methyltransferase activity [GO:0035243]    GO:0003824; GO:0005615; GO:0005739; GO:0016740; GO:0043226; GO:0065003; GO:0140096  catalytic activity; extracellular space; mitochondrion; transferase activity; organelle; protein-containing complex assembly; catalytic activity, acting on a protein
+
+==&gt; run_20260306_113912/postprocess_uniprot_go.py &lt;==
+import sys, os, time, json, math
+import pandas as pd
+import requests
+from pathlib import Path
+
+BLAST_TSV = sys.argv[1]
+OUTDIR = sys.argv[2]
+
+os.makedirs(OUTDIR, exist_ok=True)
+hits = pd.read_csv(BLAST_TSV, sep='\t', header=None,
+
+==&gt; run_20260306_113912/summary_stats.json &lt;==
+{"total_sequences": 2, "blast_hits": 2, "go_matches": 2, "goslim_matches": 2, "goslim_counts": {"vesicle-mediated transport": 1, "reproductive process": 1, "anatomical structure development": 1, "nervous system process": 1, "transmembrane transport": 1, "protein-containing complex assembly": 1}}
+==&gt; run_20260306_113912/subset-derm-protein.blast.tsv &lt;==
+g7941.t1    sp|C0HL13|LRP2_PIG  28.9    294 2.34e-31    129 sp|C0HL13|LRP2_PIG Low-density lipoprotein receptor-related protein 2 OS=Sus scrofa OX=9823 GN=LRP2 PE=1 SV=1
+g7944.t1    sp|Q7L592|NDUF7_HUMAN   51.8    415 8.53e-141   412 sp|Q7L592|NDUF7_HUMAN Protein arginine methyltransferase NDUFAF7, mitochondrial OS=Homo sapiens OX=9606 GN=NDUFAF7 PE=1 SV=1
+
+==&gt; run_20260306_113912/summary.md &lt;==
+# Annotation Summary Report
+
+## Job Information
+- **Input file**: subset-derm-protein.fa
+- **Start time**: 2026-03-06 11:39:12
+- **End time**: 2026-03-06 11:39:39
+- **Duration**: 0h 0m 27s
+- **CPUs used**: 40
+- **Tool**: DIAMOND BLASTP (protein)
+
+
+==&gt; run_20260306_113912/goslim_generic.obo &lt;==
+format-version: 1.2
+data-version: go/releases/2026-01-23/subsets/goslim_generic.owl
+subsetdef: chebi_ph7_3 "Rhea list of ChEBI terms representing the major species at pH 7.3."
+subsetdef: gocheck_do_not_annotate "Term not to be used for direct annotation"
+subsetdef: gocheck_obsoletion_candidate "Terms planned for obsoletion"
+subsetdef: goslim_agr "AGR slim"
+subsetdef: goslim_aspergillus "Aspergillus GO slim"
+subsetdef: goslim_candida "Candida GO slim"
+subsetdef: goslim_chembl "ChEMBL protein targets summary"
+subsetdef: goslim_drosophila "Drosophila GO slim"
+
+==&gt; run_20260306_113912/go-basic.obo &lt;==
+format-version: 1.2
+data-version: releases/2026-01-23
+subsetdef: chebi_ph7_3 "Rhea list of ChEBI terms representing the major species at pH 7.3."
+subsetdef: gocheck_do_not_annotate "Term not to be used for direct annotation"
+subsetdef: gocheck_obsoletion_candidate "Terms planned for obsoletion"
+subsetdef: goslim_agr "AGR slim"
+subsetdef: goslim_aspergillus "Aspergillus GO slim"
+subsetdef: goslim_candida "Candida GO slim"
+subsetdef: goslim_chembl "ChEMBL protein targets summary"
+subsetdef: goslim_drosophila "Drosophila GO slim"
+
+==&gt; run_20260306_113912/annotation_full_go.tsv &lt;==
+query   accession   pident  length  evalue  bitscore    title   id  Reviewed    protein_name    organism    go_ids  go_bp   go_cc   go_mf
+g7941.t1    C0HL13  28.9    294 2.34e-31    129 sp|C0HL13|LRP2_PIG Low-density lipoprotein receptor-related protein 2 OS=Sus scrofa OX=9823 GN=LRP2 PE=1 SV=1   LRP2_PIG    reviewed    Low-density lipoprotein receptor-related protein 2 (LRP-2) (Glycoprotein 330) (gp330) (Megalin) Sus scrofa (Pig)    GO:0001843; GO:0003139; GO:0003148; GO:0003223; GO:0005509; GO:0005905; GO:0006898; GO:0007605; GO:0008584; GO:0009897; GO:0016324; GO:0017124; GO:0030001; GO:0030424; GO:0030425; GO:0030514; GO:0031526; GO:0031904; GO:0043235; GO:0050769; GO:0051087; GO:0060068; GO:0060982; GO:0061156; GO:0070447; GO:0140058; GO:1904447; GO:1905167  coronary artery morphogenesis [GO:0060982]; folate import across plasma membrane [GO:1904447]; male gonad development [GO:0008584]; metal ion transport [GO:0030001]; negative regulation of BMP signaling pathway [GO:0030514]; neural tube closure [GO:0001843]; neuron projection arborization [GO:0140058]; outflow tract septum morphogenesis [GO:0003148]; positive regulation of lysosomal protein catabolic process [GO:1905167]; positive regulation of neurogenesis [GO:0050769]; positive regulation of oligodendrocyte progenitor proliferation [GO:0070447]; pulmonary artery morphogenesis [GO:0061156]; receptor-mediated endocytosis [GO:0006898]; secondary heart field specification [GO:0003139]; sensory perception of sound [GO:0007605]; vagina development [GO:0060068]; ventricular compact myocardium morphogenesis [GO:0003223]   apical plasma membrane [GO:0016324]; axon [GO:0030424]; brush border membrane [GO:0031526]; clathrin-coated pit [GO:0005905]; dendrite [GO:0030425]; endosome lumen [GO:0031904]; external side of plasma membrane [GO:0009897]; receptor complex [GO:0043235]  calcium ion binding [GO:0005509]; protein-folding chaperone binding [GO:0051087]; SH3 domain binding [GO:0017124]
+g7944.t1    Q7L592  51.8    415 8.529999999999999e-141  412 sp|Q7L592|NDUF7_HUMAN Protein arginine methyltransferase NDUFAF7, mitochondrial OS=Homo sapiens OX=9606 GN=NDUFAF7 PE=1 SV=1    NDUF7_HUMAN reviewed    Protein arginine methyltransferase NDUFAF7, mitochondrial (EC 2.1.1.320) (NADH dehydrogenase [ubiquinone] complex I, assembly factor 7) (Protein midA homolog)  Homo sapiens (Human)    GO:0005615; GO:0005739; GO:0005759; GO:0008168; GO:0019899; GO:0019918; GO:0032981; GO:0035243  mitochondrial respiratory chain complex I assembly [GO:0032981]; peptidyl-arginine methylation, to symmetrical-dimethyl arginine [GO:0019918]   extracellular space [GO:0005615]; mitochondrial matrix [GO:0005759]; mitochondrion [GO:0005739] enzyme binding [GO:0019899]; methyltransferase activity [GO:0008168]; protein-arginine omega-N symmetric methyltransferase activity [GO:0035243]</code></pre>
+</div>
+</div>
+</section>
+</section>
+<section id="discussion" class="level1">
+<h1>DISCUSSION</h1>
+<p>Looks like the fix worked! Everything is as expected.</p>
+
+
+</section>
+
+</main> <!-- /main -->
+<script id="quarto-html-after-body" type="application/javascript">
+window.document.addEventListener("DOMContentLoaded", function (event) {
+  const toggleBodyColorMode = (bsSheetEl) => {
+    const mode = bsSheetEl.getAttribute("data-mode");
+    const bodyEl = window.document.querySelector("body");
+    if (mode === "dark") {
+      bodyEl.classList.add("quarto-dark");
+      bodyEl.classList.remove("quarto-light");
+    } else {
+      bodyEl.classList.add("quarto-light");
+      bodyEl.classList.remove("quarto-dark");
+    }
+  }
+  const toggleBodyColorPrimary = () => {
+    const bsSheetEl = window.document.querySelector("link#quarto-bootstrap");
+    if (bsSheetEl) {
+      toggleBodyColorMode(bsSheetEl);
+    }
+  }
+  toggleBodyColorPrimary();  
+  const icon = "";
+  const anchorJS = new window.AnchorJS();
+  anchorJS.options = {
+    placement: 'right',
+    icon: icon
+  };
+  anchorJS.add('.anchored');
+  const isCodeAnnotation = (el) => {
+    for (const clz of el.classList) {
+      if (clz.startsWith('code-annotation-')) {                     
+        return true;
+      }
+    }
+    return false;
+  }
+  const onCopySuccess = function(e) {
+    // button target
+    const button = e.trigger;
+    // don't keep focus
+    button.blur();
+    // flash "checked"
+    button.classList.add('code-copy-button-checked');
+    var currentTitle = button.getAttribute("title");
+    button.setAttribute("title", "Copied!");
+    let tooltip;
+    if (window.bootstrap) {
+      button.setAttribute("data-bs-toggle", "tooltip");
+      button.setAttribute("data-bs-placement", "left");
+      button.setAttribute("data-bs-title", "Copied!");
+      tooltip = new bootstrap.Tooltip(button, 
+        { trigger: "manual", 
+          customClass: "code-copy-button-tooltip",
+          offset: [0, -8]});
+      tooltip.show();    
+    }
+    setTimeout(function() {
+      if (tooltip) {
+        tooltip.hide();
+        button.removeAttribute("data-bs-title");
+        button.removeAttribute("data-bs-toggle");
+        button.removeAttribute("data-bs-placement");
+      }
+      button.setAttribute("title", currentTitle);
+      button.classList.remove('code-copy-button-checked');
+    }, 1000);
+    // clear code selection
+    e.clearSelection();
+  }
+  const getTextToCopy = function(trigger) {
+      const codeEl = trigger.previousElementSibling.cloneNode(true);
+      for (const childEl of codeEl.children) {
+        if (isCodeAnnotation(childEl)) {
+          childEl.remove();
+        }
+      }
+      return codeEl.innerText;
+  }
+  const clipboard = new window.ClipboardJS('.code-copy-button:not([data-in-quarto-modal])', {
+    text: getTextToCopy
+  });
+  clipboard.on('success', onCopySuccess);
+  if (window.document.getElementById('quarto-embedded-source-code-modal')) {
+    const clipboardModal = new window.ClipboardJS('.code-copy-button[data-in-quarto-modal]', {
+      text: getTextToCopy,
+      container: window.document.getElementById('quarto-embedded-source-code-modal')
+    });
+    clipboardModal.on('success', onCopySuccess);
+  }
+    var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
+    var mailtoRegex = new RegExp(/^mailto:/);
+      var filterRegex = new RegExp("https:\/\/robertslab\.github\.io\/sams-notebook");
+    var isInternal = (href) => {
+        return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
+    }
+    // Inspect non-navigation links and adorn them if external
+ 	var links = window.document.querySelectorAll('a[href]:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item):not(.quarto-navigation-tool):not(.about-link)');
+    for (var i=0; i<links.length; i++) {
+      const link = links[i];
+      if (!isInternal(link.href)) {
+        // undo the damage that might have been done by quarto-nav.js in the case of
+        // links that we want to consider external
+        if (link.dataset.originalHref !== undefined) {
+          link.href = link.dataset.originalHref;
+        }
+      }
+    }
+  function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
+    const config = {
+      allowHTML: true,
+      maxWidth: 500,
+      delay: 100,
+      arrow: false,
+      appendTo: function(el) {
+          return el.parentElement;
+      },
+      interactive: true,
+      interactiveBorder: 10,
+      theme: 'quarto',
+      placement: 'bottom-start',
+    };
+    if (contentFn) {
+      config.content = contentFn;
+    }
+    if (onTriggerFn) {
+      config.onTrigger = onTriggerFn;
+    }
+    if (onUntriggerFn) {
+      config.onUntrigger = onUntriggerFn;
+    }
+    window.tippy(el, config); 
+  }
+  const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+  for (var i=0; i<noterefs.length; i++) {
+    const ref = noterefs[i];
+    tippyHover(ref, function() {
+      // use id or data attribute instead here
+      let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+      try { href = new URL(href).hash; } catch {}
+      const id = href.replace(/^#\/?/, "");
+      const note = window.document.getElementById(id);
+      if (note) {
+        return note.innerHTML;
+      } else {
+        return "";
+      }
+    });
+  }
+  const xrefs = window.document.querySelectorAll('a.quarto-xref');
+  const processXRef = (id, note) => {
+    // Strip column container classes
+    const stripColumnClz = (el) => {
+      el.classList.remove("page-full", "page-columns");
+      if (el.children) {
+        for (const child of el.children) {
+          stripColumnClz(child);
+        }
+      }
+    }
+    stripColumnClz(note)
+    if (id === null || id.startsWith('sec-')) {
+      // Special case sections, only their first couple elements
+      const container = document.createElement("div");
+      if (note.children && note.children.length > 2) {
+        container.appendChild(note.children[0].cloneNode(true));
+        for (let i = 1; i < note.children.length; i++) {
+          const child = note.children[i];
+          if (child.tagName === "P" && child.innerText === "") {
+            continue;
+          } else {
+            container.appendChild(child.cloneNode(true));
+            break;
+          }
+        }
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(container);
+        }
+        return container.innerHTML
+      } else {
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(note);
+        }
+        return note.innerHTML;
+      }
+    } else {
+      // Remove any anchor links if they are present
+      const anchorLink = note.querySelector('a.anchorjs-link');
+      if (anchorLink) {
+        anchorLink.remove();
+      }
+      if (window.Quarto?.typesetMath) {
+        window.Quarto.typesetMath(note);
+      }
+      if (note.classList.contains("callout")) {
+        return note.outerHTML;
+      } else {
+        return note.innerHTML;
+      }
+    }
+  }
+  for (var i=0; i<xrefs.length; i++) {
+    const xref = xrefs[i];
+    tippyHover(xref, undefined, function(instance) {
+      instance.disable();
+      let url = xref.getAttribute('href');
+      let hash = undefined; 
+      if (url.startsWith('#')) {
+        hash = url;
+      } else {
+        try { hash = new URL(url).hash; } catch {}
+      }
+      if (hash) {
+        const id = hash.replace(/^#\/?/, "");
+        const note = window.document.getElementById(id);
+        if (note !== null) {
+          try {
+            const html = processXRef(id, note.cloneNode(true));
+            instance.setContent(html);
+          } finally {
+            instance.enable();
+            instance.show();
+          }
+        } else {
+          // See if we can fetch this
+          fetch(url.split('#')[0])
+          .then(res => res.text())
+          .then(html => {
+            const parser = new DOMParser();
+            const htmlDoc = parser.parseFromString(html, "text/html");
+            const note = htmlDoc.getElementById(id);
+            if (note !== null) {
+              const html = processXRef(id, note);
+              instance.setContent(html);
+            } 
+          }).finally(() => {
+            instance.enable();
+            instance.show();
+          });
+        }
+      } else {
+        // See if we can fetch a full url (with no hash to target)
+        // This is a special case and we should probably do some content thinning / targeting
+        fetch(url)
+        .then(res => res.text())
+        .then(html => {
+          const parser = new DOMParser();
+          const htmlDoc = parser.parseFromString(html, "text/html");
+          const note = htmlDoc.querySelector('main.content');
+          if (note !== null) {
+            // This should only happen for chapter cross references
+            // (since there is no id in the URL)
+            // remove the first header
+            if (note.children.length > 0 && note.children[0].tagName === "HEADER") {
+              note.children[0].remove();
+            }
+            const html = processXRef(null, note);
+            instance.setContent(html);
+          } 
+        }).finally(() => {
+          instance.enable();
+          instance.show();
+        });
+      }
+    }, function(instance) {
+    });
+  }
+      let selectedAnnoteEl;
+      const selectorForAnnotation = ( cell, annotation) => {
+        let cellAttr = 'data-code-cell="' + cell + '"';
+        let lineAttr = 'data-code-annotation="' +  annotation + '"';
+        const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+        return selector;
+      }
+      const selectCodeLines = (annoteEl) => {
+        const doc = window.document;
+        const targetCell = annoteEl.getAttribute("data-target-cell");
+        const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+        const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+        const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+        const lineIds = lines.map((line) => {
+          return targetCell + "-" + line;
+        })
+        let top = null;
+        let height = null;
+        let parent = null;
+        if (lineIds.length > 0) {
+            //compute the position of the single el (top and bottom and make a div)
+            const el = window.document.getElementById(lineIds[0]);
+            top = el.offsetTop;
+            height = el.offsetHeight;
+            parent = el.parentElement.parentElement;
+          if (lineIds.length > 1) {
+            const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+            const bottom = lastEl.offsetTop + lastEl.offsetHeight;
+            height = bottom - top;
+          }
+          if (top !== null && height !== null && parent !== null) {
+            // cook up a div (if necessary) and position it 
+            let div = window.document.getElementById("code-annotation-line-highlight");
+            if (div === null) {
+              div = window.document.createElement("div");
+              div.setAttribute("id", "code-annotation-line-highlight");
+              div.style.position = 'absolute';
+              parent.appendChild(div);
+            }
+            div.style.top = top - 2 + "px";
+            div.style.height = height + 4 + "px";
+            div.style.left = 0;
+            let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+            if (gutterDiv === null) {
+              gutterDiv = window.document.createElement("div");
+              gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+              gutterDiv.style.position = 'absolute';
+              const codeCell = window.document.getElementById(targetCell);
+              const gutter = codeCell.querySelector('.code-annotation-gutter');
+              gutter.appendChild(gutterDiv);
+            }
+            gutterDiv.style.top = top - 2 + "px";
+            gutterDiv.style.height = height + 4 + "px";
+          }
+          selectedAnnoteEl = annoteEl;
+        }
+      };
+      const unselectCodeLines = () => {
+        const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+        elementsIds.forEach((elId) => {
+          const div = window.document.getElementById(elId);
+          if (div) {
+            div.remove();
+          }
+        });
+        selectedAnnoteEl = undefined;
+      };
+        // Handle positioning of the toggle
+    window.addEventListener(
+      "resize",
+      throttle(() => {
+        elRect = undefined;
+        if (selectedAnnoteEl) {
+          selectCodeLines(selectedAnnoteEl);
+        }
+      }, 10)
+    );
+    function throttle(fn, ms) {
+    let throttle = false;
+    let timer;
+      return (...args) => {
+        if(!throttle) { // first call gets through
+            fn.apply(this, args);
+            throttle = true;
+        } else { // all the others get throttled
+            if(timer) clearTimeout(timer); // cancel #2
+            timer = setTimeout(() => {
+              fn.apply(this, args);
+              timer = throttle = false;
+            }, ms);
+        }
+      };
+    }
+      // Attach click handler to the DT
+      const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
+      for (const annoteDlNode of annoteDls) {
+        annoteDlNode.addEventListener('click', (event) => {
+          const clickedEl = event.target;
+          if (clickedEl !== selectedAnnoteEl) {
+            unselectCodeLines();
+            const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
+            if (activeEl) {
+              activeEl.classList.remove('code-annotation-active');
+            }
+            selectCodeLines(clickedEl);
+            clickedEl.classList.add('code-annotation-active');
+          } else {
+            // Unselect the line
+            unselectCodeLines();
+            clickedEl.classList.remove('code-annotation-active');
+          }
+        });
+      }
+  const findCites = (el) => {
+    const parentEl = el.parentElement;
+    if (parentEl) {
+      const cites = parentEl.dataset.cites;
+      if (cites) {
+        return {
+          el,
+          cites: cites.split(' ')
+        };
+      } else {
+        return findCites(el.parentElement)
+      }
+    } else {
+      return undefined;
+    }
+  };
+  var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+  for (var i=0; i<bibliorefs.length; i++) {
+    const ref = bibliorefs[i];
+    const citeInfo = findCites(ref);
+    if (citeInfo) {
+      tippyHover(citeInfo.el, function() {
+        var popup = window.document.createElement('div');
+        citeInfo.cites.forEach(function(cite) {
+          var citeDiv = window.document.createElement('div');
+          citeDiv.classList.add('hanging-indent');
+          citeDiv.classList.add('csl-entry');
+          var biblioDiv = window.document.getElementById('ref-' + cite);
+          if (biblioDiv) {
+            citeDiv.innerHTML = biblioDiv.innerHTML;
+          }
+          popup.appendChild(citeDiv);
+        });
+        return popup.innerHTML;
+      });
+    }
+  }
+});
+</script>
+</div> <!-- /content -->
+
+
+
+
+</body></html>
