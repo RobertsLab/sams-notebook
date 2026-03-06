@@ -10,7 +10,591 @@
 <atom:link href="https://robertslab.github.io/sams-notebook/index.xml" rel="self" type="application/rss+xml"/>
 <description></description>
 <generator>quarto-1.6.42</generator>
-<lastBuildDate>Mon, 02 Feb 2026 08:00:00 GMT</lastBuildDate>
+<lastBuildDate>Thu, 05 Mar 2026 08:00:00 GMT</lastBuildDate>
+<item>
+  <title>Software Testing - Stevens workflow-annotation Pipeline</title>
+  <dc:creator>Sam White</dc:creator>
+  <link>https://robertslab.github.io/sams-notebook/posts/2026/2026-03-05-Software-Testing---Stevens-workflow-annotation-Pipeline/</link>
+  <description><![CDATA[ 
+
+
+
+
+
+<section id="intro" class="level1">
+<h1>INTRO</h1>
+<p>Steven asked me to test out his <a href="https://github.com/sr320/workflow-annotation/tree/main"><code>workflow-annoation</code> pipeline</a> (GitHub) after Hannah encountered an issue yesterday and we <a href="https://github.com/RobertsLab/resources/issues/2404#issuecomment-4000199854">implemented a potential fix</a> (GitHub Issue).</p>
+<p>The pipeline was designed to take nucleotide sequences all the way through gene ontology annotation.</p>
+<p>After some back-and-forth attempts at troubleshooting, I resorted to asking the Gemini 3 Flash (preview) gAI agent. The suggestion was the lack of an <code>User-Agent</code> in the URL request header was causing the 403 permission denied error Hannah (and I) encountered.</p>
+<p>I implemented the suggested changes and tested them.</p>
+</section>
+<section id="methods" class="level1">
+<h1>METHODS</h1>
+<p>As input, I used a subset of a FastA file provided by Hannah (see code below).</p>
+<section id="set-up-conda-environment" class="level3">
+<h3 class="anchored" data-anchor-id="set-up-conda-environment">Set up Conda environment</h3>
+</section>
+<section id="create-mambaconda-environment" class="level2">
+<h2 class="anchored" data-anchor-id="create-mambaconda-environment">Create Mamba/Conda environment</h2>
+<div class="callout callout-style-default callout-important callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Important
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>Be sure to deactivate any current Python/Conda environments!</p>
+<p><code>deactivate</code></p>
+<p>and/or</p>
+<p><code>conda deactivate</code></p>
+</div>
+</div>
+<div class="sourceCode" id="cb1" style="background: #f1f3f5;"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb1-1"><span class="ex" style="color: null;
+background-color: null;
+font-style: inherit;">mamba</span> create <span class="dt" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">\</span></span>
+<span id="cb1-2">-n sr320-workflow-annotation <span class="dt" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">\</span></span>
+<span id="cb1-3">python=3.11 <span class="dt" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">\</span></span>
+<span id="cb1-4">diamond <span class="dt" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">\</span></span>
+<span id="cb1-5">blast <span class="dt" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">\</span></span>
+<span id="cb1-6">requests <span class="dt" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">\</span></span>
+<span id="cb1-7">pandas <span class="dt" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">\</span></span>
+<span id="cb1-8">goatools <span class="dt" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">\</span></span>
+<span id="cb1-9">matplotlib <span class="dt" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">\</span></span>
+<span id="cb1-10">-c bioconda <span class="dt" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">\</span></span>
+<span id="cb1-11">-c conda-forge <span class="dt" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">\</span></span>
+<span id="cb1-12">-y</span></code></pre></div>
+</section>
+<section id="r-setup" class="level2">
+<h2 class="anchored" data-anchor-id="r-setup">R setup</h2>
+<div class="cell">
+<details class="code-fold">
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb2" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb2-1"><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">library</span>(reticulate)</span></code></pre></div>
+</details>
+</div>
+</section>
+<section id="set-r-variables" class="level2">
+<h2 class="anchored" data-anchor-id="set-r-variables">Set R variables</h2>
+<p>Specifically, sets Conda paths/environments to be used throughout this notebook.</p>
+<div class="callout callout-style-default callout-important callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Important
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>This was run on my laptop, so the paths are specific to my system. Adjust as needed for your system.</p>
+</div>
+</div>
+<div class="cell">
+<details class="code-fold">
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb3" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb3-1"><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># CONDA</span></span>
+<span id="cb3-2">conda_env_name <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">c</span>(<span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"/home/sam/programs/miniforge3/envs/sr320-workflow-annotation"</span>)</span>
+<span id="cb3-3">conda_path <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">c</span>(<span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"/home/sam/programs/miniforge3/bin/conda"</span>)</span>
+<span id="cb3-4"></span>
+<span id="cb3-5"><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># WORKING DIRECTORY</span></span>
+<span id="cb3-6">working_dir <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">c</span>(<span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"/home/sam/gitrepos/RobertsLab/sams-notebook/posts/2026/2026-03-05-Software-Testing---Stevens-workflow-annotation-Pipeline/"</span>)</span>
+<span id="cb3-7"><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">Sys.setenv</span>(<span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">working_dir =</span> working_dir)</span></code></pre></div>
+</details>
+</div>
+</section>
+<section id="load-worfkflow-annotation-conda-environment" class="level2">
+<h2 class="anchored" data-anchor-id="load-worfkflow-annotation-conda-environment">Load <a href="https://github.com/sr320/workflow-annotation/tree/main">worfkflow-annotation</a> conda environment</h2>
+<p>If this is successful, the first line of output should show that the Python being used is the one in your <a href="https://github.com/sr320/workflow-annotation/tree/main">worfkflow-annotation</a> conda environment path.</p>
+<p>E.g.</p>
+<p><code>python:         /home/sam/programs/miniforge3/envs/sr320-workflow-annotation/bin/python</code></p>
+<div class="cell">
+<details class="code-fold">
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb4" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb4-1"><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">use_condaenv</span>(<span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">condaenv =</span> conda_env_name, <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">conda =</span> conda_path)</span>
+<span id="cb4-2"><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">py_config</span>()</span></code></pre></div>
+</details>
+<div class="cell-output cell-output-stdout">
+<pre><code>python:         /home/sam/programs/miniforge3/envs/sr320-workflow-annotation/bin/python
+libpython:      /home/sam/programs/miniforge3/envs/sr320-workflow-annotation/lib/libpython3.11.so
+pythonhome:     /home/sam/programs/miniforge3/envs/sr320-workflow-annotation:/home/sam/programs/miniforge3/envs/sr320-workflow-annotation
+version:        3.11.15 | packaged by conda-forge | (main, Mar  5 2026, 16:45:40) [GCC 14.3.0]
+numpy:          /home/sam/programs/miniforge3/envs/sr320-workflow-annotation/lib/python3.11/site-packages/numpy
+numpy_version:  2.4.2
+
+NOTE: Python version was forced by use_python() function</code></pre>
+</div>
+</div>
+<section id="clone-the-workflow-annotation-pipeline" class="level3">
+<h3 class="anchored" data-anchor-id="clone-the-workflow-annotation-pipeline">Clone the workflow-annotation pipeline</h3>
+<div class="sourceCode" id="cb6" style="background: #f1f3f5;"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb6-1"><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">git</span> clone git@github.com:kubu4/workflow-annotation.git</span></code></pre></div>
+</section>
+<section id="download-the-fasta" class="level3">
+<h3 class="anchored" data-anchor-id="download-the-fasta">Download the FastA</h3>
+<div class="callout callout-style-default callout-note callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Note
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>The full FastA was not utilized. I created a subset for quick testing.</p>
+</div>
+</div>
+<div class="sourceCode" id="cb7" style="background: #f1f3f5;"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb7-1"><span class="bu" style="color: null;
+background-color: null;
+font-style: inherit;">cd</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"/home/sam/gitrepos/RobertsLab/sams-notebook/posts/2026/2026-03-05-Software-Testing---Stevens-workflow-annotation-Pipeline/"</span></span>
+<span id="cb7-2"></span>
+<span id="cb7-3"><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">git</span> clone git@github.com:kubu4/workflow-annotation.git</span>
+<span id="cb7-4"></span>
+<span id="cb7-5"><span class="bu" style="color: null;
+background-color: null;
+font-style: inherit;">cd</span> workflow-annotation</span>
+<span id="cb7-6"></span>
+<span id="cb7-7"><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">wget</span> <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">--quiet</span> <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">--continue</span> https://raw.githubusercontent.com/hannahnowers/Seastar-capstone/refs/heads/main/data/derm-protein.fa</span></code></pre></div>
+<div class="cell">
+<details class="code-fold">
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb8" style="background: #f1f3f5;"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb8-1"><span class="bu" style="color: null;
+background-color: null;
+font-style: inherit;">cd</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"/home/sam/gitrepos/RobertsLab/sams-notebook/posts/2026/2026-03-05-Software-Testing---Stevens-workflow-annotation-Pipeline/workflow-annotation"</span></span>
+<span id="cb8-2"></span>
+<span id="cb8-3"><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">cat</span> subset-derm-protein.fa</span></code></pre></div>
+</details>
+<div class="cell-output cell-output-stdout">
+<pre><code>&gt;g7941.t1
+MQYLPFRGVLCVFWGFLLIETFRPANAGDFALVADLRNGTIYAGSIGQSLADIAPLPLTG
+VIRPLAVEYDPVEKMVYWTDVNSLPSPKITRAHVNGSGQMTLVDQLHLPDGLALDVESRL
+VYWTDGVLGYIGRTRMNGTGARETIVVGLDQPRAIITDSGFIYWTDWGNSSRIERAGLDG
+SNRTTLITGNLVWPNGLFKDGNNLYWCDAKLDKIERSDLLGNNREIVIDLTSYPQIHPFD
+LAVYDEYIYWTDWGYTTLIRVHTSGRGEQNYGPSVFQQSGGLHIQKEPNYCNSSPCQNGA
+ICIDVINGFSCICPSEHQGITRSENPSGSGPCVNGGTCTTIPGGFTCQCPAGYDGPTCTI
+EFIVKKRDREIAGKCKRLH*
+&gt;g7942.t1
+MVVQVTKTSRDYGKINPELLQNLLDERLRDTFQTEDYPNLLYETYESITTSVLDEICPVT
+TRVRTVKPRLPWYDNTIQEERRIPRRLERNWRKSRLDTDYDAFLTQENNV*
+&gt;g7943.t1
+MKSTSSAILCLFGLFGLGYCGPCETLDPCENGAQCLDFDSIPGYFFCYCPYTFYGTRCEN
+RNAACDDNPCMFGGTCLVFNERYECECPSGIYGNHCQANGCANDPCMNGGTCWPFGFSYT
+CICSPGYRGENCDE*
+&gt;g7944.t1
+MATIPIDTCKRHASTKSAETVGVKHLRRRIQTTGPLTIADYMREVLTNPLTGYYMNKDVF
+GNKGDFITSPEISQMFGELIALWIIHEWTQLGQMTPLQVVELGPGRGTLADDMLRVFKQF
+QHITGNSLSLHLVEVSPKMSQLQEEKLTGQQQSKTDMDQPSVSQDSPAGRCEGDTVAERG
+SLSSAYKTSISKTGMPVSWYQSLKEVPKGVSCFIAHEFFDALPIHQFKKTEKGWREVLVD
+VDSDDAGSNHLRFVLSPAATPASTVYPQGSDSRGQIEVCPEGGVIVQEMAHRISEHGGMS
+LIVDYGHDGTKTDTLRGFKKHKLHDVLCEPGTADLTADVDFSYFRQVVQGKVSTHGPITQ
+ESFLKAMGIETRLKMLLKSATGEQRNSLITGCRMLTDPAQMGERFKFFAMMPLNQGTESG
+QAKARTPAGFPSVC*</code></pre>
+</div>
+</div>
+</section>
+<section id="execute-the-annotation-script" class="level3">
+<h3 class="anchored" data-anchor-id="execute-the-annotation-script">Execute the annotation script</h3>
+<div class="cell">
+<details class="code-fold">
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb10" style="background: #f1f3f5;"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb10-1"><span class="bu" style="color: null;
+background-color: null;
+font-style: inherit;">cd</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"/home/sam/gitrepos/RobertsLab/sams-notebook/posts/2026/2026-03-05-Software-Testing---Stevens-workflow-annotation-Pipeline/workflow-annotation"</span> <span class="kw" style="color: #003B4F;
+background-color: null;
+font-weight: bold;
+font-style: inherit;">&amp;&amp;</span> <span class="dt" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">\</span></span>
+<span id="cb10-2"><span class="bu" style="color: null;
+background-color: null;
+font-style: inherit;">export</span> <span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">PATH</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"/home/sam/programs/miniforge3/envs/sr320-workflow-annotation/bin:</span><span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">$PATH</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"</span> <span class="kw" style="color: #003B4F;
+background-color: null;
+font-weight: bold;
+font-style: inherit;">&amp;&amp;</span> <span class="dt" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">\</span></span>
+<span id="cb10-3"><span class="ex" style="color: null;
+background-color: null;
+font-style: inherit;">./blast2slim.sh</span> <span class="dt" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">\</span></span>
+<span id="cb10-4">-i subset-derm-protein.fa <span class="dt" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">\</span></span>
+<span id="cb10-5">--diamond <span class="dt" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">\</span></span>
+<span id="cb10-6">--protein <span class="dt" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">\</span></span>
+<span id="cb10-7"><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">&gt;</span> blast_run.log <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">2</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">&gt;&amp;</span><span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">1</span></span></code></pre></div>
+</details>
+</div>
+</section>
+</section>
+</section>
+<section id="results" class="level1">
+<h1>RESULTS</h1>
+<section id="check-log" class="level3">
+<h3 class="anchored" data-anchor-id="check-log">Check log</h3>
+<div class="cell">
+<details class="code-fold">
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb11" style="background: #f1f3f5;"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb11-1"><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">cat</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"/home/sam/gitrepos/RobertsLab/sams-notebook/posts/2026/2026-03-05-Software-Testing---Stevens-workflow-annotation-Pipeline/workflow-annotation/blast_run.log"</span></span></code></pre></div>
+</details>
+<div class="cell-output cell-output-stdout">
+<pre><code>[INFO] Output directory: output/run_20260306_113912
+[INFO] Running DIAMOND BLASTP...
+diamond v2.1.23.177 (C) Max Planck Society for the Advancement of Science, Benjamin J. Buchfink, University of Tuebingen
+Documentation, support and updates available at http://www.diamondsearch.org
+Please cite: http://dx.doi.org/10.1038/s41592-021-01101-x Nature Methods (2021)
+
+#CPU threads: 40
+Scoring parameters: (Matrix=BLOSUM62 Lambda=0.267 K=0.041 Penalties=11/1)
+Temporary directory: output/run_20260306_113912
+#Target sequences to report alignments for: 1
+Opening the database...  [0.138s]
+Database: blastdb/uniprot_sprot.dmnd (type: Diamond database, sequences: 574627, letters: 208482574)
+Block size = 2000000000
+Opening the input file...  [0s]
+Opening the output file...  [0s]
+Loading query sequences...  [0s]
+Masking queries...  [0.029s]
+Algorithm: Double-indexed
+Building query histograms...  [0.006s]
+Seeking in database...  [0s]
+Loading reference sequences...  [0.668s]
+Masking reference...  [4.332s]
+Initializing temporary storage...  [0.001s]
+Building reference histograms...  [4.859s]
+Allocating buffers...  [0s]
+Processing query block 1, reference block 1/1, shape 1/2, index chunk 1/4.
+Building reference seed array...  [1.264s]
+Building query seed array...  [0.011s]
+Computing hash join...  [0.073s]
+Masking low complexity seeds...  [0.007s]
+Searching alignments...  [0.005s]
+Deallocating memory...  [0s]
+Processing query block 1, reference block 1/1, shape 1/2, index chunk 2/4.
+Building reference seed array...  [1.617s]
+Building query seed array...  [0.007s]
+Computing hash join...  [0.068s]
+Masking low complexity seeds...  [0.006s]
+Searching alignments...  [0.004s]
+Deallocating memory...  [0s]
+Processing query block 1, reference block 1/1, shape 1/2, index chunk 3/4.
+Building reference seed array...  [1.373s]
+Building query seed array...  [0.009s]
+Computing hash join...  [0.068s]
+Masking low complexity seeds...  [0.004s]
+Searching alignments...  [0.004s]
+Deallocating memory...  [0s]
+Processing query block 1, reference block 1/1, shape 1/2, index chunk 4/4.
+Building reference seed array...  [1.101s]
+Building query seed array...  [0.012s]
+Computing hash join...  [0.075s]
+Masking low complexity seeds...  [0.003s]
+Searching alignments...  [0.003s]
+Deallocating memory...  [0s]
+Processing query block 1, reference block 1/1, shape 2/2, index chunk 1/4.
+Building reference seed array...  [1.253s]
+Building query seed array...  [0.006s]
+Computing hash join...  [0.066s]
+Masking low complexity seeds...  [0.003s]
+Searching alignments...  [0.006s]
+Deallocating memory...  [0s]
+Processing query block 1, reference block 1/1, shape 2/2, index chunk 2/4.
+Building reference seed array...  [1.683s]
+Building query seed array...  [0.006s]
+Computing hash join...  [0.065s]
+Masking low complexity seeds...  [0.004s]
+Searching alignments...  [0.005s]
+Deallocating memory...  [0s]
+Processing query block 1, reference block 1/1, shape 2/2, index chunk 3/4.
+Building reference seed array...  [1.558s]
+Building query seed array...  [0.009s]
+Computing hash join...  [0.06s]
+Masking low complexity seeds...  [0.003s]
+Searching alignments...  [0.005s]
+Deallocating memory...  [0s]
+Processing query block 1, reference block 1/1, shape 2/2, index chunk 4/4.
+Building reference seed array...  [0.802s]
+Building query seed array...  [0.007s]
+Computing hash join...  [0.048s]
+Masking low complexity seeds...  [0.002s]
+Searching alignments...  [0.003s]
+Deallocating memory...  [0s]
+Deallocating buffers...  [0.033s]
+Clearing query masking...  [0s]
+Computing alignments...  [0.057s]
+Deallocating reference...  [0.024s]
+Loading reference sequences...  [0s]
+Deallocating buffers...  [0s]
+Deallocating queries...  [0s]
+Loading query sequences...  [0s]
+Closing the input file...  [0s]
+Closing the output file...  [0s]
+Closing the database...  [0.005s]
+Cleaning up...  [0s]
+Total time = 21.498s
+Reported 2 pairwise alignments, 2 HSPs.
+2 queries aligned.
+deps ok
+output/run_20260306_113912/go-basic.obo: fmt(1.2) rel(2026-01-23) 42,036 Terms; optional_attrs(relationship)
+output/run_20260306_113912/goslim_generic.obo: fmt(1.2) rel(go/2026-01-23/subsets/goslim_generic.owl) 207 Terms; optional_attrs(relationship)
+[DONE] Wrote:
+ - output/run_20260306_113912/annotation_full_go.tsv
+ - output/run_20260306_113912/annotation_with_goslim.tsv
+[INFO] Summary stats: 2/2 BLAST hits, 2 GO annotations, 2 GO-Slim mappings
+[INFO] Generated GO-Slim chart: goslim_chart.png
+[INFO] Generated summary report: summary.md
+[OK] All done. See output/run_20260306_113912/annotation_with_goslim.tsv and output/run_20260306_113912/summary.md</code></pre>
+</div>
+</div>
+</section>
+<section id="confirm-expected-output-files" class="level3">
+<h3 class="anchored" data-anchor-id="confirm-expected-output-files">Confirm expected output files</h3>
+<div class="cell">
+<details class="code-fold">
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb13" style="background: #f1f3f5;"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb13-1"><span class="bu" style="color: null;
+background-color: null;
+font-style: inherit;">cd</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"/home/sam/gitrepos/RobertsLab/sams-notebook/posts/2026/2026-03-05-Software-Testing---Stevens-workflow-annotation-Pipeline/workflow-annotation"</span></span>
+<span id="cb13-2"></span>
+<span id="cb13-3"><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">ls</span> <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">-ltrh</span> output/run_<span class="pp" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">*</span></span></code></pre></div>
+</details>
+<div class="cell-output cell-output-stdout">
+<pre><code>total 31M
+-rw-rw-r-- 1 sam sam  339 Mar  6 11:39 subset-derm-protein.blast.tsv
+-rw-rw-r-- 1 sam sam 9.0K Mar  6 11:39 postprocess_uniprot_go.py
+-rw-rw-r-- 1 sam sam 2.8K Mar  6 11:39 annotation_full_go.tsv
+-rw-rw-r-- 1 sam sam  31M Mar  6 11:39 go-basic.obo
+-rw-rw-r-- 1 sam sam 122K Mar  6 11:39 goslim_generic.obo
+-rw-rw-r-- 1 sam sam 3.2K Mar  6 11:39 annotation_with_goslim.tsv
+-rw-rw-r-- 1 sam sam  296 Mar  6 11:39 summary_stats.json
+-rw-rw-r-- 1 sam sam  51K Mar  6 11:39 goslim_chart.png
+-rw-rw-r-- 1 sam sam 1.2K Mar  6 11:39 summary.md</code></pre>
+</div>
+</div>
+</section>
+<section id="peek-at-output-files" class="level3">
+<h3 class="anchored" data-anchor-id="peek-at-output-files">Peek at output files</h3>
+<div class="cell">
+<details class="code-fold">
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb15" style="background: #f1f3f5;"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb15-1"><span class="bu" style="color: null;
+background-color: null;
+font-style: inherit;">cd</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"/home/sam/gitrepos/RobertsLab/sams-notebook/posts/2026/2026-03-05-Software-Testing---Stevens-workflow-annotation-Pipeline/workflow-annotation/output"</span></span>
+<span id="cb15-2"></span>
+<span id="cb15-3"><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">find</span> run_<span class="pp" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">*</span>/ <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">-maxdepth</span> 1 <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">-type</span> f ! <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">-name</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"*.png"</span> <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">-exec</span> head {} +</span></code></pre></div>
+</details>
+<div class="cell-output cell-output-stdout">
+<pre><code>==&gt; run_20260306_113912/annotation_with_goslim.tsv &lt;==
+query   accession   id  reviewed    protein_name    organism    pident  length  evalue  bitscore    title   go_ids  go_bp   go_cc   go_mf   goslim_ids  goslim_names
+g7941.t1    C0HL13  LRP2_PIG        Low-density lipoprotein receptor-related protein 2 (LRP-2) (Glycoprotein 330) (gp330) (Megalin) Sus scrofa (Pig)    28.9    294 2.34e-31    129 sp|C0HL13|LRP2_PIG Low-density lipoprotein receptor-related protein 2 OS=Sus scrofa OX=9823 GN=LRP2 PE=1 SV=1   GO:0001843; GO:0003139; GO:0003148; GO:0003223; GO:0005509; GO:0005905; GO:0006898; GO:0007605; GO:0008584; GO:0009897; GO:0016324; GO:0017124; GO:0030001; GO:0030424; GO:0030425; GO:0030514; GO:0031526; GO:0031904; GO:0043235; GO:0050769; GO:0051087; GO:0060068; GO:0060982; GO:0061156; GO:0070447; GO:0140058; GO:1904447; GO:1905167  coronary artery morphogenesis [GO:0060982]; folate import across plasma membrane [GO:1904447]; male gonad development [GO:0008584]; metal ion transport [GO:0030001]; negative regulation of BMP signaling pathway [GO:0030514]; neural tube closure [GO:0001843]; neuron projection arborization [GO:0140058]; outflow tract septum morphogenesis [GO:0003148]; positive regulation of lysosomal protein catabolic process [GO:1905167]; positive regulation of neurogenesis [GO:0050769]; positive regulation of oligodendrocyte progenitor proliferation [GO:0070447]; pulmonary artery morphogenesis [GO:0061156]; receptor-mediated endocytosis [GO:0006898]; secondary heart field specification [GO:0003139]; sensory perception of sound [GO:0007605]; vagina development [GO:0060068]; ventricular compact myocardium morphogenesis [GO:0003223]   apical plasma membrane [GO:0016324]; axon [GO:0030424]; brush border membrane [GO:0031526]; clathrin-coated pit [GO:0005905]; dendrite [GO:0030425]; endosome lumen [GO:0031904]; external side of plasma membrane [GO:0009897]; receptor complex [GO:0043235]  calcium ion binding [GO:0005509]; protein-folding chaperone binding [GO:0051087]; SH3 domain binding [GO:0017124]   GO:0016192; GO:0022414; GO:0048856; GO:0050877; GO:0055085  vesicle-mediated transport; reproductive process; anatomical structure development; nervous system process; transmembrane transport
+g7944.t1    Q7L592  NDUF7_HUMAN     Protein arginine methyltransferase NDUFAF7, mitochondrial (EC 2.1.1.320) (NADH dehydrogenase [ubiquinone] complex I, assembly factor 7) (Protein midA homolog)  Homo sapiens (Human)    51.8    415 8.529999999999999e-141  412 sp|Q7L592|NDUF7_HUMAN Protein arginine methyltransferase NDUFAF7, mitochondrial OS=Homo sapiens OX=9606 GN=NDUFAF7 PE=1 SV=1    GO:0005615; GO:0005739; GO:0005759; GO:0008168; GO:0019899; GO:0019918; GO:0032981; GO:0035243  mitochondrial respiratory chain complex I assembly [GO:0032981]; peptidyl-arginine methylation, to symmetrical-dimethyl arginine [GO:0019918]   extracellular space [GO:0005615]; mitochondrial matrix [GO:0005759]; mitochondrion [GO:0005739] enzyme binding [GO:0019899]; methyltransferase activity [GO:0008168]; protein-arginine omega-N symmetric methyltransferase activity [GO:0035243]    GO:0003824; GO:0005615; GO:0005739; GO:0016740; GO:0043226; GO:0065003; GO:0140096  catalytic activity; extracellular space; mitochondrion; transferase activity; organelle; protein-containing complex assembly; catalytic activity, acting on a protein
+
+==&gt; run_20260306_113912/postprocess_uniprot_go.py &lt;==
+import sys, os, time, json, math
+import pandas as pd
+import requests
+from pathlib import Path
+
+BLAST_TSV = sys.argv[1]
+OUTDIR = sys.argv[2]
+
+os.makedirs(OUTDIR, exist_ok=True)
+hits = pd.read_csv(BLAST_TSV, sep='\t', header=None,
+
+==&gt; run_20260306_113912/summary_stats.json &lt;==
+{"total_sequences": 2, "blast_hits": 2, "go_matches": 2, "goslim_matches": 2, "goslim_counts": {"vesicle-mediated transport": 1, "reproductive process": 1, "anatomical structure development": 1, "nervous system process": 1, "transmembrane transport": 1, "protein-containing complex assembly": 1}}
+==&gt; run_20260306_113912/subset-derm-protein.blast.tsv &lt;==
+g7941.t1    sp|C0HL13|LRP2_PIG  28.9    294 2.34e-31    129 sp|C0HL13|LRP2_PIG Low-density lipoprotein receptor-related protein 2 OS=Sus scrofa OX=9823 GN=LRP2 PE=1 SV=1
+g7944.t1    sp|Q7L592|NDUF7_HUMAN   51.8    415 8.53e-141   412 sp|Q7L592|NDUF7_HUMAN Protein arginine methyltransferase NDUFAF7, mitochondrial OS=Homo sapiens OX=9606 GN=NDUFAF7 PE=1 SV=1
+
+==&gt; run_20260306_113912/summary.md &lt;==
+# Annotation Summary Report
+
+## Job Information
+- **Input file**: subset-derm-protein.fa
+- **Start time**: 2026-03-06 11:39:12
+- **End time**: 2026-03-06 11:39:39
+- **Duration**: 0h 0m 27s
+- **CPUs used**: 40
+- **Tool**: DIAMOND BLASTP (protein)
+
+
+==&gt; run_20260306_113912/goslim_generic.obo &lt;==
+format-version: 1.2
+data-version: go/releases/2026-01-23/subsets/goslim_generic.owl
+subsetdef: chebi_ph7_3 "Rhea list of ChEBI terms representing the major species at pH 7.3."
+subsetdef: gocheck_do_not_annotate "Term not to be used for direct annotation"
+subsetdef: gocheck_obsoletion_candidate "Terms planned for obsoletion"
+subsetdef: goslim_agr "AGR slim"
+subsetdef: goslim_aspergillus "Aspergillus GO slim"
+subsetdef: goslim_candida "Candida GO slim"
+subsetdef: goslim_chembl "ChEMBL protein targets summary"
+subsetdef: goslim_drosophila "Drosophila GO slim"
+
+==&gt; run_20260306_113912/go-basic.obo &lt;==
+format-version: 1.2
+data-version: releases/2026-01-23
+subsetdef: chebi_ph7_3 "Rhea list of ChEBI terms representing the major species at pH 7.3."
+subsetdef: gocheck_do_not_annotate "Term not to be used for direct annotation"
+subsetdef: gocheck_obsoletion_candidate "Terms planned for obsoletion"
+subsetdef: goslim_agr "AGR slim"
+subsetdef: goslim_aspergillus "Aspergillus GO slim"
+subsetdef: goslim_candida "Candida GO slim"
+subsetdef: goslim_chembl "ChEMBL protein targets summary"
+subsetdef: goslim_drosophila "Drosophila GO slim"
+
+==&gt; run_20260306_113912/annotation_full_go.tsv &lt;==
+query   accession   pident  length  evalue  bitscore    title   id  Reviewed    protein_name    organism    go_ids  go_bp   go_cc   go_mf
+g7941.t1    C0HL13  28.9    294 2.34e-31    129 sp|C0HL13|LRP2_PIG Low-density lipoprotein receptor-related protein 2 OS=Sus scrofa OX=9823 GN=LRP2 PE=1 SV=1   LRP2_PIG    reviewed    Low-density lipoprotein receptor-related protein 2 (LRP-2) (Glycoprotein 330) (gp330) (Megalin) Sus scrofa (Pig)    GO:0001843; GO:0003139; GO:0003148; GO:0003223; GO:0005509; GO:0005905; GO:0006898; GO:0007605; GO:0008584; GO:0009897; GO:0016324; GO:0017124; GO:0030001; GO:0030424; GO:0030425; GO:0030514; GO:0031526; GO:0031904; GO:0043235; GO:0050769; GO:0051087; GO:0060068; GO:0060982; GO:0061156; GO:0070447; GO:0140058; GO:1904447; GO:1905167  coronary artery morphogenesis [GO:0060982]; folate import across plasma membrane [GO:1904447]; male gonad development [GO:0008584]; metal ion transport [GO:0030001]; negative regulation of BMP signaling pathway [GO:0030514]; neural tube closure [GO:0001843]; neuron projection arborization [GO:0140058]; outflow tract septum morphogenesis [GO:0003148]; positive regulation of lysosomal protein catabolic process [GO:1905167]; positive regulation of neurogenesis [GO:0050769]; positive regulation of oligodendrocyte progenitor proliferation [GO:0070447]; pulmonary artery morphogenesis [GO:0061156]; receptor-mediated endocytosis [GO:0006898]; secondary heart field specification [GO:0003139]; sensory perception of sound [GO:0007605]; vagina development [GO:0060068]; ventricular compact myocardium morphogenesis [GO:0003223]   apical plasma membrane [GO:0016324]; axon [GO:0030424]; brush border membrane [GO:0031526]; clathrin-coated pit [GO:0005905]; dendrite [GO:0030425]; endosome lumen [GO:0031904]; external side of plasma membrane [GO:0009897]; receptor complex [GO:0043235]  calcium ion binding [GO:0005509]; protein-folding chaperone binding [GO:0051087]; SH3 domain binding [GO:0017124]
+g7944.t1    Q7L592  51.8    415 8.529999999999999e-141  412 sp|Q7L592|NDUF7_HUMAN Protein arginine methyltransferase NDUFAF7, mitochondrial OS=Homo sapiens OX=9606 GN=NDUFAF7 PE=1 SV=1    NDUF7_HUMAN reviewed    Protein arginine methyltransferase NDUFAF7, mitochondrial (EC 2.1.1.320) (NADH dehydrogenase [ubiquinone] complex I, assembly factor 7) (Protein midA homolog)  Homo sapiens (Human)    GO:0005615; GO:0005739; GO:0005759; GO:0008168; GO:0019899; GO:0019918; GO:0032981; GO:0035243  mitochondrial respiratory chain complex I assembly [GO:0032981]; peptidyl-arginine methylation, to symmetrical-dimethyl arginine [GO:0019918]   extracellular space [GO:0005615]; mitochondrial matrix [GO:0005759]; mitochondrion [GO:0005739] enzyme binding [GO:0019899]; methyltransferase activity [GO:0008168]; protein-arginine omega-N symmetric methyltransferase activity [GO:0035243]</code></pre>
+</div>
+</div>
+</section>
+</section>
+<section id="discussion" class="level1">
+<h1>DISCUSSION</h1>
+<p>Looks like the fix worked! Everything is as expected.</p>
+
+
+</section>
+
+ ]]></description>
+  <category>2026</category>
+  <category>software</category>
+  <category>annotation</category>
+  <category>workflow-annotation</category>
+  <guid>https://robertslab.github.io/sams-notebook/posts/2026/2026-03-05-Software-Testing---Stevens-workflow-annotation-Pipeline/</guid>
+  <pubDate>Thu, 05 Mar 2026 08:00:00 GMT</pubDate>
+</item>
 <item>
   <title>qPCR Analysis - M.gigas PolyIC Data from Valentinas Project</title>
   <dc:creator>Sam White</dc:creator>
@@ -60294,44 +60878,6 @@ font-style: inherit;">"install.packages(c('shiny', 'shinythemes', 'readxl', 'tid
   <category>container</category>
   <guid>https://robertslab.github.io/sams-notebook/posts/2025/2025-08-29-Shiny-Server---Configuration-on-Gannet-Using-Synology-Container-Manager/</guid>
   <pubDate>Fri, 29 Aug 2025 07:00:00 GMT</pubDate>
-</item>
-<item>
-  <title>Homogenization - C.gigas Juvenile Whole Body from polyIC Temp and Mech Stress</title>
-  <dc:creator>Sam White</dc:creator>
-  <link>https://robertslab.github.io/sams-notebook/posts/2025/2025-08-20-Homogenization---C.gigas-Juvenile-Whole-Body-from-polyIC-Temp-and-Mech-Stress/</link>
-  <description><![CDATA[ 
-
-
-
-
-
-<section id="intro" class="level1">
-<h1>INTRO</h1>
-<p><a href="https://github.com/RobertsLab/resources/issues/2256">Steven tasked me with helping and/or isolating RNA</a> (GitHub Issue) for Valentina (visiting scientist from Cristian’s lab in Chile). Samples were whole body (no shells) of small juvenile oysters exposed to <a href="https://en.wikipedia.org/wiki/Polyinosinic:polycytidylic_acid">poly I:C</a> (Wikipedia) and then subjected to mechanical stress or temperature stress (or no stress at all).</p>
-<p>I <a href="../../../posts/2025/2025-08-04-RNA-Isolation-and-Quantification---C.gigas-PolyIC-Mechanical-Trials-for-Valentina-Using-Quick-DNA-RNA-MiniPrep-Plus-Kit/index.html">previously helped isolate RNA from a subset of these on 20250804</a> and needed to process the remainder, now that Valentina has returned to Chile.</p>
-</section>
-<section id="materials-methods" class="level1">
-<h1>MATERIALS &amp; METHODS</h1>
-<p>Whole body tissue had been snap frozen and stored at -80<sup>o</sup>C.</p>
-<section id="homogenization" class="level2">
-<h2 class="anchored" data-anchor-id="homogenization">Homogenization</h2>
-<p>300uL of DNA/RNA Shield (ZymoResearch) were added to the frozen tissue. Samples and DNA/RNA Shield were transferred to 1.5mL SafeLock (Eppendorf) microcentrifuge tubes containig ~50uL of 0.5mm zirconium oxide beads and ~50uL of 0.15mm zirconium oxide beads. Samples were homogenized using the Roberts Lab Bullet Blender 5E Gold + (NextAdvance) with 1.5mL tube adapters for 3mins at speed 12. The Bullet Blender was pre-cooled, and cooled, using dry ice.</p>
-<p>Homogenized samples were stored @ -20<sup>o</sup>C until RNA isolation can be performed with Quick-DNA/RNA MiniPrep Plus Kit (ZymoResearch) later this week.</p>
-
-
-</section>
-</section>
-
- ]]></description>
-  <category>2025</category>
-  <category>PolyIC</category>
-  <category>RNA Isolation</category>
-  <category>RNA quantification</category>
-  <category>Qubit</category>
-  <category>Magallana gigas</category>
-  <category>Pacific oyster</category>
-  <guid>https://robertslab.github.io/sams-notebook/posts/2025/2025-08-20-Homogenization---C.gigas-Juvenile-Whole-Body-from-polyIC-Temp-and-Mech-Stress/</guid>
-  <pubDate>Wed, 20 Aug 2025 07:00:00 GMT</pubDate>
 </item>
 </channel>
 </rss>
