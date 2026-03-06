@@ -17,9 +17,15 @@ categories:
 
 Steven asked me to test out his [`workflow-annoation` pipeline](https://github.com/sr320/workflow-annotation/tree/main) (GitHub) after Hannah encountered an issue yesterday and we [implemented a potential fix](https://github.com/RobertsLab/resources/issues/2404#issuecomment-4000199854) (GitHub Issue).
 
-The pipeline was designed to take nucleotide sequences all the way through gene ontology annotation. As input, I used a small FastA file provided by Hannah (see code below).
+The pipeline was designed to take nucleotide sequences all the way through gene ontology annotation.
 
-## METHODS
+After some back-and-forth attempts at troubleshooting, I resorted to asking the Gemini 3 Flash (preview) gAI agent. The suggestion was the lack of an `User-Agent` in the URL request header was causing the 403 permission denied error Hannah (and I) encountered.
+
+I implemented the suggested changes and tested them.
+
+# METHODS
+
+As input, I used a subset of a FastA file provided by Hannah (see code below).
 
 ### Set up Conda environment
 
@@ -81,16 +87,25 @@ py_config()
 ### Clone the workflow-annotation pipeline
 
 ```{r download-pipeline, engine='bash'}
-git clone git@github.com:sr320/workflow-annotation.git
+git clone git@github.com:kubu4/workflow-annotation.git
 ```
 
 ### Download the FastA
-```{r download-fasta, engine='bash'}
+
+::: {.callout-note}
+The full FastA was not utilized. I created a subset for quick testing.
+:::
+
+```bash
 cd workflow-annotation
 
 wget --quiet --continue https://raw.githubusercontent.com/hannahnowers/Seastar-capstone/refs/heads/main/data/derm-protein.fa
+```
 
-ls -ltrh
+```{r peek-fasta-subset, engine='bash'}
+cd workflow-annotation
+
+cat subset-derm-protein.fa
 ```
 
 ### Execute the annotation script
@@ -99,8 +114,36 @@ ls -ltrh
 cd workflow-annotation
 
 bash blast2slim.sh \
--i derm-protein.fa \
+-i subset-derm-protein.fa \
 --protein \
 > blast_run.log 2>&1
-
 ```
+
+# RESULTS
+
+### Check log
+```{r check-log, engine='bash'}
+cat workflow-annotation/blast_run.log
+```
+
+### Confirm expected output files
+```{r confirm-output-files, engine='bash'}
+cd workflow-annotation
+
+ls -ltrh output/run_*
+```
+
+
+### Peek at output files
+```{r peek-output-files, engine='bash'}
+cd workflow-annotation/output
+
+find run_*/ -maxdepth 1 -type f ! -name "*.png" -exec head {} +
+```
+
+# DISCUSSION
+
+Looks like the fix worked! Everything is as expected.
+
+
+
