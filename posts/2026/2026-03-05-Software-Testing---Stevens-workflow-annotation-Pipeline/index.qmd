@@ -46,6 +46,7 @@ mamba create \
 -n sr320-workflow-annotation \
 python=3.11 \
 diamond \
+blast \
 requests \
 pandas \
 goatools \
@@ -73,6 +74,10 @@ This was run on my laptop, so the paths are specific to my system. Adjust as nee
 # CONDA
 conda_env_name <- c("/home/sam/programs/miniforge3/envs/sr320-workflow-annotation")
 conda_path <- c("/home/sam/programs/miniforge3/bin/conda")
+
+# WORKING DIRECTORY
+working_dir <- c("/home/sam/gitrepos/RobertsLab/sams-notebook/posts/2026/2026-03-05-Software-Testing---Stevens-workflow-annotation-Pipeline/")
+Sys.setenv(working_dir = working_dir)
 ```
 
 ## Load [worfkflow-annotation](https://github.com/sr320/workflow-annotation/tree/main) conda environment
@@ -81,7 +86,7 @@ If this is successful, the first line of output should show that the Python bein
 
 E.g.
 
-`python:         /home/sam/programs/mambaforge/envs/sr320-workflow-annotation/bin/python`
+`python:         /home/sam/programs/miniforge3/envs/sr320-workflow-annotation/bin/python`
 
 ```{r load-conda-env, eval=TRUE}
 use_condaenv(condaenv = conda_env_name, conda = conda_path)
@@ -102,24 +107,30 @@ The full FastA was not utilized. I created a subset for quick testing.
 :::
 
 ```bash
+cd "/home/sam/gitrepos/RobertsLab/sams-notebook/posts/2026/2026-03-05-Software-Testing---Stevens-workflow-annotation-Pipeline/"
+
+git clone git@github.com:kubu4/workflow-annotation.git
+
 cd workflow-annotation
 
 wget --quiet --continue https://raw.githubusercontent.com/hannahnowers/Seastar-capstone/refs/heads/main/data/derm-protein.fa
 ```
 
-```{r peek-fasta-subset, engine='bash'}
-cd workflow-annotation
+```{bash peek-fasta-subset}
+cd "/home/sam/gitrepos/RobertsLab/sams-notebook/posts/2026/2026-03-05-Software-Testing---Stevens-workflow-annotation-Pipeline/workflow-annotation"
 
 cat subset-derm-protein.fa
 ```
 
 ### Execute the annotation script
 
-```{r annotate, engine='bash'}
-cd workflow-annotation
 
-bash blast2slim.sh \
+```{bash annotate}
+cd "/home/sam/gitrepos/RobertsLab/sams-notebook/posts/2026/2026-03-05-Software-Testing---Stevens-workflow-annotation-Pipeline/workflow-annotation" && \
+export PATH="/home/sam/programs/miniforge3/envs/sr320-workflow-annotation/bin:$PATH" && \
+./blast2slim.sh \
 -i subset-derm-protein.fa \
+--diamond \
 --protein \
 > blast_run.log 2>&1
 ```
@@ -127,21 +138,21 @@ bash blast2slim.sh \
 # RESULTS
 
 ### Check log
-```{r check-log, engine='bash'}
-cat workflow-annotation/blast_run.log
+```{bash check-log}
+cat "/home/sam/gitrepos/RobertsLab/sams-notebook/posts/2026/2026-03-05-Software-Testing---Stevens-workflow-annotation-Pipeline/workflow-annotation/blast_run.log"
 ```
 
 ### Confirm expected output files
-```{r confirm-output-files, engine='bash'}
-cd workflow-annotation
+```{bash confirm-output-files}
+cd "/home/sam/gitrepos/RobertsLab/sams-notebook/posts/2026/2026-03-05-Software-Testing---Stevens-workflow-annotation-Pipeline/workflow-annotation"
 
 ls -ltrh output/run_*
 ```
 
 
 ### Peek at output files
-```{r peek-output-files, engine='bash'}
-cd workflow-annotation/output
+```{bash peek-output-files}
+cd "/home/sam/gitrepos/RobertsLab/sams-notebook/posts/2026/2026-03-05-Software-Testing---Stevens-workflow-annotation-Pipeline/workflow-annotation/output"
 
 find run_*/ -maxdepth 1 -type f ! -name "*.png" -exec head {} +
 ```
