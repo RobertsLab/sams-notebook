@@ -12,6 +12,164 @@
 <generator>quarto-1.6.42</generator>
 <lastBuildDate>Thu, 05 Mar 2026 08:00:00 GMT</lastBuildDate>
 <item>
+  <title>Software Installation - EGAPx and FCS-GX on Klone</title>
+  <dc:creator>Sam White</dc:creator>
+  <link>https://robertslab.github.io/sams-notebook/posts/2026/2026-03-05-Software-Installation---EGAPx-and-FCS-GX-on-Klone/</link>
+  <description><![CDATA[ 
+
+
+
+
+
+<section id="intro" class="level1">
+<h1>INTRO</h1>
+<p>Laura <a href="https://github.com/RobertsLab/resources/issues/2399">asked me to install EGAPx and FCS-GX on Klone</a> (GitHub Issue) so that she can use them for annotation of some existing snow crab RNA-seq data she is working with.</p>
+</section>
+<section id="methods" class="level1">
+<h1>METHODS</h1>
+<section id="fcs-gx" class="level2">
+<h2 class="anchored" data-anchor-id="fcs-gx">[FCS-GX]</h2>
+<p>The steps below follow those outlined in the <a href="https://github.com/ncbi/fcs/wiki/FCS-adaptor-quickstart">FCS-GX documentation</a>.</p>
+<section id="get-fcs-python-script" class="level3">
+<h3 class="anchored" data-anchor-id="get-fcs-python-script">Get FCS Python script</h3>
+<div class="sourceCode" id="cb1" style="background: #f1f3f5;"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb1-1"><span class="bu" style="color: null;
+background-color: null;
+font-style: inherit;">cd</span> /gscratch/srlab/containers <span class="dt" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">\</span></span>
+<span id="cb1-2"><span class="kw" style="color: #003B4F;
+background-color: null;
+font-weight: bold;
+font-style: inherit;">&amp;&amp;</span> <span class="ex" style="color: null;
+background-color: null;
+font-style: inherit;">curl</span> <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">-LO</span> https://github.com/ncbi/fcs/raw/main/dist/fcs.py</span></code></pre></div>
+</section>
+<section id="get-fcs-gx-singularity-image" class="level3">
+<h3 class="anchored" data-anchor-id="get-fcs-gx-singularity-image">Get FCS-GX Singularity image</h3>
+<div class="sourceCode" id="cb2" style="background: #f1f3f5;"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb2-1"><span class="ex" style="color: null;
+background-color: null;
+font-style: inherit;">curl</span> https://ftp.ncbi.nlm.nih.gov/genomes/TOOLS/FCS/releases/latest/fcs-gx.sif <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">-Lo</span> fcs-gx.sif</span></code></pre></div>
+</section>
+<section id="get-fcs-gx-databases" class="level3">
+<h3 class="anchored" data-anchor-id="get-fcs-gx-databases">Get FCS-GX databases</h3>
+<div class="callout callout-style-simple callout-none no-icon">
+<div class="callout-body d-flex">
+<div class="callout-icon-container">
+<i class="callout-icon no-icon"></i>
+</div>
+<div class="callout-body-container">
+<p>This downloads ~500GB of data, so be sure you have enough storage space before running this command! Additionally, the download may take a while to complete.</p>
+</div>
+</div>
+</div>
+<p><code>module load coenv/python/3.13.11</code></p>
+<div class="sourceCode" id="cb3" style="background: #f1f3f5;"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb3-1"><span class="bu" style="color: null;
+background-color: null;
+font-style: inherit;">cd</span> /gscratch/scrubbed/samwhite/databases</span>
+<span id="cb3-2"></span>
+<span id="cb3-3"><span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">SOURCE_DB_MANIFEST</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"https://ncbi-fcs-gx.s3.amazonaws.com/gxdb/latest/all.manifest"</span></span>
+<span id="cb3-4"></span>
+<span id="cb3-5"><span class="ex" style="color: null;
+background-color: null;
+font-style: inherit;">python3</span> /gscratch/srlab/containers/fcs.py <span class="dt" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">\</span></span>
+<span id="cb3-6">--image /gscratch/srlab/containers/fcs-gx.sif <span class="dt" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">\</span></span>
+<span id="cb3-7">db <span class="dt" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">\</span></span>
+<span id="cb3-8">get <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">--mft</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"</span><span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">$SOURCE_DB_MANIFEST</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"</span> <span class="dt" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">\</span></span>
+<span id="cb3-9">--dir <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"./gxdb"</span></span></code></pre></div>
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="https://robertslab.github.io/sams-notebook/posts/2026/2026-03-05-Software-Installation---EGAPx-and-FCS-GX-on-Klone/20260305-fcs_gx-db-downloads-completed.png" class="img-fluid figure-img" alt="Screenshot of completed DB downloads"></p>
+<figcaption>Screenshot of completed DB downloads</figcaption>
+</figure>
+</div>
+<p>Installation was <em>not</em> tested by running an annotation job, but the above steps were successfully completed without issue.</p>
+</section>
+</section>
+<section id="egapx" class="level2">
+<h2 class="anchored" data-anchor-id="egapx">EGAPx</h2>
+<p>The steps below follow those outlined in the <a href="https://github.com/ncbi/egapx">EGAPx documentation</a>.</p>
+<section id="containers-and-scripts" class="level3">
+<h3 class="anchored" data-anchor-id="containers-and-scripts">Containers and scripts</h3>
+<p>I created an Apptainer (Singularity) container for EGAPx and a script to execute it.</p>
+<p>Container definition file: <a href="https://github.com/RobertsLab/code/blob/cc8e19040ee50cb8cbe3bbb0fda6a17619e2beae/apptainer_definition_files/srlab-NCBI-EGAPx.def">srlab-NCBI-EGAPx.def</a> (GitHub)</p>
+<ul>
+<li><p>This container is based on the EGAPx Dockerfile and includes EGAPx and all dependencies.</p></li>
+<li><p>Primarily written using Claude Sonnet 4.6 (gAI agent) with some manual edits to ensure it would build correctly.</p></li>
+</ul>
+<p>Execution script: <a href="https://github.com/RobertsLab/code/blob/cc8e19040ee50cb8cbe3bbb0fda6a17619e2beae/apptainer_definition_files/run_egapx.sh">run_egapx.sh</a> (GitHub).</p>
+<ul>
+<li>This script is designed to execute the <code>srlab-NCBI-EGAPx.sif</code> container. It will create a cache directory, set a cache variable, and execute the container.</li>
+</ul>
+<p>Both have been added to Klone and can be found in the <code>/mmfs1/gscratch/srlab/containers</code> directory.</p>
+<p>Container and script have been added to Klone:</p>
+<ul>
+<li><p><code>/mmfs1/gscratch/srlab/containers/run_egapx.sh</code>: Script to execute <code>srlab-NCBI-EGAPx.sif</code> container. This will create a cache directory, set a cache variable, and bind directories to the container.</p>
+<p>Example usage: <code>bash   ./run_egapx.sh \   /opt/egapx/examples/input_D_farinae_small.yaml \   -e singularity \   -w ./work \   -o ./output</code></p>
+<p>This requires that the <code>srlab-NCBI-EGAPx.sif</code> container is in the same directory as this script. Both can be copied to other directories, if desired.</p></li>
+<li><p><code>/mmfs1/gscratch/srlab/containers/srlab-NCBI-EGAPx.sif</code>: Apptainer (Singularity) container. Can be executed by itself, but is better to use with the <code>run_egapx.sh</code> to ensure cache directory is set.</p>
+<p>To see additional help examples for using the <code>srlab-NCBI-EGAPx.sif</code> container:</p>
+<p><code>singularity run-help srlab-NCBI-EGAPx.sif</code></p></li>
+</ul>
+</section>
+<section id="test-egapx-container" class="level3">
+<h3 class="anchored" data-anchor-id="test-egapx-container">Test EGAPx container</h3>
+<p>The built-in test example was used to test the container. The test completed successfully, with all expected output files generated.</p>
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="https://robertslab.github.io/sams-notebook/posts/2026/2026-03-05-Software-Installation---EGAPx-and-FCS-GX-on-Klone/20260305-egapx-test-output.png" class="img-fluid figure-img" alt="Screenshot of EGAPx test output"></p>
+<figcaption>Screenshot of EGAPx test output</figcaption>
+</figure>
+</div>
+</section>
+</section>
+</section>
+<section id="conclusion" class="level1">
+<h1>CONCLUSION</h1>
+<p>EGAPx and FCS-GX have been successfully installed on Klone. Both were tested to ensure they are working correctly, with FCS-GX tested by downloading the databases and EGAPx tested by running the built-in test example.</p>
+<p>For info on how to run EGAPx: https://github.com/ncbi/egapx</p>
+
+
+</section>
+
+ ]]></description>
+  <category>2026</category>
+  <category>Hyak</category>
+  <category>Klone</category>
+  <category>EGAPx</category>
+  <category>FCS-GX</category>
+  <category>annotation</category>
+  <guid>https://robertslab.github.io/sams-notebook/posts/2026/2026-03-05-Software-Installation---EGAPx-and-FCS-GX-on-Klone/</guid>
+  <pubDate>Thu, 05 Mar 2026 08:00:00 GMT</pubDate>
+</item>
+<item>
   <title>Software Testing - Stevens workflow-annotation Pipeline</title>
   <dc:creator>Sam White</dc:creator>
   <link>https://robertslab.github.io/sams-notebook/posts/2026/2026-03-05-Software-Testing---Stevens-workflow-annotation-Pipeline/</link>
@@ -23,7 +181,7 @@
 
 <section id="intro" class="level1">
 <h1>INTRO</h1>
-<p>Steven asked me to test out his <a href="https://github.com/sr320/workflow-annotation/tree/main"><code>workflow-annoation</code> pipeline</a> (GitHub) after Hannah encountered an issue yesterday and we <a href="https://github.com/RobertsLab/resources/issues/2404#issuecomment-4000199854">implemented a potential fix</a> (GitHub Issue).</p>
+<p>Steven asked me to test out his <a href="https://github.com/sr320/workflow-annotation/tree/main"><code>workflow-annotation</code> pipeline</a> (GitHub) after Hannah encountered an issue yesterday and we <a href="https://github.com/RobertsLab/resources/issues/2404#issuecomment-4000199854">implemented a potential fix</a> (GitHub Issue).</p>
 <p>The pipeline was designed to take nucleotide sequences all the way through gene ontology annotation.</p>
 <p>After some back-and-forth attempts at troubleshooting, I resorted to asking the Gemini 3 Flash (preview) gAI agent. The suggestion was the lack of an <code>User-Agent</code> in the URL request header was causing the 403 permission denied error Hannah (and I) encountered.</p>
 <p>I implemented the suggested changes and tested them.</p>
@@ -157,7 +315,7 @@ font-style: inherit;">working_dir =</span> working_dir)</span></code></pre></div
 </section>
 <section id="load-worfkflow-annotation-conda-environment" class="level2">
 <h2 class="anchored" data-anchor-id="load-worfkflow-annotation-conda-environment">Load <a href="https://github.com/sr320/workflow-annotation/tree/main">worfkflow-annotation</a> conda environment</h2>
-<p>If this is successful, the first line of output should show that the Python being used is the one in your <a href="https://github.com/sr320/workflow-annotation/tree/main">worfkflow-annotation</a> conda environment path.</p>
+<p>If this is successful, the first line of output should show that the Python being used is the one in your <a href="https://github.com/sr320/workflow-annotation/tree/main">workflow-annotation</a> conda environment path.</p>
 <p>E.g.</p>
 <p><code>python:         /home/sam/programs/miniforge3/envs/sr320-workflow-annotation/bin/python</code></p>
 <div class="cell">
@@ -343,7 +501,7 @@ background-color: null;
 font-style: inherit;">"/home/sam/gitrepos/RobertsLab/sams-notebook/posts/2026/2026-03-05-Software-Testing---Stevens-workflow-annotation-Pipeline/workflow-annotation/blast_run.log"</span></span></code></pre></div>
 </details>
 <div class="cell-output cell-output-stdout">
-<pre><code>[INFO] Output directory: output/run_20260306_113912
+<pre><code>[INFO] Output directory: output/run_20260306_150323
 [INFO] Running DIAMOND BLASTP...
 diamond v2.1.23.177 (C) Max Planck Society for the Advancement of Science, Benjamin J. Buchfink, University of Tuebingen
 Documentation, support and updates available at http://www.diamondsearch.org
@@ -351,104 +509,104 @@ Please cite: http://dx.doi.org/10.1038/s41592-021-01101-x Nature Methods (2021)
 
 #CPU threads: 40
 Scoring parameters: (Matrix=BLOSUM62 Lambda=0.267 K=0.041 Penalties=11/1)
-Temporary directory: output/run_20260306_113912
+Temporary directory: output/run_20260306_150323
 #Target sequences to report alignments for: 1
-Opening the database...  [0.138s]
+Opening the database...  [0.104s]
 Database: blastdb/uniprot_sprot.dmnd (type: Diamond database, sequences: 574627, letters: 208482574)
 Block size = 2000000000
 Opening the input file...  [0s]
 Opening the output file...  [0s]
 Loading query sequences...  [0s]
-Masking queries...  [0.029s]
+Masking queries...  [0.016s]
 Algorithm: Double-indexed
-Building query histograms...  [0.006s]
+Building query histograms...  [0.009s]
 Seeking in database...  [0s]
-Loading reference sequences...  [0.668s]
-Masking reference...  [4.332s]
+Loading reference sequences...  [0.577s]
+Masking reference...  [3.227s]
 Initializing temporary storage...  [0.001s]
-Building reference histograms...  [4.859s]
+Building reference histograms...  [2.16s]
 Allocating buffers...  [0s]
 Processing query block 1, reference block 1/1, shape 1/2, index chunk 1/4.
-Building reference seed array...  [1.264s]
-Building query seed array...  [0.011s]
-Computing hash join...  [0.073s]
-Masking low complexity seeds...  [0.007s]
-Searching alignments...  [0.005s]
-Deallocating memory...  [0s]
-Processing query block 1, reference block 1/1, shape 1/2, index chunk 2/4.
-Building reference seed array...  [1.617s]
-Building query seed array...  [0.007s]
-Computing hash join...  [0.068s]
-Masking low complexity seeds...  [0.006s]
-Searching alignments...  [0.004s]
-Deallocating memory...  [0s]
-Processing query block 1, reference block 1/1, shape 1/2, index chunk 3/4.
-Building reference seed array...  [1.373s]
-Building query seed array...  [0.009s]
-Computing hash join...  [0.068s]
-Masking low complexity seeds...  [0.004s]
-Searching alignments...  [0.004s]
-Deallocating memory...  [0s]
-Processing query block 1, reference block 1/1, shape 1/2, index chunk 4/4.
-Building reference seed array...  [1.101s]
-Building query seed array...  [0.012s]
-Computing hash join...  [0.075s]
-Masking low complexity seeds...  [0.003s]
-Searching alignments...  [0.003s]
-Deallocating memory...  [0s]
-Processing query block 1, reference block 1/1, shape 2/2, index chunk 1/4.
-Building reference seed array...  [1.253s]
+Building reference seed array...  [0.811s]
 Building query seed array...  [0.006s]
-Computing hash join...  [0.066s]
-Masking low complexity seeds...  [0.003s]
-Searching alignments...  [0.006s]
-Deallocating memory...  [0s]
-Processing query block 1, reference block 1/1, shape 2/2, index chunk 2/4.
-Building reference seed array...  [1.683s]
-Building query seed array...  [0.006s]
-Computing hash join...  [0.065s]
-Masking low complexity seeds...  [0.004s]
-Searching alignments...  [0.005s]
-Deallocating memory...  [0s]
-Processing query block 1, reference block 1/1, shape 2/2, index chunk 3/4.
-Building reference seed array...  [1.558s]
-Building query seed array...  [0.009s]
-Computing hash join...  [0.06s]
-Masking low complexity seeds...  [0.003s]
-Searching alignments...  [0.005s]
-Deallocating memory...  [0s]
-Processing query block 1, reference block 1/1, shape 2/2, index chunk 4/4.
-Building reference seed array...  [0.802s]
-Building query seed array...  [0.007s]
-Computing hash join...  [0.048s]
+Computing hash join...  [0.043s]
 Masking low complexity seeds...  [0.002s]
 Searching alignments...  [0.003s]
 Deallocating memory...  [0s]
-Deallocating buffers...  [0.033s]
+Processing query block 1, reference block 1/1, shape 1/2, index chunk 2/4.
+Building reference seed array...  [1.081s]
+Building query seed array...  [0.007s]
+Computing hash join...  [0.05s]
+Masking low complexity seeds...  [0.003s]
+Searching alignments...  [0.003s]
+Deallocating memory...  [0s]
+Processing query block 1, reference block 1/1, shape 1/2, index chunk 3/4.
+Building reference seed array...  [1.012s]
+Building query seed array...  [0.007s]
+Computing hash join...  [0.047s]
+Masking low complexity seeds...  [0.003s]
+Searching alignments...  [0.005s]
+Deallocating memory...  [0s]
+Processing query block 1, reference block 1/1, shape 1/2, index chunk 4/4.
+Building reference seed array...  [0.759s]
+Building query seed array...  [0.007s]
+Computing hash join...  [0.045s]
+Masking low complexity seeds...  [0.002s]
+Searching alignments...  [0.004s]
+Deallocating memory...  [0s]
+Processing query block 1, reference block 1/1, shape 2/2, index chunk 1/4.
+Building reference seed array...  [0.772s]
+Building query seed array...  [0.007s]
+Computing hash join...  [0.047s]
+Masking low complexity seeds...  [0.004s]
+Searching alignments...  [0.004s]
+Deallocating memory...  [0s]
+Processing query block 1, reference block 1/1, shape 2/2, index chunk 2/4.
+Building reference seed array...  [1.06s]
+Building query seed array...  [0.007s]
+Computing hash join...  [0.047s]
+Masking low complexity seeds...  [0.002s]
+Searching alignments...  [0.004s]
+Deallocating memory...  [0s]
+Processing query block 1, reference block 1/1, shape 2/2, index chunk 3/4.
+Building reference seed array...  [0.938s]
+Building query seed array...  [0.005s]
+Computing hash join...  [0.044s]
+Masking low complexity seeds...  [0.002s]
+Searching alignments...  [0.002s]
+Deallocating memory...  [0s]
+Processing query block 1, reference block 1/1, shape 2/2, index chunk 4/4.
+Building reference seed array...  [0.778s]
+Building query seed array...  [0.006s]
+Computing hash join...  [0.046s]
+Masking low complexity seeds...  [0.003s]
+Searching alignments...  [0.002s]
+Deallocating memory...  [0s]
+Deallocating buffers...  [0.029s]
 Clearing query masking...  [0s]
-Computing alignments...  [0.057s]
-Deallocating reference...  [0.024s]
+Computing alignments...  [0.059s]
+Deallocating reference...  [0.015s]
 Loading reference sequences...  [0s]
 Deallocating buffers...  [0s]
 Deallocating queries...  [0s]
 Loading query sequences...  [0s]
 Closing the input file...  [0s]
 Closing the output file...  [0s]
-Closing the database...  [0.005s]
+Closing the database...  [0.003s]
 Cleaning up...  [0s]
-Total time = 21.498s
+Total time = 13.91s
 Reported 2 pairwise alignments, 2 HSPs.
 2 queries aligned.
 deps ok
-output/run_20260306_113912/go-basic.obo: fmt(1.2) rel(2026-01-23) 42,036 Terms; optional_attrs(relationship)
-output/run_20260306_113912/goslim_generic.obo: fmt(1.2) rel(go/2026-01-23/subsets/goslim_generic.owl) 207 Terms; optional_attrs(relationship)
+output/run_20260306_150323/go-basic.obo: fmt(1.2) rel(2026-01-23) 42,036 Terms; optional_attrs(relationship)
+output/run_20260306_150323/goslim_generic.obo: fmt(1.2) rel(go/2026-01-23/subsets/goslim_generic.owl) 207 Terms; optional_attrs(relationship)
 [DONE] Wrote:
- - output/run_20260306_113912/annotation_full_go.tsv
- - output/run_20260306_113912/annotation_with_goslim.tsv
+ - output/run_20260306_150323/annotation_full_go.tsv
+ - output/run_20260306_150323/annotation_with_goslim.tsv
 [INFO] Summary stats: 2/2 BLAST hits, 2 GO annotations, 2 GO-Slim mappings
 [INFO] Generated GO-Slim chart: goslim_chart.png
 [INFO] Generated summary report: summary.md
-[OK] All done. See output/run_20260306_113912/annotation_with_goslim.tsv and output/run_20260306_113912/summary.md</code></pre>
+[OK] All done. See output/run_20260306_150323/annotation_with_goslim.tsv and output/run_20260306_150323/summary.md</code></pre>
 </div>
 </div>
 </section>
@@ -472,7 +630,8 @@ background-color: null;
 font-style: inherit;">*</span></span></code></pre></div>
 </details>
 <div class="cell-output cell-output-stdout">
-<pre><code>total 31M
+<pre><code>output/run_20260306_113912:
+total 31M
 -rw-rw-r-- 1 sam sam  339 Mar  6 11:39 subset-derm-protein.blast.tsv
 -rw-rw-r-- 1 sam sam 9.0K Mar  6 11:39 postprocess_uniprot_go.py
 -rw-rw-r-- 1 sam sam 2.8K Mar  6 11:39 annotation_full_go.tsv
@@ -481,7 +640,19 @@ font-style: inherit;">*</span></span></code></pre></div>
 -rw-rw-r-- 1 sam sam 3.2K Mar  6 11:39 annotation_with_goslim.tsv
 -rw-rw-r-- 1 sam sam  296 Mar  6 11:39 summary_stats.json
 -rw-rw-r-- 1 sam sam  51K Mar  6 11:39 goslim_chart.png
--rw-rw-r-- 1 sam sam 1.2K Mar  6 11:39 summary.md</code></pre>
+-rw-rw-r-- 1 sam sam 1.2K Mar  6 11:39 summary.md
+
+output/run_20260306_150323:
+total 31M
+-rw-rw-r-- 1 sam sam  339 Mar  6 15:03 subset-derm-protein.blast.tsv
+-rw-rw-r-- 1 sam sam 9.0K Mar  6 15:03 postprocess_uniprot_go.py
+-rw-rw-r-- 1 sam sam 2.8K Mar  6 15:03 annotation_full_go.tsv
+-rw-rw-r-- 1 sam sam  31M Mar  6 15:03 go-basic.obo
+-rw-rw-r-- 1 sam sam 122K Mar  6 15:03 goslim_generic.obo
+-rw-rw-r-- 1 sam sam 3.2K Mar  6 15:03 annotation_with_goslim.tsv
+-rw-rw-r-- 1 sam sam  296 Mar  6 15:03 summary_stats.json
+-rw-rw-r-- 1 sam sam  51K Mar  6 15:03 goslim_chart.png
+-rw-rw-r-- 1 sam sam 1.2K Mar  6 15:03 summary.md</code></pre>
 </div>
 </div>
 </section>
@@ -573,6 +744,70 @@ subsetdef: goslim_chembl "ChEMBL protein targets summary"
 subsetdef: goslim_drosophila "Drosophila GO slim"
 
 ==&gt; run_20260306_113912/annotation_full_go.tsv &lt;==
+query   accession   pident  length  evalue  bitscore    title   id  Reviewed    protein_name    organism    go_ids  go_bp   go_cc   go_mf
+g7941.t1    C0HL13  28.9    294 2.34e-31    129 sp|C0HL13|LRP2_PIG Low-density lipoprotein receptor-related protein 2 OS=Sus scrofa OX=9823 GN=LRP2 PE=1 SV=1   LRP2_PIG    reviewed    Low-density lipoprotein receptor-related protein 2 (LRP-2) (Glycoprotein 330) (gp330) (Megalin) Sus scrofa (Pig)    GO:0001843; GO:0003139; GO:0003148; GO:0003223; GO:0005509; GO:0005905; GO:0006898; GO:0007605; GO:0008584; GO:0009897; GO:0016324; GO:0017124; GO:0030001; GO:0030424; GO:0030425; GO:0030514; GO:0031526; GO:0031904; GO:0043235; GO:0050769; GO:0051087; GO:0060068; GO:0060982; GO:0061156; GO:0070447; GO:0140058; GO:1904447; GO:1905167  coronary artery morphogenesis [GO:0060982]; folate import across plasma membrane [GO:1904447]; male gonad development [GO:0008584]; metal ion transport [GO:0030001]; negative regulation of BMP signaling pathway [GO:0030514]; neural tube closure [GO:0001843]; neuron projection arborization [GO:0140058]; outflow tract septum morphogenesis [GO:0003148]; positive regulation of lysosomal protein catabolic process [GO:1905167]; positive regulation of neurogenesis [GO:0050769]; positive regulation of oligodendrocyte progenitor proliferation [GO:0070447]; pulmonary artery morphogenesis [GO:0061156]; receptor-mediated endocytosis [GO:0006898]; secondary heart field specification [GO:0003139]; sensory perception of sound [GO:0007605]; vagina development [GO:0060068]; ventricular compact myocardium morphogenesis [GO:0003223]   apical plasma membrane [GO:0016324]; axon [GO:0030424]; brush border membrane [GO:0031526]; clathrin-coated pit [GO:0005905]; dendrite [GO:0030425]; endosome lumen [GO:0031904]; external side of plasma membrane [GO:0009897]; receptor complex [GO:0043235]  calcium ion binding [GO:0005509]; protein-folding chaperone binding [GO:0051087]; SH3 domain binding [GO:0017124]
+g7944.t1    Q7L592  51.8    415 8.529999999999999e-141  412 sp|Q7L592|NDUF7_HUMAN Protein arginine methyltransferase NDUFAF7, mitochondrial OS=Homo sapiens OX=9606 GN=NDUFAF7 PE=1 SV=1    NDUF7_HUMAN reviewed    Protein arginine methyltransferase NDUFAF7, mitochondrial (EC 2.1.1.320) (NADH dehydrogenase [ubiquinone] complex I, assembly factor 7) (Protein midA homolog)  Homo sapiens (Human)    GO:0005615; GO:0005739; GO:0005759; GO:0008168; GO:0019899; GO:0019918; GO:0032981; GO:0035243  mitochondrial respiratory chain complex I assembly [GO:0032981]; peptidyl-arginine methylation, to symmetrical-dimethyl arginine [GO:0019918]   extracellular space [GO:0005615]; mitochondrial matrix [GO:0005759]; mitochondrion [GO:0005739] enzyme binding [GO:0019899]; methyltransferase activity [GO:0008168]; protein-arginine omega-N symmetric methyltransferase activity [GO:0035243]
+
+==&gt; run_20260306_150323/annotation_with_goslim.tsv &lt;==
+query   accession   id  reviewed    protein_name    organism    pident  length  evalue  bitscore    title   go_ids  go_bp   go_cc   go_mf   goslim_ids  goslim_names
+g7941.t1    C0HL13  LRP2_PIG        Low-density lipoprotein receptor-related protein 2 (LRP-2) (Glycoprotein 330) (gp330) (Megalin) Sus scrofa (Pig)    28.9    294 2.34e-31    129 sp|C0HL13|LRP2_PIG Low-density lipoprotein receptor-related protein 2 OS=Sus scrofa OX=9823 GN=LRP2 PE=1 SV=1   GO:0001843; GO:0003139; GO:0003148; GO:0003223; GO:0005509; GO:0005905; GO:0006898; GO:0007605; GO:0008584; GO:0009897; GO:0016324; GO:0017124; GO:0030001; GO:0030424; GO:0030425; GO:0030514; GO:0031526; GO:0031904; GO:0043235; GO:0050769; GO:0051087; GO:0060068; GO:0060982; GO:0061156; GO:0070447; GO:0140058; GO:1904447; GO:1905167  coronary artery morphogenesis [GO:0060982]; folate import across plasma membrane [GO:1904447]; male gonad development [GO:0008584]; metal ion transport [GO:0030001]; negative regulation of BMP signaling pathway [GO:0030514]; neural tube closure [GO:0001843]; neuron projection arborization [GO:0140058]; outflow tract septum morphogenesis [GO:0003148]; positive regulation of lysosomal protein catabolic process [GO:1905167]; positive regulation of neurogenesis [GO:0050769]; positive regulation of oligodendrocyte progenitor proliferation [GO:0070447]; pulmonary artery morphogenesis [GO:0061156]; receptor-mediated endocytosis [GO:0006898]; secondary heart field specification [GO:0003139]; sensory perception of sound [GO:0007605]; vagina development [GO:0060068]; ventricular compact myocardium morphogenesis [GO:0003223]   apical plasma membrane [GO:0016324]; axon [GO:0030424]; brush border membrane [GO:0031526]; clathrin-coated pit [GO:0005905]; dendrite [GO:0030425]; endosome lumen [GO:0031904]; external side of plasma membrane [GO:0009897]; receptor complex [GO:0043235]  calcium ion binding [GO:0005509]; protein-folding chaperone binding [GO:0051087]; SH3 domain binding [GO:0017124]   GO:0016192; GO:0022414; GO:0048856; GO:0050877; GO:0055085  vesicle-mediated transport; reproductive process; anatomical structure development; nervous system process; transmembrane transport
+g7944.t1    Q7L592  NDUF7_HUMAN     Protein arginine methyltransferase NDUFAF7, mitochondrial (EC 2.1.1.320) (NADH dehydrogenase [ubiquinone] complex I, assembly factor 7) (Protein midA homolog)  Homo sapiens (Human)    51.8    415 8.529999999999999e-141  412 sp|Q7L592|NDUF7_HUMAN Protein arginine methyltransferase NDUFAF7, mitochondrial OS=Homo sapiens OX=9606 GN=NDUFAF7 PE=1 SV=1    GO:0005615; GO:0005739; GO:0005759; GO:0008168; GO:0019899; GO:0019918; GO:0032981; GO:0035243  mitochondrial respiratory chain complex I assembly [GO:0032981]; peptidyl-arginine methylation, to symmetrical-dimethyl arginine [GO:0019918]   extracellular space [GO:0005615]; mitochondrial matrix [GO:0005759]; mitochondrion [GO:0005739] enzyme binding [GO:0019899]; methyltransferase activity [GO:0008168]; protein-arginine omega-N symmetric methyltransferase activity [GO:0035243]    GO:0003824; GO:0005615; GO:0005739; GO:0016740; GO:0043226; GO:0065003; GO:0140096  catalytic activity; extracellular space; mitochondrion; transferase activity; organelle; protein-containing complex assembly; catalytic activity, acting on a protein
+
+==&gt; run_20260306_150323/postprocess_uniprot_go.py &lt;==
+import sys, os, time, json, math
+import pandas as pd
+import requests
+from pathlib import Path
+
+BLAST_TSV = sys.argv[1]
+OUTDIR = sys.argv[2]
+
+os.makedirs(OUTDIR, exist_ok=True)
+hits = pd.read_csv(BLAST_TSV, sep='\t', header=None,
+
+==&gt; run_20260306_150323/summary_stats.json &lt;==
+{"total_sequences": 2, "blast_hits": 2, "go_matches": 2, "goslim_matches": 2, "goslim_counts": {"vesicle-mediated transport": 1, "reproductive process": 1, "anatomical structure development": 1, "nervous system process": 1, "transmembrane transport": 1, "protein-containing complex assembly": 1}}
+==&gt; run_20260306_150323/subset-derm-protein.blast.tsv &lt;==
+g7941.t1    sp|C0HL13|LRP2_PIG  28.9    294 2.34e-31    129 sp|C0HL13|LRP2_PIG Low-density lipoprotein receptor-related protein 2 OS=Sus scrofa OX=9823 GN=LRP2 PE=1 SV=1
+g7944.t1    sp|Q7L592|NDUF7_HUMAN   51.8    415 8.53e-141   412 sp|Q7L592|NDUF7_HUMAN Protein arginine methyltransferase NDUFAF7, mitochondrial OS=Homo sapiens OX=9606 GN=NDUFAF7 PE=1 SV=1
+
+==&gt; run_20260306_150323/summary.md &lt;==
+# Annotation Summary Report
+
+## Job Information
+- **Input file**: subset-derm-protein.fa
+- **Start time**: 2026-03-06 15:03:23
+- **End time**: 2026-03-06 15:03:42
+- **Duration**: 0h 0m 19s
+- **CPUs used**: 40
+- **Tool**: DIAMOND BLASTP (protein)
+
+
+==&gt; run_20260306_150323/goslim_generic.obo &lt;==
+format-version: 1.2
+data-version: go/releases/2026-01-23/subsets/goslim_generic.owl
+subsetdef: chebi_ph7_3 "Rhea list of ChEBI terms representing the major species at pH 7.3."
+subsetdef: gocheck_do_not_annotate "Term not to be used for direct annotation"
+subsetdef: gocheck_obsoletion_candidate "Terms planned for obsoletion"
+subsetdef: goslim_agr "AGR slim"
+subsetdef: goslim_aspergillus "Aspergillus GO slim"
+subsetdef: goslim_candida "Candida GO slim"
+subsetdef: goslim_chembl "ChEMBL protein targets summary"
+subsetdef: goslim_drosophila "Drosophila GO slim"
+
+==&gt; run_20260306_150323/go-basic.obo &lt;==
+format-version: 1.2
+data-version: releases/2026-01-23
+subsetdef: chebi_ph7_3 "Rhea list of ChEBI terms representing the major species at pH 7.3."
+subsetdef: gocheck_do_not_annotate "Term not to be used for direct annotation"
+subsetdef: gocheck_obsoletion_candidate "Terms planned for obsoletion"
+subsetdef: goslim_agr "AGR slim"
+subsetdef: goslim_aspergillus "Aspergillus GO slim"
+subsetdef: goslim_candida "Candida GO slim"
+subsetdef: goslim_chembl "ChEMBL protein targets summary"
+subsetdef: goslim_drosophila "Drosophila GO slim"
+
+==&gt; run_20260306_150323/annotation_full_go.tsv &lt;==
 query   accession   pident  length  evalue  bitscore    title   id  Reviewed    protein_name    organism    go_ids  go_bp   go_cc   go_mf
 g7941.t1    C0HL13  28.9    294 2.34e-31    129 sp|C0HL13|LRP2_PIG Low-density lipoprotein receptor-related protein 2 OS=Sus scrofa OX=9823 GN=LRP2 PE=1 SV=1   LRP2_PIG    reviewed    Low-density lipoprotein receptor-related protein 2 (LRP-2) (Glycoprotein 330) (gp330) (Megalin) Sus scrofa (Pig)    GO:0001843; GO:0003139; GO:0003148; GO:0003223; GO:0005509; GO:0005905; GO:0006898; GO:0007605; GO:0008584; GO:0009897; GO:0016324; GO:0017124; GO:0030001; GO:0030424; GO:0030425; GO:0030514; GO:0031526; GO:0031904; GO:0043235; GO:0050769; GO:0051087; GO:0060068; GO:0060982; GO:0061156; GO:0070447; GO:0140058; GO:1904447; GO:1905167  coronary artery morphogenesis [GO:0060982]; folate import across plasma membrane [GO:1904447]; male gonad development [GO:0008584]; metal ion transport [GO:0030001]; negative regulation of BMP signaling pathway [GO:0030514]; neural tube closure [GO:0001843]; neuron projection arborization [GO:0140058]; outflow tract septum morphogenesis [GO:0003148]; positive regulation of lysosomal protein catabolic process [GO:1905167]; positive regulation of neurogenesis [GO:0050769]; positive regulation of oligodendrocyte progenitor proliferation [GO:0070447]; pulmonary artery morphogenesis [GO:0061156]; receptor-mediated endocytosis [GO:0006898]; secondary heart field specification [GO:0003139]; sensory perception of sound [GO:0007605]; vagina development [GO:0060068]; ventricular compact myocardium morphogenesis [GO:0003223]   apical plasma membrane [GO:0016324]; axon [GO:0030424]; brush border membrane [GO:0031526]; clathrin-coated pit [GO:0005905]; dendrite [GO:0030425]; endosome lumen [GO:0031904]; external side of plasma membrane [GO:0009897]; receptor complex [GO:0043235]  calcium ion binding [GO:0005509]; protein-folding chaperone binding [GO:0051087]; SH3 domain binding [GO:0017124]
 g7944.t1    Q7L592  51.8    415 8.529999999999999e-141  412 sp|Q7L592|NDUF7_HUMAN Protein arginine methyltransferase NDUFAF7, mitochondrial OS=Homo sapiens OX=9606 GN=NDUFAF7 PE=1 SV=1    NDUF7_HUMAN reviewed    Protein arginine methyltransferase NDUFAF7, mitochondrial (EC 2.1.1.320) (NADH dehydrogenase [ubiquinone] complex I, assembly factor 7) (Protein midA homolog)  Homo sapiens (Human)    GO:0005615; GO:0005739; GO:0005759; GO:0008168; GO:0019899; GO:0019918; GO:0032981; GO:0035243  mitochondrial respiratory chain complex I assembly [GO:0032981]; peptidyl-arginine methylation, to symmetrical-dimethyl arginine [GO:0019918]   extracellular space [GO:0005615]; mitochondrial matrix [GO:0005759]; mitochondrion [GO:0005739] enzyme binding [GO:0019899]; methyltransferase activity [GO:0008168]; protein-arginine omega-N symmetric methyltransferase activity [GO:0035243]</code></pre>
@@ -60798,86 +61033,6 @@ Important
   <category>Quick DNA/RNA Miniprep Plus Kit</category>
   <guid>https://robertslab.github.io/sams-notebook/posts/2025/2025-09-02-RNA-Isolation---C.gigas-PolyIC-Mechanical-Trials-for-Valentina-Using-Quick-DNA-RNA-Miniprep-Plus-Kit/</guid>
   <pubDate>Tue, 02 Sep 2025 07:00:00 GMT</pubDate>
-</item>
-<item>
-  <title>Shiny Server - Configuration on Gannet Using Synology Container Manager</title>
-  <dc:creator>Sam White</dc:creator>
-  <link>https://robertslab.github.io/sams-notebook/posts/2025/2025-08-29-Shiny-Server---Configuration-on-Gannet-Using-Synology-Container-Manager/</link>
-  <description><![CDATA[ 
-
-
-
-
-
-<section id="intro" class="level1">
-<h1>INTRO</h1>
-<p>Steven has created a <a href="https://shiny.posit.co/">Shiny app</a> (website) that will allow the public to plot/interact with some of the resazurin data that the lab’s been collecting. He <a href="https://github.com/RobertsLab/resources/issues/2302">assigned me to tackle getting a Shiny server set up on one our lab servers</a> so that we don’t have to rely on free options, which can be limited.</p>
-<p>This post documents the process of deploying a Shiny Server using Synology’s Container Manager on Gannet (Synology server). The goal was to host a custom Shiny app for public data visualization, using the official Rocker image and mounting the necessary volumes for persistent app storage.</p>
-<section id="step-by-step-instructions" class="level2">
-<h2 class="anchored" data-anchor-id="step-by-step-instructions">Step-by-Step Instructions</h2>
-<ol type="1">
-<li><p><strong>Open Synology Container Manager and search for the Rocker image on DockerHub.</strong><br>
-<img src="https://robertslab.github.io/sams-notebook/posts/2025/2025-08-29-Shiny-Server---Configuration-on-Gannet-Using-Synology-Container-Manager/20250829-syno-container_mgr-dockerhub-screenshot.png" class="img-fluid" alt="DockerHub search for Rocker image in Synology Container Manager. Shows the available Rocker images for selection."></p></li>
-<li><p><strong>Select the appropriate Rocker image for Shiny Server.</strong></p></li>
-</ol>
-<p>In this case, I selected <code>rocker/shiny-verse</code>. This includes Shiny server, as well as the <code>tidyverse</code> package. <img src="https://robertslab.github.io/sams-notebook/posts/2025/2025-08-29-Shiny-Server---Configuration-on-Gannet-Using-Synology-Container-Manager/20250829-syno-container_mgr-rocker_image-screenshot.png" class="img-fluid" alt="Selection of the Rocker image for Shiny Server in Synology Container Manager. Highlights the chosen image for deployment."></p>
-<ol start="3" type="1">
-<li><strong>Create and configure a new container using the selected image.</strong></li>
-</ol>
-<p>Check the boxes shown in the image below and leave the default port settings (<code>3838</code> and <code>HTTP</code>).</p>
-<p><img src="https://robertslab.github.io/sams-notebook/posts/2025/2025-08-29-Shiny-Server---Configuration-on-Gannet-Using-Synology-Container-Manager/20250829-syno-container_mgr-run-image-screenshot.png" class="img-fluid" alt="Container creation screen in Synology Container Manager. Shows configuration options for the new container."></p>
-<ol start="4" type="1">
-<li><strong>Set up volume mounts to link the app code and data to the container.</strong></li>
-</ol>
-<p>To do this, I cloned the <a href="https://github.com/RobertsLab/vims-resazurin"><code>vims-resazurin</code> GitHub repo</a> to the following Synology location: <code>/volume2/docker/shiny-verse/</code>.</p>
-<p>When setting the volumes, we’ll need <em>two</em> locations for this particular Shiny app. The reason for this is the <a href="https://github.com/RobertsLab/vims-resazurin/blob/main/code/shiny-app/app.R">Shiny app</a> (GitHub) uses relative paths to access other files within the repo. Otherwise, if all the files referenced were in the same directory as the Shiny app, we could mount just that location.</p>
-<p>So, I mounted (bound) the following two locations. These are listed Synology location, followed by container location.</p>
-<ol type="1">
-<li><p><code>/volume2/docker/shiny-verse/vims-resazurin/main</code> to <code>/srv/shiny-server</code>. This shares all files within the <code>vims-resazurin</code> repo with the Shiny server location in the container.</p></li>
-<li><p><code>/volume2/docker/shiny-verse/vims-resazurin/main/code/shiny-app</code> to <code>/srv/shiny-server/resazurin</code>.</p></li>
-</ol>
-<pre><code>This shares the Shiny app location on the Synology with the Shiny server in the container and provides it with a custom name. In this case, `resazurin`.</code></pre>
-<p><img src="https://robertslab.github.io/sams-notebook/posts/2025/2025-08-29-Shiny-Server---Configuration-on-Gannet-Using-Synology-Container-Manager/20250829-syno-container_mgr-run-image-volumes-screenshot.png" class="img-fluid" alt="Volume mount configuration in Synology Container Manager. Demonstrates how host directories are mapped to container paths."></p>
-<ol start="5" type="1">
-<li><strong>Configure web portal settings for external access.</strong></li>
-</ol>
-<p>The HTTPS port number can really be any value you’d like. There are some reserved ports, but it’s a small quantity, so feel free to pick whatever.</p>
-<p><img src="https://robertslab.github.io/sams-notebook/posts/2025/2025-08-29-Shiny-Server---Configuration-on-Gannet-Using-Synology-Container-Manager/20250829-syno-container_mgr-run-image-web_portal-screenshot.png" class="img-fluid" alt="Web portal and network settings for the Shiny Server container. Shows how to enable external access."></p>
-<ol start="6" type="1">
-<li><strong>Open a terminal in the running container to install required R packages.</strong></li>
-</ol>
-<p>The Shiny app requires additional R packages which aren’t in the container by default. To install them, you have to open a terminal in the container. Pick “Terminal” from this dropdown menu:</p>
-<p><img src="https://robertslab.github.io/sams-notebook/posts/2025/2025-08-29-Shiny-Server---Configuration-on-Gannet-Using-Synology-Container-Manager/20250829-syno-container_mgr-run-image-open_terminal-screenshot.png" class="img-fluid" alt="Opening a terminal session in the running container. Prepares for R package installation."></p>
-<ol start="7" type="1">
-<li><strong>Run the R command to install all necessary packages for the app.</strong></li>
-</ol>
-<p>Here’s the full command:</p>
-<div class="sourceCode" id="cb2" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb2-1">R <span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">-</span>e <span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"install.packages(c('shiny', 'shinythemes', 'readxl', 'tidyverse', 'tools', 'DT', 'plotly', 'pracma', 'stringr'))"</span></span></code></pre></div>
-<p><img src="https://robertslab.github.io/sams-notebook/posts/2025/2025-08-29-Shiny-Server---Configuration-on-Gannet-Using-Synology-Container-Manager/20250829-syno-container_mgr-run-image-R_terminal_commands-screenshot.png" class="img-fluid" alt="R terminal command for installing required packages. Shows the command input in the container terminal."></p>
-<ol start="8" type="1">
-<li><p><strong>Monitor the installation process to ensure all packages are installed successfully.</strong><br>
-<img src="https://robertslab.github.io/sams-notebook/posts/2025/2025-08-29-Shiny-Server---Configuration-on-Gannet-Using-Synology-Container-Manager/20250829-syno-container_mgr-run-image-R_terminal_commands-running-screenshot.png" class="img-fluid" alt="R package installation in progress. Displays the output and progress of the installation process."></p></li>
-<li><p><strong>Access the running Shiny app via the web interface to confirm functionality.</strong></p></li>
-</ol>
-<p>This becomes accessible at our existing domain (gannet.fish.washington.edu), followed by the port number we set in Step 5 above (<code>4444</code>), followed by the custom name we set (<code>resazurin</code>) in Step 4 during mounting/binding volumes to the container. <img src="https://robertslab.github.io/sams-notebook/posts/2025/2025-08-29-Shiny-Server---Configuration-on-Gannet-Using-Synology-Container-Manager/20250829-functional-shiny-app-webpage.png" class="img-fluid" alt="Functional Shiny app webpage. Confirms successful deployment and public accessibility of the app."></p>
-
-
-</section>
-</section>
-
- ]]></description>
-  <category>2025</category>
-  <category>rocker</category>
-  <category>Shiny app</category>
-  <category>Gannet</category>
-  <category>Synology</category>
-  <category>container</category>
-  <guid>https://robertslab.github.io/sams-notebook/posts/2025/2025-08-29-Shiny-Server---Configuration-on-Gannet-Using-Synology-Container-Manager/</guid>
-  <pubDate>Fri, 29 Aug 2025 07:00:00 GMT</pubDate>
 </item>
 </channel>
 </rss>
