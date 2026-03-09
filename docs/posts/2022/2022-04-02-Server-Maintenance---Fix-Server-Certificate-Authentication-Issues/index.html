@@ -2,7 +2,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
 
 <meta charset="utf-8">
-<meta name="generator" content="quarto-1.6.42">
+<meta name="generator" content="quarto-1.5.57">
 
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
@@ -38,10 +38,10 @@ ul.task-list li input[type="checkbox"] {
 <script src="../../../site_libs/quarto-html/tippy.umd.min.js"></script>
 <script src="../../../site_libs/quarto-html/anchor.min.js"></script>
 <link href="../../../site_libs/quarto-html/tippy.css" rel="stylesheet">
-<link href="../../../site_libs/quarto-html/quarto-syntax-highlighting-dark-b53751a350365c71b6c909e95f209ed1.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<link href="../../../site_libs/quarto-html/quarto-syntax-highlighting-dark.css" rel="stylesheet" id="quarto-text-highlighting-styles">
 <script src="../../../site_libs/bootstrap/bootstrap.min.js"></script>
 <link href="../../../site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
-<link href="../../../site_libs/bootstrap/bootstrap-e518e50a9807db09b51ea894c4c266f8.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="dark">
+<link href="../../../site_libs/bootstrap/bootstrap.min.css" rel="stylesheet" id="quarto-bootstrap" data-mode="dark">
 <script id="quarto-search-options" type="application/json">{
   "location": "navbar",
   "copy-button": true,
@@ -187,7 +187,7 @@ gtag('config', 'G-7483T61T11', { 'anonymize_ip': true});
                 <div class="quarto-category">servers</div>
                 <div class="quarto-category">gannet</div>
                 <div class="quarto-category">owl</div>
-                <div class="quarto-category">eagle </div>
+                <div class="quarto-category">eagle</div>
                 <div class="quarto-category">2022</div>
                 <div class="quarto-category">Computer Servicing</div>
               </div>
@@ -233,7 +233,7 @@ gtag('config', 'G-7483T61T11', { 'anonymize_ip': true});
 <p>The perplexing thing is that we have InCommon CA certificates provided by the University of Washington for each of our servers, so it was confusing that we kept encountering these certificate-related errors. I finally got fed up with the problem and decided to do some sleuthing. I had done so in the past, but never came across anything that could point me to what was wrong. Well, today, I stumbled across the problem:</p>
 <p>We didn’t have an <em>intermediate</em> InCommon certificate!</p>
 <p>I wasn’t previously aware this was a requirement, as this was not mentioned when I initially requested certificates from our department IT group. But, during my (remarkably) bried searching, I stumbled across <a href="https://www.ssl.com/how-to/enable-https-generate-csr-install-ssl-tls-certificate-in-synology-nas/">this guide for installing a certificate on a Synology NAS</a> (which is the brand for all three of our servers) and noticed that the process included an intermediate certificate. The phrasing of the instructions also implied that it was necessary, which is what prompted me to explore this further. Of note, not only did the department IT not mention intermediate certificates, but the Synology “wizard” for guiding the user through the certificate generation/upload process doesn’t <em>require</em> an intermediate certificate; suggesting it’s optional (which, I guess, technically, it is; but it’d be nice if they explained what the impacts might be if one does <em>not</em> provide an intermediate certificate).</p>
-<p>Searching for UW intermediate server certificates led me to this page which <em>actually provides the InCommon RSA Server intermediate certficates for UW</em>! (dead link). Doing a bit more research, I found the UW page describing InCommon CA server certificates(dead link). On that page is this crucial piece of information:</p>
+<p>Searching for UW intermediate server certificates led me to this page which <em>actually provides the InCommon RSA Server intermediate certficates for UW</em>! (dead link). Doing a bit more research, I found the <a href="https://wiki.cac.washington.edu/spaces/infra/pages/66705144/InCommon+SSL+Intermediate+Certificates">UW page describing InCommon CA server certificates</a>. On that page is this crucial piece of information:</p>
 <blockquote class="blockquote">
 <p>Server admins must install the InCommon CA intermediate certificate.</p>
 </blockquote>
@@ -326,6 +326,8 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
   });
   clipboard.on('success', onCopySuccess);
   if (window.document.getElementById('quarto-embedded-source-code-modal')) {
+    // For code content inside modals, clipBoardJS needs to be initialized with a container option
+    // TODO: Check when it could be a function (https://github.com/zenorocha/clipboard.js/issues/860)
     const clipboardModal = new window.ClipboardJS('.code-copy-button[data-in-quarto-modal]', {
       text: getTextToCopy,
       container: window.document.getElementById('quarto-embedded-source-code-modal')
@@ -436,6 +438,7 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
       if (window.Quarto?.typesetMath) {
         window.Quarto.typesetMath(note);
       }
+      // TODO in 1.5, we should make sure this works without a callout special case
       if (note.classList.contains("callout")) {
         return note.outerHTML;
       } else {
