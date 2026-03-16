@@ -5,7 +5,7 @@ toc-depth: 5
 toc-location: left
 title: De Novo Transcriptome Assembly and Annotation - E5 P.evermanni RNA-seq Using Trinity and PASA
 date: '2026-02-27'
-draft: true
+draft: false
 engine: knitr
 categories: 
   - "2026"
@@ -15,3 +15,682 @@ categories:
   - "transcriptome assembly"
   - "Porites evermanni"
 ---
+# INTRO
+
+This notebook performs a comprehensive transcriptome assembly and annotation for *P.evermanni* using the [PASA (Program to Assemble Spliced Alignments)](https://github.com/PASApipeline/PASApipeline/wiki), as part of the E5 [timeseries_molecular project](https://github.com/urol-e5/timeseries_molecular). This produced an updated genome annotation that incorporates the RNA-seq data, including alternative splicing information. However, it's important to note that the resulting GFF/BED files will _not_ contain any annotations from the original genome GFF which did not have any support from RNA-seq alignments!
+
+Thus, the resulting PASA annotations will be a _subset_ of the original genome annotations, but with updated gene models based on the RNA-seq data. The PASA pipeline will merge the de novo and genome-guided transcriptome assemblies, clean the transcripts, and update the genome annotations with alternative splicing information where supported by the data.
+
+The markdown below was produced from the original Rmd script:
+
+- [00.30-E-Peve-transcriptome-assembly-Trinity.Rmd](https://github.com/urol-e5/timeseries_molecular/blob/1c9153b836d2ebba3d7aa22e896fa71749f28d8b/E-Peve/code/00.30-E-Peve-transcriptome-assembly-Trinity.Rmd) (GitHub)
+
+
+Not described below is the access to the PASA web portal, which allows the user to browse the PASA results in a user-friendly interface. This can be accessed here:
+
+- http://gannet.fish.washington.edu:9000/
+
+Enter `peve_pasa` as the database name. If this is your first time using the database, it will take many minutes for the data to load (the MySQL files behind the scenes are ~10GB in size, so it takes a while to process). After initial acces, the data is cached and access is much faster.
+
+
+![Screenshot of peve_pasa web portal on Gannet](./20260227-peve-pasa_web.png)
+
+---
+
+# 1 BACKGROUND
+
+This notebook performs a comprehensive transcriptome assembly and
+annotaiton for *P.evermanni* using the [PASA (Program to Assemble
+Spliced Alignments)](https://github.com/PASApipeline/PASApipeline/wiki)
+pipeline, as well as alternative isoform identification. This pipeline
+relies on both *de novo* and genome-guided transcriptome assemblies with
+[Trinity](https://github.com/trinityrnaseq/trinityrnaseq/wiki).
+
+The key steps include: 1. **De Novo Assembly** and **Genome-Guided
+Assembly**: Using
+[Trinity](https://github.com/trinityrnaseq/trinityrnaseq/wiki) to
+assemble transcripts directly from RNA-seq reads. 2. **PASA Pipeline**:
+Utilizing [PASA](https://github.com/PASApipeline/PASApipeline/wiki) to
+merge the assemblies, clean transcripts, and update genome annotations
+with alternative splicing information.
+
+**Programs Used:** -
+[Trinity](https://github.com/trinityrnaseq/trinityrnaseq/wiki) -
+Transcriptome assembly. -
+[PASA](https://github.com/PASApipeline/PASApipeline/wiki) - Annotation
+update and transcript assembly refinement. -
+[AGAT](https://github.com/NBISweden/AGAT) - GFF/GTF toolkit for
+annotation merging and conversion. - [Singularity
+(Apptainer)](https://apptainer.org/) - Container platform used to run
+assembly pipelines.
+
+## 1.1 Expected outputs
+
+**TRINITY**:
+
+- FastA: *De novo* transcriptome assembly.
+- FastA: Genome-guided transcriptome assembly.
+
+**PASA**:
+
+- GFF3: Genome annotations produced by PASA pipeline in GFF3.
+- BED: Genome annotations produced by PASA pipeline in BED format.
+
+# 2 SETUP
+
+## 2.1 Libraries and markdown settings
+
+``` r
+library(knitr)
+library(reticulate)
+knitr::opts_chunk$set(
+  echo = TRUE,         # Display code chunks
+  eval = FALSE,        # Evaluate code chunks
+  warning = FALSE,     # Hide warnings
+  message = FALSE,     # Hide messages
+  comment = ""         # Prevents appending '##' to beginning of lines in code output
+)
+```
+
+## 2.2 Set variables
+
+``` r
+# DIRECTORIES
+top_output_dir <- file.path("..", "output")
+
+output_dir <- file.path(top_output_dir, "00.30-E-Peve-transcriptome-assembly-Trinity")
+de_novo_output_dir <- file.path(output_dir, "de_novo_assembly")
+genome_guided_output_dir <- file.path(output_dir, "genome_guided_assembly")
+pasa_container_dir <- file.path("/home", "shared", "containers")
+pasa_gff <- "peve-PASA.gff3"
+PASA_HOME <- "/usr/local/src/PASApipeline"
+pasa_output_dir <- file.path(output_dir, "PASA")
+stringtie_gtf_dir <- file.path(top_output_dir, "02.20-E-Peve-RNAseq-alignment-HiSat2")
+trimmed_reads_dir <- file.path(top_output_dir, "01.00-E-Peve-RNAseq-trimming-fastp-FastQC-MultiQC")
+
+
+# FILES
+bam_alignment <- file.path(top_output_dir, "02.20-E-Peve-RNAseq-alignment-HiSat2", "sorted-bams-merged.bam")
+
+## Path for genome will be relative to PASA output dir
+genome_fasta <- file.path("..", "..", "..", "data", "Porites_evermanni_v1.fa")
+genome_gff <- file.path("..", "data", "Porites_evermanni_validated.gff3")
+denovo_assembly_name <- "peve-denovo-Trinity"
+genome_guided_assembly_name <- "peve-GG-Trinity"
+pasa_container <- "pasapipeline.v2.5.3.simg"
+stringtie_gtf <- file.path(stringtie_gtf_dir, "Porites_evermanni_v1.stringtie.gtf")
+
+#SETTINGS
+## THREADS
+threads <- "44"
+
+## MAX RAM
+max_ram <- "100G"
+
+# PROGRAMS
+samtools <- file.path("/home", "shared", "samtools-1.12", "samtools")
+
+
+# FORMATTING
+line <- "-----------------------------------------------"
+
+# Export these as environment variables for bash chunks.
+Sys.setenv(
+  bam_alignment = bam_alignment,
+  denovo_assembly_name = denovo_assembly_name,
+  de_novo_output_dir = de_novo_output_dir,
+  genome_fasta = genome_fasta,
+  genome_gff = genome_gff,
+  genome_guided_assembly_name = genome_guided_assembly_name,
+  genome_guided_output_dir = genome_guided_output_dir,
+  line = line,
+  max_ram = max_ram,
+  output_dir = output_dir,
+  top_output_dir = top_output_dir,
+  pasa_container = pasa_container,
+  pasa_container_dir = pasa_container_dir,
+  pasa_gff = pasa_gff,
+  PASA_HOME = PASA_HOME,
+  pasa_output_dir = pasa_output_dir,
+  samtools = samtools,
+  stringtie_gtf_dir = stringtie_gtf_dir,
+  stringtie_gtf = stringtie_gtf,
+  threads = threads,
+  trimmed_reads_dir = trimmed_reads_dir
+)
+```
+
+# 3 DE NOVO ASSEMBLY
+
+## 3.1 Run Trinity
+
+Trinity was run using the [Trinity Singularity (Apptainer)
+container](https://github.com/trinityrnaseq/trinityrnaseq/wiki/Trinity-in-Docker#running-trinity-using-singularity),
+`trinityrnaseq.v2.15.2.simg` from the
+`urol-e5/timeseries_molecular/E-Peve/code/` directory.
+
+This was done in a terminal, outside of this notebook.
+
+### 3.1.1 Set Bash variables
+
+``` bash
+# Directories
+top_output_dir="../output"
+
+output_dir="${top_output_dir}/00.30-E-Peve-transcriptome-assembly-Trinity"
+de_novo_output_dir="${output_dir}/de_novo_assembly"
+genome_guided_output_dir="${output_dir}/genome_guided_assembly"
+trimmed_reads_dir="${top_output_dir}/01.00-E-Peve-RNAseq-trimming-fastp-FastQC-MultiQC"
+
+# PASA INPUT FILES
+####### NEED TO BE RELATIVE TO PASA SUBDIRECTORY #######
+genome_fasta="../../../data/Porites_evermanni_v1.fa"
+genome_gff="../../../data/Porites_evermanni_validated.gff3"
+pasa_container="pasapipeline.v2.5.3.simg"
+PASA_HOME="/usr/local/src/PASApipeline"
+stringtie_gtf="../../02.20-E-Peve-RNAseq-alignment-HiSat2/Porites_evermanni_v1.stringtie.gtf"
+
+## THREADS
+threads="44"
+
+## MAX RAM
+max_ram="100G"
+
+# Make output directoy, if it doesn't exist
+mkdir --parents ${de_novo_output_dir}
+
+## Inititalize arrays
+R1_array=()
+R2_array=()
+
+# Variables for R1/R2 lists
+R1_list=""
+R2_list=""
+
+# Create array of fastq R1 files
+R1_array=(${trimmed_reads_dir}/*R1_001.fastp-trim.fq.gz)
+
+# Create array of fastq R2 files
+R2_array=(${trimmed_reads_dir}/*R2_001.fastp-trim.fq.gz)
+
+# Create list of fastq files used in analysis
+## Uses parameter substitution to strip leading path from filename
+if [ ! -f "${de_novo_output_dir}/fastq.list.txt" ]; then
+  for fastq in ${trimmed_reads_dir}/*.fq.gz
+  do
+    echo "${fastq##*/}" >> ${de_novo_output_dir}/fastq.list.txt
+  done
+fi
+
+# Create comma-separated lists of FastQ reads
+R1_list=$(echo "${R1_array[@]}" | tr " " ",")
+R2_list=$(echo "${R2_array[@]}" | tr " " ",")
+```
+
+### 3.1.2 Run Trinity Singularity image.
+
+Used “stranded” setting (–SS_lib_type).
+
+``` bash
+singularity exec \
+-B /home \
+-e trinityrnaseq.v2.15.2.simg \
+Trinity \
+--seqType fq \
+--max_memory ${max_ram} \
+--CPU ${threads} \
+--SS_lib_type RF \
+--left "${R1_list}" \
+--right "${R2_list}" \
+--output ${de_novo_output_dir}/trinity_out_dir \
+--full_cleanup \
+> ${de_novo_output_dir}/trinity.log \
+2>&1
+```
+
+## 3.2 Rename output files
+
+### 3.2.1 Rename FastA
+
+``` bash
+# Rename generic assembly FastA
+mv ${de_novo_output_dir}/trinity_out_dir.Trinity.fasta \
+${de_novo_output_dir}/${denovo_assembly_name}.fasta
+```
+
+### 3.2.2 Rename gene map and log
+
+``` bash
+mv ${de_novo_output_dir}/trinity_out_dir.Trinity.fasta.gene_trans_map \
+${de_novo_output_dir}/${denovo_assembly_name}.gene_trans_map
+
+mv ${de_novo_output_dir}/trinity.log \
+${de_novo_output_dir}/${denovo_assembly_name}.log
+```
+
+### 3.2.3 Assembly stats
+
+#### 3.2.3.1 Run Trinity Singularity image.
+
+``` bash
+singularity exec -B /home \
+-e trinityrnaseq.v2.15.2.simg \
+/usr/local/bin/util/TrinityStats.pl \
+../output/00.30-E-Peve-transcriptome-assembly-Trinity/de_novo_assembly/peve-denovo-Trinity.fasta \
+> ../output/00.30-E-Peve-transcriptome-assembly-Trinity/de_novo_assembly/peve-denovo-Trinity.stats
+```
+
+## 3.3 Create FastA index
+
+``` bash
+${samtools} faidx \
+${de_novo_output_dir}/${denovo_assembly_name}.fasta
+```
+
+## 3.4 Checksums
+
+``` bash
+cd ${de_novo_output_dir}
+
+md5sum ${denovo_assembly_name}.fasta | tee ${denovo_assembly_name}.fasta.md5
+```
+
+    72835974384b1693cad623628ae9315c  peve-denovo-Trinity.fasta
+
+# 4 GENOME-GUIDED ASSEMBLY
+
+Trinity was run using the [Trinity Singularity (Apptainer)
+container](https://github.com/trinityrnaseq/trinityrnaseq/wiki/Trinity-in-Docker#running-trinity-using-singularity),
+`trinityrnaseq.v2.15.2.simg` from the
+`urol-e5/timeseries_molecular/E-Peve/code/` directory.
+
+This was done in a terminal, outside of this notebook.
+
+``` bash
+singularity exec \
+-B /home -e trinityrnaseq.v2.15.2.simg \
+Trinity \
+--genome_guided_bam ../output/02.20-E-Peve-RNAseq-alignment-HiSat2/sorted-bams-merged.bam \
+--genome_guided_max_intron 10000 \
+--max_memory ${max_ram} \
+--CPU ${threads} \
+--SS_lib_type RF \
+--output ${genome_guided_output_dir}/trinity_out_dir \
+--full_cleanup \
+> ${genome_guided_output_dir}/trinity.log 2>&1
+```
+
+## 4.1 Rename output files
+
+### 4.1.1 Rename FastA
+
+``` bash
+# Rename generic assembly FastA
+mv ${genome_guided_output_dir}/trinity_out_dir.Trinity-GG.fasta \
+${genome_guided_output_dir}/${genome_guided_assembly_name}.fasta
+```
+
+### 4.1.2 Rename gene map and log
+
+``` bash
+mv ${genome_guided_output_dir}/trinity_out_dir.Trinity-GG.fasta.gene_trans_map \
+${genome_guided_output_dir}/${genome_guided_assembly_name}.gene_trans_map
+
+mv ${genome_guided_output_dir}/trinity.log \
+${genome_guided_output_dir}/${genome_guided_assembly_name}.log
+```
+
+## 4.2 Create FastA index
+
+``` bash
+${samtools} faidx \
+${genome_guided_output_dir}/${genome_guided_assembly_name}.fasta
+```
+
+## 4.3 Checksums
+
+``` bash
+cd ${genome_guided_output_dir}
+
+md5sum ${genome_guided_assembly_name}.fasta | tee ${genome_guided_assembly_name}.fasta.md5
+```
+
+    d60d91acf9621a424fe61c1dbfc2d875  peve-GG-Trinity.fasta
+
+### 4.3.1 Assembly stats
+
+#### 4.3.1.1 Run Trinity Singularity image.
+
+``` bash
+singularity exec -B /home \
+-e trinityrnaseq.v2.15.2.simg \
+/usr/local/bin/util/TrinityStats.pl \
+../output/00.30-E-Peve-transcriptome-assembly-Trinity/genome_guided_assembly/peve-GG-Trinity.fasta \
+> ../output/00.30-E-Peve-transcriptome-assembly-Trinity/genome_guided_assembly/peve-GG-Trinity.stats
+```
+
+# 5 PASA PIPELINE
+
+## 5.1 Concatenate Trinity assemblies
+
+``` bash
+cat ${de_novo_output_dir}/${denovo_assembly_name}.fasta \
+${genome_guided_output_dir}/${genome_guided_assembly_name}.fasta \
+> ${pasa_output_dir}/transcripts.fasta
+```
+
+### 5.1.1 Confirm counts
+
+``` bash
+# Count transcripts in each file
+denovo_count=$(grep -c "^>" ${de_novo_output_dir}/${denovo_assembly_name}.fasta)
+genome_guided_count=$(grep -c "^>" ${genome_guided_output_dir}/${genome_guided_assembly_name}.fasta)
+pasa_count=$(grep -c "^>" ${pasa_output_dir}/transcripts.fasta)
+
+# Calculate sum of first two counts
+sum=$((denovo_count + genome_guided_count))
+
+# Compare sum to PASA count
+echo "De novo count: $denovo_count"
+echo "Genome-guided count: $genome_guided_count"
+echo "Sum: $sum"
+echo "PASA count: $pasa_count"
+
+if [ $sum -eq $pasa_count ]; then
+    echo "✓ Counts match: $sum = $pasa_count"
+else
+    echo "✗ Counts do not match: $sum ≠ $pasa_count (difference: $((pasa_count - sum)))"
+fi
+```
+
+    De novo count: 1065667
+    Genome-guided count: 533664
+    Sum: 1599331
+    PASA count: 1599331
+    ✓ Counts match: 1599331 = 1599331
+
+## 5.2 Extract transcript accessions
+
+``` bash
+singularity exec \
+-B /home \
+-e ${pasa_container_dir}/${pasa_container} \
+$PASA_HOME/misc_utilities/accession_extractor.pl \
+< ${de_novo_output_dir}/${denovo_assembly_name}.fasta \
+> ${pasa_output_dir}/tdn.accs
+
+head ${pasa_output_dir}/tdn.accs
+```
+
+## 5.3 Clean transcripts
+
+``` bash
+cd ${pasa_output_dir}
+
+singularity exec \
+-B /home \
+-e \
+--env USER="$USER" \
+${pasa_container} \
+$PASA_HOME/bin/seqclean \
+transcripts.fasta \
+-c 16
+```
+
+## 5.4 PASA Assembly
+
+### 5.4.1 Fix schema key length
+
+``` bash
+cd ${pasa_output_dir}
+
+#### Fix schema key length issue ####
+singularity exec ${pasa_container} \
+cat /usr/local/src/PASApipeline/schema/cdna_alignment_mysqlschema \
+> cdna_alignment_mysqlschema
+
+# Fix all variations of gene_id and model_id indexes
+sed -i 's/KEY gene_id_idx (gene_id)/KEY gene_id_idx (gene_id(255))/g' cdna_alignment_mysqlschema
+sed -i 's/KEY mod_idx (model_id)/KEY mod_idx (model_id(255))/g' cdna_alignment_mysqlschema
+sed -i 's/(gene_id)/(gene_id(255))/g' cdna_alignment_mysqlschema
+sed -i 's/(model_id)/(model_id(255))/g' cdna_alignment_mysqlschema
+sed -i 's/KEY gene_idx (annotation_version,gene_id)/KEY gene_idx (annotation_version,gene_id(255))/g' cdna_alignment_mysqlschema
+```
+
+### 5.4.2 Run PASA Assembly Pipeline
+
+This was executed outside of RStudio due to the verbose output, which
+will cause RStudio to crash.
+
+``` bash
+singularity exec \
+-B /home \
+-B /var/run/mysqld/mysqld.sock:/var/run/mysqld/mysqld.sock \
+-B $PWD/conf.txt:$PASA_HOME/pasa_conf/conf.txt \
+-B $PWD/cdna_alignment_mysqlschema:$PASA_HOME/schema/cdna_alignment_mysqlschema \
+${pasa_container} \
+$PASA_HOME/Launch_PASA_pipeline.pl \
+--config alignAssembly.config \
+--create \
+--run \
+--genome ${genome_fasta} \
+--transcripts transcripts.fasta.clean \
+--trans_gtf ${stringtie_gtf} \
+--ALT_SPLICE \
+-T \
+-u transcripts.fasta \
+--ALIGNERS blat,gmap,minimap2 \
+--TDN tdn.accs \
+--transcribed_is_aligned_orient \
+--annot_compare \
+-L \
+--annots ${genome_gff} \
+--TRANSDECODER \
+--CPU ${threads}
+```
+
+### 5.4.3 Alternative Splicing
+
+This doesn’t seem to have run during the assembly phase, so ran
+separately.
+
+``` bash
+singularity exec \
+-B /home \
+-B /var/run/mysqld/mysqld.sock:/var/run/mysqld/mysqld.sock \
+-B $PWD/conf.txt:$PASA_HOME/pasa_conf/conf.txt \
+-B $PWD/cdna_alignment_mysqlschema:$PASA_HOME/schema/cdna_alignment_mysqlschema \
+${pasa_container} \
+$PASA_HOME/Launch_PASA_pipeline.pl \
+-c alignAssembly.config \
+--ALT_SPLICE \
+-g ${genome_fasta} \
+-t all.transcripts.fasta.clean \
+--CPU ${threads}
+```
+
+### 5.4.4 Update annotations
+
+Now includes alternative splicing info.
+
+Uses output GFF3 from initial annotations as annotation *input*.
+
+``` bash
+singularity exec \
+-B /home \
+-B /var/run/mysqld/mysqld.sock:/var/run/mysqld/mysqld.sock \
+-B $PWD/conf.txt:$PASA_HOME/pasa_conf/conf.txt \
+-B $PWD/cdna_alignment_mysqlschema:$PASA_HOME/schema/cdna_alignment_mysqlschema \
+${pasa_container} \
+$PASA_HOME/Launch_PASA_pipeline.pl \
+-c annotCompare.config \
+--annot_compare \
+-L \
+--annots peve_pasa.gene_structures_post_PASA_updates.2550221.gff3 \
+-g ${genome_fasta} \
+-t all.transcripts.fasta.clean \
+--CPU ${threads}
+```
+
+# 6 PASA OUTPUTS
+
+## 6.1 Generate checksums
+
+``` bash
+cd "${pasa_output_dir}"
+
+md5sum peve_pasa.gene_structures_post_PASA_updates.3761502.gff3 | tee peve_pasa.gene_structures_post_PASA_updates.3761502.gff3.md5
+
+md5sum peve_pasa.gene_structures_post_PASA_updates.3761502.bed | tee peve_pasa.gene_structures_post_PASA_updates.3761502.bed.md5
+```
+
+    08d65a59913b56823d9a108db722f820  peve_pasa.gene_structures_post_PASA_updates.3761502.gff3
+    b4f76f4651063be32724c86d067ad34a  peve_pasa.gene_structures_post_PASA_updates.3761502.bed
+
+## 6.2 Rename outputs
+
+``` bash
+cd "${pasa_output_dir}"
+cp peve_pasa.gene_structures_post_PASA_updates.3761502.gff3 "${pasa_gff}"
+
+cp peve_pasa.gene_structures_post_PASA_updates.3761502.bed "${pasa_bed}"
+
+md5sum "${pasa_gff}" | tee "${pasa_gff}".md5
+md5sum "${pasa_bed}" | tee "${pasa_bed}".md5
+```
+
+    cp: cannot create regular file '': No such file or directory
+    08d65a59913b56823d9a108db722f820  peve-PASA.gff3
+    md5sum: '': No such file or directory
+
+## 6.3 GFF3 Preview
+
+``` bash
+head -n 50 "${pasa_output_dir}"/"${pasa_gff}"
+```
+
+    # PASA_UPDATE: mrna-26667, single gene model update, valid-1, status:[pasa:asmbl_337815,status:12], valid-1
+    Porites_evermani_scaffold_4224  .   gene    28057   29953   .   -   .   ID=gene-Peve_00030015;Name=mrna-26667
+    Porites_evermani_scaffold_4224  .   mRNA    28057   29953   .   -   .   ID=mrna-26667;Parent=gene-Peve_00030015;Name=mrna-26667
+    Porites_evermani_scaffold_4224  .   five_prime_UTR  29913   29953   .   -   .   ID=mrna-26667.utr5p1;Parent=mrna-26667
+    Porites_evermani_scaffold_4224  .   exon    29544   29953   .   -   .   ID=mrna-26667.exon1;Parent=mrna-26667
+    Porites_evermani_scaffold_4224  .   CDS 29544   29912   .   -   0   ID=mrna-26667.cds.1;Parent=mrna-26667
+    Porites_evermani_scaffold_4224  .   exon    28057   29172   .   -   .   ID=mrna-26667.exon2;Parent=mrna-26667
+    Porites_evermani_scaffold_4224  .   CDS 29008   29172   .   -   0   ID=mrna-26667.cds.2;Parent=mrna-26667
+    Porites_evermani_scaffold_4224  .   three_prime_UTR 28057   29007   .   -   .   ID=mrna-26667.utr3p1;Parent=mrna-26667
+
+
+    #PROT mrna-26667 gene-Peve_00030015 MPGPRGDRGREGPPGKSGPRGINGMKGQQGLLGMKGEPGIAGMKGERGAVGIKGQRGIVGMKGVPGAVGIKGERGIVGNPGRKGNKGEKGESAKASQASVVPQTNWKQCVWNSDSGTDNGKIKDCAFNKLQSNSALKVSFQGNMRVIGHGACNRWYFKFNGNECNGPMTIEAIVNNH*
+
+    # PASA_UPDATE: novel_model_1794_698a2f3c, single gene model update, valid-1, status:[pasa:asmbl_411975,status:3], valid-1
+    Porites_evermani_scaffold_594   .   gene    170578  170986  .   +   .   ID=novel_gene_1397_698a2f3c;Name=%2A%2A%20NO%20NAME%20ASSIGNED%20%2A%2A
+    Porites_evermani_scaffold_594   .   mRNA    170578  170986  .   +   .   ID=novel_model_1794_698a2f3c;Parent=novel_gene_1397_698a2f3c;Name=%2A%2A%20NO%20NAME%20ASSIGNED%20%2A%2A
+    Porites_evermani_scaffold_594   .   five_prime_UTR  170578  170640  .   +   .   ID=novel_model_1794_698a2f3c.utr5p1;Parent=novel_model_1794_698a2f3c
+    Porites_evermani_scaffold_594   .   exon    170578  170986  .   +   .   ID=novel_model_1794_698a2f3c.exon1;Parent=novel_model_1794_698a2f3c
+    Porites_evermani_scaffold_594   .   CDS 170641  170952  .   +   0   ID=novel_model_1794_698a2f3c.cds.1;Parent=novel_model_1794_698a2f3c
+    Porites_evermani_scaffold_594   .   three_prime_UTR 170953  170986  .   +   .   ID=novel_model_1794_698a2f3c.utr3p1;Parent=novel_model_1794_698a2f3c
+
+
+    #PROT novel_model_1794_698a2f3c novel_gene_1397_698a2f3c    MSKTPLQDEYLQWRPQILGITTQLNAFFFNHLMKSCHPFKSHATEYLCSTCNSGVCSDPPLPFEAWVKCTMYIDPTLSKIDTFGTSTKCPSKSDVCLLESQKM*
+
+    # ORIGINAL: mrna-32793 original gene structure, not modified by PASA
+    Porites_evermani_scaffold_594   Gmove   gene    82339   84386   .   +   .   ID=gene-Peve_00036817;Name=mrna-32793
+    Porites_evermani_scaffold_594   Gmove   mRNA    82339   84386   .   +   .   ID=mrna-32793;Parent=gene-Peve_00036817;Name=mrna-32793
+    Porites_evermani_scaffold_594   Gmove   exon    82339   82462   .   +   .   ID=mrna-32793.exon1;Parent=mrna-32793
+    Porites_evermani_scaffold_594   Gmove   CDS 82339   82462   .   +   0   ID=mrna-32793.cds.1;Parent=mrna-32793
+    Porites_evermani_scaffold_594   Gmove   exon    83270   83388   .   +   .   ID=mrna-32793.exon2;Parent=mrna-32793
+    Porites_evermani_scaffold_594   Gmove   CDS 83270   83388   .   +   2   ID=mrna-32793.cds.2;Parent=mrna-32793
+    Porites_evermani_scaffold_594   Gmove   exon    84354   84386   .   +   .   ID=mrna-32793.exon3;Parent=mrna-32793
+    Porites_evermani_scaffold_594   Gmove   CDS 84354   84386   .   +   0   ID=mrna-32793.cds.3;Parent=mrna-32793
+
+
+    #PROT mrna-32793 gene-Peve_00036817 LKAIVTTEGVYFVRARGTPSPESIVLLVRFSDLYVCQPLSTDGKSYIELVMKADNSSVPTPSKNPSKRPRVRCDQQSVAQKVAQKINYAKNL
+
+    # PASA_UPDATE: mrna-32790, single gene model update, valid-1, status:[pasa:asmbl_411993,status:12], valid-1
+    Porites_evermani_scaffold_594   .   gene    203517  221865  .   +   .   ID=gene-Peve_00036814;Name=mrna-32790
+    Porites_evermani_scaffold_594   .   mRNA    203517  221865  .   +   .   ID=mrna-32790;Parent=gene-Peve_00036814;Name=mrna-32790
+    Porites_evermani_scaffold_594   .   exon    203517  203643  .   +   .   ID=mrna-32790.exon1;Parent=mrna-32790
+    Porites_evermani_scaffold_594   .   CDS 203517  203643  .   +   0   ID=mrna-32790.cds.1;Parent=mrna-32790
+    Porites_evermani_scaffold_594   .   exon    211961  212176  .   +   .   ID=mrna-32790.exon2;Parent=mrna-32790
+    Porites_evermani_scaffold_594   .   CDS 211961  212176  .   +   2   ID=mrna-32790.cds.2;Parent=mrna-32790
+    Porites_evermani_scaffold_594   .   exon    217811  217948  .   +   .   ID=mrna-32790.exon3;Parent=mrna-32790
+    Porites_evermani_scaffold_594   .   CDS 217811  217948  .   +   2   ID=mrna-32790.cds.3;Parent=mrna-32790
+    Porites_evermani_scaffold_594   .   exon    219213  219368  .   +   .   ID=mrna-32790.exon4;Parent=mrna-32790
+    Porites_evermani_scaffold_594   .   CDS 219213  219368  .   +   2   ID=mrna-32790.cds.4;Parent=mrna-32790
+    Porites_evermani_scaffold_594   .   exon    220000  220155  .   +   .   ID=mrna-32790.exon5;Parent=mrna-32790
+    Porites_evermani_scaffold_594   .   CDS 220000  220155  .   +   2   ID=mrna-32790.cds.5;Parent=mrna-32790
+
+## 6.4 GFF Comparisons
+
+``` bash
+printf '%s\n\n' "Original GFF feature counts:"
+awk '!/^#/ && !/^[[:space:]]*$/ && NF > 0 && $3 != "" {print $3}' ${genome_gff} \
+| sort | uniq -c | sort -rn | awk '{print $2, $1}'
+
+echo ""
+echo "${line}"
+echo ""
+
+printf "%s\n\n" "Updated GFF feature counts:"
+awk -F "\t" '!/^#/ && !/^[[:space:]]*$/ && NF > 0 && $3 != "" {print $3}' "${pasa_output_dir}"/"${pasa_gff}" \
+| sort | uniq -c | sort -rn | awk '{print $2, $1}'
+```
+
+    Original GFF feature counts:
+
+    exon 246418
+    CDS 231320
+    mRNA 40389
+    gene 40389
+    UTR 15098
+
+    -----------------------------------------------
+
+    Updated GFF feature counts:
+
+    exon 463084
+    CDS 442258
+    mRNA 59418
+    five_prime_UTR 43027
+    gene 40808
+    three_prime_UTR 38919
+
+# 7 EXTRACT PROTEINS TO FASTA
+
+``` bash
+cd "${pasa_output_dir}"
+
+awk '/^#PROT / {print ">" $2 "." $3 "\n" $4}' "${pasa_gff}" > peve-proteins-PASA.fasta
+
+printf "%s\n\n" "Original protein counts:"
+grep --count "^#PROT" "${pasa_gff}"
+
+echo ""
+echo "${line}"
+echo ""
+
+printf "%s\n\n" "Extracted protein counts:"
+grep --count "^>" peve-proteins-PASA.fasta
+
+# Create FastA Index
+${samtools} faidx peve-proteins-PASA.fasta
+```
+
+    Original protein counts:
+
+    59418
+
+    -----------------------------------------------
+
+    Extracted protein counts:
+
+    59418
+
+## 7.1 Checksums
+
+``` bash
+cd "${pasa_output_dir}"
+md5sum peve-proteins-PASA.fasta | tee peve-proteins-PASA.fasta.md5
+```
+
+    9198a4d1e67759b0a78dd4d9f4229695  peve-proteins-PASA.fasta
