@@ -1,0 +1,221 @@
+---
+author: Sam White
+toc-title: Contents
+toc-depth: 5
+toc-location: left
+title: Genome Assembly - S.namaycush Lean Ecotype with PacBio HiFi Reads Using hifiasm on Hyak
+date: '2026-03-31'
+draft: false
+engine: knitr
+categories: 
+  - "2026"
+  - "Genome Assembly"
+  - "PacBio"
+  - "HiFi Reads"
+  - "hifiasm"
+  - "Salvelinus namaycush"
+  - "Lake Trout"
+  - "Lean"
+  - "Klone"
+  - "Hyak"
+---
+# INTRO
+
+As part of [`project-lake-trout`](https://github.com/RobertsLab/project-lake-trout) (GitHub repo), Steven [asked that I assemble the genome of a lean ecotype of lake trout](https://github.com/RobertsLab/resources/issues/2409) (GitHub Issue), *Salvelinus namaycush*, using PacBio HiFi reads. I previously assembled this genome [using Flye, on 20230326](../2023/2023-03-26-Genome-Assembly---S.namaycush-Lean-Ecotype-with-PacBio-HiFi-Reads-Using-Flye/index.qmd) (notebook entry), but [Steven asked me to also try hifiasm](https://github.com/RobertsLab/resources/issues/2409#issuecomment-4150948212) (GitHub Issue)for the assembly.
+
+I performed the assembly on Hyak (Klone), UW's high-performance computing cluster. I used our Apptainer (Singularity) container to run the job (`srlab-R4.4-bioinformatics-container-e5bcfea.sif`), which includes hifiasm version 0.25.0.
+
+Below is the rendered markdown from `13.1-hifiasm-genome-assembly-lean.Rmd`. The run was _very_ fast; it only took a day and half, vs the ~7 days for the Flye assembly.
+
+# PRIMARY OUTPUTS
+
+hifiasm produces three assemblies: a primary assembly, and two haplotype-resolved assemblies. Below are the links to the FastA files. The outputs are only GFA graph files. I had to convert them to FastA using [gfatools](https://github.com/lh3/gfatools).
+
+## Primary assembly:
+
+- FastA (3.5GB): https://gannet.fish.washington.edu/gitrepos/project-lake-trout/output/13.1-hifiasm-genome-assembly-lean/pb-hifiasm-lean-assembly.fa
+
+- MD5: https://gannet.fish.washington.edu/gitrepos/project-lake-trout/output/13.1-hifiasm-genome-assembly-lean/pb-hifiasm-lean-assembly.fa.md5
+
+- FastA index: https://gannet.fish.washington.edu/gitrepos/project-lake-trout/output/13.1-hifiasm-genome-assembly-lean/pb-hifiasm-lean-assembly.fa.fai
+
+## Haplotype 1:
+
+- FastA (3.2GB): https://gannet.fish.washington.edu/gitrepos/project-lake-trout/output/13.1-hifiasm-genome-assembly-lean/pb-hifiasm-lean-hap1-assembly.fa
+
+- MD5: https://gannet.fish.washington.edu/gitrepos/project-lake-trout/output/13.1-hifiasm-genome-assembly-lean/pb-hifiasm-lean-hap1-assembly.fa.md5
+
+- FastA index: https://gannet.fish.washington.edu/gitrepos/project-lake-trout/output/13.1-hifiasm-genome-assembly-lean/pb-hifiasm-lean-hap1-assembly.fa.fai
+
+
+## Haplotype 2:
+
+- FastA (2.7GB): https://gannet.fish.washington.edu/gitrepos/project-lake-trout/output/13.1-hifiasm-genome-assembly-lean/pb-hifiasm-lean-hap2-assembly.fa
+
+- MD5: https://gannet.fish.washington.edu/gitrepos/project-lake-trout/output/13.1-hifiasm-genome-assembly-lean/pb-hifiasm-lean-hap2-assembly.fa.md5
+
+- FastA index: https://gannet.fish.washington.edu/gitrepos/project-lake-trout/output/13.1-hifiasm-genome-assembly-lean/pb-hifiasm-lean-hap2-assembly.fa.fai
+
+
+After this, I'll compare the two assemblies (Flye vs. hifiasm) using [QUAST](https://github.com/ablab/quast), which will provide a more comprehensive set of assembly statistics and metrics.
+
+
+---
+
+# 1 BACKGROUND
+
+Use [hifiasm](https://github.com/chhylp123/hifiasm) (GitHub) (Cheng et
+al. 2021, 2022, 2024) to assemble PacBio reads for *S.namaycush* `lean`
+ecotype.
+
+Due to large file sizes, the outputs will not be on GitHub. They may be
+found here instead:
+
+- <https://gannet.fish.washington.edu/gitrepos/project-lake-trout/output/13.1-hifiasm-genome-assembly-lean/>
+
+# 2 SETUP
+
+## 2.1 Libraries
+
+## 2.2 Set R variables
+
+``` r
+# OUTPUT DIRECTORY
+data_dir <- "/mmfs1/gscratch/scrubbed/samwhite/gitrepos/RobertsLab/project-lake-trout/data/pacbio-lean"
+output_dir <- "../output/13.1-hifiasm-genome-assembly-lean"
+
+# PROGRAMS
+gfatools <- c("/srlab/programs/gfatools/gfatools")
+hifiasm <- c("/srlab/programs/miniforge3-24.7.1-0/envs/hifiasm-0.25.0_env/bin/hifiasm")
+
+
+# SETTINGS
+threads <- "40"
+
+
+# Export these as environment variables for bash chunks.
+Sys.setenv(
+  data_dir = data_dir,
+  gfatools = gfatools,
+  hifiasm=hifiasm,
+  output_dir = output_dir,
+  threads = threads
+)
+```
+
+``` bash
+# Make output directory, if it doesn't exist
+mkdir --parents "${output_dir}"
+
+cd "${output_dir}"
+
+# Create an array of .fastq.gz files
+fastqs=(${data_dir}/*.fastq.gz)
+
+# Print the result (optional, for verification)
+## newline-delimited format
+echo "List of FastQs used for assembly:"
+
+printf "%s\n" "${fastqs[@]}" \
+| tee input_fastqs.txt
+
+# Run hifiasm assembly
+"${hifiasm}" \
+-o pb-hifiasm-lean-assembly.asm \
+-t "${threads}" \
+"${fastqs[@]}" \
+> pb-hifiasm-lean-assembly.log 2>&1
+```
+
+# 3 GFATOOLS
+
+## 3.1 Primary contigs to FastA
+
+This will extract a FastA file from the graph files output by hifiasm.
+
+``` bash
+cd "${output_dir}"
+
+"${gfatools}" gfa2fa \
+pb-hifiasm-lean-assembly.asm.bp.p_ctg.gfa \
+> pb-hifiasm-lean-assembly.fa
+
+samtools faidx pb-hifiasm-lean-assembly.fa
+```
+
+## 3.2 Haplotype 1 contigs to FastA
+
+This will extract a FastA file from the graph files output by hifiasm.
+
+``` bash
+cd "${output_dir}"
+
+"${gfatools}" gfa2fa \
+pb-hifiasm-lean-assembly.asm.bp.hap1.p_ctg.gfa \
+> pb-hifiasm-lean-hap1-assembly.fa
+
+samtools faidx pb-hifiasm-lean-hap1-assembly.fa
+```
+
+## 3.3 Haplotype 2 contigs to FastA
+
+This will extract a FastA file from the graph files output by hifiasm.
+
+``` bash
+cd "${output_dir}"
+
+"${gfatools}" gfa2fa \
+pb-hifiasm-lean-assembly.asm.bp.hap2.p_ctg.gfa \
+> pb-hifiasm-lean-hap2-assembly.fa
+
+samtools faidx pb-hifiasm-lean-hap2-assembly.fa
+```
+
+## 3.4 Generate checksums
+
+``` bash
+cd "${output_dir}"
+
+for fasta in *.fa
+do
+  md5sum "${fasta}" \
+  | tee "${fasta}".md5
+done
+```
+
+    ## 4ba0c3cc7a7ab090d67047cb22f10bb2  pb-hifiasm-lean-assembly.fa
+    ## 77d48fe452af73d751039245f1bd688e  pb-hifiasm-lean-hap1-assembly.fa
+    ## 21b9cfeb83ec8ce522fcc624873b58eb  pb-hifiasm-lean-hap2-assembly.fa
+
+# 4 REFERENCES
+
+<div id="refs" class="references csl-bib-body hanging-indent">
+
+<div id="ref-cheng2024" class="csl-entry">
+
+Cheng, Haoyu, Mobin Asri, Julian Lucas, Sergey Koren, and Heng Li. 2024.
+“Scalable Telomere-to-Telomere Assembly for Diploid and Polyploid
+Genomes with Double Graph.” *Nature Methods* 21 (6): 967–70.
+<https://doi.org/10.1038/s41592-024-02269-8>.
+
+</div>
+
+<div id="ref-cheng2021" class="csl-entry">
+
+Cheng, Haoyu, Gregory T. Concepcion, Xiaowen Feng, Haowen Zhang, and
+Heng Li. 2021. “Haplotype-Resolved de Novo Assembly Using Phased
+Assembly Graphs with Hifiasm.” *Nature Methods* 18 (2): 170–75.
+<https://doi.org/10.1038/s41592-020-01056-5>.
+
+</div>
+
+<div id="ref-cheng2022" class="csl-entry">
+
+Cheng, Haoyu, Erich D. Jarvis, Olivier Fedrigo, et al. 2022.
+“Haplotype-Resolved Assembly of Diploid Genomes Without Parental Data.”
+*Nature Biotechnology* 40 (9): 1332–35.
+<https://doi.org/10.1038/s41587-022-01261-x>.
+
+</div>
+
+</div>
