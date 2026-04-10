@@ -5,7 +5,7 @@ toc-depth: 5
 toc-location: left
 title: Genome Assembly - S.namaycush Siscowet Ecotype with PacBio HiFi Reads Using Flye
 date: '2026-03-26'
-draft: true
+draft: false
 engine: knitr
 categories: 
   - "2026"
@@ -17,3 +17,207 @@ categories:
   - "Lake Trout"
   - "Siscowet"
 ---
+# INTRO
+
+As part of [`project-lake-trout`](https://github.com/RobertsLab/project-lake-trout) (GitHub repo), Steven [asked that I assemble the genome of a siscowet ecotype of lake trout](https://github.com/RobertsLab/resources/issues/2409) (GitHub Issue), *Salvelinus namaycush*, using PacBio HiFi reads. I opted to use Flye for the assembly, as we'd previously used it for [_Chionoecetes bairdi_ (Tanner crab)](http://en.wikipedia.org/wiki/Chionoecetes_bairdi) (Wikipedia), and it performed well. The assembly process was straightforward and quick.
+
+I performed the assembly on Hyak (Klone), UW's high-performance computing cluster. I used our Apptainer (Singularity) container to run the job (`srlab-R4.4-bioinformatics-container-fca8ae6.sif`), which includes Flye version 2.9.6.
+
+Below is the rendered markdown from `13.1-genome-assembly-siscowet.Rmd`. The run took ~7 days.
+
+# PRIMARY OUTPUTS
+
+- FastA (4.1GB): https://gannet.fish.washington.edu/gitrepos/project-lake-trout/output/13.1-genome-assembly-siscowet/snam-siscowet-pb-flye-assembly.fasta
+
+- MD5: https://gannet.fish.washington.edu/gitrepos/project-lake-trout/output/13.1-genome-assembly-siscowet/snam-siscowet-pb-flye-assembly.fasta.md5
+
+- FastA index: https://gannet.fish.washington.edu/gitrepos/project-lake-trout/output/13.1-genome-assembly-siscowet/snam-siscowet-pb-flye-assembly.fasta.fai
+
+Once I've also assembled this genome using [hifiasm](https://github.com/CHPGenetics/hifiasm), I'll compare the two assemblies using [QUAST](https://github.com/ablab/quast), which will provide a more comprehensive set of assembly statistics and metrics.
+
+
+---
+
+# 1 BACKGROUND
+
+Use [Flye](https://github.com/mikolmogorov/Flye)(GitHub) (Kolmogorov et
+al. 2019) to assemble PacBio reads for *S.namaycush* `siscowet` ecotype.
+
+# 2 SETUP
+
+## 2.1 Libraries
+
+## 2.2 Set R variables
+
+``` r
+# OUTPUT DIRECTORY
+data_dir <- "../data/pacbio-siscowet"
+output_dir <- "../output/13.1-genome-assembly-siscowet"
+
+#OUTPUT FILE(S)
+prefix <- "snam-siscowet-pb-flye"
+
+
+
+# CONDA
+conda_env_name <- c("/srlab/programs/miniforge3-24.7.1-0/envs/flye-2.9.6-env")
+conda_path <- c("/srlab/programs/miniforge3-24.7.1-0/bin/conda")
+
+# SETTINGS
+genome_size <- "2.3g"
+threads <- "100"
+
+
+# Export these as environment variables for bash chunks.
+Sys.setenv(
+  data_dir = data_dir,
+  genome_size = genome_size,
+  output_dir = output_dir,
+  prefix = prefix,
+  threads = threads
+)
+```
+
+## 2.3 Load [Flye](https://github.com/mikolmogorov/Flye) conda environment
+
+If this is successful, the first line of output should show that the
+Python being used is the one in your
+[Flye](https://github.com/mikolmogorov/Flye) conda environment path.
+
+E.g.
+
+`python:         /srlab/programs/miniforge3-24.7.1-0/envs/flye-2.9.6-env/bin/python`
+
+``` r
+use_condaenv(condaenv = conda_env_name, conda = conda_path)
+py_config()
+```
+
+    ## python:         /srlab/programs/miniforge3-24.7.1-0/envs/flye-2.9.6-env/bin/python
+    ## libpython:      /srlab/programs/miniforge3-24.7.1-0/envs/flye-2.9.6-env/lib/libpython3.12.so
+    ## pythonhome:     /srlab/programs/miniforge3-24.7.1-0/envs/flye-2.9.6-env:/srlab/programs/miniforge3-24.7.1-0/envs/flye-2.9.6-env
+    ## version:        3.12.13 | packaged by conda-forge | (main, Mar  5 2026, 16:50:00) [GCC 14.3.0]
+    ## numpy:           [NOT FOUND]
+    ## 
+    ## NOTE: Python version was forced by use_python() function
+
+# 3 FLYE
+
+``` bash
+# Make output directory, if it doesn't exist
+mkdir --parents "${output_dir}"
+
+# Create an array of .fastq.gz files
+fastqs=(${data_dir}/*.fastq.gz)
+
+# Print the result (optional, for verification)
+## newline-delimited format
+echo "List of FastQs used for assembly:"
+
+printf "%s\n" "${fastqs[@]}" \
+| tee "${output_dir}/input_fastqs.txt"
+
+# Run Flye assembly
+flye \
+--pacbio-hifi "${fastqs[@]}" \
+--genome-size "${genome_size}" \
+--out-dir "${output_dir}" \
+--threads "${threads}" \
+> "${output_dir}"/pb-siscowet-assembly.log 2>&1
+```
+
+# 4 OUTPUTS
+
+## 4.1 List files
+
+``` bash
+ls -ltrh "${output_dir}"
+```
+
+    ## total 8.9G
+    ## -rw-r--r-- 1 samwhite all  342 Apr  6 08:08 input_fastqs.txt
+    ## drwxr-xr-x 2 samwhite all  512 Apr  8 11:51 00-assembly
+    ## drwxr-xr-x 2 samwhite all 8.0K Apr  8 15:08 10-consensus
+    ## drwxr-xr-x 2 samwhite all  512 Apr  9 02:23 20-repeat
+    ## drwxr-xr-x 2 samwhite all  512 Apr  9 02:40 30-contigger
+    ## drwxr-xr-x 2 samwhite all 8.0K Apr  9 10:29 40-polishing
+    ## -rw-r--r-- 1 samwhite all   92 Apr  9 10:29 params.json
+    ## -rw-r--r-- 1 samwhite all  55M Apr  9 10:29 assembly_graph.gv
+    ## -rw-r--r-- 1 samwhite all 4.3G Apr  9 10:30 assembly_graph.gfa
+    ## -rw-r--r-- 1 samwhite all 4.2G Apr  9 10:30 assembly.fasta
+    ## -rw-r--r-- 1 samwhite all 4.8M Apr  9 10:30 assembly_info.txt
+    ## -rw-r--r-- 1 samwhite all 3.2K Apr  9 10:30 pb-siscowet-assembly.log
+    ## -rw-r--r-- 1 samwhite all 482M Apr  9 10:30 flye.log
+
+## 4.2 Rename files
+
+Files have generic “assembly\_\*” naming.
+
+Renaming to reflect specific species-ecotype-data-assembly_method.
+
+``` bash
+cd "${output_dir}"
+
+for file in assembly*
+do
+  mv "${file}" ${prefix}-${file}
+done
+```
+
+## 4.3 Create FastA Index
+
+``` bash
+cd "${output_dir}"
+
+samtools faidx ${prefix}-assembly.fasta
+```
+
+## 4.4 Create checksums
+
+``` bash
+cd "${output_dir}"
+
+for file in ${prefix}*
+do
+  md5sum "${file}" \
+  | tee "${file}".md5
+done
+```
+
+    ## 30139d7d8d7fdad878543fc5a5f3f0a8  snam-siscowet-pb-flye-assembly.fasta
+    ## adf9dfc0996f12c28a41089e148e693a  snam-siscowet-pb-flye-assembly.fasta.fai
+    ## 62f9467fdd049e7dafaf7c63871c4184  snam-siscowet-pb-flye-assembly_graph.gfa
+    ## 949d7663ab4d54500e00856fd80deed9  snam-siscowet-pb-flye-assembly_graph.gv
+    ## 1f336e131d47f582e15bdd0acc66414f  snam-siscowet-pb-flye-assembly_info.txt
+
+## 4.5 Assembly stats
+
+``` bash
+cd "${output_dir}"
+
+tail flye.log
+```
+
+    ## [2026-04-09 10:30:36] root: INFO: Assembly statistics:
+    ## 
+    ##  Total length:   4336778941
+    ##  Fragments:  110158
+    ##  Fragments N50:  78564
+    ##  Largest frg:    2753427
+    ##  Scaffolds:  0
+    ##  Mean coverage:  21
+    ## 
+    ## [2026-04-09 10:30:36] root: INFO: Final assembly: /mmfs1/gscratch/scrubbed/samwhite/gitrepos/RobertsLab/project-lake-trout/output/13.1-genome-assembly-siscowet/assembly.fasta
+
+<div id="refs" class="references csl-bib-body hanging-indent">
+
+<div id="ref-kolmogorov2019" class="csl-entry">
+
+Kolmogorov, Mikhail, Jeffrey Yuan, Yu Lin, and Pavel A. Pevzner. 2019.
+“Assembly of Long, Error-Prone Reads Using Repeat Graphs.” *Nature
+Biotechnology* 37 (5): 540–46.
+<https://doi.org/10.1038/s41587-019-0072-8>.
+
+</div>
+
+</div>
