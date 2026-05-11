@@ -395,6 +395,1300 @@ font-style: inherit;">dittman_grc_rnaseq_1/lib_212404_sample_1703681_S101_L002_R
   <pubDate>Thu, 07 May 2026 07:00:00 GMT</pubDate>
 </item>
 <item>
+  <title>Heat Stress Survivorship - M.gigas USDA Families Heat Stressed at 33C</title>
+  <dc:creator>Sam White</dc:creator>
+  <link>https://robertslab.github.io/sams-notebook/posts/2026/2026-04-27-Heat-Stress-Survivorship---M.gigas-USDA-Families-Heat-Stressed-at-33C/</link>
+  <description><![CDATA[ 
+
+
+
+
+
+<section id="intro" class="level1">
+<h1>INTRO</h1>
+<p>This continues development of the <a href="https://sormi.science/">Summer Oyster Resilience &amp; Mortality Index (SORMI)</a> (SORMI website). <em>M.gigas</em> oysters from nine different USDA families, <a href="https://github.com/RobertsLab/sormi-assay-development/blob/main/Resazurin/20260415-36C/README.md">which were previously heat stressed @ 36<sup>o</sup>C and assessed by the resazurin assay on 20260415</a> (GitHub README), were subjected to a second heat stress.</p>
+<p>Repo for this experiment is here:</p>
+<ul>
+<li><a href="https://github.com/RobertsLab/sormi-assay-development/tree/main/heat-survivorship/20260427-33C-USDA-families">https://github.com/RobertsLab/sormi-assay-development/tree/main/heat-survivorship/20260427-33C-USDA-families</a></li>
+</ul>
+</section>
+<section id="materials-methods" class="level1">
+<h1>MATERIALS &amp; METHODS</h1>
+<p>Oysters were submered in ~100mL of Instant Ocean (25ppt salinity) in clear, plastic cups. They were held at 33<sup>o</sup>C and periodically assessed for mortality.</p>
+<p>After the first day of heat stress, I believe Steven turned the incubator off overnight, due to his concern that too many oysters would die during a period in which no one would be available to check on them.</p>
+<p>The text below is knitted from <a href="https://github.com/RobertsLab/sormi-assay-development/blob/main/scripts/00.00-mgig-heat-survivorship.Rmd"><code>00.00-mgig-heat-survivorship.Rmd</code></a>.</p>
+<hr>
+</section>
+<section id="background" class="level1">
+<h1>1 BACKGROUND</h1>
+<p>This is a Kaplan-Meier survival analysis of 33<sup>o</sup>C heat stress of <em>Magallana gigas</em> oysters, <a href="https://github.com/RobertsLab/sormi-assay-development/tree/main/heat-survivorship/20260427-33C-USDA-families">conducted on 20260427</a> (GitHub repo). It compares 9 different families bred/selected by the USDA.</p>
+<p>These oysters had been <a href="https://github.com/RobertsLab/sormi-assay-development/blob/main/Resazurin/20260415-36C/README.md">previously heat stressed @ 36<sup>o</sup>C and assessed by the resazurin assay on 20260415</a> (GitHub README)</p>
+<section id="setup" class="level2">
+<h2 class="anchored" data-anchor-id="setup">1.1 SETUP</h2>
+<section id="load-packages" class="level3">
+<h3 class="anchored" data-anchor-id="load-packages">1.1.1 Load packages</h3>
+<div class="sourceCode" id="cb1" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">library</span>(readr)</span>
+<span id="cb1-2"><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">library</span>(dplyr)</span>
+<span id="cb1-3"><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">library</span>(survival)</span>
+<span id="cb1-4"><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">library</span>(ggplot2)</span>
+<span id="cb1-5"></span>
+<span id="cb1-6">knitr<span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">::</span>opts_chunk<span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">$</span><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">set</span>(</span>
+<span id="cb1-7">  <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">echo =</span> <span class="cn" style="color: #8f5902;
+background-color: null;
+font-style: inherit;">TRUE</span>,         <span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># Display code chunks</span></span>
+<span id="cb1-8">  <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">eval =</span> <span class="cn" style="color: #8f5902;
+background-color: null;
+font-style: inherit;">TRUE</span>,        <span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># Evaluate code chunks</span></span>
+<span id="cb1-9">  <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">warning =</span> <span class="cn" style="color: #8f5902;
+background-color: null;
+font-style: inherit;">FALSE</span>,     <span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># Hide warnings</span></span>
+<span id="cb1-10">  <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">message =</span> <span class="cn" style="color: #8f5902;
+background-color: null;
+font-style: inherit;">FALSE</span>,     <span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># Hide messages</span></span>
+<span id="cb1-11">  <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">comment =</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">""</span>,         <span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># Prevents appending '##' to beginning of lines in code output</span></span>
+<span id="cb1-12">  <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">results =</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">'hold'</span>     <span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># Holds output so it's all printed together after code chunk</span></span>
+<span id="cb1-13">)</span></code></pre></div>
+</section>
+<section id="read-in-and-view-raw-data" class="level3">
+<h3 class="anchored" data-anchor-id="read-in-and-view-raw-data">1.1.2 Read in and view raw data</h3>
+<div class="sourceCode" id="cb2" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb2-1">survivorship_raw <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">read_csv</span>(</span>
+<span id="cb2-2">    <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"../heat-survivorship/20260427-33C-USDA-families/survivorship.csv"</span>,</span>
+<span id="cb2-3">    <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">show_col_types =</span> <span class="cn" style="color: #8f5902;
+background-color: null;
+font-style: inherit;">FALSE</span></span>
+<span id="cb2-4">)</span>
+<span id="cb2-5"></span>
+<span id="cb2-6"><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># Preview newly created object</span></span>
+<span id="cb2-7"><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">cat</span>(<span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"</span><span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">\n</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">=== survivorship_raw: str() ===</span><span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">\n</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"</span>)</span>
+<span id="cb2-8"><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">str</span>(survivorship_raw)</span></code></pre></div>
+<pre><code>=== survivorship_raw: str() ===
+spc_tbl_ [1,920 × 10] (S3: spec_tbl_df/tbl_df/tbl/data.frame)
+ $ individual_id      : num [1:1920] 184 199 207 206 205 204 203 202 201 198 ...
+ $ familly_id.group   : num [1:1920] 1 1 1 1 1 1 1 1 1 1 ...
+ $ timepoint_count    : num [1:1920] 0 0 0 0 0 0 0 0 0 0 ...
+ $ timepoint_hrs      : num [1:1920] 0 0 0 0 0 0 0 0 0 0 ...
+ $ alive.measurement  : logi [1:1920] TRUE TRUE TRUE TRUE TRUE TRUE ...
+ $ date               : Date[1:1920], format: "2026-04-27" "2026-04-27" ...
+ $ time               : 'hms' num [1:1920] 11:30:00 11:30:00 11:30:00 11:30:00 ...
+  ..- attr(*, "units")= chr "secs"
+ $ area_mm2.measurment: num [1:1920] 893 752 867 966 671 ...
+ $ imageJ_ID          : logi [1:1920] NA NA NA NA NA NA ...
+ $ notes              : chr [1:1920] NA NA NA NA ...
+ - attr(*, "spec")=
+  .. cols(
+  ..   individual_id = col_double(),
+  ..   familly_id.group = col_double(),
+  ..   timepoint_count = col_double(),
+  ..   timepoint_hrs = col_double(),
+  ..   alive.measurement = col_logical(),
+  ..   date = col_date(format = ""),
+  ..   time = col_time(format = ""),
+  ..   area_mm2.measurment = col_double(),
+  ..   imageJ_ID = col_logical(),
+  ..   notes = col_character()
+  .. )
+ - attr(*, "problems")=&lt;pointer: 0x561a2453d570&gt; </code></pre>
+</section>
+</section>
+<section id="analysis" class="level2">
+<h2 class="anchored" data-anchor-id="analysis">1.2 ANALYSIS</h2>
+<section id="clean-and-standardize-columns-used-for-survival-analysis" class="level3">
+<h3 class="anchored" data-anchor-id="clean-and-standardize-columns-used-for-survival-analysis">1.2.1 Clean and standardize columns used for survival analysis</h3>
+<div class="sourceCode" id="cb4" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb4-1">survivorship_clean <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> survivorship_raw <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">%&gt;%</span></span>
+<span id="cb4-2">    <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">mutate</span>(</span>
+<span id="cb4-3">        <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">individual_id =</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">as.character</span>(individual_id),</span>
+<span id="cb4-4">        <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">family_group =</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">as.character</span>(<span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">`</span><span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">familly_id.group</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">`</span>),</span>
+<span id="cb4-5">        <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">timepoint_hrs =</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">as.numeric</span>(timepoint_hrs),</span>
+<span id="cb4-6">        <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">alive_chr =</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">toupper</span>(<span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">trimws</span>(<span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">as.character</span>(<span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">`</span><span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">alive.measurement</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">`</span>))),</span>
+<span id="cb4-7">        <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">alive =</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">case_when</span>(</span>
+<span id="cb4-8">            alive_chr <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">%in%</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">c</span>(<span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"TRUE"</span>, <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"T"</span>, <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"1"</span>, <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"YES"</span>, <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"Y"</span>) <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">~</span> <span class="cn" style="color: #8f5902;
+background-color: null;
+font-style: inherit;">TRUE</span>,</span>
+<span id="cb4-9">            alive_chr <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">%in%</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">c</span>(<span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"FALSE"</span>, <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"F"</span>, <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"0"</span>, <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"NO"</span>, <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"N"</span>) <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">~</span> <span class="cn" style="color: #8f5902;
+background-color: null;
+font-style: inherit;">FALSE</span>,</span>
+<span id="cb4-10">            <span class="cn" style="color: #8f5902;
+background-color: null;
+font-style: inherit;">TRUE</span> <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">~</span> <span class="cn" style="color: #8f5902;
+background-color: null;
+font-style: inherit;">NA</span></span>
+<span id="cb4-11">        )</span>
+<span id="cb4-12">    ) <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">%&gt;%</span></span>
+<span id="cb4-13">    <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">select</span>(</span>
+<span id="cb4-14">        individual_id,</span>
+<span id="cb4-15">        family_group,</span>
+<span id="cb4-16">        timepoint_count,</span>
+<span id="cb4-17">        timepoint_hrs,</span>
+<span id="cb4-18">        alive,</span>
+<span id="cb4-19">        date,</span>
+<span id="cb4-20">        time,</span>
+<span id="cb4-21">        <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">everything</span>()</span>
+<span id="cb4-22">    )</span>
+<span id="cb4-23"></span>
+<span id="cb4-24"><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># Preview newly created object</span></span>
+<span id="cb4-25"><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">cat</span>(<span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"</span><span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">\n</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">=== survivorship_clean: str() ===</span><span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">\n</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"</span>)</span>
+<span id="cb4-26"><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">str</span>(survivorship_clean)</span>
+<span id="cb4-27"><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">cat</span>(<span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"</span><span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">\n</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">=== survivorship_clean: summary(alive) ===</span><span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">\n</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"</span>)</span>
+<span id="cb4-28"><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">summary</span>(survivorship_clean<span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">$</span>alive)</span></code></pre></div>
+<pre><code>=== survivorship_clean: str() ===
+tibble [1,920 × 13] (S3: tbl_df/tbl/data.frame)
+ $ individual_id      : chr [1:1920] "184" "199" "207" "206" ...
+ $ family_group       : chr [1:1920] "1" "1" "1" "1" ...
+ $ timepoint_count    : num [1:1920] 0 0 0 0 0 0 0 0 0 0 ...
+ $ timepoint_hrs      : num [1:1920] 0 0 0 0 0 0 0 0 0 0 ...
+ $ alive              : logi [1:1920] TRUE TRUE TRUE TRUE TRUE TRUE ...
+ $ date               : Date[1:1920], format: "2026-04-27" "2026-04-27" ...
+ $ time               : 'hms' num [1:1920] 11:30:00 11:30:00 11:30:00 11:30:00 ...
+  ..- attr(*, "units")= chr "secs"
+ $ familly_id.group   : num [1:1920] 1 1 1 1 1 1 1 1 1 1 ...
+ $ alive.measurement  : logi [1:1920] TRUE TRUE TRUE TRUE TRUE TRUE ...
+ $ area_mm2.measurment: num [1:1920] 893 752 867 966 671 ...
+ $ imageJ_ID          : logi [1:1920] NA NA NA NA NA NA ...
+ $ notes              : chr [1:1920] NA NA NA NA ...
+ $ alive_chr          : chr [1:1920] "TRUE" "TRUE" "TRUE" "TRUE" ...
+
+=== survivorship_clean: summary(alive) ===
+   Mode   FALSE    TRUE 
+logical     281    1639 </code></pre>
+</section>
+<section id="reduce-repeated-observations-to-one-survival-row-per-individual" class="level3">
+<h3 class="anchored" data-anchor-id="reduce-repeated-observations-to-one-survival-row-per-individual">1.2.2 Reduce repeated observations to one survival row per individual</h3>
+<div class="sourceCode" id="cb6" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb6-1">individual_survival <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> survivorship_clean <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">%&gt;%</span></span>
+<span id="cb6-2">    <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">filter</span>(<span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">!</span><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">is.na</span>(individual_id), <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">!</span><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">is.na</span>(timepoint_hrs), <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">!</span><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">is.na</span>(alive)) <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">%&gt;%</span></span>
+<span id="cb6-3">    <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">arrange</span>(individual_id, timepoint_hrs) <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">%&gt;%</span></span>
+<span id="cb6-4">    <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">group_by</span>(individual_id) <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">%&gt;%</span></span>
+<span id="cb6-5">    <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">summarise</span>(</span>
+<span id="cb6-6">        <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">family_group =</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">first</span>(family_group[<span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">!</span><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">is.na</span>(family_group)]),</span>
+<span id="cb6-7">        <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">event =</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">if_else</span>(<span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">any</span>(<span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">!</span>alive), <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">1</span>L, <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">0</span>L),</span>
+<span id="cb6-8">        <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">time_to_event =</span> {</span>
+<span id="cb6-9">            <span class="cf" style="color: #003B4F;
+background-color: null;
+font-weight: bold;
+font-style: inherit;">if</span> (<span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">any</span>(<span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">!</span>alive)) {</span>
+<span id="cb6-10">                <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">min</span>(timepoint_hrs[<span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">!</span>alive])</span>
+<span id="cb6-11">            } <span class="cf" style="color: #003B4F;
+background-color: null;
+font-weight: bold;
+font-style: inherit;">else</span> {</span>
+<span id="cb6-12">                <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">max</span>(timepoint_hrs)</span>
+<span id="cb6-13">            }</span>
+<span id="cb6-14">        },</span>
+<span id="cb6-15">        <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">n_observations =</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">n</span>(),</span>
+<span id="cb6-16">        <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">.groups =</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"drop"</span></span>
+<span id="cb6-17">    )</span>
+<span id="cb6-18"></span>
+<span id="cb6-19"><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># Preview newly created object</span></span>
+<span id="cb6-20"><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">cat</span>(<span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"</span><span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">\n</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">=== individual_survival: str() ===</span><span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">\n</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"</span>)</span>
+<span id="cb6-21"><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">str</span>(individual_survival)</span>
+<span id="cb6-22"><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">cat</span>(<span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"</span><span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">\n</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">=== individual_survival: summary(time_to_event) ===</span><span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">\n</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"</span>)</span>
+<span id="cb6-23"><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">summary</span>(individual_survival<span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">$</span>time_to_event)</span>
+<span id="cb6-24"><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">cat</span>(<span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"</span><span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">\n</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">=== individual_survival: table(event) ===</span><span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">\n</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"</span>)</span>
+<span id="cb6-25"><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">table</span>(individual_survival<span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">$</span>event)</span></code></pre></div>
+<pre><code>=== individual_survival: str() ===
+tibble [128 × 5] (S3: tbl_df/tbl/data.frame)
+ $ individual_id : chr [1:128] "1" "101" "102" "103" ...
+ $ family_group  : chr [1:128] "6" "9" "5" "3" ...
+ $ event         : int [1:128] 0 0 0 1 0 0 0 1 0 1 ...
+ $ time_to_event : num [1:128] 99.5 99.5 99.5 93 99.5 99.5 99.5 99.5 99.5 93 ...
+ $ n_observations: int [1:128] 15 15 15 15 15 15 15 15 15 15 ...
+
+=== individual_survival: summary(time_to_event) ===
+   Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
+  20.00   93.00   99.50   86.49   99.50   99.50 
+
+=== individual_survival: table(event) ===
+
+ 0  1 
+65 63 </code></pre>
+</section>
+<section id="create-surv-object-and-fit-kaplan-meier-models" class="level3">
+<h3 class="anchored" data-anchor-id="create-surv-object-and-fit-kaplan-meier-models">1.2.3 Create Surv object and fit Kaplan-Meier models</h3>
+<div class="sourceCode" id="cb8" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb8-1">surv_object <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">with</span>(individual_survival, <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">Surv</span>(<span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">time =</span> time_to_event, <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">event =</span> event))</span>
+<span id="cb8-2"></span>
+<span id="cb8-3">km_fit_overall <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">survfit</span>(surv_object <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">~</span> <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">1</span>, <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">data =</span> individual_survival)</span>
+<span id="cb8-4">km_fit_by_family <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">survfit</span>(surv_object <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">~</span> family_group, <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">data =</span> individual_survival)</span>
+<span id="cb8-5"></span>
+<span id="cb8-6"><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># Preview newly created objects</span></span>
+<span id="cb8-7"><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">cat</span>(<span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"</span><span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">\n</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">=== km_fit_overall ===</span><span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">\n</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"</span>)</span>
+<span id="cb8-8"><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">print</span>(km_fit_overall)</span>
+<span id="cb8-9"><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">cat</span>(<span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"</span><span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">\n</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">=== km_fit_by_family ===</span><span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">\n</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"</span>)</span>
+<span id="cb8-10"><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">print</span>(km_fit_by_family)</span>
+<span id="cb8-11"><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">cat</span>(<span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"</span><span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">\n</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">=== km_fit_overall: str() ===</span><span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">\n</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"</span>)</span>
+<span id="cb8-12"><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">str</span>(km_fit_overall)</span>
+<span id="cb8-13"><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">cat</span>(<span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"</span><span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">\n</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">=== km_fit_by_family: str() ===</span><span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">\n</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"</span>)</span>
+<span id="cb8-14"><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">str</span>(km_fit_by_family)</span></code></pre></div>
+<pre><code>=== km_fit_overall ===
+Call: survfit(formula = surv_object ~ 1, data = individual_survival)
+
+       n events median 0.95LCL 0.95UCL
+[1,] 128     63     NA    96.5      NA
+
+=== km_fit_by_family ===
+Call: survfit(formula = surv_object ~ family_group, data = individual_survival)
+
+                 n events median 0.95LCL 0.95UCL
+family_group=1  20     12   93.0    52.5      NA
+family_group=10  9      5   99.5    99.5      NA
+family_group=2   8      3     NA    99.5      NA
+family_group=3  20      8     NA    93.0      NA
+family_group=5  20      8     NA    93.0      NA
+family_group=6   9      4     NA    48.0      NA
+family_group=7  17     10   96.5    69.5      NA
+family_group=8  10      8   72.8    52.5      NA
+family_group=9  15      5     NA    96.5      NA
+
+=== km_fit_overall: str() ===
+List of 17
+ $ n        : int 128
+ $ time     : num [1:9] 20 24 44 48 52.5 69.5 93 96.5 99.5
+ $ n.risk   : num [1:9] 128 126 125 124 122 100 97 77 71
+ $ n.event  : num [1:9] 2 1 1 2 22 3 20 6 6
+ $ n.censor : num [1:9] 0 0 0 0 0 0 0 0 65
+ $ surv     : num [1:9] 0.984 0.977 0.969 0.953 0.781 ...
+ $ std.err  : num [1:9] 0.0111 0.0137 0.0159 0.0196 0.0468 ...
+ $ cumhaz   : num [1:9] 0.0156 0.0236 0.0316 0.0477 0.228 ...
+ $ std.chaz : num [1:9] 0.011 0.0136 0.0158 0.0195 0.0431 ...
+ $ type     : chr "right"
+ $ logse    : logi TRUE
+ $ conf.int : num 0.95
+ $ conf.type: chr "log"
+ $ lower    : num [1:9] 0.963 0.951 0.939 0.917 0.713 ...
+ $ upper    : num [1:9] 1 1 0.999 0.99 0.856 ...
+ $ t0       : num 0
+ $ call     : language survfit(formula = surv_object ~ 1, data = individual_survival)
+ - attr(*, "class")= chr "survfit"
+
+=== km_fit_by_family: str() ===
+List of 18
+ $ n        : int [1:9] 20 9 8 20 20 9 17 10 15
+ $ time     : num [1:34] 20 52.5 93 99.5 93 99.5 52.5 93 99.5 52.5 ...
+ $ n.risk   : num [1:34] 20 19 12 8 9 7 8 7 6 20 ...
+ $ n.event  : num [1:34] 1 7 4 0 2 3 1 1 1 3 ...
+ $ n.censor : num [1:34] 0 0 0 8 0 4 0 0 5 0 ...
+ $ surv     : num [1:34] 0.95 0.6 0.4 0.4 0.778 ...
+ $ std.err  : num [1:34] 0.0513 0.1826 0.2739 0.2739 0.1782 ...
+ $ cumhaz   : num [1:34] 0.05 0.418 0.752 0.752 0.222 ...
+ $ std.chaz : num [1:34] 0.05 0.148 0.223 0.223 0.157 ...
+ $ strata   : Named int [1:9] 4 2 3 5 3 5 4 4 4
+  ..- attr(*, "names")= chr [1:9] "family_group=1" "family_group=10" "family_group=2" "family_group=3" ...
+ $ type     : chr "right"
+ $ logse    : logi TRUE
+ $ conf.int : num 0.95
+ $ conf.type: chr "log"
+ $ lower    : num [1:34] 0.859 0.42 0.234 0.234 0.549 ...
+ $ upper    : num [1:34] 1 0.858 0.684 0.684 1 ...
+ $ t0       : num 0
+ $ call     : language survfit(formula = surv_object ~ family_group, data = individual_survival)
+ - attr(*, "class")= chr "survfit"</code></pre>
+</section>
+<section id="perform-log-rank-test-to-compare-survival-between-families" class="level3">
+<h3 class="anchored" data-anchor-id="perform-log-rank-test-to-compare-survival-between-families">1.2.4 Perform log-rank test to compare survival between families</h3>
+<div class="sourceCode" id="cb10" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb10-1">logrank_test <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">survdiff</span>(surv_object <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">~</span> family_group, <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">data =</span> individual_survival)</span>
+<span id="cb10-2"></span>
+<span id="cb10-3"><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># Display test results</span></span>
+<span id="cb10-4"><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">cat</span>(<span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"</span><span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">\n</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">=== Log-rank test: survdiff() output ===</span><span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">\n</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"</span>)</span>
+<span id="cb10-5"><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">print</span>(logrank_test)</span>
+<span id="cb10-6"></span>
+<span id="cb10-7"><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># Extract and report key statistics</span></span>
+<span id="cb10-8"><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">cat</span>(<span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"</span><span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">\n</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">=== Log-Rank Test Summary ===</span><span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">\n</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"</span>)</span>
+<span id="cb10-9"><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">cat</span>(<span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"Chi-square statistic:"</span>, logrank_test<span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">$</span>chisq, <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"</span><span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">\n</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"</span>)</span>
+<span id="cb10-10"><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">cat</span>(<span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"Degrees of freedom:"</span>, <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">length</span>(logrank_test<span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">$</span>n) <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">-</span> <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">1</span>, <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"</span><span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">\n</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"</span>)</span>
+<span id="cb10-11"><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">cat</span>(<span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"p-value:"</span>, <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">1</span> <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">-</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">pchisq</span>(logrank_test<span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">$</span>chisq, <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">df =</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">length</span>(logrank_test<span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">$</span>n) <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">-</span> <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">1</span>), <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"</span><span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">\n</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"</span>)</span>
+<span id="cb10-12"><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">cat</span>(<span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"</span><span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">\n</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">Interpretation:</span><span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">\n</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"</span>)</span>
+<span id="cb10-13">p_val <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">1</span> <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">-</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">pchisq</span>(logrank_test<span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">$</span>chisq, <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">df =</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">length</span>(logrank_test<span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">$</span>n) <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">-</span> <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">1</span>)</span>
+<span id="cb10-14"><span class="cf" style="color: #003B4F;
+background-color: null;
+font-weight: bold;
+font-style: inherit;">if</span> (p_val <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">&lt;</span> <span class="fl" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">0.05</span>) {</span>
+<span id="cb10-15">  <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">cat</span>(<span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"p &lt; 0.05: Family groups show SIGNIFICANTLY DIFFERENT survival (reject null hypothesis)</span><span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">\n</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"</span>)</span>
+<span id="cb10-16">} <span class="cf" style="color: #003B4F;
+background-color: null;
+font-weight: bold;
+font-style: inherit;">else</span> {</span>
+<span id="cb10-17">  <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">cat</span>(<span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"p &gt;= 0.05: No significant difference in survival detected between family groups</span><span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">\n</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"</span>)</span>
+<span id="cb10-18">}</span></code></pre></div>
+<pre><code>=== Log-rank test: survdiff() output ===
+Call:
+survdiff(formula = surv_object ~ family_group, data = individual_survival)
+
+                 N Observed Expected (O-E)^2/E (O-E)^2/V
+family_group=1  20       12     8.48    1.4595    1.9665
+family_group=10  9        5     5.31    0.0187    0.0237
+family_group=2   8        3     4.45    0.4736    0.5908
+family_group=3  20        8    10.40    0.5524    0.7674
+family_group=5  20        8    10.69    0.6756    0.9447
+family_group=6   9        4     3.68    0.0271    0.0332
+family_group=7  17       10     8.07    0.4629    0.6156
+family_group=8  10        8     3.61    5.3556    6.6652
+family_group=9  15        5     8.31    1.3188    1.7654
+
+ Chisq= 12.2  on 8 degrees of freedom, p= 0.1 
+
+=== Log-Rank Test Summary ===
+Chi-square statistic: 12.16475 
+Degrees of freedom: 8 
+p-value: 0.1440031 
+
+Interpretation:
+p &gt;= 0.05: No significant difference in survival detected between family groups</code></pre>
+</section>
+<section id="convert-kaplan-meier-fit-to-plotting-data-frames" class="level3">
+<h3 class="anchored" data-anchor-id="convert-kaplan-meier-fit-to-plotting-data-frames">1.2.5 Convert Kaplan-Meier fit to plotting data frames</h3>
+<div class="sourceCode" id="cb12" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb12-1">km_overall_df <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">bind_rows</span>(</span>
+<span id="cb12-2">    <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">data.frame</span>(</span>
+<span id="cb12-3">        <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">time =</span> <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">0</span>,</span>
+<span id="cb12-4">        <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">surv =</span> <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">1</span>,</span>
+<span id="cb12-5">        <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">n_risk =</span> km_fit_overall<span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">$</span>n,</span>
+<span id="cb12-6">        <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">n_event =</span> <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">0</span>,</span>
+<span id="cb12-7">        <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">n_censor =</span> <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">0</span></span>
+<span id="cb12-8">    ),</span>
+<span id="cb12-9">    <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">summary</span>(km_fit_overall) <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">%&gt;%</span></span>
+<span id="cb12-10">        <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">with</span>(</span>
+<span id="cb12-11">            <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">data.frame</span>(</span>
+<span id="cb12-12">                <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">time =</span> time,</span>
+<span id="cb12-13">                <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">surv =</span> surv,</span>
+<span id="cb12-14">                <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">n_risk =</span> n.risk,</span>
+<span id="cb12-15">                <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">n_event =</span> n.event,</span>
+<span id="cb12-16">                <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">n_censor =</span> n.censor</span>
+<span id="cb12-17">            )</span>
+<span id="cb12-18">        )</span>
+<span id="cb12-19">) <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">%&gt;%</span></span>
+<span id="cb12-20">    <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">arrange</span>(time)</span>
+<span id="cb12-21"></span>
+<span id="cb12-22">km_family_df <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">bind_rows</span>(</span>
+<span id="cb12-23">    <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">data.frame</span>(</span>
+<span id="cb12-24">        <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">time =</span> <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">0</span>,</span>
+<span id="cb12-25">        <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">surv =</span> <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">1</span>,</span>
+<span id="cb12-26">        <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">n_risk =</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">as.numeric</span>(km_fit_by_family<span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">$</span>n),</span>
+<span id="cb12-27">        <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">n_event =</span> <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">0</span>,</span>
+<span id="cb12-28">        <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">n_censor =</span> <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">0</span>,</span>
+<span id="cb12-29">        <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">strata =</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">names</span>(km_fit_by_family<span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">$</span>strata)</span>
+<span id="cb12-30">    ),</span>
+<span id="cb12-31">    <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">summary</span>(km_fit_by_family) <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">%&gt;%</span></span>
+<span id="cb12-32">        <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">with</span>(</span>
+<span id="cb12-33">            <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">data.frame</span>(</span>
+<span id="cb12-34">                <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">time =</span> time,</span>
+<span id="cb12-35">                <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">surv =</span> surv,</span>
+<span id="cb12-36">                <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">n_risk =</span> n.risk,</span>
+<span id="cb12-37">                <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">n_event =</span> n.event,</span>
+<span id="cb12-38">                <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">n_censor =</span> n.censor,</span>
+<span id="cb12-39">                <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">strata =</span> strata</span>
+<span id="cb12-40">            )</span>
+<span id="cb12-41">        )</span>
+<span id="cb12-42">) <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">%&gt;%</span></span>
+<span id="cb12-43">    <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">mutate</span>(<span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">family_group =</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">sub</span>(<span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"^family_group="</span>, <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">""</span>, strata)) <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">%&gt;%</span></span>
+<span id="cb12-44">    <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">arrange</span>(family_group, time)</span>
+<span id="cb12-45"></span>
+<span id="cb12-46"><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># Preview newly created objects</span></span>
+<span id="cb12-47"><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">cat</span>(<span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"</span><span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">\n</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">=== km_overall_df: head() ===</span><span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">\n</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"</span>)</span>
+<span id="cb12-48"><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">print</span>(<span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">head</span>(km_overall_df))</span>
+<span id="cb12-49"><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">cat</span>(<span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"</span><span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">\n</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">=== km_overall_df: str() ===</span><span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">\n</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"</span>)</span>
+<span id="cb12-50"><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">str</span>(km_overall_df)</span>
+<span id="cb12-51"></span>
+<span id="cb12-52"><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">cat</span>(<span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"</span><span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">\n</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">=== km_family_df: head() ===</span><span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">\n</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"</span>)</span>
+<span id="cb12-53"><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">print</span>(<span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">head</span>(km_family_df))</span>
+<span id="cb12-54"><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">cat</span>(<span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"</span><span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">\n</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">=== km_family_df: str() ===</span><span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">\n</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"</span>)</span>
+<span id="cb12-55"><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">str</span>(km_family_df)</span></code></pre></div>
+<pre><code>=== km_overall_df: head() ===
+  time      surv n_risk n_event n_censor
+1  0.0 1.0000000    128       0        0
+2 20.0 0.9843750    128       2        0
+3 24.0 0.9765625    126       1        0
+4 44.0 0.9687500    125       1        0
+5 48.0 0.9531250    124       2        0
+6 52.5 0.7812500    122      22        0
+
+=== km_overall_df: str() ===
+'data.frame':   10 obs. of  5 variables:
+ $ time    : num  0 20 24 44 48 52.5 69.5 93 96.5 99.5
+ $ surv    : num  1 0.984 0.977 0.969 0.953 ...
+ $ n_risk  : num  128 128 126 125 124 122 100 97 77 71
+ $ n_event : num  0 2 1 1 2 22 3 20 6 6
+ $ n_censor: num  0 0 0 0 0 0 0 0 0 65
+
+=== km_family_df: head() ===
+  time      surv n_risk n_event n_censor          strata family_group
+1  0.0 1.0000000     20       0        0  family_group=1            1
+2 20.0 0.9500000     20       1        0  family_group=1            1
+3 52.5 0.6000000     19       7        0  family_group=1            1
+4 93.0 0.4000000     12       4        0  family_group=1            1
+5  0.0 1.0000000      9       0        0 family_group=10           10
+6 93.0 0.7777778      9       2        0 family_group=10           10
+
+=== km_family_df: str() ===
+'data.frame':   38 obs. of  7 variables:
+ $ time        : num  0 20 52.5 93 0 93 99.5 0 52.5 93 ...
+ $ surv        : num  1 0.95 0.6 0.4 1 ...
+ $ n_risk      : num  20 20 19 12 9 9 7 8 8 7 ...
+ $ n_event     : num  0 1 7 4 0 2 3 0 1 1 ...
+ $ n_censor    : num  0 0 0 0 0 0 4 0 0 0 ...
+ $ strata      : chr  "family_group=1" "family_group=1" "family_group=1" "family_group=1" ...
+ $ family_group: chr  "1" "1" "1" "1" ...</code></pre>
+</section>
+</section>
+<section id="plots" class="level2">
+<h2 class="anchored" data-anchor-id="plots">1.3 PLOTS</h2>
+<section id="plot-kaplan-meier-curves" class="level3">
+<h3 class="anchored" data-anchor-id="plot-kaplan-meier-curves">1.3.1 Plot Kaplan-Meier curves</h3>
+<section id="overall" class="level4">
+<h4 class="anchored" data-anchor-id="overall">1.3.1.1 Overall</h4>
+<div class="sourceCode" id="cb14" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb14-1"><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">ggplot</span>(km_overall_df, <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">aes</span>(<span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">x =</span> time, <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">y =</span> surv)) <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">+</span></span>
+<span id="cb14-2">    <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">geom_step</span>(<span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">linewidth =</span> <span class="fl" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">1.1</span>) <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">+</span></span>
+<span id="cb14-3">    <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">labs</span>(</span>
+<span id="cb14-4">        <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">title =</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"Kaplan-Meier Survival Curve (Overall)"</span>,</span>
+<span id="cb14-5">        <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">x =</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"Time (hours)"</span>,</span>
+<span id="cb14-6">        <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">y =</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"Survival probability"</span></span>
+<span id="cb14-7">    ) <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">+</span></span>
+<span id="cb14-8">    <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">ylim</span>(<span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">0</span>, <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">1</span>) <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">+</span></span>
+<span id="cb14-9">    <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">theme_minimal</span>(<span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">base_size =</span> <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">12</span>)</span></code></pre></div>
+<p><img src="https://robertslab.github.io/sams-notebook/posts/2026/2026-04-27-Heat-Stress-Survivorship---M.gigas-USDA-Families-Heat-Stressed-at-33C/00.00-mgig-heat-survivorship_files/figure-gfm/plot-km-overall-1.png" class="img-fluid"><!-- --></p>
+</section>
+<section id="families" class="level4">
+<h4 class="anchored" data-anchor-id="families">1.3.1.2 Families</h4>
+<div class="sourceCode" id="cb15" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb15-1"><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">ggplot</span>(km_family_df, <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">aes</span>(<span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">x =</span> time, <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">y =</span> surv, <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">color =</span> family_group)) <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">+</span></span>
+<span id="cb15-2">    <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">geom_step</span>(<span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">linewidth =</span> <span class="fl" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">1.0</span>) <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">+</span></span>
+<span id="cb15-3">    <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">labs</span>(</span>
+<span id="cb15-4">        <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">title =</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"Kaplan-Meier Survival Curves by Family Group"</span>,</span>
+<span id="cb15-5">        <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">x =</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"Time (hours)"</span>,</span>
+<span id="cb15-6">        <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">y =</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"Survival probability"</span>,</span>
+<span id="cb15-7">        <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">color =</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"Family group"</span></span>
+<span id="cb15-8">    ) <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">+</span></span>
+<span id="cb15-9">    <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">ylim</span>(<span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">0</span>, <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">1</span>) <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">+</span></span>
+<span id="cb15-10">    <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">theme_minimal</span>(<span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">base_size =</span> <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">12</span>)</span></code></pre></div>
+<p><img src="https://robertslab.github.io/sams-notebook/posts/2026/2026-04-27-Heat-Stress-Survivorship---M.gigas-USDA-Families-Heat-Stressed-at-33C/00.00-mgig-heat-survivorship_files/figure-gfm/plot-km-by-family-1.png" class="img-fluid"><!-- --></p>
+
+
+</section>
+</section>
+</section>
+</section>
+
+ ]]></description>
+  <category>2026</category>
+  <category>USDA</category>
+  <category>Pacific oysters</category>
+  <category>Crassostrea gigas</category>
+  <category>Magallana gigas</category>
+  <category>heat stress</category>
+  <category>survivorship</category>
+  <guid>https://robertslab.github.io/sams-notebook/posts/2026/2026-04-27-Heat-Stress-Survivorship---M.gigas-USDA-Families-Heat-Stressed-at-33C/</guid>
+  <pubDate>Mon, 27 Apr 2026 07:00:00 GMT</pubDate>
+</item>
+<item>
   <title>Resazurin Assays - USDA M.gigas Families in Response to Temperature Stress</title>
   <dc:creator>Sam White</dc:creator>
   <link>https://robertslab.github.io/sams-notebook/posts/2026/2026-04-15-Resazurin-Assays---USDA-M.gigas-Families-in-Response-to-Temperature-Stress/</link>
@@ -10790,306 +12084,6 @@ font-style: inherit;">tee</span> ptua-proteins-PASA.fasta.md5</span></code></pre
   <category>transcriptome assembly</category>
   <category>Pocillopora tuahiensis</category>
   <guid>https://robertslab.github.io/sams-notebook/posts/2026/2026-02-27-De-Novo-Transcriptome-Assembly-and-Annotation---E5-P.tuahiensis-RNA-seq-Using-Trinity-and-PASA/</guid>
-  <pubDate>Fri, 27 Feb 2026 08:00:00 GMT</pubDate>
-</item>
-<item>
-  <title>PASA Web Portal - Configuration on Gannet Using Synology Container Manager</title>
-  <dc:creator>Sam White</dc:creator>
-  <link>https://robertslab.github.io/sams-notebook/posts/2026/2026-02-27-PASA-Web-Portal---Configuration-on-Gannet-Using-Synology-Container-Manager/</link>
-  <description><![CDATA[ 
-
-
-
-
-
-<section id="intro" class="level1">
-<h1>INTRO</h1>
-<p>The <a href="https://github.com/PASApipeline/PASApipeline/wiki">PASA pipeline</a> (GitHub) was used to generate transcriptome annotations using the RNA-seq data for the three coral species in the <a href="https://github.com/urol-e5/timeseries_molecular">`timeseries_molecular project</a> (GitHub) project. The PASA web portal provides a user-friendly interface to explore and visualize the results of the PASA pipeline, including gene models, alignments, and annotations.</p>
-<p>Below, I detail the steps I took to configure the PASA web portal on Gannet using the Synology Container Manager. This includes building a custom Docker image with the necessary Perl modules, transferring it to the Synology, and setting up the container to run the PASA web portal.</p>
-</section>
-<section id="methods" class="level1">
-<h1>METHODS</h1>
-<div class="callout callout-style-default callout-note callout-titled">
-<div class="callout-header d-flex align-content-center">
-<div class="callout-icon-container">
-<i class="callout-icon"></i>
-</div>
-<div class="callout-title-container flex-fill">
-Note
-</div>
-</div>
-<div class="callout-body-container callout-body">
-<p>The example below uses the <code>peve_pasa</code> database, but you can replace it with your database name as needed.</p>
-</div>
-</div>
-<section id="build-and-transfer-docker-image" class="level2">
-<h2 class="anchored" data-anchor-id="build-and-transfer-docker-image">Build and Transfer Docker Image</h2>
-<div class="callout callout-style-default callout-note callout-titled">
-<div class="callout-header d-flex align-content-center">
-<div class="callout-icon-container">
-<i class="callout-icon"></i>
-</div>
-<div class="callout-title-container flex-fill">
-Note
-</div>
-</div>
-<div class="callout-body-container callout-body">
-<p>This doesn’t have to be done on a local computer; you can build the image directly on the Synology if you have the necessary tools and permissions. However, building locally and transferring can be faster and more convenient in some cases.</p>
-</div>
-</div>
-<ol type="1">
-<li><p>Build the image (if not already done)</p>
-<div class="sourceCode" id="cb1" style="background: #f1f3f5;"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb1-1"><span class="bu" style="color: null;
-background-color: null;
-font-style: inherit;">cd</span> /home/shared/8TB_HDD_01/sam/gitrepos/urol-e5/timeseries_molecular/E-Peve/output/00.30-E-Peve-transcriptome-assembly-Trinity/PASA</span>
-<span id="cb1-2"><span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">sudo</span> docker build <span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">-t</span> pasapipeline-fixed:latest <span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">-f</span> Dockerfile.pasaweb .</span></code></pre></div>
-<p>Here’s what’s in <code>Dockerfile.pasaweb</code>:</p>
-<div class="sourceCode" id="cb2" style="background: #f1f3f5;"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb2-1"><span class="ex" style="color: null;
-background-color: null;
-font-style: inherit;">$</span> cat Dockerfile.pasaweb</span>
-<span id="cb2-2"></span>
-<span id="cb2-3"><span class="ex" style="color: null;
-background-color: null;
-font-style: inherit;">FROM</span> pasapipeline/pasapipeline:latest</span>
-<span id="cb2-4"></span>
-<span id="cb2-5"><span class="co" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;"># Install missing Perl modules required for PasaWeb</span></span>
-<span id="cb2-6"><span class="ex" style="color: null;
-background-color: null;
-font-style: inherit;">RUN</span> cpan <span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">-i</span> CGI GD::Graph</span>
-<span id="cb2-7"></span>
-<span id="cb2-8"><span class="co" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;"># Keep the original entrypoint</span></span></code></pre></div></li>
-<li><p>Save the image to a tar file.</p>
-<div class="sourceCode" id="cb3" style="background: #f1f3f5;"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb3-1"><span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">sudo</span> docker save pasapipeline-fixed:latest <span class="dt" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">\</span></span>
-<span id="cb3-2"><span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">&gt;</span> /home/sam/pasapipeline-fixed.tar</span></code></pre></div></li>
-<li><p>Transfer to Synology (replace with your Synology details).</p>
-<div class="sourceCode" id="cb4" style="background: #f1f3f5;"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb4-1"><span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">rsync</span> <span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">-avP</span> pasapipeline-fixed.tar <span class="dt" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">\</span></span>
-<span id="cb4-2">gannet:/volume2/docker/PASA_web_portal/</span></code></pre></div></li>
-</ol>
-</section>
-<section id="synology-configuration-steps" class="level2">
-<h2 class="anchored" data-anchor-id="synology-configuration-steps">Synology Configuration Steps</h2>
-<section id="command-line-setup" class="level3">
-<h3 class="anchored" data-anchor-id="command-line-setup">Command Line Setup</h3>
-<p>On Synology, via command line:</p>
-<section id="load-the-pre-built-image" class="level4">
-<h4 class="anchored" data-anchor-id="load-the-pre-built-image">Load the pre-built image</h4>
-<div class="sourceCode" id="cb5" style="background: #f1f3f5;"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb5-1"></span>
-<span id="cb5-2"><span class="bu" style="color: null;
-background-color: null;
-font-style: inherit;">cd</span> /volume2/docker/PASA_web_portal</span>
-<span id="cb5-3"><span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">sudo</span> docker load <span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">-i</span> pasapipeline-fixed.tar</span></code></pre></div>
-</section>
-<section id="grant-mysql-permissions-if-not-already-done" class="level4">
-<h4 class="anchored" data-anchor-id="grant-mysql-permissions-if-not-already-done">Grant MySQL permissions (if not already done):</h4>
-<div class="sourceCode" id="cb6" style="background: #f1f3f5;"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb6-1"><span class="ex" style="color: null;
-background-color: null;
-font-style: inherit;">mysql</span> <span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">-u</span> root <span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">-p</span><span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">&lt;</span>password<span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">&gt;</span></span></code></pre></div>
-<div class="sourceCode" id="cb7" style="background: #f1f3f5;"><pre class="sourceCode sql code-with-copy"><code class="sourceCode sql"><span id="cb7-1"><span class="kw" style="color: #003B4F;
-background-color: null;
-font-weight: bold;
-font-style: inherit;">GRANT</span> <span class="kw" style="color: #003B4F;
-background-color: null;
-font-weight: bold;
-font-style: inherit;">SELECT</span> <span class="kw" style="color: #003B4F;
-background-color: null;
-font-weight: bold;
-font-style: inherit;">ON</span> peve_pasa.<span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">*</span> <span class="kw" style="color: #003B4F;
-background-color: null;
-font-weight: bold;
-font-style: inherit;">TO</span> <span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">'pasa_access'</span>@<span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">'localhost'</span>;</span>
-<span id="cb7-2"><span class="kw" style="color: #003B4F;
-background-color: null;
-font-weight: bold;
-font-style: inherit;">GRANT</span> <span class="kw" style="color: #003B4F;
-background-color: null;
-font-weight: bold;
-font-style: inherit;">SELECT</span> <span class="kw" style="color: #003B4F;
-background-color: null;
-font-weight: bold;
-font-style: inherit;">ON</span> apul_pasa.<span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">*</span> <span class="kw" style="color: #003B4F;
-background-color: null;
-font-weight: bold;
-font-style: inherit;">TO</span> <span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">'pasa_access'</span>@<span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">'localhost'</span>;</span>
-<span id="cb7-3"><span class="kw" style="color: #003B4F;
-background-color: null;
-font-weight: bold;
-font-style: inherit;">GRANT</span> <span class="kw" style="color: #003B4F;
-background-color: null;
-font-weight: bold;
-font-style: inherit;">SELECT</span> <span class="kw" style="color: #003B4F;
-background-color: null;
-font-weight: bold;
-font-style: inherit;">ON</span> ptua_pasa.<span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">*</span> <span class="kw" style="color: #003B4F;
-background-color: null;
-font-weight: bold;
-font-style: inherit;">TO</span> <span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">'pasa_access'</span>@<span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">'localhost'</span>;</span>
-<span id="cb7-4"><span class="kw" style="color: #003B4F;
-background-color: null;
-font-weight: bold;
-font-style: inherit;">FLUSH</span> <span class="kw" style="color: #003B4F;
-background-color: null;
-font-weight: bold;
-font-style: inherit;">PRIVILEGES</span>;</span></code></pre></div>
-</section>
-<section id="createimport-databases-if-not-already-done" class="level4">
-<h4 class="anchored" data-anchor-id="createimport-databases-if-not-already-done">Create/import databases (if not already done):</h4>
-<div class="sourceCode" id="cb8" style="background: #f1f3f5;"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb8-1"><span class="ex" style="color: null;
-background-color: null;
-font-style: inherit;">mysql</span> <span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">-u</span> root <span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">-p</span> <span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">-h127.0.0.1</span> <span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">-P3307</span> <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">&lt;&lt;'EOF'</span></span>
-<span id="cb8-2"><span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">CREATE DATABASE IF NOT EXISTS peve_pasa;</span></span>
-<span id="cb8-3"><span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">EOF</span></span></code></pre></div>
-</section>
-<section id="fix-collation-issue-in-the-sql-dump-file-if-needed" class="level4">
-<h4 class="anchored" data-anchor-id="fix-collation-issue-in-the-sql-dump-file-if-needed">Fix collation issue in the SQL dump file (if needed):</h4>
-<div class="sourceCode" id="cb9" style="background: #f1f3f5;"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb9-1"><span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">sed</span> <span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">-i</span> <span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">'s/utf8mb4_0900_ai_ci/utf8mb4_general_ci/g'</span> <span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">'/volume2/web/gitrepos/urol-e5/timeseries_molecular/E-Peve/output/00.30-E-Peve-transcriptome-assembly-Trinity/PASA/peve_pasa_backup.sql'</span></span></code></pre></div>
-</section>
-<section id="load-the-sql-dump-into-the-database" class="level4">
-<h4 class="anchored" data-anchor-id="load-the-sql-dump-into-the-database">Load the SQL dump into the database:</h4>
-<div class="sourceCode" id="cb10" style="background: #f1f3f5;"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb10-1"><span class="ex" style="color: null;
-background-color: null;
-font-style: inherit;">mysql</span> <span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">-u</span> root <span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">-p</span><span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">&lt;</span>password<span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">&gt;</span> -h127.0.0.1 <span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">-P3307</span> peve_pasa <span class="dt" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">\</span></span>
-<span id="cb10-2">  <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">&lt;</span> /volume2/web/gitrepos/urol-e5/timeseries_molecular/E-Peve/output/00.30-E-Peve-transcriptome-assembly-Trinity/PASA/peve_pasa_backup.sql</span></code></pre></div>
-</section>
-</section>
-<section id="web-interface" class="level3">
-<h3 class="anchored" data-anchor-id="web-interface">Web Interface</h3>
-<p>Then, access the Synology via the web interface and set up the container.</p>
-<p>In the Container Manager app, create a new container with these settings:</p>
-<p>Go to the “Image” tab You should see pasapipeline-fixed:latest in the list of images.</p>
-<p>Click on the image, then click “Launch” or “Run”</p>
-<p>This opens the container creation wizard where you configure: - Container name - Port mappings - Volume mounts - Environment variables - xecution Command: <code>bash -c "cp /pasa_data/conf.txt /usr/local/src/PASApipeline/pasa_conf/conf.txt &amp;&amp; /usr/local/src/PASApipeline/run_PasaWeb.pl 9000"</code> - Port Settings:</p>
-<pre><code>- Local Port: 9000
-- Container Port: 9000
-- Type: TCP
-- Volume Mappings:</code></pre>
-<ul>
-<li><p>Host: /volume1/path/to/PASA/directory</p></li>
-<li><p>Container: /pasa_data</p></li>
-<li><p>Network:</p></li>
-<li><p>Use bridge mode</p></li>
-<li><p>Working Directory:</p></li>
-</ul>
-<p><img src="https://robertslab.github.io/sams-notebook/posts/2026/2026-02-27-PASA-Web-Portal---Configuration-on-Gannet-Using-Synology-Container-Manager/screenshot-pasa-portal-configuration-01.png" class="img-fluid"></p>
-<p><img src="https://robertslab.github.io/sams-notebook/posts/2026/2026-02-27-PASA-Web-Portal---Configuration-on-Gannet-Using-Synology-Container-Manager/screenshot-pasa-portal-configuration-02.png" class="img-fluid"></p>
-</section>
-<section id="access" class="level3">
-<h3 class="anchored" data-anchor-id="access">Access</h3>
-<div class="callout callout-style-default callout-important callout-titled">
-<div class="callout-header d-flex align-content-center">
-<div class="callout-icon-container">
-<i class="callout-icon"></i>
-</div>
-<div class="callout-title-container flex-fill">
-Important
-</div>
-</div>
-<div class="callout-body-container callout-body">
-<p><code>http</code> is used instead of <code>https</code> because the PASA web portal does not support SSL/TLS. Ensure that your network is secure and consider using a VPN if accessing remotely.</p>
-</div>
-</div>
-<p>http://gannet.fish.washington.edu:9000 Enter database name when prompted (e.g., peve_pasa)</p>
-
-
-</section>
-</section>
-</section>
-
- ]]></description>
-  <category>gannet</category>
-  <category>MySQL</category>
-  <category>PASA</category>
-  <category>2026</category>
-  <guid>https://robertslab.github.io/sams-notebook/posts/2026/2026-02-27-PASA-Web-Portal---Configuration-on-Gannet-Using-Synology-Container-Manager/</guid>
   <pubDate>Fri, 27 Feb 2026 08:00:00 GMT</pubDate>
 </item>
 </channel>
