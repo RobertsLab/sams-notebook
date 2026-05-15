@@ -496,6 +496,1485 @@ Huffmyer, Ariana S., Noah Ozguner, Madeline Baird, Colby Elvrum, Carolyn Kounell
   <pubDate>Wed, 13 May 2026 07:00:00 GMT</pubDate>
 </item>
 <item>
+  <title>Heat Stress Survivorship - M.gigas USDA Families Heat Stressed at 33C</title>
+  <dc:creator>Sam White</dc:creator>
+  <link>https://robertslab.github.io/sams-notebook/posts/2026/2026-05-11-Heat-Stress-Survivorship---M.gigas-USDA-Families-Heat-Stressed-at-33C/</link>
+  <description><![CDATA[ 
+
+
+
+
+
+<section id="intro" class="level1">
+<h1>INTRO</h1>
+<p><em>M.gigas</em> oysters from nine different USDA families were subjected to heat stress @ 33<sup>o</sup>C in a large, upright incubator. Oysters were submerged in seawater in 24-well plates. Survivorship was assessed periodically over a 72hr period.</p>
+<p>Well temps were spot checked at each time point using an infrared thermometer. Temps were generally in a range from 32-38<sup>o</sup>C over the course of the entire experiment. Wells closer to the door were generally cooler than those further back in the incubator, which may have contributed to some of the variability in survivorship observed across families.</p>
+<p>Plates were arranged in a single layer (i.e.&nbsp;not stacked) in the incubator and were rotated after each time point to minimize any potential effects of well position on survivorship.</p>
+<p>The post below was knitted from <a href="https://github.com/RobertsLab/sormi-assay-development/blob/main/scripts/00.00-mgig-heat-survivorship-20260511.Rmd">00.00-mgig-heat-survivorship-20260511.Rmd</a> (GitHub).</p>
+<hr>
+</section>
+<section id="background" class="level1">
+<h1>1 BACKGROUND</h1>
+<!-- This is a Kaplan-Meier survival analysis of 33<sup>o</sup>C heat stress of _Magallana gigas_ oysters, [conducted on 20260511](https://github.com/RobertsLab/sormi-assay-development/tree/main/heat-survivorship/20260511-33C-USDA-families) (GitHub repo). It compares 9 different families bred/selected by the USDA. -->
+<section id="setup" class="level2">
+<h2 class="anchored" data-anchor-id="setup">1.1 SETUP</h2>
+<section id="load-packages" class="level3">
+<h3 class="anchored" data-anchor-id="load-packages">1.1.1 Load packages</h3>
+<div class="sourceCode" id="cb1" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">library</span>(readr)</span>
+<span id="cb1-2"><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">library</span>(dplyr)</span>
+<span id="cb1-3"><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">library</span>(survival)</span>
+<span id="cb1-4"><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">library</span>(survminer)</span>
+<span id="cb1-5"><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">library</span>(ggplot2)</span>
+<span id="cb1-6"></span>
+<span id="cb1-7">knitr<span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">::</span>opts_chunk<span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">$</span><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">set</span>(</span>
+<span id="cb1-8">  <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">echo =</span> <span class="cn" style="color: #8f5902;
+background-color: null;
+font-style: inherit;">TRUE</span>,         <span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># Display code chunks</span></span>
+<span id="cb1-9">  <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">eval =</span> <span class="cn" style="color: #8f5902;
+background-color: null;
+font-style: inherit;">TRUE</span>,        <span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># Evaluate code chunks</span></span>
+<span id="cb1-10">  <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">warning =</span> <span class="cn" style="color: #8f5902;
+background-color: null;
+font-style: inherit;">FALSE</span>,     <span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># Hide warnings</span></span>
+<span id="cb1-11">  <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">message =</span> <span class="cn" style="color: #8f5902;
+background-color: null;
+font-style: inherit;">FALSE</span>,     <span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># Hide messages</span></span>
+<span id="cb1-12">  <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">comment =</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">""</span>,         <span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># Prevents appending '##' to beginning of lines in code output</span></span>
+<span id="cb1-13">  <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">results =</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">'hold'</span>     <span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># Holds output so it's all printed together after code chunk</span></span>
+<span id="cb1-14">)</span></code></pre></div>
+</section>
+<section id="read-in-and-view-raw-data" class="level3">
+<h3 class="anchored" data-anchor-id="read-in-and-view-raw-data">1.1.2 Read in and view raw data</h3>
+<div class="sourceCode" id="cb2" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb2-1">survivorship_raw <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">read_csv</span>(</span>
+<span id="cb2-2">    <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"../heat-survivorship/20260511-33C-USDA-families/survivorship.csv"</span>,</span>
+<span id="cb2-3">    <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">show_col_types =</span> <span class="cn" style="color: #8f5902;
+background-color: null;
+font-style: inherit;">FALSE</span></span>
+<span id="cb2-4">)</span>
+<span id="cb2-5"></span>
+<span id="cb2-6"><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># Preview newly created object</span></span>
+<span id="cb2-7"><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">cat</span>(<span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"</span><span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">\n</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">=== survivorship_raw: str() ===</span><span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">\n</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"</span>)</span>
+<span id="cb2-8"><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">str</span>(survivorship_raw)</span></code></pre></div>
+<pre><code>=== survivorship_raw: str() ===
+spc_tbl_ [1,080 × 10] (S3: spec_tbl_df/tbl_df/tbl/data.frame)
+ $ plate_ID         : chr [1:1080] "plate-A" "plate-A" "plate-A" "plate-A" ...
+ $ plate_well       : chr [1:1080] "A01" "A02" "A03" "A04" ...
+ $ individual_id    : num [1:1080] 1 2 3 4 5 6 7 8 9 10 ...
+ $ familly_id.group : chr [1:1080] "3" "3" "3" "3" ...
+ $ timepoint_count  : num [1:1080] 0 0 0 0 0 0 0 0 0 0 ...
+ $ timepoint_hrs    : num [1:1080] 0 0 0 0 0 0 0 0 0 0 ...
+ $ alive.measurement: logi [1:1080] TRUE TRUE TRUE TRUE TRUE TRUE ...
+ $ date             : num [1:1080] 20260511 20260511 20260511 20260511 20260511 ...
+ $ time             : 'hms' num [1:1080] 12:30:00 12:30:00 12:30:00 12:30:00 ...
+  ..- attr(*, "units")= chr "secs"
+ $ notes            : logi [1:1080] NA NA NA NA NA NA ...
+ - attr(*, "spec")=
+  .. cols(
+  ..   plate_ID = col_character(),
+  ..   plate_well = col_character(),
+  ..   individual_id = col_double(),
+  ..   familly_id.group = col_character(),
+  ..   timepoint_count = col_double(),
+  ..   timepoint_hrs = col_double(),
+  ..   alive.measurement = col_logical(),
+  ..   date = col_double(),
+  ..   time = col_time(format = ""),
+  ..   notes = col_logical()
+  .. )
+ - attr(*, "problems")=&lt;pointer: 0x5a6584bbccc0&gt; </code></pre>
+</section>
+</section>
+<section id="analysis" class="level2">
+<h2 class="anchored" data-anchor-id="analysis">1.2 ANALYSIS</h2>
+<section id="clean-and-standardize-columns-used-for-survival-analysis" class="level3">
+<h3 class="anchored" data-anchor-id="clean-and-standardize-columns-used-for-survival-analysis">1.2.1 Clean and standardize columns used for survival analysis</h3>
+<div class="sourceCode" id="cb4" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb4-1">survivorship_clean <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> survivorship_raw <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">%&gt;%</span></span>
+<span id="cb4-2">    <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">mutate</span>(</span>
+<span id="cb4-3">        <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">individual_id =</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">as.character</span>(individual_id),</span>
+<span id="cb4-4">        <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">family_group =</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">as.character</span>(<span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">`</span><span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">familly_id.group</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">`</span>),</span>
+<span id="cb4-5">        <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">timepoint_hrs =</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">as.numeric</span>(timepoint_hrs),</span>
+<span id="cb4-6">        <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">alive_chr =</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">toupper</span>(<span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">trimws</span>(<span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">as.character</span>(<span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">`</span><span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">alive.measurement</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">`</span>))),</span>
+<span id="cb4-7">        <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">alive =</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">case_when</span>(</span>
+<span id="cb4-8">            alive_chr <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">%in%</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">c</span>(<span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"TRUE"</span>, <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"T"</span>, <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"1"</span>, <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"YES"</span>, <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"Y"</span>) <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">~</span> <span class="cn" style="color: #8f5902;
+background-color: null;
+font-style: inherit;">TRUE</span>,</span>
+<span id="cb4-9">            alive_chr <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">%in%</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">c</span>(<span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"FALSE"</span>, <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"F"</span>, <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"0"</span>, <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"NO"</span>, <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"N"</span>) <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">~</span> <span class="cn" style="color: #8f5902;
+background-color: null;
+font-style: inherit;">FALSE</span>,</span>
+<span id="cb4-10">            <span class="cn" style="color: #8f5902;
+background-color: null;
+font-style: inherit;">TRUE</span> <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">~</span> <span class="cn" style="color: #8f5902;
+background-color: null;
+font-style: inherit;">NA</span></span>
+<span id="cb4-11">        )</span>
+<span id="cb4-12">    ) <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">%&gt;%</span></span>
+<span id="cb4-13">    <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">select</span>(</span>
+<span id="cb4-14">        individual_id,</span>
+<span id="cb4-15">        family_group,</span>
+<span id="cb4-16">        timepoint_count,</span>
+<span id="cb4-17">        timepoint_hrs,</span>
+<span id="cb4-18">        alive,</span>
+<span id="cb4-19">        date,</span>
+<span id="cb4-20">        time,</span>
+<span id="cb4-21">        <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">everything</span>()</span>
+<span id="cb4-22">    )</span>
+<span id="cb4-23"></span>
+<span id="cb4-24"><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># Preview newly created object</span></span>
+<span id="cb4-25"><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">cat</span>(<span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"</span><span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">\n</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">=== survivorship_clean: str() ===</span><span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">\n</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"</span>)</span>
+<span id="cb4-26"><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">str</span>(survivorship_clean)</span>
+<span id="cb4-27"><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">cat</span>(<span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"</span><span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">\n</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">=== survivorship_clean: summary(alive) ===</span><span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">\n</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"</span>)</span>
+<span id="cb4-28"><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">summary</span>(survivorship_clean<span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">$</span>alive)</span></code></pre></div>
+<pre><code>=== survivorship_clean: str() ===
+tibble [1,080 × 13] (S3: tbl_df/tbl/data.frame)
+ $ individual_id    : chr [1:1080] "1" "2" "3" "4" ...
+ $ family_group     : chr [1:1080] "3" "3" "3" "3" ...
+ $ timepoint_count  : num [1:1080] 0 0 0 0 0 0 0 0 0 0 ...
+ $ timepoint_hrs    : num [1:1080] 0 0 0 0 0 0 0 0 0 0 ...
+ $ alive            : logi [1:1080] TRUE TRUE TRUE TRUE TRUE TRUE ...
+ $ date             : num [1:1080] 20260511 20260511 20260511 20260511 20260511 ...
+ $ time             : 'hms' num [1:1080] 12:30:00 12:30:00 12:30:00 12:30:00 ...
+  ..- attr(*, "units")= chr "secs"
+ $ plate_ID         : chr [1:1080] "plate-A" "plate-A" "plate-A" "plate-A" ...
+ $ plate_well       : chr [1:1080] "A01" "A02" "A03" "A04" ...
+ $ familly_id.group : chr [1:1080] "3" "3" "3" "3" ...
+ $ alive.measurement: logi [1:1080] TRUE TRUE TRUE TRUE TRUE TRUE ...
+ $ notes            : logi [1:1080] NA NA NA NA NA NA ...
+ $ alive_chr        : chr [1:1080] "TRUE" "TRUE" "TRUE" "TRUE" ...
+
+=== survivorship_clean: summary(alive) ===
+   Mode   FALSE    TRUE 
+logical     683     397 </code></pre>
+</section>
+<section id="reduce-repeated-observations-to-one-survival-row-per-individual" class="level3">
+<h3 class="anchored" data-anchor-id="reduce-repeated-observations-to-one-survival-row-per-individual">1.2.2 Reduce repeated observations to one survival row per individual</h3>
+<div class="sourceCode" id="cb6" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb6-1">individual_survival <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> survivorship_clean <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">%&gt;%</span></span>
+<span id="cb6-2">    <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">filter</span>(<span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">!</span><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">is.na</span>(individual_id), <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">!</span><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">is.na</span>(timepoint_hrs), <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">!</span><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">is.na</span>(alive)) <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">%&gt;%</span></span>
+<span id="cb6-3">    <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">arrange</span>(individual_id, timepoint_hrs) <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">%&gt;%</span></span>
+<span id="cb6-4">    <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">group_by</span>(individual_id) <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">%&gt;%</span></span>
+<span id="cb6-5">    <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">summarise</span>(</span>
+<span id="cb6-6">        <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">family_group =</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">first</span>(family_group[<span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">!</span><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">is.na</span>(family_group)]),</span>
+<span id="cb6-7">        <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">event =</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">if_else</span>(<span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">any</span>(<span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">!</span>alive), <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">1</span>L, <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">0</span>L),</span>
+<span id="cb6-8">        <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">time_to_event =</span> {</span>
+<span id="cb6-9">            <span class="cf" style="color: #003B4F;
+background-color: null;
+font-weight: bold;
+font-style: inherit;">if</span> (<span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">any</span>(<span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">!</span>alive)) {</span>
+<span id="cb6-10">                <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">min</span>(timepoint_hrs[<span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">!</span>alive])</span>
+<span id="cb6-11">            } <span class="cf" style="color: #003B4F;
+background-color: null;
+font-weight: bold;
+font-style: inherit;">else</span> {</span>
+<span id="cb6-12">                <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">max</span>(timepoint_hrs)</span>
+<span id="cb6-13">            }</span>
+<span id="cb6-14">        },</span>
+<span id="cb6-15">        <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">n_observations =</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">n</span>(),</span>
+<span id="cb6-16">        <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">.groups =</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"drop"</span></span>
+<span id="cb6-17">    )</span>
+<span id="cb6-18"></span>
+<span id="cb6-19"><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># Preview newly created object</span></span>
+<span id="cb6-20"><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">cat</span>(<span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"</span><span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">\n</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">=== individual_survival: str() ===</span><span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">\n</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"</span>)</span>
+<span id="cb6-21"><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">str</span>(individual_survival)</span>
+<span id="cb6-22"><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">cat</span>(<span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"</span><span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">\n</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">=== individual_survival: summary(time_to_event) ===</span><span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">\n</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"</span>)</span>
+<span id="cb6-23"><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">summary</span>(individual_survival<span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">$</span>time_to_event)</span>
+<span id="cb6-24"><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">cat</span>(<span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"</span><span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">\n</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">=== individual_survival: table(event) ===</span><span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">\n</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"</span>)</span>
+<span id="cb6-25"><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">table</span>(individual_survival<span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">$</span>event)</span></code></pre></div>
+<pre><code>=== individual_survival: str() ===
+tibble [108 × 5] (S3: tbl_df/tbl/data.frame)
+ $ individual_id : chr [1:108] "1" "10" "100" "101" ...
+ $ family_group  : chr [1:108] "3" "3" "6" "6" ...
+ $ event         : int [1:108] 1 1 1 1 1 1 1 1 1 1 ...
+ $ time_to_event : num [1:108] 48 48 22 43 27 27 22 43 22 43 ...
+ $ n_observations: int [1:108] 10 10 10 10 10 10 10 10 10 10 ...
+
+=== individual_survival: summary(time_to_event) ===
+   Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
+  22.00   24.83   43.00   36.42   43.00   67.00 
+
+=== individual_survival: table(event) ===
+
+  0   1 
+  1 107 </code></pre>
+</section>
+<section id="create-surv-object-and-fit-kaplan-meier-models" class="level3">
+<h3 class="anchored" data-anchor-id="create-surv-object-and-fit-kaplan-meier-models">1.2.3 Create Surv object and fit Kaplan-Meier models</h3>
+<div class="sourceCode" id="cb8" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb8-1">surv_object <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">with</span>(individual_survival, <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">Surv</span>(<span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">time =</span> time_to_event, <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">event =</span> event))</span>
+<span id="cb8-2"></span>
+<span id="cb8-3">km_fit_overall <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">survfit</span>(surv_object <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">~</span> <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">1</span>, <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">data =</span> individual_survival)</span>
+<span id="cb8-4">km_fit_by_family <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">survfit</span>(surv_object <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">~</span> family_group, <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">data =</span> individual_survival)</span>
+<span id="cb8-5"></span>
+<span id="cb8-6"><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># Preview newly created objects</span></span>
+<span id="cb8-7"><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">cat</span>(<span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"</span><span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">\n</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">=== km_fit_overall ===</span><span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">\n</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"</span>)</span>
+<span id="cb8-8"><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">print</span>(km_fit_overall)</span>
+<span id="cb8-9"><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">cat</span>(<span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"</span><span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">\n</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">=== km_fit_by_family ===</span><span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">\n</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"</span>)</span>
+<span id="cb8-10"><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">print</span>(km_fit_by_family)</span>
+<span id="cb8-11"><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">cat</span>(<span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"</span><span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">\n</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">=== km_fit_overall: str() ===</span><span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">\n</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"</span>)</span>
+<span id="cb8-12"><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">str</span>(km_fit_overall)</span>
+<span id="cb8-13"><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">cat</span>(<span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"</span><span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">\n</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">=== km_fit_by_family: str() ===</span><span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">\n</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"</span>)</span>
+<span id="cb8-14"><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">str</span>(km_fit_by_family)</span></code></pre></div>
+<pre><code>=== km_fit_overall ===
+Call: survfit(formula = surv_object ~ 1, data = individual_survival)
+
+       n events median 0.95LCL 0.95UCL
+[1,] 108    107     43      27      43
+
+=== km_fit_by_family ===
+Call: survfit(formula = surv_object ~ family_group, data = individual_survival)
+
+                 n events median 0.95LCL 0.95UCL
+family_group=1  12     12   43.0    27.0      NA
+family_group=10 12     12   22.0    22.0      NA
+family_group=3  12     12   35.0    27.0      NA
+family_group=5  12     12   43.0    43.0      NA
+family_group=6  12     12   27.0    22.0      NA
+family_group=7  12     12   24.8    22.0      NA
+family_group=8  12     11   27.0    24.8      NA
+family_group=9  12     12   43.0    43.0      NA
+family_group=9b 12     12   43.0    43.0      NA
+
+=== km_fit_overall: str() ===
+List of 17
+ $ n        : int 108
+ $ time     : num [1:8] 22 24.8 27 43 45 ...
+ $ n.risk   : num [1:8] 108 89 77 57 17 16 12 8
+ $ n.event  : num [1:8] 19 12 20 40 1 4 4 7
+ $ n.censor : num [1:8] 0 0 0 0 0 0 0 1
+ $ surv     : num [1:8] 0.824 0.713 0.528 0.157 0.148 ...
+ $ std.err  : num [1:8] 0.0445 0.0611 0.091 0.2226 0.2307 ...
+ $ cumhaz   : num [1:8] 0.176 0.311 0.57 1.272 1.331 ...
+ $ std.chaz : num [1:8] 0.0404 0.0561 0.0807 0.1372 0.1493 ...
+ $ type     : chr "right"
+ $ logse    : logi TRUE
+ $ conf.int : num 0.95
+ $ conf.type: chr "log"
+ $ lower    : num [1:8] 0.7553 0.6326 0.4415 0.1017 0.0943 ...
+ $ upper    : num [1:8] 0.899 0.804 0.631 0.244 0.233 ...
+ $ t0       : num 0
+ $ call     : language survfit(formula = surv_object ~ 1, data = individual_survival)
+ - attr(*, "class")= chr "survfit"
+
+=== km_fit_by_family: str() ===
+List of 18
+ $ n        : int [1:9] 12 12 12 12 12 12 12 12 12
+ $ time     : num [1:37] 22 27 43 45 48 ...
+ $ n.risk   : num [1:37] 12 11 8 3 2 1 12 5 2 1 ...
+ $ n.event  : num [1:37] 1 3 5 1 1 1 7 3 1 1 ...
+ $ n.censor : num [1:37] 0 0 0 0 0 0 0 0 0 0 ...
+ $ surv     : num [1:37] 0.9167 0.6667 0.25 0.1667 0.0833 ...
+ $ std.err  : num [1:37] 0.087 0.204 0.5 0.645 0.957 ...
+ $ cumhaz   : num [1:37] 0.0833 0.3561 0.9811 1.3144 1.8144 ...
+ $ std.chaz : num [1:37] 0.0833 0.1782 0.3315 0.4701 0.6863 ...
+ $ strata   : Named int [1:9] 6 4 5 4 4 4 4 3 3
+  ..- attr(*, "names")= chr [1:9] "family_group=1" "family_group=10" "family_group=3" "family_group=5" ...
+ $ type     : chr "right"
+ $ logse    : logi TRUE
+ $ conf.int : num 0.95
+ $ conf.type: chr "log"
+ $ lower    : num [1:37] 0.7729 0.4468 0.0938 0.047 0.0128 ...
+ $ upper    : num [1:37] 1 0.995 0.666 0.591 0.544 ...
+ $ t0       : num 0
+ $ call     : language survfit(formula = surv_object ~ family_group, data = individual_survival)
+ - attr(*, "class")= chr "survfit"</code></pre>
+</section>
+<section id="perform-log-rank-test-to-compare-survival-between-families" class="level3">
+<h3 class="anchored" data-anchor-id="perform-log-rank-test-to-compare-survival-between-families">1.2.4 Perform log-rank test to compare survival between families</h3>
+<div class="sourceCode" id="cb10" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb10-1">logrank_test <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">survdiff</span>(surv_object <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">~</span> family_group, <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">data =</span> individual_survival)</span>
+<span id="cb10-2"></span>
+<span id="cb10-3"><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># Display test results</span></span>
+<span id="cb10-4"><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">cat</span>(<span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"</span><span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">\n</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">=== Log-rank test: survdiff() output ===</span><span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">\n</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"</span>)</span>
+<span id="cb10-5"><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">print</span>(logrank_test)</span>
+<span id="cb10-6"></span>
+<span id="cb10-7"><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># Extract and report key statistics</span></span>
+<span id="cb10-8"><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">cat</span>(<span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"</span><span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">\n</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">=== Log-Rank Test Summary ===</span><span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">\n</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"</span>)</span>
+<span id="cb10-9"><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">cat</span>(<span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"Chi-square statistic:"</span>, logrank_test<span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">$</span>chisq, <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"</span><span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">\n</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"</span>)</span>
+<span id="cb10-10"><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">cat</span>(<span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"Degrees of freedom:"</span>, <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">length</span>(logrank_test<span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">$</span>n) <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">-</span> <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">1</span>, <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"</span><span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">\n</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"</span>)</span>
+<span id="cb10-11"><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">cat</span>(<span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"p-value:"</span>, <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">1</span> <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">-</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">pchisq</span>(logrank_test<span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">$</span>chisq, <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">df =</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">length</span>(logrank_test<span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">$</span>n) <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">-</span> <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">1</span>), <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"</span><span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">\n</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"</span>)</span>
+<span id="cb10-12"><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">cat</span>(<span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"</span><span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">\n</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">Interpretation:</span><span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">\n</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"</span>)</span>
+<span id="cb10-13">p_val <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">1</span> <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">-</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">pchisq</span>(logrank_test<span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">$</span>chisq, <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">df =</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">length</span>(logrank_test<span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">$</span>n) <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">-</span> <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">1</span>)</span>
+<span id="cb10-14"><span class="cf" style="color: #003B4F;
+background-color: null;
+font-weight: bold;
+font-style: inherit;">if</span> (p_val <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">&lt;</span> <span class="fl" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">0.05</span>) {</span>
+<span id="cb10-15">  <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">cat</span>(<span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"p &lt; 0.05: Family groups show SIGNIFICANTLY DIFFERENT survival (reject null hypothesis)</span><span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">\n</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"</span>)</span>
+<span id="cb10-16">} <span class="cf" style="color: #003B4F;
+background-color: null;
+font-weight: bold;
+font-style: inherit;">else</span> {</span>
+<span id="cb10-17">  <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">cat</span>(<span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"p &gt;= 0.05: No significant difference in survival detected between family groups</span><span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">\n</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"</span>)</span>
+<span id="cb10-18">}</span></code></pre></div>
+<pre><code>=== Log-rank test: survdiff() output ===
+Call:
+survdiff(formula = surv_object ~ family_group, data = individual_survival)
+
+                 N Observed Expected (O-E)^2/E (O-E)^2/V
+family_group=1  12       12    14.28     0.365     0.744
+family_group=10 12       12     5.52     7.593    12.784
+family_group=3  12       12    13.34     0.134     0.259
+family_group=5  12       12    19.47     2.869     6.823
+family_group=6  12       12     7.81     2.241     3.934
+family_group=7  12       12     6.46     4.754     8.000
+family_group=8  12       11     7.50     1.637     2.650
+family_group=9  12       12    17.43     1.690     3.802
+family_group=9b 12       12    15.18     0.667     1.426
+
+ Chisq= 38.3  on 8 degrees of freedom, p= 7e-06 
+
+=== Log-Rank Test Summary ===
+Chi-square statistic: 38.31314 
+Degrees of freedom: 8 
+p-value: 6.588796e-06 
+
+Interpretation:
+p &lt; 0.05: Family groups show SIGNIFICANTLY DIFFERENT survival (reject null hypothesis)</code></pre>
+</section>
+<section id="pairwise-log-rank-tests-with-bh-correction" class="level3">
+<h3 class="anchored" data-anchor-id="pairwise-log-rank-tests-with-bh-correction">1.2.5 Pairwise log-rank tests with BH correction</h3>
+<div class="sourceCode" id="cb12" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb12-1">pairwise_results <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">pairwise_survdiff</span>(</span>
+<span id="cb12-2">    <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">Surv</span>(time_to_event, event) <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">~</span> family_group,</span>
+<span id="cb12-3">    <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">data =</span> individual_survival,</span>
+<span id="cb12-4">    <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">p.adjust.method =</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"BH"</span></span>
+<span id="cb12-5">)</span>
+<span id="cb12-6"></span>
+<span id="cb12-7"><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">cat</span>(<span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"</span><span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">\n</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">=== Pairwise log-rank test (BH-adjusted p-values) ===</span><span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">\n</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"</span>)</span>
+<span id="cb12-8"><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">print</span>(pairwise_results)</span>
+<span id="cb12-9"></span>
+<span id="cb12-10"><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># Extract and display only significant pairs</span></span>
+<span id="cb12-11">p_mat <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> pairwise_results<span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">$</span>p.value</span>
+<span id="cb12-12">sig_pairs <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">which</span>(p_mat <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">&lt;=</span> <span class="fl" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">0.05</span>, <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">arr.ind =</span> <span class="cn" style="color: #8f5902;
+background-color: null;
+font-style: inherit;">TRUE</span>)</span>
+<span id="cb12-13"></span>
+<span id="cb12-14"><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">cat</span>(<span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"</span><span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">\n</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">=== Significant pairwise comparisons (BH-adjusted p &lt;= 0.05) ===</span><span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">\n</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"</span>)</span>
+<span id="cb12-15"><span class="cf" style="color: #003B4F;
+background-color: null;
+font-weight: bold;
+font-style: inherit;">if</span> (<span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">nrow</span>(sig_pairs) <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">==</span> <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">0</span>) {</span>
+<span id="cb12-16">    <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">cat</span>(<span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"No significant pairwise differences found.</span><span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">\n</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"</span>)</span>
+<span id="cb12-17">} <span class="cf" style="color: #003B4F;
+background-color: null;
+font-weight: bold;
+font-style: inherit;">else</span> {</span>
+<span id="cb12-18">    sig_df <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">data.frame</span>(</span>
+<span id="cb12-19">        <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">group1      =</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">rownames</span>(p_mat)[sig_pairs[, <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">1</span>]],</span>
+<span id="cb12-20">        <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">group2      =</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">colnames</span>(p_mat)[sig_pairs[, <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">2</span>]],</span>
+<span id="cb12-21">        <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">p_adjusted  =</span> p_mat[sig_pairs]</span>
+<span id="cb12-22">    )</span>
+<span id="cb12-23">    <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">print</span>(sig_df)</span>
+<span id="cb12-24">}</span></code></pre></div>
+<pre><code>=== Pairwise log-rank test (BH-adjusted p-values) ===
+
+    Pairwise comparisons using Log-Rank test 
+
+data:  individual_survival and family_group 
+
+   1      10     3      5      6      7      8      9     
+10 0.0333 -      -      -      -      -      -      -     
+3  0.8810 0.0333 -      -      -      -      -      -     
+5  0.2411 0.0051 0.2382 -      -      -      -      -     
+6  0.0549 0.2681 0.1482 0.0051 -      -      -      -     
+7  0.0251 0.5335 0.0532 0.0038 0.6378 -      -      -     
+8  0.1918 0.0846 0.3170 0.0333 0.8543 0.7041 -      -     
+9  0.4492 0.0038 0.2858 0.5155 0.0038 0.0038 0.0142 -     
+9b 0.9547 0.0075 0.8835 0.1918 0.0075 0.0038 0.0142 0.3198
+
+P value adjustment method: BH 
+
+=== Significant pairwise comparisons (BH-adjusted p &lt;= 0.05) ===
+   group1 group2  p_adjusted
+1      10      1 0.033324135
+2       7      1 0.025143399
+3       3     10 0.033324135
+4       5     10 0.005050921
+5       9     10 0.003843674
+6      9b     10 0.007545462
+7       6      5 0.005050921
+8       7      5 0.003843674
+9       8      5 0.033324135
+10      9      6 0.003843674
+11     9b      6 0.007545462
+12      9      7 0.003843674
+13     9b      7 0.003843674
+14      9      8 0.014195943
+15     9b      8 0.014195943</code></pre>
+</section>
+<section id="convert-kaplan-meier-fit-to-plotting-data-frames" class="level3">
+<h3 class="anchored" data-anchor-id="convert-kaplan-meier-fit-to-plotting-data-frames">1.2.6 Convert Kaplan-Meier fit to plotting data frames</h3>
+<div class="sourceCode" id="cb14" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb14-1">km_overall_df <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">bind_rows</span>(</span>
+<span id="cb14-2">    <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">data.frame</span>(</span>
+<span id="cb14-3">        <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">time =</span> <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">0</span>,</span>
+<span id="cb14-4">        <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">surv =</span> <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">1</span>,</span>
+<span id="cb14-5">        <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">n_risk =</span> km_fit_overall<span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">$</span>n,</span>
+<span id="cb14-6">        <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">n_event =</span> <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">0</span>,</span>
+<span id="cb14-7">        <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">n_censor =</span> <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">0</span></span>
+<span id="cb14-8">    ),</span>
+<span id="cb14-9">    <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">summary</span>(km_fit_overall) <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">%&gt;%</span></span>
+<span id="cb14-10">        <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">with</span>(</span>
+<span id="cb14-11">            <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">data.frame</span>(</span>
+<span id="cb14-12">                <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">time =</span> time,</span>
+<span id="cb14-13">                <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">surv =</span> surv,</span>
+<span id="cb14-14">                <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">n_risk =</span> n.risk,</span>
+<span id="cb14-15">                <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">n_event =</span> n.event,</span>
+<span id="cb14-16">                <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">n_censor =</span> n.censor</span>
+<span id="cb14-17">            )</span>
+<span id="cb14-18">        )</span>
+<span id="cb14-19">) <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">%&gt;%</span></span>
+<span id="cb14-20">    <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">arrange</span>(time)</span>
+<span id="cb14-21"></span>
+<span id="cb14-22">km_family_df <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">bind_rows</span>(</span>
+<span id="cb14-23">    <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">data.frame</span>(</span>
+<span id="cb14-24">        <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">time =</span> <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">0</span>,</span>
+<span id="cb14-25">        <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">surv =</span> <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">1</span>,</span>
+<span id="cb14-26">        <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">n_risk =</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">as.numeric</span>(km_fit_by_family<span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">$</span>n),</span>
+<span id="cb14-27">        <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">n_event =</span> <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">0</span>,</span>
+<span id="cb14-28">        <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">n_censor =</span> <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">0</span>,</span>
+<span id="cb14-29">        <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">strata =</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">names</span>(km_fit_by_family<span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">$</span>strata)</span>
+<span id="cb14-30">    ),</span>
+<span id="cb14-31">    <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">summary</span>(km_fit_by_family) <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">%&gt;%</span></span>
+<span id="cb14-32">        <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">with</span>(</span>
+<span id="cb14-33">            <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">data.frame</span>(</span>
+<span id="cb14-34">                <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">time =</span> time,</span>
+<span id="cb14-35">                <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">surv =</span> surv,</span>
+<span id="cb14-36">                <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">n_risk =</span> n.risk,</span>
+<span id="cb14-37">                <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">n_event =</span> n.event,</span>
+<span id="cb14-38">                <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">n_censor =</span> n.censor,</span>
+<span id="cb14-39">                <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">strata =</span> strata</span>
+<span id="cb14-40">            )</span>
+<span id="cb14-41">        )</span>
+<span id="cb14-42">) <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">%&gt;%</span></span>
+<span id="cb14-43">    <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">mutate</span>(<span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">family_group =</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">sub</span>(<span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"^family_group="</span>, <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">""</span>, strata)) <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">%&gt;%</span></span>
+<span id="cb14-44">    <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">arrange</span>(family_group, time)</span>
+<span id="cb14-45"></span>
+<span id="cb14-46"><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># Preview newly created objects</span></span>
+<span id="cb14-47"><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">cat</span>(<span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"</span><span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">\n</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">=== km_overall_df: head() ===</span><span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">\n</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"</span>)</span>
+<span id="cb14-48"><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">print</span>(<span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">head</span>(km_overall_df))</span>
+<span id="cb14-49"><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">cat</span>(<span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"</span><span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">\n</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">=== km_overall_df: str() ===</span><span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">\n</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"</span>)</span>
+<span id="cb14-50"><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">str</span>(km_overall_df)</span>
+<span id="cb14-51"></span>
+<span id="cb14-52"><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">cat</span>(<span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"</span><span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">\n</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">=== km_family_df: head() ===</span><span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">\n</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"</span>)</span>
+<span id="cb14-53"><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">print</span>(<span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">head</span>(km_family_df))</span>
+<span id="cb14-54"><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">cat</span>(<span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"</span><span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">\n</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">=== km_family_df: str() ===</span><span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">\n</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"</span>)</span>
+<span id="cb14-55"><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">str</span>(km_family_df)</span></code></pre></div>
+<pre><code>=== km_overall_df: head() ===
+   time      surv n_risk n_event n_censor
+1  0.00 1.0000000    108       0        0
+2 22.00 0.8240741    108      19        0
+3 24.83 0.7129630     89      12        0
+4 27.00 0.5277778     77      20        0
+5 43.00 0.1574074     57      40        0
+6 45.00 0.1481481     17       1        0
+
+=== km_overall_df: str() ===
+'data.frame':   9 obs. of  5 variables:
+ $ time    : num  0 22 24.8 27 43 ...
+ $ surv    : num  1 0.824 0.713 0.528 0.157 ...
+ $ n_risk  : num  108 108 89 77 57 17 16 12 8
+ $ n_event : num  0 19 12 20 40 1 4 4 7
+ $ n_censor: num  0 0 0 0 0 0 0 0 1
+
+=== km_family_df: head() ===
+  time       surv n_risk n_event n_censor         strata family_group
+1    0 1.00000000     12       0        0 family_group=1            1
+2   22 0.91666667     12       1        0 family_group=1            1
+3   27 0.66666667     11       3        0 family_group=1            1
+4   43 0.25000000      8       5        0 family_group=1            1
+5   45 0.16666667      3       1        0 family_group=1            1
+6   48 0.08333333      2       1        0 family_group=1            1
+
+=== km_family_df: str() ===
+'data.frame':   45 obs. of  7 variables:
+ $ time        : num  0 22 27 43 45 ...
+ $ surv        : num  1 0.917 0.667 0.25 0.167 ...
+ $ n_risk      : num  12 12 11 8 3 2 1 12 12 5 ...
+ $ n_event     : num  0 1 3 5 1 1 1 0 7 3 ...
+ $ n_censor    : num  0 0 0 0 0 0 0 0 0 0 ...
+ $ strata      : chr  "family_group=1" "family_group=1" "family_group=1" "family_group=1" ...
+ $ family_group: chr  "1" "1" "1" "1" ...</code></pre>
+</section>
+</section>
+<section id="plots" class="level2">
+<h2 class="anchored" data-anchor-id="plots">1.3 PLOTS</h2>
+<section id="plot-kaplan-meier-curves" class="level3">
+<h3 class="anchored" data-anchor-id="plot-kaplan-meier-curves">1.3.1 Plot Kaplan-Meier curves</h3>
+<section id="families" class="level4">
+<h4 class="anchored" data-anchor-id="families">1.3.1.1 Families</h4>
+<div class="sourceCode" id="cb16" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb16-1"><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">ggplot</span>(km_family_df, <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">aes</span>(<span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">x =</span> time, <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">y =</span> surv, <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">color =</span> family_group)) <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">+</span></span>
+<span id="cb16-2">    <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">geom_step</span>(<span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">linewidth =</span> <span class="fl" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">1.0</span>) <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">+</span></span>
+<span id="cb16-3">    <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">labs</span>(</span>
+<span id="cb16-4">        <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">title =</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"Kaplan-Meier Survival Curves by Family Group"</span>,</span>
+<span id="cb16-5">        <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">x =</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"Time (hours)"</span>,</span>
+<span id="cb16-6">        <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">y =</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"Survival probability"</span>,</span>
+<span id="cb16-7">        <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">color =</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"Family group"</span></span>
+<span id="cb16-8">    ) <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">+</span></span>
+<span id="cb16-9">    <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">ylim</span>(<span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">0</span>, <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">1</span>) <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">+</span></span>
+<span id="cb16-10">    <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">theme_minimal</span>(<span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">base_size =</span> <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">12</span>)</span></code></pre></div>
+<p><img src="https://robertslab.github.io/sams-notebook/posts/2026/2026-05-11-Heat-Stress-Survivorship---M.gigas-USDA-Families-Heat-Stressed-at-33C/00.00-mgig-heat-survivorship-20260511_files/figure-gfm/plot-km-by-family-1.png" class="img-fluid"><!-- --></p>
+<hr>
+</section>
+</section>
+</section>
+</section>
+<section id="discussion" class="level1">
+<h1>DISCUSSION</h1>
+<p>There were significant differences in survivorship between the different families of <em>M.gigas</em> oysters under heat stress at 33<sup>o</sup>C. The log-rank test indicated that family groups had significantly different survival curves (p &lt; 0.05). Pairwise comparisons with BH correction revealed specific family pairs that differed significantly in survival.</p>
+<table class="caption-top table">
+<thead>
+<tr class="header">
+<th>group1</th>
+<th>group2</th>
+<th>p_adjusted</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>10</td>
+<td>1</td>
+<td>0.033324135</td>
+</tr>
+<tr class="even">
+<td>7</td>
+<td>1</td>
+<td>0.025143399</td>
+</tr>
+<tr class="odd">
+<td>3</td>
+<td>10</td>
+<td>0.033324135</td>
+</tr>
+<tr class="even">
+<td>5</td>
+<td>10</td>
+<td>0.005050921</td>
+</tr>
+<tr class="odd">
+<td>9</td>
+<td>10</td>
+<td>0.003843674</td>
+</tr>
+<tr class="even">
+<td>9b</td>
+<td>10</td>
+<td>0.007545462</td>
+</tr>
+<tr class="odd">
+<td>6</td>
+<td>5</td>
+<td>0.005050921</td>
+</tr>
+<tr class="even">
+<td>7</td>
+<td>5</td>
+<td>0.003843674</td>
+</tr>
+<tr class="odd">
+<td>8</td>
+<td>5</td>
+<td>0.033324135</td>
+</tr>
+<tr class="even">
+<td>9</td>
+<td>6</td>
+<td>0.003843674</td>
+</tr>
+<tr class="odd">
+<td>9b</td>
+<td>6</td>
+<td>0.007545462</td>
+</tr>
+<tr class="even">
+<td>9</td>
+<td>7</td>
+<td>0.003843674</td>
+</tr>
+<tr class="odd">
+<td>9b</td>
+<td>7</td>
+<td>0.003843674</td>
+</tr>
+<tr class="even">
+<td>9</td>
+<td>8</td>
+<td>0.014195943</td>
+</tr>
+<tr class="odd">
+<td>9b</td>
+<td>8</td>
+<td>0.014195943</td>
+</tr>
+</tbody>
+</table>
+
+
+</section>
+
+ ]]></description>
+  <category>2026</category>
+  <category>USDA</category>
+  <category>Pacific oysters</category>
+  <category>Crassostrea gigas</category>
+  <category>Magallana gigas</category>
+  <category>heat stress</category>
+  <category>survivorship</category>
+  <guid>https://robertslab.github.io/sams-notebook/posts/2026/2026-05-11-Heat-Stress-Survivorship---M.gigas-USDA-Families-Heat-Stressed-at-33C/</guid>
+  <pubDate>Mon, 11 May 2026 07:00:00 GMT</pubDate>
+</item>
+<item>
   <title>Data Received - RNA-seq Subset for Andy Dittman and NOAA</title>
   <dc:creator>Sam White</dc:creator>
   <link>https://robertslab.github.io/sams-notebook/posts/2026/2026-05-08-Data-Received---RNA-seq-Subset-for-Andy-Dittman-and-NOAA/</link>
@@ -8302,2114 +9781,6 @@ font-style: inherit;">tee</span> proteins-PASA.fasta.md5</span></code></pre></di
   <category>transcriptome assembly</category>
   <category>Acropora pulchra</category>
   <guid>https://robertslab.github.io/sams-notebook/posts/2026/2026-02-27-De-Novo-Transcriptome-Assembly-and-Annotation---E5-A.pulchra-RNA-seq-Using-Trinity-and-PASA/</guid>
-  <pubDate>Fri, 27 Feb 2026 08:00:00 GMT</pubDate>
-</item>
-<item>
-  <title>De Novo Transcriptome Assembly and Annotation - E5 P.evermanni RNA-seq Using Trinity and PASA</title>
-  <dc:creator>Sam White</dc:creator>
-  <link>https://robertslab.github.io/sams-notebook/posts/2026/2026-02-27-De-Novo-Transcriptome-Assembly-and-Annotation---E5-P.evermanni-RNA-seq-Using-Trinity-and-PASA/</link>
-  <description><![CDATA[ 
-
-
-
-
-
-<section id="intro" class="level1">
-<h1>INTRO</h1>
-<p>This notebook performs a comprehensive transcriptome assembly and annotation for <em>P.evermanni</em> using the <a href="https://github.com/PASApipeline/PASApipeline/wiki">PASA (Program to Assemble Spliced Alignments)</a>, as part of the E5 <a href="https://github.com/urol-e5/timeseries_molecular">timeseries_molecular project</a>. This produced an updated genome annotation that incorporates the RNA-seq data, including alternative splicing information. However, it’s important to note that the resulting GFF/BED files will <em>not</em> contain any annotations from the original genome GFF which did not have any support from RNA-seq alignments!</p>
-<p>Thus, the resulting PASA annotations will be a <em>subset</em> of the original genome annotations, but with updated gene models based on the RNA-seq data. The PASA pipeline will merge the de novo and genome-guided transcriptome assemblies, clean the transcripts, and update the genome annotations with alternative splicing information where supported by the data.</p>
-<p>Due to large file sizes, the majority of important output files are <em>not</em> availabe on GitHub, but can be accessed on Gannet here:</p>
-<p><a href="https://gannet.fish.washington.edu/gitrepos/urol-e5/timeseries_molecular/E-Peve/output/00.30-E-Peve-transcriptome-assembly-Trinity/">https://gannet.fish.washington.edu/gitrepos/urol-e5/timeseries_molecular/E-Peve/output/00.30-E-Peve-transcriptome-assembly-Trinity/</a></p>
-<p>Primary products:</p>
-<ul>
-<li>Trinity de-novo assembly FastA: https://gannet.fish.washington.edu/gitrepos/urol-e5/timeseries_molecular/E-Peve/output/00.30-E-Peve-transcriptome-assembly-Trinity/de_novo_assembly/peve-denovo-Trinity.fasta</li>
-<li>Trinity genome-guided assembly FastA: https://gannet.fish.washington.edu/gitrepos/urol-e5/timeseries_molecular/E-Peve/output/00.30-E-Peve-transcriptome-assembly-Trinity/genome_guided_assembly/peve-GG-Trinity.fasta</li>
-<li>PASA final GFF: https://gannet.fish.washington.edu/gitrepos/urol-e5/timeseries_molecular/E-Peve/output/00.30-E-Peve-transcriptome-assembly-Trinity/PASA/peve-PASA.gff3</li>
-<li>PASA final BED: https://gannet.fish.washington.edu/gitrepos/urol-e5/timeseries_molecular/E-Peve/output/00.30-E-Peve-transcriptome-assembly-Trinity/PASA/peve-PASA.bed</li>
-</ul>
-<p>The markdown below was produced from the original Rmd script:</p>
-<ul>
-<li><a href="https://github.com/urol-e5/timeseries_molecular/blob/1c9153b836d2ebba3d7aa22e896fa71749f28d8b/E-Peve/code/00.30-E-Peve-transcriptome-assembly-Trinity.Rmd">00.30-E-Peve-transcriptome-assembly-Trinity.Rmd</a> (GitHub)</li>
-</ul>
-<p>Not described below is the access to the PASA web portal, which allows the user to browse the PASA results in a user-friendly interface. This can be accessed here:</p>
-<ul>
-<li>http://gannet.fish.washington.edu:9000/</li>
-</ul>
-<p>Enter <code>peve_pasa</code> as the database name. If this is your first time using the database, it will take many minutes for the data to load (the MySQL files behind the scenes are ~10GB in size, so it takes a while to process). After initial acces, the data is cached and access is much faster.</p>
-<div class="quarto-figure quarto-figure-center">
-<figure class="figure">
-<p><img src="https://robertslab.github.io/sams-notebook/posts/2026/2026-02-27-De-Novo-Transcriptome-Assembly-and-Annotation---E5-P.evermanni-RNA-seq-Using-Trinity-and-PASA/20260227-peve-pasa_web.png" class="img-fluid figure-img"></p>
-<figcaption>Screenshot of peve_pasa web portal on Gannet</figcaption>
-</figure>
-</div>
-<hr>
-</section>
-<section id="background" class="level1">
-<h1>1 BACKGROUND</h1>
-<p>This notebook performs a comprehensive transcriptome assembly and annotaiton for <em>P.evermanni</em> using the <a href="https://github.com/PASApipeline/PASApipeline/wiki">PASA (Program to Assemble Spliced Alignments)</a> pipeline, as well as alternative isoform identification. This pipeline relies on both <em>de novo</em> and genome-guided transcriptome assemblies with <a href="https://github.com/trinityrnaseq/trinityrnaseq/wiki">Trinity</a>.</p>
-<p>The key steps include: 1. <strong>De Novo Assembly</strong> and <strong>Genome-Guided Assembly</strong>: Using <a href="https://github.com/trinityrnaseq/trinityrnaseq/wiki">Trinity</a> to assemble transcripts directly from RNA-seq reads. 2. <strong>PASA Pipeline</strong>: Utilizing <a href="https://github.com/PASApipeline/PASApipeline/wiki">PASA</a> to merge the assemblies, clean transcripts, and update genome annotations with alternative splicing information.</p>
-<p><strong>Programs Used:</strong> - <a href="https://github.com/trinityrnaseq/trinityrnaseq/wiki">Trinity</a> - Transcriptome assembly. - <a href="https://github.com/PASApipeline/PASApipeline/wiki">PASA</a> - Annotation update and transcript assembly refinement. - <a href="https://github.com/NBISweden/AGAT">AGAT</a> - GFF/GTF toolkit for annotation merging and conversion. - <a href="https://apptainer.org/">Singularity (Apptainer)</a> - Container platform used to run assembly pipelines.</p>
-<section id="expected-outputs" class="level2">
-<h2 class="anchored" data-anchor-id="expected-outputs">1.1 Expected outputs</h2>
-<p><strong>TRINITY</strong>:</p>
-<ul>
-<li>FastA: <em>De novo</em> transcriptome assembly.</li>
-<li>FastA: Genome-guided transcriptome assembly.</li>
-</ul>
-<p><strong>PASA</strong>:</p>
-<ul>
-<li>GFF3: Genome annotations produced by PASA pipeline in GFF3.</li>
-<li>BED: Genome annotations produced by PASA pipeline in BED format.</li>
-</ul>
-</section>
-</section>
-<section id="setup" class="level1">
-<h1>2 SETUP</h1>
-<section id="libraries-and-markdown-settings" class="level2">
-<h2 class="anchored" data-anchor-id="libraries-and-markdown-settings">2.1 Libraries and markdown settings</h2>
-<div class="sourceCode" id="cb1" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">library</span>(knitr)</span>
-<span id="cb1-2"><span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">library</span>(reticulate)</span>
-<span id="cb1-3">knitr<span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">::</span>opts_chunk<span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">$</span><span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">set</span>(</span>
-<span id="cb1-4">  <span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">echo =</span> <span class="cn" style="color: #8f5902;
-background-color: null;
-font-style: inherit;">TRUE</span>,         <span class="co" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;"># Display code chunks</span></span>
-<span id="cb1-5">  <span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">eval =</span> <span class="cn" style="color: #8f5902;
-background-color: null;
-font-style: inherit;">FALSE</span>,        <span class="co" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;"># Evaluate code chunks</span></span>
-<span id="cb1-6">  <span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">warning =</span> <span class="cn" style="color: #8f5902;
-background-color: null;
-font-style: inherit;">FALSE</span>,     <span class="co" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;"># Hide warnings</span></span>
-<span id="cb1-7">  <span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">message =</span> <span class="cn" style="color: #8f5902;
-background-color: null;
-font-style: inherit;">FALSE</span>,     <span class="co" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;"># Hide messages</span></span>
-<span id="cb1-8">  <span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">comment =</span> <span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">""</span>         <span class="co" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;"># Prevents appending '##' to beginning of lines in code output</span></span>
-<span id="cb1-9">)</span></code></pre></div>
-</section>
-<section id="set-variables" class="level2">
-<h2 class="anchored" data-anchor-id="set-variables">2.2 Set variables</h2>
-<div class="sourceCode" id="cb2" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb2-1"><span class="co" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;"># DIRECTORIES</span></span>
-<span id="cb2-2">top_output_dir <span class="ot" style="color: #003B4F;
-background-color: null;
-font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">file.path</span>(<span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">".."</span>, <span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"output"</span>)</span>
-<span id="cb2-3"></span>
-<span id="cb2-4">output_dir <span class="ot" style="color: #003B4F;
-background-color: null;
-font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">file.path</span>(top_output_dir, <span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"00.30-E-Peve-transcriptome-assembly-Trinity"</span>)</span>
-<span id="cb2-5">de_novo_output_dir <span class="ot" style="color: #003B4F;
-background-color: null;
-font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">file.path</span>(output_dir, <span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"de_novo_assembly"</span>)</span>
-<span id="cb2-6">genome_guided_output_dir <span class="ot" style="color: #003B4F;
-background-color: null;
-font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">file.path</span>(output_dir, <span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"genome_guided_assembly"</span>)</span>
-<span id="cb2-7">pasa_container_dir <span class="ot" style="color: #003B4F;
-background-color: null;
-font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">file.path</span>(<span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"/home"</span>, <span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"shared"</span>, <span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"containers"</span>)</span>
-<span id="cb2-8">pasa_bed <span class="ot" style="color: #003B4F;
-background-color: null;
-font-style: inherit;">&lt;-</span> <span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"peve-PASA.bed"</span></span>
-<span id="cb2-9">pasa_gff <span class="ot" style="color: #003B4F;
-background-color: null;
-font-style: inherit;">&lt;-</span> <span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"peve-PASA.gff3"</span></span>
-<span id="cb2-10">PASA_HOME <span class="ot" style="color: #003B4F;
-background-color: null;
-font-style: inherit;">&lt;-</span> <span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"/usr/local/src/PASApipeline"</span></span>
-<span id="cb2-11">pasa_output_dir <span class="ot" style="color: #003B4F;
-background-color: null;
-font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">file.path</span>(output_dir, <span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"PASA"</span>)</span>
-<span id="cb2-12">stringtie_gtf_dir <span class="ot" style="color: #003B4F;
-background-color: null;
-font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">file.path</span>(top_output_dir, <span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"02.20-E-Peve-RNAseq-alignment-HiSat2"</span>)</span>
-<span id="cb2-13">trimmed_reads_dir <span class="ot" style="color: #003B4F;
-background-color: null;
-font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">file.path</span>(top_output_dir, <span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"01.00-E-Peve-RNAseq-trimming-fastp-FastQC-MultiQC"</span>)</span>
-<span id="cb2-14"></span>
-<span id="cb2-15"></span>
-<span id="cb2-16"><span class="co" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;"># FILES</span></span>
-<span id="cb2-17">bam_alignment <span class="ot" style="color: #003B4F;
-background-color: null;
-font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">file.path</span>(top_output_dir, <span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"02.20-E-Peve-RNAseq-alignment-HiSat2"</span>, <span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"sorted-bams-merged.bam"</span>)</span>
-<span id="cb2-18"></span>
-<span id="cb2-19"><span class="do" style="color: #5E5E5E;
-background-color: null;
-font-style: italic;">## Path for genome will be relative to PASA output dir</span></span>
-<span id="cb2-20">genome_fasta <span class="ot" style="color: #003B4F;
-background-color: null;
-font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">file.path</span>(<span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">".."</span>, <span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">".."</span>, <span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">".."</span>, <span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"data"</span>, <span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"Porites_evermanni_v1.fa"</span>)</span>
-<span id="cb2-21">genome_gff <span class="ot" style="color: #003B4F;
-background-color: null;
-font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">file.path</span>(<span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">".."</span>, <span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"data"</span>, <span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"Porites_evermanni_validated.gff3"</span>)</span>
-<span id="cb2-22">denovo_assembly_name <span class="ot" style="color: #003B4F;
-background-color: null;
-font-style: inherit;">&lt;-</span> <span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"peve-denovo-Trinity"</span></span>
-<span id="cb2-23">genome_guided_assembly_name <span class="ot" style="color: #003B4F;
-background-color: null;
-font-style: inherit;">&lt;-</span> <span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"peve-GG-Trinity"</span></span>
-<span id="cb2-24">pasa_container <span class="ot" style="color: #003B4F;
-background-color: null;
-font-style: inherit;">&lt;-</span> <span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"pasapipeline.v2.5.3.simg"</span></span>
-<span id="cb2-25">stringtie_gtf <span class="ot" style="color: #003B4F;
-background-color: null;
-font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">file.path</span>(stringtie_gtf_dir, <span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"Porites_evermanni_v1.stringtie.gtf"</span>)</span>
-<span id="cb2-26"></span>
-<span id="cb2-27"><span class="co" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">#SETTINGS</span></span>
-<span id="cb2-28"><span class="do" style="color: #5E5E5E;
-background-color: null;
-font-style: italic;">## THREADS</span></span>
-<span id="cb2-29">threads <span class="ot" style="color: #003B4F;
-background-color: null;
-font-style: inherit;">&lt;-</span> <span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"44"</span></span>
-<span id="cb2-30"></span>
-<span id="cb2-31"><span class="do" style="color: #5E5E5E;
-background-color: null;
-font-style: italic;">## MAX RAM</span></span>
-<span id="cb2-32">max_ram <span class="ot" style="color: #003B4F;
-background-color: null;
-font-style: inherit;">&lt;-</span> <span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"100G"</span></span>
-<span id="cb2-33"></span>
-<span id="cb2-34"><span class="co" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;"># PROGRAMS</span></span>
-<span id="cb2-35">samtools <span class="ot" style="color: #003B4F;
-background-color: null;
-font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">file.path</span>(<span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"/home"</span>, <span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"shared"</span>, <span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"samtools-1.12"</span>, <span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"samtools"</span>)</span>
-<span id="cb2-36"></span>
-<span id="cb2-37"></span>
-<span id="cb2-38"><span class="co" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;"># FORMATTING</span></span>
-<span id="cb2-39">line <span class="ot" style="color: #003B4F;
-background-color: null;
-font-style: inherit;">&lt;-</span> <span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"-----------------------------------------------"</span></span>
-<span id="cb2-40"></span>
-<span id="cb2-41"><span class="co" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;"># Export these as environment variables for bash chunks.</span></span>
-<span id="cb2-42"><span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">Sys.setenv</span>(</span>
-<span id="cb2-43">  <span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">bam_alignment =</span> bam_alignment,</span>
-<span id="cb2-44">  <span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">denovo_assembly_name =</span> denovo_assembly_name,</span>
-<span id="cb2-45">  <span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">de_novo_output_dir =</span> de_novo_output_dir,</span>
-<span id="cb2-46">  <span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">genome_fasta =</span> genome_fasta,</span>
-<span id="cb2-47">  <span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">genome_gff =</span> genome_gff,</span>
-<span id="cb2-48">  <span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">genome_guided_assembly_name =</span> genome_guided_assembly_name,</span>
-<span id="cb2-49">  <span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">genome_guided_output_dir =</span> genome_guided_output_dir,</span>
-<span id="cb2-50">  <span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">line =</span> line,</span>
-<span id="cb2-51">  <span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">max_ram =</span> max_ram,</span>
-<span id="cb2-52">  <span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">output_dir =</span> output_dir,</span>
-<span id="cb2-53">  <span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">top_output_dir =</span> top_output_dir,</span>
-<span id="cb2-54">  <span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">pasa_bed =</span> pasa_bed,</span>
-<span id="cb2-55">  <span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">pasa_container =</span> pasa_container,</span>
-<span id="cb2-56">  <span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">pasa_container_dir =</span> pasa_container_dir,</span>
-<span id="cb2-57">  <span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">pasa_gff =</span> pasa_gff,</span>
-<span id="cb2-58">  <span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">PASA_HOME =</span> PASA_HOME,</span>
-<span id="cb2-59">  <span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">pasa_output_dir =</span> pasa_output_dir,</span>
-<span id="cb2-60">  <span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">samtools =</span> samtools,</span>
-<span id="cb2-61">  <span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">stringtie_gtf_dir =</span> stringtie_gtf_dir,</span>
-<span id="cb2-62">  <span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">stringtie_gtf =</span> stringtie_gtf,</span>
-<span id="cb2-63">  <span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">threads =</span> threads,</span>
-<span id="cb2-64">  <span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">trimmed_reads_dir =</span> trimmed_reads_dir</span>
-<span id="cb2-65">)</span></code></pre></div>
-</section>
-</section>
-<section id="de-novo-assembly" class="level1">
-<h1>3 DE NOVO ASSEMBLY</h1>
-<section id="run-trinity" class="level2">
-<h2 class="anchored" data-anchor-id="run-trinity">3.1 Run Trinity</h2>
-<p>Trinity was run using the <a href="https://github.com/trinityrnaseq/trinityrnaseq/wiki/Trinity-in-Docker#running-trinity-using-singularity">Trinity Singularity (Apptainer) container</a>, <code>trinityrnaseq.v2.15.2.simg</code> from the <code>urol-e5/timeseries_molecular/E-Peve/code/</code> directory.</p>
-<p>This was done in a terminal, outside of this notebook.</p>
-<section id="set-bash-variables" class="level3">
-<h3 class="anchored" data-anchor-id="set-bash-variables">3.1.1 Set Bash variables</h3>
-<div class="sourceCode" id="cb3" style="background: #f1f3f5;"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb3-1"><span class="co" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;"># Directories</span></span>
-<span id="cb3-2"><span class="va" style="color: #111111;
-background-color: null;
-font-style: inherit;">top_output_dir</span><span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">=</span><span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"../output"</span></span>
-<span id="cb3-3"></span>
-<span id="cb3-4"><span class="va" style="color: #111111;
-background-color: null;
-font-style: inherit;">output_dir</span><span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">=</span><span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"</span><span class="va" style="color: #111111;
-background-color: null;
-font-style: inherit;">${top_output_dir}</span><span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">/00.30-E-Peve-transcriptome-assembly-Trinity"</span></span>
-<span id="cb3-5"><span class="va" style="color: #111111;
-background-color: null;
-font-style: inherit;">de_novo_output_dir</span><span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">=</span><span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"</span><span class="va" style="color: #111111;
-background-color: null;
-font-style: inherit;">${output_dir}</span><span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">/de_novo_assembly"</span></span>
-<span id="cb3-6"><span class="va" style="color: #111111;
-background-color: null;
-font-style: inherit;">genome_guided_output_dir</span><span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">=</span><span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"</span><span class="va" style="color: #111111;
-background-color: null;
-font-style: inherit;">${output_dir}</span><span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">/genome_guided_assembly"</span></span>
-<span id="cb3-7"><span class="va" style="color: #111111;
-background-color: null;
-font-style: inherit;">trimmed_reads_dir</span><span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">=</span><span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"</span><span class="va" style="color: #111111;
-background-color: null;
-font-style: inherit;">${top_output_dir}</span><span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">/01.00-E-Peve-RNAseq-trimming-fastp-FastQC-MultiQC"</span></span>
-<span id="cb3-8"></span>
-<span id="cb3-9"><span class="co" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;"># PASA INPUT FILES</span></span>
-<span id="cb3-10"><span class="co" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">####### NEED TO BE RELATIVE TO PASA SUBDIRECTORY #######</span></span>
-<span id="cb3-11"><span class="va" style="color: #111111;
-background-color: null;
-font-style: inherit;">genome_fasta</span><span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">=</span><span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"../../../data/Porites_evermanni_v1.fa"</span></span>
-<span id="cb3-12"><span class="va" style="color: #111111;
-background-color: null;
-font-style: inherit;">genome_gff</span><span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">=</span><span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"../../../data/Porites_evermanni_validated.gff3"</span></span>
-<span id="cb3-13"><span class="va" style="color: #111111;
-background-color: null;
-font-style: inherit;">pasa_container</span><span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">=</span><span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"pasapipeline.v2.5.3.simg"</span></span>
-<span id="cb3-14"><span class="va" style="color: #111111;
-background-color: null;
-font-style: inherit;">PASA_HOME</span><span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">=</span><span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"/usr/local/src/PASApipeline"</span></span>
-<span id="cb3-15"><span class="va" style="color: #111111;
-background-color: null;
-font-style: inherit;">stringtie_gtf</span><span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">=</span><span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"../../02.20-E-Peve-RNAseq-alignment-HiSat2/Porites_evermanni_v1.stringtie.gtf"</span></span>
-<span id="cb3-16"></span>
-<span id="cb3-17"><span class="co" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">## THREADS</span></span>
-<span id="cb3-18"><span class="va" style="color: #111111;
-background-color: null;
-font-style: inherit;">threads</span><span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">=</span><span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"44"</span></span>
-<span id="cb3-19"></span>
-<span id="cb3-20"><span class="co" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">## MAX RAM</span></span>
-<span id="cb3-21"><span class="va" style="color: #111111;
-background-color: null;
-font-style: inherit;">max_ram</span><span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">=</span><span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"100G"</span></span>
-<span id="cb3-22"></span>
-<span id="cb3-23"><span class="co" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;"># Make output directoy, if it doesn't exist</span></span>
-<span id="cb3-24"><span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">mkdir</span> <span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">--parents</span> <span class="va" style="color: #111111;
-background-color: null;
-font-style: inherit;">${de_novo_output_dir}</span></span>
-<span id="cb3-25"></span>
-<span id="cb3-26"><span class="co" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">## Inititalize arrays</span></span>
-<span id="cb3-27"><span class="va" style="color: #111111;
-background-color: null;
-font-style: inherit;">R1_array</span><span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">=</span><span class="va" style="color: #111111;
-background-color: null;
-font-style: inherit;">()</span></span>
-<span id="cb3-28"><span class="va" style="color: #111111;
-background-color: null;
-font-style: inherit;">R2_array</span><span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">=</span><span class="va" style="color: #111111;
-background-color: null;
-font-style: inherit;">()</span></span>
-<span id="cb3-29"></span>
-<span id="cb3-30"><span class="co" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;"># Variables for R1/R2 lists</span></span>
-<span id="cb3-31"><span class="va" style="color: #111111;
-background-color: null;
-font-style: inherit;">R1_list</span><span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">=</span><span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">""</span></span>
-<span id="cb3-32"><span class="va" style="color: #111111;
-background-color: null;
-font-style: inherit;">R2_list</span><span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">=</span><span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">""</span></span>
-<span id="cb3-33"></span>
-<span id="cb3-34"><span class="co" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;"># Create array of fastq R1 files</span></span>
-<span id="cb3-35"><span class="va" style="color: #111111;
-background-color: null;
-font-style: inherit;">R1_array</span><span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">=</span><span class="va" style="color: #111111;
-background-color: null;
-font-style: inherit;">(${trimmed_reads_dir}</span>/<span class="pp" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">*</span>R1_001.fastp-trim.fq.gz<span class="va" style="color: #111111;
-background-color: null;
-font-style: inherit;">)</span></span>
-<span id="cb3-36"></span>
-<span id="cb3-37"><span class="co" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;"># Create array of fastq R2 files</span></span>
-<span id="cb3-38"><span class="va" style="color: #111111;
-background-color: null;
-font-style: inherit;">R2_array</span><span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">=</span><span class="va" style="color: #111111;
-background-color: null;
-font-style: inherit;">(${trimmed_reads_dir}</span>/<span class="pp" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">*</span>R2_001.fastp-trim.fq.gz<span class="va" style="color: #111111;
-background-color: null;
-font-style: inherit;">)</span></span>
-<span id="cb3-39"></span>
-<span id="cb3-40"><span class="co" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;"># Create list of fastq files used in analysis</span></span>
-<span id="cb3-41"><span class="co" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">## Uses parameter substitution to strip leading path from filename</span></span>
-<span id="cb3-42"><span class="cf" style="color: #003B4F;
-background-color: null;
-font-weight: bold;
-font-style: inherit;">if</span> <span class="bu" style="color: null;
-background-color: null;
-font-style: inherit;">[</span> <span class="ot" style="color: #003B4F;
-background-color: null;
-font-style: inherit;">!</span> <span class="ot" style="color: #003B4F;
-background-color: null;
-font-style: inherit;">-f</span> <span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"</span><span class="va" style="color: #111111;
-background-color: null;
-font-style: inherit;">${de_novo_output_dir}</span><span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">/fastq.list.txt"</span> <span class="bu" style="color: null;
-background-color: null;
-font-style: inherit;">]</span><span class="kw" style="color: #003B4F;
-background-color: null;
-font-weight: bold;
-font-style: inherit;">;</span> <span class="cf" style="color: #003B4F;
-background-color: null;
-font-weight: bold;
-font-style: inherit;">then</span></span>
-<span id="cb3-43">  <span class="cf" style="color: #003B4F;
-background-color: null;
-font-weight: bold;
-font-style: inherit;">for</span> fastq <span class="kw" style="color: #003B4F;
-background-color: null;
-font-weight: bold;
-font-style: inherit;">in</span> <span class="va" style="color: #111111;
-background-color: null;
-font-style: inherit;">${trimmed_reads_dir}</span>/<span class="pp" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">*</span>.fq.gz</span>
-<span id="cb3-44">  <span class="cf" style="color: #003B4F;
-background-color: null;
-font-weight: bold;
-font-style: inherit;">do</span></span>
-<span id="cb3-45">    <span class="bu" style="color: null;
-background-color: null;
-font-style: inherit;">echo</span> <span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"</span><span class="va" style="color: #111111;
-background-color: null;
-font-style: inherit;">${fastq</span><span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">##</span><span class="pp" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">*</span>/<span class="va" style="color: #111111;
-background-color: null;
-font-style: inherit;">}</span><span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"</span> <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">&gt;&gt;</span> <span class="va" style="color: #111111;
-background-color: null;
-font-style: inherit;">${de_novo_output_dir}</span>/fastq.list.txt</span>
-<span id="cb3-46">  <span class="cf" style="color: #003B4F;
-background-color: null;
-font-weight: bold;
-font-style: inherit;">done</span></span>
-<span id="cb3-47"><span class="cf" style="color: #003B4F;
-background-color: null;
-font-weight: bold;
-font-style: inherit;">fi</span></span>
-<span id="cb3-48"></span>
-<span id="cb3-49"><span class="co" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;"># Create comma-separated lists of FastQ reads</span></span>
-<span id="cb3-50"><span class="va" style="color: #111111;
-background-color: null;
-font-style: inherit;">R1_list</span><span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">=</span><span class="va" style="color: #111111;
-background-color: null;
-font-style: inherit;">$(</span><span class="bu" style="color: null;
-background-color: null;
-font-style: inherit;">echo</span> <span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"</span><span class="va" style="color: #111111;
-background-color: null;
-font-style: inherit;">${R1_array</span><span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">[@]</span><span class="va" style="color: #111111;
-background-color: null;
-font-style: inherit;">}</span><span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"</span> <span class="kw" style="color: #003B4F;
-background-color: null;
-font-weight: bold;
-font-style: inherit;">|</span> <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">tr</span> <span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">" "</span> <span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">","</span><span class="va" style="color: #111111;
-background-color: null;
-font-style: inherit;">)</span></span>
-<span id="cb3-51"><span class="va" style="color: #111111;
-background-color: null;
-font-style: inherit;">R2_list</span><span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">=</span><span class="va" style="color: #111111;
-background-color: null;
-font-style: inherit;">$(</span><span class="bu" style="color: null;
-background-color: null;
-font-style: inherit;">echo</span> <span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"</span><span class="va" style="color: #111111;
-background-color: null;
-font-style: inherit;">${R2_array</span><span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">[@]</span><span class="va" style="color: #111111;
-background-color: null;
-font-style: inherit;">}</span><span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"</span> <span class="kw" style="color: #003B4F;
-background-color: null;
-font-weight: bold;
-font-style: inherit;">|</span> <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">tr</span> <span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">" "</span> <span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">","</span><span class="va" style="color: #111111;
-background-color: null;
-font-style: inherit;">)</span></span></code></pre></div>
-</section>
-<section id="run-trinity-singularity-image." class="level3">
-<h3 class="anchored" data-anchor-id="run-trinity-singularity-image.">3.1.2 Run Trinity Singularity image.</h3>
-<p>Used “stranded” setting (–SS_lib_type).</p>
-<div class="sourceCode" id="cb4" style="background: #f1f3f5;"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb4-1"><span class="ex" style="color: null;
-background-color: null;
-font-style: inherit;">singularity</span> exec <span class="dt" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">\</span></span>
-<span id="cb4-2">-B /home <span class="dt" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">\</span></span>
-<span id="cb4-3">-e trinityrnaseq.v2.15.2.simg <span class="dt" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">\</span></span>
-<span id="cb4-4">Trinity <span class="dt" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">\</span></span>
-<span id="cb4-5">--seqType fq <span class="dt" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">\</span></span>
-<span id="cb4-6">--max_memory <span class="va" style="color: #111111;
-background-color: null;
-font-style: inherit;">${max_ram}</span> <span class="dt" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">\</span></span>
-<span id="cb4-7">--CPU <span class="va" style="color: #111111;
-background-color: null;
-font-style: inherit;">${threads}</span> <span class="dt" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">\</span></span>
-<span id="cb4-8">--SS_lib_type RF <span class="dt" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">\</span></span>
-<span id="cb4-9">--left <span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"</span><span class="va" style="color: #111111;
-background-color: null;
-font-style: inherit;">${R1_list}</span><span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"</span> <span class="dt" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">\</span></span>
-<span id="cb4-10">--right <span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"</span><span class="va" style="color: #111111;
-background-color: null;
-font-style: inherit;">${R2_list}</span><span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"</span> <span class="dt" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">\</span></span>
-<span id="cb4-11">--output <span class="va" style="color: #111111;
-background-color: null;
-font-style: inherit;">${de_novo_output_dir}</span>/trinity_out_dir <span class="dt" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">\</span></span>
-<span id="cb4-12">--full_cleanup <span class="dt" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">\</span></span>
-<span id="cb4-13"><span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">&gt;</span> <span class="va" style="color: #111111;
-background-color: null;
-font-style: inherit;">${de_novo_output_dir}</span>/trinity.log <span class="dt" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">\</span></span>
-<span id="cb4-14">2<span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">&gt;&amp;</span><span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">1</span></span></code></pre></div>
-</section>
-</section>
-<section id="rename-output-files" class="level2">
-<h2 class="anchored" data-anchor-id="rename-output-files">3.2 Rename output files</h2>
-<section id="rename-fasta" class="level3">
-<h3 class="anchored" data-anchor-id="rename-fasta">3.2.1 Rename FastA</h3>
-<div class="sourceCode" id="cb5" style="background: #f1f3f5;"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb5-1"><span class="co" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;"># Rename generic assembly FastA</span></span>
-<span id="cb5-2"><span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">mv</span> <span class="va" style="color: #111111;
-background-color: null;
-font-style: inherit;">${de_novo_output_dir}</span>/trinity_out_dir.Trinity.fasta <span class="dt" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">\</span></span>
-<span id="cb5-3"><span class="va" style="color: #111111;
-background-color: null;
-font-style: inherit;">${de_novo_output_dir}</span>/<span class="va" style="color: #111111;
-background-color: null;
-font-style: inherit;">${denovo_assembly_name}</span>.fasta</span></code></pre></div>
-</section>
-<section id="rename-gene-map-and-log" class="level3">
-<h3 class="anchored" data-anchor-id="rename-gene-map-and-log">3.2.2 Rename gene map and log</h3>
-<div class="sourceCode" id="cb6" style="background: #f1f3f5;"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb6-1"><span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">mv</span> <span class="va" style="color: #111111;
-background-color: null;
-font-style: inherit;">${de_novo_output_dir}</span>/trinity_out_dir.Trinity.fasta.gene_trans_map <span class="dt" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">\</span></span>
-<span id="cb6-2"><span class="va" style="color: #111111;
-background-color: null;
-font-style: inherit;">${de_novo_output_dir}</span>/<span class="va" style="color: #111111;
-background-color: null;
-font-style: inherit;">${denovo_assembly_name}</span>.gene_trans_map</span>
-<span id="cb6-3"></span>
-<span id="cb6-4"><span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">mv</span> <span class="va" style="color: #111111;
-background-color: null;
-font-style: inherit;">${de_novo_output_dir}</span>/trinity.log <span class="dt" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">\</span></span>
-<span id="cb6-5"><span class="va" style="color: #111111;
-background-color: null;
-font-style: inherit;">${de_novo_output_dir}</span>/<span class="va" style="color: #111111;
-background-color: null;
-font-style: inherit;">${denovo_assembly_name}</span>.log</span></code></pre></div>
-</section>
-<section id="assembly-stats" class="level3">
-<h3 class="anchored" data-anchor-id="assembly-stats">3.2.3 Assembly stats</h3>
-<section id="run-trinity-singularity-image.-1" class="level4">
-<h4 class="anchored" data-anchor-id="run-trinity-singularity-image.-1">3.2.3.1 Run Trinity Singularity image.</h4>
-<div class="sourceCode" id="cb7" style="background: #f1f3f5;"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb7-1"><span class="ex" style="color: null;
-background-color: null;
-font-style: inherit;">singularity</span> exec <span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">-B</span> /home <span class="dt" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">\</span></span>
-<span id="cb7-2">-e trinityrnaseq.v2.15.2.simg <span class="dt" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">\</span></span>
-<span id="cb7-3">/usr/local/bin/util/TrinityStats.pl <span class="dt" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">\</span></span>
-<span id="cb7-4">../output/00.30-E-Peve-transcriptome-assembly-Trinity/de_novo_assembly/peve-denovo-Trinity.fasta <span class="dt" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">\</span></span>
-<span id="cb7-5"><span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">&gt;</span> ../output/00.30-E-Peve-transcriptome-assembly-Trinity/de_novo_assembly/peve-denovo-Trinity.stats</span></code></pre></div>
-</section>
-</section>
-</section>
-<section id="create-fasta-index" class="level2">
-<h2 class="anchored" data-anchor-id="create-fasta-index">3.3 Create FastA index</h2>
-<div class="sourceCode" id="cb8" style="background: #f1f3f5;"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb8-1"><span class="va" style="color: #111111;
-background-color: null;
-font-style: inherit;">${samtools}</span> faidx <span class="dt" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">\</span></span>
-<span id="cb8-2"><span class="va" style="color: #111111;
-background-color: null;
-font-style: inherit;">${de_novo_output_dir}</span>/<span class="va" style="color: #111111;
-background-color: null;
-font-style: inherit;">${denovo_assembly_name}</span>.fasta</span></code></pre></div>
-</section>
-<section id="checksums" class="level2">
-<h2 class="anchored" data-anchor-id="checksums">3.4 Checksums</h2>
-<div class="sourceCode" id="cb9" style="background: #f1f3f5;"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb9-1"><span class="bu" style="color: null;
-background-color: null;
-font-style: inherit;">cd</span> <span class="va" style="color: #111111;
-background-color: null;
-font-style: inherit;">${de_novo_output_dir}</span></span>
-<span id="cb9-2"></span>
-<span id="cb9-3"><span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">md5sum</span> <span class="va" style="color: #111111;
-background-color: null;
-font-style: inherit;">${denovo_assembly_name}</span>.fasta <span class="kw" style="color: #003B4F;
-background-color: null;
-font-weight: bold;
-font-style: inherit;">|</span> <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">tee</span> <span class="va" style="color: #111111;
-background-color: null;
-font-style: inherit;">${denovo_assembly_name}</span>.fasta.md5</span></code></pre></div>
-<pre><code>72835974384b1693cad623628ae9315c  peve-denovo-Trinity.fasta</code></pre>
-</section>
-</section>
-<section id="genome-guided-assembly" class="level1">
-<h1>4 GENOME-GUIDED ASSEMBLY</h1>
-<p>Trinity was run using the <a href="https://github.com/trinityrnaseq/trinityrnaseq/wiki/Trinity-in-Docker#running-trinity-using-singularity">Trinity Singularity (Apptainer) container</a>, <code>trinityrnaseq.v2.15.2.simg</code> from the <code>urol-e5/timeseries_molecular/E-Peve/code/</code> directory.</p>
-<p>This was done in a terminal, outside of this notebook.</p>
-<div class="sourceCode" id="cb11" style="background: #f1f3f5;"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb11-1"><span class="ex" style="color: null;
-background-color: null;
-font-style: inherit;">singularity</span> exec <span class="dt" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">\</span></span>
-<span id="cb11-2">-B /home <span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">-e</span> trinityrnaseq.v2.15.2.simg <span class="dt" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">\</span></span>
-<span id="cb11-3">Trinity <span class="dt" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">\</span></span>
-<span id="cb11-4">--genome_guided_bam ../output/02.20-E-Peve-RNAseq-alignment-HiSat2/sorted-bams-merged.bam <span class="dt" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">\</span></span>
-<span id="cb11-5">--genome_guided_max_intron 10000 <span class="dt" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">\</span></span>
-<span id="cb11-6">--max_memory <span class="va" style="color: #111111;
-background-color: null;
-font-style: inherit;">${max_ram}</span> <span class="dt" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">\</span></span>
-<span id="cb11-7">--CPU <span class="va" style="color: #111111;
-background-color: null;
-font-style: inherit;">${threads}</span> <span class="dt" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">\</span></span>
-<span id="cb11-8">--SS_lib_type RF <span class="dt" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">\</span></span>
-<span id="cb11-9">--output <span class="va" style="color: #111111;
-background-color: null;
-font-style: inherit;">${genome_guided_output_dir}</span>/trinity_out_dir <span class="dt" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">\</span></span>
-<span id="cb11-10">--full_cleanup <span class="dt" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">\</span></span>
-<span id="cb11-11"><span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">&gt;</span> <span class="va" style="color: #111111;
-background-color: null;
-font-style: inherit;">${genome_guided_output_dir}</span>/trinity.log <span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">2</span><span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">&gt;&amp;</span><span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">1</span></span></code></pre></div>
-<section id="rename-output-files-1" class="level2">
-<h2 class="anchored" data-anchor-id="rename-output-files-1">4.1 Rename output files</h2>
-<section id="rename-fasta-1" class="level3">
-<h3 class="anchored" data-anchor-id="rename-fasta-1">4.1.1 Rename FastA</h3>
-<div class="sourceCode" id="cb12" style="background: #f1f3f5;"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb12-1"><span class="co" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;"># Rename generic assembly FastA</span></span>
-<span id="cb12-2"><span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">mv</span> <span class="va" style="color: #111111;
-background-color: null;
-font-style: inherit;">${genome_guided_output_dir}</span>/trinity_out_dir.Trinity-GG.fasta <span class="dt" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">\</span></span>
-<span id="cb12-3"><span class="va" style="color: #111111;
-background-color: null;
-font-style: inherit;">${genome_guided_output_dir}</span>/<span class="va" style="color: #111111;
-background-color: null;
-font-style: inherit;">${genome_guided_assembly_name}</span>.fasta</span></code></pre></div>
-</section>
-<section id="rename-gene-map-and-log-1" class="level3">
-<h3 class="anchored" data-anchor-id="rename-gene-map-and-log-1">4.1.2 Rename gene map and log</h3>
-<div class="sourceCode" id="cb13" style="background: #f1f3f5;"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb13-1"><span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">mv</span> <span class="va" style="color: #111111;
-background-color: null;
-font-style: inherit;">${genome_guided_output_dir}</span>/trinity_out_dir.Trinity-GG.fasta.gene_trans_map <span class="dt" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">\</span></span>
-<span id="cb13-2"><span class="va" style="color: #111111;
-background-color: null;
-font-style: inherit;">${genome_guided_output_dir}</span>/<span class="va" style="color: #111111;
-background-color: null;
-font-style: inherit;">${genome_guided_assembly_name}</span>.gene_trans_map</span>
-<span id="cb13-3"></span>
-<span id="cb13-4"><span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">mv</span> <span class="va" style="color: #111111;
-background-color: null;
-font-style: inherit;">${genome_guided_output_dir}</span>/trinity.log <span class="dt" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">\</span></span>
-<span id="cb13-5"><span class="va" style="color: #111111;
-background-color: null;
-font-style: inherit;">${genome_guided_output_dir}</span>/<span class="va" style="color: #111111;
-background-color: null;
-font-style: inherit;">${genome_guided_assembly_name}</span>.log</span></code></pre></div>
-</section>
-</section>
-<section id="create-fasta-index-1" class="level2">
-<h2 class="anchored" data-anchor-id="create-fasta-index-1">4.2 Create FastA index</h2>
-<div class="sourceCode" id="cb14" style="background: #f1f3f5;"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb14-1"><span class="va" style="color: #111111;
-background-color: null;
-font-style: inherit;">${samtools}</span> faidx <span class="dt" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">\</span></span>
-<span id="cb14-2"><span class="va" style="color: #111111;
-background-color: null;
-font-style: inherit;">${genome_guided_output_dir}</span>/<span class="va" style="color: #111111;
-background-color: null;
-font-style: inherit;">${genome_guided_assembly_name}</span>.fasta</span></code></pre></div>
-</section>
-<section id="checksums-1" class="level2">
-<h2 class="anchored" data-anchor-id="checksums-1">4.3 Checksums</h2>
-<div class="sourceCode" id="cb15" style="background: #f1f3f5;"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb15-1"><span class="bu" style="color: null;
-background-color: null;
-font-style: inherit;">cd</span> <span class="va" style="color: #111111;
-background-color: null;
-font-style: inherit;">${genome_guided_output_dir}</span></span>
-<span id="cb15-2"></span>
-<span id="cb15-3"><span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">md5sum</span> <span class="va" style="color: #111111;
-background-color: null;
-font-style: inherit;">${genome_guided_assembly_name}</span>.fasta <span class="kw" style="color: #003B4F;
-background-color: null;
-font-weight: bold;
-font-style: inherit;">|</span> <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">tee</span> <span class="va" style="color: #111111;
-background-color: null;
-font-style: inherit;">${genome_guided_assembly_name}</span>.fasta.md5</span></code></pre></div>
-<pre><code>d60d91acf9621a424fe61c1dbfc2d875  peve-GG-Trinity.fasta</code></pre>
-<section id="assembly-stats-1" class="level3">
-<h3 class="anchored" data-anchor-id="assembly-stats-1">4.3.1 Assembly stats</h3>
-<section id="run-trinity-singularity-image.-2" class="level4">
-<h4 class="anchored" data-anchor-id="run-trinity-singularity-image.-2">4.3.1.1 Run Trinity Singularity image.</h4>
-<div class="sourceCode" id="cb17" style="background: #f1f3f5;"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb17-1"><span class="ex" style="color: null;
-background-color: null;
-font-style: inherit;">singularity</span> exec <span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">-B</span> /home <span class="dt" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">\</span></span>
-<span id="cb17-2">-e trinityrnaseq.v2.15.2.simg <span class="dt" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">\</span></span>
-<span id="cb17-3">/usr/local/bin/util/TrinityStats.pl <span class="dt" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">\</span></span>
-<span id="cb17-4">../output/00.30-E-Peve-transcriptome-assembly-Trinity/genome_guided_assembly/peve-GG-Trinity.fasta <span class="dt" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">\</span></span>
-<span id="cb17-5"><span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">&gt;</span> ../output/00.30-E-Peve-transcriptome-assembly-Trinity/genome_guided_assembly/peve-GG-Trinity.stats</span></code></pre></div>
-</section>
-</section>
-</section>
-</section>
-<section id="pasa-pipeline" class="level1">
-<h1>5 PASA PIPELINE</h1>
-<section id="concatenate-trinity-assemblies" class="level2">
-<h2 class="anchored" data-anchor-id="concatenate-trinity-assemblies">5.1 Concatenate Trinity assemblies</h2>
-<div class="sourceCode" id="cb18" style="background: #f1f3f5;"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb18-1"><span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">cat</span> <span class="va" style="color: #111111;
-background-color: null;
-font-style: inherit;">${de_novo_output_dir}</span>/<span class="va" style="color: #111111;
-background-color: null;
-font-style: inherit;">${denovo_assembly_name}</span>.fasta <span class="dt" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">\</span></span>
-<span id="cb18-2"><span class="va" style="color: #111111;
-background-color: null;
-font-style: inherit;">${genome_guided_output_dir}</span>/<span class="va" style="color: #111111;
-background-color: null;
-font-style: inherit;">${genome_guided_assembly_name}</span>.fasta <span class="dt" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">\</span></span>
-<span id="cb18-3"><span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">&gt;</span> <span class="va" style="color: #111111;
-background-color: null;
-font-style: inherit;">${pasa_output_dir}</span>/transcripts.fasta</span></code></pre></div>
-<section id="confirm-counts" class="level3">
-<h3 class="anchored" data-anchor-id="confirm-counts">5.1.1 Confirm counts</h3>
-<div class="sourceCode" id="cb19" style="background: #f1f3f5;"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb19-1"><span class="co" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;"># Count transcripts in each file</span></span>
-<span id="cb19-2"><span class="va" style="color: #111111;
-background-color: null;
-font-style: inherit;">denovo_count</span><span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">=</span><span class="va" style="color: #111111;
-background-color: null;
-font-style: inherit;">$(</span><span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">grep</span> <span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">-c</span> <span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"^&gt;"</span> <span class="va" style="color: #111111;
-background-color: null;
-font-style: inherit;">${de_novo_output_dir}</span>/<span class="va" style="color: #111111;
-background-color: null;
-font-style: inherit;">${denovo_assembly_name}</span>.fasta<span class="va" style="color: #111111;
-background-color: null;
-font-style: inherit;">)</span></span>
-<span id="cb19-3"><span class="va" style="color: #111111;
-background-color: null;
-font-style: inherit;">genome_guided_count</span><span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">=</span><span class="va" style="color: #111111;
-background-color: null;
-font-style: inherit;">$(</span><span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">grep</span> <span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">-c</span> <span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"^&gt;"</span> <span class="va" style="color: #111111;
-background-color: null;
-font-style: inherit;">${genome_guided_output_dir}</span>/<span class="va" style="color: #111111;
-background-color: null;
-font-style: inherit;">${genome_guided_assembly_name}</span>.fasta<span class="va" style="color: #111111;
-background-color: null;
-font-style: inherit;">)</span></span>
-<span id="cb19-4"><span class="va" style="color: #111111;
-background-color: null;
-font-style: inherit;">pasa_count</span><span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">=</span><span class="va" style="color: #111111;
-background-color: null;
-font-style: inherit;">$(</span><span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">grep</span> <span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">-c</span> <span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"^&gt;"</span> <span class="va" style="color: #111111;
-background-color: null;
-font-style: inherit;">${pasa_output_dir}</span>/transcripts.fasta<span class="va" style="color: #111111;
-background-color: null;
-font-style: inherit;">)</span></span>
-<span id="cb19-5"></span>
-<span id="cb19-6"><span class="co" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;"># Calculate sum of first two counts</span></span>
-<span id="cb19-7"><span class="va" style="color: #111111;
-background-color: null;
-font-style: inherit;">sum</span><span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">=</span><span class="va" style="color: #111111;
-background-color: null;
-font-style: inherit;">$((denovo_count</span> <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">+</span> <span class="va" style="color: #111111;
-background-color: null;
-font-style: inherit;">genome_guided_count))</span></span>
-<span id="cb19-8"></span>
-<span id="cb19-9"><span class="co" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;"># Compare sum to PASA count</span></span>
-<span id="cb19-10"><span class="bu" style="color: null;
-background-color: null;
-font-style: inherit;">echo</span> <span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"De novo count: </span><span class="va" style="color: #111111;
-background-color: null;
-font-style: inherit;">$denovo_count</span><span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"</span></span>
-<span id="cb19-11"><span class="bu" style="color: null;
-background-color: null;
-font-style: inherit;">echo</span> <span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"Genome-guided count: </span><span class="va" style="color: #111111;
-background-color: null;
-font-style: inherit;">$genome_guided_count</span><span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"</span></span>
-<span id="cb19-12"><span class="bu" style="color: null;
-background-color: null;
-font-style: inherit;">echo</span> <span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"Sum: </span><span class="va" style="color: #111111;
-background-color: null;
-font-style: inherit;">$sum</span><span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"</span></span>
-<span id="cb19-13"><span class="bu" style="color: null;
-background-color: null;
-font-style: inherit;">echo</span> <span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"PASA count: </span><span class="va" style="color: #111111;
-background-color: null;
-font-style: inherit;">$pasa_count</span><span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"</span></span>
-<span id="cb19-14"></span>
-<span id="cb19-15"><span class="cf" style="color: #003B4F;
-background-color: null;
-font-weight: bold;
-font-style: inherit;">if</span> <span class="bu" style="color: null;
-background-color: null;
-font-style: inherit;">[</span> <span class="va" style="color: #111111;
-background-color: null;
-font-style: inherit;">$sum</span> <span class="ot" style="color: #003B4F;
-background-color: null;
-font-style: inherit;">-eq</span> <span class="va" style="color: #111111;
-background-color: null;
-font-style: inherit;">$pasa_count</span> <span class="bu" style="color: null;
-background-color: null;
-font-style: inherit;">]</span><span class="kw" style="color: #003B4F;
-background-color: null;
-font-weight: bold;
-font-style: inherit;">;</span> <span class="cf" style="color: #003B4F;
-background-color: null;
-font-weight: bold;
-font-style: inherit;">then</span></span>
-<span id="cb19-16">    <span class="bu" style="color: null;
-background-color: null;
-font-style: inherit;">echo</span> <span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"✓ Counts match: </span><span class="va" style="color: #111111;
-background-color: null;
-font-style: inherit;">$sum</span><span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;"> = </span><span class="va" style="color: #111111;
-background-color: null;
-font-style: inherit;">$pasa_count</span><span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"</span></span>
-<span id="cb19-17"><span class="cf" style="color: #003B4F;
-background-color: null;
-font-weight: bold;
-font-style: inherit;">else</span></span>
-<span id="cb19-18">    <span class="bu" style="color: null;
-background-color: null;
-font-style: inherit;">echo</span> <span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"✗ Counts do not match: </span><span class="va" style="color: #111111;
-background-color: null;
-font-style: inherit;">$sum</span><span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;"> ≠ </span><span class="va" style="color: #111111;
-background-color: null;
-font-style: inherit;">$pasa_count</span><span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;"> (difference: </span><span class="va" style="color: #111111;
-background-color: null;
-font-style: inherit;">$((pasa_count</span> <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">-</span> <span class="va" style="color: #111111;
-background-color: null;
-font-style: inherit;">sum))</span><span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">)"</span></span>
-<span id="cb19-19"><span class="cf" style="color: #003B4F;
-background-color: null;
-font-weight: bold;
-font-style: inherit;">fi</span></span></code></pre></div>
-<pre><code>De novo count: 1065667
-Genome-guided count: 533664
-Sum: 1599331
-PASA count: 1599331
-✓ Counts match: 1599331 = 1599331</code></pre>
-</section>
-</section>
-<section id="extract-transcript-accessions" class="level2">
-<h2 class="anchored" data-anchor-id="extract-transcript-accessions">5.2 Extract transcript accessions</h2>
-<div class="sourceCode" id="cb21" style="background: #f1f3f5;"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb21-1"><span class="ex" style="color: null;
-background-color: null;
-font-style: inherit;">singularity</span> exec <span class="dt" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">\</span></span>
-<span id="cb21-2">-B /home <span class="dt" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">\</span></span>
-<span id="cb21-3">-e <span class="va" style="color: #111111;
-background-color: null;
-font-style: inherit;">${pasa_container_dir}</span>/<span class="va" style="color: #111111;
-background-color: null;
-font-style: inherit;">${pasa_container}</span> <span class="dt" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">\</span></span>
-<span id="cb21-4"><span class="va" style="color: #111111;
-background-color: null;
-font-style: inherit;">$PASA_HOME</span>/misc_utilities/accession_extractor.pl <span class="dt" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">\</span></span>
-<span id="cb21-5"><span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">&lt;</span> <span class="va" style="color: #111111;
-background-color: null;
-font-style: inherit;">${de_novo_output_dir}</span>/<span class="va" style="color: #111111;
-background-color: null;
-font-style: inherit;">${denovo_assembly_name}</span>.fasta <span class="dt" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">\</span></span>
-<span id="cb21-6"><span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">&gt;</span> <span class="va" style="color: #111111;
-background-color: null;
-font-style: inherit;">${pasa_output_dir}</span>/tdn.accs</span>
-<span id="cb21-7"></span>
-<span id="cb21-8"><span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">head</span> <span class="va" style="color: #111111;
-background-color: null;
-font-style: inherit;">${pasa_output_dir}</span>/tdn.accs</span></code></pre></div>
-</section>
-<section id="clean-transcripts" class="level2">
-<h2 class="anchored" data-anchor-id="clean-transcripts">5.3 Clean transcripts</h2>
-<div class="sourceCode" id="cb22" style="background: #f1f3f5;"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb22-1"><span class="bu" style="color: null;
-background-color: null;
-font-style: inherit;">cd</span> <span class="va" style="color: #111111;
-background-color: null;
-font-style: inherit;">${pasa_output_dir}</span></span>
-<span id="cb22-2"></span>
-<span id="cb22-3"><span class="ex" style="color: null;
-background-color: null;
-font-style: inherit;">singularity</span> exec <span class="dt" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">\</span></span>
-<span id="cb22-4">-B /home <span class="dt" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">\</span></span>
-<span id="cb22-5">-e <span class="dt" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">\</span></span>
-<span id="cb22-6">--env USER=<span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"</span><span class="va" style="color: #111111;
-background-color: null;
-font-style: inherit;">$USER</span><span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"</span> <span class="dt" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">\</span></span>
-<span id="cb22-7"><span class="va" style="color: #111111;
-background-color: null;
-font-style: inherit;">${pasa_container}</span> <span class="dt" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">\</span></span>
-<span id="cb22-8"><span class="va" style="color: #111111;
-background-color: null;
-font-style: inherit;">$PASA_HOME</span>/bin/seqclean <span class="dt" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">\</span></span>
-<span id="cb22-9">transcripts.fasta <span class="dt" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">\</span></span>
-<span id="cb22-10">-c 16</span></code></pre></div>
-</section>
-<section id="pasa-assembly" class="level2">
-<h2 class="anchored" data-anchor-id="pasa-assembly">5.4 PASA Assembly</h2>
-<section id="fix-schema-key-length" class="level3">
-<h3 class="anchored" data-anchor-id="fix-schema-key-length">5.4.1 Fix schema key length</h3>
-<div class="sourceCode" id="cb23" style="background: #f1f3f5;"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb23-1"><span class="bu" style="color: null;
-background-color: null;
-font-style: inherit;">cd</span> <span class="va" style="color: #111111;
-background-color: null;
-font-style: inherit;">${pasa_output_dir}</span></span>
-<span id="cb23-2"></span>
-<span id="cb23-3"><span class="co" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">#### Fix schema key length issue ####</span></span>
-<span id="cb23-4"><span class="ex" style="color: null;
-background-color: null;
-font-style: inherit;">singularity</span> exec <span class="va" style="color: #111111;
-background-color: null;
-font-style: inherit;">${pasa_container}</span> <span class="dt" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">\</span></span>
-<span id="cb23-5">cat /usr/local/src/PASApipeline/schema/cdna_alignment_mysqlschema <span class="dt" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">\</span></span>
-<span id="cb23-6"><span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">&gt;</span> cdna_alignment_mysqlschema</span>
-<span id="cb23-7"></span>
-<span id="cb23-8"><span class="co" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;"># Fix all variations of gene_id and model_id indexes</span></span>
-<span id="cb23-9"><span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">sed</span> <span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">-i</span> <span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">'s/KEY gene_id_idx (gene_id)/KEY gene_id_idx (gene_id(255))/g'</span> cdna_alignment_mysqlschema</span>
-<span id="cb23-10"><span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">sed</span> <span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">-i</span> <span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">'s/KEY mod_idx (model_id)/KEY mod_idx (model_id(255))/g'</span> cdna_alignment_mysqlschema</span>
-<span id="cb23-11"><span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">sed</span> <span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">-i</span> <span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">'s/(gene_id)/(gene_id(255))/g'</span> cdna_alignment_mysqlschema</span>
-<span id="cb23-12"><span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">sed</span> <span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">-i</span> <span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">'s/(model_id)/(model_id(255))/g'</span> cdna_alignment_mysqlschema</span>
-<span id="cb23-13"><span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">sed</span> <span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">-i</span> <span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">'s/KEY gene_idx (annotation_version,gene_id)/KEY gene_idx (annotation_version,gene_id(255))/g'</span> cdna_alignment_mysqlschema</span></code></pre></div>
-</section>
-<section id="run-pasa-assembly-pipeline" class="level3">
-<h3 class="anchored" data-anchor-id="run-pasa-assembly-pipeline">5.4.2 Run PASA Assembly Pipeline</h3>
-<p>This was executed outside of RStudio due to the verbose output, which will cause RStudio to crash.</p>
-<div class="sourceCode" id="cb24" style="background: #f1f3f5;"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb24-1"><span class="ex" style="color: null;
-background-color: null;
-font-style: inherit;">singularity</span> exec <span class="dt" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">\</span></span>
-<span id="cb24-2">-B /home <span class="dt" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">\</span></span>
-<span id="cb24-3">-B /var/run/mysqld/mysqld.sock:/var/run/mysqld/mysqld.sock <span class="dt" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">\</span></span>
-<span id="cb24-4">-B <span class="va" style="color: #111111;
-background-color: null;
-font-style: inherit;">$PWD</span>/conf.txt:<span class="va" style="color: #111111;
-background-color: null;
-font-style: inherit;">$PASA_HOME</span>/pasa_conf/conf.txt <span class="dt" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">\</span></span>
-<span id="cb24-5">-B <span class="va" style="color: #111111;
-background-color: null;
-font-style: inherit;">$PWD</span>/cdna_alignment_mysqlschema:<span class="va" style="color: #111111;
-background-color: null;
-font-style: inherit;">$PASA_HOME</span>/schema/cdna_alignment_mysqlschema <span class="dt" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">\</span></span>
-<span id="cb24-6"><span class="va" style="color: #111111;
-background-color: null;
-font-style: inherit;">${pasa_container}</span> <span class="dt" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">\</span></span>
-<span id="cb24-7"><span class="va" style="color: #111111;
-background-color: null;
-font-style: inherit;">$PASA_HOME</span>/Launch_PASA_pipeline.pl <span class="dt" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">\</span></span>
-<span id="cb24-8">--config alignAssembly.config <span class="dt" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">\</span></span>
-<span id="cb24-9">--create <span class="dt" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">\</span></span>
-<span id="cb24-10">--run <span class="dt" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">\</span></span>
-<span id="cb24-11">--genome <span class="va" style="color: #111111;
-background-color: null;
-font-style: inherit;">${genome_fasta}</span> <span class="dt" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">\</span></span>
-<span id="cb24-12">--transcripts transcripts.fasta.clean <span class="dt" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">\</span></span>
-<span id="cb24-13">--trans_gtf <span class="va" style="color: #111111;
-background-color: null;
-font-style: inherit;">${stringtie_gtf}</span> <span class="dt" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">\</span></span>
-<span id="cb24-14">--ALT_SPLICE <span class="dt" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">\</span></span>
-<span id="cb24-15">-T <span class="dt" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">\</span></span>
-<span id="cb24-16">-u transcripts.fasta <span class="dt" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">\</span></span>
-<span id="cb24-17">--ALIGNERS blat,gmap,minimap2 <span class="dt" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">\</span></span>
-<span id="cb24-18">--TDN tdn.accs <span class="dt" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">\</span></span>
-<span id="cb24-19">--transcribed_is_aligned_orient <span class="dt" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">\</span></span>
-<span id="cb24-20">--annot_compare <span class="dt" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">\</span></span>
-<span id="cb24-21">-L <span class="dt" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">\</span></span>
-<span id="cb24-22">--annots <span class="va" style="color: #111111;
-background-color: null;
-font-style: inherit;">${genome_gff}</span> <span class="dt" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">\</span></span>
-<span id="cb24-23">--TRANSDECODER <span class="dt" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">\</span></span>
-<span id="cb24-24">--CPU <span class="va" style="color: #111111;
-background-color: null;
-font-style: inherit;">${threads}</span></span></code></pre></div>
-</section>
-<section id="alternative-splicing" class="level3">
-<h3 class="anchored" data-anchor-id="alternative-splicing">5.4.3 Alternative Splicing</h3>
-<p>This doesn’t seem to have run during the assembly phase, so ran separately.</p>
-<div class="sourceCode" id="cb25" style="background: #f1f3f5;"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb25-1"><span class="ex" style="color: null;
-background-color: null;
-font-style: inherit;">singularity</span> exec <span class="dt" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">\</span></span>
-<span id="cb25-2">-B /home <span class="dt" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">\</span></span>
-<span id="cb25-3">-B /var/run/mysqld/mysqld.sock:/var/run/mysqld/mysqld.sock <span class="dt" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">\</span></span>
-<span id="cb25-4">-B <span class="va" style="color: #111111;
-background-color: null;
-font-style: inherit;">$PWD</span>/conf.txt:<span class="va" style="color: #111111;
-background-color: null;
-font-style: inherit;">$PASA_HOME</span>/pasa_conf/conf.txt <span class="dt" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">\</span></span>
-<span id="cb25-5">-B <span class="va" style="color: #111111;
-background-color: null;
-font-style: inherit;">$PWD</span>/cdna_alignment_mysqlschema:<span class="va" style="color: #111111;
-background-color: null;
-font-style: inherit;">$PASA_HOME</span>/schema/cdna_alignment_mysqlschema <span class="dt" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">\</span></span>
-<span id="cb25-6"><span class="va" style="color: #111111;
-background-color: null;
-font-style: inherit;">${pasa_container}</span> <span class="dt" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">\</span></span>
-<span id="cb25-7"><span class="va" style="color: #111111;
-background-color: null;
-font-style: inherit;">$PASA_HOME</span>/Launch_PASA_pipeline.pl <span class="dt" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">\</span></span>
-<span id="cb25-8">-c alignAssembly.config <span class="dt" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">\</span></span>
-<span id="cb25-9">--ALT_SPLICE <span class="dt" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">\</span></span>
-<span id="cb25-10">-g <span class="va" style="color: #111111;
-background-color: null;
-font-style: inherit;">${genome_fasta}</span> <span class="dt" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">\</span></span>
-<span id="cb25-11">-t all.transcripts.fasta.clean <span class="dt" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">\</span></span>
-<span id="cb25-12">--CPU <span class="va" style="color: #111111;
-background-color: null;
-font-style: inherit;">${threads}</span></span></code></pre></div>
-</section>
-<section id="update-annotations" class="level3">
-<h3 class="anchored" data-anchor-id="update-annotations">5.4.4 Update annotations</h3>
-<p>Now includes alternative splicing info.</p>
-<p>Uses output GFF3 from initial annotations as annotation <em>input</em>.</p>
-<div class="sourceCode" id="cb26" style="background: #f1f3f5;"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb26-1"><span class="ex" style="color: null;
-background-color: null;
-font-style: inherit;">singularity</span> exec <span class="dt" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">\</span></span>
-<span id="cb26-2">-B /home <span class="dt" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">\</span></span>
-<span id="cb26-3">-B /var/run/mysqld/mysqld.sock:/var/run/mysqld/mysqld.sock <span class="dt" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">\</span></span>
-<span id="cb26-4">-B <span class="va" style="color: #111111;
-background-color: null;
-font-style: inherit;">$PWD</span>/conf.txt:<span class="va" style="color: #111111;
-background-color: null;
-font-style: inherit;">$PASA_HOME</span>/pasa_conf/conf.txt <span class="dt" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">\</span></span>
-<span id="cb26-5">-B <span class="va" style="color: #111111;
-background-color: null;
-font-style: inherit;">$PWD</span>/cdna_alignment_mysqlschema:<span class="va" style="color: #111111;
-background-color: null;
-font-style: inherit;">$PASA_HOME</span>/schema/cdna_alignment_mysqlschema <span class="dt" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">\</span></span>
-<span id="cb26-6"><span class="va" style="color: #111111;
-background-color: null;
-font-style: inherit;">${pasa_container}</span> <span class="dt" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">\</span></span>
-<span id="cb26-7"><span class="va" style="color: #111111;
-background-color: null;
-font-style: inherit;">$PASA_HOME</span>/Launch_PASA_pipeline.pl <span class="dt" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">\</span></span>
-<span id="cb26-8">-c annotCompare.config <span class="dt" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">\</span></span>
-<span id="cb26-9">--annot_compare <span class="dt" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">\</span></span>
-<span id="cb26-10">-L <span class="dt" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">\</span></span>
-<span id="cb26-11">--annots peve_pasa.gene_structures_post_PASA_updates.2550221.gff3 <span class="dt" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">\</span></span>
-<span id="cb26-12">-g <span class="va" style="color: #111111;
-background-color: null;
-font-style: inherit;">${genome_fasta}</span> <span class="dt" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">\</span></span>
-<span id="cb26-13">-t all.transcripts.fasta.clean <span class="dt" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">\</span></span>
-<span id="cb26-14">--CPU <span class="va" style="color: #111111;
-background-color: null;
-font-style: inherit;">${threads}</span></span></code></pre></div>
-</section>
-</section>
-</section>
-<section id="pasa-outputs" class="level1">
-<h1>6 PASA OUTPUTS</h1>
-<section id="generate-checksums" class="level2">
-<h2 class="anchored" data-anchor-id="generate-checksums">6.1 Generate checksums</h2>
-<div class="sourceCode" id="cb27" style="background: #f1f3f5;"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb27-1"><span class="bu" style="color: null;
-background-color: null;
-font-style: inherit;">cd</span> <span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"</span><span class="va" style="color: #111111;
-background-color: null;
-font-style: inherit;">${pasa_output_dir}</span><span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"</span></span>
-<span id="cb27-2"></span>
-<span id="cb27-3"><span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">md5sum</span> peve_pasa.gene_structures_post_PASA_updates.3761502.gff3 <span class="kw" style="color: #003B4F;
-background-color: null;
-font-weight: bold;
-font-style: inherit;">|</span> <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">tee</span> peve_pasa.gene_structures_post_PASA_updates.3761502.gff3.md5</span>
-<span id="cb27-4"></span>
-<span id="cb27-5"><span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">md5sum</span> peve_pasa.gene_structures_post_PASA_updates.3761502.bed <span class="kw" style="color: #003B4F;
-background-color: null;
-font-weight: bold;
-font-style: inherit;">|</span> <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">tee</span> peve_pasa.gene_structures_post_PASA_updates.3761502.bed.md5</span></code></pre></div>
-<pre><code>08d65a59913b56823d9a108db722f820  peve_pasa.gene_structures_post_PASA_updates.3761502.gff3
-b4f76f4651063be32724c86d067ad34a  peve_pasa.gene_structures_post_PASA_updates.3761502.bed</code></pre>
-</section>
-<section id="rename-outputs" class="level2">
-<h2 class="anchored" data-anchor-id="rename-outputs">6.2 Rename outputs</h2>
-<div class="sourceCode" id="cb29" style="background: #f1f3f5;"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb29-1"><span class="bu" style="color: null;
-background-color: null;
-font-style: inherit;">cd</span> <span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"</span><span class="va" style="color: #111111;
-background-color: null;
-font-style: inherit;">${pasa_output_dir}</span><span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"</span></span>
-<span id="cb29-2"><span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">cp</span> peve_pasa.gene_structures_post_PASA_updates.3761502.gff3 <span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"</span><span class="va" style="color: #111111;
-background-color: null;
-font-style: inherit;">${pasa_gff}</span><span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"</span></span>
-<span id="cb29-3"></span>
-<span id="cb29-4"><span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">cp</span> peve_pasa.gene_structures_post_PASA_updates.3761502.bed <span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"</span><span class="va" style="color: #111111;
-background-color: null;
-font-style: inherit;">${pasa_bed}</span><span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"</span></span>
-<span id="cb29-5"></span>
-<span id="cb29-6"><span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">md5sum</span> <span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"</span><span class="va" style="color: #111111;
-background-color: null;
-font-style: inherit;">${pasa_gff}</span><span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"</span> <span class="kw" style="color: #003B4F;
-background-color: null;
-font-weight: bold;
-font-style: inherit;">|</span> <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">tee</span> <span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"</span><span class="va" style="color: #111111;
-background-color: null;
-font-style: inherit;">${pasa_gff}</span><span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"</span>.md5</span>
-<span id="cb29-7"><span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">md5sum</span> <span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"</span><span class="va" style="color: #111111;
-background-color: null;
-font-style: inherit;">${pasa_bed}</span><span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"</span> <span class="kw" style="color: #003B4F;
-background-color: null;
-font-weight: bold;
-font-style: inherit;">|</span> <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">tee</span> <span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"</span><span class="va" style="color: #111111;
-background-color: null;
-font-style: inherit;">${pasa_bed}</span><span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"</span>.md5</span></code></pre></div>
-<pre><code>08d65a59913b56823d9a108db722f820  peve-PASA.gff3
-b4f76f4651063be32724c86d067ad34a  peve-PASA.bed</code></pre>
-</section>
-<section id="gff3-preview" class="level2">
-<h2 class="anchored" data-anchor-id="gff3-preview">6.3 GFF3 Preview</h2>
-<div class="sourceCode" id="cb31" style="background: #f1f3f5;"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb31-1"><span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">head</span> <span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">-n</span> 50 <span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"</span><span class="va" style="color: #111111;
-background-color: null;
-font-style: inherit;">${pasa_output_dir}</span><span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"</span>/<span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"</span><span class="va" style="color: #111111;
-background-color: null;
-font-style: inherit;">${pasa_gff}</span><span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"</span></span></code></pre></div>
-<pre><code># PASA_UPDATE: mrna-26667, single gene model update, valid-1, status:[pasa:asmbl_337815,status:12], valid-1
-Porites_evermani_scaffold_4224  .   gene    28057   29953   .   -   .   ID=gene-Peve_00030015;Name=mrna-26667
-Porites_evermani_scaffold_4224  .   mRNA    28057   29953   .   -   .   ID=mrna-26667;Parent=gene-Peve_00030015;Name=mrna-26667
-Porites_evermani_scaffold_4224  .   five_prime_UTR  29913   29953   .   -   .   ID=mrna-26667.utr5p1;Parent=mrna-26667
-Porites_evermani_scaffold_4224  .   exon    29544   29953   .   -   .   ID=mrna-26667.exon1;Parent=mrna-26667
-Porites_evermani_scaffold_4224  .   CDS 29544   29912   .   -   0   ID=mrna-26667.cds.1;Parent=mrna-26667
-Porites_evermani_scaffold_4224  .   exon    28057   29172   .   -   .   ID=mrna-26667.exon2;Parent=mrna-26667
-Porites_evermani_scaffold_4224  .   CDS 29008   29172   .   -   0   ID=mrna-26667.cds.2;Parent=mrna-26667
-Porites_evermani_scaffold_4224  .   three_prime_UTR 28057   29007   .   -   .   ID=mrna-26667.utr3p1;Parent=mrna-26667
-
-
-#PROT mrna-26667 gene-Peve_00030015 MPGPRGDRGREGPPGKSGPRGINGMKGQQGLLGMKGEPGIAGMKGERGAVGIKGQRGIVGMKGVPGAVGIKGERGIVGNPGRKGNKGEKGESAKASQASVVPQTNWKQCVWNSDSGTDNGKIKDCAFNKLQSNSALKVSFQGNMRVIGHGACNRWYFKFNGNECNGPMTIEAIVNNH*
-
-# PASA_UPDATE: novel_model_1794_698a2f3c, single gene model update, valid-1, status:[pasa:asmbl_411975,status:3], valid-1
-Porites_evermani_scaffold_594   .   gene    170578  170986  .   +   .   ID=novel_gene_1397_698a2f3c;Name=%2A%2A%20NO%20NAME%20ASSIGNED%20%2A%2A
-Porites_evermani_scaffold_594   .   mRNA    170578  170986  .   +   .   ID=novel_model_1794_698a2f3c;Parent=novel_gene_1397_698a2f3c;Name=%2A%2A%20NO%20NAME%20ASSIGNED%20%2A%2A
-Porites_evermani_scaffold_594   .   five_prime_UTR  170578  170640  .   +   .   ID=novel_model_1794_698a2f3c.utr5p1;Parent=novel_model_1794_698a2f3c
-Porites_evermani_scaffold_594   .   exon    170578  170986  .   +   .   ID=novel_model_1794_698a2f3c.exon1;Parent=novel_model_1794_698a2f3c
-Porites_evermani_scaffold_594   .   CDS 170641  170952  .   +   0   ID=novel_model_1794_698a2f3c.cds.1;Parent=novel_model_1794_698a2f3c
-Porites_evermani_scaffold_594   .   three_prime_UTR 170953  170986  .   +   .   ID=novel_model_1794_698a2f3c.utr3p1;Parent=novel_model_1794_698a2f3c
-
-
-#PROT novel_model_1794_698a2f3c novel_gene_1397_698a2f3c    MSKTPLQDEYLQWRPQILGITTQLNAFFFNHLMKSCHPFKSHATEYLCSTCNSGVCSDPPLPFEAWVKCTMYIDPTLSKIDTFGTSTKCPSKSDVCLLESQKM*
-
-# ORIGINAL: mrna-32793 original gene structure, not modified by PASA
-Porites_evermani_scaffold_594   Gmove   gene    82339   84386   .   +   .   ID=gene-Peve_00036817;Name=mrna-32793
-Porites_evermani_scaffold_594   Gmove   mRNA    82339   84386   .   +   .   ID=mrna-32793;Parent=gene-Peve_00036817;Name=mrna-32793
-Porites_evermani_scaffold_594   Gmove   exon    82339   82462   .   +   .   ID=mrna-32793.exon1;Parent=mrna-32793
-Porites_evermani_scaffold_594   Gmove   CDS 82339   82462   .   +   0   ID=mrna-32793.cds.1;Parent=mrna-32793
-Porites_evermani_scaffold_594   Gmove   exon    83270   83388   .   +   .   ID=mrna-32793.exon2;Parent=mrna-32793
-Porites_evermani_scaffold_594   Gmove   CDS 83270   83388   .   +   2   ID=mrna-32793.cds.2;Parent=mrna-32793
-Porites_evermani_scaffold_594   Gmove   exon    84354   84386   .   +   .   ID=mrna-32793.exon3;Parent=mrna-32793
-Porites_evermani_scaffold_594   Gmove   CDS 84354   84386   .   +   0   ID=mrna-32793.cds.3;Parent=mrna-32793
-
-
-#PROT mrna-32793 gene-Peve_00036817 LKAIVTTEGVYFVRARGTPSPESIVLLVRFSDLYVCQPLSTDGKSYIELVMKADNSSVPTPSKNPSKRPRVRCDQQSVAQKVAQKINYAKNL
-
-# PASA_UPDATE: mrna-32790, single gene model update, valid-1, status:[pasa:asmbl_411993,status:12], valid-1
-Porites_evermani_scaffold_594   .   gene    203517  221865  .   +   .   ID=gene-Peve_00036814;Name=mrna-32790
-Porites_evermani_scaffold_594   .   mRNA    203517  221865  .   +   .   ID=mrna-32790;Parent=gene-Peve_00036814;Name=mrna-32790
-Porites_evermani_scaffold_594   .   exon    203517  203643  .   +   .   ID=mrna-32790.exon1;Parent=mrna-32790
-Porites_evermani_scaffold_594   .   CDS 203517  203643  .   +   0   ID=mrna-32790.cds.1;Parent=mrna-32790
-Porites_evermani_scaffold_594   .   exon    211961  212176  .   +   .   ID=mrna-32790.exon2;Parent=mrna-32790
-Porites_evermani_scaffold_594   .   CDS 211961  212176  .   +   2   ID=mrna-32790.cds.2;Parent=mrna-32790
-Porites_evermani_scaffold_594   .   exon    217811  217948  .   +   .   ID=mrna-32790.exon3;Parent=mrna-32790
-Porites_evermani_scaffold_594   .   CDS 217811  217948  .   +   2   ID=mrna-32790.cds.3;Parent=mrna-32790
-Porites_evermani_scaffold_594   .   exon    219213  219368  .   +   .   ID=mrna-32790.exon4;Parent=mrna-32790
-Porites_evermani_scaffold_594   .   CDS 219213  219368  .   +   2   ID=mrna-32790.cds.4;Parent=mrna-32790
-Porites_evermani_scaffold_594   .   exon    220000  220155  .   +   .   ID=mrna-32790.exon5;Parent=mrna-32790
-Porites_evermani_scaffold_594   .   CDS 220000  220155  .   +   2   ID=mrna-32790.cds.5;Parent=mrna-32790</code></pre>
-</section>
-<section id="gff-comparisons" class="level2">
-<h2 class="anchored" data-anchor-id="gff-comparisons">6.4 GFF Comparisons</h2>
-<div class="sourceCode" id="cb33" style="background: #f1f3f5;"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb33-1"><span class="bu" style="color: null;
-background-color: null;
-font-style: inherit;">printf</span> <span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">'%s\n\n'</span> <span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"Original GFF feature counts:"</span></span>
-<span id="cb33-2"><span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">awk</span> <span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">'!/^#/ &amp;&amp; !/^[[:space:]]*$/ &amp;&amp; NF &gt; 0 &amp;&amp; $3 != "" {print $3}'</span> <span class="va" style="color: #111111;
-background-color: null;
-font-style: inherit;">${genome_gff}</span> <span class="dt" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">\</span></span>
-<span id="cb33-3"><span class="kw" style="color: #003B4F;
-background-color: null;
-font-weight: bold;
-font-style: inherit;">|</span> <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">sort</span> <span class="kw" style="color: #003B4F;
-background-color: null;
-font-weight: bold;
-font-style: inherit;">|</span> <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">uniq</span> <span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">-c</span> <span class="kw" style="color: #003B4F;
-background-color: null;
-font-weight: bold;
-font-style: inherit;">|</span> <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">sort</span> <span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">-rn</span> <span class="kw" style="color: #003B4F;
-background-color: null;
-font-weight: bold;
-font-style: inherit;">|</span> <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">awk</span> <span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">'{print $2, $1}'</span></span>
-<span id="cb33-4"></span>
-<span id="cb33-5"><span class="bu" style="color: null;
-background-color: null;
-font-style: inherit;">echo</span> <span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">""</span></span>
-<span id="cb33-6"><span class="bu" style="color: null;
-background-color: null;
-font-style: inherit;">echo</span> <span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"</span><span class="va" style="color: #111111;
-background-color: null;
-font-style: inherit;">${line}</span><span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"</span></span>
-<span id="cb33-7"><span class="bu" style="color: null;
-background-color: null;
-font-style: inherit;">echo</span> <span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">""</span></span>
-<span id="cb33-8"></span>
-<span id="cb33-9"><span class="bu" style="color: null;
-background-color: null;
-font-style: inherit;">printf</span> <span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"%s\n\n"</span> <span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"Updated GFF feature counts:"</span></span>
-<span id="cb33-10"><span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">awk</span> <span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">-F</span> <span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"\t"</span> <span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">'!/^#/ &amp;&amp; !/^[[:space:]]*$/ &amp;&amp; NF &gt; 0 &amp;&amp; $3 != "" {print $3}'</span> <span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"</span><span class="va" style="color: #111111;
-background-color: null;
-font-style: inherit;">${pasa_output_dir}</span><span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"</span>/<span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"</span><span class="va" style="color: #111111;
-background-color: null;
-font-style: inherit;">${pasa_gff}</span><span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"</span> <span class="dt" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">\</span></span>
-<span id="cb33-11"><span class="kw" style="color: #003B4F;
-background-color: null;
-font-weight: bold;
-font-style: inherit;">|</span> <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">sort</span> <span class="kw" style="color: #003B4F;
-background-color: null;
-font-weight: bold;
-font-style: inherit;">|</span> <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">uniq</span> <span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">-c</span> <span class="kw" style="color: #003B4F;
-background-color: null;
-font-weight: bold;
-font-style: inherit;">|</span> <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">sort</span> <span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">-rn</span> <span class="kw" style="color: #003B4F;
-background-color: null;
-font-weight: bold;
-font-style: inherit;">|</span> <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">awk</span> <span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">'{print $2, $1}'</span></span></code></pre></div>
-<pre><code>Original GFF feature counts:
-
-exon 246418
-CDS 231320
-mRNA 40389
-gene 40389
-UTR 15098
-
------------------------------------------------
-
-Updated GFF feature counts:
-
-exon 463084
-CDS 442258
-mRNA 59418
-five_prime_UTR 43027
-gene 40808
-three_prime_UTR 38919</code></pre>
-</section>
-</section>
-<section id="extract-proteins-to-fasta" class="level1">
-<h1>7 EXTRACT PROTEINS TO FASTA</h1>
-<div class="sourceCode" id="cb35" style="background: #f1f3f5;"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb35-1"><span class="bu" style="color: null;
-background-color: null;
-font-style: inherit;">cd</span> <span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"</span><span class="va" style="color: #111111;
-background-color: null;
-font-style: inherit;">${pasa_output_dir}</span><span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"</span></span>
-<span id="cb35-2"></span>
-<span id="cb35-3"><span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">awk</span> <span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">'/^#PROT / {print "&gt;" $2 "." $3 "\n" $4}'</span> <span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"</span><span class="va" style="color: #111111;
-background-color: null;
-font-style: inherit;">${pasa_gff}</span><span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"</span> <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">&gt;</span> peve-proteins-PASA.fasta</span>
-<span id="cb35-4"></span>
-<span id="cb35-5"><span class="bu" style="color: null;
-background-color: null;
-font-style: inherit;">printf</span> <span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"%s\n\n"</span> <span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"Original protein counts:"</span></span>
-<span id="cb35-6"><span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">grep</span> <span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">--count</span> <span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"^#PROT"</span> <span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"</span><span class="va" style="color: #111111;
-background-color: null;
-font-style: inherit;">${pasa_gff}</span><span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"</span></span>
-<span id="cb35-7"></span>
-<span id="cb35-8"><span class="bu" style="color: null;
-background-color: null;
-font-style: inherit;">echo</span> <span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">""</span></span>
-<span id="cb35-9"><span class="bu" style="color: null;
-background-color: null;
-font-style: inherit;">echo</span> <span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"</span><span class="va" style="color: #111111;
-background-color: null;
-font-style: inherit;">${line}</span><span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"</span></span>
-<span id="cb35-10"><span class="bu" style="color: null;
-background-color: null;
-font-style: inherit;">echo</span> <span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">""</span></span>
-<span id="cb35-11"></span>
-<span id="cb35-12"><span class="bu" style="color: null;
-background-color: null;
-font-style: inherit;">printf</span> <span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"%s\n\n"</span> <span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"Extracted protein counts:"</span></span>
-<span id="cb35-13"><span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">grep</span> <span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">--count</span> <span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"^&gt;"</span> peve-proteins-PASA.fasta</span>
-<span id="cb35-14"></span>
-<span id="cb35-15"><span class="co" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;"># Create FastA Index</span></span>
-<span id="cb35-16"><span class="va" style="color: #111111;
-background-color: null;
-font-style: inherit;">${samtools}</span> faidx peve-proteins-PASA.fasta</span></code></pre></div>
-<pre><code>Original protein counts:
-
-59418
-
------------------------------------------------
-
-Extracted protein counts:
-
-59418</code></pre>
-<section id="checksums-2" class="level2">
-<h2 class="anchored" data-anchor-id="checksums-2">7.1 Checksums</h2>
-<div class="sourceCode" id="cb37" style="background: #f1f3f5;"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb37-1"><span class="bu" style="color: null;
-background-color: null;
-font-style: inherit;">cd</span> <span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"</span><span class="va" style="color: #111111;
-background-color: null;
-font-style: inherit;">${pasa_output_dir}</span><span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"</span></span>
-<span id="cb37-2"><span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">md5sum</span> peve-proteins-PASA.fasta <span class="kw" style="color: #003B4F;
-background-color: null;
-font-weight: bold;
-font-style: inherit;">|</span> <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">tee</span> peve-proteins-PASA.fasta.md5</span></code></pre></div>
-<pre><code>9198a4d1e67759b0a78dd4d9f4229695  peve-proteins-PASA.fasta</code></pre>
-
-
-</section>
-</section>
-
- ]]></description>
-  <category>2026</category>
-  <category>Trinity</category>
-  <category>E5</category>
-  <category>PASA</category>
-  <category>transcriptome assembly</category>
-  <category>Porites evermanni</category>
-  <guid>https://robertslab.github.io/sams-notebook/posts/2026/2026-02-27-De-Novo-Transcriptome-Assembly-and-Annotation---E5-P.evermanni-RNA-seq-Using-Trinity-and-PASA/</guid>
   <pubDate>Fri, 27 Feb 2026 08:00:00 GMT</pubDate>
 </item>
 </channel>
