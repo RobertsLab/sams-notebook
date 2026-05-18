@@ -1156,7 +1156,6 @@ length(unique(na.omit(auc_df$treatment_group))) \> 1 |
 | list( model = model, anova = anova_res, pairs_full = pairs_full, pairs_family = pairs_family, pairs_trt = pairs_trt, has_family = has_family, has_treatment = has_treatment ) } |
 | metrics_to_test \<- unique(auc_all\$metric) stats_results \<- map( set_names(metrics_to_test), ~ run_auc_stats(auc_all %\>% filter(metric == .x)) ) \`\`\` |
 | \## Results by metric |
-| `r for (met in metrics_to_test) { stats <- stats_results[[met]] cat("\n\n----\n### Metric:", met, "\n\n") cat("**ANOVA:**\n") print(stats$anova) if (stats$has_family && stats$has_treatment) { cat("\n**Pairwise: family × treatment (Tukey):**\n") print(stats$pairs_full) cat("\n**Pairwise: family main effect:**\n") print(stats$pairs_family) cat("\n**Pairwise: treatment main effect:**\n") print(stats$pairs_trt) } else if (stats$has_family) { cat("\n**Pairwise: family (Tukey):**\n") print(stats$pairs_family) } else if (stats$has_treatment) { cat("\n**Pairwise: treatment (Tukey):**\n") print(stats$pairs_trt) } }` |
 
 ### 10.1.1 Metric: metabolism_per_area_cm2_measurement
 
@@ -1434,3 +1433,17 @@ Wells were spot checked and range noted in table below.
 | G     | 4    | 33    |
 
 # RESULTS
+
+**Plate G was automatically excluded** from all analyses: its T0 read was accidentally exported as a 24-well plate, causing it to fail the consistency check. Three additional wells were excluded due to volume loss: J B1 (sample 41, tweed selected), K A2 (sample 50, blue selected), and L A4 (sample 64, blue control).
+
+Metabolic activity (AUC of blank-corrected, size-normalised fold-change per cm² shell area) did not differ significantly by family, treatment, or their interaction (ANOVA: family F = 2.03, p = 0.161; treatment F = 1.91, p = 0.174; family × treatment F = 2.95, p = 0.092). Blue control clams had the highest mean AUC (66.6 ± 6.8 SE), while the other three groups were similar: tweed control (49.0 ± 4.7), tweed selected (50.5 ± 6.4), and blue selected (48.4 ± 4.7). No pairwise contrast reached significance after Tukey adjustment (all p > 0.13).
+
+The time-series mixed-effects model identified a transient divergence of **blue control clams** at mid-assay timepoints:
+
+- t = 1.5 h: blue control > tweed control (p = 0.013) and > blue selected (p = 0.035)
+- t = 2.0 h: blue control > tweed control (p = 0.042)
+- t = 2.5 h: blue control > tweed control (p = 0.043)
+
+No significant differences were detected at any other timepoints (all Tukey-adjusted p > 0.09).
+
+In summary, **selected clams did not show higher metabolic activity than control clams** in this larger-clam 36°C assay. The primary signal in this experiment is a transient elevation in **blue-family control clams** at 1.5–2.5 h, not a treatment effect; the marginally non-significant family × treatment interaction (p = 0.092) is consistent with this blue-control-specific pattern. This same blue-control divergence was also observed on [Day 0 of the smaller-clam 36°C experiment](../2026-03-31-Resazurin-Assays---Selected-Juvenile-Ruditapes-philippinarum-Exposed-to-36C-Acute-Heat-Stress-Day-0/index.qmd).
