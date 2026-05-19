@@ -16,3 +16,98 @@ categories:
   - "hifiasm"
   - "genome assembly"
 ---
+# INTRO
+
+
+
+
+# VARIABLES
+```{r set-variables}
+# DIRECTORIES
+data_dir <- "/mmfs1/gscratch/scrubbed/samwhite/data/C_rogercresseyi/HIFI_Caligus/Hembra_01_cell1/"
+output_dir <- "/mmfs1/gscratch/scrubbed/samwhite/outputs/20260519-crog-hembra-genome_assembly-hifiasm/"
+
+# FILES
+hifiasm_asm <- "crog-hembra-pb-hifiasm-assembly.asm"
+hifiasm_primary_graph <- "crog-hembra-pb-hifiasm-assembly.asm.bp.p_ctg.gfa"
+hifiasm_assembly_fasta <- "crog-hembra-pb-hifiasm-assembly.fa"
+hifiasm_assembly_log <- "crog-hembra-pb-hifiasm-assembly.log"
+
+# PROGRAMS
+gfatools <- c("/srlab/programs/gfatools/gfatools")
+hifiasm <- c("/srlab/programs/miniforge3-24.7.1-0/envs/hifiasm-0.25.0_env/bin/hifiasm")
+
+
+# SETTINGS
+threads <- "50"
+
+
+# Export these as environment variables for bash chunks.
+Sys.setenv(
+  data_dir = data_dir,
+  gfatools = gfatools,
+  hifiasm = hifiasm,
+  hifiasm_asm = hifiasm_asm,
+  hifiasm_assembly_fasta = hifiasm_assembly_fasta,
+  hifiasm_assembly_log = hifiasm_assembly_log,
+  hifiasm_primary_graph = hifiasm_primary_graph,
+  input_fastq = input_fastq,
+  output_dir = output_dir,
+  threads = threads
+)
+```
+
+
+# HIFIASM
+```{r engine='bash'}
+# Make output directory, if it doesn't exist
+mkdir --parents "${output_dir}"
+
+cd "${output_dir}"
+
+# Create an array of .fastq.gz files
+fastqs=(${data_dir}/*.fastq.gz)
+
+# Print the result (optional, for verification)
+## newline-delimited format
+echo "List of FastQs used for assembly:"
+
+printf "%s\n" "${fastqs[@]}" \
+| tee input_fastqs.txt
+
+# Run hifiasm assembly
+"${hifiasm}" \
+-o "${hifiasm_asm}" \
+-t "${threads}" \
+"${fastqs[@]}" \
+> "${hifiasm_assembly_log}" 2>&1
+```
+
+# 3 GFATOOLS
+
+## 3.1 Primary contigs to FastA
+
+This will extract a FastA file from the graph files output by hifiasm.
+
+```{r engine='bash'}
+cd "${output_dir}"
+
+"${gfatools}" gfa2fa \
+"${hifiasm_primary_graph}" \
+> "${hifiasm_assembly_fasta}"
+
+samtools faidx "${hifiasm_assembly_fasta}"
+```
+
+
+# CHECKSUMS
+
+```{r checksums, engine='bash'}
+cd "${output_dir}"
+
+for fasta in *.fa
+do
+  md5sum "${fasta}" \
+  | tee "${fasta}".md5
+done
+```
