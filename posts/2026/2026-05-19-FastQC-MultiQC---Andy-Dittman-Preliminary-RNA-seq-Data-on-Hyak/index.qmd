@@ -5,14 +5,44 @@ toc-depth: 5
 toc-location: left
 title: FastQC MultiQC - Andy Dittman Preliminary RNA-seq Data on Hyak
 date: '2026-05-19'
-draft: true
+draft: false
 engine: knitr
 execute:
   eval: false
 categories: 
   - "2026"
+  - "FastQC"
+  - "MultiQC"
+  - "RNA-seq"
+  - "hyak"
+image: "posts/2026/2026-05-19-FastQC-MultiQC---Andy-Dittman-Preliminary-RNA-seq-Data-on-Hyak/20260519-dittman-multiqc.png"
 ---
+# INTRO
 
+RNA-seq data from Andy Dittman at NOAA came in on [20260508](../2026-05-08-Data-Received---RNA-seq-Subset-for-Andy-Dittman-and-NOAA/index.qmd) (Notebook entry). The data is an initial run of a subset of samples to see how the data looks and to make sure it is of good quality. The initial [GitHub Issue](https://github.com/RobertsLab/resources/issues/2397) indicated that the RNA Integrity Number (RIN) for these samples was not ideal, so he wanted to see how a subset of the data looked before proceeding with the rest of the samples. I ran FastQC and MultiQC on the raw reads to assess their quality.
+
+Analysis was run on Hyak using the following Roberts Lab Apptainer image:
+
+- `srlab-R4.4-bioinformatics-container-c3d3116.sif` (built on 20260410)
+
+# RESULTS
+
+Output directory:
+
+- [https://owl.fish.washington.edu/nightingales/dittman_grc_rnaseq_1/](https://owl.fish.washington.edu/nightingales/dittman_grc_rnaseq_1/)
+
+MultiQC Report (HTML):
+
+- [https://owl.fish.washington.edu/nightingales/dittman_grc_rnaseq_1/multiqc_report.html](https://owl.fish.washington.edu/nightingales/dittman_grc_rnaseq_1/multiqc_report.html)
+
+
+Overall, the FastQC and MultiQC reports indicate that the raw reads are of good quality, with quality being consistent for what we usually see with RNA-seq data. Additionally, none of the sequencing There is a bit of "wonkiness" in the per base sequence content plot beyond the first 15-20bp for a number of samples. However, knowing these samples had low RINs, this is not unexpected. However, it does make me wonder if those long stretches after the initial 15-20bp are due to adapter contamination and/or polyG sequence (polyG is a common occurrence in Illumina sequencing data when the transcripts are short and the sequencing read extends into the adapter sequence). I will look into this further in the next steps of the analysis, which will include running FastP on the raw reads to trim adapters and polyG sequences, and then re-running FastQC and MultiQC on the trimmed reads to see if that "wonkiness" in the per base sequence content plot is resolved after trimming.
+
+
+
+Code is below.
+
+---
 
 # VARIABLES
 ```{r set-variables}
