@@ -10,7 +10,261 @@
 <atom:link href="https://robertslab.github.io/sams-notebook/index.xml" rel="self" type="application/rss+xml"/>
 <description></description>
 <generator>quarto-1.6.42</generator>
-<lastBuildDate>Tue, 19 May 2026 07:00:00 GMT</lastBuildDate>
+<lastBuildDate>Wed, 20 May 2026 07:00:00 GMT</lastBuildDate>
+<item>
+  <title>Genome Comparisons - C.rogercresseyi Hembra and Macho PacBio hifiasm Assemblies Using QUAST on Hyak</title>
+  <dc:creator>Sam White</dc:creator>
+  <link>https://robertslab.github.io/sams-notebook/posts/2026/2026-05-20-Genome-Comparisons---C.rogercresseyi-Hembra-and-Macho-PacBio-hifiasm-Assemblies-Using-QUAST-on-Hyak/</link>
+  <description><![CDATA[ 
+
+
+
+
+
+<section id="intro" class="level1">
+<h1>INTRO</h1>
+<p>I previously assembled two <em>C. rogercresseyi</em> genomes (Hembra and Macho) using hifiasm on Hyak:</p>
+<ul>
+<li><p><a href="../../../posts/2026/2026-05-19-Genome-Assembly---C.rogercresseyi-Hembra-with-PacBio-HiFi-Reads-Using-hifiasm-on-Hyak/index.html">2026-05-19-Genome-Assembly—C.rogercresseyi-Hembra-with-PacBio-HiFi-Reads-Using-hifiasm-on-Hyak</a> (Notebook entry)</p></li>
+<li><p>2026-05-19-Genome-Assembly—C.rogercresseyi-Macho-with-PacBio-HiFi-Reads-Using-hifiasm-on-Hyak (Notebook entry)</p></li>
+</ul>
+<p>Used <a href="https://quast.sourceforge.net/docs/manual.html">QUAST</a> (SourceForge) to evaluate the two sets of PacBio genome assemblies produced with <a href="https://github.com/chhylp123/hifiasm">hifiasm</a> (GitHub). QUAST was run on Hyak using our Apptainer image: <code>srlab-R4.4-bioinformatics-container-c3d3116.sif</code>.</p>
+</section>
+<section id="results" class="level1">
+<h1>RESULTS</h1>
+<p>Output directory:</p>
+<ul>
+<li><a href="https://gannet.fish.washington.edu/Atumefaciens/20260520-crog-quast/">https://gannet.fish.washington.edu/Atumefaciens/20260520-crog-quast/</a></li>
+</ul>
+<p>Report (HTML):</p>
+<ul>
+<li><a href="https://gannet.fish.washington.edu/Atumefaciens/20260520-crog-quast/report.html">https://gannet.fish.washington.edu/Atumefaciens/20260520-crog-quast/report.html</a></li>
+</ul>
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="https://robertslab.github.io/sams-notebook/posts/2026/2026-05-20-Genome-Comparisons---C.rogercresseyi-Hembra-and-Macho-PacBio-hifiasm-Assemblies-Using-QUAST-on-Hyak/20260520-crog-quast-table.png" class="img-fluid figure-img"></p>
+<figcaption>QUAST report summary table</figcaption>
+</figure>
+</div>
+<pre><code>All statistics are based on contigs of size &gt;= 500 bp, unless otherwise noted (e.g., "# contigs (&gt;= 0 bp)" and "Total length (&gt;= 0 bp)" include all contigs).
+
+Assembly                    hembra_hifiasm  macho_hifiasm
+# contigs (&gt;= 0 bp)         38173           29083        
+# contigs (&gt;= 1000 bp)      38173           29083        
+# contigs (&gt;= 5000 bp)      38114           29063        
+# contigs (&gt;= 10000 bp)     32342           26462        
+# contigs (&gt;= 25000 bp)     9330            10803        
+# contigs (&gt;= 50000 bp)     2607            4232         
+Total length (&gt;= 0 bp)      965132142       1039559438   
+Total length (&gt;= 1000 bp)   965132142       1039559438   
+Total length (&gt;= 5000 bp)   964862679       1039469033   
+Total length (&gt;= 10000 bp)  916572303       1017589149   
+Total length (&gt;= 25000 bp)  551660840       756247282    
+Total length (&gt;= 50000 bp)  325882306       532742257    
+# contigs                   38173           29083        
+Largest contig              5795613         5889309      
+Total length                965132142       1039559438   
+GC (%)                      35.50           36.26        
+N50                         29880           52326        
+N90                         11881           15183        
+auN                         263844.4        315728.2     
+L50                         6795            3979         
+L90                         27965           20005        
+# N's per 100 kbp           0.00            0.00         </code></pre>
+<p>Code is below.</p>
+<hr>
+</section>
+<section id="setup" class="level1">
+<h1>SETUP</h1>
+<section id="libraries" class="level2">
+<h2 class="anchored" data-anchor-id="libraries">Libraries</h2>
+<div class="cell">
+<details class="code-fold">
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb2" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb2-1"><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">library</span>(knitr)</span>
+<span id="cb2-2"><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">library</span>(tidyverse)</span></code></pre></div>
+</details>
+</div>
+<pre><code>## ── Attaching core tidyverse packages ──────────────────────── tidyverse 2.0.0 ──
+## ✔ dplyr     1.1.4     ✔ readr     2.1.5
+## ✔ forcats   1.0.0     ✔ stringr   1.5.1
+## ✔ ggplot2   3.5.2     ✔ tibble    3.2.1
+## ✔ lubridate 1.9.4     ✔ tidyr     1.3.1
+## ✔ purrr     1.0.4     
+## ── Conflicts ────────────────────────────────────────── tidyverse_conflicts() ──
+## ✖ dplyr::filter() masks stats::filter()
+## ✖ dplyr::lag()    masks stats::lag()
+## ℹ Use the conflicted package (&lt;http://conflicted.r-lib.org/&gt;) to force all conflicts to become errors</code></pre>
+</section>
+<section id="variables" class="level2">
+<h2 class="anchored" data-anchor-id="variables">Variables</h2>
+<div class="cell">
+<details class="code-fold">
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb4" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb4-1"><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># OUTPUT DIRECTORY</span></span>
+<span id="cb4-2">output_dir <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"/mmfs1/gscratch/scrubbed/samwhite/outputs/20260520-crog-quast"</span></span>
+<span id="cb4-3"></span>
+<span id="cb4-4"><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># FILES</span></span>
+<span id="cb4-5">hifiasm_hembra_fasta <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"/mmfs1/gscratch/scrubbed/samwhite/outputs/20260519-crog-hembra-genome_assembly-hifiasm/crog-hembra-pb-hifiasm-assembly.fa"</span></span>
+<span id="cb4-6">hifiasm_macho_fasta <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"/mmfs1/gscratch/scrubbed/samwhite/outputs/20260519-crog-macho-genome_assembly-hifiasm/crog-macho-pb-hifiasm-assembly.fa"</span></span>
+<span id="cb4-7">quast_log <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"/mmfs1/gscratch/scrubbed/samwhite/outputs/20260520-crog-quast/quast_log.txt"</span></span>
+<span id="cb4-8"></span>
+<span id="cb4-9"><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># SETTINGS</span></span>
+<span id="cb4-10">threads <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"40"</span></span>
+<span id="cb4-11"></span>
+<span id="cb4-12"></span>
+<span id="cb4-13"><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># Export these as environment variables for bash chunks.</span></span>
+<span id="cb4-14"><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">Sys.setenv</span>(</span>
+<span id="cb4-15">  <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">hifiasm_hembra_fasta =</span> hifiasm_hembra_fasta,</span>
+<span id="cb4-16">  <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">hifiasm_macho_fasta =</span> hifiasm_macho_fasta,</span>
+<span id="cb4-17">  <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">output_dir =</span> output_dir,</span>
+<span id="cb4-18">  <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">quast_log =</span> quast_log,</span>
+<span id="cb4-19">  <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">threads =</span> threads</span>
+<span id="cb4-20">)</span></code></pre></div>
+</details>
+</div>
+</section>
+</section>
+<section id="quast" class="level1">
+<h1>QUAST</h1>
+<div class="cell">
+<details class="code-fold">
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb5" style="background: #f1f3f5;"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb5-1"><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># Make output directory, if it doesn't exist</span></span>
+<span id="cb5-2"><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">mkdir</span> <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">--parents</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"</span><span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">${output_dir}</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"</span></span>
+<span id="cb5-3"></span>
+<span id="cb5-4"><span class="ex" style="color: null;
+background-color: null;
+font-style: inherit;">quast.py</span> <span class="dt" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">\</span></span>
+<span id="cb5-5"><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"</span><span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">${hifiasm_hembra_fasta}</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"</span> <span class="dt" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">\</span></span>
+<span id="cb5-6"><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"</span><span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">${hifiasm_macho_fasta}</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"</span> <span class="dt" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">\</span></span>
+<span id="cb5-7">--output-dir <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"</span><span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">${output_dir}</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"</span> <span class="dt" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">\</span></span>
+<span id="cb5-8">--threads <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"</span><span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">${threads}</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"</span> <span class="dt" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">\</span></span>
+<span id="cb5-9">--labels <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"hembra_hifiasm, macho_hifiasm"</span> <span class="dt" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">\</span></span>
+<span id="cb5-10"><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">&gt;</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"</span><span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">${quast_log}</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"</span> <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">2</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">&gt;&amp;</span><span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">1</span></span></code></pre></div>
+</details>
+</div>
+
+
+</section>
+
+ ]]></description>
+  <category>2026</category>
+  <category>hyak</category>
+  <category>Caligus rogercresseyi</category>
+  <category>QUAST</category>
+  <category>sea lice</category>
+  <guid>https://robertslab.github.io/sams-notebook/posts/2026/2026-05-20-Genome-Comparisons---C.rogercresseyi-Hembra-and-Macho-PacBio-hifiasm-Assemblies-Using-QUAST-on-Hyak/</guid>
+  <pubDate>Wed, 20 May 2026 07:00:00 GMT</pubDate>
+</item>
 <item>
   <title>FastQC MultiQC - Andy Dittman Preliminary RNA-seq Data on Hyak</title>
   <dc:creator>Sam White</dc:creator>
@@ -31540,164 +31794,6 @@ Kolmogorov, Mikhail, Jeffrey Yuan, Yu Lin, and Pavel A. Pevzner. 2019. “Assemb
   <category>Siscowet</category>
   <guid>https://robertslab.github.io/sams-notebook/posts/2026/2026-03-26-Genome-Assembly---S.namaycush-Siscowet-Ecotype-with-PacBio-HiFi-Reads-Using-Flye/</guid>
   <pubDate>Thu, 26 Mar 2026 07:00:00 GMT</pubDate>
-</item>
-<item>
-  <title>Software Installation - EGAPx and FCS-GX on Klone</title>
-  <dc:creator>Sam White</dc:creator>
-  <link>https://robertslab.github.io/sams-notebook/posts/2026/2026-03-05-Software-Installation---EGAPx-and-FCS-GX-on-Klone/</link>
-  <description><![CDATA[ 
-
-
-
-
-
-<section id="intro" class="level1">
-<h1>INTRO</h1>
-<p>Laura <a href="https://github.com/RobertsLab/resources/issues/2399">asked me to install EGAPx and FCS-GX on Klone</a> (GitHub Issue) so that she can use them for annotation of some existing snow crab RNA-seq data she is working with.</p>
-</section>
-<section id="methods" class="level1">
-<h1>METHODS</h1>
-<section id="fcs-gx" class="level2">
-<h2 class="anchored" data-anchor-id="fcs-gx">[FCS-GX]</h2>
-<p>The steps below follow those outlined in the <a href="https://github.com/ncbi/fcs/wiki/FCS-adaptor-quickstart">FCS-GX documentation</a>.</p>
-<section id="get-fcs-python-script" class="level3">
-<h3 class="anchored" data-anchor-id="get-fcs-python-script">Get FCS Python script</h3>
-<div class="sourceCode" id="cb1" style="background: #f1f3f5;"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb1-1"><span class="bu" style="color: null;
-background-color: null;
-font-style: inherit;">cd</span> /gscratch/srlab/containers <span class="dt" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">\</span></span>
-<span id="cb1-2"><span class="kw" style="color: #003B4F;
-background-color: null;
-font-weight: bold;
-font-style: inherit;">&amp;&amp;</span> <span class="ex" style="color: null;
-background-color: null;
-font-style: inherit;">curl</span> <span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">-LO</span> https://github.com/ncbi/fcs/raw/main/dist/fcs.py</span></code></pre></div>
-</section>
-<section id="get-fcs-gx-singularity-image" class="level3">
-<h3 class="anchored" data-anchor-id="get-fcs-gx-singularity-image">Get FCS-GX Singularity image</h3>
-<div class="sourceCode" id="cb2" style="background: #f1f3f5;"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb2-1"><span class="ex" style="color: null;
-background-color: null;
-font-style: inherit;">curl</span> https://ftp.ncbi.nlm.nih.gov/genomes/TOOLS/FCS/releases/latest/fcs-gx.sif <span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">-Lo</span> fcs-gx.sif</span></code></pre></div>
-</section>
-<section id="get-fcs-gx-databases" class="level3">
-<h3 class="anchored" data-anchor-id="get-fcs-gx-databases">Get FCS-GX databases</h3>
-<div class="callout callout-style-simple callout-none no-icon">
-<div class="callout-body d-flex">
-<div class="callout-icon-container">
-<i class="callout-icon no-icon"></i>
-</div>
-<div class="callout-body-container">
-<p>This downloads ~500GB of data, so be sure you have enough storage space before running this command! Additionally, the download may take a while to complete.</p>
-</div>
-</div>
-</div>
-<p><code>module load coenv/python/3.13.11</code></p>
-<div class="sourceCode" id="cb3" style="background: #f1f3f5;"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb3-1"><span class="bu" style="color: null;
-background-color: null;
-font-style: inherit;">cd</span> /gscratch/scrubbed/samwhite/databases</span>
-<span id="cb3-2"></span>
-<span id="cb3-3"><span class="va" style="color: #111111;
-background-color: null;
-font-style: inherit;">SOURCE_DB_MANIFEST</span><span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">=</span><span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"https://ncbi-fcs-gx.s3.amazonaws.com/gxdb/latest/all.manifest"</span></span>
-<span id="cb3-4"></span>
-<span id="cb3-5"><span class="ex" style="color: null;
-background-color: null;
-font-style: inherit;">python3</span> /gscratch/srlab/containers/fcs.py <span class="dt" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">\</span></span>
-<span id="cb3-6">--image /gscratch/srlab/containers/fcs-gx.sif <span class="dt" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">\</span></span>
-<span id="cb3-7">db <span class="dt" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">\</span></span>
-<span id="cb3-8">get <span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">--mft</span> <span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"</span><span class="va" style="color: #111111;
-background-color: null;
-font-style: inherit;">$SOURCE_DB_MANIFEST</span><span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"</span> <span class="dt" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">\</span></span>
-<span id="cb3-9">--dir <span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"./gxdb"</span></span></code></pre></div>
-<div class="quarto-figure quarto-figure-center">
-<figure class="figure">
-<p><img src="https://robertslab.github.io/sams-notebook/posts/2026/2026-03-05-Software-Installation---EGAPx-and-FCS-GX-on-Klone/20260305-fcs_gx-db-downloads-completed.png" class="img-fluid figure-img" alt="Screenshot of completed DB downloads"></p>
-<figcaption>Screenshot of completed DB downloads</figcaption>
-</figure>
-</div>
-<p>Installation was <em>not</em> tested by running an annotation job, but the above steps were successfully completed without issue.</p>
-</section>
-</section>
-<section id="egapx" class="level2">
-<h2 class="anchored" data-anchor-id="egapx">EGAPx</h2>
-<p>The steps below follow those outlined in the <a href="https://github.com/ncbi/egapx">EGAPx documentation</a>.</p>
-<section id="containers-and-scripts" class="level3">
-<h3 class="anchored" data-anchor-id="containers-and-scripts">Containers and scripts</h3>
-<p>I created an Apptainer (Singularity) container for EGAPx and a script to execute it.</p>
-<p>Container definition file: <a href="https://github.com/RobertsLab/code/blob/cc8e19040ee50cb8cbe3bbb0fda6a17619e2beae/apptainer_definition_files/srlab-NCBI-EGAPx.def">srlab-NCBI-EGAPx.def</a> (GitHub)</p>
-<ul>
-<li><p>This container is based on the EGAPx Dockerfile and includes EGAPx and all dependencies.</p></li>
-<li><p>Primarily written using Claude Sonnet 4.6 (gAI agent) with some manual edits to ensure it would build correctly.</p></li>
-</ul>
-<p>Execution script: <a href="https://github.com/RobertsLab/code/blob/cc8e19040ee50cb8cbe3bbb0fda6a17619e2beae/apptainer_definition_files/run_egapx.sh">run_egapx.sh</a> (GitHub).</p>
-<ul>
-<li>This script is designed to execute the <code>srlab-NCBI-EGAPx.sif</code> container. It will create a cache directory, set a cache variable, and execute the container.</li>
-</ul>
-<p>Both have been added to Klone and can be found in the <code>/mmfs1/gscratch/srlab/containers</code> directory.</p>
-<p>Container and script have been added to Klone:</p>
-<ul>
-<li><p><code>/mmfs1/gscratch/srlab/containers/run_egapx.sh</code>: Script to execute <code>srlab-NCBI-EGAPx.sif</code> container. This will create a cache directory, set a cache variable, and bind directories to the container.</p>
-<p>Example usage: <code>bash   ./run_egapx.sh \   /opt/egapx/examples/input_D_farinae_small.yaml \   -e singularity \   -w ./work \   -o ./output</code></p>
-<p>This requires that the <code>srlab-NCBI-EGAPx.sif</code> container is in the same directory as this script. Both can be copied to other directories, if desired.</p></li>
-<li><p><code>/mmfs1/gscratch/srlab/containers/srlab-NCBI-EGAPx.sif</code>: Apptainer (Singularity) container. Can be executed by itself, but is better to use with the <code>run_egapx.sh</code> to ensure cache directory is set.</p>
-<p>To see additional help examples for using the <code>srlab-NCBI-EGAPx.sif</code> container:</p>
-<p><code>singularity run-help srlab-NCBI-EGAPx.sif</code></p></li>
-</ul>
-</section>
-<section id="test-egapx-container" class="level3">
-<h3 class="anchored" data-anchor-id="test-egapx-container">Test EGAPx container</h3>
-<p>The built-in test example was used to test the container. The test completed successfully, with all expected output files generated.</p>
-<div class="quarto-figure quarto-figure-center">
-<figure class="figure">
-<p><img src="https://robertslab.github.io/sams-notebook/posts/2026/2026-03-05-Software-Installation---EGAPx-and-FCS-GX-on-Klone/20260305-egapx-test-output.png" class="img-fluid figure-img" alt="Screenshot of EGAPx test output"></p>
-<figcaption>Screenshot of EGAPx test output</figcaption>
-</figure>
-</div>
-</section>
-</section>
-</section>
-<section id="conclusion" class="level1">
-<h1>CONCLUSION</h1>
-<p>EGAPx and FCS-GX have been successfully installed on Klone. Both were tested to ensure they are working correctly, with FCS-GX tested by downloading the databases and EGAPx tested by running the built-in test example.</p>
-<p>For info on how to run EGAPx: https://github.com/ncbi/egapx</p>
-
-
-</section>
-
- ]]></description>
-  <category>2026</category>
-  <category>Hyak</category>
-  <category>Klone</category>
-  <category>EGAPx</category>
-  <category>FCS-GX</category>
-  <category>annotation</category>
-  <guid>https://robertslab.github.io/sams-notebook/posts/2026/2026-03-05-Software-Installation---EGAPx-and-FCS-GX-on-Klone/</guid>
-  <pubDate>Thu, 05 Mar 2026 08:00:00 GMT</pubDate>
 </item>
 </channel>
 </rss>
