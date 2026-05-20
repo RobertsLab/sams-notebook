@@ -1,0 +1,175 @@
+---
+author: Sam White
+toc-title: Contents
+toc-depth: 5
+toc-location: left
+title: Trimming - Andy Dittman Preliminary RNA-seq Data Using Fastp FastQC MultiQC on Hyak
+date: '2026-05-20'
+draft: false
+engine: knitr
+categories: 
+  - "2026"
+---
+# INTRO
+
+
+
+
+Analysis was run on Hyak using the following Roberts Lab Apptainer image:
+
+- `srlab-R4.4-bioinformatics-container-c3d3116.sif` (built on 20260410)
+
+
+Code is below.
+
+---
+
+# VARIABLES
+```{r set-variables}
+# DIRECTORIES
+raw_reads_dir <- "/mmfs1/gscratch/scrubbed/samwhite/data/dittman_grc_rnaseq_1/"
+output_dir <- "/mmfs1/gscratch/scrubbed/samwhite/outputs/20260520-Fastp-FastQC-MultiQC-dittman-grc-rnaseq"
+
+# FILES
+fastq_pattern="*.fastq.gz"
+R1_fastq_pattern="*_R1_*.fastq.gz"
+R2_fastq_pattern="*_R2_*.fastq.gz"
+trimmed_fastq_pattern="*fastp-trim.fq.gz"
+
+
+
+# SETTINGS
+threads <- "50"
+
+
+# Export these as environment variables for bash chunks.
+Sys.setenv(
+  fastq_pattern = fastq_pattern,
+  raw_reads_dir = raw_reads_dir,
+  R1_fastq_pattern = R1_fastq_pattern,
+  R2_fastq_pattern = R2_fastq_pattern,
+  trimmed_fastq_pattern = trimmed_fastq_pattern,
+  output_dir = output_dir,
+  threads = threads
+)
+```
+
+# Fastp Trimming
+
+[fastp](https://github.com/OpenGene/fastp) [@chen2023] is set to auto-detect Illumina adapters, as well as trim the first 15bp from each read, as past experience shows these first 15bp are more inconsistent than the remainder of the read length.
+
+Expects filenames like: `lib_212412_sample_1703783_S120_L002_R2_001.fastq.gz`
+
+```{r fastp-trimming, engine='bash'}
+# Make output directories, if it doesn't exist
+mkdir --parents "${output_dir}"
+
+# Change to raw reads directory
+cd "${raw_reads_dir}"
+
+# Create arrays of fastq R1 files and sample names
+for fastq in ${R1_fastq_pattern}
+do
+  fastq_array_R1+=("${fastq}")
+  R1_names_array+=("$(echo "${fastq}" | awk -F"_" -v OFS="_" '{print $1, $2, $3, $4, $5, $6}')")
+done
+
+# Create array of fastq R2 files
+for fastq in ${R2_fastq_pattern}
+do
+  fastq_array_R2+=("${fastq}")
+  R2_names_array+=("$(echo "${fastq}" | awk -F"_" -v OFS="_" '{print $1, $2, $3, $4, $5, $6}')")
+done
+
+# Create list of fastq files used in analysis
+# Create MD5 checksum for reference
+if [ ! -f "${output_dir}"/raw-fastq-checksums.md5 ]; then
+for fastq in *.gz
+  do
+    md5sum ${fastq} >> "${output_dir}"/raw-fastq-checksums.md5
+  done
+fi
+
+# Run fastp on files
+# Adds JSON report output for downstream usage by MultiQC
+for index in "${!fastq_array_R1[@]}"
+do
+  R1_sample_name=$(echo "${R1_names_array[index]}")
+  R2_sample_name=$(echo "${R2_names_array[index]}")
+  ${fastp} \
+  --in1 ${fastq_array_R1[index]} \
+  --in2 ${fastq_array_R2[index]} \
+  --detect_adapter_for_pe \
+  --trim_poly_g \
+  --trim_poly_x \
+  --trim_front1 15 \
+  --trim_front2 15 \
+  --thread ${threads} \
+  --html "${output_dir}"/"${R1_sample_name}".fastp-trim.report.html \
+  --json "${output_dir}"/"${R1_sample_name}".fastp-trim.report.json \
+  --out1 "${output_dir}"/"${R1_sample_name}"_R1_001.fastp-trim.fq.gz \
+  --out2 "${output_dir}"/"${R2_sample_name}"_R2_001.fastp-trim.fq.gz \
+  2>> "${output_dir}"/fastp.stderr
+
+  # Generate md5 checksums for newly trimmed files
+  cd "${output_dir}"
+  md5sum "${R1_sample_name}"_R1_001.fastp-trim.fq.gz > "${R1_sample_name}"_R1_001.fastp-trim.fq.gz.md5
+  md5sum "${R2_sample_name}"_R2_001.fastp-trim.fq.gz > "${R2_sample_name}"_R2_001.fastp-trim.fq.gz.md5
+  cd -
+done
+```
+
+# FASTQC/MULTIQC
+
+Uses `--cl-config "sp: { fastp: { fn: '*report.json' } }"` to update the
+MultiQC search pattern for the fastp module.
+```{r fastqc-multiqc, engine='bash'}
+# Make output directory if it doesn't exist
+mkdir --parents "${output_dir}"
+
+############ RUN FASTQC ############
+
+
+# Create array of trimmed FastQs
+trimmed_fastqs_array=(${output_dir}/${trimmed_fastq_pattern})
+
+# Pass array contents to new variable as space-delimited list
+trimmed_fastqc_list=$(echo "${trimmed_fastqs_array[*]}")
+
+echo "Beginning FastQC on trimmed reads..."
+echo ""
+
+# Run FastQC
+### NOTE: Do NOT quote trimmed_fastqc_list
+fastqc \
+--threads ${threads} \
+--outdir ${output_dir} \
+--quiet \
+${trimmed_fastqc_list}
+
+echo "FastQC on trimmed reads complete!"
+echo ""
+
+############ END FASTQC ############
+
+############ RUN MULTIQC ############
+echo "Beginning MultiQC on trimmed FastQC..."
+echo ""
+
+multiqc ${output_dir} \
+--cl-config "sp: { fastp: { fn: '*report.json' } }" \
+--interactive \
+-o ${output_dir}
+
+echo ""
+echo "MultiQC on trimmed FastQs complete."
+echo ""
+
+############ END MULTIQC ############
+
+echo "Removing FastQC zip files."
+echo ""
+rm ${output_dir}/*.zip
+echo "FastQC zip files removed."
+echo ""
+```
