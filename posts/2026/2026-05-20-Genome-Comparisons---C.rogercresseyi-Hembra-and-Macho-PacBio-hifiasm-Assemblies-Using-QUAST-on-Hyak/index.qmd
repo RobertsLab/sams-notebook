@@ -1,0 +1,103 @@
+---
+author: Sam White
+toc-title: Contents
+toc-depth: 5
+toc-location: left
+title: Genome Comparisons - C.rogercresseyi Hembra and Macho PacBio hifiasm Assemblies Using QUAST on Hyak
+date: '2026-05-20'
+draft: true
+engine: knitr
+categories: 
+  - "2026"
+  - "hyak"
+  - "Caligus rogercresseyi"
+  - "QUAST"
+  - "sea lice"
+---
+# INTRO
+I previously assembled two _C. rogercresseyi_ genomes (Hembra and Macho) using hifiasm on Hyak:
+
+- [2026-05-19-Genome-Assembly---C.rogercresseyi-Hembra-with-PacBio-HiFi-Reads-Using-hifiasm-on-Hyak](../2026-05-19-Genome-Assembly---C.rogercresseyi-Hembra-with-PacBio-HiFi-Reads-Using-hifiasm-on-Hyak/index.qmd) (Notebook entry)
+
+- [2026-05-19-Genome-Assembly---C.rogercresseyi-Macho-with-PacBio-HiFi-Reads-Using-hifiasm-on-Hyak](../2026-05-19-Genome-Assembly---C.rogercresseyi-Macho-with-PacBio-HiFi-Reads-Using-hifiasm-on-Hyak/index.qmd) (Notebook entry)
+
+Used [QUAST](https://quast.sourceforge.net/docs/manual.html) (SourceForge) to evaluate the two sets of PacBio genome assemblies produced with [hifiasm](https://github.com/chhylp123/hifiasm) (GitHub).
+
+# RESULTS
+
+Output directory:
+
+- [https://gannet.fish.washington.edu/Atumefaciens/20260520-crog-quast/](https://gannet.fish.washington.edu/Atumefaciens/20260520-crog-quast/)
+
+
+Code is below.
+
+---
+
+
+# SETUP
+## Libraries
+```{r setup}
+library(knitr)
+library(tidyverse)
+```
+
+    ## ── Attaching core tidyverse packages ──────────────────────── tidyverse 2.0.0 ──
+    ## ✔ dplyr     1.1.4     ✔ readr     2.1.5
+    ## ✔ forcats   1.0.0     ✔ stringr   1.5.1
+    ## ✔ ggplot2   3.5.2     ✔ tibble    3.2.1
+    ## ✔ lubridate 1.9.4     ✔ tidyr     1.3.1
+    ## ✔ purrr     1.0.4     
+    ## ── Conflicts ────────────────────────────────────────── tidyverse_conflicts() ──
+    ## ✖ dplyr::filter() masks stats::filter()
+    ## ✖ dplyr::lag()    masks stats::lag()
+    ## ℹ Use the conflicted package (<http://conflicted.r-lib.org/>) to force all conflicts to become errors
+## Kniter Options
+```{r set-knitr-options}
+knitr::opts_chunk$set(
+  echo = TRUE,         # Display code chunks
+    eval = FALSE,        # Evaluate code chunks
+    results = "hold",   # Hold outputs and show them after the full code chunk
+  warning = FALSE,     # Hide warnings
+        collapse = FALSE,    # Keep code and output in separate blocks
+        warning = FALSE,     # Hide warnings
+        message = FALSE,     # Hide messages
+        comment = "##"      # Prefix output lines with '##' so output is visually distinct
+)
+```
+
+## Variables
+```{r set-variables}
+# OUTPUT DIRECTORY
+output_dir <- "/mmfs1/gscratch/scrubbed/samwhite/outputs/20260520-crog-quast"
+
+# INPUT FILES
+hifiasm_hembra_fasta <- "/mmfs1/gscratch/scrubbed/samwhite/outputs/20260519-crog-hembra-genome_assembly-hifiasm/crog-hembra-pb-hifiasm-assembly.fa"
+hifiasm_macho_fasta <- "/mmfs1/gscratch/scrubbed/samwhite/outputs/20260519-crog-macho-genome_assembly-hifiasm/crog-macho-pb-hifiasm-assembly.fa"
+
+# SETTINGS
+threads <- "40"
+
+
+# Export these as environment variables for bash chunks.
+Sys.setenv(
+  hifiasm_hembra_fasta = hifiasm_hembra_fasta,
+  hifiasm_macho_fasta = hifiasm_macho_fasta,
+  output_dir = output_dir,
+  threads = threads
+)
+```
+
+# QUAST
+
+```{r QUAST, engine=bash}
+# Make output directory, if it doesn't exist
+mkdir --parents "${output_dir}"
+
+quast.py \
+"${hifiasm_hembra_fasta}" \
+"${hifiasm_macho_fasta}" \
+--output-dir "${output_dir}" \
+--threads "${threads}" \
+--labels "hembra_hifiasm, macho_hifiasm"
+```
