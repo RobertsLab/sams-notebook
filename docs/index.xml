@@ -266,6 +266,882 @@ font-style: inherit;">1</span></span></code></pre></div>
   <pubDate>Wed, 20 May 2026 07:00:00 GMT</pubDate>
 </item>
 <item>
+  <title>Trimming - Andy Dittman Preliminary RNA-seq Data Using Fastp FastQC MultiQC on Hyak</title>
+  <dc:creator>Sam White</dc:creator>
+  <link>https://robertslab.github.io/sams-notebook/posts/2026/2026-05-20-Trimming---Andy-Dittman-Preliminary-RNA-seq-Data-Using-Fastp-FastQC-MultiQC-on-Hyak/</link>
+  <description><![CDATA[ 
+
+
+
+
+
+<section id="intro" class="level1">
+<h1>INTRO</h1>
+<p>After <a href="../2026/2026-05-19-FastQC-on-Andy-Dittman-Preliminary-RNA-seq-Data-on-Hyak/index.qmd">running an initial FastQC on the raw reads</a>, I thought it would be prudent to run the reads through some adapter and quality trimming. I ran <a href="https://github.com/OpenGene/fastp">fastp</a> to trim the reads (removed adapters and low-quality bases, 15bp from 5’ end of each read, removed poly-G and poly-A tails), and then ran FastQC and MultiQC on the trimmed reads to assess the quality of the trimmed data. See CODE section below for specifics.</p>
+<p>The trimming and quality assessment was run on Hyak using our Apptainer image: <code>srlab-R4.4-bioinformatics-container-c3d3116.sif</code>.</p>
+</section>
+<section id="results" class="level1">
+<h1>RESULTS</h1>
+<p>Output directory:</p>
+<ul>
+<li><a href="https://gannet.fish.washington.edu/Atumefaciens/20260520-crog-Fastp-FastQC-MultiQC-dittman-grc-rnaseq/">https://gannet.fish.washington.edu/Atumefaciens/20260520-crog-Fastp-FastQC-MultiQC-dittman-grc-rnaseq/</a></li>
+</ul>
+<p>MultiQC report (HTML):</p>
+<ul>
+<li><a href="https://gannet.fish.washington.edu/Atumefaciens/20260520-crog-Fastp-FastQC-MultiQC-dittman-grc-rnaseq/multiqc_report.html">https://gannet.fish.washington.edu/Atumefaciens/20260520-crog-Fastp-FastQC-MultiQC-dittman-grc-rnaseq/multiqc_report.html</a></li>
+</ul>
+</section>
+<section id="discussion" class="level1">
+<h1>DISCUSSION</h1>
+<p>Trimming with <a href="https://github.com/OpenGene/fastp"><code>fastp</code></a> went quickly and smoothly, and the resulting trimmed FastQs were of good quality, as assessed by FastQC and MultiQC. After trimming, the per base sequence content is much more consistent across the read length.</p>
+<p>I’ll recommend that Andy proceed with having the remainder of the samples sequenced.</p>
+<p>Code is below.</p>
+<hr>
+</section>
+<section id="code" class="level1">
+<h1>CODE</h1>
+</section>
+<section id="variables" class="level1">
+<h1>VARIABLES</h1>
+<div class="cell">
+<details class="code-fold">
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb1" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># DIRECTORIES</span></span>
+<span id="cb1-2">raw_reads_dir <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"/mmfs1/gscratch/scrubbed/samwhite/data/dittman_grc_rnaseq_1/"</span></span>
+<span id="cb1-3">output_dir <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"/mmfs1/gscratch/scrubbed/samwhite/outputs/20260520-crog-Fastp-FastQC-MultiQC-dittman-grc-rnaseq"</span></span>
+<span id="cb1-4"></span>
+<span id="cb1-5"><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># FILES</span></span>
+<span id="cb1-6">fastq_pattern<span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">=</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"*.fastq.gz"</span></span>
+<span id="cb1-7">R1_fastq_pattern<span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">=</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"*_R1_*.fastq.gz"</span></span>
+<span id="cb1-8">R2_fastq_pattern<span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">=</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"*_R2_*.fastq.gz"</span></span>
+<span id="cb1-9">trimmed_fastq_pattern<span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">=</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"*fastp-trim.fq.gz"</span></span>
+<span id="cb1-10"></span>
+<span id="cb1-11"></span>
+<span id="cb1-12"></span>
+<span id="cb1-13"><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># SETTINGS</span></span>
+<span id="cb1-14">threads <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"50"</span></span>
+<span id="cb1-15"></span>
+<span id="cb1-16"></span>
+<span id="cb1-17"><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># Export these as environment variables for bash chunks.</span></span>
+<span id="cb1-18"><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">Sys.setenv</span>(</span>
+<span id="cb1-19">  <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">fastq_pattern =</span> fastq_pattern,</span>
+<span id="cb1-20">  <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">raw_reads_dir =</span> raw_reads_dir,</span>
+<span id="cb1-21">  <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">R1_fastq_pattern =</span> R1_fastq_pattern,</span>
+<span id="cb1-22">  <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">R2_fastq_pattern =</span> R2_fastq_pattern,</span>
+<span id="cb1-23">  <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">trimmed_fastq_pattern =</span> trimmed_fastq_pattern,</span>
+<span id="cb1-24">  <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">output_dir =</span> output_dir,</span>
+<span id="cb1-25">  <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">threads =</span> threads</span>
+<span id="cb1-26">)</span></code></pre></div>
+</details>
+</div>
+</section>
+<section id="fastp-trimming" class="level1">
+<h1>Fastp Trimming</h1>
+<p><a href="https://github.com/OpenGene/fastp">fastp</a> <span class="citation" data-cites="chen2023">[@chen2023]</span> is set to auto-detect Illumina adapters, as well as trim the first 15bp from each read, as past experience shows these first 15bp are more inconsistent than the remainder of the read length.</p>
+<p>Expects filenames like: <code>lib_212412_sample_1703783_S120_L002_R2_001.fastq.gz</code></p>
+<div class="cell">
+<details class="code-fold">
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb2" style="background: #f1f3f5;"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb2-1"><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># Make output directories, if it doesn't exist</span></span>
+<span id="cb2-2"><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">mkdir</span> <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">--parents</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"</span><span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">${output_dir}</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"</span></span>
+<span id="cb2-3"></span>
+<span id="cb2-4"><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># Change to raw reads directory</span></span>
+<span id="cb2-5"><span class="bu" style="color: null;
+background-color: null;
+font-style: inherit;">cd</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"</span><span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">${raw_reads_dir}</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"</span></span>
+<span id="cb2-6"></span>
+<span id="cb2-7"><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># Create arrays of fastq R1 files and sample names</span></span>
+<span id="cb2-8"><span class="cf" style="color: #003B4F;
+background-color: null;
+font-weight: bold;
+font-style: inherit;">for</span> fastq <span class="kw" style="color: #003B4F;
+background-color: null;
+font-weight: bold;
+font-style: inherit;">in</span> <span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">${R1_fastq_pattern}</span></span>
+<span id="cb2-9"><span class="cf" style="color: #003B4F;
+background-color: null;
+font-weight: bold;
+font-style: inherit;">do</span></span>
+<span id="cb2-10">  <span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">fastq_array_R1</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">+=</span><span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">(</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"</span><span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">${fastq}</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"</span><span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">)</span></span>
+<span id="cb2-11">  <span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">R1_names_array</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">+=</span><span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">(</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"</span><span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">$(</span><span class="bu" style="color: null;
+background-color: null;
+font-style: inherit;">echo</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"</span><span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">${fastq}</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"</span> <span class="kw" style="color: #003B4F;
+background-color: null;
+font-weight: bold;
+font-style: inherit;">|</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">awk</span> <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">-F</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"_"</span> <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">-v</span> OFS=<span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"_"</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">'{print $1, $2, $3, $4, $5, $6}'</span><span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">)</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"</span><span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">)</span></span>
+<span id="cb2-12"><span class="cf" style="color: #003B4F;
+background-color: null;
+font-weight: bold;
+font-style: inherit;">done</span></span>
+<span id="cb2-13"></span>
+<span id="cb2-14"><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># Create array of fastq R2 files</span></span>
+<span id="cb2-15"><span class="cf" style="color: #003B4F;
+background-color: null;
+font-weight: bold;
+font-style: inherit;">for</span> fastq <span class="kw" style="color: #003B4F;
+background-color: null;
+font-weight: bold;
+font-style: inherit;">in</span> <span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">${R2_fastq_pattern}</span></span>
+<span id="cb2-16"><span class="cf" style="color: #003B4F;
+background-color: null;
+font-weight: bold;
+font-style: inherit;">do</span></span>
+<span id="cb2-17">  <span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">fastq_array_R2</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">+=</span><span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">(</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"</span><span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">${fastq}</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"</span><span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">)</span></span>
+<span id="cb2-18">  <span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">R2_names_array</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">+=</span><span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">(</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"</span><span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">$(</span><span class="bu" style="color: null;
+background-color: null;
+font-style: inherit;">echo</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"</span><span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">${fastq}</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"</span> <span class="kw" style="color: #003B4F;
+background-color: null;
+font-weight: bold;
+font-style: inherit;">|</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">awk</span> <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">-F</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"_"</span> <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">-v</span> OFS=<span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"_"</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">'{print $1, $2, $3, $4, $5, $6}'</span><span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">)</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"</span><span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">)</span></span>
+<span id="cb2-19"><span class="cf" style="color: #003B4F;
+background-color: null;
+font-weight: bold;
+font-style: inherit;">done</span></span>
+<span id="cb2-20"></span>
+<span id="cb2-21"><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># Create list of fastq files used in analysis</span></span>
+<span id="cb2-22"><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># Create MD5 checksum for reference</span></span>
+<span id="cb2-23"><span class="cf" style="color: #003B4F;
+background-color: null;
+font-weight: bold;
+font-style: inherit;">if</span> <span class="bu" style="color: null;
+background-color: null;
+font-style: inherit;">[</span> <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">!</span> <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">-f</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"</span><span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">${output_dir}</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"</span>/raw-fastq-checksums.md5 <span class="bu" style="color: null;
+background-color: null;
+font-style: inherit;">]</span><span class="kw" style="color: #003B4F;
+background-color: null;
+font-weight: bold;
+font-style: inherit;">;</span> <span class="cf" style="color: #003B4F;
+background-color: null;
+font-weight: bold;
+font-style: inherit;">then</span></span>
+<span id="cb2-24"><span class="cf" style="color: #003B4F;
+background-color: null;
+font-weight: bold;
+font-style: inherit;">for</span> fastq <span class="kw" style="color: #003B4F;
+background-color: null;
+font-weight: bold;
+font-style: inherit;">in</span> <span class="pp" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">*</span>.gz</span>
+<span id="cb2-25">  <span class="cf" style="color: #003B4F;
+background-color: null;
+font-weight: bold;
+font-style: inherit;">do</span></span>
+<span id="cb2-26">    <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">md5sum</span> <span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">${fastq}</span> <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">&gt;&gt;</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"</span><span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">${output_dir}</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"</span>/raw-fastq-checksums.md5</span>
+<span id="cb2-27">  <span class="cf" style="color: #003B4F;
+background-color: null;
+font-weight: bold;
+font-style: inherit;">done</span></span>
+<span id="cb2-28"><span class="cf" style="color: #003B4F;
+background-color: null;
+font-weight: bold;
+font-style: inherit;">fi</span></span>
+<span id="cb2-29"></span>
+<span id="cb2-30"><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># Run fastp on files</span></span>
+<span id="cb2-31"><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># Adds JSON report output for downstream usage by MultiQC</span></span>
+<span id="cb2-32"><span class="cf" style="color: #003B4F;
+background-color: null;
+font-weight: bold;
+font-style: inherit;">for</span> index <span class="kw" style="color: #003B4F;
+background-color: null;
+font-weight: bold;
+font-style: inherit;">in</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"</span><span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">${</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">!</span><span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">fastq_array_R1</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">[@]</span><span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">}</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"</span></span>
+<span id="cb2-33"><span class="cf" style="color: #003B4F;
+background-color: null;
+font-weight: bold;
+font-style: inherit;">do</span></span>
+<span id="cb2-34">  <span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">R1_sample_name</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span><span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">$(</span><span class="bu" style="color: null;
+background-color: null;
+font-style: inherit;">echo</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"</span><span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">${R1_names_array</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">[</span>index<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">]</span><span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">}</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"</span><span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">)</span></span>
+<span id="cb2-35">  <span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">R2_sample_name</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span><span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">$(</span><span class="bu" style="color: null;
+background-color: null;
+font-style: inherit;">echo</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"</span><span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">${R2_names_array</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">[</span>index<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">]</span><span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">}</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"</span><span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">)</span></span>
+<span id="cb2-36">  <span class="ex" style="color: null;
+background-color: null;
+font-style: inherit;">fastp</span> <span class="dt" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">\</span></span>
+<span id="cb2-37">  <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">--in1</span> <span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">${fastq_array_R1</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">[</span>index<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">]</span><span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">}</span> <span class="dt" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">\</span></span>
+<span id="cb2-38">  <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">--in2</span> <span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">${fastq_array_R2</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">[</span>index<span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">]</span><span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">}</span> <span class="dt" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">\</span></span>
+<span id="cb2-39">  <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">--detect_adapter_for_pe</span> <span class="dt" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">\</span></span>
+<span id="cb2-40">  <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">--trim_poly_g</span> <span class="dt" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">\</span></span>
+<span id="cb2-41">  <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">--trim_poly_x</span> <span class="dt" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">\</span></span>
+<span id="cb2-42">  <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">--trim_front1</span> 15 <span class="dt" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">\</span></span>
+<span id="cb2-43">  <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">--trim_front2</span> 15 <span class="dt" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">\</span></span>
+<span id="cb2-44">  <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">--thread</span> <span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">${threads}</span> <span class="dt" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">\</span></span>
+<span id="cb2-45">  <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">--html</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"</span><span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">${output_dir}</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"</span>/<span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"</span><span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">${R1_sample_name}</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"</span>.fastp-trim.report.html <span class="dt" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">\</span></span>
+<span id="cb2-46">  <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">--json</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"</span><span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">${output_dir}</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"</span>/<span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"</span><span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">${R1_sample_name}</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"</span>.fastp-trim.report.json <span class="dt" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">\</span></span>
+<span id="cb2-47">  <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">--out1</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"</span><span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">${output_dir}</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"</span>/<span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"</span><span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">${R1_sample_name}</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"</span>_R1_001.fastp-trim.fq.gz <span class="dt" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">\</span></span>
+<span id="cb2-48">  <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">--out2</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"</span><span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">${output_dir}</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"</span>/<span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"</span><span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">${R2_sample_name}</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"</span>_R2_001.fastp-trim.fq.gz <span class="dt" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">\</span></span>
+<span id="cb2-49">  <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">2</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">&gt;&gt;</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"</span><span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">${output_dir}</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"</span>/fastp.stderr</span>
+<span id="cb2-50"></span>
+<span id="cb2-51">  <span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># Generate md5 checksums for newly trimmed files</span></span>
+<span id="cb2-52">  <span class="bu" style="color: null;
+background-color: null;
+font-style: inherit;">cd</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"</span><span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">${output_dir}</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"</span></span>
+<span id="cb2-53">  <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">md5sum</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"</span><span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">${R1_sample_name}</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"</span>_R1_001.fastp-trim.fq.gz <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">&gt;</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"</span><span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">${R1_sample_name}</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"</span>_R1_001.fastp-trim.fq.gz.md5</span>
+<span id="cb2-54">  <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">md5sum</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"</span><span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">${R2_sample_name}</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"</span>_R2_001.fastp-trim.fq.gz <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">&gt;</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"</span><span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">${R2_sample_name}</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"</span>_R2_001.fastp-trim.fq.gz.md5</span>
+<span id="cb2-55">  <span class="bu" style="color: null;
+background-color: null;
+font-style: inherit;">cd</span> <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">-</span></span>
+<span id="cb2-56"><span class="cf" style="color: #003B4F;
+background-color: null;
+font-weight: bold;
+font-style: inherit;">done</span></span></code></pre></div>
+</details>
+</div>
+</section>
+<section id="fastqcmultiqc" class="level1">
+<h1>FASTQC/MULTIQC</h1>
+<p>Uses <code>--cl-config "sp: { fastp: { fn: '*report.json' } }"</code> to update the MultiQC search pattern for the fastp module.</p>
+<div class="cell">
+<details class="code-fold">
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb3" style="background: #f1f3f5;"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb3-1"><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># Make output directory if it doesn't exist</span></span>
+<span id="cb3-2"><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">mkdir</span> <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">--parents</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"</span><span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">${output_dir}</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"</span></span>
+<span id="cb3-3"></span>
+<span id="cb3-4"><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">############ RUN FASTQC ############</span></span>
+<span id="cb3-5"></span>
+<span id="cb3-6"></span>
+<span id="cb3-7"><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># Create array of trimmed FastQs</span></span>
+<span id="cb3-8"><span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">trimmed_fastqs_array</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span><span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">(${output_dir}</span>/<span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">${trimmed_fastq_pattern})</span></span>
+<span id="cb3-9"></span>
+<span id="cb3-10"><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># Pass array contents to new variable as space-delimited list</span></span>
+<span id="cb3-11"><span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">trimmed_fastqc_list</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span><span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">$(</span><span class="bu" style="color: null;
+background-color: null;
+font-style: inherit;">echo</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"</span><span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">${trimmed_fastqs_array</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">[*]</span><span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">}</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"</span><span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">)</span></span>
+<span id="cb3-12"></span>
+<span id="cb3-13"><span class="bu" style="color: null;
+background-color: null;
+font-style: inherit;">echo</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"Beginning FastQC on trimmed reads..."</span></span>
+<span id="cb3-14"><span class="bu" style="color: null;
+background-color: null;
+font-style: inherit;">echo</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">""</span></span>
+<span id="cb3-15"></span>
+<span id="cb3-16"><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># Run FastQC</span></span>
+<span id="cb3-17"><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">### </span><span class="al" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">NOTE</span><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">: Do NOT quote trimmed_fastqc_list</span></span>
+<span id="cb3-18"><span class="ex" style="color: null;
+background-color: null;
+font-style: inherit;">fastqc</span> <span class="dt" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">\</span></span>
+<span id="cb3-19">--threads <span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">${threads}</span> <span class="dt" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">\</span></span>
+<span id="cb3-20">--outdir <span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">${output_dir}</span> <span class="dt" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">\</span></span>
+<span id="cb3-21">--quiet <span class="dt" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">\</span></span>
+<span id="cb3-22"><span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">${trimmed_fastqc_list}</span></span>
+<span id="cb3-23"></span>
+<span id="cb3-24"><span class="bu" style="color: null;
+background-color: null;
+font-style: inherit;">echo</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"FastQC on trimmed reads complete!"</span></span>
+<span id="cb3-25"><span class="bu" style="color: null;
+background-color: null;
+font-style: inherit;">echo</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">""</span></span>
+<span id="cb3-26"></span>
+<span id="cb3-27"><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">############ </span><span class="re">END</span><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"> FASTQC ############</span></span>
+<span id="cb3-28"></span>
+<span id="cb3-29"><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">############ RUN MULTIQC ############</span></span>
+<span id="cb3-30"><span class="bu" style="color: null;
+background-color: null;
+font-style: inherit;">echo</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"Beginning MultiQC on trimmed FastQC..."</span></span>
+<span id="cb3-31"><span class="bu" style="color: null;
+background-color: null;
+font-style: inherit;">echo</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">""</span></span>
+<span id="cb3-32"></span>
+<span id="cb3-33"><span class="ex" style="color: null;
+background-color: null;
+font-style: inherit;">multiqc</span> <span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">${output_dir}</span> <span class="dt" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">\</span></span>
+<span id="cb3-34">--cl-config <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"sp: { fastp: { fn: '*report.json' } }"</span> <span class="dt" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">\</span></span>
+<span id="cb3-35">--interactive <span class="dt" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">\</span></span>
+<span id="cb3-36">-o <span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">${output_dir}</span></span>
+<span id="cb3-37"></span>
+<span id="cb3-38"><span class="bu" style="color: null;
+background-color: null;
+font-style: inherit;">echo</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">""</span></span>
+<span id="cb3-39"><span class="bu" style="color: null;
+background-color: null;
+font-style: inherit;">echo</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"MultiQC on trimmed FastQs complete."</span></span>
+<span id="cb3-40"><span class="bu" style="color: null;
+background-color: null;
+font-style: inherit;">echo</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">""</span></span>
+<span id="cb3-41"></span>
+<span id="cb3-42"><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">############ </span><span class="re">END</span><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"> MULTIQC ############</span></span>
+<span id="cb3-43"></span>
+<span id="cb3-44"><span class="bu" style="color: null;
+background-color: null;
+font-style: inherit;">echo</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"Removing FastQC zip files."</span></span>
+<span id="cb3-45"><span class="bu" style="color: null;
+background-color: null;
+font-style: inherit;">echo</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">""</span></span>
+<span id="cb3-46"><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">rm</span> <span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">${output_dir}</span>/<span class="pp" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">*</span>.zip</span>
+<span id="cb3-47"><span class="bu" style="color: null;
+background-color: null;
+font-style: inherit;">echo</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"FastQC zip files removed."</span></span>
+<span id="cb3-48"><span class="bu" style="color: null;
+background-color: null;
+font-style: inherit;">echo</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">""</span></span></code></pre></div>
+</details>
+</div>
+
+
+</section>
+
+ ]]></description>
+  <category>2026</category>
+  <category>fastp</category>
+  <category>fastqc</category>
+  <category>multiqc</category>
+  <category>hyak</category>
+  <category>RNA-seq</category>
+  <category>trimming</category>
+  <guid>https://robertslab.github.io/sams-notebook/posts/2026/2026-05-20-Trimming---Andy-Dittman-Preliminary-RNA-seq-Data-Using-Fastp-FastQC-MultiQC-on-Hyak/</guid>
+  <pubDate>Wed, 20 May 2026 07:00:00 GMT</pubDate>
+  <media:content url="https://robertslab.github.io/sams-notebook/posts/2026/2026-05-20-Trimming---Andy-Dittman-Preliminary-RNA-seq-Data-Using-Fastp-FastQC-MultiQC-on-Hyak/20260520-multiqc-per_base_sequence_content.png" medium="image" type="image/png" height="84" width="144"/>
+</item>
+<item>
   <title>FastQC MultiQC - Andy Dittman Preliminary RNA-seq Data on Hyak</title>
   <dc:creator>Sam White</dc:creator>
   <link>https://robertslab.github.io/sams-notebook/posts/2026/2026-05-19-FastQC-MultiQC---Andy-Dittman-Preliminary-RNA-seq-Data-on-Hyak/</link>
@@ -31158,571 +32034,6 @@ font-style: inherit;">"Output files written to: "</span>, out_dir)</span></code>
   <category>Samples Submitted</category>
   <guid>https://robertslab.github.io/sams-notebook/posts/2026/2026-03-30-Samples-Submitted---Salmon-Kidney-Tissue-to-SolusCell-for-Cristian-Gallardo/</guid>
   <pubDate>Mon, 30 Mar 2026 07:00:00 GMT</pubDate>
-</item>
-<item>
-  <title>Genome Assembly - S.namaycush Lean Ecotype with PacBio HiFi Reads Using Flye</title>
-  <dc:creator>Sam White</dc:creator>
-  <link>https://robertslab.github.io/sams-notebook/posts/2026/2026-03-26-Genome-Assembly---S.namaycush-Lean-Ecotype-with-PacBio-HiFi-Reads-Using-Flye/</link>
-  <description><![CDATA[ 
-
-
-
-
-
-<section id="intro" class="level1">
-<h1>INTRO</h1>
-<p>As part of <a href="https://github.com/RobertsLab/project-lake-trout"><code>project-lake-trout</code></a> (GitHub repo), Steven <a href="https://github.com/RobertsLab/resources/issues/2409">asked that I assemble the genome of a lean ecotype of lake trout</a> (GitHub Issue), <em>Salvelinus namaycush</em>, using PacBio HiFi reads. I opted to use Flye for the assembly, as we’d previously used it for <a href="http://en.wikipedia.org/wiki/Chionoecetes_bairdi"><em>Chionoecetes bairdi</em> (Tanner crab)</a> (Wikipedia), and it performed well. The assembly process was straightforward and quick.</p>
-<p>I performed the assembly on Hyak (Klone), UW’s high-performance computing cluster. I used our Apptainer (Singularity) container to run the job (<code>srlab-R4.4-bioinformatics-container-fca8ae6.sif</code>), which includes Flye version 2.9.6.</p>
-<p>Below is the rendered markdown from <code>13.1-genome-assembly-lean.Rmd</code>. The run took ~7 days.</p>
-</section>
-<section id="primary-outputs" class="level1">
-<h1>PRIMARY OUTPUTS</h1>
-<ul>
-<li><p>FastA (3.9GB): https://gannet.fish.washington.edu/gitrepos/project-lake-trout/output/13.1-genome-assembly-lean/snam-lean-pb-flye-assembly.fasta</p></li>
-<li><p>MD5: https://gannet.fish.washington.edu/gitrepos/project-lake-trout/output/13.1-genome-assembly-lean/snam-lean-pb-flye-assembly.fasta.md5</p></li>
-<li><p>FastA index: https://gannet.fish.washington.edu/gitrepos/project-lake-trout/output/13.1-genome-assembly-lean/snam-lean-pb-flye-assembly.fasta.fai</p></li>
-</ul>
-<p>Once I’ve also assembled this genome using <a href="https://github.com/CHPGenetics/hifiasm">hifiasm</a>, I’ll compare the two assemblies using <a href="https://github.com/ablab/quast">QUAST</a>, which will provide a more comprehensive set of assembly statistics and metrics.</p>
-<hr>
-</section>
-<section id="genome-assembly-lean" class="level1">
-<h1>13.1-genome-assembly-lean</h1>
-<p>Sam White 2026-03-26</p>
-</section>
-<section id="background" class="level1">
-<h1>1 BACKGROUND</h1>
-<p>Use <a href="https://github.com/mikolmogorov/Flye">Flye</a>(GitHub) (Kolmogorov et al.&nbsp;2019) to assemble PacBio reads for <em>S.namaycush</em> <code>lean</code> ecotype.</p>
-</section>
-<section id="setup" class="level1">
-<h1>2 SETUP</h1>
-<section id="libraries" class="level2">
-<h2 class="anchored" data-anchor-id="libraries">2.1 Libraries</h2>
-<div class="sourceCode" id="cb1" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">library</span>(knitr)</span>
-<span id="cb1-2"><span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">library</span>(tidyverse)</span></code></pre></div>
-<pre><code>## ── Attaching core tidyverse packages ──────────────────────── tidyverse 2.0.0 ──
-## ✔ dplyr     1.1.4     ✔ readr     2.1.5
-## ✔ forcats   1.0.0     ✔ stringr   1.5.1
-## ✔ ggplot2   3.5.2     ✔ tibble    3.2.1
-## ✔ lubridate 1.9.4     ✔ tidyr     1.3.1
-## ✔ purrr     1.0.4     
-## ── Conflicts ────────────────────────────────────────── tidyverse_conflicts() ──
-## ✖ dplyr::filter() masks stats::filter()
-## ✖ dplyr::lag()    masks stats::lag()
-## ℹ Use the conflicted package (&lt;http://conflicted.r-lib.org/&gt;) to force all conflicts to become errors</code></pre>
-<div class="sourceCode" id="cb3" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb3-1"><span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">library</span>(reticulate)</span>
-<span id="cb3-2"></span>
-<span id="cb3-3">knitr<span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">::</span>opts_chunk<span class="sc" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">$</span><span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">set</span>(</span>
-<span id="cb3-4">  <span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">echo =</span> <span class="cn" style="color: #8f5902;
-background-color: null;
-font-style: inherit;">TRUE</span>,         <span class="co" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;"># Display code chunks</span></span>
-<span id="cb3-5">    <span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">eval =</span> <span class="cn" style="color: #8f5902;
-background-color: null;
-font-style: inherit;">FALSE</span>,        <span class="co" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;"># Evaluate code chunks</span></span>
-<span id="cb3-6">    <span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">results =</span> <span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"hold"</span>,   <span class="co" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;"># Hold outputs and show them after the full code chunk</span></span>
-<span id="cb3-7">  <span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">warning =</span> <span class="cn" style="color: #8f5902;
-background-color: null;
-font-style: inherit;">FALSE</span>,     <span class="co" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;"># Hide warnings</span></span>
-<span id="cb3-8">        <span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">collapse =</span> <span class="cn" style="color: #8f5902;
-background-color: null;
-font-style: inherit;">FALSE</span>,    <span class="co" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;"># Keep code and output in separate blocks</span></span>
-<span id="cb3-9">        <span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">warning =</span> <span class="cn" style="color: #8f5902;
-background-color: null;
-font-style: inherit;">FALSE</span>,     <span class="co" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;"># Hide warnings</span></span>
-<span id="cb3-10">        <span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">message =</span> <span class="cn" style="color: #8f5902;
-background-color: null;
-font-style: inherit;">FALSE</span>,     <span class="co" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;"># Hide messages</span></span>
-<span id="cb3-11">        <span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">comment =</span> <span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"##"</span>      <span class="co" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;"># Prefix output lines with '##' so output is visually distinct</span></span>
-<span id="cb3-12">)</span></code></pre></div>
-</section>
-<section id="set-r-variables" class="level2">
-<h2 class="anchored" data-anchor-id="set-r-variables">2.2 Set R variables</h2>
-<div class="sourceCode" id="cb4" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb4-1"><span class="co" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;"># OUTPUT DIRECTORY</span></span>
-<span id="cb4-2">data_dir <span class="ot" style="color: #003B4F;
-background-color: null;
-font-style: inherit;">&lt;-</span> <span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"../data/pacbio-lean"</span></span>
-<span id="cb4-3">output_dir <span class="ot" style="color: #003B4F;
-background-color: null;
-font-style: inherit;">&lt;-</span> <span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"../output/13.1-genome-assembly-lean"</span></span>
-<span id="cb4-4"></span>
-<span id="cb4-5"><span class="co" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">#OUTPUT FILE(S)</span></span>
-<span id="cb4-6">prefix <span class="ot" style="color: #003B4F;
-background-color: null;
-font-style: inherit;">&lt;-</span> <span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"snam-lean-pb-flye"</span></span>
-<span id="cb4-7"></span>
-<span id="cb4-8"></span>
-<span id="cb4-9"><span class="co" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;"># CONDA</span></span>
-<span id="cb4-10">conda_env_name <span class="ot" style="color: #003B4F;
-background-color: null;
-font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">c</span>(<span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"/srlab/programs/miniforge3-24.7.1-0/envs/flye-2.9.6-env"</span>)</span>
-<span id="cb4-11">conda_path <span class="ot" style="color: #003B4F;
-background-color: null;
-font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">c</span>(<span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"/srlab/programs/miniforge3-24.7.1-0/bin/conda"</span>)</span>
-<span id="cb4-12"></span>
-<span id="cb4-13"><span class="co" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;"># SETTINGS</span></span>
-<span id="cb4-14">genome_size <span class="ot" style="color: #003B4F;
-background-color: null;
-font-style: inherit;">&lt;-</span> <span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"2.3g"</span></span>
-<span id="cb4-15">threads <span class="ot" style="color: #003B4F;
-background-color: null;
-font-style: inherit;">&lt;-</span> <span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"32"</span></span>
-<span id="cb4-16"></span>
-<span id="cb4-17"></span>
-<span id="cb4-18"><span class="co" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;"># Export these as environment variables for bash chunks.</span></span>
-<span id="cb4-19"><span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">Sys.setenv</span>(</span>
-<span id="cb4-20">  <span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">data_dir =</span> data_dir,</span>
-<span id="cb4-21">  <span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">genome_size =</span> genome_size,</span>
-<span id="cb4-22">  <span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">output_dir =</span> output_dir,</span>
-<span id="cb4-23">  <span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">prefix =</span> prefix,</span>
-<span id="cb4-24">  <span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">threads =</span> threads</span>
-<span id="cb4-25">)</span></code></pre></div>
-</section>
-<section id="load-flye-conda-environment" class="level2">
-<h2 class="anchored" data-anchor-id="load-flye-conda-environment">2.3 Load <a href="https://github.com/mikolmogorov/Flye">Flye</a> conda environment</h2>
-<p>If this is successful, the first line of output should show that the Python being used is the one in your <a href="https://github.com/mikolmogorov/Flye">Flye</a> conda environment path.</p>
-<p>E.g.</p>
-<p><code>python:         /srlab/programs/miniforge3-24.7.1-0/envs/flye-2.9.6-env/bin/python</code></p>
-<div class="sourceCode" id="cb5" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb5-1"><span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">use_condaenv</span>(<span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">condaenv =</span> conda_env_name, <span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">conda =</span> conda_path)</span>
-<span id="cb5-2"><span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">py_config</span>()</span></code></pre></div>
-<pre><code>## python:         /srlab/programs/miniforge3-24.7.1-0/envs/flye-2.9.6-env/bin/python
-## libpython:      /srlab/programs/miniforge3-24.7.1-0/envs/flye-2.9.6-env/lib/libpython3.12.so
-## pythonhome:     /srlab/programs/miniforge3-24.7.1-0/envs/flye-2.9.6-env:/srlab/programs/miniforge3-24.7.1-0/envs/flye-2.9.6-env
-## version:        3.12.13 | packaged by conda-forge | (main, Mar  5 2026, 16:50:00) [GCC 14.3.0]
-## numpy:           [NOT FOUND]
-## 
-## NOTE: Python version was forced by use_python() function</code></pre>
-<div class="sourceCode" id="cb7" style="background: #f1f3f5;"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb7-1"><span class="co" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;"># Make output directory, if it doesn't exist</span></span>
-<span id="cb7-2"><span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">mkdir</span> <span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">--parents</span> <span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"</span><span class="va" style="color: #111111;
-background-color: null;
-font-style: inherit;">${output_dir}</span><span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"</span></span>
-<span id="cb7-3"></span>
-<span id="cb7-4"><span class="co" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;"># Create an array of .fastq.gz files</span></span>
-<span id="cb7-5"><span class="va" style="color: #111111;
-background-color: null;
-font-style: inherit;">fastqs</span><span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">=</span><span class="va" style="color: #111111;
-background-color: null;
-font-style: inherit;">(${data_dir}</span>/<span class="pp" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">*</span>.fastq.gz<span class="va" style="color: #111111;
-background-color: null;
-font-style: inherit;">)</span></span>
-<span id="cb7-6"></span>
-<span id="cb7-7"><span class="co" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;"># Print the result (optional, for verification)</span></span>
-<span id="cb7-8"><span class="co" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">## newline-delimited format</span></span>
-<span id="cb7-9"><span class="bu" style="color: null;
-background-color: null;
-font-style: inherit;">echo</span> <span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"List of FastQs used for assembly:"</span></span>
-<span id="cb7-10"></span>
-<span id="cb7-11"><span class="bu" style="color: null;
-background-color: null;
-font-style: inherit;">printf</span> <span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"%s\n"</span> <span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"</span><span class="va" style="color: #111111;
-background-color: null;
-font-style: inherit;">${fastqs</span><span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">[@]</span><span class="va" style="color: #111111;
-background-color: null;
-font-style: inherit;">}</span><span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"</span> <span class="dt" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">\</span></span>
-<span id="cb7-12"><span class="kw" style="color: #003B4F;
-background-color: null;
-font-weight: bold;
-font-style: inherit;">|</span> <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">tee</span> <span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"</span><span class="va" style="color: #111111;
-background-color: null;
-font-style: inherit;">${output_dir}</span><span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">/input_fastqs.txt"</span></span>
-<span id="cb7-13"></span>
-<span id="cb7-14"><span class="co" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;"># Run Flye assembly</span></span>
-<span id="cb7-15"><span class="ex" style="color: null;
-background-color: null;
-font-style: inherit;">flye</span> <span class="dt" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">\</span></span>
-<span id="cb7-16">--pacbio-hifi <span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"</span><span class="va" style="color: #111111;
-background-color: null;
-font-style: inherit;">${fastqs</span><span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">[@]</span><span class="va" style="color: #111111;
-background-color: null;
-font-style: inherit;">}</span><span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"</span> <span class="dt" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">\</span></span>
-<span id="cb7-17">--genome-size <span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"</span><span class="va" style="color: #111111;
-background-color: null;
-font-style: inherit;">${genome_size}</span><span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"</span> <span class="dt" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">\</span></span>
-<span id="cb7-18">--out-dir <span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"</span><span class="va" style="color: #111111;
-background-color: null;
-font-style: inherit;">${output_dir}</span><span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"</span> <span class="dt" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">\</span></span>
-<span id="cb7-19">--threads <span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"</span><span class="va" style="color: #111111;
-background-color: null;
-font-style: inherit;">${threads}</span><span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"</span> <span class="dt" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">\</span></span>
-<span id="cb7-20"><span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">&gt;</span> <span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"</span><span class="va" style="color: #111111;
-background-color: null;
-font-style: inherit;">${output_dir}</span><span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"</span>/pb-lean-assembly.log <span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">2</span><span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">&gt;&amp;</span><span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">1</span></span></code></pre></div>
-</section>
-</section>
-<section id="outputs" class="level1">
-<h1>3 OUTPUTS</h1>
-<section id="list-files" class="level2">
-<h2 class="anchored" data-anchor-id="list-files">3.1 List files</h2>
-<div class="sourceCode" id="cb8" style="background: #f1f3f5;"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb8-1"><span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">ls</span> <span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">-ltrh</span> <span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"</span><span class="va" style="color: #111111;
-background-color: null;
-font-style: inherit;">${output_dir}</span><span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"</span></span></code></pre></div>
-<pre><code>## total 8.2G
-## -rw-r--r-- 1 samwhite all  326 Mar 26 11:02 input_fastqs.txt
-## drwxr-xr-x 2 samwhite all  512 Mar 30 07:44 00-assembly
-## drwxr-xr-x 2 samwhite all 8.0K Mar 30 12:12 10-consensus
-## drwxr-xr-x 2 samwhite all  512 Mar 31 08:22 20-repeat
-## drwxr-xr-x 2 samwhite all  512 Mar 31 08:33 30-contigger
-## drwxr-xr-x 2 samwhite all 8.0K Mar 31 17:25 40-polishing
-## -rw-r--r-- 1 samwhite all   92 Mar 31 17:25 params.json
-## -rw-r--r-- 1 samwhite all  53M Mar 31 17:25 assembly_graph.gv
-## -rw-r--r-- 1 samwhite all 4.0G Mar 31 17:25 assembly_graph.gfa
-## -rw-r--r-- 1 samwhite all 3.9G Mar 31 17:25 assembly.fasta
-## -rw-r--r-- 1 samwhite all 4.8M Mar 31 17:25 assembly_info.txt
-## -rw-r--r-- 1 samwhite all 3.2K Mar 31 17:25 pb-lean-assembly.log
-## -rw-r--r-- 1 samwhite all 338M Mar 31 17:25 flye.log
-## -rw-r--r-- 1 samwhite all 3.9M Apr  2 10:05 assembly.fasta.fai</code></pre>
-</section>
-<section id="rename-files" class="level2">
-<h2 class="anchored" data-anchor-id="rename-files">3.2 Rename files</h2>
-<p>Files have generic “assembly_*” naming.</p>
-<p>Renaming to reflect specific species-ecotype-data-assembly_method.</p>
-<div class="sourceCode" id="cb10" style="background: #f1f3f5;"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb10-1"><span class="bu" style="color: null;
-background-color: null;
-font-style: inherit;">cd</span> <span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"</span><span class="va" style="color: #111111;
-background-color: null;
-font-style: inherit;">${output_dir}</span><span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"</span></span>
-<span id="cb10-2"></span>
-<span id="cb10-3"><span class="cf" style="color: #003B4F;
-background-color: null;
-font-weight: bold;
-font-style: inherit;">for</span> file <span class="kw" style="color: #003B4F;
-background-color: null;
-font-weight: bold;
-font-style: inherit;">in</span> assembly<span class="pp" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">*</span></span>
-<span id="cb10-4"><span class="cf" style="color: #003B4F;
-background-color: null;
-font-weight: bold;
-font-style: inherit;">do</span></span>
-<span id="cb10-5">  <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">mv</span> <span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"</span><span class="va" style="color: #111111;
-background-color: null;
-font-style: inherit;">${file}</span><span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"</span> <span class="va" style="color: #111111;
-background-color: null;
-font-style: inherit;">${prefix}</span>-<span class="va" style="color: #111111;
-background-color: null;
-font-style: inherit;">${file}</span></span>
-<span id="cb10-6"><span class="cf" style="color: #003B4F;
-background-color: null;
-font-weight: bold;
-font-style: inherit;">done</span></span></code></pre></div>
-</section>
-<section id="create-fasta-index" class="level2">
-<h2 class="anchored" data-anchor-id="create-fasta-index">3.3 Create FastA Index</h2>
-<div class="sourceCode" id="cb11" style="background: #f1f3f5;"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb11-1"><span class="bu" style="color: null;
-background-color: null;
-font-style: inherit;">cd</span> <span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"</span><span class="va" style="color: #111111;
-background-color: null;
-font-style: inherit;">${output_dir}</span><span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"</span></span>
-<span id="cb11-2"></span>
-<span id="cb11-3"><span class="ex" style="color: null;
-background-color: null;
-font-style: inherit;">samtools</span> faidx <span class="va" style="color: #111111;
-background-color: null;
-font-style: inherit;">${prefix}</span>-assembly.fasta</span></code></pre></div>
-</section>
-<section id="create-checksums" class="level2">
-<h2 class="anchored" data-anchor-id="create-checksums">3.4 Create checksums</h2>
-<div class="sourceCode" id="cb12" style="background: #f1f3f5;"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb12-1"><span class="bu" style="color: null;
-background-color: null;
-font-style: inherit;">cd</span> <span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"</span><span class="va" style="color: #111111;
-background-color: null;
-font-style: inherit;">${output_dir}</span><span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"</span></span>
-<span id="cb12-2"></span>
-<span id="cb12-3"><span class="cf" style="color: #003B4F;
-background-color: null;
-font-weight: bold;
-font-style: inherit;">for</span> file <span class="kw" style="color: #003B4F;
-background-color: null;
-font-weight: bold;
-font-style: inherit;">in</span> <span class="va" style="color: #111111;
-background-color: null;
-font-style: inherit;">${prefix}</span><span class="pp" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">*</span></span>
-<span id="cb12-4"><span class="cf" style="color: #003B4F;
-background-color: null;
-font-weight: bold;
-font-style: inherit;">do</span></span>
-<span id="cb12-5">  <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">md5sum</span> <span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"</span><span class="va" style="color: #111111;
-background-color: null;
-font-style: inherit;">${file}</span><span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"</span> <span class="dt" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">\</span></span>
-<span id="cb12-6">  <span class="kw" style="color: #003B4F;
-background-color: null;
-font-weight: bold;
-font-style: inherit;">|</span> <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">tee</span> <span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"</span><span class="va" style="color: #111111;
-background-color: null;
-font-style: inherit;">${file}</span><span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"</span>.md5</span>
-<span id="cb12-7"><span class="cf" style="color: #003B4F;
-background-color: null;
-font-weight: bold;
-font-style: inherit;">done</span></span></code></pre></div>
-<pre><code>## ac7c2af6c32834f86954cfb9893c4c50  snam-lean-pb-flye-assembly.fasta
-## 242ea029692207d1c7df0b7e842fd58f  snam-lean-pb-flye-assembly.fasta.fai
-## 35f1973b873fd7498ebeeecdb7eecd2e  snam-lean-pb-flye-assembly_graph.gfa
-## d4f6a3a41846f6285d0290c7a41ed1f7  snam-lean-pb-flye-assembly_graph.gv
-## e1224b9a628253fd8cee1d39517343ef  snam-lean-pb-flye-assembly_info.txt</code></pre>
-</section>
-<section id="assembly-stats" class="level2">
-<h2 class="anchored" data-anchor-id="assembly-stats">3.5 Assembly stats</h2>
-<div class="sourceCode" id="cb14" style="background: #f1f3f5;"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb14-1"><span class="bu" style="color: null;
-background-color: null;
-font-style: inherit;">cd</span> <span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"</span><span class="va" style="color: #111111;
-background-color: null;
-font-style: inherit;">${output_dir}</span><span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"</span></span>
-<span id="cb14-2"></span>
-<span id="cb14-3"><span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">tail</span> flye.log</span></code></pre></div>
-<pre><code>## [2026-03-31 17:25:45] root: INFO: Assembly statistics:
-## 
-##  Total length:   4046369763
-##  Fragments:  112562
-##  Fragments N50:  74514
-##  Largest frg:    2170611
-##  Scaffolds:  0
-##  Mean coverage:  15
-## 
-## [2026-03-31 17:25:45] root: INFO: Final assembly: /mmfs1/gscratch/scrubbed/samwhite/gitrepos/RobertsLab/project-lake-trout/output/13.1-genome-assembly-lean/assembly.fasta</code></pre>
-<div id="refs" class="references csl-bib-body hanging-indent">
-<div id="ref-kolmogorov2019" class="csl-entry">
-Kolmogorov, Mikhail, Jeffrey Yuan, Yu Lin, and Pavel A. Pevzner. 2019. “Assembly of Long, Error-Prone Reads Using Repeat Graphs.” <em>Nature Biotechnology</em> 37 (5): 540–46. <a href="https://doi.org/10.1038/s41587-019-0072-8" class="uri">https://doi.org/10.1038/s41587-019-0072-8</a>.
-</div>
-</div>
-
-
-</section>
-</section>
-
- ]]></description>
-  <category>2026</category>
-  <category>Genome Assembly</category>
-  <category>PacBio</category>
-  <category>HiFi Reads</category>
-  <category>Flye</category>
-  <category>Salvelinus namaycush</category>
-  <category>Lake Trout</category>
-  <category>Lean</category>
-  <guid>https://robertslab.github.io/sams-notebook/posts/2026/2026-03-26-Genome-Assembly---S.namaycush-Lean-Ecotype-with-PacBio-HiFi-Reads-Using-Flye/</guid>
-  <pubDate>Thu, 26 Mar 2026 07:00:00 GMT</pubDate>
 </item>
 </channel>
 </rss>
