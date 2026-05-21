@@ -7,28 +7,53 @@ title: Trimming - Andy Dittman Preliminary RNA-seq Data Using Fastp FastQC Multi
 date: '2026-05-20'
 draft: false
 engine: knitr
+execute:
+  eval: false
 categories: 
   - "2026"
+  - "fastp"
+  - "fastqc"
+  - "multiqc"
+  - "hyak"
+  - "RNA-seq"
+  - "trimming"
+image: "/posts/2026/2026-05-20-Trimming---Andy-Dittman-Preliminary-RNA-seq-Data-Using-Fastp-FastQC-MultiQC-on-Hyak/20260520-multiqc-per_base_sequence_content.png"
 ---
 # INTRO
+After [running an initial FastQC on the raw reads](../2026/2026-05-19-FastQC-on-Andy-Dittman-Preliminary-RNA-seq-Data-on-Hyak/index.qmd), I thought it would be prudent to run the reads through some adapter and quality trimming. I ran [fastp](https://github.com/OpenGene/fastp) to trim the reads (removed adapters and low-quality bases, 15bp from 5' end of each read, removed poly-G and poly-A tails), and then ran FastQC and MultiQC on the trimmed reads to assess the quality of the trimmed data. See [CODE section below](#code) for specifics.
+
+The trimming and quality assessment was run on Hyak using our Apptainer image: `srlab-R4.4-bioinformatics-container-c3d3116.sif`.
 
 
+# RESULTS
+
+Output directory:
+
+- [https://gannet.fish.washington.edu/Atumefaciens/20260520-crog-Fastp-FastQC-MultiQC-dittman-grc-rnaseq/](https://gannet.fish.washington.edu/Atumefaciens/20260520-crog-Fastp-FastQC-MultiQC-dittman-grc-rnaseq/)
+
+MultiQC report (HTML):
+
+- [https://gannet.fish.washington.edu/Atumefaciens/20260520-crog-Fastp-FastQC-MultiQC-dittman-grc-rnaseq/multiqc_report.html](https://gannet.fish.washington.edu/Atumefaciens/20260520-crog-Fastp-FastQC-MultiQC-dittman-grc-rnaseq/multiqc_report.html)
 
 
-Analysis was run on Hyak using the following Roberts Lab Apptainer image:
+# DISCUSSION
 
-- `srlab-R4.4-bioinformatics-container-c3d3116.sif` (built on 20260410)
+Trimming with [`fastp`](https://github.com/OpenGene/fastp) went quickly and smoothly, and the resulting trimmed FastQs were of good quality, as assessed by FastQC and MultiQC. After trimming, the per base sequence content is much more consistent across the read length.
+
+I'll recommend that Andy proceed with having the remainder of the samples sequenced.
 
 
 Code is below.
 
 ---
 
+# CODE
+
 # VARIABLES
 ```{r set-variables}
 # DIRECTORIES
 raw_reads_dir <- "/mmfs1/gscratch/scrubbed/samwhite/data/dittman_grc_rnaseq_1/"
-output_dir <- "/mmfs1/gscratch/scrubbed/samwhite/outputs/20260520-Fastp-FastQC-MultiQC-dittman-grc-rnaseq"
+output_dir <- "/mmfs1/gscratch/scrubbed/samwhite/outputs/20260520-crog-Fastp-FastQC-MultiQC-dittman-grc-rnaseq"
 
 # FILES
 fastq_pattern="*.fastq.gz"
