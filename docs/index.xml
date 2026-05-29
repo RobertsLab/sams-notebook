@@ -6078,6 +6078,1784 @@ font-style: inherit;">"Output files written to: "</span>, out_dir)</span></code>
   <pubDate>Thu, 28 May 2026 07:00:00 GMT</pubDate>
 </item>
 <item>
+  <title>Resazurin Assays - Proximity to Plate Reader Detector Significantly Affects Fluorescence Readings</title>
+  <dc:creator>Sam White</dc:creator>
+  <link>https://robertslab.github.io/sams-notebook/posts/2026/2026-05-28-Resazurin-Assays---Proximity-to-Plate-Reader-Detector-Significantly-Affects-Fluorescence-Readings/</link>
+  <description><![CDATA[ 
+
+
+
+
+
+<section id="intro" class="level1">
+<h1>INTRO</h1>
+<p>Having run a large number of resazurin assays, I have noticed that the fluorescence readings at time 0 (i.e., immediately after adding the resazurin solution) can vary widely, despite the fact that the resazurin solution should be the same across all wells. Generally, we always add the same volume to all wells, however, those wells with organisms in them (clams, oysters, etc.) have higher fluorescence readings at time 0 than the blank wells (i.e., those with only resazurin solution).</p>
+<p>This observation led me to suspect that the proximity of the resazurin solution to the plate reader detector could be influencing the fluorescence readings. Since the volumes were the same, but the height of the resazurin solution within each well varied due to displacement by the organisms, I suspected that this could be affecting the fluorescence readings. To test this hypothesis, I decided to run a 48-well plate with only resazurin solution, but with varying volumes to simulate the different heights of the solution in the wells. I then measured the fluorescence readings at time 0 to see if there were significant differences between the different volumes (and thus height) of the resazurin solution and the fluorescence readings.</p>
+<p>Here’s an example data set measured recently that illustrates this point. These are raw fluorescence values measured almost immediately after adding resazurin solution to the plate:</p>
+<table class="caption-top table">
+<thead>
+<tr class="header">
+<th></th>
+<th>1</th>
+<th>2</th>
+<th>3</th>
+<th>4</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>A</td>
+<td>178</td>
+<td>183</td>
+<td>192</td>
+<td>149</td>
+</tr>
+<tr class="even">
+<td>B</td>
+<td>224</td>
+<td>149</td>
+<td>161</td>
+<td>164</td>
+</tr>
+<tr class="odd">
+<td>C</td>
+<td>114</td>
+<td>178</td>
+<td>164</td>
+<td>152</td>
+</tr>
+</tbody>
+</table>
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="https://robertslab.github.io/sams-notebook/posts/2026/2026-05-28-Resazurin-Assays---Proximity-to-Plate-Reader-Detector-Significantly-Affects-Fluorescence-Readings/20260528-plate-heatmap.png" class="img-fluid figure-img"></p>
+<figcaption>Heatmap illustrating differences in raw fluorescence readings. Red value is blank well.</figcaption>
+</figure>
+</div>
+<p>Without telling you, see if you can figure out which well is the blank well and which well has the largest clam in it…</p>
+</section>
+<section id="materials-methods" class="level1">
+<h1>MATERIALS &amp; METHODS</h1>
+<p>I prepared a resazurin working solution and loaded it into a 48-well plate at different volumes: 100, 200, 300, 400, 500, 750, 900, and 1000 µL. Each volume was replicated in six wells. I then read the fluorescence at time 0 using a Synergy HTX (Agilent) plate reader. The fluorescence readings were recorded and analyzed to determine if there were significant differences between the different volumes of resazurin solution.</p>
+</section>
+<section id="results" class="level1">
+<h1>RESULTS</h1>
+<p>Data is available here:</p>
+<p><a href="https://github.com/RobertsLab/resazurin-assay-development/tree/main/data/volume_testing/20280528">https://github.com/RobertsLab/resazurin-assay-development/tree/main/data/volume_testing/20280528</a></p>
+</section>
+<section id="summary" class="level1">
+<h1>SUMMARY</h1>
+<p>The results of the volume testing indicate that the height of the resazurin solution within each well significantly affects the fluorescence readings at time 0. Wells with higher volumes (and thus higher solution heights) exhibited consistently higher fluorescence readings compared to wells with lower volumes.</p>
+<p>Other than the 100 µL and 200 µL volumes, which were not significantly different from each other, all other volume groups were significantly different from each other (Tukey-adjusted pairwise comparisons, α = 0.05). The fluorescence readings increased with increasing volume, suggesting a strong positive correlation between the height of the resazurin solution and the fluorescence readings. This finding supports the hypothesis that the proximity of the resazurin solution to the plate reader detector can influence fluorescence readings, and it highlights the importance of considering solution height when designing and interpreting resazurin assays.</p>
+<p>This means a couple of things:</p>
+<ol type="1">
+<li><p>Raw fluorescence is not a useful metric for comparing metabolic activity across wells with different heights of resazurin solution, as the height itself is a confounding factor that affects the fluorescence readings.</p></li>
+<li><p>Is normalizing to blank wells (i.e., subtracting the mean fluorescence of blank wells from the fluorescence of sample wells) sufficient to account for this effect? This is something that needs to be tested, as it may not fully account for the differences in fluorescence readings due to solution height.</p></li>
+<li><p>Normalization to sample area measurements (e.g., area_mm2_measurement) is necessary to account for differences in organism size and the resulting displacement of the resazurin solution, which affects the height of the solution and thus the fluorescence readings. However, do we need to estimate the volume (i.e.&nbsp;displacement volume) of the organism to fully account for this effect, or is normalizing to area sufficient? This is another question that needs to be tested.</p></li>
+</ol>
+<p>Post below was knitted from the R Markdown file: <a href="https://github.com/RobertsLab/resazurin-assay-development/blob/main/scripts/volume_testing/01.00-resazurin-20260528-volume_testing.Rmd">01.00-resazurin-20260528-volume_testing.Rmd</a></p>
+<hr>
+</section>
+<section id="background" class="level1">
+<h1>1 BACKGROUND</h1>
+<p>Comparison of how different resazurin solution volumes affect fluorescence readings. All wells contain the same resazurin working solution; only the volume loaded per well differs. Volumes tested: 100, 200, 300, 400, 500, 750, 900, and 1000 µL. Six replicate wells per volume. Fluorescence was read at T0 on a Synergy HTX (Agilent) plate reader.</p>
+<section id="expected-inputs" class="level2">
+<h2 class="anchored" data-anchor-id="expected-inputs">1.1 Expected inputs</h2>
+<table class="caption-top table">
+<colgroup>
+<col style="width: 50%">
+<col style="width: 50%">
+</colgroup>
+<thead>
+<tr class="header">
+<th style="text-align: left;">Path</th>
+<th style="text-align: left;">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;"><code>data/volume_testing/20280528/plate-A-T*.txt</code></td>
+<td style="text-align: left;">Plate reader fluorescence exports</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"><code>data/volume_testing/20280528/layout.csv</code></td>
+<td style="text-align: left;">Well metadata: plate ID, well, volume group</td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="expected-outputs" class="level2">
+<h2 class="anchored" data-anchor-id="expected-outputs">1.2 Expected outputs</h2>
+<p>All outputs are written to <code>output/volume_testing/20260528/</code>.</p>
+<table class="caption-top table">
+<colgroup>
+<col style="width: 36%">
+<col style="width: 64%">
+</colgroup>
+<thead>
+<tr class="header">
+<th style="text-align: left;">File</th>
+<th style="text-align: left;">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;"><code>figures/</code></td>
+<td style="text-align: left;">All plots generated by this script</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"><code>volume_fluorescence.csv</code></td>
+<td style="text-align: left;">Per-well raw fluorescence with volume metadata</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;"><code>volume_summary.csv</code></td>
+<td style="text-align: left;">Volume-level summary statistics</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"><code>pairwise_stats.csv</code></td>
+<td style="text-align: left;">Tukey-adjusted pairwise comparisons</td>
+</tr>
+</tbody>
+</table>
+</section>
+</section>
+<section id="setup" class="level1">
+<h1>2 SETUP</h1>
+<section id="knitr" class="level2">
+<h2 class="anchored" data-anchor-id="knitr">2.1 Knitr</h2>
+<div class="sourceCode" id="cb1" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1">knitr<span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">::</span>opts_chunk<span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">$</span><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">set</span>(</span>
+<span id="cb1-2">  <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">echo    =</span> <span class="cn" style="color: #8f5902;
+background-color: null;
+font-style: inherit;">TRUE</span>,</span>
+<span id="cb1-3">  <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">eval    =</span> <span class="cn" style="color: #8f5902;
+background-color: null;
+font-style: inherit;">TRUE</span>,</span>
+<span id="cb1-4">  <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">warning =</span> <span class="cn" style="color: #8f5902;
+background-color: null;
+font-style: inherit;">FALSE</span>,</span>
+<span id="cb1-5">  <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">message =</span> <span class="cn" style="color: #8f5902;
+background-color: null;
+font-style: inherit;">FALSE</span>,</span>
+<span id="cb1-6">  <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">comment =</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">""</span>,</span>
+<span id="cb1-7">  <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">results =</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">'hold'</span></span>
+<span id="cb1-8">)</span></code></pre></div>
+</section>
+<section id="libraries" class="level2">
+<h2 class="anchored" data-anchor-id="libraries">2.2 Libraries</h2>
+<div class="sourceCode" id="cb2" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb2-1"><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">library</span>(tidyverse)</span>
+<span id="cb2-2"><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">library</span>(emmeans)</span>
+<span id="cb2-3"><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">library</span>(multcompView)</span></code></pre></div>
+</section>
+<section id="helper-functions" class="level2">
+<h2 class="anchored" data-anchor-id="helper-functions">2.3 Helper Functions</h2>
+<div class="sourceCode" id="cb3" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb3-1">normalize_well_id <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> <span class="cf" style="color: #003B4F;
+background-color: null;
+font-weight: bold;
+font-style: inherit;">function</span>(x) {</span>
+<span id="cb3-2">  x <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">toupper</span>(<span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">trimws</span>(x))</span>
+<span id="cb3-3">  valid <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">str_detect</span>(x, <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"^[A-Z]+[0-9]+$"</span>)</span>
+<span id="cb3-4">  out <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">rep</span>(<span class="cn" style="color: #8f5902;
+background-color: null;
+font-style: inherit;">NA_character_</span>, <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">length</span>(x))</span>
+<span id="cb3-5">  <span class="cf" style="color: #003B4F;
+background-color: null;
+font-weight: bold;
+font-style: inherit;">if</span> (<span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">!</span><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">any</span>(valid)) <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">return</span>(out)</span>
+<span id="cb3-6">  m <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">str_match</span>(x[valid], <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"^([A-Z]+)([0-9]+)$"</span>)</span>
+<span id="cb3-7">  out[valid] <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">paste0</span>(m[, <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">2</span>], <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">as.integer</span>(m[, <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">3</span>]))</span>
+<span id="cb3-8">  out</span>
+<span id="cb3-9">}</span>
+<span id="cb3-10"></span>
+<span id="cb3-11">parse_time_hr <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> <span class="cf" style="color: #003B4F;
+background-color: null;
+font-weight: bold;
+font-style: inherit;">function</span>(path) {</span>
+<span id="cb3-12">  hit <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">str_match</span>(<span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">basename</span>(path),</span>
+<span id="cb3-13">                   <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"(?i)-T([0-9]+(?:</span><span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">\\</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">.[0-9]+)?)</span><span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">\\</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">.txt$"</span>)</span>
+<span id="cb3-14">  <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">as.numeric</span>(hit[, <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">2</span>])</span>
+<span id="cb3-15">}</span>
+<span id="cb3-16"></span>
+<span id="cb3-17">parse_plate_id <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> <span class="cf" style="color: #003B4F;
+background-color: null;
+font-weight: bold;
+font-style: inherit;">function</span>(path) {</span>
+<span id="cb3-18">  hit <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">str_match</span>(<span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">basename</span>(path),</span>
+<span id="cb3-19">    <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"(?i)^plate-([A-Za-z0-9-]+)-T[0-9]+(?:</span><span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">\\</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">.[0-9]+)?</span><span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">\\</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">.txt$"</span>)</span>
+<span id="cb3-20">  id <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> hit[, <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">2</span>]</span>
+<span id="cb3-21">  <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">ifelse</span>(<span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">is.na</span>(id), <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"unknown"</span>, id)</span>
+<span id="cb3-22">}</span>
+<span id="cb3-23"></span>
+<span id="cb3-24">extract_results_block <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> <span class="cf" style="color: #003B4F;
+background-color: null;
+font-weight: bold;
+font-style: inherit;">function</span>(lines) {</span>
+<span id="cb3-25">  results_idx <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">which</span>(<span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">trimws</span>(lines) <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">==</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"Results"</span>)</span>
+<span id="cb3-26">  <span class="cf" style="color: #003B4F;
+background-color: null;
+font-weight: bold;
+font-style: inherit;">if</span> (<span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">length</span>(results_idx) <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">==</span> <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">0</span>) <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">stop</span>(<span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"No Results section found"</span>)</span>
+<span id="cb3-27">  idx <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> results_idx[<span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">1</span>]</span>
+<span id="cb3-28">  header_tokens <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">str_split</span>(lines[idx <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">+</span> <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">1</span>], <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"</span><span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">\\</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">t"</span>)[[<span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">1</span>]] <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">|&gt;</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">trimws</span>()</span>
+<span id="cb3-29">  col_ids <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> header_tokens[</span>
+<span id="cb3-30">    header_tokens <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">!=</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">""</span> <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">&amp;</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">str_detect</span>(header_tokens, <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"^[0-9]+$"</span>)]</span>
+<span id="cb3-31">  j <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> idx <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">+</span> <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">2</span></span>
+<span id="cb3-32">  data_lines <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">character</span>()</span>
+<span id="cb3-33">  <span class="cf" style="color: #003B4F;
+background-color: null;
+font-weight: bold;
+font-style: inherit;">while</span> (j <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">&lt;=</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">length</span>(lines)) {</span>
+<span id="cb3-34">    line <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> lines[j]</span>
+<span id="cb3-35">    <span class="cf" style="color: #003B4F;
+background-color: null;
+font-weight: bold;
+font-style: inherit;">if</span> (<span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">trimws</span>(line) <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">==</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">""</span>) <span class="cf" style="color: #003B4F;
+background-color: null;
+font-weight: bold;
+font-style: inherit;">break</span></span>
+<span id="cb3-36">    <span class="cf" style="color: #003B4F;
+background-color: null;
+font-weight: bold;
+font-style: inherit;">if</span> (<span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">!</span><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">str_detect</span>(line, <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"^[A-Za-z]</span><span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">\\</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">t"</span>)) <span class="cf" style="color: #003B4F;
+background-color: null;
+font-weight: bold;
+font-style: inherit;">break</span></span>
+<span id="cb3-37">    data_lines <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">c</span>(data_lines, line)</span>
+<span id="cb3-38">    j <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> j <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">+</span> <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">1</span></span>
+<span id="cb3-39">  }</span>
+<span id="cb3-40">  <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">list</span>(<span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">col_ids =</span> col_ids, <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">data_lines =</span> data_lines)</span>
+<span id="cb3-41">}</span>
+<span id="cb3-42"></span>
+<span id="cb3-43">parse_plate_export <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> <span class="cf" style="color: #003B4F;
+background-color: null;
+font-weight: bold;
+font-style: inherit;">function</span>(path) {</span>
+<span id="cb3-44">  lines <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">readLines</span>(path, <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">warn =</span> <span class="cn" style="color: #8f5902;
+background-color: null;
+font-style: inherit;">FALSE</span>)</span>
+<span id="cb3-45">  res   <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">extract_results_block</span>(lines)</span>
+<span id="cb3-46"></span>
+<span id="cb3-47">  <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">map_dfr</span>(res<span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">$</span>data_lines, <span class="cf" style="color: #003B4F;
+background-color: null;
+font-weight: bold;
+font-style: inherit;">function</span>(line) {</span>
+<span id="cb3-48">    tokens <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">str_split</span>(line, <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"</span><span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">\\</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">t"</span>)[[<span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">1</span>]] <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">|&gt;</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">trimws</span>()</span>
+<span id="cb3-49">    tokens <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> tokens[tokens <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">!=</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">""</span>]</span>
+<span id="cb3-50">    row_letter <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> tokens[<span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">1</span>]</span>
+<span id="cb3-51">    nums <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">suppressWarnings</span>(<span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">as.numeric</span>(tokens[<span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">-</span><span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">1</span>]))</span>
+<span id="cb3-52">    valid_idx <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">which</span>(<span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">!</span><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">is.na</span>(nums))</span>
+<span id="cb3-53">    <span class="cf" style="color: #003B4F;
+background-color: null;
+font-weight: bold;
+font-style: inherit;">if</span> (<span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">length</span>(valid_idx) <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">==</span> <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">0</span>) <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">return</span>(<span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">tibble</span>())</span>
+<span id="cb3-54">    vals <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> nums[valid_idx]</span>
+<span id="cb3-55">    n    <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">min</span>(<span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">length</span>(vals), <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">length</span>(res<span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">$</span>col_ids))</span>
+<span id="cb3-56">    <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">tibble</span>(</span>
+<span id="cb3-57">      <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">row_id  =</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">toupper</span>(row_letter),</span>
+<span id="cb3-58">      <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">col_id  =</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">as.integer</span>(res<span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">$</span>col_ids[<span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">seq_len</span>(n)]),</span>
+<span id="cb3-59">      <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">well_id =</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">normalize_well_id</span>(</span>
+<span id="cb3-60">        <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">paste0</span>(<span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">toupper</span>(row_letter), res<span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">$</span>col_ids[<span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">seq_len</span>(n)])),</span>
+<span id="cb3-61">      <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">value   =</span> vals[<span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">seq_len</span>(n)]</span>
+<span id="cb3-62">    )</span>
+<span id="cb3-63">  }) <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">%&gt;%</span></span>
+<span id="cb3-64">    <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">mutate</span>(</span>
+<span id="cb3-65">      <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">plate_id =</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">str_to_lower</span>(<span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">parse_plate_id</span>(path)),</span>
+<span id="cb3-66">      <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">time_hr  =</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">parse_time_hr</span>(path)</span>
+<span id="cb3-67">    )</span>
+<span id="cb3-68">}</span>
+<span id="cb3-69"></span>
+<span id="cb3-70">sig_label <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> <span class="cf" style="color: #003B4F;
+background-color: null;
+font-weight: bold;
+font-style: inherit;">function</span>(p) {</span>
+<span id="cb3-71">  <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">case_when</span>(p <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">&lt;</span> <span class="fl" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">0.001</span> <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">~</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"***"</span>, p <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">&lt;</span> <span class="fl" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">0.01</span> <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">~</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"**"</span>, p <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">&lt;</span> <span class="fl" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">0.05</span> <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">~</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"*"</span>,</span>
+<span id="cb3-72">            <span class="cn" style="color: #8f5902;
+background-color: null;
+font-style: inherit;">TRUE</span> <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">~</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"ns"</span>)</span>
+<span id="cb3-73">}</span></code></pre></div>
+</section>
+</section>
+<section id="load-data" class="level1">
+<h1>3 LOAD DATA</h1>
+<section id="plate-export-files" class="level2">
+<h2 class="anchored" data-anchor-id="plate-export-files">3.1 Plate export files</h2>
+<div class="sourceCode" id="cb4" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb4-1">proj_root <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> rprojroot<span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">::</span><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">find_rstudio_root_file</span>()</span>
+<span id="cb4-2">data_dir  <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">file.path</span>(proj_root, <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"data"</span>, <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"volume_testing"</span>, <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"20280528"</span>)</span>
+<span id="cb4-3">fig_dir   <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">file.path</span>(proj_root, <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"output"</span>, <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"volume_testing"</span>, <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"20260528"</span>, <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"figures"</span>)</span>
+<span id="cb4-4">out_dir   <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">file.path</span>(proj_root, <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"output"</span>, <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"volume_testing"</span>, <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"20260528"</span>)</span>
+<span id="cb4-5"></span>
+<span id="cb4-6"><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">dir.create</span>(fig_dir, <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">recursive =</span> <span class="cn" style="color: #8f5902;
+background-color: null;
+font-style: inherit;">TRUE</span>, <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">showWarnings =</span> <span class="cn" style="color: #8f5902;
+background-color: null;
+font-style: inherit;">FALSE</span>)</span>
+<span id="cb4-7"><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">dir.create</span>(out_dir, <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">recursive =</span> <span class="cn" style="color: #8f5902;
+background-color: null;
+font-style: inherit;">TRUE</span>, <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">showWarnings =</span> <span class="cn" style="color: #8f5902;
+background-color: null;
+font-style: inherit;">FALSE</span>)</span>
+<span id="cb4-8"></span>
+<span id="cb4-9">plate_files <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">list.files</span>(</span>
+<span id="cb4-10">  data_dir,</span>
+<span id="cb4-11">  <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">pattern   =</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"(?i)^plate-.*-T[0-9]+(?:</span><span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">\\</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">.[0-9]+)?</span><span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">\\</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">.txt$"</span>,</span>
+<span id="cb4-12">  <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">full.names =</span> <span class="cn" style="color: #8f5902;
+background-color: null;
+font-style: inherit;">TRUE</span></span>
+<span id="cb4-13">)</span>
+<span id="cb4-14"></span>
+<span id="cb4-15">plate_raw <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">map_dfr</span>(plate_files, <span class="cf" style="color: #003B4F;
+background-color: null;
+font-weight: bold;
+font-style: inherit;">function</span>(path) {</span>
+<span id="cb4-16">  <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">tryCatch</span>(</span>
+<span id="cb4-17">    <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">parse_plate_export</span>(path),</span>
+<span id="cb4-18">    <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">error =</span> <span class="cf" style="color: #003B4F;
+background-color: null;
+font-weight: bold;
+font-style: inherit;">function</span>(e) {</span>
+<span id="cb4-19">      <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">message</span>(<span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"Parse error in "</span>, <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">basename</span>(path), <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">": "</span>, e<span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">$</span>message)</span>
+<span id="cb4-20">      <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">tibble</span>()</span>
+<span id="cb4-21">    }</span>
+<span id="cb4-22">  )</span>
+<span id="cb4-23">})</span>
+<span id="cb4-24"></span>
+<span id="cb4-25"><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">str</span>(plate_raw)</span></code></pre></div>
+<pre><code>tibble [48 × 6] (S3: tbl_df/tbl/data.frame)
+ $ row_id  : chr [1:48] "A" "A" "A" "A" ...
+ $ col_id  : int [1:48] 1 2 3 4 5 6 7 8 1 2 ...
+ $ well_id : chr [1:48] "A1" "A2" "A3" "A4" ...
+ $ value   : num [1:48] 51 54 59 63 72 98 119 139 51 54 ...
+ $ plate_id: chr [1:48] "a" "a" "a" "a" ...
+ $ time_hr : num [1:48] 0 0 0 0 0 0 0 0 0 0 ...</code></pre>
+</section>
+<section id="layout-file" class="level2">
+<h2 class="anchored" data-anchor-id="layout-file">3.2 Layout file</h2>
+<div class="sourceCode" id="cb6" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb6-1">layout_path <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">file.path</span>(data_dir, <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"layout.csv"</span>)</span>
+<span id="cb6-2"></span>
+<span id="cb6-3">layout_raw <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">read_csv</span>(layout_path,</span>
+<span id="cb6-4">                       <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">col_types    =</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">cols</span>(<span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">.default =</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"c"</span>),</span>
+<span id="cb6-5">                       <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">show_col_types =</span> <span class="cn" style="color: #8f5902;
+background-color: null;
+font-style: inherit;">FALSE</span>)</span>
+<span id="cb6-6"></span>
+<span id="cb6-7"><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># Standardise column names to snake_case</span></span>
+<span id="cb6-8"><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">names</span>(layout_raw) <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">names</span>(layout_raw) <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">|&gt;</span></span>
+<span id="cb6-9">  <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">str_to_lower</span>() <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">|&gt;</span></span>
+<span id="cb6-10">  <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">str_replace_all</span>(<span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"[^a-z0-9]+"</span>, <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"_"</span>) <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">|&gt;</span></span>
+<span id="cb6-11">  <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">str_replace_all</span>(<span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"_+"</span>, <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"_"</span>) <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">|&gt;</span></span>
+<span id="cb6-12">  <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">str_replace</span>(<span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"_$"</span>, <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">""</span>)</span>
+<span id="cb6-13"></span>
+<span id="cb6-14">layout_clean <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> layout_raw <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">%&gt;%</span></span>
+<span id="cb6-15">  <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">mutate</span>(</span>
+<span id="cb6-16">    <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">plate_id  =</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">str_remove</span>(<span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">str_to_lower</span>(plate_id), <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"^plate-"</span>),</span>
+<span id="cb6-17">    <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">well_id   =</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">normalize_well_id</span>(plate_well),</span>
+<span id="cb6-18">    <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">volume_ul =</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">as.integer</span>(family_id_group)</span>
+<span id="cb6-19">  )</span>
+<span id="cb6-20"></span>
+<span id="cb6-21"><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">str</span>(layout_clean)</span></code></pre></div>
+<pre><code>tibble [48 × 15] (S3: tbl_df/tbl/data.frame)
+ $ plate_id             : chr [1:48] "a" "a" "a" "a" ...
+ $ plate_well           : chr [1:48] "A01" "A02" "A03" "A04" ...
+ $ is_blank             : chr [1:48] "TRUE" "TRUE" "TRUE" "TRUE" ...
+ $ family_id_group      : chr [1:48] "100" "200" "300" "400" ...
+ $ sample_id_group      : chr [1:48] NA NA NA NA ...
+ $ treatment_group      : chr [1:48] NA NA NA NA ...
+ $ exclude_from_analysis: chr [1:48] NA NA NA NA ...
+ $ exclude_reason       : chr [1:48] NA NA NA NA ...
+ $ width_mm_measurement : chr [1:48] NA NA NA NA ...
+ $ length_mm_measurement: chr [1:48] NA NA NA NA ...
+ $ weight_mg_measurement: chr [1:48] NA NA NA NA ...
+ $ area_mm2_measurement : chr [1:48] NA NA NA NA ...
+ $ imagej_id            : chr [1:48] NA NA NA NA ...
+ $ well_id              : chr [1:48] "A1" "A2" "A3" "A4" ...
+ $ volume_ul            : int [1:48] 100 200 300 400 500 750 900 1000 100 200 ...</code></pre>
+</section>
+</section>
+<section id="merge-data" class="level1">
+<h1>4 MERGE DATA</h1>
+<div class="sourceCode" id="cb8" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb8-1">dat <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> plate_raw <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">%&gt;%</span></span>
+<span id="cb8-2">  <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">left_join</span>(</span>
+<span id="cb8-3">    layout_clean <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">%&gt;%</span> dplyr<span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">::</span><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">select</span>(plate_id, well_id, volume_ul),</span>
+<span id="cb8-4">    <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">by =</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">c</span>(<span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"plate_id"</span>, <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"well_id"</span>)</span>
+<span id="cb8-5">  ) <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">%&gt;%</span></span>
+<span id="cb8-6">  <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">filter</span>(<span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">!</span><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">is.na</span>(volume_ul)) <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">%&gt;%</span></span>
+<span id="cb8-7">  <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">mutate</span>(</span>
+<span id="cb8-8">    <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">volume_ul =</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">factor</span>(volume_ul,</span>
+<span id="cb8-9">                       <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">levels =</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">sort</span>(<span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">unique</span>(volume_ul)))</span>
+<span id="cb8-10">  )</span>
+<span id="cb8-11"></span>
+<span id="cb8-12"><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">str</span>(dat)</span></code></pre></div>
+<pre><code>tibble [48 × 7] (S3: tbl_df/tbl/data.frame)
+ $ row_id   : chr [1:48] "A" "A" "A" "A" ...
+ $ col_id   : int [1:48] 1 2 3 4 5 6 7 8 1 2 ...
+ $ well_id  : chr [1:48] "A1" "A2" "A3" "A4" ...
+ $ value    : num [1:48] 51 54 59 63 72 98 119 139 51 54 ...
+ $ plate_id : chr [1:48] "a" "a" "a" "a" ...
+ $ time_hr  : num [1:48] 0 0 0 0 0 0 0 0 0 0 ...
+ $ volume_ul: Factor w/ 8 levels "100","200","300",..: 1 2 3 4 5 6 7 8 1 2 ...</code></pre>
+</section>
+<section id="summary-stats" class="level1">
+<h1>5 SUMMARY STATS</h1>
+<div class="sourceCode" id="cb10" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb10-1">vol_summary <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> dat <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">%&gt;%</span></span>
+<span id="cb10-2">  <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">group_by</span>(volume_ul) <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">%&gt;%</span></span>
+<span id="cb10-3">  <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">summarise</span>(</span>
+<span id="cb10-4">    <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">n          =</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">n</span>(),</span>
+<span id="cb10-5">    <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">mean_rfu   =</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">mean</span>(value, <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">na.rm =</span> <span class="cn" style="color: #8f5902;
+background-color: null;
+font-style: inherit;">TRUE</span>),</span>
+<span id="cb10-6">    <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">sd_rfu     =</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">sd</span>(value, <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">na.rm =</span> <span class="cn" style="color: #8f5902;
+background-color: null;
+font-style: inherit;">TRUE</span>),</span>
+<span id="cb10-7">    <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">se_rfu     =</span> sd_rfu <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">/</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">sqrt</span>(n),</span>
+<span id="cb10-8">    <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">median_rfu =</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">median</span>(value, <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">na.rm =</span> <span class="cn" style="color: #8f5902;
+background-color: null;
+font-style: inherit;">TRUE</span>),</span>
+<span id="cb10-9">    <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">.groups    =</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"drop"</span></span>
+<span id="cb10-10">  )</span>
+<span id="cb10-11"></span>
+<span id="cb10-12"><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">print</span>(vol_summary)</span>
+<span id="cb10-13"></span>
+<span id="cb10-14"><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">str</span>(vol_summary)</span></code></pre></div>
+<pre><code># A tibble: 8 × 6
+  volume_ul     n mean_rfu sd_rfu se_rfu median_rfu
+  &lt;fct&gt;     &lt;int&gt;    &lt;dbl&gt;  &lt;dbl&gt;  &lt;dbl&gt;      &lt;dbl&gt;
+1 100           6     52.2   1.33  0.543       52  
+2 200           6     55.2   1.47  0.601       54.5
+3 300           6     59.2   1.60  0.654       59  
+4 400           6     65.3   1.75  0.715       65.5
+5 500           6     72.3   1.03  0.422       72  
+6 750           6     98.5   1.76  0.719       98  
+7 900           6    120.    1.94  0.792      120. 
+8 1000          6    143.    2.93  1.19       144. 
+tibble [8 × 6] (S3: tbl_df/tbl/data.frame)
+ $ volume_ul : Factor w/ 8 levels "100","200","300",..: 1 2 3 4 5 6 7 8
+ $ n         : int [1:8] 6 6 6 6 6 6 6 6
+ $ mean_rfu  : num [1:8] 52.2 55.2 59.2 65.3 72.3 ...
+ $ sd_rfu    : num [1:8] 1.33 1.47 1.6 1.75 1.03 ...
+ $ se_rfu    : num [1:8] 0.543 0.601 0.654 0.715 0.422 ...
+ $ median_rfu: num [1:8] 52 54.5 59 65.5 72 ...</code></pre>
+</section>
+<section id="statistical-analysis" class="level1">
+<h1>6 STATISTICAL ANALYSIS</h1>
+<p>One-way ANOVA tests for any volume effect; Tukey-adjusted pairwise comparisons identify which volume pairs differ significantly (α = 0.05). Compact letter display (CLD) groups volumes that are not significantly different.</p>
+<section id="one-way-anova" class="level2">
+<h2 class="anchored" data-anchor-id="one-way-anova">6.1 One-way ANOVA</h2>
+<div class="sourceCode" id="cb12" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb12-1">model     <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">aov</span>(value <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">~</span> volume_ul, <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">data =</span> dat)</span>
+<span id="cb12-2">anova_res <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">summary</span>(model)</span>
+<span id="cb12-3"></span>
+<span id="cb12-4"><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">print</span>(anova_res)</span>
+<span id="cb12-5"></span>
+<span id="cb12-6"><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">str</span>(anova_res)</span></code></pre></div>
+<pre><code>            Df Sum Sq Mean Sq F value Pr(&gt;F)    
+volume_ul    7  47524    6789    2084 &lt;2e-16 ***
+Residuals   40    130       3                   
+---
+Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+List of 1
+ $ :Classes 'anova' and 'data.frame':   2 obs. of  5 variables:
+  ..$ Df     : num [1:2] 7 40
+  ..$ Sum Sq : num [1:2] 47524 130
+  ..$ Mean Sq: num [1:2] 6789.08 3.26
+  ..$ F value: num [1:2] 2084 NA
+  ..$ Pr(&gt;F) : num [1:2] 3.61e-49 NA
+ - attr(*, "class")= chr [1:2] "summary.aov" "listof"</code></pre>
+</section>
+<section id="tukey-pairwise-comparisons" class="level2">
+<h2 class="anchored" data-anchor-id="tukey-pairwise-comparisons">6.2 Tukey pairwise comparisons</h2>
+<div class="sourceCode" id="cb14" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb14-1">tukey_res <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">TukeyHSD</span>(model)</span>
+<span id="cb14-2">pairs_res <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">as.data.frame</span>(tukey_res<span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">$</span>volume_ul) <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">%&gt;%</span></span>
+<span id="cb14-3">  tibble<span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">::</span><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">rownames_to_column</span>(<span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"contrast"</span>) <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">%&gt;%</span></span>
+<span id="cb14-4">  <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">rename</span>(<span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">p.value =</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">`</span><span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">p adj</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">`</span>) <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">%&gt;%</span></span>
+<span id="cb14-5">  <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">mutate</span>(<span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">sig_label =</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">sig_label</span>(p.value))</span>
+<span id="cb14-6"></span>
+<span id="cb14-7"><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">print</span>(pairs_res)</span>
+<span id="cb14-8"></span>
+<span id="cb14-9"><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">str</span>(pairs_res)</span></code></pre></div>
+<pre><code>   contrast      diff        lwr       upr      p.value sig_label
+1   200-100  3.000000 -0.3312867  6.331287 1.043796e-01        ns
+2   300-100  7.000000  3.6687133 10.331287 1.242607e-06       ***
+3   400-100 13.166667  9.8353800 16.497953 5.175860e-13       ***
+4   500-100 20.166667 16.8353800 23.497953 4.636291e-13       ***
+5   750-100 46.333333 43.0020466 49.664620 4.636291e-13       ***
+6   900-100 68.000000 64.6687133 71.331287 4.636291e-13       ***
+7  1000-100 90.666667 87.3353800 93.997953 4.636291e-13       ***
+8   300-200  4.000000  0.6687133  7.331287 9.317756e-03        **
+9   400-200 10.166667  6.8353800 13.497953 1.085119e-10       ***
+10  500-200 17.166667 13.8353800 20.497953 4.638512e-13       ***
+11  750-200 43.333333 40.0020466 46.664620 4.636291e-13       ***
+12  900-200 65.000000 61.6687133 68.331287 4.636291e-13       ***
+13 1000-200 87.666667 84.3353800 90.997953 4.636291e-13       ***
+14  400-300  6.166667  2.8353800  9.497953 1.611005e-05       ***
+15  500-300 13.166667  9.8353800 16.497953 5.175860e-13       ***
+16  750-300 39.333333 36.0020466 42.664620 4.636291e-13       ***
+17  900-300 61.000000 57.6687133 64.331287 4.636291e-13       ***
+18 1000-300 83.666667 80.3353800 86.997953 4.636291e-13       ***
+19  500-400  7.000000  3.6687133 10.331287 1.242607e-06       ***
+20  750-400 33.166667 29.8353800 36.497953 4.636291e-13       ***
+21  900-400 54.833333 51.5020466 58.164620 4.636291e-13       ***
+22 1000-400 77.500000 74.1687133 80.831287 4.636291e-13       ***
+23  750-500 26.166667 22.8353800 29.497953 4.636291e-13       ***
+24  900-500 47.833333 44.5020466 51.164620 4.636291e-13       ***
+25 1000-500 70.500000 67.1687133 73.831287 4.636291e-13       ***
+26  900-750 21.666667 18.3353800 24.997953 4.636291e-13       ***
+27 1000-750 44.333333 41.0020466 47.664620 4.636291e-13       ***
+28 1000-900 22.666667 19.3353800 25.997953 4.636291e-13       ***
+'data.frame':   28 obs. of  6 variables:
+ $ contrast : chr  "200-100" "300-100" "400-100" "500-100" ...
+ $ diff     : num  3 7 13.2 20.2 46.3 ...
+ $ lwr      : num  -0.331 3.669 9.835 16.835 43.002 ...
+ $ upr      : num  6.33 10.33 16.5 23.5 49.66 ...
+ $ p.value  : num  1.04e-01 1.24e-06 5.18e-13 4.64e-13 4.64e-13 ...
+ $ sig_label: chr  "ns" "***" "***" "***" ...</code></pre>
+</section>
+<section id="compact-letter-display" class="level2">
+<h2 class="anchored" data-anchor-id="compact-letter-display">6.3 Compact letter display</h2>
+<p>Groups sharing a letter are not significantly different at α = 0.05.</p>
+<div class="sourceCode" id="cb16" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb16-1"><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># multcompLetters4 works directly with TukeyHSD output, so group-name</span></span>
+<span id="cb16-2"><span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># alignment is handled internally and reliably.</span></span>
+<span id="cb16-3">cld_letters <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> multcompView<span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">::</span><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">multcompLetters4</span>(model, tukey_res)<span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">$</span>volume_ul<span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">$</span>Letters</span>
+<span id="cb16-4"></span>
+<span id="cb16-5">vols <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">levels</span>(dat<span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">$</span>volume_ul)</span>
+<span id="cb16-6"></span>
+<span id="cb16-7">cld_df <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">tibble</span>(</span>
+<span id="cb16-8">  <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">volume_ul =</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">factor</span>(vols, <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">levels =</span> vols),</span>
+<span id="cb16-9">  <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">.group    =</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">trimws</span>(cld_letters[vols])</span>
+<span id="cb16-10">)</span>
+<span id="cb16-11"></span>
+<span id="cb16-12"><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">print</span>(cld_df)</span>
+<span id="cb16-13"></span>
+<span id="cb16-14"><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">str</span>(cld_df)</span></code></pre></div>
+<pre><code># A tibble: 8 × 2
+  volume_ul .group
+  &lt;fct&gt;     &lt;chr&gt; 
+1 100       g     
+2 200       g     
+3 300       f     
+4 400       e     
+5 500       d     
+6 750       c     
+7 900       b     
+8 1000      a     
+tibble [8 × 2] (S3: tbl_df/tbl/data.frame)
+ $ volume_ul: Factor w/ 8 levels "100","200","300",..: 1 2 3 4 5 6 7 8
+ $ .group   : Named chr [1:8] "g" "g" "f" "e" ...
+  ..- attr(*, "names")= chr [1:8] "100" "200" "300" "400" ...</code></pre>
+</section>
+</section>
+<section id="plots" class="level1">
+<h1>7 PLOTS</h1>
+<section id="box-plot-with-statistical-annotations" class="level2">
+<h2 class="anchored" data-anchor-id="box-plot-with-statistical-annotations">7.1 Box Plot with Statistical Annotations</h2>
+<div class="sourceCode" id="cb18" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb18-1">y_max   <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">max</span>(dat<span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">$</span>value, <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">na.rm =</span> <span class="cn" style="color: #8f5902;
+background-color: null;
+font-style: inherit;">TRUE</span>)</span>
+<span id="cb18-2">y_range <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">diff</span>(<span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">range</span>(dat<span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">$</span>value, <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">na.rm =</span> <span class="cn" style="color: #8f5902;
+background-color: null;
+font-style: inherit;">TRUE</span>))</span>
+<span id="cb18-3">label_y <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> y_max <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">+</span> y_range <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">*</span> <span class="fl" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">0.07</span></span>
+<span id="cb18-4"></span>
+<span id="cb18-5">p_box <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">ggplot</span>(dat, <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">aes</span>(<span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">x =</span> volume_ul, <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">y =</span> value, <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">fill =</span> volume_ul)) <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">+</span></span>
+<span id="cb18-6">  <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">geom_boxplot</span>(<span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">alpha =</span> <span class="fl" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">0.6</span>, <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">outlier.shape =</span> <span class="cn" style="color: #8f5902;
+background-color: null;
+font-style: inherit;">NA</span>) <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">+</span></span>
+<span id="cb18-7">  <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">geom_jitter</span>(<span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">width =</span> <span class="fl" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">0.15</span>, <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">alpha =</span> <span class="fl" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">0.55</span>, <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">size =</span> <span class="fl" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">2.2</span>) <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">+</span></span>
+<span id="cb18-8">  <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">geom_text</span>(</span>
+<span id="cb18-9">    <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">data        =</span> cld_df,</span>
+<span id="cb18-10">    <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">aes</span>(<span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">x =</span> volume_ul, <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">y =</span> label_y, <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">label =</span> .group),</span>
+<span id="cb18-11">    <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">inherit.aes =</span> <span class="cn" style="color: #8f5902;
+background-color: null;
+font-style: inherit;">FALSE</span>,</span>
+<span id="cb18-12">    <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">size        =</span> <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">5</span>,</span>
+<span id="cb18-13">    <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">fontface    =</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"bold"</span></span>
+<span id="cb18-14">  ) <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">+</span></span>
+<span id="cb18-15">  <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">scale_fill_brewer</span>(<span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">palette =</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"Set2"</span>, <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">guide =</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"none"</span>) <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">+</span></span>
+<span id="cb18-16">  <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">labs</span>(</span>
+<span id="cb18-17">    <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">x        =</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"Resazurin volume (µL)"</span>,</span>
+<span id="cb18-18">    <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">y        =</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"Raw fluorescence (RFU)"</span>,</span>
+<span id="cb18-19">    <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">title    =</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"Fluorescence by resazurin volume"</span>,</span>
+<span id="cb18-20">    <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">subtitle =</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"Shared letter = not significantly different (Tukey, α = 0.05)"</span></span>
+<span id="cb18-21">  ) <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">+</span></span>
+<span id="cb18-22">  <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">theme_classic</span>(<span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">base_size =</span> <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">13</span>) <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">+</span></span>
+<span id="cb18-23">  <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">theme</span>(<span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">plot.subtitle =</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">element_text</span>(<span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">size =</span> <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">10</span>, <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">colour =</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"grey40"</span>))</span>
+<span id="cb18-24"></span>
+<span id="cb18-25">p_box</span></code></pre></div>
+<p><img src="https://robertslab.github.io/sams-notebook/posts/2026/2026-05-28-Resazurin-Assays---Proximity-to-Plate-Reader-Detector-Significantly-Affects-Fluorescence-Readings/01.00-resazurin-20260528-volume_testing_files/figure-gfm/boxplot-volume-1.png" class="img-fluid"><!-- --></p>
+<div class="sourceCode" id="cb19" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb19-1"><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">ggsave</span>(<span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">file.path</span>(fig_dir, <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"boxplot_fluorescence_by_volume.png"</span>),</span>
+<span id="cb19-2">       p_box, <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">width =</span> <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">9</span>, <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">height =</span> <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">6</span>)</span></code></pre></div>
+</section>
+<section id="fluorescence-vs.-volume-scatter-with-regression" class="level2">
+<h2 class="anchored" data-anchor-id="fluorescence-vs.-volume-scatter-with-regression">7.2 Fluorescence vs.&nbsp;volume (scatter with regression)</h2>
+<p>Visualises the relationship between volume and mean fluorescence to assess linearity.</p>
+<div class="sourceCode" id="cb20" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb20-1">vol_summary_num <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> vol_summary <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">%&gt;%</span></span>
+<span id="cb20-2">  <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">mutate</span>(<span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">volume_num =</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">as.numeric</span>(<span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">as.character</span>(volume_ul)))</span>
+<span id="cb20-3"></span>
+<span id="cb20-4">lm_fit  <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">lm</span>(mean_rfu <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">~</span> volume_num, <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">data =</span> vol_summary_num)</span>
+<span id="cb20-5">lm_coef <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">coef</span>(lm_fit)</span>
+<span id="cb20-6">lm_r2   <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">summary</span>(lm_fit)<span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">$</span>r.squared</span>
+<span id="cb20-7"></span>
+<span id="cb20-8">lm_label <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">sprintf</span>(</span>
+<span id="cb20-9">  <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"y = %.3f x + %.2f</span><span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">\n</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">R² = %.4f"</span>,</span>
+<span id="cb20-10">  lm_coef[<span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"volume_num"</span>],</span>
+<span id="cb20-11">  lm_coef[<span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"(Intercept)"</span>],</span>
+<span id="cb20-12">  lm_r2</span>
+<span id="cb20-13">)</span>
+<span id="cb20-14"></span>
+<span id="cb20-15">p_scatter <span class="ot" style="color: #003B4F;
+background-color: null;
+font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">ggplot</span>(vol_summary_num,</span>
+<span id="cb20-16">    <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">aes</span>(<span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">x =</span> volume_num, <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">y =</span> mean_rfu)) <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">+</span></span>
+<span id="cb20-17">  <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">geom_smooth</span>(<span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">method =</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"lm"</span>, <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">colour =</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"steelblue"</span>, <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">fill =</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"steelblue"</span>,</span>
+<span id="cb20-18">              <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">alpha =</span> <span class="fl" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">0.15</span>, <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">linewidth =</span> <span class="fl" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">0.8</span>) <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">+</span></span>
+<span id="cb20-19">  <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">geom_errorbar</span>(<span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">aes</span>(<span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">ymin =</span> mean_rfu <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">-</span> se_rfu,</span>
+<span id="cb20-20">                    <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">ymax =</span> mean_rfu <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">+</span> se_rfu),</span>
+<span id="cb20-21">                <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">width =</span> <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">20</span>, <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">colour =</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"grey40"</span>) <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">+</span></span>
+<span id="cb20-22">  <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">geom_point</span>(<span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">size =</span> <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">3</span>) <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">+</span></span>
+<span id="cb20-23">  <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">annotate</span>(<span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"text"</span>,</span>
+<span id="cb20-24">           <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">x     =</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">min</span>(vol_summary_num<span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">$</span>volume_num),</span>
+<span id="cb20-25">           <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">y     =</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">max</span>(vol_summary_num<span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">$</span>mean_rfu),</span>
+<span id="cb20-26">           <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">label =</span> lm_label,</span>
+<span id="cb20-27">           <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">hjust =</span> <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">0</span>, <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">vjust =</span> <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">1</span>, <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">size =</span> <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">4</span>, <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">colour =</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"steelblue"</span>) <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">+</span></span>
+<span id="cb20-28">  <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">scale_x_continuous</span>(<span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">breaks =</span> vol_summary_num<span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">$</span>volume_num) <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">+</span></span>
+<span id="cb20-29">  <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">labs</span>(</span>
+<span id="cb20-30">    <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">x     =</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"Resazurin volume (µL)"</span>,</span>
+<span id="cb20-31">    <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">y     =</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"Mean fluorescence (RFU ± SE)"</span>,</span>
+<span id="cb20-32">    <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">title =</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"Mean fluorescence vs. volume"</span></span>
+<span id="cb20-33">  ) <span class="sc" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">+</span></span>
+<span id="cb20-34">  <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">theme_classic</span>(<span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">base_size =</span> <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">13</span>)</span>
+<span id="cb20-35"></span>
+<span id="cb20-36">p_scatter</span></code></pre></div>
+<p><img src="https://robertslab.github.io/sams-notebook/posts/2026/2026-05-28-Resazurin-Assays---Proximity-to-Plate-Reader-Detector-Significantly-Affects-Fluorescence-Readings/01.00-resazurin-20260528-volume_testing_files/figure-gfm/scatter-linearity-1.png" class="img-fluid"><!-- --></p>
+<div class="sourceCode" id="cb21" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb21-1"><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">ggsave</span>(<span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">file.path</span>(fig_dir, <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"scatter_mean_fluorescence_by_volume.png"</span>),</span>
+<span id="cb21-2">       p_scatter, <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">width =</span> <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">7</span>, <span class="at" style="color: #657422;
+background-color: null;
+font-style: inherit;">height =</span> <span class="dv" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">5</span>)</span></code></pre></div>
+</section>
+</section>
+<section id="save-outputs" class="level1">
+<h1>8 SAVE OUTPUTS</h1>
+<div class="sourceCode" id="cb22" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb22-1"><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">write_csv</span>(dat,         <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">file.path</span>(out_dir, <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"volume_fluorescence.csv"</span>))</span>
+<span id="cb22-2"><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">write_csv</span>(vol_summary, <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">file.path</span>(out_dir, <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"volume_summary.csv"</span>))</span>
+<span id="cb22-3"><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">write_csv</span>(pairs_res,   <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">file.path</span>(out_dir, <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"pairwise_stats.csv"</span>))</span>
+<span id="cb22-4"></span>
+<span id="cb22-5"><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">message</span>(<span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"Output files written to: "</span>, out_dir)</span></code></pre></div>
+
+
+</section>
+
+ ]]></description>
+  <category>2026</category>
+  <category>resazurin</category>
+  <guid>https://robertslab.github.io/sams-notebook/posts/2026/2026-05-28-Resazurin-Assays---Proximity-to-Plate-Reader-Detector-Significantly-Affects-Fluorescence-Readings/</guid>
+  <pubDate>Thu, 28 May 2026 07:00:00 GMT</pubDate>
+</item>
+<item>
   <title>Computer Management - Replace Bad HDD on Gannet</title>
   <dc:creator>Sam White</dc:creator>
   <link>https://robertslab.github.io/sams-notebook/posts/2026/2026-05-26-Computer-Management---Replace-Bad-HDD-on-Gannet/</link>
@@ -25784,443 +27562,6 @@ Cheng, Haoyu, Erich D. Jarvis, Olivier Fedrigo, et al.&nbsp;2022. “Haplotype-R
   <category>Klone</category>
   <category>Hyak</category>
   <guid>https://robertslab.github.io/sams-notebook/posts/2026/2026-03-31-Genome-Assembly---S.namaycush-Lean-Ecotype-with-PacBio-HiFi-Reads-Using-hifiasm-on-Hyak/</guid>
-  <pubDate>Tue, 31 Mar 2026 07:00:00 GMT</pubDate>
-</item>
-<item>
-  <title>Genome Assembly - S.namaycush Siscowet Ecotype with PacBio HiFi Reads Using hifiasm on Hyak</title>
-  <dc:creator>Sam White</dc:creator>
-  <link>https://robertslab.github.io/sams-notebook/posts/2026/2026-03-31-Genome-Assembly---S.namaycush-Siscowet-Ecotype-with-PacBio-HiFi-Reads-Using-hifiasm-on-Hyak/</link>
-  <description><![CDATA[ 
-
-
-
-
-
-<section id="intro" class="level1">
-<h1>INTRO</h1>
-<p>As part of <a href="https://github.com/RobertsLab/project-lake-trout"><code>project-lake-trout</code></a> (GitHub repo), Steven <a href="https://github.com/RobertsLab/resources/issues/2409">asked that I assemble the genome of a siscowet ecotype of lake trout</a> (GitHub Issue), <em>Salvelinus namaycush</em>, using PacBio HiFi reads. I previously assembled this genome using Flye, on 20260326 (notebook entry), but <a href="https://github.com/RobertsLab/resources/issues/2409#issuecomment-4150948212">Steven asked me to also try hifiasm</a> (GitHub Issue)for the assembly.</p>
-<p>I performed the assembly on Hyak (Klone), UW’s high-performance computing cluster. I used our Apptainer (Singularity) container to run the job (<code>srlab-R4.4-bioinformatics-container-e5bcfea.sif</code>), which includes hifiasm version 0.25.0.</p>
-<p>Below is the rendered markdown from <code>13.1-hifiasm-genome-assembly-siscowet.Rmd</code>. The run was <em>very</em> fast; it only took a day and half.</p>
-</section>
-<section id="primary-outputs" class="level1">
-<h1>PRIMARY OUTPUTS</h1>
-<p>hifiasm produces three assemblies: a primary assembly, and two haplotype-resolved assemblies. Below are the links to the FastA files. The outputs are only GFA graph files. I had to convert them to FastA using <a href="https://github.com/lh3/gfatools">gfatools</a>.</p>
-<p>Primary assembly:</p>
-<ul>
-<li><p>FastA (3.8GB): https://gannet.fish.washington.edu/gitrepos/project-lake-trout/output/13.1-hifiasm-genome-assembly-siscowet/pb-hifiasm-siscowet-assembly.fa</p></li>
-<li><p>MD5: https://gannet.fish.washington.edu/gitrepos/project-lake-trout/output/13.1-hifiasm-genome-assembly-siscowet/pb-hifiasm-siscowet-assembly.fa.md5</p></li>
-<li><p>FastA index: https://gannet.fish.washington.edu/gitrepos/project-lake-trout/output/13.1-hifiasm-genome-assembly-siscowet/pb-hifiasm-siscowet-assembly.fa.fai</p></li>
-</ul>
-<p>Haplotype 1:</p>
-<ul>
-<li><p>FastA (3.4GB): https://gannet.fish.washington.edu/gitrepos/project-lake-trout/output/13.1-hifiasm-genome-assembly-siscowet/pb-hifiasm-siscowet-hap1-assembly.fa</p></li>
-<li><p>MD5: https://gannet.fish.washington.edu/gitrepos/project-lake-trout/output/13.1-hifiasm-genome-assembly-siscowet/pb-hifiasm-siscowet-hap1-assembly.fa.md5</p></li>
-<li><p>FastA index: https://gannet.fish.washington.edu/gitrepos/project-lake-trout/output/13.1-hifiasm-genome-assembly-siscowet/pb-hifiasm-siscowet-hap1-assembly.fa.fai</p></li>
-</ul>
-<p>Haplotype 2:</p>
-<ul>
-<li><p>FastA (3.2GB): https://gannet.fish.washington.edu/gitrepos/project-lake-trout/output/13.1-hifiasm-genome-assembly-siscowet/pb-hifiasm-siscowet-hap2-assembly.fa</p></li>
-<li><p>MD5: https://gannet.fish.washington.edu/gitrepos/project-lake-trout/output/13.1-hifiasm-genome-assembly-siscowet/pb-hifiasm-siscowet-hap2-assembly.fa.md5</p></li>
-<li><p>FastA index: https://gannet.fish.washington.edu/gitrepos/project-lake-trout/output/13.1-hifiasm-genome-assembly-siscowet/pb-hifiasm-siscowet-hap2-assembly.fa.fai</p></li>
-</ul>
-<p>After this, I’ll compare the two assemblies (Flye vs.&nbsp;hifiasm) using <a href="https://github.com/ablab/quast">QUAST</a>, which will provide a more comprehensive set of assembly statistics and metrics.</p>
-<hr>
-</section>
-<section id="background" class="level1">
-<h1>1 BACKGROUND</h1>
-<p>Use <a href="https://github.com/chhylp123/hifiasm">hifiasm</a> (GitHub) (Cheng et al.&nbsp;2021, 2022, 2024) to assemble PacBio reads for <em>S.namaycush</em> <code>siscowet</code> ecotype.</p>
-<p>Due to large file sizes, the outputs will not be on GitHub. They may be found here instead:</p>
-<ul>
-<li><a href="https://gannet.fish.washington.edu/gitrepos/project-lake-trout/output/13.1-hifiasm-genome-assembly-siscowet/" class="uri">https://gannet.fish.washington.edu/gitrepos/project-lake-trout/output/13.1-hifiasm-genome-assembly-siscowet/</a></li>
-</ul>
-</section>
-<section id="setup" class="level1">
-<h1>2 SETUP</h1>
-<section id="libraries" class="level2">
-<h2 class="anchored" data-anchor-id="libraries">2.1 Libraries</h2>
-</section>
-<section id="set-r-variables" class="level2">
-<h2 class="anchored" data-anchor-id="set-r-variables">2.2 Set R variables</h2>
-<div class="sourceCode" id="cb1" style="background: #f1f3f5;"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><span class="co" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;"># OUTPUT DIRECTORY</span></span>
-<span id="cb1-2">data_dir <span class="ot" style="color: #003B4F;
-background-color: null;
-font-style: inherit;">&lt;-</span> <span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"/mmfs1/gscratch/scrubbed/samwhite/gitrepos/RobertsLab/project-lake-trout/data/pacbio-siscowet"</span></span>
-<span id="cb1-3">output_dir <span class="ot" style="color: #003B4F;
-background-color: null;
-font-style: inherit;">&lt;-</span> <span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"../output/13.1-hifiasm-genome-assembly-siscowet"</span></span>
-<span id="cb1-4"></span>
-<span id="cb1-5"><span class="co" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;"># PROGRAMS</span></span>
-<span id="cb1-6">gfatools <span class="ot" style="color: #003B4F;
-background-color: null;
-font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">c</span>(<span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"/srlab/programs/gfatools/gfatools"</span>)</span>
-<span id="cb1-7">hifiasm <span class="ot" style="color: #003B4F;
-background-color: null;
-font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">c</span>(<span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"/srlab/programs/miniforge3-24.7.1-0/envs/hifiasm-0.25.0_env/bin/hifiasm"</span>)</span>
-<span id="cb1-8"></span>
-<span id="cb1-9"></span>
-<span id="cb1-10"><span class="co" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;"># SETTINGS</span></span>
-<span id="cb1-11">threads <span class="ot" style="color: #003B4F;
-background-color: null;
-font-style: inherit;">&lt;-</span> <span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"40"</span></span>
-<span id="cb1-12"></span>
-<span id="cb1-13"></span>
-<span id="cb1-14"><span class="co" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;"># Export these as environment variables for bash chunks.</span></span>
-<span id="cb1-15"><span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">Sys.setenv</span>(</span>
-<span id="cb1-16">  <span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">data_dir =</span> data_dir,</span>
-<span id="cb1-17">  <span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">gfatools =</span> gfatools,</span>
-<span id="cb1-18">  <span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">hifiasm=</span>hifiasm,</span>
-<span id="cb1-19">  <span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">output_dir =</span> output_dir,</span>
-<span id="cb1-20">  <span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">threads =</span> threads</span>
-<span id="cb1-21">)</span></code></pre></div>
-</section>
-</section>
-<section id="run-hifiasm" class="level1">
-<h1>3 RUN HIFIASM</h1>
-<div class="sourceCode" id="cb2" style="background: #f1f3f5;"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb2-1"><span class="co" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;"># Make output directory, if it doesn't exist</span></span>
-<span id="cb2-2"><span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">mkdir</span> <span class="at" style="color: #657422;
-background-color: null;
-font-style: inherit;">--parents</span> <span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"</span><span class="va" style="color: #111111;
-background-color: null;
-font-style: inherit;">${output_dir}</span><span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"</span></span>
-<span id="cb2-3"></span>
-<span id="cb2-4"><span class="bu" style="color: null;
-background-color: null;
-font-style: inherit;">cd</span> <span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"</span><span class="va" style="color: #111111;
-background-color: null;
-font-style: inherit;">${output_dir}</span><span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"</span></span>
-<span id="cb2-5"></span>
-<span id="cb2-6"><span class="co" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;"># Create an array of .fastq.gz files</span></span>
-<span id="cb2-7"><span class="va" style="color: #111111;
-background-color: null;
-font-style: inherit;">fastqs</span><span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">=</span><span class="va" style="color: #111111;
-background-color: null;
-font-style: inherit;">(${data_dir}</span>/<span class="pp" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">*</span>.fastq.gz<span class="va" style="color: #111111;
-background-color: null;
-font-style: inherit;">)</span></span>
-<span id="cb2-8"></span>
-<span id="cb2-9"><span class="co" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;"># Print the result (optional, for verification)</span></span>
-<span id="cb2-10"><span class="co" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">## newline-delimited format</span></span>
-<span id="cb2-11"><span class="bu" style="color: null;
-background-color: null;
-font-style: inherit;">echo</span> <span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"List of FastQs used for assembly:"</span></span>
-<span id="cb2-12"></span>
-<span id="cb2-13"><span class="bu" style="color: null;
-background-color: null;
-font-style: inherit;">printf</span> <span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"%s\n"</span> <span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"</span><span class="va" style="color: #111111;
-background-color: null;
-font-style: inherit;">${fastqs</span><span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">[@]</span><span class="va" style="color: #111111;
-background-color: null;
-font-style: inherit;">}</span><span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"</span> <span class="dt" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">\</span></span>
-<span id="cb2-14"><span class="kw" style="color: #003B4F;
-background-color: null;
-font-weight: bold;
-font-style: inherit;">|</span> <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">tee</span> input_fastqs.txt</span>
-<span id="cb2-15"></span>
-<span id="cb2-16"><span class="co" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;"># Run hifiasm assembly</span></span>
-<span id="cb2-17"><span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"</span><span class="va" style="color: #111111;
-background-color: null;
-font-style: inherit;">${hifiasm}</span><span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"</span> <span class="dt" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">\</span></span>
-<span id="cb2-18">-o pb-hifiasm-siscowet-assembly.asm <span class="dt" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">\</span></span>
-<span id="cb2-19">-t <span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"</span><span class="va" style="color: #111111;
-background-color: null;
-font-style: inherit;">${threads}</span><span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"</span> <span class="dt" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">\</span></span>
-<span id="cb2-20"><span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"</span><span class="va" style="color: #111111;
-background-color: null;
-font-style: inherit;">${fastqs</span><span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">[@]</span><span class="va" style="color: #111111;
-background-color: null;
-font-style: inherit;">}</span><span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"</span> <span class="dt" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">\</span></span>
-<span id="cb2-21"><span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">&gt;</span> pb-hifiasm-siscowet-assembly.log <span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">2</span><span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">&gt;&amp;</span><span class="dv" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">1</span></span></code></pre></div>
-</section>
-<section id="gfatools" class="level1">
-<h1>4 GFATOOLS</h1>
-<section id="primary-contigs-to-fasta" class="level2">
-<h2 class="anchored" data-anchor-id="primary-contigs-to-fasta">4.1 Primary contigs to FastA</h2>
-<p>This will extract a FastA file from the graph files output by hifiasm.</p>
-<div class="sourceCode" id="cb3" style="background: #f1f3f5;"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb3-1"><span class="bu" style="color: null;
-background-color: null;
-font-style: inherit;">cd</span> <span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"</span><span class="va" style="color: #111111;
-background-color: null;
-font-style: inherit;">${output_dir}</span><span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"</span></span>
-<span id="cb3-2"></span>
-<span id="cb3-3"><span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"</span><span class="va" style="color: #111111;
-background-color: null;
-font-style: inherit;">${gfatools}</span><span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"</span> gfa2fa <span class="dt" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">\</span></span>
-<span id="cb3-4">pb-hifiasm-siscowet-assembly.asm.bp.p_ctg.gfa <span class="dt" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">\</span></span>
-<span id="cb3-5"><span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">&gt;</span> pb-hifiasm-siscowet-assembly.fa</span>
-<span id="cb3-6"></span>
-<span id="cb3-7"><span class="ex" style="color: null;
-background-color: null;
-font-style: inherit;">samtools</span> faidx pb-hifiasm-siscowet-assembly.fa</span></code></pre></div>
-</section>
-<section id="haplotype-1-contigs-to-fasta" class="level2">
-<h2 class="anchored" data-anchor-id="haplotype-1-contigs-to-fasta">4.2 Haplotype 1 contigs to FastA</h2>
-<p>This will extract a FastA file from the graph files output by hifiasm.</p>
-<div class="sourceCode" id="cb4" style="background: #f1f3f5;"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb4-1"><span class="bu" style="color: null;
-background-color: null;
-font-style: inherit;">cd</span> <span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"</span><span class="va" style="color: #111111;
-background-color: null;
-font-style: inherit;">${output_dir}</span><span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"</span></span>
-<span id="cb4-2"></span>
-<span id="cb4-3"><span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"</span><span class="va" style="color: #111111;
-background-color: null;
-font-style: inherit;">${gfatools}</span><span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"</span> gfa2fa <span class="dt" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">\</span></span>
-<span id="cb4-4">pb-hifiasm-siscowet-assembly.asm.bp.hap1.p_ctg.gfa <span class="dt" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">\</span></span>
-<span id="cb4-5"><span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">&gt;</span> pb-hifiasm-siscowet-hap1-assembly.fa</span>
-<span id="cb4-6"></span>
-<span id="cb4-7"><span class="ex" style="color: null;
-background-color: null;
-font-style: inherit;">samtools</span> faidx pb-hifiasm-siscowet-hap1-assembly.fa</span></code></pre></div>
-</section>
-<section id="haplotype-2-contigs-to-fasta" class="level2">
-<h2 class="anchored" data-anchor-id="haplotype-2-contigs-to-fasta">4.3 Haplotype 2 contigs to FastA</h2>
-<p>This will extract a FastA file from the graph files output by hifiasm.</p>
-<div class="sourceCode" id="cb5" style="background: #f1f3f5;"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb5-1"><span class="bu" style="color: null;
-background-color: null;
-font-style: inherit;">cd</span> <span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"</span><span class="va" style="color: #111111;
-background-color: null;
-font-style: inherit;">${output_dir}</span><span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"</span></span>
-<span id="cb5-2"></span>
-<span id="cb5-3"><span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"</span><span class="va" style="color: #111111;
-background-color: null;
-font-style: inherit;">${gfatools}</span><span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"</span> gfa2fa <span class="dt" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">\</span></span>
-<span id="cb5-4">pb-hifiasm-siscowet-assembly.asm.bp.hap2.p_ctg.gfa <span class="dt" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">\</span></span>
-<span id="cb5-5"><span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">&gt;</span> pb-hifiasm-siscowet-hap2-assembly.fa</span>
-<span id="cb5-6"></span>
-<span id="cb5-7"><span class="ex" style="color: null;
-background-color: null;
-font-style: inherit;">samtools</span> faidx pb-hifiasm-siscowet-hap2-assembly.fa</span></code></pre></div>
-</section>
-<section id="generate-checksums" class="level2">
-<h2 class="anchored" data-anchor-id="generate-checksums">4.4 Generate checksums</h2>
-<div class="sourceCode" id="cb6" style="background: #f1f3f5;"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb6-1"><span class="bu" style="color: null;
-background-color: null;
-font-style: inherit;">cd</span> <span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"</span><span class="va" style="color: #111111;
-background-color: null;
-font-style: inherit;">${output_dir}</span><span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"</span></span>
-<span id="cb6-2"></span>
-<span id="cb6-3"><span class="cf" style="color: #003B4F;
-background-color: null;
-font-weight: bold;
-font-style: inherit;">for</span> fasta <span class="kw" style="color: #003B4F;
-background-color: null;
-font-weight: bold;
-font-style: inherit;">in</span> <span class="pp" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">*</span>.fa</span>
-<span id="cb6-4"><span class="cf" style="color: #003B4F;
-background-color: null;
-font-weight: bold;
-font-style: inherit;">do</span></span>
-<span id="cb6-5">  <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">md5sum</span> <span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"</span><span class="va" style="color: #111111;
-background-color: null;
-font-style: inherit;">${fasta}</span><span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"</span> <span class="dt" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">\</span></span>
-<span id="cb6-6">  <span class="kw" style="color: #003B4F;
-background-color: null;
-font-weight: bold;
-font-style: inherit;">|</span> <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;">tee</span> <span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"</span><span class="va" style="color: #111111;
-background-color: null;
-font-style: inherit;">${fasta}</span><span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"</span>.md5</span>
-<span id="cb6-7"><span class="cf" style="color: #003B4F;
-background-color: null;
-font-weight: bold;
-font-style: inherit;">done</span></span></code></pre></div>
-<pre><code>## d41d8cd98f00b204e9800998ecf8427e  pb-hifiasm-lean-assembly.fa
-## c5e88b1d81585383b3fb7354aa624f34  pb-hifiasm-siscowet-assembly.fa
-## cb85945e4b07c42fba548865e3039d00  pb-hifiasm-siscowet-hap1-assembly.fa
-## 5d813ba82405afef60628e3c8325306f  pb-hifiasm-siscowet-hap2-assembly.fa</code></pre>
-</section>
-</section>
-<section id="references" class="level1">
-<h1>5 REFERENCES</h1>
-<div id="refs" class="references csl-bib-body hanging-indent">
-<div id="ref-cheng2024" class="csl-entry">
-Cheng, Haoyu, Mobin Asri, Julian Lucas, Sergey Koren, and Heng Li. 2024. “Scalable Telomere-to-Telomere Assembly for Diploid and Polyploid Genomes with Double Graph.” <em>Nature Methods</em> 21 (6): 967–70. <a href="https://doi.org/10.1038/s41592-024-02269-8" class="uri">https://doi.org/10.1038/s41592-024-02269-8</a>.
-</div>
-<div id="ref-cheng2021" class="csl-entry">
-Cheng, Haoyu, Gregory T. Concepcion, Xiaowen Feng, Haowen Zhang, and Heng Li. 2021. “Haplotype-Resolved de Novo Assembly Using Phased Assembly Graphs with Hifiasm.” <em>Nature Methods</em> 18 (2): 170–75. <a href="https://doi.org/10.1038/s41592-020-01056-5" class="uri">https://doi.org/10.1038/s41592-020-01056-5</a>.
-</div>
-<div id="ref-cheng2022" class="csl-entry">
-Cheng, Haoyu, Erich D. Jarvis, Olivier Fedrigo, et al.&nbsp;2022. “Haplotype-Resolved Assembly of Diploid Genomes Without Parental Data.” <em>Nature Biotechnology</em> 40 (9): 1332–35. <a href="https://doi.org/10.1038/s41587-022-01261-x" class="uri">https://doi.org/10.1038/s41587-022-01261-x</a>.
-</div>
-</div>
-
-
-</section>
-
- ]]></description>
-  <category>2026</category>
-  <category>Genome Assembly</category>
-  <category>PacBio</category>
-  <category>HiFi Reads</category>
-  <category>hifiasm</category>
-  <category>Salvelinus namaycush</category>
-  <category>Lake Trout</category>
-  <category>Siscowet</category>
-  <category>Klone</category>
-  <category>Hyak</category>
-  <guid>https://robertslab.github.io/sams-notebook/posts/2026/2026-03-31-Genome-Assembly---S.namaycush-Siscowet-Ecotype-with-PacBio-HiFi-Reads-Using-hifiasm-on-Hyak/</guid>
   <pubDate>Tue, 31 Mar 2026 07:00:00 GMT</pubDate>
 </item>
 </channel>
