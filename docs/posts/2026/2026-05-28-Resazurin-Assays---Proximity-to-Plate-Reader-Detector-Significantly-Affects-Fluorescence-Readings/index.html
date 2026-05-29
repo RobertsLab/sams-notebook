@@ -281,6 +281,7 @@ gtag('config', 'G-7483T61T11', { 'anonymize_ip': true});
   <ul>
   <li><a href="#box-plot-with-statistical-annotations" id="toc-box-plot-with-statistical-annotations" class="nav-link" data-scroll-target="#box-plot-with-statistical-annotations">7.1 Box Plot with Statistical Annotations</a></li>
   <li><a href="#fluorescence-vs.-volume-scatter-with-regression" id="toc-fluorescence-vs.-volume-scatter-with-regression" class="nav-link" data-scroll-target="#fluorescence-vs.-volume-scatter-with-regression">7.2 Fluorescence vs.&nbsp;volume (scatter with regression)</a></li>
+  <li><a href="#model-residuals" id="toc-model-residuals" class="nav-link" data-scroll-target="#model-residuals">7.3 Model residuals</a></li>
   </ul></li>
   <li><a href="#save-outputs" id="toc-save-outputs" class="nav-link" data-scroll-target="#save-outputs">8 SAVE OUTPUTS</a></li>
   </ul>
@@ -803,55 +804,209 @@ tibble [8 × 2] (S3: tbl_df/tbl/data.frame)
 </section>
 <section id="fluorescence-vs.-volume-scatter-with-regression" class="level2">
 <h2 class="anchored" data-anchor-id="fluorescence-vs.-volume-scatter-with-regression">7.2 Fluorescence vs.&nbsp;volume (scatter with regression)</h2>
-<p>Visualises the relationship between volume and mean fluorescence to assess linearity.</p>
+<p>Visualises the relationship between volume and mean fluorescence. Four candidate models are fit and compared.</p>
 <div class="sourceCode" id="cb20"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb20-1"><a href="#cb20-1" aria-hidden="true" tabindex="-1"></a>vol_summary_num <span class="ot">&lt;-</span> vol_summary <span class="sc">%&gt;%</span></span>
 <span id="cb20-2"><a href="#cb20-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">volume_num =</span> <span class="fu">as.numeric</span>(<span class="fu">as.character</span>(volume_ul)))</span>
 <span id="cb20-3"><a href="#cb20-3" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb20-4"><a href="#cb20-4" aria-hidden="true" tabindex="-1"></a>lm_fit  <span class="ot">&lt;-</span> <span class="fu">lm</span>(mean_rfu <span class="sc">~</span> volume_num, <span class="at">data =</span> vol_summary_num)</span>
-<span id="cb20-5"><a href="#cb20-5" aria-hidden="true" tabindex="-1"></a>lm_coef <span class="ot">&lt;-</span> <span class="fu">coef</span>(lm_fit)</span>
+<span id="cb20-4"><a href="#cb20-4" aria-hidden="true" tabindex="-1"></a><span class="co"># Linear: RFU = a + b*volume</span></span>
+<span id="cb20-5"><a href="#cb20-5" aria-hidden="true" tabindex="-1"></a>lm_fit  <span class="ot">&lt;-</span> <span class="fu">lm</span>(mean_rfu <span class="sc">~</span> volume_num, <span class="at">data =</span> vol_summary_num)</span>
 <span id="cb20-6"><a href="#cb20-6" aria-hidden="true" tabindex="-1"></a>lm_r2   <span class="ot">&lt;-</span> <span class="fu">summary</span>(lm_fit)<span class="sc">$</span>r.squared</span>
 <span id="cb20-7"><a href="#cb20-7" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb20-8"><a href="#cb20-8" aria-hidden="true" tabindex="-1"></a>lm_label <span class="ot">&lt;-</span> <span class="fu">sprintf</span>(</span>
-<span id="cb20-9"><a href="#cb20-9" aria-hidden="true" tabindex="-1"></a>  <span class="st">"y = %.3f x + %.2f</span><span class="sc">\n</span><span class="st">R² = %.4f"</span>,</span>
-<span id="cb20-10"><a href="#cb20-10" aria-hidden="true" tabindex="-1"></a>  lm_coef[<span class="st">"volume_num"</span>],</span>
-<span id="cb20-11"><a href="#cb20-11" aria-hidden="true" tabindex="-1"></a>  lm_coef[<span class="st">"(Intercept)"</span>],</span>
-<span id="cb20-12"><a href="#cb20-12" aria-hidden="true" tabindex="-1"></a>  lm_r2</span>
-<span id="cb20-13"><a href="#cb20-13" aria-hidden="true" tabindex="-1"></a>)</span>
-<span id="cb20-14"><a href="#cb20-14" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb20-15"><a href="#cb20-15" aria-hidden="true" tabindex="-1"></a>p_scatter <span class="ot">&lt;-</span> <span class="fu">ggplot</span>(vol_summary_num,</span>
-<span id="cb20-16"><a href="#cb20-16" aria-hidden="true" tabindex="-1"></a>    <span class="fu">aes</span>(<span class="at">x =</span> volume_num, <span class="at">y =</span> mean_rfu)) <span class="sc">+</span></span>
-<span id="cb20-17"><a href="#cb20-17" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_smooth</span>(<span class="at">method =</span> <span class="st">"lm"</span>, <span class="at">colour =</span> <span class="st">"steelblue"</span>, <span class="at">fill =</span> <span class="st">"steelblue"</span>,</span>
-<span id="cb20-18"><a href="#cb20-18" aria-hidden="true" tabindex="-1"></a>              <span class="at">alpha =</span> <span class="fl">0.15</span>, <span class="at">linewidth =</span> <span class="fl">0.8</span>) <span class="sc">+</span></span>
-<span id="cb20-19"><a href="#cb20-19" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_errorbar</span>(<span class="fu">aes</span>(<span class="at">ymin =</span> mean_rfu <span class="sc">-</span> se_rfu,</span>
-<span id="cb20-20"><a href="#cb20-20" aria-hidden="true" tabindex="-1"></a>                    <span class="at">ymax =</span> mean_rfu <span class="sc">+</span> se_rfu),</span>
-<span id="cb20-21"><a href="#cb20-21" aria-hidden="true" tabindex="-1"></a>                <span class="at">width =</span> <span class="dv">20</span>, <span class="at">colour =</span> <span class="st">"grey40"</span>) <span class="sc">+</span></span>
-<span id="cb20-22"><a href="#cb20-22" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_point</span>(<span class="at">size =</span> <span class="dv">3</span>) <span class="sc">+</span></span>
-<span id="cb20-23"><a href="#cb20-23" aria-hidden="true" tabindex="-1"></a>  <span class="fu">annotate</span>(<span class="st">"text"</span>,</span>
-<span id="cb20-24"><a href="#cb20-24" aria-hidden="true" tabindex="-1"></a>           <span class="at">x     =</span> <span class="fu">min</span>(vol_summary_num<span class="sc">$</span>volume_num),</span>
-<span id="cb20-25"><a href="#cb20-25" aria-hidden="true" tabindex="-1"></a>           <span class="at">y     =</span> <span class="fu">max</span>(vol_summary_num<span class="sc">$</span>mean_rfu),</span>
-<span id="cb20-26"><a href="#cb20-26" aria-hidden="true" tabindex="-1"></a>           <span class="at">label =</span> lm_label,</span>
-<span id="cb20-27"><a href="#cb20-27" aria-hidden="true" tabindex="-1"></a>           <span class="at">hjust =</span> <span class="dv">0</span>, <span class="at">vjust =</span> <span class="dv">1</span>, <span class="at">size =</span> <span class="dv">4</span>, <span class="at">colour =</span> <span class="st">"steelblue"</span>) <span class="sc">+</span></span>
-<span id="cb20-28"><a href="#cb20-28" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_x_continuous</span>(<span class="at">breaks =</span> vol_summary_num<span class="sc">$</span>volume_num) <span class="sc">+</span></span>
-<span id="cb20-29"><a href="#cb20-29" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(</span>
-<span id="cb20-30"><a href="#cb20-30" aria-hidden="true" tabindex="-1"></a>    <span class="at">x     =</span> <span class="st">"Resazurin volume (µL)"</span>,</span>
-<span id="cb20-31"><a href="#cb20-31" aria-hidden="true" tabindex="-1"></a>    <span class="at">y     =</span> <span class="st">"Mean fluorescence (RFU ± SE)"</span>,</span>
-<span id="cb20-32"><a href="#cb20-32" aria-hidden="true" tabindex="-1"></a>    <span class="at">title =</span> <span class="st">"Mean fluorescence vs. volume"</span></span>
-<span id="cb20-33"><a href="#cb20-33" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">+</span></span>
-<span id="cb20-34"><a href="#cb20-34" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_classic</span>(<span class="at">base_size =</span> <span class="dv">13</span>)</span>
-<span id="cb20-35"><a href="#cb20-35" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb20-36"><a href="#cb20-36" aria-hidden="true" tabindex="-1"></a>p_scatter</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span id="cb20-8"><a href="#cb20-8" aria-hidden="true" tabindex="-1"></a><span class="co"># Power law (log-log): log(RFU) = log(a) + b*log(volume)  →  RFU = a*volume^b</span></span>
+<span id="cb20-9"><a href="#cb20-9" aria-hidden="true" tabindex="-1"></a>loglog_fit  <span class="ot">&lt;-</span> <span class="fu">lm</span>(<span class="fu">log</span>(mean_rfu) <span class="sc">~</span> <span class="fu">log</span>(volume_num), <span class="at">data =</span> vol_summary_num)</span>
+<span id="cb20-10"><a href="#cb20-10" aria-hidden="true" tabindex="-1"></a>loglog_r2   <span class="ot">&lt;-</span> <span class="fu">summary</span>(loglog_fit)<span class="sc">$</span>r.squared</span>
+<span id="cb20-11"><a href="#cb20-11" aria-hidden="true" tabindex="-1"></a>a_pow       <span class="ot">&lt;-</span> <span class="fu">exp</span>(<span class="fu">coef</span>(loglog_fit)[<span class="st">"(Intercept)"</span>])</span>
+<span id="cb20-12"><a href="#cb20-12" aria-hidden="true" tabindex="-1"></a>b_pow       <span class="ot">&lt;-</span> <span class="fu">coef</span>(loglog_fit)[<span class="st">"log(volume_num)"</span>]</span>
+<span id="cb20-13"><a href="#cb20-13" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb20-14"><a href="#cb20-14" aria-hidden="true" tabindex="-1"></a><span class="co"># Exponential (semi-log): log(RFU) = a + b*volume  →  RFU = e^a * e^(b*volume)</span></span>
+<span id="cb20-15"><a href="#cb20-15" aria-hidden="true" tabindex="-1"></a>exp_fit  <span class="ot">&lt;-</span> <span class="fu">lm</span>(<span class="fu">log</span>(mean_rfu) <span class="sc">~</span> volume_num, <span class="at">data =</span> vol_summary_num)</span>
+<span id="cb20-16"><a href="#cb20-16" aria-hidden="true" tabindex="-1"></a>exp_r2   <span class="ot">&lt;-</span> <span class="fu">summary</span>(exp_fit)<span class="sc">$</span>r.squared</span>
+<span id="cb20-17"><a href="#cb20-17" aria-hidden="true" tabindex="-1"></a>a_exp    <span class="ot">&lt;-</span> <span class="fu">exp</span>(<span class="fu">coef</span>(exp_fit)[<span class="st">"(Intercept)"</span>])</span>
+<span id="cb20-18"><a href="#cb20-18" aria-hidden="true" tabindex="-1"></a>b_exp    <span class="ot">&lt;-</span> <span class="fu">coef</span>(exp_fit)[<span class="st">"volume_num"</span>]</span>
+<span id="cb20-19"><a href="#cb20-19" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb20-20"><a href="#cb20-20" aria-hidden="true" tabindex="-1"></a><span class="co"># Quadratic: RFU = a + b*volume + c*volume^2</span></span>
+<span id="cb20-21"><a href="#cb20-21" aria-hidden="true" tabindex="-1"></a>quad_fit <span class="ot">&lt;-</span> <span class="fu">lm</span>(mean_rfu <span class="sc">~</span> volume_num <span class="sc">+</span> <span class="fu">I</span>(volume_num<span class="sc">^</span><span class="dv">2</span>), <span class="at">data =</span> vol_summary_num)</span>
+<span id="cb20-22"><a href="#cb20-22" aria-hidden="true" tabindex="-1"></a>quad_r2  <span class="ot">&lt;-</span> <span class="fu">summary</span>(quad_fit)<span class="sc">$</span>r.squared</span>
+<span id="cb20-23"><a href="#cb20-23" aria-hidden="true" tabindex="-1"></a>quad_coef <span class="ot">&lt;-</span> <span class="fu">coef</span>(quad_fit)</span>
+<span id="cb20-24"><a href="#cb20-24" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb20-25"><a href="#cb20-25" aria-hidden="true" tabindex="-1"></a>rmse <span class="ot">&lt;-</span> <span class="cf">function</span>(fit) <span class="fu">sqrt</span>(<span class="fu">mean</span>(<span class="fu">residuals</span>(fit)<span class="sc">^</span><span class="dv">2</span>))</span>
+<span id="cb20-26"><a href="#cb20-26" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb20-27"><a href="#cb20-27" aria-hidden="true" tabindex="-1"></a>model_compare <span class="ot">&lt;-</span> <span class="fu">tibble</span>(</span>
+<span id="cb20-28"><a href="#cb20-28" aria-hidden="true" tabindex="-1"></a>  <span class="at">model =</span> <span class="fu">c</span>(<span class="st">"Linear"</span>, <span class="st">"Power law"</span>, <span class="st">"Exponential"</span>, <span class="st">"Quadratic"</span>),</span>
+<span id="cb20-29"><a href="#cb20-29" aria-hidden="true" tabindex="-1"></a>  <span class="at">r2    =</span> <span class="fu">c</span>(lm_r2, loglog_r2, exp_r2, quad_r2),</span>
+<span id="cb20-30"><a href="#cb20-30" aria-hidden="true" tabindex="-1"></a>  <span class="at">RMSE  =</span> <span class="fu">c</span>(<span class="fu">rmse</span>(lm_fit), <span class="fu">rmse</span>(loglog_fit), <span class="fu">rmse</span>(exp_fit), <span class="fu">rmse</span>(quad_fit)),</span>
+<span id="cb20-31"><a href="#cb20-31" aria-hidden="true" tabindex="-1"></a>  <span class="at">AIC   =</span> <span class="fu">c</span>(<span class="fu">AIC</span>(lm_fit), <span class="fu">AIC</span>(loglog_fit), <span class="fu">AIC</span>(exp_fit), <span class="fu">AIC</span>(quad_fit))</span>
+<span id="cb20-32"><a href="#cb20-32" aria-hidden="true" tabindex="-1"></a>) <span class="sc">%&gt;%</span></span>
+<span id="cb20-33"><a href="#cb20-33" aria-hidden="true" tabindex="-1"></a>  <span class="fu">arrange</span>(AIC)</span>
+<span id="cb20-34"><a href="#cb20-34" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb20-35"><a href="#cb20-35" aria-hidden="true" tabindex="-1"></a><span class="fu">print</span>(model_compare)</span>
+<span id="cb20-36"><a href="#cb20-36" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb20-37"><a href="#cb20-37" aria-hidden="true" tabindex="-1"></a><span class="fu">str</span>(model_compare)</span>
+<span id="cb20-38"><a href="#cb20-38" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb20-39"><a href="#cb20-39" aria-hidden="true" tabindex="-1"></a><span class="co"># Predicted curves on original scale for plotting</span></span>
+<span id="cb20-40"><a href="#cb20-40" aria-hidden="true" tabindex="-1"></a>vol_seq <span class="ot">&lt;-</span> <span class="fu">seq</span>(<span class="fu">min</span>(vol_summary_num<span class="sc">$</span>volume_num),</span>
+<span id="cb20-41"><a href="#cb20-41" aria-hidden="true" tabindex="-1"></a>               <span class="fu">max</span>(vol_summary_num<span class="sc">$</span>volume_num),</span>
+<span id="cb20-42"><a href="#cb20-42" aria-hidden="true" tabindex="-1"></a>               <span class="at">length.out =</span> <span class="dv">200</span>)</span>
+<span id="cb20-43"><a href="#cb20-43" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb20-44"><a href="#cb20-44" aria-hidden="true" tabindex="-1"></a>pred_df <span class="ot">&lt;-</span> <span class="fu">tibble</span>(<span class="at">volume_num =</span> vol_seq) <span class="sc">%&gt;%</span></span>
+<span id="cb20-45"><a href="#cb20-45" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(</span>
+<span id="cb20-46"><a href="#cb20-46" aria-hidden="true" tabindex="-1"></a>    <span class="at">Linear      =</span> <span class="fu">predict</span>(lm_fit,   <span class="at">newdata =</span> <span class="fu">tibble</span>(<span class="at">volume_num =</span> vol_seq)),</span>
+<span id="cb20-47"><a href="#cb20-47" aria-hidden="true" tabindex="-1"></a>    <span class="st">`</span><span class="at">Power law</span><span class="st">`</span> <span class="ot">=</span> a_pow <span class="sc">*</span> vol_seq <span class="sc">^</span> b_pow,</span>
+<span id="cb20-48"><a href="#cb20-48" aria-hidden="true" tabindex="-1"></a>    <span class="at">Exponential =</span> a_exp <span class="sc">*</span> <span class="fu">exp</span>(b_exp <span class="sc">*</span> vol_seq),</span>
+<span id="cb20-49"><a href="#cb20-49" aria-hidden="true" tabindex="-1"></a>    <span class="at">Quadratic   =</span> <span class="fu">predict</span>(quad_fit, <span class="at">newdata =</span> <span class="fu">tibble</span>(<span class="at">volume_num =</span> vol_seq))</span>
+<span id="cb20-50"><a href="#cb20-50" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">%&gt;%</span></span>
+<span id="cb20-51"><a href="#cb20-51" aria-hidden="true" tabindex="-1"></a>  <span class="fu">pivot_longer</span>(<span class="sc">-</span>volume_num, <span class="at">names_to =</span> <span class="st">"model"</span>, <span class="at">values_to =</span> <span class="st">"mean_rfu"</span>)</span>
+<span id="cb20-52"><a href="#cb20-52" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb20-53"><a href="#cb20-53" aria-hidden="true" tabindex="-1"></a><span class="fu">str</span>(pred_df)</span>
+<span id="cb20-54"><a href="#cb20-54" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb20-55"><a href="#cb20-55" aria-hidden="true" tabindex="-1"></a>model_colours <span class="ot">&lt;-</span> <span class="fu">c</span>(</span>
+<span id="cb20-56"><a href="#cb20-56" aria-hidden="true" tabindex="-1"></a>  <span class="at">Linear      =</span> <span class="st">"steelblue"</span>,</span>
+<span id="cb20-57"><a href="#cb20-57" aria-hidden="true" tabindex="-1"></a>  <span class="st">`</span><span class="at">Power law</span><span class="st">`</span> <span class="ot">=</span> <span class="st">"darkorange"</span>,</span>
+<span id="cb20-58"><a href="#cb20-58" aria-hidden="true" tabindex="-1"></a>  <span class="at">Exponential =</span> <span class="st">"forestgreen"</span>,</span>
+<span id="cb20-59"><a href="#cb20-59" aria-hidden="true" tabindex="-1"></a>  <span class="at">Quadratic   =</span> <span class="st">"purple"</span></span>
+<span id="cb20-60"><a href="#cb20-60" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb20-61"><a href="#cb20-61" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb20-62"><a href="#cb20-62" aria-hidden="true" tabindex="-1"></a>p_scatter <span class="ot">&lt;-</span> <span class="fu">ggplot</span>(vol_summary_num, <span class="fu">aes</span>(<span class="at">x =</span> volume_num, <span class="at">y =</span> mean_rfu)) <span class="sc">+</span></span>
+<span id="cb20-63"><a href="#cb20-63" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_line</span>(<span class="at">data =</span> pred_df,</span>
+<span id="cb20-64"><a href="#cb20-64" aria-hidden="true" tabindex="-1"></a>            <span class="fu">aes</span>(<span class="at">colour =</span> model, <span class="at">linetype =</span> model),</span>
+<span id="cb20-65"><a href="#cb20-65" aria-hidden="true" tabindex="-1"></a>            <span class="at">linewidth =</span> <span class="fl">0.9</span>) <span class="sc">+</span></span>
+<span id="cb20-66"><a href="#cb20-66" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_errorbar</span>(<span class="fu">aes</span>(<span class="at">ymin =</span> mean_rfu <span class="sc">-</span> se_rfu,</span>
+<span id="cb20-67"><a href="#cb20-67" aria-hidden="true" tabindex="-1"></a>                    <span class="at">ymax =</span> mean_rfu <span class="sc">+</span> se_rfu),</span>
+<span id="cb20-68"><a href="#cb20-68" aria-hidden="true" tabindex="-1"></a>                <span class="at">width =</span> <span class="dv">20</span>, <span class="at">colour =</span> <span class="st">"grey40"</span>) <span class="sc">+</span></span>
+<span id="cb20-69"><a href="#cb20-69" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_point</span>(<span class="at">size =</span> <span class="dv">3</span>) <span class="sc">+</span></span>
+<span id="cb20-70"><a href="#cb20-70" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_colour_manual</span>(<span class="at">values =</span> model_colours, <span class="at">name =</span> <span class="st">"Model"</span>) <span class="sc">+</span></span>
+<span id="cb20-71"><a href="#cb20-71" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_linetype_manual</span>(</span>
+<span id="cb20-72"><a href="#cb20-72" aria-hidden="true" tabindex="-1"></a>    <span class="at">values =</span> <span class="fu">c</span>(<span class="at">Linear =</span> <span class="st">"dashed"</span>, <span class="st">`</span><span class="at">Power law</span><span class="st">`</span> <span class="ot">=</span> <span class="st">"solid"</span>,</span>
+<span id="cb20-73"><a href="#cb20-73" aria-hidden="true" tabindex="-1"></a>               <span class="at">Exponential =</span> <span class="st">"dotdash"</span>, <span class="at">Quadratic =</span> <span class="st">"dotted"</span>),</span>
+<span id="cb20-74"><a href="#cb20-74" aria-hidden="true" tabindex="-1"></a>    <span class="at">name =</span> <span class="st">"Model"</span></span>
+<span id="cb20-75"><a href="#cb20-75" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">+</span></span>
+<span id="cb20-76"><a href="#cb20-76" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_x_continuous</span>(<span class="at">breaks =</span> vol_summary_num<span class="sc">$</span>volume_num) <span class="sc">+</span></span>
+<span id="cb20-77"><a href="#cb20-77" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(</span>
+<span id="cb20-78"><a href="#cb20-78" aria-hidden="true" tabindex="-1"></a>    <span class="at">x        =</span> <span class="st">"Resazurin volume (µL)"</span>,</span>
+<span id="cb20-79"><a href="#cb20-79" aria-hidden="true" tabindex="-1"></a>    <span class="at">y        =</span> <span class="st">"Mean fluorescence (RFU ± SE)"</span>,</span>
+<span id="cb20-80"><a href="#cb20-80" aria-hidden="true" tabindex="-1"></a>    <span class="at">title    =</span> <span class="st">"Mean fluorescence vs. volume — model comparison"</span></span>
+<span id="cb20-81"><a href="#cb20-81" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">+</span></span>
+<span id="cb20-82"><a href="#cb20-82" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_classic</span>(<span class="at">base_size =</span> <span class="dv">13</span>) <span class="sc">+</span></span>
+<span id="cb20-83"><a href="#cb20-83" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme</span>(<span class="at">legend.position =</span> <span class="st">"bottom"</span>)</span>
+<span id="cb20-84"><a href="#cb20-84" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb20-85"><a href="#cb20-85" aria-hidden="true" tabindex="-1"></a>p_scatter</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <p><img src="01.00-resazurin-20260528-volume_testing_files/figure-gfm/scatter-linearity-1.png" class="img-fluid"><!-- --></p>
 <div class="sourceCode" id="cb21"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb21-1"><a href="#cb21-1" aria-hidden="true" tabindex="-1"></a><span class="fu">ggsave</span>(<span class="fu">file.path</span>(fig_dir, <span class="st">"scatter_mean_fluorescence_by_volume.png"</span>),</span>
 <span id="cb21-2"><a href="#cb21-2" aria-hidden="true" tabindex="-1"></a>       p_scatter, <span class="at">width =</span> <span class="dv">7</span>, <span class="at">height =</span> <span class="dv">5</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<pre><code># A tibble: 4 × 4
+  model          r2   RMSE    AIC
+  &lt;chr&gt;       &lt;dbl&gt;  &lt;dbl&gt;  &lt;dbl&gt;
+1 Exponential 0.985 0.0438 -21.3 
+2 Power law   0.825 0.148   -1.85
+3 Quadratic   0.998 1.46    36.8 
+4 Linear      0.944 7.48    60.9 
+tibble [4 × 4] (S3: tbl_df/tbl/data.frame)
+ $ model: chr [1:4] "Exponential" "Power law" "Quadratic" "Linear"
+ $ r2   : num [1:4] 0.985 0.825 0.998 0.944
+ $ RMSE : num [1:4] 0.0438 0.1481 1.4647 7.4756
+ $ AIC  : num [1:4] -21.33 -1.85 36.81 60.89
+tibble [800 × 3] (S3: tbl_df/tbl/data.frame)
+ $ volume_num: num [1:800] 100 100 100 100 105 ...
+ $ model     : chr [1:800] "Linear" "Power law" "Exponential" "Quadratic" ...
+ $ mean_rfu  : Named num [1:800] 41.9 42.3 48.5 53.3 42.4 ...
+  ..- attr(*, "names")= chr [1:800] "1" "" "" "1" ...</code></pre>
+</section>
+<section id="model-residuals" class="level2">
+<h2 class="anchored" data-anchor-id="model-residuals">7.3 Model residuals</h2>
+<p>Residuals for all four models. The flattest panel indicates the best functional form for the volume–fluorescence relationship.</p>
+<div class="sourceCode" id="cb23"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb23-1"><a href="#cb23-1" aria-hidden="true" tabindex="-1"></a>model_levels <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="st">"Linear"</span>, <span class="st">"Power law"</span>, <span class="st">"Exponential"</span>, <span class="st">"Quadratic"</span>)</span>
+<span id="cb23-2"><a href="#cb23-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb23-3"><a href="#cb23-3" aria-hidden="true" tabindex="-1"></a>resid_df <span class="ot">&lt;-</span> vol_summary_num <span class="sc">%&gt;%</span></span>
+<span id="cb23-4"><a href="#cb23-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(</span>
+<span id="cb23-5"><a href="#cb23-5" aria-hidden="true" tabindex="-1"></a>    <span class="at">Linear      =</span> <span class="fu">residuals</span>(lm_fit),</span>
+<span id="cb23-6"><a href="#cb23-6" aria-hidden="true" tabindex="-1"></a>    <span class="st">`</span><span class="at">Power law</span><span class="st">`</span> <span class="ot">=</span> <span class="fu">residuals</span>(loglog_fit),</span>
+<span id="cb23-7"><a href="#cb23-7" aria-hidden="true" tabindex="-1"></a>    <span class="at">Exponential =</span> <span class="fu">residuals</span>(exp_fit),</span>
+<span id="cb23-8"><a href="#cb23-8" aria-hidden="true" tabindex="-1"></a>    <span class="at">Quadratic   =</span> <span class="fu">residuals</span>(quad_fit),</span>
+<span id="cb23-9"><a href="#cb23-9" aria-hidden="true" tabindex="-1"></a>    <span class="at">fitted_Linear      =</span> <span class="fu">fitted</span>(lm_fit),</span>
+<span id="cb23-10"><a href="#cb23-10" aria-hidden="true" tabindex="-1"></a>    <span class="at">fitted_Power.law   =</span> <span class="fu">fitted</span>(loglog_fit),</span>
+<span id="cb23-11"><a href="#cb23-11" aria-hidden="true" tabindex="-1"></a>    <span class="at">fitted_Exponential =</span> <span class="fu">fitted</span>(exp_fit),</span>
+<span id="cb23-12"><a href="#cb23-12" aria-hidden="true" tabindex="-1"></a>    <span class="at">fitted_Quadratic   =</span> <span class="fu">fitted</span>(quad_fit)</span>
+<span id="cb23-13"><a href="#cb23-13" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">%&gt;%</span></span>
+<span id="cb23-14"><a href="#cb23-14" aria-hidden="true" tabindex="-1"></a>  <span class="fu">pivot_longer</span>(</span>
+<span id="cb23-15"><a href="#cb23-15" aria-hidden="true" tabindex="-1"></a>    <span class="at">cols      =</span> <span class="fu">all_of</span>(model_levels),</span>
+<span id="cb23-16"><a href="#cb23-16" aria-hidden="true" tabindex="-1"></a>    <span class="at">names_to  =</span> <span class="st">"model"</span>,</span>
+<span id="cb23-17"><a href="#cb23-17" aria-hidden="true" tabindex="-1"></a>    <span class="at">values_to =</span> <span class="st">"residual"</span></span>
+<span id="cb23-18"><a href="#cb23-18" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">%&gt;%</span></span>
+<span id="cb23-19"><a href="#cb23-19" aria-hidden="true" tabindex="-1"></a>  <span class="fu">pivot_longer</span>(</span>
+<span id="cb23-20"><a href="#cb23-20" aria-hidden="true" tabindex="-1"></a>    <span class="at">cols      =</span> <span class="fu">starts_with</span>(<span class="st">"fitted_"</span>),</span>
+<span id="cb23-21"><a href="#cb23-21" aria-hidden="true" tabindex="-1"></a>    <span class="at">names_to  =</span> <span class="st">"fitted_model"</span>,</span>
+<span id="cb23-22"><a href="#cb23-22" aria-hidden="true" tabindex="-1"></a>    <span class="at">values_to =</span> <span class="st">"fitted"</span></span>
+<span id="cb23-23"><a href="#cb23-23" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">%&gt;%</span></span>
+<span id="cb23-24"><a href="#cb23-24" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(<span class="fu">str_remove</span>(fitted_model, <span class="st">"fitted_"</span>) <span class="sc">==</span> <span class="fu">str_replace</span>(model, <span class="st">" "</span>, <span class="st">"."</span>)) <span class="sc">%&gt;%</span></span>
+<span id="cb23-25"><a href="#cb23-25" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">model =</span> <span class="fu">factor</span>(model, <span class="at">levels =</span> model_levels))</span>
+<span id="cb23-26"><a href="#cb23-26" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb23-27"><a href="#cb23-27" aria-hidden="true" tabindex="-1"></a><span class="fu">str</span>(resid_df)</span>
+<span id="cb23-28"><a href="#cb23-28" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb23-29"><a href="#cb23-29" aria-hidden="true" tabindex="-1"></a>theme_resid <span class="ot">&lt;-</span> <span class="fu">theme_classic</span>(<span class="at">base_size =</span> <span class="dv">12</span>) <span class="sc">+</span></span>
+<span id="cb23-30"><a href="#cb23-30" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme</span>(</span>
+<span id="cb23-31"><a href="#cb23-31" aria-hidden="true" tabindex="-1"></a>    <span class="at">strip.background =</span> <span class="fu">element_blank</span>(),</span>
+<span id="cb23-32"><a href="#cb23-32" aria-hidden="true" tabindex="-1"></a>    <span class="at">strip.text       =</span> <span class="fu">element_text</span>(<span class="at">face =</span> <span class="st">"bold"</span>),</span>
+<span id="cb23-33"><a href="#cb23-33" aria-hidden="true" tabindex="-1"></a>    <span class="at">axis.text.x      =</span> <span class="fu">element_text</span>(<span class="at">angle =</span> <span class="dv">40</span>, <span class="at">hjust =</span> <span class="dv">1</span>)</span>
+<span id="cb23-34"><a href="#cb23-34" aria-hidden="true" tabindex="-1"></a>  )</span>
+<span id="cb23-35"><a href="#cb23-35" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb23-36"><a href="#cb23-36" aria-hidden="true" tabindex="-1"></a><span class="co"># Residuals vs. predictor (volume)</span></span>
+<span id="cb23-37"><a href="#cb23-37" aria-hidden="true" tabindex="-1"></a>p_resid_vol <span class="ot">&lt;-</span> <span class="fu">ggplot</span>(resid_df, <span class="fu">aes</span>(<span class="at">x =</span> volume_num, <span class="at">y =</span> residual)) <span class="sc">+</span></span>
+<span id="cb23-38"><a href="#cb23-38" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_hline</span>(<span class="at">yintercept =</span> <span class="dv">0</span>, <span class="at">linetype =</span> <span class="st">"dashed"</span>, <span class="at">colour =</span> <span class="st">"grey50"</span>) <span class="sc">+</span></span>
+<span id="cb23-39"><a href="#cb23-39" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_point</span>(<span class="at">size =</span> <span class="fl">2.5</span>) <span class="sc">+</span></span>
+<span id="cb23-40"><a href="#cb23-40" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_smooth</span>(<span class="at">method =</span> <span class="st">"loess"</span>, <span class="at">se =</span> <span class="cn">FALSE</span>, <span class="at">colour =</span> <span class="st">"firebrick"</span>,</span>
+<span id="cb23-41"><a href="#cb23-41" aria-hidden="true" tabindex="-1"></a>              <span class="at">linewidth =</span> <span class="fl">0.8</span>) <span class="sc">+</span></span>
+<span id="cb23-42"><a href="#cb23-42" aria-hidden="true" tabindex="-1"></a>  <span class="fu">facet_wrap</span>(<span class="sc">~</span> model, <span class="at">scales =</span> <span class="st">"free_y"</span>, <span class="at">nrow =</span> <span class="dv">1</span>) <span class="sc">+</span></span>
+<span id="cb23-43"><a href="#cb23-43" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_x_continuous</span>(<span class="at">breaks =</span> vol_summary_num<span class="sc">$</span>volume_num) <span class="sc">+</span></span>
+<span id="cb23-44"><a href="#cb23-44" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">x =</span> <span class="st">"Volume (µL)"</span>, <span class="at">y =</span> <span class="st">"Residual"</span>,</span>
+<span id="cb23-45"><a href="#cb23-45" aria-hidden="true" tabindex="-1"></a>       <span class="at">title =</span> <span class="st">"Residuals vs. predictor"</span>,</span>
+<span id="cb23-46"><a href="#cb23-46" aria-hidden="true" tabindex="-1"></a>       <span class="at">subtitle =</span> <span class="st">"Systematic arch = wrong model form"</span>) <span class="sc">+</span></span>
+<span id="cb23-47"><a href="#cb23-47" aria-hidden="true" tabindex="-1"></a>  theme_resid <span class="sc">+</span></span>
+<span id="cb23-48"><a href="#cb23-48" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme</span>(<span class="at">plot.subtitle =</span> <span class="fu">element_text</span>(<span class="at">size =</span> <span class="dv">10</span>, <span class="at">colour =</span> <span class="st">"grey40"</span>))</span>
+<span id="cb23-49"><a href="#cb23-49" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb23-50"><a href="#cb23-50" aria-hidden="true" tabindex="-1"></a><span class="co"># Residuals vs. fitted values</span></span>
+<span id="cb23-51"><a href="#cb23-51" aria-hidden="true" tabindex="-1"></a>p_resid_fit <span class="ot">&lt;-</span> <span class="fu">ggplot</span>(resid_df, <span class="fu">aes</span>(<span class="at">x =</span> fitted, <span class="at">y =</span> residual)) <span class="sc">+</span></span>
+<span id="cb23-52"><a href="#cb23-52" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_hline</span>(<span class="at">yintercept =</span> <span class="dv">0</span>, <span class="at">linetype =</span> <span class="st">"dashed"</span>, <span class="at">colour =</span> <span class="st">"grey50"</span>) <span class="sc">+</span></span>
+<span id="cb23-53"><a href="#cb23-53" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_point</span>(<span class="at">size =</span> <span class="fl">2.5</span>) <span class="sc">+</span></span>
+<span id="cb23-54"><a href="#cb23-54" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_smooth</span>(<span class="at">method =</span> <span class="st">"loess"</span>, <span class="at">se =</span> <span class="cn">FALSE</span>, <span class="at">colour =</span> <span class="st">"firebrick"</span>,</span>
+<span id="cb23-55"><a href="#cb23-55" aria-hidden="true" tabindex="-1"></a>              <span class="at">linewidth =</span> <span class="fl">0.8</span>) <span class="sc">+</span></span>
+<span id="cb23-56"><a href="#cb23-56" aria-hidden="true" tabindex="-1"></a>  <span class="fu">facet_wrap</span>(<span class="sc">~</span> model, <span class="at">scales =</span> <span class="st">"free"</span>, <span class="at">nrow =</span> <span class="dv">1</span>) <span class="sc">+</span></span>
+<span id="cb23-57"><a href="#cb23-57" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">x =</span> <span class="st">"Fitted value (RFU)"</span>, <span class="at">y =</span> <span class="st">"Residual"</span>,</span>
+<span id="cb23-58"><a href="#cb23-58" aria-hidden="true" tabindex="-1"></a>       <span class="at">title =</span> <span class="st">"Residuals vs. fitted"</span>,</span>
+<span id="cb23-59"><a href="#cb23-59" aria-hidden="true" tabindex="-1"></a>       <span class="at">subtitle =</span> <span class="st">"Fan shape = unequal variance; arch = curvature still present"</span>) <span class="sc">+</span></span>
+<span id="cb23-60"><a href="#cb23-60" aria-hidden="true" tabindex="-1"></a>  theme_resid <span class="sc">+</span></span>
+<span id="cb23-61"><a href="#cb23-61" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme</span>(<span class="at">plot.subtitle =</span> <span class="fu">element_text</span>(<span class="at">size =</span> <span class="dv">10</span>, <span class="at">colour =</span> <span class="st">"grey40"</span>))</span>
+<span id="cb23-62"><a href="#cb23-62" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb23-63"><a href="#cb23-63" aria-hidden="true" tabindex="-1"></a>p_resid_vol</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p><img src="01.00-resazurin-20260528-volume_testing_files/figure-gfm/residuals-1.png" class="img-fluid"><!-- --></p>
+<div class="sourceCode" id="cb24"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb24-1"><a href="#cb24-1" aria-hidden="true" tabindex="-1"></a>p_resid_fit</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p><img src="01.00-resazurin-20260528-volume_testing_files/figure-gfm/residuals-2.png" class="img-fluid"><!-- --></p>
+<div class="sourceCode" id="cb25"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb25-1"><a href="#cb25-1" aria-hidden="true" tabindex="-1"></a><span class="fu">ggsave</span>(<span class="fu">file.path</span>(fig_dir, <span class="st">"residuals_vs_predictor.png"</span>),</span>
+<span id="cb25-2"><a href="#cb25-2" aria-hidden="true" tabindex="-1"></a>       p_resid_vol, <span class="at">width =</span> <span class="dv">12</span>, <span class="at">height =</span> <span class="dv">4</span>)</span>
+<span id="cb25-3"><a href="#cb25-3" aria-hidden="true" tabindex="-1"></a><span class="fu">ggsave</span>(<span class="fu">file.path</span>(fig_dir, <span class="st">"residuals_vs_fitted.png"</span>),</span>
+<span id="cb25-4"><a href="#cb25-4" aria-hidden="true" tabindex="-1"></a>       p_resid_fit, <span class="at">width =</span> <span class="dv">12</span>, <span class="at">height =</span> <span class="dv">4</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<pre><code>tibble [32 × 11] (S3: tbl_df/tbl/data.frame)
+ $ volume_ul   : Factor w/ 8 levels "100","200","300",..: 1 1 1 1 2 2 2 2 3 3 ...
+ $ n           : int [1:32] 6 6 6 6 6 6 6 6 6 6 ...
+ $ mean_rfu    : num [1:32] 52.2 52.2 52.2 52.2 55.2 ...
+ $ sd_rfu      : num [1:32] 1.33 1.33 1.33 1.33 1.47 ...
+ $ se_rfu      : num [1:32] 0.543 0.543 0.543 0.543 0.601 ...
+ $ median_rfu  : num [1:32] 52 52 52 52 54.5 54.5 54.5 54.5 59 59 ...
+ $ volume_num  : num [1:32] 100 100 100 100 200 200 200 200 300 300 ...
+ $ model       : Factor w/ 4 levels "Linear","Power law",..: 1 2 3 4 1 2 3 4 1 2 ...
+ $ residual    : Named num [1:32] 10.2213 0.2096 0.0728 -1.1242 3.3674 ...
+  ..- attr(*, "names")= chr [1:32] "1" "1" "1" "1" ...
+ $ fitted_model: chr [1:32] "fitted_Linear" "fitted_Power.law" "fitted_Exponential" "fitted_Quadratic" ...
+ $ fitted      : Named num [1:32] 41.95 3.74 3.88 53.29 51.8 ...
+  ..- attr(*, "names")= chr [1:32] "1" "1" "1" "1" ...</code></pre>
 </section>
 </section>
 <section id="save-outputs" class="level1">
 <h1>8 SAVE OUTPUTS</h1>
-<div class="sourceCode" id="cb22"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb22-1"><a href="#cb22-1" aria-hidden="true" tabindex="-1"></a><span class="fu">write_csv</span>(dat,         <span class="fu">file.path</span>(out_dir, <span class="st">"volume_fluorescence.csv"</span>))</span>
-<span id="cb22-2"><a href="#cb22-2" aria-hidden="true" tabindex="-1"></a><span class="fu">write_csv</span>(vol_summary, <span class="fu">file.path</span>(out_dir, <span class="st">"volume_summary.csv"</span>))</span>
-<span id="cb22-3"><a href="#cb22-3" aria-hidden="true" tabindex="-1"></a><span class="fu">write_csv</span>(pairs_res,   <span class="fu">file.path</span>(out_dir, <span class="st">"pairwise_stats.csv"</span>))</span>
-<span id="cb22-4"><a href="#cb22-4" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb22-5"><a href="#cb22-5" aria-hidden="true" tabindex="-1"></a><span class="fu">message</span>(<span class="st">"Output files written to: "</span>, out_dir)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode" id="cb27"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb27-1"><a href="#cb27-1" aria-hidden="true" tabindex="-1"></a><span class="fu">write_csv</span>(dat,         <span class="fu">file.path</span>(out_dir, <span class="st">"volume_fluorescence.csv"</span>))</span>
+<span id="cb27-2"><a href="#cb27-2" aria-hidden="true" tabindex="-1"></a><span class="fu">write_csv</span>(vol_summary, <span class="fu">file.path</span>(out_dir, <span class="st">"volume_summary.csv"</span>))</span>
+<span id="cb27-3"><a href="#cb27-3" aria-hidden="true" tabindex="-1"></a><span class="fu">write_csv</span>(pairs_res,   <span class="fu">file.path</span>(out_dir, <span class="st">"pairwise_stats.csv"</span>))</span>
+<span id="cb27-4"><a href="#cb27-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb27-5"><a href="#cb27-5" aria-hidden="true" tabindex="-1"></a><span class="fu">message</span>(<span class="st">"Output files written to: "</span>, out_dir)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 
 
 </section>

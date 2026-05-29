@@ -10,6 +10,7 @@ engine: knitr
 categories: 
   - "2026"
   - "resazurin"
+image: "/posts/2026/2026-05-28-Resazurin-Assays---Proximity-to-Plate-Reader-Detector-Significantly-Affects-Fluorescence-Readings/01.00-resazurin-20260528-volume_testing_files/figure-gfm/boxplot-volume-1.png"
 ---
 # INTRO
 
@@ -496,44 +497,93 @@ ggsave(file.path(fig_dir, "boxplot_fluorescence_by_volume.png"),
 
 ## 7.2 Fluorescence vs. volume (scatter with regression)
 
-Visualises the relationship between volume and mean fluorescence to
-assess linearity.
+Visualises the relationship between volume and mean fluorescence. Four
+candidate models are fit and compared.
 
 ``` r
 vol_summary_num <- vol_summary %>%
   mutate(volume_num = as.numeric(as.character(volume_ul)))
 
+# Linear: RFU = a + b*volume
 lm_fit  <- lm(mean_rfu ~ volume_num, data = vol_summary_num)
-lm_coef <- coef(lm_fit)
 lm_r2   <- summary(lm_fit)$r.squared
 
-lm_label <- sprintf(
-  "y = %.3f x + %.2f\nR² = %.4f",
-  lm_coef["volume_num"],
-  lm_coef["(Intercept)"],
-  lm_r2
+# Power law (log-log): log(RFU) = log(a) + b*log(volume)  →  RFU = a*volume^b
+loglog_fit  <- lm(log(mean_rfu) ~ log(volume_num), data = vol_summary_num)
+loglog_r2   <- summary(loglog_fit)$r.squared
+a_pow       <- exp(coef(loglog_fit)["(Intercept)"])
+b_pow       <- coef(loglog_fit)["log(volume_num)"]
+
+# Exponential (semi-log): log(RFU) = a + b*volume  →  RFU = e^a * e^(b*volume)
+exp_fit  <- lm(log(mean_rfu) ~ volume_num, data = vol_summary_num)
+exp_r2   <- summary(exp_fit)$r.squared
+a_exp    <- exp(coef(exp_fit)["(Intercept)"])
+b_exp    <- coef(exp_fit)["volume_num"]
+
+# Quadratic: RFU = a + b*volume + c*volume^2
+quad_fit <- lm(mean_rfu ~ volume_num + I(volume_num^2), data = vol_summary_num)
+quad_r2  <- summary(quad_fit)$r.squared
+quad_coef <- coef(quad_fit)
+
+rmse <- function(fit) sqrt(mean(residuals(fit)^2))
+
+model_compare <- tibble(
+  model = c("Linear", "Power law", "Exponential", "Quadratic"),
+  r2    = c(lm_r2, loglog_r2, exp_r2, quad_r2),
+  RMSE  = c(rmse(lm_fit), rmse(loglog_fit), rmse(exp_fit), rmse(quad_fit)),
+  AIC   = c(AIC(lm_fit), AIC(loglog_fit), AIC(exp_fit), AIC(quad_fit))
+) %>%
+  arrange(AIC)
+
+print(model_compare)
+
+str(model_compare)
+
+# Predicted curves on original scale for plotting
+vol_seq <- seq(min(vol_summary_num$volume_num),
+               max(vol_summary_num$volume_num),
+               length.out = 200)
+
+pred_df <- tibble(volume_num = vol_seq) %>%
+  mutate(
+    Linear      = predict(lm_fit,   newdata = tibble(volume_num = vol_seq)),
+    `Power law` = a_pow * vol_seq ^ b_pow,
+    Exponential = a_exp * exp(b_exp * vol_seq),
+    Quadratic   = predict(quad_fit, newdata = tibble(volume_num = vol_seq))
+  ) %>%
+  pivot_longer(-volume_num, names_to = "model", values_to = "mean_rfu")
+
+str(pred_df)
+
+model_colours <- c(
+  Linear      = "steelblue",
+  `Power law` = "darkorange",
+  Exponential = "forestgreen",
+  Quadratic   = "purple"
 )
 
-p_scatter <- ggplot(vol_summary_num,
-    aes(x = volume_num, y = mean_rfu)) +
-  geom_smooth(method = "lm", colour = "steelblue", fill = "steelblue",
-              alpha = 0.15, linewidth = 0.8) +
+p_scatter <- ggplot(vol_summary_num, aes(x = volume_num, y = mean_rfu)) +
+  geom_line(data = pred_df,
+            aes(colour = model, linetype = model),
+            linewidth = 0.9) +
   geom_errorbar(aes(ymin = mean_rfu - se_rfu,
                     ymax = mean_rfu + se_rfu),
                 width = 20, colour = "grey40") +
   geom_point(size = 3) +
-  annotate("text",
-           x     = min(vol_summary_num$volume_num),
-           y     = max(vol_summary_num$mean_rfu),
-           label = lm_label,
-           hjust = 0, vjust = 1, size = 4, colour = "steelblue") +
+  scale_colour_manual(values = model_colours, name = "Model") +
+  scale_linetype_manual(
+    values = c(Linear = "dashed", `Power law` = "solid",
+               Exponential = "dotdash", Quadratic = "dotted"),
+    name = "Model"
+  ) +
   scale_x_continuous(breaks = vol_summary_num$volume_num) +
   labs(
-    x     = "Resazurin volume (µL)",
-    y     = "Mean fluorescence (RFU ± SE)",
-    title = "Mean fluorescence vs. volume"
+    x        = "Resazurin volume (µL)",
+    y        = "Mean fluorescence (RFU ± SE)",
+    title    = "Mean fluorescence vs. volume — model comparison"
   ) +
-  theme_classic(base_size = 13)
+  theme_classic(base_size = 13) +
+  theme(legend.position = "bottom")
 
 p_scatter
 ```
@@ -544,6 +594,125 @@ p_scatter
 ggsave(file.path(fig_dir, "scatter_mean_fluorescence_by_volume.png"),
        p_scatter, width = 7, height = 5)
 ```
+
+    # A tibble: 4 × 4
+      model          r2   RMSE    AIC
+      <chr>       <dbl>  <dbl>  <dbl>
+    1 Exponential 0.985 0.0438 -21.3 
+    2 Power law   0.825 0.148   -1.85
+    3 Quadratic   0.998 1.46    36.8 
+    4 Linear      0.944 7.48    60.9 
+    tibble [4 × 4] (S3: tbl_df/tbl/data.frame)
+     $ model: chr [1:4] "Exponential" "Power law" "Quadratic" "Linear"
+     $ r2   : num [1:4] 0.985 0.825 0.998 0.944
+     $ RMSE : num [1:4] 0.0438 0.1481 1.4647 7.4756
+     $ AIC  : num [1:4] -21.33 -1.85 36.81 60.89
+    tibble [800 × 3] (S3: tbl_df/tbl/data.frame)
+     $ volume_num: num [1:800] 100 100 100 100 105 ...
+     $ model     : chr [1:800] "Linear" "Power law" "Exponential" "Quadratic" ...
+     $ mean_rfu  : Named num [1:800] 41.9 42.3 48.5 53.3 42.4 ...
+      ..- attr(*, "names")= chr [1:800] "1" "" "" "1" ...
+
+## 7.3 Model residuals
+
+Residuals for all four models. The flattest panel indicates the best
+functional form for the volume–fluorescence relationship.
+
+``` r
+model_levels <- c("Linear", "Power law", "Exponential", "Quadratic")
+
+resid_df <- vol_summary_num %>%
+  mutate(
+    Linear      = residuals(lm_fit),
+    `Power law` = residuals(loglog_fit),
+    Exponential = residuals(exp_fit),
+    Quadratic   = residuals(quad_fit),
+    fitted_Linear      = fitted(lm_fit),
+    fitted_Power.law   = fitted(loglog_fit),
+    fitted_Exponential = fitted(exp_fit),
+    fitted_Quadratic   = fitted(quad_fit)
+  ) %>%
+  pivot_longer(
+    cols      = all_of(model_levels),
+    names_to  = "model",
+    values_to = "residual"
+  ) %>%
+  pivot_longer(
+    cols      = starts_with("fitted_"),
+    names_to  = "fitted_model",
+    values_to = "fitted"
+  ) %>%
+  filter(str_remove(fitted_model, "fitted_") == str_replace(model, " ", ".")) %>%
+  mutate(model = factor(model, levels = model_levels))
+
+str(resid_df)
+
+theme_resid <- theme_classic(base_size = 12) +
+  theme(
+    strip.background = element_blank(),
+    strip.text       = element_text(face = "bold"),
+    axis.text.x      = element_text(angle = 40, hjust = 1)
+  )
+
+# Residuals vs. predictor (volume)
+p_resid_vol <- ggplot(resid_df, aes(x = volume_num, y = residual)) +
+  geom_hline(yintercept = 0, linetype = "dashed", colour = "grey50") +
+  geom_point(size = 2.5) +
+  geom_smooth(method = "loess", se = FALSE, colour = "firebrick",
+              linewidth = 0.8) +
+  facet_wrap(~ model, scales = "free_y", nrow = 1) +
+  scale_x_continuous(breaks = vol_summary_num$volume_num) +
+  labs(x = "Volume (µL)", y = "Residual",
+       title = "Residuals vs. predictor",
+       subtitle = "Systematic arch = wrong model form") +
+  theme_resid +
+  theme(plot.subtitle = element_text(size = 10, colour = "grey40"))
+
+# Residuals vs. fitted values
+p_resid_fit <- ggplot(resid_df, aes(x = fitted, y = residual)) +
+  geom_hline(yintercept = 0, linetype = "dashed", colour = "grey50") +
+  geom_point(size = 2.5) +
+  geom_smooth(method = "loess", se = FALSE, colour = "firebrick",
+              linewidth = 0.8) +
+  facet_wrap(~ model, scales = "free", nrow = 1) +
+  labs(x = "Fitted value (RFU)", y = "Residual",
+       title = "Residuals vs. fitted",
+       subtitle = "Fan shape = unequal variance; arch = curvature still present") +
+  theme_resid +
+  theme(plot.subtitle = element_text(size = 10, colour = "grey40"))
+
+p_resid_vol
+```
+
+![](01.00-resazurin-20260528-volume_testing_files/figure-gfm/residuals-1.png)<!-- -->
+
+``` r
+p_resid_fit
+```
+
+![](01.00-resazurin-20260528-volume_testing_files/figure-gfm/residuals-2.png)<!-- -->
+
+``` r
+ggsave(file.path(fig_dir, "residuals_vs_predictor.png"),
+       p_resid_vol, width = 12, height = 4)
+ggsave(file.path(fig_dir, "residuals_vs_fitted.png"),
+       p_resid_fit, width = 12, height = 4)
+```
+
+    tibble [32 × 11] (S3: tbl_df/tbl/data.frame)
+     $ volume_ul   : Factor w/ 8 levels "100","200","300",..: 1 1 1 1 2 2 2 2 3 3 ...
+     $ n           : int [1:32] 6 6 6 6 6 6 6 6 6 6 ...
+     $ mean_rfu    : num [1:32] 52.2 52.2 52.2 52.2 55.2 ...
+     $ sd_rfu      : num [1:32] 1.33 1.33 1.33 1.33 1.47 ...
+     $ se_rfu      : num [1:32] 0.543 0.543 0.543 0.543 0.601 ...
+     $ median_rfu  : num [1:32] 52 52 52 52 54.5 54.5 54.5 54.5 59 59 ...
+     $ volume_num  : num [1:32] 100 100 100 100 200 200 200 200 300 300 ...
+     $ model       : Factor w/ 4 levels "Linear","Power law",..: 1 2 3 4 1 2 3 4 1 2 ...
+     $ residual    : Named num [1:32] 10.2213 0.2096 0.0728 -1.1242 3.3674 ...
+      ..- attr(*, "names")= chr [1:32] "1" "1" "1" "1" ...
+     $ fitted_model: chr [1:32] "fitted_Linear" "fitted_Power.law" "fitted_Exponential" "fitted_Quadratic" ...
+     $ fitted      : Named num [1:32] 41.95 3.74 3.88 53.29 51.8 ...
+      ..- attr(*, "names")= chr [1:32] "1" "1" "1" "1" ...
 
 # 8 SAVE OUTPUTS
 
