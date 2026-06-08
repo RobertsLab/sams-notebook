@@ -17,13 +17,36 @@ categories:
 ---
 # INTRO
 
-Steven asked me to provide plot just the the raw fluorescence of resazurin data from the Pacific oyster USDA freshwater stress experiments we'd run up until now. The data is raw fluorescence, which means it has not been processed or normalized in any way.
+Steven asked me to plot just the the raw fluorescence of resazurin data from the Pacific oyster USDA freshwater stress experiments we'd run up until now. The data is raw fluorescence, which means it has not been processed or normalized in any way.
 
 This notebook will be updated as we continue to run more experiments and collect more data, so it will be a living document that evolves over time.
 
 Analysis was/is performed in R and Knitted to markdown below:
 
 - [02.00-resazurin-raw-all-freshwater-RT-experiments.Rmd](https://github.com/RobertsLab/sormi-assay-development/blob/main/Resazurin/code/02.00-resazurin-raw-all-freshwater-RT-experiments.Rmd) (GitHub)
+
+Plots were generated from the following data file ([exported from `plot_df` object in the Rmd](#filter-samples)):
+
+- [https://github.com/RobertsLab/sormi-assay-development/blob/main/Resazurin/outputs/02.00-resazurin-raw-all-freshwater-RT-experiments/plot_df.csv](https://github.com/RobertsLab/sormi-assay-development/blob/main/Resazurin/outputs/02.00-resazurin-raw-all-freshwater-RT-experiments/plot_df.csv)
+
+
+
+
+
+::: {.callout-note}
+
+Steven asked that I add a brief summary of the statistical analyses performed on the AUC data for each experiment, so here is a table summarizing the ANOVA results and significant pairwise comparisons for each experiment:
+
+| Date | Duration | AUC ANOVA | Highest families (mean AUC) | Lowest families (mean AUC) | Significant pairwise (AUC) |
+|------|----------|-----------|----------------------------|---------------------------|---------------------------|
+| 2026-04-29 | 32 h | F(8,90)=3.28, p=0.003 | 9b (0.96), 9 (0.87), 5 (0.83) | 7 (0.41), 6 (0.44) | 7 vs 9b (p=0.010), 6 vs 9b (p=0.018) |
+| 2026-05-05 | 28 h | F(8,90)=1.43, p=0.194 | 6 (0.84), 1 (0.73) | 7 (0.42), 8 (0.59) | none |
+| 2026-05-11 | 76 h | F(8,76)=1.46, p=0.186 | 8 (7.09), 1 (6.71), 3 (6.07) | 9 (3.39), 9b (3.52) | none |
+| 2026-06-02 | 48 h | F(8,90)=3.74, p<0.001 | 1 (2.30), 8 (2.17), 3 (2.00) | 9b (0.73), 9 (0.83) | 1 vs 9 (p=0.024), 1 vs 9b (p=0.012), 8 vs 9b (p=0.029) |
+
+A notable pattern is the apparent reversal between the April 29 and June 2 assays: families 9 and 9b had the highest metabolism in April but consistently the lowest in the three subsequent experiments.
+:::
+
 
 <a href="https://robertslab.github.io/resources/Agentic-Coding-Tools/#five-level-rubric"><img alt="AI Use Level 4: Substantial AI contribution" src="https://img.shields.io/badge/AI%20Use-Level%204%20Substantial%20AI%20Contribution-red"></a>
 
@@ -323,6 +346,19 @@ str(plot_df)
      $ unique_id            : chr [1:3752] "20260429_1" "20260429_2" "20260429_3" "20260429_4" ...
      $ family               : Factor w/ 9 levels "1","10","3","5",..: 5 5 5 5 5 5 5 5 5 5 ...
      $ experiment           : Factor w/ 4 levels "20260429","20260505",..: 1 1 1 1 1 1 1 1 1 1 ...
+
+## 6.1 Write plot_df to CSV
+
+``` r
+out_dir <- file.path(proj_root, "Resazurin", "outputs",
+                     "02.00-resazurin-raw-all-freshwater-RT-experiments")
+
+dir.create(out_dir, recursive = TRUE, showWarnings = FALSE)
+
+write_csv(plot_df, file.path(out_dir, "plot_df.csv"))
+
+message("plot_df written to: ", out_dir)
+```
 
 # 7 Color Palettes
 
