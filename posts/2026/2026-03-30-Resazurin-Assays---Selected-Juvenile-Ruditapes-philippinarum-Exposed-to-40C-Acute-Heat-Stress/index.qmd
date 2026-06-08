@@ -1096,42 +1096,63 @@ for (col in names(ts_stats)) {
 }
 ```
 
-| \### Metric: metabolism_per_area_mm2_measurement |
-|:---|
-| Signif. codes: 0 ‘***’ 0.001 ’**’ 0.01 ’*’ 0.05 ‘.’ 0.1 ’ ’ 1 |
-| **Marginal means – main effects (collapsed across time):** contrast estimate SE df t.ratio p.value blue control - tweed control 0.01994712 0.02039961 76 0.978 0.7625 blue control - blue selected 0.00783381 0.02039961 76 0.384 0.9806 blue control - tweed selected 0.04671200 0.02039961 76 2.290 0.1095 tweed control - blue selected -0.01211331 0.02039961 76 -0.594 0.9337 tweed control - tweed selected 0.02676488 0.02039961 76 1.312 0.5582 blue selected - tweed selected 0.03887819 0.02039961 76 1.906 0.2343 |
-| Results are averaged over the levels of: time_f Degrees-of-freedom method: kenward-roger P value adjustment: tukey method for comparing a family of 4 estimates |
-| **Pairwise comparisons by timepoint (Tukey):** time_f = 0: contrast estimate SE df t.ratio p.value blue control - tweed control 0.00000000 0.02424006 145.35 0.000 1.0000 blue control - blue selected 0.00000000 0.02424006 145.35 0.000 1.0000 blue control - tweed selected 0.00000000 0.02424006 145.35 0.000 1.0000 tweed control - blue selected 0.00000000 0.02424006 145.35 0.000 1.0000 tweed control - tweed selected 0.00000000 0.02424006 145.35 0.000 1.0000 blue selected - tweed selected 0.00000000 0.02424006 145.35 0.000 1.0000 |
-| time_f = 0.5: contrast estimate SE df t.ratio p.value blue control - tweed control 0.01058815 0.02424006 145.35 0.437 0.9720 blue control - blue selected -0.00633532 0.02424006 145.35 -0.261 0.9937 blue control - tweed selected 0.02197331 0.02424006 145.35 0.906 0.8014 tweed control - blue selected -0.01692347 0.02424006 145.35 -0.698 0.8976 tweed control - tweed selected 0.01138517 0.02424006 145.35 0.470 0.9656 blue selected - tweed selected 0.02830864 0.02424006 145.35 1.168 0.6481 |
-| time_f = 1: contrast estimate SE df t.ratio p.value blue control - tweed control 0.02713104 0.02424006 145.35 1.119 0.6783 blue control - blue selected 0.00712265 0.02424006 145.35 0.294 0.9911 blue control - tweed selected 0.06043328 0.02424006 145.35 2.493 0.0652 tweed control - blue selected -0.02000840 0.02424006 145.35 -0.825 0.8423 tweed control - tweed selected 0.03330224 0.02424006 145.35 1.374 0.5178 blue selected - tweed selected 0.05331063 0.02424006 145.35 2.199 0.1283 |
-| time_f = 1.5: contrast estimate SE df t.ratio p.value blue control - tweed control 0.02687676 0.02424006 145.35 1.109 0.6847 blue control - blue selected 0.01848720 0.02424006 145.35 0.763 0.8711 blue control - tweed selected 0.07696626 0.02424006 145.35 3.175 0.0098 tweed control - blue selected -0.00838956 0.02424006 145.35 -0.346 0.9857 tweed control - tweed selected 0.05008949 0.02424006 145.35 2.066 0.1691 blue selected - tweed selected 0.05847905 0.02424006 145.35 2.412 0.0792 |
-| time_f = 2: contrast estimate SE df t.ratio p.value blue control - tweed control 0.03513966 0.02424006 145.35 1.450 0.4707 blue control - blue selected 0.01989453 0.02424006 145.35 0.821 0.8446 blue control - tweed selected 0.07418715 0.02424006 145.35 3.061 0.0139 tweed control - blue selected -0.01524513 0.02424006 145.35 -0.629 0.9226 tweed control - tweed selected 0.03904749 0.02424006 145.35 1.611 0.3757 blue selected - tweed selected 0.05429262 0.02424006 145.35 2.240 0.1175 |
-| Degrees-of-freedom method: kenward-roger P value adjustment: tukey method for comparing a family of 4 estimates |
-| \# Area Under the Curve (AUC) |
-| AUC computed per individual via the trapezoid rule across all timepoints. `metabolism_per_*` is the primary metric matching the paper; `corrected_fc` and `raw_fluorescence` are retained for reference. |
-| \`\`\` r compute_auc \<- function(df, value_col, group_vars) { df %\>% filter(is.finite(time_hr), is.finite(.data$$\[value_col$$\])) %\>% group_by(across(all_of(group_vars))) %\>% summarise( AUC = trapezoid_auc(time_hr, .data$$\[value_col$$\]), n_timepoints = n(), .groups = “drop” ) %\>% filter(is.finite(AUC)) } |
-| \# Only include grouping columns that are actually present in the data individual_vars \<- intersect( c(“trace_id”, “family_id_group”, “treatment_group”), names(metabolism_df) ) |
-| auc_metab_list \<- list() if (nrow(metabolism_df) \> 0) { for (mc in active_meas_cols) { col \<- paste0(“metabolism_per\_”, mc) if (col %in% names(metabolism_df)) { auc_metab_list$$\[col$$\] \<- compute_auc(metabolism_df, col, individual_vars) %\>% mutate(metric = col) } } } |
-| auc_all \<- bind_rows(auc_metab_list) |
-| str(auc_all) \`\`\` |
-| `tibble [80 × 6] (S3: tbl_df/tbl/data.frame) $ trace_id       : chr [1:80] "1" "10" "11" "12" ... $ family_id_group: chr [1:80] "blue" "blue" "blue" "blue" ... $ treatment_group: chr [1:80] "control" "control" "control" "control" ... $ AUC            : num [1:80] 0.261 0.722 0.371 0.157 0.143 ... $ n_timepoints   : int [1:80] 5 5 5 5 5 5 5 5 5 5 ... $ metric         : chr [1:80] "metabolism_per_area_mm2_measurement" "metabolism_per_area_mm2_measurement" "metabolism_per_area_mm2_measurement" "metabolism_per_area_mm2_measurement" ...` |
-| \## AUC summary tables |
-| \`\`\` r sum_vars \<- intersect( c(“metric”, “family_id_group”, “treatment_group”), names(auc_all) ) auc_summary \<- auc_all %\>% group_by(across(all_of(sum_vars))) %\>% summarise( n = n(), mean = mean(AUC, na.rm = TRUE), sd = sd(AUC, na.rm = TRUE), se = sd / sqrt(n), median = median(AUC, na.rm = TRUE), .groups = “drop” ) |
-| print(auc_summary) \`\`\` |
-| `# A tibble: 4 × 8 metric         family_id_group treatment_group     n  mean    sd     se median <chr>          <chr>           <chr>           <int> <dbl> <dbl>  <dbl>  <dbl> 1 metabolism_pe… blue            control            20 0.346 0.181 0.0405  0.289 2 metabolism_pe… blue            selected           20 0.332 0.108 0.0242  0.345 3 metabolism_pe… tweed           control            20 0.305 0.107 0.0239  0.322 4 metabolism_pe… tweed           selected           20 0.248 0.145 0.0324  0.218` |
-| \# Statistical Analysis |
-| Each individual clam (`sample_id_group`) is the observational unit. The model is built from whichever grouping factors are present: both family and treatment (with interaction) when both exist, or a one-way model when only one factor is available. Each plate maps to a unique family × treatment combination, so plate-level and group-level variance are confounded; interpret accordingly. |
-| \`\`\` r run_auc_stats \<- function(auc_df) { empty \<- tibble() |
-| has_family \<- “family_id_group” %in% names(auc_df) && length(unique(na.omit(auc_df$family_id_group))) > 1
+### Metric: metabolism_per_area_mm2_measurement
+
+Signif. codes: 0 ‘***’ 0.001 ’**’ 0.01 ’*’ 0.05 ‘.’ 0.1 ’ ’ 1
+
+**Marginal means – main effects (collapsed across time):** contrast estimate SE df t.ratio p.value blue control - tweed control 0.01994712 0.02039961 76 0.978 0.7625 blue control - blue selected 0.00783381 0.02039961 76 0.384 0.9806 blue control - tweed selected 0.04671200 0.02039961 76 2.290 0.1095 tweed control - blue selected -0.01211331 0.02039961 76 -0.594 0.9337 tweed control - tweed selected 0.02676488 0.02039961 76 1.312 0.5582 blue selected - tweed selected 0.03887819 0.02039961 76 1.906 0.2343
+
+Results are averaged over the levels of: time_f Degrees-of-freedom method: kenward-roger P value adjustment: tukey method for comparing a family of 4 estimates
+
+**Pairwise comparisons by timepoint (Tukey):** time_f = 0: contrast estimate SE df t.ratio p.value blue control - tweed control 0.00000000 0.02424006 145.35 0.000 1.0000 blue control - blue selected 0.00000000 0.02424006 145.35 0.000 1.0000 blue control - tweed selected 0.00000000 0.02424006 145.35 0.000 1.0000 tweed control - blue selected 0.00000000 0.02424006 145.35 0.000 1.0000 tweed control - tweed selected 0.00000000 0.02424006 145.35 0.000 1.0000 blue selected - tweed selected 0.00000000 0.02424006 145.35 0.000 1.0000
+
+time_f = 0.5: contrast estimate SE df t.ratio p.value blue control - tweed control 0.01058815 0.02424006 145.35 0.437 0.9720 blue control - blue selected -0.00633532 0.02424006 145.35 -0.261 0.9937 blue control - tweed selected 0.02197331 0.02424006 145.35 0.906 0.8014 tweed control - blue selected -0.01692347 0.02424006 145.35 -0.698 0.8976 tweed control - tweed selected 0.01138517 0.02424006 145.35 0.470 0.9656 blue selected - tweed selected 0.02830864 0.02424006 145.35 1.168 0.6481
+
+time_f = 1: contrast estimate SE df t.ratio p.value blue control - tweed control 0.02713104 0.02424006 145.35 1.119 0.6783 blue control - blue selected 0.00712265 0.02424006 145.35 0.294 0.9911 blue control - tweed selected 0.06043328 0.02424006 145.35 2.493 0.0652 tweed control - blue selected -0.02000840 0.02424006 145.35 -0.825 0.8423 tweed control - tweed selected 0.03330224 0.02424006 145.35 1.374 0.5178 blue selected - tweed selected 0.05331063 0.02424006 145.35 2.199 0.1283
+
+time_f = 1.5: contrast estimate SE df t.ratio p.value blue control - tweed control 0.02687676 0.02424006 145.35 1.109 0.6847 blue control - blue selected 0.01848720 0.02424006 145.35 0.763 0.8711 blue control - tweed selected 0.07696626 0.02424006 145.35 3.175 0.0098 tweed control - blue selected -0.00838956 0.02424006 145.35 -0.346 0.9857 tweed control - tweed selected 0.05008949 0.02424006 145.35 2.066 0.1691 blue selected - tweed selected 0.05847905 0.02424006 145.35 2.412 0.0792
+
+time_f = 2: contrast estimate SE df t.ratio p.value blue control - tweed control 0.03513966 0.02424006 145.35 1.450 0.4707 blue control - blue selected 0.01989453 0.02424006 145.35 0.821 0.8446 blue control - tweed selected 0.07418715 0.02424006 145.35 3.061 0.0139 tweed control - blue selected -0.01524513 0.02424006 145.35 -0.629 0.9226 tweed control - tweed selected 0.03904749 0.02424006 145.35 1.611 0.3757 blue selected - tweed selected 0.05429262 0.02424006 145.35 2.240 0.1175
+
+Degrees-of-freedom method: kenward-roger P value adjustment: tukey method for comparing a family of 4 estimates
+
+# Area Under the Curve (AUC)
+
+AUC computed per individual via the trapezoid rule across all timepoints. `metabolism_per_*` is the primary metric matching the paper; `corrected_fc` and `raw_fluorescence` are retained for reference.
+
+``` r
+compute_auc <- function(df, value_col, group_vars) { df %>% filter(is.finite(time_hr), is.finite(.data[[value_col]])) %>% group_by(across(all_of(group_vars))) %>% summarise( AUC = trapezoid_auc(time_hr, .data[[value_col]]), n_timepoints = n(), .groups = “drop” ) %>% filter(is.finite(AUC)) }
+\# Only include grouping columns that are actually present in the data individual_vars <- intersect( c(“trace_id”, “family_id_group”, “treatment_group”), names(metabolism_df) )
+auc_metab_list <- list() if (nrow(metabolism_df) > 0) { for (mc in active_meas_cols) { col <- paste0(“metabolism_per_”, mc) if (col %in% names(metabolism_df)) { auc_metab_list[[col]] <- compute_auc(metabolism_df, col, individual_vars) %>% mutate(metric = col) } } }
+auc_all <- bind_rows(auc_metab_list)
+str(auc_all)
+```
+
+    tibble [80 × 6] (S3: tbl_df/tbl/data.frame) $ trace_id       : chr [1:80] "1" "10" "11" "12" ... $ family_id_group: chr [1:80] "blue" "blue" "blue" "blue" ... $ treatment_group: chr [1:80] "control" "control" "control" "control" ... $ AUC            : num [1:80] 0.261 0.722 0.371 0.157 0.143 ... $ n_timepoints   : int [1:80] 5 5 5 5 5 5 5 5 5 5 ... $ metric         : chr [1:80] "metabolism_per_area_mm2_measurement" "metabolism_per_area_mm2_measurement" "metabolism_per_area_mm2_measurement" "metabolism_per_area_mm2_measurement" ...
+
+## AUC summary tables
+
+``` r
+sum_vars <- intersect( c(“metric”, “family_id_group”, “treatment_group”), names(auc_all) ) auc_summary <- auc_all %>% group_by(across(all_of(sum_vars))) %>% summarise( n = n(), mean = mean(AUC, na.rm = TRUE), sd = sd(AUC, na.rm = TRUE), se = sd / sqrt(n), median = median(AUC, na.rm = TRUE), .groups = “drop” )
+print(auc_summary)
+```
+
+    # A tibble: 4 × 8 metric         family_id_group treatment_group     n  mean    sd     se median <chr>          <chr>           <chr>           <int> <dbl> <dbl>  <dbl>  <dbl> 1 metabolism_pe… blue            control            20 0.346 0.181 0.0405  0.289 2 metabolism_pe… blue            selected           20 0.332 0.108 0.0242  0.345 3 metabolism_pe… tweed           control            20 0.305 0.107 0.0239  0.322 4 metabolism_pe… tweed           selected           20 0.248 0.145 0.0324  0.218
+
+# Statistical Analysis
+
+Each individual clam (`sample_id_group`) is the observational unit. The model is built from whichever grouping factors are present: both family and treatment (with interaction) when both exist, or a one-way model when only one factor is available. Each plate maps to a unique family × treatment combination, so plate-level and group-level variance are confounded; interpret accordingly.
+
 has_treatment <- "treatment_group" %in% names(auc_df) &&
-length(unique(na.omit(auc_df$treatment_group))) \> 1 |
-| if (!has_family && !has_treatment) { return(list(model = NULL, anova = NULL, pairs_full = empty, pairs_family = empty, pairs_trt = empty, has_family = FALSE, has_treatment = FALSE)) } |
-| if (has_family) auc_df \<- auc_df %\>% mutate(family = factor(family_id_group)) if (has_treatment) auc_df \<- auc_df %\>% mutate(treatment = factor(treatment_group)) |
-| formula_str \<- if (has_family && has_treatment) “AUC ~ family \* treatment” else if (has_family) “AUC ~ family” else “AUC ~ treatment” model \<- lm(as.formula(formula_str), data = auc_df) anova_res \<- anova(model) |
-| if (has_family && has_treatment) { pairs_full \<- as.data.frame(pairs(emmeans(model, ~ family \* treatment), adjust = “tukey”)) pairs_family \<- as.data.frame(pairs(emmeans(model, ~ family), adjust = “tukey”)) pairs_trt \<- as.data.frame(pairs(emmeans(model, ~ treatment), adjust = “tukey”)) } else if (has_family) { pairs_family \<- as.data.frame(pairs(emmeans(model, ~ family), adjust = “tukey”)) pairs_full \<- pairs_family pairs_trt \<- empty } else { pairs_trt \<- as.data.frame(pairs(emmeans(model, ~ treatment), adjust = “tukey”)) pairs_full \<- pairs_trt pairs_family \<- empty } |
-| list( model = model, anova = anova_res, pairs_full = pairs_full, pairs_family = pairs_family, pairs_trt = pairs_trt, has_family = has_family, has_treatment = has_treatment ) } |
-| metrics_to_test \<- unique(auc_all\$metric) stats_results \<- map( set_names(metrics_to_test), ~ run_auc_stats(auc_all %\>% filter(metric == .x)) ) \`\`\` |
-| \## Results by metric |
+length(unique(na.omit(auc_df$treatment_group))) > 1
+if (!has_family && !has_treatment) { return(list(model = NULL, anova = NULL, pairs_full = empty, pairs_family = empty, pairs_trt = empty, has_family = FALSE, has_treatment = FALSE)) }
+if (has_family) auc_df <- auc_df %>% mutate(family = factor(family_id_group)) if (has_treatment) auc_df <- auc_df %>% mutate(treatment = factor(treatment_group))
+formula_str <- if (has_family && has_treatment) “AUC ~ family * treatment” else if (has_family) “AUC ~ family” else “AUC ~ treatment” model <- lm(as.formula(formula_str), data = auc_df) anova_res <- anova(model)
+if (has_family && has_treatment) { pairs_full <- as.data.frame(pairs(emmeans(model, ~ family * treatment), adjust = “tukey”)) pairs_family <- as.data.frame(pairs(emmeans(model, ~ family), adjust = “tukey”)) pairs_trt <- as.data.frame(pairs(emmeans(model, ~ treatment), adjust = “tukey”)) } else if (has_family) { pairs_family <- as.data.frame(pairs(emmeans(model, ~ family), adjust = “tukey”)) pairs_full <- pairs_family pairs_trt <- empty } else { pairs_trt <- as.data.frame(pairs(emmeans(model, ~ treatment), adjust = “tukey”)) pairs_full <- pairs_trt pairs_family <- empty }
+list( model = model, anova = anova_res, pairs_full = pairs_full, pairs_family = pairs_family, pairs_trt = pairs_trt, has_family = has_family, has_treatment = has_treatment ) }
+metrics_to_test <- unique(auc_all$metric) stats_results <- map( set_names(metrics_to_test), ~ run_auc_stats(auc_all %>% filter(metric == .x)) ) \`\`\`
+## Results by metric
+
 
 ### 10.1.1 Metric: metabolism_per_area_mm2_measurement
 
