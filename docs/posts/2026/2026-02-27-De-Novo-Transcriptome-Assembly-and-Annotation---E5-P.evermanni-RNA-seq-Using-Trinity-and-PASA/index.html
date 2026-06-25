@@ -2,7 +2,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
 
 <meta charset="utf-8">
-<meta name="generator" content="quarto-1.6.42">
+<meta name="generator" content="quarto-1.5.57">
 
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
@@ -72,10 +72,10 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <script src="../../../site_libs/quarto-html/tippy.umd.min.js"></script>
 <script src="../../../site_libs/quarto-html/anchor.min.js"></script>
 <link href="../../../site_libs/quarto-html/tippy.css" rel="stylesheet">
-<link href="../../../site_libs/quarto-html/quarto-syntax-highlighting-dark-b53751a350365c71b6c909e95f209ed1.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<link href="../../../site_libs/quarto-html/quarto-syntax-highlighting-dark.css" rel="stylesheet" id="quarto-text-highlighting-styles">
 <script src="../../../site_libs/bootstrap/bootstrap.min.js"></script>
 <link href="../../../site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
-<link href="../../../site_libs/bootstrap/bootstrap-e518e50a9807db09b51ea894c4c266f8.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="dark">
+<link href="../../../site_libs/bootstrap/bootstrap.min.css" rel="stylesheet" id="quarto-bootstrap" data-mode="dark">
 <script id="quarto-search-options" type="application/json">{
   "location": "navbar",
   "copy-button": true,
@@ -344,7 +344,7 @@ gtag('config', 'G-7483T61T11', { 'anonymize_ip': true});
 <p>This notebook performs a comprehensive transcriptome assembly and annotation for <em>P.evermanni</em> using the <a href="https://github.com/PASApipeline/PASApipeline/wiki">PASA (Program to Assemble Spliced Alignments)</a>, as part of the E5 <a href="https://github.com/urol-e5/timeseries_molecular">timeseries_molecular project</a>. This produced an updated genome annotation that incorporates the RNA-seq data, including alternative splicing information. However, it’s important to note that the resulting GFF/BED files will <em>not</em> contain any annotations from the original genome GFF which did not have any support from RNA-seq alignments!</p>
 <p>Thus, the resulting PASA annotations will be a <em>subset</em> of the original genome annotations, but with updated gene models based on the RNA-seq data. The PASA pipeline will merge the de novo and genome-guided transcriptome assemblies, clean the transcripts, and update the genome annotations with alternative splicing information where supported by the data.</p>
 <p>Due to large file sizes, the majority of important output files are <em>not</em> availabe on GitHub, but can be accessed on Gannet here:</p>
-<p><a href="https://gannet.fish.washington.edu/gitrepos/urol-e5/timeseries_molecular/E-Peve/output/00.30-E-Peve-transcriptome-assembly-Trinity/">https://gannet.fish.washington.edu/gitrepos/urol-e5/timeseries_molecular/E-Peve/output/00.30-E-Peve-transcriptome-assembly-Trinity/</a></p>
+<p>https://gannet.fish.washington.edu/gitrepos/urol-e5/timeseries_molecular/E-Peve/output/00.30-E-Peve-transcriptome-assembly-Trinity/</p>
 <p>Primary products:</p>
 <ul>
 <li>Trinity de-novo assembly FastA: https://gannet.fish.washington.edu/gitrepos/urol-e5/timeseries_molecular/E-Peve/output/00.30-E-Peve-transcriptome-assembly-Trinity/de_novo_assembly/peve-denovo-Trinity.fasta</li>
@@ -411,64 +411,62 @@ gtag('config', 'G-7483T61T11', { 'anonymize_ip': true});
 <span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a>de_novo_output_dir <span class="ot">&lt;-</span> <span class="fu">file.path</span>(output_dir, <span class="st">"de_novo_assembly"</span>)</span>
 <span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a>genome_guided_output_dir <span class="ot">&lt;-</span> <span class="fu">file.path</span>(output_dir, <span class="st">"genome_guided_assembly"</span>)</span>
 <span id="cb2-7"><a href="#cb2-7" aria-hidden="true" tabindex="-1"></a>pasa_container_dir <span class="ot">&lt;-</span> <span class="fu">file.path</span>(<span class="st">"/home"</span>, <span class="st">"shared"</span>, <span class="st">"containers"</span>)</span>
-<span id="cb2-8"><a href="#cb2-8" aria-hidden="true" tabindex="-1"></a>pasa_bed <span class="ot">&lt;-</span> <span class="st">"peve-PASA.bed"</span></span>
-<span id="cb2-9"><a href="#cb2-9" aria-hidden="true" tabindex="-1"></a>pasa_gff <span class="ot">&lt;-</span> <span class="st">"peve-PASA.gff3"</span></span>
-<span id="cb2-10"><a href="#cb2-10" aria-hidden="true" tabindex="-1"></a>PASA_HOME <span class="ot">&lt;-</span> <span class="st">"/usr/local/src/PASApipeline"</span></span>
-<span id="cb2-11"><a href="#cb2-11" aria-hidden="true" tabindex="-1"></a>pasa_output_dir <span class="ot">&lt;-</span> <span class="fu">file.path</span>(output_dir, <span class="st">"PASA"</span>)</span>
-<span id="cb2-12"><a href="#cb2-12" aria-hidden="true" tabindex="-1"></a>stringtie_gtf_dir <span class="ot">&lt;-</span> <span class="fu">file.path</span>(top_output_dir, <span class="st">"02.20-E-Peve-RNAseq-alignment-HiSat2"</span>)</span>
-<span id="cb2-13"><a href="#cb2-13" aria-hidden="true" tabindex="-1"></a>trimmed_reads_dir <span class="ot">&lt;-</span> <span class="fu">file.path</span>(top_output_dir, <span class="st">"01.00-E-Peve-RNAseq-trimming-fastp-FastQC-MultiQC"</span>)</span>
+<span id="cb2-8"><a href="#cb2-8" aria-hidden="true" tabindex="-1"></a>pasa_gff <span class="ot">&lt;-</span> <span class="st">"peve-PASA.gff3"</span></span>
+<span id="cb2-9"><a href="#cb2-9" aria-hidden="true" tabindex="-1"></a>PASA_HOME <span class="ot">&lt;-</span> <span class="st">"/usr/local/src/PASApipeline"</span></span>
+<span id="cb2-10"><a href="#cb2-10" aria-hidden="true" tabindex="-1"></a>pasa_output_dir <span class="ot">&lt;-</span> <span class="fu">file.path</span>(output_dir, <span class="st">"PASA"</span>)</span>
+<span id="cb2-11"><a href="#cb2-11" aria-hidden="true" tabindex="-1"></a>stringtie_gtf_dir <span class="ot">&lt;-</span> <span class="fu">file.path</span>(top_output_dir, <span class="st">"02.20-E-Peve-RNAseq-alignment-HiSat2"</span>)</span>
+<span id="cb2-12"><a href="#cb2-12" aria-hidden="true" tabindex="-1"></a>trimmed_reads_dir <span class="ot">&lt;-</span> <span class="fu">file.path</span>(top_output_dir, <span class="st">"01.00-E-Peve-RNAseq-trimming-fastp-FastQC-MultiQC"</span>)</span>
+<span id="cb2-13"><a href="#cb2-13" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb2-14"><a href="#cb2-14" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb2-15"><a href="#cb2-15" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb2-16"><a href="#cb2-16" aria-hidden="true" tabindex="-1"></a><span class="co"># FILES</span></span>
-<span id="cb2-17"><a href="#cb2-17" aria-hidden="true" tabindex="-1"></a>bam_alignment <span class="ot">&lt;-</span> <span class="fu">file.path</span>(top_output_dir, <span class="st">"02.20-E-Peve-RNAseq-alignment-HiSat2"</span>, <span class="st">"sorted-bams-merged.bam"</span>)</span>
-<span id="cb2-18"><a href="#cb2-18" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb2-19"><a href="#cb2-19" aria-hidden="true" tabindex="-1"></a><span class="do">## Path for genome will be relative to PASA output dir</span></span>
-<span id="cb2-20"><a href="#cb2-20" aria-hidden="true" tabindex="-1"></a>genome_fasta <span class="ot">&lt;-</span> <span class="fu">file.path</span>(<span class="st">".."</span>, <span class="st">".."</span>, <span class="st">".."</span>, <span class="st">"data"</span>, <span class="st">"Porites_evermanni_v1.fa"</span>)</span>
-<span id="cb2-21"><a href="#cb2-21" aria-hidden="true" tabindex="-1"></a>genome_gff <span class="ot">&lt;-</span> <span class="fu">file.path</span>(<span class="st">".."</span>, <span class="st">"data"</span>, <span class="st">"Porites_evermanni_validated.gff3"</span>)</span>
-<span id="cb2-22"><a href="#cb2-22" aria-hidden="true" tabindex="-1"></a>denovo_assembly_name <span class="ot">&lt;-</span> <span class="st">"peve-denovo-Trinity"</span></span>
-<span id="cb2-23"><a href="#cb2-23" aria-hidden="true" tabindex="-1"></a>genome_guided_assembly_name <span class="ot">&lt;-</span> <span class="st">"peve-GG-Trinity"</span></span>
-<span id="cb2-24"><a href="#cb2-24" aria-hidden="true" tabindex="-1"></a>pasa_container <span class="ot">&lt;-</span> <span class="st">"pasapipeline.v2.5.3.simg"</span></span>
-<span id="cb2-25"><a href="#cb2-25" aria-hidden="true" tabindex="-1"></a>stringtie_gtf <span class="ot">&lt;-</span> <span class="fu">file.path</span>(stringtie_gtf_dir, <span class="st">"Porites_evermanni_v1.stringtie.gtf"</span>)</span>
-<span id="cb2-26"><a href="#cb2-26" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb2-27"><a href="#cb2-27" aria-hidden="true" tabindex="-1"></a><span class="co">#SETTINGS</span></span>
-<span id="cb2-28"><a href="#cb2-28" aria-hidden="true" tabindex="-1"></a><span class="do">## THREADS</span></span>
-<span id="cb2-29"><a href="#cb2-29" aria-hidden="true" tabindex="-1"></a>threads <span class="ot">&lt;-</span> <span class="st">"44"</span></span>
-<span id="cb2-30"><a href="#cb2-30" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb2-31"><a href="#cb2-31" aria-hidden="true" tabindex="-1"></a><span class="do">## MAX RAM</span></span>
-<span id="cb2-32"><a href="#cb2-32" aria-hidden="true" tabindex="-1"></a>max_ram <span class="ot">&lt;-</span> <span class="st">"100G"</span></span>
-<span id="cb2-33"><a href="#cb2-33" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb2-34"><a href="#cb2-34" aria-hidden="true" tabindex="-1"></a><span class="co"># PROGRAMS</span></span>
-<span id="cb2-35"><a href="#cb2-35" aria-hidden="true" tabindex="-1"></a>samtools <span class="ot">&lt;-</span> <span class="fu">file.path</span>(<span class="st">"/home"</span>, <span class="st">"shared"</span>, <span class="st">"samtools-1.12"</span>, <span class="st">"samtools"</span>)</span>
+<span id="cb2-15"><a href="#cb2-15" aria-hidden="true" tabindex="-1"></a><span class="co"># FILES</span></span>
+<span id="cb2-16"><a href="#cb2-16" aria-hidden="true" tabindex="-1"></a>bam_alignment <span class="ot">&lt;-</span> <span class="fu">file.path</span>(top_output_dir, <span class="st">"02.20-E-Peve-RNAseq-alignment-HiSat2"</span>, <span class="st">"sorted-bams-merged.bam"</span>)</span>
+<span id="cb2-17"><a href="#cb2-17" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-18"><a href="#cb2-18" aria-hidden="true" tabindex="-1"></a><span class="do">## Path for genome will be relative to PASA output dir</span></span>
+<span id="cb2-19"><a href="#cb2-19" aria-hidden="true" tabindex="-1"></a>genome_fasta <span class="ot">&lt;-</span> <span class="fu">file.path</span>(<span class="st">".."</span>, <span class="st">".."</span>, <span class="st">".."</span>, <span class="st">"data"</span>, <span class="st">"Porites_evermanni_v1.fa"</span>)</span>
+<span id="cb2-20"><a href="#cb2-20" aria-hidden="true" tabindex="-1"></a>genome_gff <span class="ot">&lt;-</span> <span class="fu">file.path</span>(<span class="st">".."</span>, <span class="st">"data"</span>, <span class="st">"Porites_evermanni_validated.gff3"</span>)</span>
+<span id="cb2-21"><a href="#cb2-21" aria-hidden="true" tabindex="-1"></a>denovo_assembly_name <span class="ot">&lt;-</span> <span class="st">"peve-denovo-Trinity"</span></span>
+<span id="cb2-22"><a href="#cb2-22" aria-hidden="true" tabindex="-1"></a>genome_guided_assembly_name <span class="ot">&lt;-</span> <span class="st">"peve-GG-Trinity"</span></span>
+<span id="cb2-23"><a href="#cb2-23" aria-hidden="true" tabindex="-1"></a>pasa_container <span class="ot">&lt;-</span> <span class="st">"pasapipeline.v2.5.3.simg"</span></span>
+<span id="cb2-24"><a href="#cb2-24" aria-hidden="true" tabindex="-1"></a>stringtie_gtf <span class="ot">&lt;-</span> <span class="fu">file.path</span>(stringtie_gtf_dir, <span class="st">"Porites_evermanni_v1.stringtie.gtf"</span>)</span>
+<span id="cb2-25"><a href="#cb2-25" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-26"><a href="#cb2-26" aria-hidden="true" tabindex="-1"></a><span class="co">#SETTINGS</span></span>
+<span id="cb2-27"><a href="#cb2-27" aria-hidden="true" tabindex="-1"></a><span class="do">## THREADS</span></span>
+<span id="cb2-28"><a href="#cb2-28" aria-hidden="true" tabindex="-1"></a>threads <span class="ot">&lt;-</span> <span class="st">"44"</span></span>
+<span id="cb2-29"><a href="#cb2-29" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-30"><a href="#cb2-30" aria-hidden="true" tabindex="-1"></a><span class="do">## MAX RAM</span></span>
+<span id="cb2-31"><a href="#cb2-31" aria-hidden="true" tabindex="-1"></a>max_ram <span class="ot">&lt;-</span> <span class="st">"100G"</span></span>
+<span id="cb2-32"><a href="#cb2-32" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-33"><a href="#cb2-33" aria-hidden="true" tabindex="-1"></a><span class="co"># PROGRAMS</span></span>
+<span id="cb2-34"><a href="#cb2-34" aria-hidden="true" tabindex="-1"></a>samtools <span class="ot">&lt;-</span> <span class="fu">file.path</span>(<span class="st">"/home"</span>, <span class="st">"shared"</span>, <span class="st">"samtools-1.12"</span>, <span class="st">"samtools"</span>)</span>
+<span id="cb2-35"><a href="#cb2-35" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb2-36"><a href="#cb2-36" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb2-37"><a href="#cb2-37" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb2-38"><a href="#cb2-38" aria-hidden="true" tabindex="-1"></a><span class="co"># FORMATTING</span></span>
-<span id="cb2-39"><a href="#cb2-39" aria-hidden="true" tabindex="-1"></a>line <span class="ot">&lt;-</span> <span class="st">"-----------------------------------------------"</span></span>
-<span id="cb2-40"><a href="#cb2-40" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb2-41"><a href="#cb2-41" aria-hidden="true" tabindex="-1"></a><span class="co"># Export these as environment variables for bash chunks.</span></span>
-<span id="cb2-42"><a href="#cb2-42" aria-hidden="true" tabindex="-1"></a><span class="fu">Sys.setenv</span>(</span>
-<span id="cb2-43"><a href="#cb2-43" aria-hidden="true" tabindex="-1"></a>  <span class="at">bam_alignment =</span> bam_alignment,</span>
-<span id="cb2-44"><a href="#cb2-44" aria-hidden="true" tabindex="-1"></a>  <span class="at">denovo_assembly_name =</span> denovo_assembly_name,</span>
-<span id="cb2-45"><a href="#cb2-45" aria-hidden="true" tabindex="-1"></a>  <span class="at">de_novo_output_dir =</span> de_novo_output_dir,</span>
-<span id="cb2-46"><a href="#cb2-46" aria-hidden="true" tabindex="-1"></a>  <span class="at">genome_fasta =</span> genome_fasta,</span>
-<span id="cb2-47"><a href="#cb2-47" aria-hidden="true" tabindex="-1"></a>  <span class="at">genome_gff =</span> genome_gff,</span>
-<span id="cb2-48"><a href="#cb2-48" aria-hidden="true" tabindex="-1"></a>  <span class="at">genome_guided_assembly_name =</span> genome_guided_assembly_name,</span>
-<span id="cb2-49"><a href="#cb2-49" aria-hidden="true" tabindex="-1"></a>  <span class="at">genome_guided_output_dir =</span> genome_guided_output_dir,</span>
-<span id="cb2-50"><a href="#cb2-50" aria-hidden="true" tabindex="-1"></a>  <span class="at">line =</span> line,</span>
-<span id="cb2-51"><a href="#cb2-51" aria-hidden="true" tabindex="-1"></a>  <span class="at">max_ram =</span> max_ram,</span>
-<span id="cb2-52"><a href="#cb2-52" aria-hidden="true" tabindex="-1"></a>  <span class="at">output_dir =</span> output_dir,</span>
-<span id="cb2-53"><a href="#cb2-53" aria-hidden="true" tabindex="-1"></a>  <span class="at">top_output_dir =</span> top_output_dir,</span>
-<span id="cb2-54"><a href="#cb2-54" aria-hidden="true" tabindex="-1"></a>  <span class="at">pasa_bed =</span> pasa_bed,</span>
-<span id="cb2-55"><a href="#cb2-55" aria-hidden="true" tabindex="-1"></a>  <span class="at">pasa_container =</span> pasa_container,</span>
-<span id="cb2-56"><a href="#cb2-56" aria-hidden="true" tabindex="-1"></a>  <span class="at">pasa_container_dir =</span> pasa_container_dir,</span>
-<span id="cb2-57"><a href="#cb2-57" aria-hidden="true" tabindex="-1"></a>  <span class="at">pasa_gff =</span> pasa_gff,</span>
-<span id="cb2-58"><a href="#cb2-58" aria-hidden="true" tabindex="-1"></a>  <span class="at">PASA_HOME =</span> PASA_HOME,</span>
-<span id="cb2-59"><a href="#cb2-59" aria-hidden="true" tabindex="-1"></a>  <span class="at">pasa_output_dir =</span> pasa_output_dir,</span>
-<span id="cb2-60"><a href="#cb2-60" aria-hidden="true" tabindex="-1"></a>  <span class="at">samtools =</span> samtools,</span>
-<span id="cb2-61"><a href="#cb2-61" aria-hidden="true" tabindex="-1"></a>  <span class="at">stringtie_gtf_dir =</span> stringtie_gtf_dir,</span>
-<span id="cb2-62"><a href="#cb2-62" aria-hidden="true" tabindex="-1"></a>  <span class="at">stringtie_gtf =</span> stringtie_gtf,</span>
-<span id="cb2-63"><a href="#cb2-63" aria-hidden="true" tabindex="-1"></a>  <span class="at">threads =</span> threads,</span>
-<span id="cb2-64"><a href="#cb2-64" aria-hidden="true" tabindex="-1"></a>  <span class="at">trimmed_reads_dir =</span> trimmed_reads_dir</span>
-<span id="cb2-65"><a href="#cb2-65" aria-hidden="true" tabindex="-1"></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span id="cb2-37"><a href="#cb2-37" aria-hidden="true" tabindex="-1"></a><span class="co"># FORMATTING</span></span>
+<span id="cb2-38"><a href="#cb2-38" aria-hidden="true" tabindex="-1"></a>line <span class="ot">&lt;-</span> <span class="st">"-----------------------------------------------"</span></span>
+<span id="cb2-39"><a href="#cb2-39" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-40"><a href="#cb2-40" aria-hidden="true" tabindex="-1"></a><span class="co"># Export these as environment variables for bash chunks.</span></span>
+<span id="cb2-41"><a href="#cb2-41" aria-hidden="true" tabindex="-1"></a><span class="fu">Sys.setenv</span>(</span>
+<span id="cb2-42"><a href="#cb2-42" aria-hidden="true" tabindex="-1"></a>  <span class="at">bam_alignment =</span> bam_alignment,</span>
+<span id="cb2-43"><a href="#cb2-43" aria-hidden="true" tabindex="-1"></a>  <span class="at">denovo_assembly_name =</span> denovo_assembly_name,</span>
+<span id="cb2-44"><a href="#cb2-44" aria-hidden="true" tabindex="-1"></a>  <span class="at">de_novo_output_dir =</span> de_novo_output_dir,</span>
+<span id="cb2-45"><a href="#cb2-45" aria-hidden="true" tabindex="-1"></a>  <span class="at">genome_fasta =</span> genome_fasta,</span>
+<span id="cb2-46"><a href="#cb2-46" aria-hidden="true" tabindex="-1"></a>  <span class="at">genome_gff =</span> genome_gff,</span>
+<span id="cb2-47"><a href="#cb2-47" aria-hidden="true" tabindex="-1"></a>  <span class="at">genome_guided_assembly_name =</span> genome_guided_assembly_name,</span>
+<span id="cb2-48"><a href="#cb2-48" aria-hidden="true" tabindex="-1"></a>  <span class="at">genome_guided_output_dir =</span> genome_guided_output_dir,</span>
+<span id="cb2-49"><a href="#cb2-49" aria-hidden="true" tabindex="-1"></a>  <span class="at">line =</span> line,</span>
+<span id="cb2-50"><a href="#cb2-50" aria-hidden="true" tabindex="-1"></a>  <span class="at">max_ram =</span> max_ram,</span>
+<span id="cb2-51"><a href="#cb2-51" aria-hidden="true" tabindex="-1"></a>  <span class="at">output_dir =</span> output_dir,</span>
+<span id="cb2-52"><a href="#cb2-52" aria-hidden="true" tabindex="-1"></a>  <span class="at">top_output_dir =</span> top_output_dir,</span>
+<span id="cb2-53"><a href="#cb2-53" aria-hidden="true" tabindex="-1"></a>  <span class="at">pasa_container =</span> pasa_container,</span>
+<span id="cb2-54"><a href="#cb2-54" aria-hidden="true" tabindex="-1"></a>  <span class="at">pasa_container_dir =</span> pasa_container_dir,</span>
+<span id="cb2-55"><a href="#cb2-55" aria-hidden="true" tabindex="-1"></a>  <span class="at">pasa_gff =</span> pasa_gff,</span>
+<span id="cb2-56"><a href="#cb2-56" aria-hidden="true" tabindex="-1"></a>  <span class="at">PASA_HOME =</span> PASA_HOME,</span>
+<span id="cb2-57"><a href="#cb2-57" aria-hidden="true" tabindex="-1"></a>  <span class="at">pasa_output_dir =</span> pasa_output_dir,</span>
+<span id="cb2-58"><a href="#cb2-58" aria-hidden="true" tabindex="-1"></a>  <span class="at">samtools =</span> samtools,</span>
+<span id="cb2-59"><a href="#cb2-59" aria-hidden="true" tabindex="-1"></a>  <span class="at">stringtie_gtf_dir =</span> stringtie_gtf_dir,</span>
+<span id="cb2-60"><a href="#cb2-60" aria-hidden="true" tabindex="-1"></a>  <span class="at">stringtie_gtf =</span> stringtie_gtf,</span>
+<span id="cb2-61"><a href="#cb2-61" aria-hidden="true" tabindex="-1"></a>  <span class="at">threads =</span> threads,</span>
+<span id="cb2-62"><a href="#cb2-62" aria-hidden="true" tabindex="-1"></a>  <span class="at">trimmed_reads_dir =</span> trimmed_reads_dir</span>
+<span id="cb2-63"><a href="#cb2-63" aria-hidden="true" tabindex="-1"></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </section>
 </section>
 <section id="de-novo-assembly" class="level1">
@@ -810,8 +808,9 @@ b4f76f4651063be32724c86d067ad34a  peve_pasa.gene_structures_post_PASA_updates.37
 <span id="cb29-5"><a href="#cb29-5" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb29-6"><a href="#cb29-6" aria-hidden="true" tabindex="-1"></a><span class="fu">md5sum</span> <span class="st">"</span><span class="va">${pasa_gff}</span><span class="st">"</span> <span class="kw">|</span> <span class="fu">tee</span> <span class="st">"</span><span class="va">${pasa_gff}</span><span class="st">"</span>.md5</span>
 <span id="cb29-7"><a href="#cb29-7" aria-hidden="true" tabindex="-1"></a><span class="fu">md5sum</span> <span class="st">"</span><span class="va">${pasa_bed}</span><span class="st">"</span> <span class="kw">|</span> <span class="fu">tee</span> <span class="st">"</span><span class="va">${pasa_bed}</span><span class="st">"</span>.md5</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<pre><code>08d65a59913b56823d9a108db722f820  peve-PASA.gff3
-b4f76f4651063be32724c86d067ad34a  peve-PASA.bed</code></pre>
+<pre><code>cp: cannot create regular file '': No such file or directory
+08d65a59913b56823d9a108db722f820  peve-PASA.gff3
+md5sum: '': No such file or directory</code></pre>
 </section>
 <section id="gff3-preview" class="level2">
 <h2 class="anchored" data-anchor-id="gff3-preview">6.3 GFF3 Preview</h2>
@@ -1020,6 +1019,8 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
   });
   clipboard.on('success', onCopySuccess);
   if (window.document.getElementById('quarto-embedded-source-code-modal')) {
+    // For code content inside modals, clipBoardJS needs to be initialized with a container option
+    // TODO: Check when it could be a function (https://github.com/zenorocha/clipboard.js/issues/860)
     const clipboardModal = new window.ClipboardJS('.code-copy-button[data-in-quarto-modal]', {
       text: getTextToCopy,
       container: window.document.getElementById('quarto-embedded-source-code-modal')
@@ -1130,6 +1131,7 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
       if (window.Quarto?.typesetMath) {
         window.Quarto.typesetMath(note);
       }
+      // TODO in 1.5, we should make sure this works without a callout special case
       if (note.classList.contains("callout")) {
         return note.outerHTML;
       } else {

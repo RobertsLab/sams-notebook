@@ -2,7 +2,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
 
 <meta charset="utf-8">
-<meta name="generator" content="quarto-1.6.42">
+<meta name="generator" content="quarto-1.5.57">
 
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
@@ -72,10 +72,10 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <script src="../../../site_libs/quarto-html/tippy.umd.min.js"></script>
 <script src="../../../site_libs/quarto-html/anchor.min.js"></script>
 <link href="../../../site_libs/quarto-html/tippy.css" rel="stylesheet">
-<link href="../../../site_libs/quarto-html/quarto-syntax-highlighting-dark-b53751a350365c71b6c909e95f209ed1.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<link href="../../../site_libs/quarto-html/quarto-syntax-highlighting-dark.css" rel="stylesheet" id="quarto-text-highlighting-styles">
 <script src="../../../site_libs/bootstrap/bootstrap.min.js"></script>
 <link href="../../../site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
-<link href="../../../site_libs/bootstrap/bootstrap-e518e50a9807db09b51ea894c4c266f8.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="dark">
+<link href="../../../site_libs/bootstrap/bootstrap.min.css" rel="stylesheet" id="quarto-bootstrap" data-mode="dark">
 <script id="quarto-search-options" type="application/json">{
   "location": "navbar",
   "copy-button": true,
@@ -252,14 +252,22 @@ gtag('config', 'G-7483T61T11', { 'anonymize_ip': true});
    
   <ul>
   <li><a href="#intro" id="toc-intro" class="nav-link active" data-scroll-target="#intro">INTRO</a></li>
-  <li><a href="#methods" id="toc-methods" class="nav-link" data-scroll-target="#methods">METHODS</a></li>
-  <li><a href="#build-the-image-if-not-already-done" id="toc-build-the-image-if-not-already-done" class="nav-link" data-scroll-target="#build-the-image-if-not-already-done">1. Build the image (if not already done)</a></li>
-  <li><a href="#save-the-image-to-a-tar-file" id="toc-save-the-image-to-a-tar-file" class="nav-link" data-scroll-target="#save-the-image-to-a-tar-file">2. Save the image to a tar file</a></li>
-  <li><a href="#transfer-to-synology-replace-with-your-synology-details" id="toc-transfer-to-synology-replace-with-your-synology-details" class="nav-link" data-scroll-target="#transfer-to-synology-replace-with-your-synology-details">3. Transfer to Synology (replace with your Synology details)</a></li>
-  <li><a href="#load-the-pre-built-image" id="toc-load-the-pre-built-image" class="nav-link" data-scroll-target="#load-the-pre-built-image">Load the pre-built image</a>
+  <li><a href="#methods" id="toc-methods" class="nav-link" data-scroll-target="#methods">METHODS</a>
   <ul>
+  <li><a href="#build-and-transfer-docker-image" id="toc-build-and-transfer-docker-image" class="nav-link" data-scroll-target="#build-and-transfer-docker-image">Build and Transfer Docker Image</a></li>
+  <li><a href="#synology-configuration-steps" id="toc-synology-configuration-steps" class="nav-link" data-scroll-target="#synology-configuration-steps">Synology Configuration Steps</a>
+  <ul>
+  <li><a href="#command-line-setup" id="toc-command-line-setup" class="nav-link" data-scroll-target="#command-line-setup">Command Line Setup</a>
+  <ul class="collapse">
+  <li><a href="#load-the-pre-built-image" id="toc-load-the-pre-built-image" class="nav-link" data-scroll-target="#load-the-pre-built-image">Load the pre-built image</a></li>
+  <li><a href="#grant-mysql-permissions-if-not-already-done" id="toc-grant-mysql-permissions-if-not-already-done" class="nav-link" data-scroll-target="#grant-mysql-permissions-if-not-already-done">Grant MySQL permissions (if not already done):</a></li>
+  <li><a href="#createimport-databases-if-not-already-done" id="toc-createimport-databases-if-not-already-done" class="nav-link" data-scroll-target="#createimport-databases-if-not-already-done">Create/import databases (if not already done):</a></li>
   <li><a href="#fix-collation-issue-in-the-sql-dump-file-if-needed" id="toc-fix-collation-issue-in-the-sql-dump-file-if-needed" class="nav-link" data-scroll-target="#fix-collation-issue-in-the-sql-dump-file-if-needed">Fix collation issue in the SQL dump file (if needed):</a></li>
   <li><a href="#load-the-sql-dump-into-the-database" id="toc-load-the-sql-dump-into-the-database" class="nav-link" data-scroll-target="#load-the-sql-dump-into-the-database">Load the SQL dump into the database:</a></li>
+  </ul></li>
+  <li><a href="#web-interface" id="toc-web-interface" class="nav-link" data-scroll-target="#web-interface">Web Interface</a></li>
+  <li><a href="#access" id="toc-access" class="nav-link" data-scroll-target="#access">Access</a></li>
+  </ul></li>
   </ul></li>
   </ul>
 </nav>
@@ -277,60 +285,118 @@ gtag('config', 'G-7483T61T11', { 'anonymize_ip': true});
 
 <section id="intro" class="level1">
 <h1>INTRO</h1>
+<p>The <a href="https://github.com/PASApipeline/PASApipeline/wiki">PASA pipeline</a> (GitHub) was used to generate transcriptome annotations using the RNA-seq data for the three coral species in the <a href="https://github.com/urol-e5/timeseries_molecular">`timeseries_molecular project</a> (GitHub) project. The PASA web portal provides a user-friendly interface to explore and visualize the results of the PASA pipeline, including gene models, alignments, and annotations.</p>
+<p>Below, I detail the steps I took to configure the PASA web portal on Gannet using the Synology Container Manager. This includes building a custom Docker image with the necessary Perl modules, transferring it to the Synology, and setting up the container to run the PASA web portal.</p>
 </section>
 <section id="methods" class="level1">
 <h1>METHODS</h1>
-</section>
-<section id="build-the-image-if-not-already-done" class="level1">
-<h1>1. Build the image (if not already done)</h1>
-<p>cd /home/shared/8TB_HDD_01/sam/gitrepos/urol-e5/timeseries_molecular/E-Peve/output/00.30-E-Peve-transcriptome-assembly-Trinity/PASA sudo docker build -t pasapipeline-fixed:latest -f Dockerfile.pasaweb .</p>
-</section>
-<section id="save-the-image-to-a-tar-file" class="level1">
-<h1>2. Save the image to a tar file</h1>
-<p>sudo docker save pasapipeline-fixed:latest &gt; /home/sam/pasapipeline-fixed.tar</p>
-</section>
-<section id="transfer-to-synology-replace-with-your-synology-details" class="level1">
-<h1>3. Transfer to Synology (replace with your Synology details)</h1>
-<p>rsync -avP pasapipeline-fixed.tar gannet:/volume2/docker/PASA_web_portal/</p>
-<p>On Synology, load the image into Docker:</p>
-</section>
-<section id="load-the-pre-built-image" class="level1">
-<h1>Load the pre-built image</h1>
-<p>cd /volume2/docker/PASA_web_portal sudo docker load -i pasapipeline-fixed.tar</p>
-<ol start="2" type="1">
-<li>In Container Manager, create a new container with these settings:</li>
+<div class="callout callout-style-default callout-note callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Note
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>The example below uses the <code>peve_pasa</code> database, but you can replace it with your database name as needed.</p>
+</div>
+</div>
+<section id="build-and-transfer-docker-image" class="level2">
+<h2 class="anchored" data-anchor-id="build-and-transfer-docker-image">Build and Transfer Docker Image</h2>
+<div class="callout callout-style-default callout-note callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Note
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>This doesn’t have to be done on a local computer; you can build the image directly on the Synology if you have the necessary tools and permissions. However, building locally and transferring can be faster and more convenient in some cases.</p>
+</div>
+</div>
+<ol type="1">
+<li><p>Build the image (if not already done)</p>
+<div class="sourceCode" id="cb1"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="bu">cd</span> /home/shared/8TB_HDD_01/sam/gitrepos/urol-e5/timeseries_molecular/E-Peve/output/00.30-E-Peve-transcriptome-assembly-Trinity/PASA</span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="fu">sudo</span> docker build <span class="at">-t</span> pasapipeline-fixed:latest <span class="at">-f</span> Dockerfile.pasaweb .</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p>Here’s what’s in <code>Dockerfile.pasaweb</code>:</p>
+<div class="sourceCode" id="cb2"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="ex">$</span> cat Dockerfile.pasaweb</span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a><span class="ex">FROM</span> pasapipeline/pasapipeline:latest</span>
+<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a><span class="co"># Install missing Perl modules required for PasaWeb</span></span>
+<span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a><span class="ex">RUN</span> cpan <span class="at">-i</span> CGI GD::Graph</span>
+<span id="cb2-7"><a href="#cb2-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-8"><a href="#cb2-8" aria-hidden="true" tabindex="-1"></a><span class="co"># Keep the original entrypoint</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div></li>
+<li><p>Save the image to a tar file.</p>
+<div class="sourceCode" id="cb3"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="fu">sudo</span> docker save pasapipeline-fixed:latest <span class="dt">\</span></span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a><span class="op">&gt;</span> /home/sam/pasapipeline-fixed.tar</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div></li>
+<li><p>Transfer to Synology (replace with your Synology details).</p>
+<div class="sourceCode" id="cb4"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="fu">rsync</span> <span class="at">-avP</span> pasapipeline-fixed.tar <span class="dt">\</span></span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a>gannet:/volume2/docker/PASA_web_portal/</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div></li>
 </ol>
-<p>In Container Manager:</p>
-<p>Go to the “Image” tab You should see pasapipeline-fixed:latest in the list of images Click on the image, then click “Launch” or “Run” This opens the container creation wizard where you configure: Container name Port mappings Volume mounts Environment variables Execution Command: <code>bash -c "cp /pasa_data/conf.txt /usr/local/src/PASApipeline/pasa_conf/conf.txt &amp;&amp; /usr/local/src/PASApipeline/run_PasaWeb.pl 9000"</code> Port Settings:</p>
-<p>Local Port: 9000 Container Port: 9000 Type: TCP Volume Mappings:</p>
-<p>Host: /volume1/path/to/PASA/directory Container: /pasa_data Network:</p>
-<p>Use bridge mode</p>
-<p>Working Directory:</p>
-<ol start="3" type="1">
-<li>Grant MySQL permissions (if not already done):</li>
-</ol>
-<div class="sourceCode" id="cb1"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="ex">mysql</span> <span class="at">-u</span> root <span class="at">-p</span><span class="op">&lt;</span>password<span class="op">&gt;</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="sourceCode" id="cb2"><pre class="sourceCode sql code-with-copy"><code class="sourceCode sql"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="kw">GRANT</span> <span class="kw">SELECT</span> <span class="kw">ON</span> peve_pasa.<span class="op">*</span> <span class="kw">TO</span> <span class="st">'pasa_access'</span>@<span class="st">'localhost'</span>;</span>
-<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a><span class="kw">GRANT</span> <span class="kw">SELECT</span> <span class="kw">ON</span> apul_pasa.<span class="op">*</span> <span class="kw">TO</span> <span class="st">'pasa_access'</span>@<span class="st">'localhost'</span>;</span>
-<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a><span class="kw">GRANT</span> <span class="kw">SELECT</span> <span class="kw">ON</span> ptua_pasa.<span class="op">*</span> <span class="kw">TO</span> <span class="st">'pasa_access'</span>@<span class="st">'localhost'</span>;</span>
-<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a><span class="kw">FLUSH</span> <span class="kw">PRIVILEGES</span>;</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<ol start="4" type="1">
-<li>Create/import databases (if not already done):</li>
-</ol>
-<div class="sourceCode" id="cb3"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="ex">mysql</span> <span class="at">-u</span> root <span class="at">-p</span> <span class="at">-h127.0.0.1</span> <span class="at">-P3307</span> <span class="op">&lt;&lt;'EOF'</span></span>
-<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a><span class="st">CREATE DATABASE IF NOT EXISTS peve_pasa;</span></span>
-<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a><span class="op">EOF</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<section id="fix-collation-issue-in-the-sql-dump-file-if-needed" class="level2">
-<h2 class="anchored" data-anchor-id="fix-collation-issue-in-the-sql-dump-file-if-needed">Fix collation issue in the SQL dump file (if needed):</h2>
-<div class="sourceCode" id="cb4"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="fu">sed</span> <span class="at">-i</span> <span class="st">'s/utf8mb4_0900_ai_ci/utf8mb4_general_ci/g'</span> <span class="st">'/volume2/web/gitrepos/urol-e5/timeseries_molecular/E-Peve/output/00.30-E-Peve-transcriptome-assembly-Trinity/PASA/peve_pasa_backup.sql'</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </section>
-<section id="load-the-sql-dump-into-the-database" class="level2">
-<h2 class="anchored" data-anchor-id="load-the-sql-dump-into-the-database">Load the SQL dump into the database:</h2>
-<div class="sourceCode" id="cb5"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="ex">mysql</span> <span class="at">-u</span> root <span class="at">-p</span><span class="op">&lt;</span>password<span class="op">&gt;</span> -h127.0.0.1 <span class="at">-P3307</span> peve_pasa <span class="dt">\</span></span>
-<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a>  <span class="op">&lt;</span> /volume2/web/gitrepos/urol-e5/timeseries_molecular/E-Peve/output/00.30-E-Peve-transcriptome-assembly-Trinity/PASA/peve_pasa_backup.sql</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<ol start="4" type="1">
-<li>Access:</li>
-</ol>
+<section id="synology-configuration-steps" class="level2">
+<h2 class="anchored" data-anchor-id="synology-configuration-steps">Synology Configuration Steps</h2>
+<section id="command-line-setup" class="level3">
+<h3 class="anchored" data-anchor-id="command-line-setup">Command Line Setup</h3>
+<p>On Synology, via command line:</p>
+<section id="load-the-pre-built-image" class="level4">
+<h4 class="anchored" data-anchor-id="load-the-pre-built-image">Load the pre-built image</h4>
+<div class="sourceCode" id="cb5"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a><span class="bu">cd</span> /volume2/docker/PASA_web_portal</span>
+<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a><span class="fu">sudo</span> docker load <span class="at">-i</span> pasapipeline-fixed.tar</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</section>
+<section id="grant-mysql-permissions-if-not-already-done" class="level4">
+<h4 class="anchored" data-anchor-id="grant-mysql-permissions-if-not-already-done">Grant MySQL permissions (if not already done):</h4>
+<div class="sourceCode" id="cb6"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="ex">mysql</span> <span class="at">-u</span> root <span class="at">-p</span><span class="op">&lt;</span>password<span class="op">&gt;</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode" id="cb7"><pre class="sourceCode sql code-with-copy"><code class="sourceCode sql"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="kw">GRANT</span> <span class="kw">SELECT</span> <span class="kw">ON</span> peve_pasa.<span class="op">*</span> <span class="kw">TO</span> <span class="st">'pasa_access'</span>@<span class="st">'localhost'</span>;</span>
+<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a><span class="kw">GRANT</span> <span class="kw">SELECT</span> <span class="kw">ON</span> apul_pasa.<span class="op">*</span> <span class="kw">TO</span> <span class="st">'pasa_access'</span>@<span class="st">'localhost'</span>;</span>
+<span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a><span class="kw">GRANT</span> <span class="kw">SELECT</span> <span class="kw">ON</span> ptua_pasa.<span class="op">*</span> <span class="kw">TO</span> <span class="st">'pasa_access'</span>@<span class="st">'localhost'</span>;</span>
+<span id="cb7-4"><a href="#cb7-4" aria-hidden="true" tabindex="-1"></a><span class="kw">FLUSH</span> <span class="kw">PRIVILEGES</span>;</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</section>
+<section id="createimport-databases-if-not-already-done" class="level4">
+<h4 class="anchored" data-anchor-id="createimport-databases-if-not-already-done">Create/import databases (if not already done):</h4>
+<div class="sourceCode" id="cb8"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="ex">mysql</span> <span class="at">-u</span> root <span class="at">-p</span> <span class="at">-h127.0.0.1</span> <span class="at">-P3307</span> <span class="op">&lt;&lt;'EOF'</span></span>
+<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a><span class="st">CREATE DATABASE IF NOT EXISTS peve_pasa;</span></span>
+<span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a><span class="op">EOF</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</section>
+<section id="fix-collation-issue-in-the-sql-dump-file-if-needed" class="level4">
+<h4 class="anchored" data-anchor-id="fix-collation-issue-in-the-sql-dump-file-if-needed">Fix collation issue in the SQL dump file (if needed):</h4>
+<div class="sourceCode" id="cb9"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a><span class="fu">sed</span> <span class="at">-i</span> <span class="st">'s/utf8mb4_0900_ai_ci/utf8mb4_general_ci/g'</span> <span class="st">'/volume2/web/gitrepos/urol-e5/timeseries_molecular/E-Peve/output/00.30-E-Peve-transcriptome-assembly-Trinity/PASA/peve_pasa_backup.sql'</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</section>
+<section id="load-the-sql-dump-into-the-database" class="level4">
+<h4 class="anchored" data-anchor-id="load-the-sql-dump-into-the-database">Load the SQL dump into the database:</h4>
+<div class="sourceCode" id="cb10"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a><span class="ex">mysql</span> <span class="at">-u</span> root <span class="at">-p</span><span class="op">&lt;</span>password<span class="op">&gt;</span> -h127.0.0.1 <span class="at">-P3307</span> peve_pasa <span class="dt">\</span></span>
+<span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a>  <span class="op">&lt;</span> /volume2/web/gitrepos/urol-e5/timeseries_molecular/E-Peve/output/00.30-E-Peve-transcriptome-assembly-Trinity/PASA/peve_pasa_backup.sql</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</section>
+</section>
+<section id="web-interface" class="level3">
+<h3 class="anchored" data-anchor-id="web-interface">Web Interface</h3>
+<p>Then, access the Synology via the web interface and set up the container.</p>
+<p>In the Container Manager app, create a new container with these settings:</p>
+<p>Go to the “Image” tab You should see pasapipeline-fixed:latest in the list of images.</p>
+<p>Click on the image, then click “Launch” or “Run”</p>
+<p>This opens the container creation wizard where you configure: - Container name - Port mappings - Volume mounts - Environment variables - xecution Command: <code>bash -c "cp /pasa_data/conf.txt /usr/local/src/PASApipeline/pasa_conf/conf.txt &amp;&amp; /usr/local/src/PASApipeline/run_PasaWeb.pl 9000"</code> - Port Settings:</p>
+<pre><code>- Local Port: 9000
+- Container Port: 9000
+- Type: TCP
+- Volume Mappings:</code></pre>
+<ul>
+<li><p>Host: /volume1/path/to/PASA/directory</p></li>
+<li><p>Container: /pasa_data</p></li>
+<li><p>Network:</p></li>
+<li><p>Use bridge mode</p></li>
+<li><p>Working Directory:</p></li>
+</ul>
+<p><img src="./screenshot-pasa-portal-configuration-01.png" class="img-fluid"></p>
+<p><img src="./screenshot-pasa-portal-configuration-02.png" class="img-fluid"></p>
+</section>
+<section id="access" class="level3">
+<h3 class="anchored" data-anchor-id="access">Access</h3>
 <div class="callout callout-style-default callout-important callout-titled">
 <div class="callout-header d-flex align-content-center">
 <div class="callout-icon-container">
@@ -347,6 +413,7 @@ Important
 <p>http://gannet.fish.washington.edu:9000 Enter database name when prompted (e.g., peve_pasa)</p>
 
 
+</section>
 </section>
 </section>
 
@@ -433,6 +500,8 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
   });
   clipboard.on('success', onCopySuccess);
   if (window.document.getElementById('quarto-embedded-source-code-modal')) {
+    // For code content inside modals, clipBoardJS needs to be initialized with a container option
+    // TODO: Check when it could be a function (https://github.com/zenorocha/clipboard.js/issues/860)
     const clipboardModal = new window.ClipboardJS('.code-copy-button[data-in-quarto-modal]', {
       text: getTextToCopy,
       container: window.document.getElementById('quarto-embedded-source-code-modal')
@@ -543,6 +612,7 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
       if (window.Quarto?.typesetMath) {
         window.Quarto.typesetMath(note);
       }
+      // TODO in 1.5, we should make sure this works without a callout special case
       if (note.classList.contains("callout")) {
         return note.outerHTML;
       } else {
