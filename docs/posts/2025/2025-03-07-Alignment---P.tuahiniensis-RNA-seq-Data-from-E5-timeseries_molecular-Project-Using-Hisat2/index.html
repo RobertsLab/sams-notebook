@@ -2,7 +2,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
 
 <meta charset="utf-8">
-<meta name="generator" content="quarto-1.5.57">
+<meta name="generator" content="quarto-1.6.42">
 
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
@@ -91,10 +91,10 @@ div.csl-indent {
 <script src="../../../site_libs/quarto-html/tippy.umd.min.js"></script>
 <script src="../../../site_libs/quarto-html/anchor.min.js"></script>
 <link href="../../../site_libs/quarto-html/tippy.css" rel="stylesheet">
-<link href="../../../site_libs/quarto-html/quarto-syntax-highlighting-dark.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<link href="../../../site_libs/quarto-html/quarto-syntax-highlighting-dark-b53751a350365c71b6c909e95f209ed1.css" rel="stylesheet" id="quarto-text-highlighting-styles">
 <script src="../../../site_libs/bootstrap/bootstrap.min.js"></script>
 <link href="../../../site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
-<link href="../../../site_libs/bootstrap/bootstrap.min.css" rel="stylesheet" id="quarto-bootstrap" data-mode="dark">
+<link href="../../../site_libs/bootstrap/bootstrap-e518e50a9807db09b51ea894c4c266f8.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="dark">
 <script id="quarto-search-options" type="application/json">{
   "location": "navbar",
   "copy-button": true,
@@ -131,6 +131,35 @@ gtag('js', new Date());
 gtag('config', 'G-7483T61T11', { 'anonymize_ip': true});
 </script>
 
+  <script src="https://cdnjs.cloudflare.com/polyfill/v3/polyfill.min.js?features=es6"></script>
+  <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml-full.js" type="text/javascript"></script>
+
+<script type="text/javascript">
+const typesetMath = (el) => {
+  if (window.MathJax) {
+    // MathJax Typeset
+    window.MathJax.typeset([el]);
+  } else if (window.katex) {
+    // KaTeX Render
+    var mathElements = el.getElementsByClassName("math");
+    var macros = [];
+    for (var i = 0; i < mathElements.length; i++) {
+      var texText = mathElements[i].firstChild;
+      if (mathElements[i].tagName == "SPAN") {
+        window.katex.render(texText.data, mathElements[i], {
+          displayMode: mathElements[i].classList.contains('display'),
+          throwOnError: false,
+          macros: macros,
+          fleqn: false
+        });
+      }
+    }
+  }
+}
+window.Quarto = {
+  typesetMath
+};
+</script>
 
 <link rel="stylesheet" href="../../../styles.css">
 </head>
@@ -285,8 +314,9 @@ gtag('config', 'G-7483T61T11', { 'anonymize_ip': true});
   <li><a href="#merge-sorted-bams" id="toc-merge-sorted-bams" class="nav-link" data-scroll-target="#merge-sorted-bams">4 Merge sorted BAMs</a></li>
   <li><a href="#create-combined-gtf" id="toc-create-combined-gtf" class="nav-link" data-scroll-target="#create-combined-gtf">5 Create combined GTF</a></li>
   <li><a href="#create-deseq2-count-matrices" id="toc-create-deseq2-count-matrices" class="nav-link" data-scroll-target="#create-deseq2-count-matrices">6 Create DESeq2 Count Matrices</a></li>
-  <li><a href="#generate-checksums" id="toc-generate-checksums" class="nav-link" data-scroll-target="#generate-checksums">7 Generate checksums</a></li>
-  <li><a href="#references" id="toc-references" class="nav-link" data-scroll-target="#references">8 References</a></li>
+  <li><a href="#add-gene-ids-to-transcript-count-matrix" id="toc-add-gene-ids-to-transcript-count-matrix" class="nav-link" data-scroll-target="#add-gene-ids-to-transcript-count-matrix">7 Add Gene IDs to Transcript Count Matrix</a></li>
+  <li><a href="#generate-checksums" id="toc-generate-checksums" class="nav-link" data-scroll-target="#generate-checksums">8 Generate checksums</a></li>
+  <li><a href="#references" id="toc-references" class="nav-link" data-scroll-target="#references">9 References</a></li>
   </ul>
 </nav>
 </nav>
@@ -315,13 +345,13 @@ Note
 </div>
 </div>
 <div class="callout-body-container callout-body">
-<p>The contents below are from markdown knitted from <a href="https://github.com/urol-e5/timeseries_molecular/blob/461f679b6c42f014e7a9c3138d38d6db1d477eee/F-Ptua/code/02.20-F-Ptua-RNAseq-alignment-HiSat2.Rmd"><code>02.20-F-Ptua-RNAseq-alignment-HiSat2.Rmd</code></a> (commit <code>461f679</code>).</p>
+<p>The contents below are from markdown knitted from <a href="https://github.com/urol-e5/timeseries_molecular/blob/ac67faa70c79c381423aecbd23f9a2f9205a4be5/F-Ptua/code/02.20-F-Ptua-RNAseq-alignment-HiSat2.Rmd"><code>02.20-F-Ptua-RNAseq-alignment-HiSat2.Rmd</code></a> (commit <code>ac67faa7</code>).</p>
 </div>
 </div>
 </section>
 <section id="background" class="level1">
 <h1>1 Background</h1>
-<p>This notebook will align trimmed <em>P.tuahiniensis</em> RNA-seq data to the <em>P.tuahiniensis</em> genome using <a href="https://github.com/DaehwanKimLab/hisat2">HISAT2</a> (Kim et al.&nbsp;2019). Follwed by <a href="https://ccb.jhu.edu/software/stringtie/index.shtml?t=manual">StringTie</a> (Pertea et al.&nbsp;2015, 2016) for transcript assembly/identification and count matrices for downstream expression analysis with <a href="https://github.com/thelovelab/DESeq2">DESeq2</a> and/or <a href="https://github.com/alyssafrazee/ballgown">Ballgown</a>.</p>
+<p>This notebook will align trimmed <em>P.tuahiniensis</em> RNA-seq data to the <em>P.tuahiniensis</em> genome using <a href="https://github.com/DaehwanKimLab/hisat2">HISAT2</a> (Kim et al.&nbsp;2019). Follwed by <a href="https://ccb.jhu.edu/software/stringtie/index.shtml?t=manual">StringTie</a> (Pertea et al.&nbsp;2015, 2016) for transcript assembly/identification and count matrices for downstream expression analysis with <a href="https://github.com/thelovelab/DESeq2">DESeq2</a> and/or <span class="math display">\[Ballgown\]</span>(<a href="https://github.com/alyssafrazee/ballgown" class="uri">https://github.com/alyssafrazee/ballgown</a>.</p>
 <p>Since the BAM files produced by this notebook are too large for GitHub, they can be accessed on our server here:</p>
 <p><a href="https://gannet.fish.washington.edu/Atumefaciens/gitrepos/urol-e5/timeseries_molecular/F-Ptua/output/02.20-F-Ptua-RNAseq-alignment-HiSat2/" class="uri">https://gannet.fish.washington.edu/Atumefaciens/gitrepos/urol-e5/timeseries_molecular/F-Ptua/output/02.20-F-Ptua-RNAseq-alignment-HiSat2/</a></p>
 <p>Input(s)</p>
@@ -338,6 +368,7 @@ Note
 <li><p><code>checksums.md5</code>: MD5 checksum for all files in this directory. Excludes subdirectories.</p></li>
 <li><p><code>ptua-gene_count_matrix.csv</code>: Gene count matrix for use in <a href="https://github.com/thelovelab/DESeq2">DESeq2</a>.</p></li>
 <li><p><code>ptua-transcript_count_matrix.csv</code>: Transcript count matrix for use in <a href="https://github.com/thelovelab/DESeq2">DESeq2</a>.</p></li>
+<li><p><code>ptua-transcript_count_matrix_with_gene_ids.csv</code>: Transcript count matrix which includes corresponding gene IDs.</p></li>
 <li><p><code>prepDE-sample_list.txt</code>: Sample file list provided as input to StringTie for DESeq2 count matrix generation. Also serves as documentation of which files were used for this step.</p></li>
 <li><p><code>Pocillopora_meandrina_HIv1.assembly.stringtie.gtf</code>: Canonical StringTie GTF file compiled from all individual sample GTFs.</p></li>
 <li><p><code>sorted-bams-merged.bam</code>: Merged (and sorted) BAM consisting of all individual sample BAMs.</p></li>
@@ -369,7 +400,7 @@ Note
 <span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="bu">echo</span> <span class="st">""</span></span>
 <span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a><span class="bu">echo</span> <span class="st">"# Data directories"</span></span>
-<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a><span class="bu">echo</span> <span class="st">'export timeseries_dir=/home/shared/8TB_HDD_01/sam/gitrepos/urol-e5/timeseries_molecular'</span></span>
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a><span class="bu">echo</span> <span class="st">'export timeseries_dir=/home/shared/16TB_HDD_01/sam/gitrepos/urol-e5/timeseries_molecular'</span></span>
 <span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a><span class="bu">echo</span> <span class="st">'export genome_dir="${timeseries_dir}/F-Ptua/data"'</span></span>
 <span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a><span class="bu">echo</span> <span class="st">'export genome_index_dir="${timeseries_dir}/F-Ptua/output/02.10-F-Ptua-RNAseq-genome-index-HiSat2"'</span></span>
 <span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a><span class="bu">echo</span> <span class="st">'export output_dir_top="${timeseries_dir}/F-Ptua/output/02.20-F-Ptua-RNAseq-alignment-HiSat2"'</span></span>
@@ -450,7 +481,7 @@ Note
 <pre><code>#### Assign Variables ####
 
 # Data directories
-export timeseries_dir=/home/shared/8TB_HDD_01/sam/gitrepos/urol-e5/timeseries_molecular
+export timeseries_dir=/home/shared/16TB_HDD_01/sam/gitrepos/urol-e5/timeseries_molecular
 export genome_dir="${timeseries_dir}/F-Ptua/data"
 export genome_index_dir="${timeseries_dir}/F-Ptua/output/02.10-F-Ptua-RNAseq-genome-index-HiSat2"
 export output_dir_top="${timeseries_dir}/F-Ptua/output/02.20-F-Ptua-RNAseq-alignment-HiSat2"
@@ -651,573 +682,535 @@ export line="--------------------------------------------------------"</code></p
 <span id="cb4-7"><a href="#cb4-7" aria-hidden="true" tabindex="-1"></a><span class="co"># Display HISAT2 output directory structure</span></span>
 <span id="cb4-8"><a href="#cb4-8" aria-hidden="true" tabindex="-1"></a><span class="co"># with directory (--du) and file sizes (-h)</span></span>
 <span id="cb4-9"><a href="#cb4-9" aria-hidden="true" tabindex="-1"></a><span class="ex">tree</span> <span class="at">--du</span> <span class="at">-h</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<pre><code>.
-├── [ 607]  checksums.md5
-├── [5.5K]  gtf_list.txt
-├── [308K]  multiqc_data
-│&nbsp;&nbsp; ├── [5.1K]  multiqc_bowtie2.txt
-│&nbsp;&nbsp; ├── [ 307]  multiqc_citations.txt
-│&nbsp;&nbsp; ├── [268K]  multiqc_data.json
-│&nbsp;&nbsp; ├── [3.2K]  multiqc_general_stats.txt
-│&nbsp;&nbsp; ├── [4.1K]  multiqc.log
-│&nbsp;&nbsp; ├── [7.8K]  multiqc_samtools_flagstat.txt
-│&nbsp;&nbsp; └── [ 16K]  multiqc_sources.txt
-├── [1.1M]  multiqc_report.html
-├── [1.8G]  POC-201-TP1
-│&nbsp;&nbsp; ├── [2.4M]  e2t.ctab
-│&nbsp;&nbsp; ├── [ 21M]  e_data.ctab
-│&nbsp;&nbsp; ├── [2.0M]  i2t.ctab
-│&nbsp;&nbsp; ├── [ 13M]  i_data.ctab
-│&nbsp;&nbsp; ├── [ 400]  input_fastqs_checksums.md5
-│&nbsp;&nbsp; ├── [ 601]  POC-201-TP1_checksums.md5
-│&nbsp;&nbsp; ├── [ 13M]  POC-201-TP1.cov_refs.gtf
-│&nbsp;&nbsp; ├── [ 56M]  POC-201-TP1.gtf
-│&nbsp;&nbsp; ├── [ 449]  POC-201-TP1-hisat2_output.flagstat
-│&nbsp;&nbsp; ├── [ 638]  POC-201-TP1_hisat2.stats
-│&nbsp;&nbsp; ├── [1.7G]  POC-201-TP1.sorted.bam
-│&nbsp;&nbsp; ├── [628K]  POC-201-TP1.sorted.bam.bai
-│&nbsp;&nbsp; └── [5.8M]  t_data.ctab
-├── [2.0G]  POC-201-TP2
-│&nbsp;&nbsp; ├── [2.4M]  e2t.ctab
-│&nbsp;&nbsp; ├── [ 21M]  e_data.ctab
-│&nbsp;&nbsp; ├── [2.0M]  i2t.ctab
-│&nbsp;&nbsp; ├── [ 13M]  i_data.ctab
-│&nbsp;&nbsp; ├── [ 400]  input_fastqs_checksums.md5
-│&nbsp;&nbsp; ├── [ 601]  POC-201-TP2_checksums.md5
-│&nbsp;&nbsp; ├── [ 13M]  POC-201-TP2.cov_refs.gtf
-│&nbsp;&nbsp; ├── [ 56M]  POC-201-TP2.gtf
-│&nbsp;&nbsp; ├── [ 449]  POC-201-TP2-hisat2_output.flagstat
-│&nbsp;&nbsp; ├── [ 639]  POC-201-TP2_hisat2.stats
-│&nbsp;&nbsp; ├── [1.9G]  POC-201-TP2.sorted.bam
-│&nbsp;&nbsp; ├── [680K]  POC-201-TP2.sorted.bam.bai
-│&nbsp;&nbsp; └── [5.8M]  t_data.ctab
-├── [1.4G]  POC-201-TP3
-│&nbsp;&nbsp; ├── [2.4M]  e2t.ctab
-│&nbsp;&nbsp; ├── [ 20M]  e_data.ctab
-│&nbsp;&nbsp; ├── [2.0M]  i2t.ctab
-│&nbsp;&nbsp; ├── [ 12M]  i_data.ctab
-│&nbsp;&nbsp; ├── [ 400]  input_fastqs_checksums.md5
-│&nbsp;&nbsp; ├── [ 601]  POC-201-TP3_checksums.md5
-│&nbsp;&nbsp; ├── [6.1M]  POC-201-TP3.cov_refs.gtf
-│&nbsp;&nbsp; ├── [ 55M]  POC-201-TP3.gtf
-│&nbsp;&nbsp; ├── [ 448]  POC-201-TP3-hisat2_output.flagstat
-│&nbsp;&nbsp; ├── [ 635]  POC-201-TP3_hisat2.stats
-│&nbsp;&nbsp; ├── [1.3G]  POC-201-TP3.sorted.bam
-│&nbsp;&nbsp; ├── [427K]  POC-201-TP3.sorted.bam.bai
-│&nbsp;&nbsp; └── [5.8M]  t_data.ctab
-├── [1.8G]  POC-219-TP1
-│&nbsp;&nbsp; ├── [2.4M]  e2t.ctab
-│&nbsp;&nbsp; ├── [ 21M]  e_data.ctab
-│&nbsp;&nbsp; ├── [2.0M]  i2t.ctab
-│&nbsp;&nbsp; ├── [ 12M]  i_data.ctab
-│&nbsp;&nbsp; ├── [ 400]  input_fastqs_checksums.md5
-│&nbsp;&nbsp; ├── [ 601]  POC-219-TP1_checksums.md5
-│&nbsp;&nbsp; ├── [ 12M]  POC-219-TP1.cov_refs.gtf
-│&nbsp;&nbsp; ├── [ 55M]  POC-219-TP1.gtf
-│&nbsp;&nbsp; ├── [ 448]  POC-219-TP1-hisat2_output.flagstat
-│&nbsp;&nbsp; ├── [ 638]  POC-219-TP1_hisat2.stats
-│&nbsp;&nbsp; ├── [1.7G]  POC-219-TP1.sorted.bam
-│&nbsp;&nbsp; ├── [637K]  POC-219-TP1.sorted.bam.bai
-│&nbsp;&nbsp; └── [5.8M]  t_data.ctab
-├── [1.7G]  POC-219-TP2
-│&nbsp;&nbsp; ├── [2.4M]  e2t.ctab
-│&nbsp;&nbsp; ├── [ 21M]  e_data.ctab
-│&nbsp;&nbsp; ├── [2.0M]  i2t.ctab
-│&nbsp;&nbsp; ├── [ 12M]  i_data.ctab
-│&nbsp;&nbsp; ├── [ 400]  input_fastqs_checksums.md5
-│&nbsp;&nbsp; ├── [ 601]  POC-219-TP2_checksums.md5
-│&nbsp;&nbsp; ├── [9.8M]  POC-219-TP2.cov_refs.gtf
-│&nbsp;&nbsp; ├── [ 55M]  POC-219-TP2.gtf
-│&nbsp;&nbsp; ├── [ 448]  POC-219-TP2-hisat2_output.flagstat
-│&nbsp;&nbsp; ├── [ 635]  POC-219-TP2_hisat2.stats
-│&nbsp;&nbsp; ├── [1.6G]  POC-219-TP2.sorted.bam
-│&nbsp;&nbsp; ├── [580K]  POC-219-TP2.sorted.bam.bai
-│&nbsp;&nbsp; └── [5.8M]  t_data.ctab
-├── [1.9G]  POC-219-TP3
-│&nbsp;&nbsp; ├── [2.4M]  e2t.ctab
-│&nbsp;&nbsp; ├── [ 20M]  e_data.ctab
-│&nbsp;&nbsp; ├── [2.0M]  i2t.ctab
-│&nbsp;&nbsp; ├── [ 12M]  i_data.ctab
-│&nbsp;&nbsp; ├── [ 400]  input_fastqs_checksums.md5
-│&nbsp;&nbsp; ├── [ 601]  POC-219-TP3_checksums.md5
-│&nbsp;&nbsp; ├── [4.2M]  POC-219-TP3.cov_refs.gtf
-│&nbsp;&nbsp; ├── [ 55M]  POC-219-TP3.gtf
-│&nbsp;&nbsp; ├── [ 442]  POC-219-TP3-hisat2_output.flagstat
-│&nbsp;&nbsp; ├── [ 634]  POC-219-TP3_hisat2.stats
-│&nbsp;&nbsp; ├── [1.8G]  POC-219-TP3.sorted.bam
-│&nbsp;&nbsp; ├── [364K]  POC-219-TP3.sorted.bam.bai
-│&nbsp;&nbsp; └── [5.8M]  t_data.ctab
-├── [1.7G]  POC-219-TP4
-│&nbsp;&nbsp; ├── [2.4M]  e2t.ctab
-│&nbsp;&nbsp; ├── [ 21M]  e_data.ctab
-│&nbsp;&nbsp; ├── [2.0M]  i2t.ctab
-│&nbsp;&nbsp; ├── [ 12M]  i_data.ctab
-│&nbsp;&nbsp; ├── [ 400]  input_fastqs_checksums.md5
-│&nbsp;&nbsp; ├── [ 601]  POC-219-TP4_checksums.md5
-│&nbsp;&nbsp; ├── [8.5M]  POC-219-TP4.cov_refs.gtf
-│&nbsp;&nbsp; ├── [ 55M]  POC-219-TP4.gtf
-│&nbsp;&nbsp; ├── [ 448]  POC-219-TP4-hisat2_output.flagstat
-│&nbsp;&nbsp; ├── [ 639]  POC-219-TP4_hisat2.stats
-│&nbsp;&nbsp; ├── [1.6G]  POC-219-TP4.sorted.bam
-│&nbsp;&nbsp; ├── [512K]  POC-219-TP4.sorted.bam.bai
-│&nbsp;&nbsp; └── [5.8M]  t_data.ctab
-├── [1.8G]  POC-222-TP1
-│&nbsp;&nbsp; ├── [2.4M]  e2t.ctab
-│&nbsp;&nbsp; ├── [ 21M]  e_data.ctab
-│&nbsp;&nbsp; ├── [2.0M]  i2t.ctab
-│&nbsp;&nbsp; ├── [ 13M]  i_data.ctab
-│&nbsp;&nbsp; ├── [ 400]  input_fastqs_checksums.md5
-│&nbsp;&nbsp; ├── [ 601]  POC-222-TP1_checksums.md5
-│&nbsp;&nbsp; ├── [ 14M]  POC-222-TP1.cov_refs.gtf
-│&nbsp;&nbsp; ├── [ 56M]  POC-222-TP1.gtf
-│&nbsp;&nbsp; ├── [ 449]  POC-222-TP1-hisat2_output.flagstat
-│&nbsp;&nbsp; ├── [ 637]  POC-222-TP1_hisat2.stats
-│&nbsp;&nbsp; ├── [1.7G]  POC-222-TP1.sorted.bam
-│&nbsp;&nbsp; ├── [664K]  POC-222-TP1.sorted.bam.bai
-│&nbsp;&nbsp; └── [5.8M]  t_data.ctab
-├── [1.9G]  POC-222-TP2
-│&nbsp;&nbsp; ├── [2.4M]  e2t.ctab
-│&nbsp;&nbsp; ├── [ 21M]  e_data.ctab
-│&nbsp;&nbsp; ├── [2.0M]  i2t.ctab
-│&nbsp;&nbsp; ├── [ 12M]  i_data.ctab
-│&nbsp;&nbsp; ├── [ 400]  input_fastqs_checksums.md5
-│&nbsp;&nbsp; ├── [ 601]  POC-222-TP2_checksums.md5
-│&nbsp;&nbsp; ├── [ 11M]  POC-222-TP2.cov_refs.gtf
-│&nbsp;&nbsp; ├── [ 55M]  POC-222-TP2.gtf
-│&nbsp;&nbsp; ├── [ 449]  POC-222-TP2-hisat2_output.flagstat
-│&nbsp;&nbsp; ├── [ 639]  POC-222-TP2_hisat2.stats
-│&nbsp;&nbsp; ├── [1.8G]  POC-222-TP2.sorted.bam
-│&nbsp;&nbsp; ├── [624K]  POC-222-TP2.sorted.bam.bai
-│&nbsp;&nbsp; └── [5.8M]  t_data.ctab
-├── [2.0G]  POC-222-TP3
-│&nbsp;&nbsp; ├── [2.4M]  e2t.ctab
-│&nbsp;&nbsp; ├── [ 21M]  e_data.ctab
-│&nbsp;&nbsp; ├── [2.0M]  i2t.ctab
-│&nbsp;&nbsp; ├── [ 13M]  i_data.ctab
-│&nbsp;&nbsp; ├── [ 400]  input_fastqs_checksums.md5
-│&nbsp;&nbsp; ├── [ 601]  POC-222-TP3_checksums.md5
-│&nbsp;&nbsp; ├── [ 14M]  POC-222-TP3.cov_refs.gtf
-│&nbsp;&nbsp; ├── [ 56M]  POC-222-TP3.gtf
-│&nbsp;&nbsp; ├── [ 449]  POC-222-TP3-hisat2_output.flagstat
-│&nbsp;&nbsp; ├── [ 638]  POC-222-TP3_hisat2.stats
-│&nbsp;&nbsp; ├── [1.9G]  POC-222-TP3.sorted.bam
-│&nbsp;&nbsp; ├── [717K]  POC-222-TP3.sorted.bam.bai
-│&nbsp;&nbsp; └── [5.8M]  t_data.ctab
-├── [1.5G]  POC-222-TP4
-│&nbsp;&nbsp; ├── [2.4M]  e2t.ctab
-│&nbsp;&nbsp; ├── [ 21M]  e_data.ctab
-│&nbsp;&nbsp; ├── [2.0M]  i2t.ctab
-│&nbsp;&nbsp; ├── [ 12M]  i_data.ctab
-│&nbsp;&nbsp; ├── [ 400]  input_fastqs_checksums.md5
-│&nbsp;&nbsp; ├── [ 601]  POC-222-TP4_checksums.md5
-│&nbsp;&nbsp; ├── [9.2M]  POC-222-TP4.cov_refs.gtf
-│&nbsp;&nbsp; ├── [ 55M]  POC-222-TP4.gtf
-│&nbsp;&nbsp; ├── [ 448]  POC-222-TP4-hisat2_output.flagstat
-│&nbsp;&nbsp; ├── [ 636]  POC-222-TP4_hisat2.stats
-│&nbsp;&nbsp; ├── [1.4G]  POC-222-TP4.sorted.bam
-│&nbsp;&nbsp; ├── [549K]  POC-222-TP4.sorted.bam.bai
-│&nbsp;&nbsp; └── [5.8M]  t_data.ctab
-├── [1.8G]  POC-255-TP1
-│&nbsp;&nbsp; ├── [2.4M]  e2t.ctab
-│&nbsp;&nbsp; ├── [ 21M]  e_data.ctab
-│&nbsp;&nbsp; ├── [2.0M]  i2t.ctab
-│&nbsp;&nbsp; ├── [ 13M]  i_data.ctab
-│&nbsp;&nbsp; ├── [ 400]  input_fastqs_checksums.md5
-│&nbsp;&nbsp; ├── [ 601]  POC-255-TP1_checksums.md5
-│&nbsp;&nbsp; ├── [ 13M]  POC-255-TP1.cov_refs.gtf
-│&nbsp;&nbsp; ├── [ 55M]  POC-255-TP1.gtf
-│&nbsp;&nbsp; ├── [ 449]  POC-255-TP1-hisat2_output.flagstat
-│&nbsp;&nbsp; ├── [ 637]  POC-255-TP1_hisat2.stats
-│&nbsp;&nbsp; ├── [1.7G]  POC-255-TP1.sorted.bam
-│&nbsp;&nbsp; ├── [607K]  POC-255-TP1.sorted.bam.bai
-│&nbsp;&nbsp; └── [5.8M]  t_data.ctab
-├── [1.7G]  POC-255-TP2
-│&nbsp;&nbsp; ├── [2.4M]  e2t.ctab
-│&nbsp;&nbsp; ├── [ 21M]  e_data.ctab
-│&nbsp;&nbsp; ├── [2.0M]  i2t.ctab
-│&nbsp;&nbsp; ├── [ 12M]  i_data.ctab
-│&nbsp;&nbsp; ├── [ 400]  input_fastqs_checksums.md5
-│&nbsp;&nbsp; ├── [ 601]  POC-255-TP2_checksums.md5
-│&nbsp;&nbsp; ├── [ 10M]  POC-255-TP2.cov_refs.gtf
-│&nbsp;&nbsp; ├── [ 55M]  POC-255-TP2.gtf
-│&nbsp;&nbsp; ├── [ 448]  POC-255-TP2-hisat2_output.flagstat
-│&nbsp;&nbsp; ├── [ 635]  POC-255-TP2_hisat2.stats
-│&nbsp;&nbsp; ├── [1.6G]  POC-255-TP2.sorted.bam
-│&nbsp;&nbsp; ├── [592K]  POC-255-TP2.sorted.bam.bai
-│&nbsp;&nbsp; └── [5.8M]  t_data.ctab
-├── [2.1G]  POC-255-TP3
-│&nbsp;&nbsp; ├── [2.4M]  e2t.ctab
-│&nbsp;&nbsp; ├── [ 21M]  e_data.ctab
-│&nbsp;&nbsp; ├── [2.0M]  i2t.ctab
-│&nbsp;&nbsp; ├── [ 12M]  i_data.ctab
-│&nbsp;&nbsp; ├── [ 400]  input_fastqs_checksums.md5
-│&nbsp;&nbsp; ├── [ 601]  POC-255-TP3_checksums.md5
-│&nbsp;&nbsp; ├── [5.2M]  POC-255-TP3.cov_refs.gtf
-│&nbsp;&nbsp; ├── [ 55M]  POC-255-TP3.gtf
-│&nbsp;&nbsp; ├── [ 448]  POC-255-TP3-hisat2_output.flagstat
-│&nbsp;&nbsp; ├── [ 639]  POC-255-TP3_hisat2.stats
-│&nbsp;&nbsp; ├── [2.0G]  POC-255-TP3.sorted.bam
-│&nbsp;&nbsp; ├── [513K]  POC-255-TP3.sorted.bam.bai
-│&nbsp;&nbsp; └── [5.8M]  t_data.ctab
-├── [1.9G]  POC-255-TP4
-│&nbsp;&nbsp; ├── [2.4M]  e2t.ctab
-│&nbsp;&nbsp; ├── [ 21M]  e_data.ctab
-│&nbsp;&nbsp; ├── [2.0M]  i2t.ctab
-│&nbsp;&nbsp; ├── [ 13M]  i_data.ctab
-│&nbsp;&nbsp; ├── [ 400]  input_fastqs_checksums.md5
-│&nbsp;&nbsp; ├── [ 601]  POC-255-TP4_checksums.md5
-│&nbsp;&nbsp; ├── [ 13M]  POC-255-TP4.cov_refs.gtf
-│&nbsp;&nbsp; ├── [ 56M]  POC-255-TP4.gtf
-│&nbsp;&nbsp; ├── [ 448]  POC-255-TP4-hisat2_output.flagstat
-│&nbsp;&nbsp; ├── [ 638]  POC-255-TP4_hisat2.stats
-│&nbsp;&nbsp; ├── [1.7G]  POC-255-TP4.sorted.bam
-│&nbsp;&nbsp; ├── [650K]  POC-255-TP4.sorted.bam.bai
-│&nbsp;&nbsp; └── [5.8M]  t_data.ctab
-├── [1.7G]  POC-259-TP1
-│&nbsp;&nbsp; ├── [2.4M]  e2t.ctab
-│&nbsp;&nbsp; ├── [ 21M]  e_data.ctab
-│&nbsp;&nbsp; ├── [2.0M]  i2t.ctab
-│&nbsp;&nbsp; ├── [ 12M]  i_data.ctab
-│&nbsp;&nbsp; ├── [ 400]  input_fastqs_checksums.md5
-│&nbsp;&nbsp; ├── [ 601]  POC-259-TP1_checksums.md5
-│&nbsp;&nbsp; ├── [ 13M]  POC-259-TP1.cov_refs.gtf
-│&nbsp;&nbsp; ├── [ 56M]  POC-259-TP1.gtf
-│&nbsp;&nbsp; ├── [ 449]  POC-259-TP1-hisat2_output.flagstat
-│&nbsp;&nbsp; ├── [ 635]  POC-259-TP1_hisat2.stats
-│&nbsp;&nbsp; ├── [1.6G]  POC-259-TP1.sorted.bam
-│&nbsp;&nbsp; ├── [605K]  POC-259-TP1.sorted.bam.bai
-│&nbsp;&nbsp; └── [5.8M]  t_data.ctab
-├── [1.9G]  POC-259-TP2
-│&nbsp;&nbsp; ├── [2.4M]  e2t.ctab
-│&nbsp;&nbsp; ├── [ 21M]  e_data.ctab
-│&nbsp;&nbsp; ├── [2.0M]  i2t.ctab
-│&nbsp;&nbsp; ├── [ 13M]  i_data.ctab
-│&nbsp;&nbsp; ├── [ 400]  input_fastqs_checksums.md5
-│&nbsp;&nbsp; ├── [ 601]  POC-259-TP2_checksums.md5
-│&nbsp;&nbsp; ├── [ 14M]  POC-259-TP2.cov_refs.gtf
-│&nbsp;&nbsp; ├── [ 56M]  POC-259-TP2.gtf
-│&nbsp;&nbsp; ├── [ 449]  POC-259-TP2-hisat2_output.flagstat
-│&nbsp;&nbsp; ├── [ 637]  POC-259-TP2_hisat2.stats
-│&nbsp;&nbsp; ├── [1.8G]  POC-259-TP2.sorted.bam
-│&nbsp;&nbsp; ├── [660K]  POC-259-TP2.sorted.bam.bai
-│&nbsp;&nbsp; └── [5.8M]  t_data.ctab
-├── [1.9G]  POC-259-TP3
-│&nbsp;&nbsp; ├── [2.4M]  e2t.ctab
-│&nbsp;&nbsp; ├── [ 21M]  e_data.ctab
-│&nbsp;&nbsp; ├── [2.0M]  i2t.ctab
-│&nbsp;&nbsp; ├── [ 12M]  i_data.ctab
-│&nbsp;&nbsp; ├── [ 400]  input_fastqs_checksums.md5
-│&nbsp;&nbsp; ├── [ 601]  POC-259-TP3_checksums.md5
-│&nbsp;&nbsp; ├── [8.8M]  POC-259-TP3.cov_refs.gtf
-│&nbsp;&nbsp; ├── [ 55M]  POC-259-TP3.gtf
-│&nbsp;&nbsp; ├── [ 448]  POC-259-TP3-hisat2_output.flagstat
-│&nbsp;&nbsp; ├── [ 640]  POC-259-TP3_hisat2.stats
-│&nbsp;&nbsp; ├── [1.8G]  POC-259-TP3.sorted.bam
-│&nbsp;&nbsp; ├── [587K]  POC-259-TP3.sorted.bam.bai
-│&nbsp;&nbsp; └── [5.8M]  t_data.ctab
-├── [1.7G]  POC-259-TP4
-│&nbsp;&nbsp; ├── [2.4M]  e2t.ctab
-│&nbsp;&nbsp; ├── [ 21M]  e_data.ctab
-│&nbsp;&nbsp; ├── [2.0M]  i2t.ctab
-│&nbsp;&nbsp; ├── [ 13M]  i_data.ctab
-│&nbsp;&nbsp; ├── [ 400]  input_fastqs_checksums.md5
-│&nbsp;&nbsp; ├── [ 601]  POC-259-TP4_checksums.md5
-│&nbsp;&nbsp; ├── [ 13M]  POC-259-TP4.cov_refs.gtf
-│&nbsp;&nbsp; ├── [ 56M]  POC-259-TP4.gtf
-│&nbsp;&nbsp; ├── [ 448]  POC-259-TP4-hisat2_output.flagstat
-│&nbsp;&nbsp; ├── [ 637]  POC-259-TP4_hisat2.stats
-│&nbsp;&nbsp; ├── [1.6G]  POC-259-TP4.sorted.bam
-│&nbsp;&nbsp; ├── [644K]  POC-259-TP4.sorted.bam.bai
-│&nbsp;&nbsp; └── [5.8M]  t_data.ctab
-├── [1.6G]  POC-40-TP1
-│&nbsp;&nbsp; ├── [2.4M]  e2t.ctab
-│&nbsp;&nbsp; ├── [ 21M]  e_data.ctab
-│&nbsp;&nbsp; ├── [2.0M]  i2t.ctab
-│&nbsp;&nbsp; ├── [ 12M]  i_data.ctab
-│&nbsp;&nbsp; ├── [ 398]  input_fastqs_checksums.md5
-│&nbsp;&nbsp; ├── [ 595]  POC-40-TP1_checksums.md5
-│&nbsp;&nbsp; ├── [ 11M]  POC-40-TP1.cov_refs.gtf
-│&nbsp;&nbsp; ├── [ 55M]  POC-40-TP1.gtf
-│&nbsp;&nbsp; ├── [ 449]  POC-40-TP1-hisat2_output.flagstat
-│&nbsp;&nbsp; ├── [ 635]  POC-40-TP1_hisat2.stats
-│&nbsp;&nbsp; ├── [1.5G]  POC-40-TP1.sorted.bam
-│&nbsp;&nbsp; ├── [585K]  POC-40-TP1.sorted.bam.bai
-│&nbsp;&nbsp; └── [5.8M]  t_data.ctab
-├── [1.9G]  POC-40-TP2
-│&nbsp;&nbsp; ├── [2.4M]  e2t.ctab
-│&nbsp;&nbsp; ├── [ 21M]  e_data.ctab
-│&nbsp;&nbsp; ├── [2.0M]  i2t.ctab
-│&nbsp;&nbsp; ├── [ 12M]  i_data.ctab
-│&nbsp;&nbsp; ├── [ 398]  input_fastqs_checksums.md5
-│&nbsp;&nbsp; ├── [ 595]  POC-40-TP2_checksums.md5
-│&nbsp;&nbsp; ├── [ 11M]  POC-40-TP2.cov_refs.gtf
-│&nbsp;&nbsp; ├── [ 55M]  POC-40-TP2.gtf
-│&nbsp;&nbsp; ├── [ 449]  POC-40-TP2-hisat2_output.flagstat
-│&nbsp;&nbsp; ├── [ 638]  POC-40-TP2_hisat2.stats
-│&nbsp;&nbsp; ├── [1.8G]  POC-40-TP2.sorted.bam
-│&nbsp;&nbsp; ├── [599K]  POC-40-TP2.sorted.bam.bai
-│&nbsp;&nbsp; └── [5.8M]  t_data.ctab
-├── [1.8G]  POC-40-TP3
-│&nbsp;&nbsp; ├── [2.4M]  e2t.ctab
-│&nbsp;&nbsp; ├── [ 21M]  e_data.ctab
-│&nbsp;&nbsp; ├── [2.0M]  i2t.ctab
-│&nbsp;&nbsp; ├── [ 13M]  i_data.ctab
-│&nbsp;&nbsp; ├── [ 398]  input_fastqs_checksums.md5
-│&nbsp;&nbsp; ├── [ 595]  POC-40-TP3_checksums.md5
-│&nbsp;&nbsp; ├── [ 13M]  POC-40-TP3.cov_refs.gtf
-│&nbsp;&nbsp; ├── [ 56M]  POC-40-TP3.gtf
-│&nbsp;&nbsp; ├── [ 449]  POC-40-TP3-hisat2_output.flagstat
-│&nbsp;&nbsp; ├── [ 637]  POC-40-TP3_hisat2.stats
-│&nbsp;&nbsp; ├── [1.7G]  POC-40-TP3.sorted.bam
-│&nbsp;&nbsp; ├── [646K]  POC-40-TP3.sorted.bam.bai
-│&nbsp;&nbsp; └── [5.8M]  t_data.ctab
-├── [1.7G]  POC-40-TP4
-│&nbsp;&nbsp; ├── [2.4M]  e2t.ctab
-│&nbsp;&nbsp; ├── [ 21M]  e_data.ctab
-│&nbsp;&nbsp; ├── [2.0M]  i2t.ctab
-│&nbsp;&nbsp; ├── [ 12M]  i_data.ctab
-│&nbsp;&nbsp; ├── [ 398]  input_fastqs_checksums.md5
-│&nbsp;&nbsp; ├── [ 595]  POC-40-TP4_checksums.md5
-│&nbsp;&nbsp; ├── [ 11M]  POC-40-TP4.cov_refs.gtf
-│&nbsp;&nbsp; ├── [ 56M]  POC-40-TP4.gtf
-│&nbsp;&nbsp; ├── [ 449]  POC-40-TP4-hisat2_output.flagstat
-│&nbsp;&nbsp; ├── [ 637]  POC-40-TP4_hisat2.stats
-│&nbsp;&nbsp; ├── [1.6G]  POC-40-TP4.sorted.bam
-│&nbsp;&nbsp; ├── [592K]  POC-40-TP4.sorted.bam.bai
-│&nbsp;&nbsp; └── [5.8M]  t_data.ctab
-├── [1.6G]  POC-42-TP1
-│&nbsp;&nbsp; ├── [2.4M]  e2t.ctab
-│&nbsp;&nbsp; ├── [ 21M]  e_data.ctab
-│&nbsp;&nbsp; ├── [2.0M]  i2t.ctab
-│&nbsp;&nbsp; ├── [ 12M]  i_data.ctab
-│&nbsp;&nbsp; ├── [ 398]  input_fastqs_checksums.md5
-│&nbsp;&nbsp; ├── [ 595]  POC-42-TP1_checksums.md5
-│&nbsp;&nbsp; ├── [ 11M]  POC-42-TP1.cov_refs.gtf
-│&nbsp;&nbsp; ├── [ 55M]  POC-42-TP1.gtf
-│&nbsp;&nbsp; ├── [ 449]  POC-42-TP1-hisat2_output.flagstat
-│&nbsp;&nbsp; ├── [ 636]  POC-42-TP1_hisat2.stats
-│&nbsp;&nbsp; ├── [1.5G]  POC-42-TP1.sorted.bam
-│&nbsp;&nbsp; ├── [580K]  POC-42-TP1.sorted.bam.bai
-│&nbsp;&nbsp; └── [5.8M]  t_data.ctab
-├── [1.9G]  POC-42-TP2
-│&nbsp;&nbsp; ├── [2.4M]  e2t.ctab
-│&nbsp;&nbsp; ├── [ 21M]  e_data.ctab
-│&nbsp;&nbsp; ├── [2.0M]  i2t.ctab
-│&nbsp;&nbsp; ├── [ 12M]  i_data.ctab
-│&nbsp;&nbsp; ├── [ 398]  input_fastqs_checksums.md5
-│&nbsp;&nbsp; ├── [ 595]  POC-42-TP2_checksums.md5
-│&nbsp;&nbsp; ├── [ 12M]  POC-42-TP2.cov_refs.gtf
-│&nbsp;&nbsp; ├── [ 55M]  POC-42-TP2.gtf
-│&nbsp;&nbsp; ├── [ 448]  POC-42-TP2-hisat2_output.flagstat
-│&nbsp;&nbsp; ├── [ 636]  POC-42-TP2_hisat2.stats
-│&nbsp;&nbsp; ├── [1.8G]  POC-42-TP2.sorted.bam
-│&nbsp;&nbsp; ├── [610K]  POC-42-TP2.sorted.bam.bai
-│&nbsp;&nbsp; └── [5.8M]  t_data.ctab
-├── [1.8G]  POC-42-TP3
-│&nbsp;&nbsp; ├── [2.4M]  e2t.ctab
-│&nbsp;&nbsp; ├── [ 21M]  e_data.ctab
-│&nbsp;&nbsp; ├── [2.0M]  i2t.ctab
-│&nbsp;&nbsp; ├── [ 12M]  i_data.ctab
-│&nbsp;&nbsp; ├── [ 398]  input_fastqs_checksums.md5
-│&nbsp;&nbsp; ├── [ 595]  POC-42-TP3_checksums.md5
-│&nbsp;&nbsp; ├── [ 11M]  POC-42-TP3.cov_refs.gtf
-│&nbsp;&nbsp; ├── [ 55M]  POC-42-TP3.gtf
-│&nbsp;&nbsp; ├── [ 448]  POC-42-TP3-hisat2_output.flagstat
-│&nbsp;&nbsp; ├── [ 638]  POC-42-TP3_hisat2.stats
-│&nbsp;&nbsp; ├── [1.6G]  POC-42-TP3.sorted.bam
-│&nbsp;&nbsp; ├── [584K]  POC-42-TP3.sorted.bam.bai
-│&nbsp;&nbsp; └── [5.8M]  t_data.ctab
-├── [1.4G]  POC-42-TP4
-│&nbsp;&nbsp; ├── [2.4M]  e2t.ctab
-│&nbsp;&nbsp; ├── [ 20M]  e_data.ctab
-│&nbsp;&nbsp; ├── [2.0M]  i2t.ctab
-│&nbsp;&nbsp; ├── [ 12M]  i_data.ctab
-│&nbsp;&nbsp; ├── [ 398]  input_fastqs_checksums.md5
-│&nbsp;&nbsp; ├── [ 595]  POC-42-TP4_checksums.md5
-│&nbsp;&nbsp; ├── [3.5M]  POC-42-TP4.cov_refs.gtf
-│&nbsp;&nbsp; ├── [ 55M]  POC-42-TP4.gtf
-│&nbsp;&nbsp; ├── [ 448]  POC-42-TP4-hisat2_output.flagstat
-│&nbsp;&nbsp; ├── [ 635]  POC-42-TP4_hisat2.stats
-│&nbsp;&nbsp; ├── [1.3G]  POC-42-TP4.sorted.bam
-│&nbsp;&nbsp; ├── [455K]  POC-42-TP4.sorted.bam.bai
-│&nbsp;&nbsp; └── [5.8M]  t_data.ctab
-├── [1.6G]  POC-52-TP1
-│&nbsp;&nbsp; ├── [2.4M]  e2t.ctab
-│&nbsp;&nbsp; ├── [ 20M]  e_data.ctab
-│&nbsp;&nbsp; ├── [2.0M]  i2t.ctab
-│&nbsp;&nbsp; ├── [ 12M]  i_data.ctab
-│&nbsp;&nbsp; ├── [ 398]  input_fastqs_checksums.md5
-│&nbsp;&nbsp; ├── [ 595]  POC-52-TP1_checksums.md5
-│&nbsp;&nbsp; ├── [1.6M]  POC-52-TP1.cov_refs.gtf
-│&nbsp;&nbsp; ├── [ 55M]  POC-52-TP1.gtf
-│&nbsp;&nbsp; ├── [ 442]  POC-52-TP1-hisat2_output.flagstat
-│&nbsp;&nbsp; ├── [ 634]  POC-52-TP1_hisat2.stats
-│&nbsp;&nbsp; ├── [1.5G]  POC-52-TP1.sorted.bam
-│&nbsp;&nbsp; ├── [379K]  POC-52-TP1.sorted.bam.bai
-│&nbsp;&nbsp; └── [5.8M]  t_data.ctab
-├── [1.8G]  POC-52-TP2
-│&nbsp;&nbsp; ├── [2.4M]  e2t.ctab
-│&nbsp;&nbsp; ├── [ 21M]  e_data.ctab
-│&nbsp;&nbsp; ├── [2.0M]  i2t.ctab
-│&nbsp;&nbsp; ├── [ 12M]  i_data.ctab
-│&nbsp;&nbsp; ├── [ 398]  input_fastqs_checksums.md5
-│&nbsp;&nbsp; ├── [ 595]  POC-52-TP2_checksums.md5
-│&nbsp;&nbsp; ├── [ 10M]  POC-52-TP2.cov_refs.gtf
-│&nbsp;&nbsp; ├── [ 55M]  POC-52-TP2.gtf
-│&nbsp;&nbsp; ├── [ 448]  POC-52-TP2-hisat2_output.flagstat
-│&nbsp;&nbsp; ├── [ 638]  POC-52-TP2_hisat2.stats
-│&nbsp;&nbsp; ├── [1.7G]  POC-52-TP2.sorted.bam
-│&nbsp;&nbsp; ├── [582K]  POC-52-TP2.sorted.bam.bai
-│&nbsp;&nbsp; └── [5.8M]  t_data.ctab
-├── [1.6G]  POC-52-TP3
-│&nbsp;&nbsp; ├── [2.4M]  e2t.ctab
-│&nbsp;&nbsp; ├── [ 21M]  e_data.ctab
-│&nbsp;&nbsp; ├── [2.0M]  i2t.ctab
-│&nbsp;&nbsp; ├── [ 12M]  i_data.ctab
-│&nbsp;&nbsp; ├── [ 398]  input_fastqs_checksums.md5
-│&nbsp;&nbsp; ├── [ 595]  POC-52-TP3_checksums.md5
-│&nbsp;&nbsp; ├── [ 12M]  POC-52-TP3.cov_refs.gtf
-│&nbsp;&nbsp; ├── [ 55M]  POC-52-TP3.gtf
-│&nbsp;&nbsp; ├── [ 448]  POC-52-TP3-hisat2_output.flagstat
-│&nbsp;&nbsp; ├── [ 636]  POC-52-TP3_hisat2.stats
-│&nbsp;&nbsp; ├── [1.5G]  POC-52-TP3.sorted.bam
-│&nbsp;&nbsp; ├── [558K]  POC-52-TP3.sorted.bam.bai
-│&nbsp;&nbsp; └── [5.8M]  t_data.ctab
-├── [1.6G]  POC-52-TP4
-│&nbsp;&nbsp; ├── [2.4M]  e2t.ctab
-│&nbsp;&nbsp; ├── [ 21M]  e_data.ctab
-│&nbsp;&nbsp; ├── [2.0M]  i2t.ctab
-│&nbsp;&nbsp; ├── [ 13M]  i_data.ctab
-│&nbsp;&nbsp; ├── [ 398]  input_fastqs_checksums.md5
-│&nbsp;&nbsp; ├── [ 595]  POC-52-TP4_checksums.md5
-│&nbsp;&nbsp; ├── [ 14M]  POC-52-TP4.cov_refs.gtf
-│&nbsp;&nbsp; ├── [ 56M]  POC-52-TP4.gtf
-│&nbsp;&nbsp; ├── [ 448]  POC-52-TP4-hisat2_output.flagstat
-│&nbsp;&nbsp; ├── [ 636]  POC-52-TP4_hisat2.stats
-│&nbsp;&nbsp; ├── [1.5G]  POC-52-TP4.sorted.bam
-│&nbsp;&nbsp; ├── [631K]  POC-52-TP4.sorted.bam.bai
-│&nbsp;&nbsp; └── [5.8M]  t_data.ctab
-├── [1.8G]  POC-53-TP1
-│&nbsp;&nbsp; ├── [2.4M]  e2t.ctab
-│&nbsp;&nbsp; ├── [ 21M]  e_data.ctab
-│&nbsp;&nbsp; ├── [2.0M]  i2t.ctab
-│&nbsp;&nbsp; ├── [ 13M]  i_data.ctab
-│&nbsp;&nbsp; ├── [ 398]  input_fastqs_checksums.md5
-│&nbsp;&nbsp; ├── [ 595]  POC-53-TP1_checksums.md5
-│&nbsp;&nbsp; ├── [ 13M]  POC-53-TP1.cov_refs.gtf
-│&nbsp;&nbsp; ├── [ 56M]  POC-53-TP1.gtf
-│&nbsp;&nbsp; ├── [ 449]  POC-53-TP1-hisat2_output.flagstat
-│&nbsp;&nbsp; ├── [ 635]  POC-53-TP1_hisat2.stats
-│&nbsp;&nbsp; ├── [1.7G]  POC-53-TP1.sorted.bam
-│&nbsp;&nbsp; ├── [637K]  POC-53-TP1.sorted.bam.bai
-│&nbsp;&nbsp; └── [5.8M]  t_data.ctab
-├── [1.7G]  POC-53-TP2
-│&nbsp;&nbsp; ├── [2.4M]  e2t.ctab
-│&nbsp;&nbsp; ├── [ 21M]  e_data.ctab
-│&nbsp;&nbsp; ├── [2.0M]  i2t.ctab
-│&nbsp;&nbsp; ├── [ 12M]  i_data.ctab
-│&nbsp;&nbsp; ├── [ 398]  input_fastqs_checksums.md5
-│&nbsp;&nbsp; ├── [ 595]  POC-53-TP2_checksums.md5
-│&nbsp;&nbsp; ├── [ 12M]  POC-53-TP2.cov_refs.gtf
-│&nbsp;&nbsp; ├── [ 56M]  POC-53-TP2.gtf
-│&nbsp;&nbsp; ├── [ 448]  POC-53-TP2-hisat2_output.flagstat
-│&nbsp;&nbsp; ├── [ 635]  POC-53-TP2_hisat2.stats
-│&nbsp;&nbsp; ├── [1.6G]  POC-53-TP2.sorted.bam
-│&nbsp;&nbsp; ├── [590K]  POC-53-TP2.sorted.bam.bai
-│&nbsp;&nbsp; └── [5.8M]  t_data.ctab
-├── [1.8G]  POC-53-TP3
-│&nbsp;&nbsp; ├── [2.4M]  e2t.ctab
-│&nbsp;&nbsp; ├── [ 21M]  e_data.ctab
-│&nbsp;&nbsp; ├── [2.0M]  i2t.ctab
-│&nbsp;&nbsp; ├── [ 13M]  i_data.ctab
-│&nbsp;&nbsp; ├── [ 398]  input_fastqs_checksums.md5
-│&nbsp;&nbsp; ├── [ 595]  POC-53-TP3_checksums.md5
-│&nbsp;&nbsp; ├── [ 13M]  POC-53-TP3.cov_refs.gtf
-│&nbsp;&nbsp; ├── [ 56M]  POC-53-TP3.gtf
-│&nbsp;&nbsp; ├── [ 449]  POC-53-TP3-hisat2_output.flagstat
-│&nbsp;&nbsp; ├── [ 638]  POC-53-TP3_hisat2.stats
-│&nbsp;&nbsp; ├── [1.7G]  POC-53-TP3.sorted.bam
-│&nbsp;&nbsp; ├── [636K]  POC-53-TP3.sorted.bam.bai
-│&nbsp;&nbsp; └── [5.8M]  t_data.ctab
-├── [1.8G]  POC-53-TP4
-│&nbsp;&nbsp; ├── [2.4M]  e2t.ctab
-│&nbsp;&nbsp; ├── [ 21M]  e_data.ctab
-│&nbsp;&nbsp; ├── [2.0M]  i2t.ctab
-│&nbsp;&nbsp; ├── [ 12M]  i_data.ctab
-│&nbsp;&nbsp; ├── [ 398]  input_fastqs_checksums.md5
-│&nbsp;&nbsp; ├── [ 595]  POC-53-TP4_checksums.md5
-│&nbsp;&nbsp; ├── [9.4M]  POC-53-TP4.cov_refs.gtf
-│&nbsp;&nbsp; ├── [ 55M]  POC-53-TP4.gtf
-│&nbsp;&nbsp; ├── [ 448]  POC-53-TP4-hisat2_output.flagstat
-│&nbsp;&nbsp; ├── [ 638]  POC-53-TP4_hisat2.stats
-│&nbsp;&nbsp; ├── [1.7G]  POC-53-TP4.sorted.bam
-│&nbsp;&nbsp; ├── [520K]  POC-53-TP4.sorted.bam.bai
-│&nbsp;&nbsp; └── [5.8M]  t_data.ctab
-├── [1.6G]  POC-57-TP1
-│&nbsp;&nbsp; ├── [2.4M]  e2t.ctab
-│&nbsp;&nbsp; ├── [ 21M]  e_data.ctab
-│&nbsp;&nbsp; ├── [2.0M]  i2t.ctab
-│&nbsp;&nbsp; ├── [ 12M]  i_data.ctab
-│&nbsp;&nbsp; ├── [ 398]  input_fastqs_checksums.md5
-│&nbsp;&nbsp; ├── [ 595]  POC-57-TP1_checksums.md5
-│&nbsp;&nbsp; ├── [ 12M]  POC-57-TP1.cov_refs.gtf
-│&nbsp;&nbsp; ├── [ 56M]  POC-57-TP1.gtf
-│&nbsp;&nbsp; ├── [ 449]  POC-57-TP1-hisat2_output.flagstat
-│&nbsp;&nbsp; ├── [ 635]  POC-57-TP1_hisat2.stats
-│&nbsp;&nbsp; ├── [1.5G]  POC-57-TP1.sorted.bam
-│&nbsp;&nbsp; ├── [602K]  POC-57-TP1.sorted.bam.bai
-│&nbsp;&nbsp; └── [5.8M]  t_data.ctab
-├── [1.7G]  POC-57-TP2
-│&nbsp;&nbsp; ├── [2.4M]  e2t.ctab
-│&nbsp;&nbsp; ├── [ 21M]  e_data.ctab
-│&nbsp;&nbsp; ├── [2.0M]  i2t.ctab
-│&nbsp;&nbsp; ├── [ 12M]  i_data.ctab
-│&nbsp;&nbsp; ├── [ 398]  input_fastqs_checksums.md5
-│&nbsp;&nbsp; ├── [ 595]  POC-57-TP2_checksums.md5
-│&nbsp;&nbsp; ├── [7.5M]  POC-57-TP2.cov_refs.gtf
-│&nbsp;&nbsp; ├── [ 55M]  POC-57-TP2.gtf
-│&nbsp;&nbsp; ├── [ 449]  POC-57-TP2-hisat2_output.flagstat
-│&nbsp;&nbsp; ├── [ 638]  POC-57-TP2_hisat2.stats
-│&nbsp;&nbsp; ├── [1.6G]  POC-57-TP2.sorted.bam
-│&nbsp;&nbsp; ├── [539K]  POC-57-TP2.sorted.bam.bai
-│&nbsp;&nbsp; └── [5.8M]  t_data.ctab
-├── [1.9G]  POC-57-TP3
-│&nbsp;&nbsp; ├── [2.4M]  e2t.ctab
-│&nbsp;&nbsp; ├── [ 21M]  e_data.ctab
-│&nbsp;&nbsp; ├── [2.0M]  i2t.ctab
-│&nbsp;&nbsp; ├── [ 13M]  i_data.ctab
-│&nbsp;&nbsp; ├── [ 398]  input_fastqs_checksums.md5
-│&nbsp;&nbsp; ├── [ 595]  POC-57-TP3_checksums.md5
-│&nbsp;&nbsp; ├── [ 14M]  POC-57-TP3.cov_refs.gtf
-│&nbsp;&nbsp; ├── [ 56M]  POC-57-TP3.gtf
-│&nbsp;&nbsp; ├── [ 449]  POC-57-TP3-hisat2_output.flagstat
-│&nbsp;&nbsp; ├── [ 637]  POC-57-TP3_hisat2.stats
-│&nbsp;&nbsp; ├── [1.8G]  POC-57-TP3.sorted.bam
-│&nbsp;&nbsp; ├── [692K]  POC-57-TP3.sorted.bam.bai
-│&nbsp;&nbsp; └── [5.8M]  t_data.ctab
-├── [1.8G]  POC-57-TP4
-│&nbsp;&nbsp; ├── [2.4M]  e2t.ctab
-│&nbsp;&nbsp; ├── [ 21M]  e_data.ctab
-│&nbsp;&nbsp; ├── [2.0M]  i2t.ctab
-│&nbsp;&nbsp; ├── [ 13M]  i_data.ctab
-│&nbsp;&nbsp; ├── [ 398]  input_fastqs_checksums.md5
-│&nbsp;&nbsp; ├── [ 595]  POC-57-TP4_checksums.md5
-│&nbsp;&nbsp; ├── [ 13M]  POC-57-TP4.cov_refs.gtf
-│&nbsp;&nbsp; ├── [ 56M]  POC-57-TP4.gtf
-│&nbsp;&nbsp; ├── [ 449]  POC-57-TP4-hisat2_output.flagstat
-│&nbsp;&nbsp; ├── [ 638]  POC-57-TP4_hisat2.stats
-│&nbsp;&nbsp; ├── [1.7G]  POC-57-TP4.sorted.bam
-│&nbsp;&nbsp; ├── [636K]  POC-57-TP4.sorted.bam.bai
-│&nbsp;&nbsp; └── [5.8M]  t_data.ctab
-├── [ 57M]  Pocillopora_meandrina_HIv1.assembly.stringtie.gtf
-├── [5.9K]  prepDE-sample_list.txt
-├── [5.1M]  ptua-gene_count_matrix.csv
-├── [5.1M]  ptua-transcript_count_matrix.csv
-├── [1.4K]  sorted_bams.list
-├── [ 61G]  sorted-bams-merged.bam
-└── [8.3M]  sorted-bams-merged.bam.bai
+<pre><code>[4.3G]  [01;34m.[0m
+├── [ 607]  [00mchecksums.md5[0m
+├── [5.5K]  [00mgtf_list.txt[0m
+├── [308K]  [01;34mmultiqc_data[0m
+│&nbsp;&nbsp; ├── [5.1K]  [00mmultiqc_bowtie2.txt[0m
+│&nbsp;&nbsp; ├── [ 307]  [00mmultiqc_citations.txt[0m
+│&nbsp;&nbsp; ├── [268K]  [00mmultiqc_data.json[0m
+│&nbsp;&nbsp; ├── [3.2K]  [00mmultiqc_general_stats.txt[0m
+│&nbsp;&nbsp; ├── [4.1K]  [00mmultiqc.log[0m
+│&nbsp;&nbsp; ├── [7.8K]  [00mmultiqc_samtools_flagstat.txt[0m
+│&nbsp;&nbsp; └── [ 16K]  [00mmultiqc_sources.txt[0m
+├── [1.1M]  [00mmultiqc_report.html[0m
+├── [113M]  [01;34mPOC-201-TP1[0m
+│&nbsp;&nbsp; ├── [2.4M]  [00me2t.ctab[0m
+│&nbsp;&nbsp; ├── [ 21M]  [00me_data.ctab[0m
+│&nbsp;&nbsp; ├── [2.0M]  [00mi2t.ctab[0m
+│&nbsp;&nbsp; ├── [ 13M]  [00mi_data.ctab[0m
+│&nbsp;&nbsp; ├── [ 400]  [00minput_fastqs_checksums.md5[0m
+│&nbsp;&nbsp; ├── [ 601]  [00mPOC-201-TP1_checksums.md5[0m
+│&nbsp;&nbsp; ├── [ 13M]  [00mPOC-201-TP1.cov_refs.gtf[0m
+│&nbsp;&nbsp; ├── [ 56M]  [00mPOC-201-TP1.gtf[0m
+│&nbsp;&nbsp; ├── [ 449]  [00mPOC-201-TP1-hisat2_output.flagstat[0m
+│&nbsp;&nbsp; ├── [ 638]  [00mPOC-201-TP1_hisat2.stats[0m
+│&nbsp;&nbsp; ├── [628K]  [00mPOC-201-TP1.sorted.bam.bai[0m
+│&nbsp;&nbsp; └── [5.8M]  [00mt_data.ctab[0m
+├── [113M]  [01;34mPOC-201-TP2[0m
+│&nbsp;&nbsp; ├── [2.4M]  [00me2t.ctab[0m
+│&nbsp;&nbsp; ├── [ 21M]  [00me_data.ctab[0m
+│&nbsp;&nbsp; ├── [2.0M]  [00mi2t.ctab[0m
+│&nbsp;&nbsp; ├── [ 13M]  [00mi_data.ctab[0m
+│&nbsp;&nbsp; ├── [ 400]  [00minput_fastqs_checksums.md5[0m
+│&nbsp;&nbsp; ├── [ 601]  [00mPOC-201-TP2_checksums.md5[0m
+│&nbsp;&nbsp; ├── [ 13M]  [00mPOC-201-TP2.cov_refs.gtf[0m
+│&nbsp;&nbsp; ├── [ 56M]  [00mPOC-201-TP2.gtf[0m
+│&nbsp;&nbsp; ├── [ 449]  [00mPOC-201-TP2-hisat2_output.flagstat[0m
+│&nbsp;&nbsp; ├── [ 639]  [00mPOC-201-TP2_hisat2.stats[0m
+│&nbsp;&nbsp; ├── [680K]  [00mPOC-201-TP2.sorted.bam.bai[0m
+│&nbsp;&nbsp; └── [5.8M]  [00mt_data.ctab[0m
+├── [105M]  [01;34mPOC-201-TP3[0m
+│&nbsp;&nbsp; ├── [2.4M]  [00me2t.ctab[0m
+│&nbsp;&nbsp; ├── [ 20M]  [00me_data.ctab[0m
+│&nbsp;&nbsp; ├── [2.0M]  [00mi2t.ctab[0m
+│&nbsp;&nbsp; ├── [ 12M]  [00mi_data.ctab[0m
+│&nbsp;&nbsp; ├── [ 400]  [00minput_fastqs_checksums.md5[0m
+│&nbsp;&nbsp; ├── [ 601]  [00mPOC-201-TP3_checksums.md5[0m
+│&nbsp;&nbsp; ├── [6.1M]  [00mPOC-201-TP3.cov_refs.gtf[0m
+│&nbsp;&nbsp; ├── [ 55M]  [00mPOC-201-TP3.gtf[0m
+│&nbsp;&nbsp; ├── [ 448]  [00mPOC-201-TP3-hisat2_output.flagstat[0m
+│&nbsp;&nbsp; ├── [ 635]  [00mPOC-201-TP3_hisat2.stats[0m
+│&nbsp;&nbsp; ├── [427K]  [00mPOC-201-TP3.sorted.bam.bai[0m
+│&nbsp;&nbsp; └── [5.8M]  [00mt_data.ctab[0m
+├── [111M]  [01;34mPOC-219-TP1[0m
+│&nbsp;&nbsp; ├── [2.4M]  [00me2t.ctab[0m
+│&nbsp;&nbsp; ├── [ 21M]  [00me_data.ctab[0m
+│&nbsp;&nbsp; ├── [2.0M]  [00mi2t.ctab[0m
+│&nbsp;&nbsp; ├── [ 12M]  [00mi_data.ctab[0m
+│&nbsp;&nbsp; ├── [ 400]  [00minput_fastqs_checksums.md5[0m
+│&nbsp;&nbsp; ├── [ 601]  [00mPOC-219-TP1_checksums.md5[0m
+│&nbsp;&nbsp; ├── [ 12M]  [00mPOC-219-TP1.cov_refs.gtf[0m
+│&nbsp;&nbsp; ├── [ 55M]  [00mPOC-219-TP1.gtf[0m
+│&nbsp;&nbsp; ├── [ 448]  [00mPOC-219-TP1-hisat2_output.flagstat[0m
+│&nbsp;&nbsp; ├── [ 638]  [00mPOC-219-TP1_hisat2.stats[0m
+│&nbsp;&nbsp; ├── [637K]  [00mPOC-219-TP1.sorted.bam.bai[0m
+│&nbsp;&nbsp; └── [5.8M]  [00mt_data.ctab[0m
+├── [109M]  [01;34mPOC-219-TP2[0m
+│&nbsp;&nbsp; ├── [2.4M]  [00me2t.ctab[0m
+│&nbsp;&nbsp; ├── [ 21M]  [00me_data.ctab[0m
+│&nbsp;&nbsp; ├── [2.0M]  [00mi2t.ctab[0m
+│&nbsp;&nbsp; ├── [ 12M]  [00mi_data.ctab[0m
+│&nbsp;&nbsp; ├── [ 400]  [00minput_fastqs_checksums.md5[0m
+│&nbsp;&nbsp; ├── [ 601]  [00mPOC-219-TP2_checksums.md5[0m
+│&nbsp;&nbsp; ├── [9.8M]  [00mPOC-219-TP2.cov_refs.gtf[0m
+│&nbsp;&nbsp; ├── [ 55M]  [00mPOC-219-TP2.gtf[0m
+│&nbsp;&nbsp; ├── [ 448]  [00mPOC-219-TP2-hisat2_output.flagstat[0m
+│&nbsp;&nbsp; ├── [ 635]  [00mPOC-219-TP2_hisat2.stats[0m
+│&nbsp;&nbsp; ├── [580K]  [00mPOC-219-TP2.sorted.bam.bai[0m
+│&nbsp;&nbsp; └── [5.8M]  [00mt_data.ctab[0m
+├── [102M]  [01;34mPOC-219-TP3[0m
+│&nbsp;&nbsp; ├── [2.4M]  [00me2t.ctab[0m
+│&nbsp;&nbsp; ├── [ 20M]  [00me_data.ctab[0m
+│&nbsp;&nbsp; ├── [2.0M]  [00mi2t.ctab[0m
+│&nbsp;&nbsp; ├── [ 12M]  [00mi_data.ctab[0m
+│&nbsp;&nbsp; ├── [ 400]  [00minput_fastqs_checksums.md5[0m
+│&nbsp;&nbsp; ├── [ 601]  [00mPOC-219-TP3_checksums.md5[0m
+│&nbsp;&nbsp; ├── [4.2M]  [00mPOC-219-TP3.cov_refs.gtf[0m
+│&nbsp;&nbsp; ├── [ 55M]  [00mPOC-219-TP3.gtf[0m
+│&nbsp;&nbsp; ├── [ 442]  [00mPOC-219-TP3-hisat2_output.flagstat[0m
+│&nbsp;&nbsp; ├── [ 634]  [00mPOC-219-TP3_hisat2.stats[0m
+│&nbsp;&nbsp; ├── [364K]  [00mPOC-219-TP3.sorted.bam.bai[0m
+│&nbsp;&nbsp; └── [5.8M]  [00mt_data.ctab[0m
+├── [108M]  [01;34mPOC-219-TP4[0m
+│&nbsp;&nbsp; ├── [2.4M]  [00me2t.ctab[0m
+│&nbsp;&nbsp; ├── [ 21M]  [00me_data.ctab[0m
+│&nbsp;&nbsp; ├── [2.0M]  [00mi2t.ctab[0m
+│&nbsp;&nbsp; ├── [ 12M]  [00mi_data.ctab[0m
+│&nbsp;&nbsp; ├── [ 400]  [00minput_fastqs_checksums.md5[0m
+│&nbsp;&nbsp; ├── [ 601]  [00mPOC-219-TP4_checksums.md5[0m
+│&nbsp;&nbsp; ├── [8.5M]  [00mPOC-219-TP4.cov_refs.gtf[0m
+│&nbsp;&nbsp; ├── [ 55M]  [00mPOC-219-TP4.gtf[0m
+│&nbsp;&nbsp; ├── [ 448]  [00mPOC-219-TP4-hisat2_output.flagstat[0m
+│&nbsp;&nbsp; ├── [ 639]  [00mPOC-219-TP4_hisat2.stats[0m
+│&nbsp;&nbsp; ├── [512K]  [00mPOC-219-TP4.sorted.bam.bai[0m
+│&nbsp;&nbsp; └── [5.8M]  [00mt_data.ctab[0m
+├── [114M]  [01;34mPOC-222-TP1[0m
+│&nbsp;&nbsp; ├── [2.4M]  [00me2t.ctab[0m
+│&nbsp;&nbsp; ├── [ 21M]  [00me_data.ctab[0m
+│&nbsp;&nbsp; ├── [2.0M]  [00mi2t.ctab[0m
+│&nbsp;&nbsp; ├── [ 13M]  [00mi_data.ctab[0m
+│&nbsp;&nbsp; ├── [ 400]  [00minput_fastqs_checksums.md5[0m
+│&nbsp;&nbsp; ├── [ 601]  [00mPOC-222-TP1_checksums.md5[0m
+│&nbsp;&nbsp; ├── [ 14M]  [00mPOC-222-TP1.cov_refs.gtf[0m
+│&nbsp;&nbsp; ├── [ 56M]  [00mPOC-222-TP1.gtf[0m
+│&nbsp;&nbsp; ├── [ 449]  [00mPOC-222-TP1-hisat2_output.flagstat[0m
+│&nbsp;&nbsp; ├── [ 637]  [00mPOC-222-TP1_hisat2.stats[0m
+│&nbsp;&nbsp; ├── [664K]  [00mPOC-222-TP1.sorted.bam.bai[0m
+│&nbsp;&nbsp; └── [5.8M]  [00mt_data.ctab[0m
+├── [110M]  [01;34mPOC-222-TP2[0m
+│&nbsp;&nbsp; ├── [2.4M]  [00me2t.ctab[0m
+│&nbsp;&nbsp; ├── [ 21M]  [00me_data.ctab[0m
+│&nbsp;&nbsp; ├── [2.0M]  [00mi2t.ctab[0m
+│&nbsp;&nbsp; ├── [ 12M]  [00mi_data.ctab[0m
+│&nbsp;&nbsp; ├── [ 400]  [00minput_fastqs_checksums.md5[0m
+│&nbsp;&nbsp; ├── [ 601]  [00mPOC-222-TP2_checksums.md5[0m
+│&nbsp;&nbsp; ├── [ 11M]  [00mPOC-222-TP2.cov_refs.gtf[0m
+│&nbsp;&nbsp; ├── [ 55M]  [00mPOC-222-TP2.gtf[0m
+│&nbsp;&nbsp; ├── [ 449]  [00mPOC-222-TP2-hisat2_output.flagstat[0m
+│&nbsp;&nbsp; ├── [ 639]  [00mPOC-222-TP2_hisat2.stats[0m
+│&nbsp;&nbsp; ├── [624K]  [00mPOC-222-TP2.sorted.bam.bai[0m
+│&nbsp;&nbsp; └── [5.8M]  [00mt_data.ctab[0m
+├── [114M]  [01;34mPOC-222-TP3[0m
+│&nbsp;&nbsp; ├── [2.4M]  [00me2t.ctab[0m
+│&nbsp;&nbsp; ├── [ 21M]  [00me_data.ctab[0m
+│&nbsp;&nbsp; ├── [2.0M]  [00mi2t.ctab[0m
+│&nbsp;&nbsp; ├── [ 13M]  [00mi_data.ctab[0m
+│&nbsp;&nbsp; ├── [ 400]  [00minput_fastqs_checksums.md5[0m
+│&nbsp;&nbsp; ├── [ 601]  [00mPOC-222-TP3_checksums.md5[0m
+│&nbsp;&nbsp; ├── [ 14M]  [00mPOC-222-TP3.cov_refs.gtf[0m
+│&nbsp;&nbsp; ├── [ 56M]  [00mPOC-222-TP3.gtf[0m
+│&nbsp;&nbsp; ├── [ 449]  [00mPOC-222-TP3-hisat2_output.flagstat[0m
+│&nbsp;&nbsp; ├── [ 638]  [00mPOC-222-TP3_hisat2.stats[0m
+│&nbsp;&nbsp; ├── [717K]  [00mPOC-222-TP3.sorted.bam.bai[0m
+│&nbsp;&nbsp; └── [5.8M]  [00mt_data.ctab[0m
+├── [108M]  [01;34mPOC-222-TP4[0m
+│&nbsp;&nbsp; ├── [2.4M]  [00me2t.ctab[0m
+│&nbsp;&nbsp; ├── [ 21M]  [00me_data.ctab[0m
+│&nbsp;&nbsp; ├── [2.0M]  [00mi2t.ctab[0m
+│&nbsp;&nbsp; ├── [ 12M]  [00mi_data.ctab[0m
+│&nbsp;&nbsp; ├── [ 400]  [00minput_fastqs_checksums.md5[0m
+│&nbsp;&nbsp; ├── [ 601]  [00mPOC-222-TP4_checksums.md5[0m
+│&nbsp;&nbsp; ├── [9.2M]  [00mPOC-222-TP4.cov_refs.gtf[0m
+│&nbsp;&nbsp; ├── [ 55M]  [00mPOC-222-TP4.gtf[0m
+│&nbsp;&nbsp; ├── [ 448]  [00mPOC-222-TP4-hisat2_output.flagstat[0m
+│&nbsp;&nbsp; ├── [ 636]  [00mPOC-222-TP4_hisat2.stats[0m
+│&nbsp;&nbsp; ├── [549K]  [00mPOC-222-TP4.sorted.bam.bai[0m
+│&nbsp;&nbsp; └── [5.8M]  [00mt_data.ctab[0m
+├── [112M]  [01;34mPOC-255-TP1[0m
+│&nbsp;&nbsp; ├── [2.4M]  [00me2t.ctab[0m
+│&nbsp;&nbsp; ├── [ 21M]  [00me_data.ctab[0m
+│&nbsp;&nbsp; ├── [2.0M]  [00mi2t.ctab[0m
+│&nbsp;&nbsp; ├── [ 13M]  [00mi_data.ctab[0m
+│&nbsp;&nbsp; ├── [ 400]  [00minput_fastqs_checksums.md5[0m
+│&nbsp;&nbsp; ├── [ 601]  [00mPOC-255-TP1_checksums.md5[0m
+│&nbsp;&nbsp; ├── [ 13M]  [00mPOC-255-TP1.cov_refs.gtf[0m
+│&nbsp;&nbsp; ├── [ 55M]  [00mPOC-255-TP1.gtf[0m
+│&nbsp;&nbsp; ├── [ 449]  [00mPOC-255-TP1-hisat2_output.flagstat[0m
+│&nbsp;&nbsp; ├── [ 637]  [00mPOC-255-TP1_hisat2.stats[0m
+│&nbsp;&nbsp; ├── [607K]  [00mPOC-255-TP1.sorted.bam.bai[0m
+│&nbsp;&nbsp; └── [5.8M]  [00mt_data.ctab[0m
+├── [110M]  [01;34mPOC-255-TP2[0m
+│&nbsp;&nbsp; ├── [2.4M]  [00me2t.ctab[0m
+│&nbsp;&nbsp; ├── [ 21M]  [00me_data.ctab[0m
+│&nbsp;&nbsp; ├── [2.0M]  [00mi2t.ctab[0m
+│&nbsp;&nbsp; ├── [ 12M]  [00mi_data.ctab[0m
+│&nbsp;&nbsp; ├── [ 400]  [00minput_fastqs_checksums.md5[0m
+│&nbsp;&nbsp; ├── [ 601]  [00mPOC-255-TP2_checksums.md5[0m
+│&nbsp;&nbsp; ├── [ 10M]  [00mPOC-255-TP2.cov_refs.gtf[0m
+│&nbsp;&nbsp; ├── [ 55M]  [00mPOC-255-TP2.gtf[0m
+│&nbsp;&nbsp; ├── [ 448]  [00mPOC-255-TP2-hisat2_output.flagstat[0m
+│&nbsp;&nbsp; ├── [ 635]  [00mPOC-255-TP2_hisat2.stats[0m
+│&nbsp;&nbsp; ├── [592K]  [00mPOC-255-TP2.sorted.bam.bai[0m
+│&nbsp;&nbsp; └── [5.8M]  [00mt_data.ctab[0m
+├── [104M]  [01;34mPOC-255-TP3[0m
+│&nbsp;&nbsp; ├── [2.4M]  [00me2t.ctab[0m
+│&nbsp;&nbsp; ├── [ 21M]  [00me_data.ctab[0m
+│&nbsp;&nbsp; ├── [2.0M]  [00mi2t.ctab[0m
+│&nbsp;&nbsp; ├── [ 12M]  [00mi_data.ctab[0m
+│&nbsp;&nbsp; ├── [ 400]  [00minput_fastqs_checksums.md5[0m
+│&nbsp;&nbsp; ├── [ 601]  [00mPOC-255-TP3_checksums.md5[0m
+│&nbsp;&nbsp; ├── [5.2M]  [00mPOC-255-TP3.cov_refs.gtf[0m
+│&nbsp;&nbsp; ├── [ 55M]  [00mPOC-255-TP3.gtf[0m
+│&nbsp;&nbsp; ├── [ 448]  [00mPOC-255-TP3-hisat2_output.flagstat[0m
+│&nbsp;&nbsp; ├── [ 639]  [00mPOC-255-TP3_hisat2.stats[0m
+│&nbsp;&nbsp; ├── [513K]  [00mPOC-255-TP3.sorted.bam.bai[0m
+│&nbsp;&nbsp; └── [5.8M]  [00mt_data.ctab[0m
+├── [112M]  [01;34mPOC-255-TP4[0m
+│&nbsp;&nbsp; ├── [2.4M]  [00me2t.ctab[0m
+│&nbsp;&nbsp; ├── [ 21M]  [00me_data.ctab[0m
+│&nbsp;&nbsp; ├── [2.0M]  [00mi2t.ctab[0m
+│&nbsp;&nbsp; ├── [ 13M]  [00mi_data.ctab[0m
+│&nbsp;&nbsp; ├── [ 400]  [00minput_fastqs_checksums.md5[0m
+│&nbsp;&nbsp; ├── [ 601]  [00mPOC-255-TP4_checksums.md5[0m
+│&nbsp;&nbsp; ├── [ 13M]  [00mPOC-255-TP4.cov_refs.gtf[0m
+│&nbsp;&nbsp; ├── [ 56M]  [00mPOC-255-TP4.gtf[0m
+│&nbsp;&nbsp; ├── [ 448]  [00mPOC-255-TP4-hisat2_output.flagstat[0m
+│&nbsp;&nbsp; ├── [ 638]  [00mPOC-255-TP4_hisat2.stats[0m
+│&nbsp;&nbsp; ├── [650K]  [00mPOC-255-TP4.sorted.bam.bai[0m
+│&nbsp;&nbsp; └── [5.8M]  [00mt_data.ctab[0m
+├── [113M]  [01;34mPOC-259-TP1[0m
+│&nbsp;&nbsp; ├── [2.4M]  [00me2t.ctab[0m
+│&nbsp;&nbsp; ├── [ 21M]  [00me_data.ctab[0m
+│&nbsp;&nbsp; ├── [2.0M]  [00mi2t.ctab[0m
+│&nbsp;&nbsp; ├── [ 12M]  [00mi_data.ctab[0m
+│&nbsp;&nbsp; ├── [ 400]  [00minput_fastqs_checksums.md5[0m
+│&nbsp;&nbsp; ├── [ 601]  [00mPOC-259-TP1_checksums.md5[0m
+│&nbsp;&nbsp; ├── [ 13M]  [00mPOC-259-TP1.cov_refs.gtf[0m
+│&nbsp;&nbsp; ├── [ 56M]  [00mPOC-259-TP1.gtf[0m
+│&nbsp;&nbsp; ├── [ 449]  [00mPOC-259-TP1-hisat2_output.flagstat[0m
+│&nbsp;&nbsp; ├── [ 635]  [00mPOC-259-TP1_hisat2.stats[0m
+│&nbsp;&nbsp; ├── [605K]  [00mPOC-259-TP1.sorted.bam.bai[0m
+│&nbsp;&nbsp; └── [5.8M]  [00mt_data.ctab[0m
+├── [113M]  [01;34mPOC-259-TP2[0m
+│&nbsp;&nbsp; ├── [2.4M]  [00me2t.ctab[0m
+│&nbsp;&nbsp; ├── [ 21M]  [00me_data.ctab[0m
+│&nbsp;&nbsp; ├── [2.0M]  [00mi2t.ctab[0m
+│&nbsp;&nbsp; ├── [ 13M]  [00mi_data.ctab[0m
+│&nbsp;&nbsp; ├── [ 400]  [00minput_fastqs_checksums.md5[0m
+│&nbsp;&nbsp; ├── [ 601]  [00mPOC-259-TP2_checksums.md5[0m
+│&nbsp;&nbsp; ├── [ 14M]  [00mPOC-259-TP2.cov_refs.gtf[0m
+│&nbsp;&nbsp; ├── [ 56M]  [00mPOC-259-TP2.gtf[0m
+│&nbsp;&nbsp; ├── [ 449]  [00mPOC-259-TP2-hisat2_output.flagstat[0m
+│&nbsp;&nbsp; ├── [ 637]  [00mPOC-259-TP2_hisat2.stats[0m
+│&nbsp;&nbsp; ├── [660K]  [00mPOC-259-TP2.sorted.bam.bai[0m
+│&nbsp;&nbsp; └── [5.8M]  [00mt_data.ctab[0m
+├── [108M]  [01;34mPOC-259-TP3[0m
+│&nbsp;&nbsp; ├── [2.4M]  [00me2t.ctab[0m
+│&nbsp;&nbsp; ├── [ 21M]  [00me_data.ctab[0m
+│&nbsp;&nbsp; ├── [2.0M]  [00mi2t.ctab[0m
+│&nbsp;&nbsp; ├── [ 12M]  [00mi_data.ctab[0m
+│&nbsp;&nbsp; ├── [ 400]  [00minput_fastqs_checksums.md5[0m
+│&nbsp;&nbsp; ├── [ 601]  [00mPOC-259-TP3_checksums.md5[0m
+│&nbsp;&nbsp; ├── [8.8M]  [00mPOC-259-TP3.cov_refs.gtf[0m
+│&nbsp;&nbsp; ├── [ 55M]  [00mPOC-259-TP3.gtf[0m
+│&nbsp;&nbsp; ├── [ 448]  [00mPOC-259-TP3-hisat2_output.flagstat[0m
+│&nbsp;&nbsp; ├── [ 640]  [00mPOC-259-TP3_hisat2.stats[0m
+│&nbsp;&nbsp; ├── [587K]  [00mPOC-259-TP3.sorted.bam.bai[0m
+│&nbsp;&nbsp; └── [5.8M]  [00mt_data.ctab[0m
+├── [113M]  [01;34mPOC-259-TP4[0m
+│&nbsp;&nbsp; ├── [2.4M]  [00me2t.ctab[0m
+│&nbsp;&nbsp; ├── [ 21M]  [00me_data.ctab[0m
+│&nbsp;&nbsp; ├── [2.0M]  [00mi2t.ctab[0m
+│&nbsp;&nbsp; ├── [ 13M]  [00mi_data.ctab[0m
+│&nbsp;&nbsp; ├── [ 400]  [00minput_fastqs_checksums.md5[0m
+│&nbsp;&nbsp; ├── [ 601]  [00mPOC-259-TP4_checksums.md5[0m
+│&nbsp;&nbsp; ├── [ 13M]  [00mPOC-259-TP4.cov_refs.gtf[0m
+│&nbsp;&nbsp; ├── [ 56M]  [00mPOC-259-TP4.gtf[0m
+│&nbsp;&nbsp; ├── [ 448]  [00mPOC-259-TP4-hisat2_output.flagstat[0m
+│&nbsp;&nbsp; ├── [ 637]  [00mPOC-259-TP4_hisat2.stats[0m
+│&nbsp;&nbsp; ├── [644K]  [00mPOC-259-TP4.sorted.bam.bai[0m
+│&nbsp;&nbsp; └── [5.8M]  [00mt_data.ctab[0m
+├── [111M]  [01;34mPOC-40-TP1[0m
+│&nbsp;&nbsp; ├── [2.4M]  [00me2t.ctab[0m
+│&nbsp;&nbsp; ├── [ 21M]  [00me_data.ctab[0m
+│&nbsp;&nbsp; ├── [2.0M]  [00mi2t.ctab[0m
+│&nbsp;&nbsp; ├── [ 12M]  [00mi_data.ctab[0m
+│&nbsp;&nbsp; ├── [ 398]  [00minput_fastqs_checksums.md5[0m
+│&nbsp;&nbsp; ├── [ 595]  [00mPOC-40-TP1_checksums.md5[0m
+│&nbsp;&nbsp; ├── [ 11M]  [00mPOC-40-TP1.cov_refs.gtf[0m
+│&nbsp;&nbsp; ├── [ 55M]  [00mPOC-40-TP1.gtf[0m
+│&nbsp;&nbsp; ├── [ 449]  [00mPOC-40-TP1-hisat2_output.flagstat[0m
+│&nbsp;&nbsp; ├── [ 635]  [00mPOC-40-TP1_hisat2.stats[0m
+│&nbsp;&nbsp; ├── [585K]  [00mPOC-40-TP1.sorted.bam.bai[0m
+│&nbsp;&nbsp; └── [5.8M]  [00mt_data.ctab[0m
+├── [111M]  [01;34mPOC-40-TP2[0m
+│&nbsp;&nbsp; ├── [2.4M]  [00me2t.ctab[0m
+│&nbsp;&nbsp; ├── [ 21M]  [00me_data.ctab[0m
+│&nbsp;&nbsp; ├── [2.0M]  [00mi2t.ctab[0m
+│&nbsp;&nbsp; ├── [ 12M]  [00mi_data.ctab[0m
+│&nbsp;&nbsp; ├── [ 398]  [00minput_fastqs_checksums.md5[0m
+│&nbsp;&nbsp; ├── [ 595]  [00mPOC-40-TP2_checksums.md5[0m
+│&nbsp;&nbsp; ├── [ 11M]  [00mPOC-40-TP2.cov_refs.gtf[0m
+│&nbsp;&nbsp; ├── [ 55M]  [00mPOC-40-TP2.gtf[0m
+│&nbsp;&nbsp; ├── [ 449]  [00mPOC-40-TP2-hisat2_output.flagstat[0m
+│&nbsp;&nbsp; ├── [ 638]  [00mPOC-40-TP2_hisat2.stats[0m
+│&nbsp;&nbsp; ├── [599K]  [00mPOC-40-TP2.sorted.bam.bai[0m
+│&nbsp;&nbsp; └── [5.8M]  [00mt_data.ctab[0m
+├── [112M]  [01;34mPOC-40-TP3[0m
+│&nbsp;&nbsp; ├── [2.4M]  [00me2t.ctab[0m
+│&nbsp;&nbsp; ├── [ 21M]  [00me_data.ctab[0m
+│&nbsp;&nbsp; ├── [2.0M]  [00mi2t.ctab[0m
+│&nbsp;&nbsp; ├── [ 13M]  [00mi_data.ctab[0m
+│&nbsp;&nbsp; ├── [ 398]  [00minput_fastqs_checksums.md5[0m
+│&nbsp;&nbsp; ├── [ 595]  [00mPOC-40-TP3_checksums.md5[0m
+│&nbsp;&nbsp; ├── [ 13M]  [00mPOC-40-TP3.cov_refs.gtf[0m
+│&nbsp;&nbsp; ├── [ 56M]  [00mPOC-40-TP3.gtf[0m
+│&nbsp;&nbsp; ├── [ 449]  [00mPOC-40-TP3-hisat2_output.flagstat[0m
+│&nbsp;&nbsp; ├── [ 637]  [00mPOC-40-TP3_hisat2.stats[0m
+│&nbsp;&nbsp; ├── [646K]  [00mPOC-40-TP3.sorted.bam.bai[0m
+│&nbsp;&nbsp; └── [5.8M]  [00mt_data.ctab[0m
+├── [111M]  [01;34mPOC-40-TP4[0m
+│&nbsp;&nbsp; ├── [2.4M]  [00me2t.ctab[0m
+│&nbsp;&nbsp; ├── [ 21M]  [00me_data.ctab[0m
+│&nbsp;&nbsp; ├── [2.0M]  [00mi2t.ctab[0m
+│&nbsp;&nbsp; ├── [ 12M]  [00mi_data.ctab[0m
+│&nbsp;&nbsp; ├── [ 398]  [00minput_fastqs_checksums.md5[0m
+│&nbsp;&nbsp; ├── [ 595]  [00mPOC-40-TP4_checksums.md5[0m
+│&nbsp;&nbsp; ├── [ 11M]  [00mPOC-40-TP4.cov_refs.gtf[0m
+│&nbsp;&nbsp; ├── [ 56M]  [00mPOC-40-TP4.gtf[0m
+│&nbsp;&nbsp; ├── [ 449]  [00mPOC-40-TP4-hisat2_output.flagstat[0m
+│&nbsp;&nbsp; ├── [ 637]  [00mPOC-40-TP4_hisat2.stats[0m
+│&nbsp;&nbsp; ├── [592K]  [00mPOC-40-TP4.sorted.bam.bai[0m
+│&nbsp;&nbsp; └── [5.8M]  [00mt_data.ctab[0m
+├── [111M]  [01;34mPOC-42-TP1[0m
+│&nbsp;&nbsp; ├── [2.4M]  [00me2t.ctab[0m
+│&nbsp;&nbsp; ├── [ 21M]  [00me_data.ctab[0m
+│&nbsp;&nbsp; ├── [2.0M]  [00mi2t.ctab[0m
+│&nbsp;&nbsp; ├── [ 12M]  [00mi_data.ctab[0m
+│&nbsp;&nbsp; ├── [ 398]  [00minput_fastqs_checksums.md5[0m
+│&nbsp;&nbsp; ├── [ 595]  [00mPOC-42-TP1_checksums.md5[0m
+│&nbsp;&nbsp; ├── [ 11M]  [00mPOC-42-TP1.cov_refs.gtf[0m
+│&nbsp;&nbsp; ├── [ 55M]  [00mPOC-42-TP1.gtf[0m
+│&nbsp;&nbsp; ├── [ 449]  [00mPOC-42-TP1-hisat2_output.flagstat[0m
+│&nbsp;&nbsp; ├── [ 636]  [00mPOC-42-TP1_hisat2.stats[0m
+│&nbsp;&nbsp; ├── [580K]  [00mPOC-42-TP1.sorted.bam.bai[0m
+│&nbsp;&nbsp; └── [5.8M]  [00mt_data.ctab[0m
+├── [111M]  [01;34mPOC-42-TP2[0m
+│&nbsp;&nbsp; ├── [2.4M]  [00me2t.ctab[0m
+│&nbsp;&nbsp; ├── [ 21M]  [00me_data.ctab[0m
+│&nbsp;&nbsp; ├── [2.0M]  [00mi2t.ctab[0m
+│&nbsp;&nbsp; ├── [ 12M]  [00mi_data.ctab[0m
+│&nbsp;&nbsp; ├── [ 398]  [00minput_fastqs_checksums.md5[0m
+│&nbsp;&nbsp; ├── [ 595]  [00mPOC-42-TP2_checksums.md5[0m
+│&nbsp;&nbsp; ├── [ 12M]  [00mPOC-42-TP2.cov_refs.gtf[0m
+│&nbsp;&nbsp; ├── [ 55M]  [00mPOC-42-TP2.gtf[0m
+│&nbsp;&nbsp; ├── [ 448]  [00mPOC-42-TP2-hisat2_output.flagstat[0m
+│&nbsp;&nbsp; ├── [ 636]  [00mPOC-42-TP2_hisat2.stats[0m
+│&nbsp;&nbsp; ├── [610K]  [00mPOC-42-TP2.sorted.bam.bai[0m
+│&nbsp;&nbsp; └── [5.8M]  [00mt_data.ctab[0m
+├── [110M]  [01;34mPOC-42-TP3[0m
+│&nbsp;&nbsp; ├── [2.4M]  [00me2t.ctab[0m
+│&nbsp;&nbsp; ├── [ 21M]  [00me_data.ctab[0m
+│&nbsp;&nbsp; ├── [2.0M]  [00mi2t.ctab[0m
+│&nbsp;&nbsp; ├── [ 12M]  [00mi_data.ctab[0m
+│&nbsp;&nbsp; ├── [ 398]  [00minput_fastqs_checksums.md5[0m
+│&nbsp;&nbsp; ├── [ 595]  [00mPOC-42-TP3_checksums.md5[0m
+│&nbsp;&nbsp; ├── [ 11M]  [00mPOC-42-TP3.cov_refs.gtf[0m
+│&nbsp;&nbsp; ├── [ 55M]  [00mPOC-42-TP3.gtf[0m
+│&nbsp;&nbsp; ├── [ 448]  [00mPOC-42-TP3-hisat2_output.flagstat[0m
+│&nbsp;&nbsp; ├── [ 638]  [00mPOC-42-TP3_hisat2.stats[0m
+│&nbsp;&nbsp; ├── [584K]  [00mPOC-42-TP3.sorted.bam.bai[0m
+│&nbsp;&nbsp; └── [5.8M]  [00mt_data.ctab[0m
+├── [102M]  [01;34mPOC-42-TP4[0m
+│&nbsp;&nbsp; ├── [2.4M]  [00me2t.ctab[0m
+│&nbsp;&nbsp; ├── [ 20M]  [00me_data.ctab[0m
+│&nbsp;&nbsp; ├── [2.0M]  [00mi2t.ctab[0m
+│&nbsp;&nbsp; ├── [ 12M]  [00mi_data.ctab[0m
+│&nbsp;&nbsp; ├── [ 398]  [00minput_fastqs_checksums.md5[0m
+│&nbsp;&nbsp; ├── [ 595]  [00mPOC-42-TP4_checksums.md5[0m
+│&nbsp;&nbsp; ├── [3.5M]  [00mPOC-42-TP4.cov_refs.gtf[0m
+│&nbsp;&nbsp; ├── [ 55M]  [00mPOC-42-TP4.gtf[0m
+│&nbsp;&nbsp; ├── [ 448]  [00mPOC-42-TP4-hisat2_output.flagstat[0m
+│&nbsp;&nbsp; ├── [ 635]  [00mPOC-42-TP4_hisat2.stats[0m
+│&nbsp;&nbsp; ├── [455K]  [00mPOC-42-TP4.sorted.bam.bai[0m
+│&nbsp;&nbsp; └── [5.8M]  [00mt_data.ctab[0m
+├── [ 99M]  [01;34mPOC-52-TP1[0m
+│&nbsp;&nbsp; ├── [2.4M]  [00me2t.ctab[0m
+│&nbsp;&nbsp; ├── [ 20M]  [00me_data.ctab[0m
+│&nbsp;&nbsp; ├── [2.0M]  [00mi2t.ctab[0m
+│&nbsp;&nbsp; ├── [ 12M]  [00mi_data.ctab[0m
+│&nbsp;&nbsp; ├── [ 398]  [00minput_fastqs_checksums.md5[0m
+│&nbsp;&nbsp; ├── [ 595]  [00mPOC-52-TP1_checksums.md5[0m
+│&nbsp;&nbsp; ├── [1.6M]  [00mPOC-52-TP1.cov_refs.gtf[0m
+│&nbsp;&nbsp; ├── [ 55M]  [00mPOC-52-TP1.gtf[0m
+│&nbsp;&nbsp; ├── [ 442]  [00mPOC-52-TP1-hisat2_output.flagstat[0m
+│&nbsp;&nbsp; ├── [ 634]  [00mPOC-52-TP1_hisat2.stats[0m
+│&nbsp;&nbsp; ├── [379K]  [00mPOC-52-TP1.sorted.bam.bai[0m
+│&nbsp;&nbsp; └── [5.8M]  [00mt_data.ctab[0m
+├── [110M]  [01;34mPOC-52-TP2[0m
+│&nbsp;&nbsp; ├── [2.4M]  [00me2t.ctab[0m
+│&nbsp;&nbsp; ├── [ 21M]  [00me_data.ctab[0m
+│&nbsp;&nbsp; ├── [2.0M]  [00mi2t.ctab[0m
+│&nbsp;&nbsp; ├── [ 12M]  [00mi_data.ctab[0m
+│&nbsp;&nbsp; ├── [ 398]  [00minput_fastqs_checksums.md5[0m
+│&nbsp;&nbsp; ├── [ 595]  [00mPOC-52-TP2_checksums.md5[0m
+│&nbsp;&nbsp; ├── [ 10M]  [00mPOC-52-TP2.cov_refs.gtf[0m
+│&nbsp;&nbsp; ├── [ 55M]  [00mPOC-52-TP2.gtf[0m
+│&nbsp;&nbsp; ├── [ 448]  [00mPOC-52-TP2-hisat2_output.flagstat[0m
+│&nbsp;&nbsp; ├── [ 638]  [00mPOC-52-TP2_hisat2.stats[0m
+│&nbsp;&nbsp; ├── [582K]  [00mPOC-52-TP2.sorted.bam.bai[0m
+│&nbsp;&nbsp; └── [5.8M]  [00mt_data.ctab[0m
+├── [111M]  [01;34mPOC-52-TP3[0m
+│&nbsp;&nbsp; ├── [2.4M]  [00me2t.ctab[0m
+│&nbsp;&nbsp; ├── [ 21M]  [00me_data.ctab[0m
+│&nbsp;&nbsp; ├── [2.0M]  [00mi2t.ctab[0m
+│&nbsp;&nbsp; ├── [ 12M]  [00mi_data.ctab[0m
+│&nbsp;&nbsp; ├── [ 398]  [00minput_fastqs_checksums.md5[0m
+│&nbsp;&nbsp; ├── [ 595]  [00mPOC-52-TP3_checksums.md5[0m
+│&nbsp;&nbsp; ├── [ 12M]  [00mPOC-52-TP3.cov_refs.gtf[0m
+│&nbsp;&nbsp; ├── [ 55M]  [00mPOC-52-TP3.gtf[0m
+│&nbsp;&nbsp; ├── [ 448]  [00mPOC-52-TP3-hisat2_output.flagstat[0m
+│&nbsp;&nbsp; ├── [ 636]  [00mPOC-52-TP3_hisat2.stats[0m
+│&nbsp;&nbsp; ├── [558K]  [00mPOC-52-TP3.sorted.bam.bai[0m
+│&nbsp;&nbsp; └── [5.8M]  [00mt_data.ctab[0m
+├── [114M]  [01;34mPOC-52-TP4[0m
+│&nbsp;&nbsp; ├── [2.4M]  [00me2t.ctab[0m
+│&nbsp;&nbsp; ├── [ 21M]  [00me_data.ctab[0m
+│&nbsp;&nbsp; ├── [2.0M]  [00mi2t.ctab[0m
+│&nbsp;&nbsp; ├── [ 13M]  [00mi_data.ctab[0m
+│&nbsp;&nbsp; ├── [ 398]  [00minput_fastqs_checksums.md5[0m
+│&nbsp;&nbsp; ├── [ 595]  [00mPOC-52-TP4_checksums.md5[0m
+│&nbsp;&nbsp; ├── [ 14M]  [00mPOC-52-TP4.cov_refs.gtf[0m
+│&nbsp;&nbsp; ├── [ 56M]  [00mPOC-52-TP4.gtf[0m
+│&nbsp;&nbsp; ├── [ 448]  [00mPOC-52-TP4-hisat2_output.flagstat[0m
+│&nbsp;&nbsp; ├── [ 636]  [00mPOC-52-TP4_hisat2.stats[0m
+│&nbsp;&nbsp; ├── [631K]  [00mPOC-52-TP4.sorted.bam.bai[0m
+│&nbsp;&nbsp; └── [5.8M]  [00mt_data.ctab[0m
+├── [113M]  [01;34mPOC-53-TP1[0m
+│&nbsp;&nbsp; ├── [2.4M]  [00me2t.ctab[0m
+│&nbsp;&nbsp; ├── [ 21M]  [00me_data.ctab[0m
+│&nbsp;&nbsp; ├── [2.0M]  [00mi2t.ctab[0m
+│&nbsp;&nbsp; ├── [ 13M]  [00mi_data.ctab[0m
+│&nbsp;&nbsp; ├── [ 398]  [00minput_fastqs_checksums.md5[0m
+│&nbsp;&nbsp; ├── [ 595]  [00mPOC-53-TP1_checksums.md5[0m
+│&nbsp;&nbsp; ├── [ 13M]  [00mPOC-53-TP1.cov_refs.gtf[0m
+│&nbsp;&nbsp; ├── [ 56M]  [00mPOC-53-TP1.gtf[0m
+│&nbsp;&nbsp; ├── [ 449]  [00mPOC-53-TP1-hisat2_output.flagstat[0m
+│&nbsp;&nbsp; ├── [ 635]  [00mPOC-53-TP1_hisat2.stats[0m
+│&nbsp;&nbsp; ├── [637K]  [00mPOC-53-TP1.sorted.bam.bai[0m
+│&nbsp;&nbsp; └── [5.8M]  [00mt_data.ctab[0m
+├── [112M]  [01;34mPOC-53-TP2[0m
+│&nbsp;&nbsp; ├── [2.4M]  [00me2t.ctab[0m
+│&nbsp;&nbsp; ├── [ 21M]  [00me_data.ctab[0m
+│&nbsp;&nbsp; ├── [2.0M]  [00mi2t.ctab[0m
+│&nbsp;&nbsp; ├── [ 12M]  [00mi_data.ctab[0m
+│&nbsp;&nbsp; ├── [ 398]  [00minput_fastqs_checksums.md5[0m
+│&nbsp;&nbsp; ├── [ 595]  [00mPOC-53-TP2_checksums.md5[0m
+│&nbsp;&nbsp; ├── [ 12M]  [00mPOC-53-TP2.cov_refs.gtf[0m
+│&nbsp;&nbsp; ├── [ 56M]  [00mPOC-53-TP2.gtf[0m
+│&nbsp;&nbsp; ├── [ 448]  [00mPOC-53-TP2-hisat2_output.flagstat[0m
+│&nbsp;&nbsp; ├── [ 635]  [00mPOC-53-TP2_hisat2.stats[0m
+│&nbsp;&nbsp; ├── [590K]  [00mPOC-53-TP2.sorted.bam.bai[0m
+│&nbsp;&nbsp; └── [5.8M]  [00mt_data.ctab[0m
+├── [113M]  [01;34mPOC-53-TP3[0m
+│&nbsp;&nbsp; ├── [2.4M]  [00me2t.ctab[0m
+│&nbsp;&nbsp; ├── [ 21M]  [00me_data.ctab[0m
+│&nbsp;&nbsp; ├── [2.0M]  [00mi2t.ctab[0m
+│&nbsp;&nbsp; ├── [ 13M]  [00mi_data.ctab[0m
+│&nbsp;&nbsp; ├── [ 398]  [00minput_fastqs_checksums.md5[0m
+│&nbsp;&nbsp; ├── [ 595]  [00mPOC-53-TP3_checksums.md5[0m
+│&nbsp;&nbsp; ├── [ 13M]  [00mPOC-53-TP3.cov_refs.gtf[0m
+│&nbsp;&nbsp; ├── [ 56M]  [00mPOC-53-TP3.gtf[0m
+│&nbsp;&nbsp; ├── [ 449]  [00mPOC-53-TP3-hisat2_output.flagstat[0m
+│&nbsp;&nbsp; ├── [ 638]  [00mPOC-53-TP3_hisat2.stats[0m
+│&nbsp;&nbsp; ├── [636K]  [00mPOC-53-TP3.sorted.bam.bai[0m
+│&nbsp;&nbsp; └── [5.8M]  [00mt_data.ctab[0m
+├── [108M]  [01;34mPOC-53-TP4[0m
+│&nbsp;&nbsp; ├── [2.4M]  [00me2t.ctab[0m
+│&nbsp;&nbsp; ├── [ 21M]  [00me_data.ctab[0m
+│&nbsp;&nbsp; ├── [2.0M]  [00mi2t.ctab[0m
+│&nbsp;&nbsp; ├── [ 12M]  [00mi_data.ctab[0m
+│&nbsp;&nbsp; ├── [ 398]  [00minput_fastqs_checksums.md5[0m
+│&nbsp;&nbsp; ├── [ 595]  [00mPOC-53-TP4_checksums.md5[0m
+│&nbsp;&nbsp; ├── [9.4M]  [00mPOC-53-TP4.cov_refs.gtf[0m
+│&nbsp;&nbsp; ├── [ 55M]  [00mPOC-53-TP4.gtf[0m
+│&nbsp;&nbsp; ├── [ 448]  [00mPOC-53-TP4-hisat2_output.flagstat[0m
+│&nbsp;&nbsp; ├── [ 638]  [00mPOC-53-TP4_hisat2.stats[0m
+│&nbsp;&nbsp; ├── [520K]  [00mPOC-53-TP4.sorted.bam.bai[0m
+│&nbsp;&nbsp; └── [5.8M]  [00mt_data.ctab[0m
+├── [112M]  [01;34mPOC-57-TP1[0m
+│&nbsp;&nbsp; ├── [2.4M]  [00me2t.ctab[0m
+│&nbsp;&nbsp; ├── [ 21M]  [00me_data.ctab[0m
+│&nbsp;&nbsp; ├── [2.0M]  [00mi2t.ctab[0m
+│&nbsp;&nbsp; ├── [ 12M]  [00mi_data.ctab[0m
+│&nbsp;&nbsp; ├── [ 398]  [00minput_fastqs_checksums.md5[0m
+│&nbsp;&nbsp; ├── [ 595]  [00mPOC-57-TP1_checksums.md5[0m
+│&nbsp;&nbsp; ├── [ 12M]  [00mPOC-57-TP1.cov_refs.gtf[0m
+│&nbsp;&nbsp; ├── [ 56M]  [00mPOC-57-TP1.gtf[0m
+│&nbsp;&nbsp; ├── [ 449]  [00mPOC-57-TP1-hisat2_output.flagstat[0m
+│&nbsp;&nbsp; ├── [ 635]  [00mPOC-57-TP1_hisat2.stats[0m
+│&nbsp;&nbsp; ├── [602K]  [00mPOC-57-TP1.sorted.bam.bai[0m
+│&nbsp;&nbsp; └── [5.8M]  [00mt_data.ctab[0m
+├── [107M]  [01;34mPOC-57-TP2[0m
+│&nbsp;&nbsp; ├── [2.4M]  [00me2t.ctab[0m
+│&nbsp;&nbsp; ├── [ 21M]  [00me_data.ctab[0m
+│&nbsp;&nbsp; ├── [2.0M]  [00mi2t.ctab[0m
+│&nbsp;&nbsp; ├── [ 12M]  [00mi_data.ctab[0m
+│&nbsp;&nbsp; ├── [ 398]  [00minput_fastqs_checksums.md5[0m
+│&nbsp;&nbsp; ├── [ 595]  [00mPOC-57-TP2_checksums.md5[0m
+│&nbsp;&nbsp; ├── [7.5M]  [00mPOC-57-TP2.cov_refs.gtf[0m
+│&nbsp;&nbsp; ├── [ 55M]  [00mPOC-57-TP2.gtf[0m
+│&nbsp;&nbsp; ├── [ 449]  [00mPOC-57-TP2-hisat2_output.flagstat[0m
+│&nbsp;&nbsp; ├── [ 638]  [00mPOC-57-TP2_hisat2.stats[0m
+│&nbsp;&nbsp; ├── [539K]  [00mPOC-57-TP2.sorted.bam.bai[0m
+│&nbsp;&nbsp; └── [5.8M]  [00mt_data.ctab[0m
+├── [114M]  [01;34mPOC-57-TP3[0m
+│&nbsp;&nbsp; ├── [2.4M]  [00me2t.ctab[0m
+│&nbsp;&nbsp; ├── [ 21M]  [00me_data.ctab[0m
+│&nbsp;&nbsp; ├── [2.0M]  [00mi2t.ctab[0m
+│&nbsp;&nbsp; ├── [ 13M]  [00mi_data.ctab[0m
+│&nbsp;&nbsp; ├── [ 398]  [00minput_fastqs_checksums.md5[0m
+│&nbsp;&nbsp; ├── [ 595]  [00mPOC-57-TP3_checksums.md5[0m
+│&nbsp;&nbsp; ├── [ 14M]  [00mPOC-57-TP3.cov_refs.gtf[0m
+│&nbsp;&nbsp; ├── [ 56M]  [00mPOC-57-TP3.gtf[0m
+│&nbsp;&nbsp; ├── [ 449]  [00mPOC-57-TP3-hisat2_output.flagstat[0m
+│&nbsp;&nbsp; ├── [ 637]  [00mPOC-57-TP3_hisat2.stats[0m
+│&nbsp;&nbsp; ├── [692K]  [00mPOC-57-TP3.sorted.bam.bai[0m
+│&nbsp;&nbsp; └── [5.8M]  [00mt_data.ctab[0m
+├── [113M]  [01;34mPOC-57-TP4[0m
+│&nbsp;&nbsp; ├── [2.4M]  [00me2t.ctab[0m
+│&nbsp;&nbsp; ├── [ 21M]  [00me_data.ctab[0m
+│&nbsp;&nbsp; ├── [2.0M]  [00mi2t.ctab[0m
+│&nbsp;&nbsp; ├── [ 13M]  [00mi_data.ctab[0m
+│&nbsp;&nbsp; ├── [ 398]  [00minput_fastqs_checksums.md5[0m
+│&nbsp;&nbsp; ├── [ 595]  [00mPOC-57-TP4_checksums.md5[0m
+│&nbsp;&nbsp; ├── [ 13M]  [00mPOC-57-TP4.cov_refs.gtf[0m
+│&nbsp;&nbsp; ├── [ 56M]  [00mPOC-57-TP4.gtf[0m
+│&nbsp;&nbsp; ├── [ 449]  [00mPOC-57-TP4-hisat2_output.flagstat[0m
+│&nbsp;&nbsp; ├── [ 638]  [00mPOC-57-TP4_hisat2.stats[0m
+│&nbsp;&nbsp; ├── [636K]  [00mPOC-57-TP4.sorted.bam.bai[0m
+│&nbsp;&nbsp; └── [5.8M]  [00mt_data.ctab[0m
+├── [ 57M]  [00mPocillopora_meandrina_HIv1.assembly.stringtie.gtf[0m
+├── [5.9K]  [00mprepDE-sample_list.txt[0m
+├── [5.1M]  [00mptua-gene_count_matrix.csv[0m
+├── [5.1M]  [00mptua-transcript_count_matrix.csv[0m
+├── [6.6M]  [00mptua-transcript_count_matrix_with_gene_ids.csv[0m
+├── [3.3K]  [00mREADME.md[0m
+├── [1.4K]  [00msorted_bams.list[0m
+└── [8.3M]  [00msorted-bams-merged.bam.bai[0m
 
- 130G used in 40 directories, 524 files</code></pre>
+ 8.5G used in 41 directories, 486 files</code></pre>
 </section>
 <section id="multiqc-alignment-rates" class="level2">
 <h2 class="anchored" data-anchor-id="multiqc-alignment-rates">3.2 MultiQC alignment rates</h2>
@@ -1275,40 +1268,167 @@ export line="--------------------------------------------------------"</code></p
 <div class="sourceCode" id="cb9"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Load bash variables into memory</span></span>
 <span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a><span class="bu">source</span> .bashvars</span>
 <span id="cb9-3"><a href="#cb9-3" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb9-4"><a href="#cb9-4" aria-hidden="true" tabindex="-1"></a><span class="co"># Change to ouput directory</span></span>
+<span id="cb9-4"><a href="#cb9-4" aria-hidden="true" tabindex="-1"></a><span class="co"># Change to output directory</span></span>
 <span id="cb9-5"><a href="#cb9-5" aria-hidden="true" tabindex="-1"></a><span class="bu">cd</span> <span class="st">"</span><span class="va">${output_dir_top}</span><span class="st">"</span></span>
 <span id="cb9-6"><a href="#cb9-6" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb9-7"><a href="#cb9-7" aria-hidden="true" tabindex="-1"></a><span class="co"># Create file list for prepDE.py</span></span>
-<span id="cb9-8"><a href="#cb9-8" aria-hidden="true" tabindex="-1"></a><span class="cf">while</span> <span class="bu">read</span> <span class="at">-r</span> <span class="va">line</span></span>
-<span id="cb9-9"><a href="#cb9-9" aria-hidden="true" tabindex="-1"></a><span class="cf">do</span></span>
-<span id="cb9-10"><a href="#cb9-10" aria-hidden="true" tabindex="-1"></a>  <span class="va">sample_no_path</span><span class="op">=</span><span class="va">${line</span><span class="op">##</span><span class="pp">*</span>/<span class="va">}</span></span>
-<span id="cb9-11"><a href="#cb9-11" aria-hidden="true" tabindex="-1"></a>  <span class="va">sample</span><span class="op">=</span><span class="va">${sample_no_path</span><span class="op">%</span>.<span class="pp">*</span><span class="va">}</span></span>
-<span id="cb9-12"><a href="#cb9-12" aria-hidden="true" tabindex="-1"></a>  <span class="bu">echo</span> <span class="va">${sample}</span> <span class="va">${line}</span></span>
-<span id="cb9-13"><a href="#cb9-13" aria-hidden="true" tabindex="-1"></a><span class="cf">done</span> <span class="op">&lt;</span> gtf_list.txt <span class="op">&gt;&gt;</span> prepDE-sample_list.txt</span>
-<span id="cb9-14"><a href="#cb9-14" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb9-15"><a href="#cb9-15" aria-hidden="true" tabindex="-1"></a><span class="co"># Create count matrices for genes and transcripts</span></span>
-<span id="cb9-16"><a href="#cb9-16" aria-hidden="true" tabindex="-1"></a><span class="co"># Compatible with import to DESeq2</span></span>
-<span id="cb9-17"><a href="#cb9-17" aria-hidden="true" tabindex="-1"></a><span class="ex">python3</span> <span class="st">"</span><span class="va">${programs_array</span><span class="op">[</span>prepDE<span class="op">]</span><span class="va">}</span><span class="st">"</span> <span class="dt">\</span></span>
-<span id="cb9-18"><a href="#cb9-18" aria-hidden="true" tabindex="-1"></a>--input=prepDE-sample_list.txt <span class="dt">\</span></span>
-<span id="cb9-19"><a href="#cb9-19" aria-hidden="true" tabindex="-1"></a>-g ptua-gene_count_matrix.csv <span class="dt">\</span></span>
-<span id="cb9-20"><a href="#cb9-20" aria-hidden="true" tabindex="-1"></a>-t ptua-transcript_count_matrix.csv <span class="dt">\</span></span>
-<span id="cb9-21"><a href="#cb9-21" aria-hidden="true" tabindex="-1"></a>--length=<span class="va">${read_length}</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span id="cb9-7"><a href="#cb9-7" aria-hidden="true" tabindex="-1"></a><span class="co"># Check if prepDE-sample_list.txt exists</span></span>
+<span id="cb9-8"><a href="#cb9-8" aria-hidden="true" tabindex="-1"></a><span class="cf">if</span> <span class="bu">[</span> <span class="ot">-f</span> prepDE-sample_list.txt <span class="bu">]</span><span class="kw">;</span> <span class="cf">then</span></span>
+<span id="cb9-9"><a href="#cb9-9" aria-hidden="true" tabindex="-1"></a>  <span class="va">gtf_lines</span><span class="op">=</span><span class="va">$(</span><span class="fu">wc</span> <span class="at">-l</span> <span class="op">&lt;</span> gtf_list.txt<span class="va">)</span></span>
+<span id="cb9-10"><a href="#cb9-10" aria-hidden="true" tabindex="-1"></a>  <span class="va">prepde_lines</span><span class="op">=</span><span class="va">$(</span><span class="fu">wc</span> <span class="at">-l</span> <span class="op">&lt;</span> prepDE-sample_list.txt<span class="va">)</span></span>
+<span id="cb9-11"><a href="#cb9-11" aria-hidden="true" tabindex="-1"></a>  <span class="cf">if</span> <span class="bu">[</span> <span class="st">"</span><span class="va">$gtf_lines</span><span class="st">"</span> <span class="ot">-eq</span> <span class="st">"</span><span class="va">$prepde_lines</span><span class="st">"</span> <span class="bu">]</span><span class="kw">;</span> <span class="cf">then</span></span>
+<span id="cb9-12"><a href="#cb9-12" aria-hidden="true" tabindex="-1"></a>    <span class="bu">echo</span> <span class="st">"prepDE-sample_list.txt exists and line count matches gtf_list.txt. Skipping sample list creation."</span></span>
+<span id="cb9-13"><a href="#cb9-13" aria-hidden="true" tabindex="-1"></a>  <span class="cf">else</span></span>
+<span id="cb9-14"><a href="#cb9-14" aria-hidden="true" tabindex="-1"></a>    <span class="bu">echo</span> <span class="st">"prepDE-sample_list.txt exists but line count does not match. Regenerating sample list."</span></span>
+<span id="cb9-15"><a href="#cb9-15" aria-hidden="true" tabindex="-1"></a>    <span class="fu">rm</span> prepDE-sample_list.txt</span>
+<span id="cb9-16"><a href="#cb9-16" aria-hidden="true" tabindex="-1"></a>    <span class="cf">while</span> <span class="bu">read</span> <span class="at">-r</span> <span class="va">line</span></span>
+<span id="cb9-17"><a href="#cb9-17" aria-hidden="true" tabindex="-1"></a>    <span class="cf">do</span></span>
+<span id="cb9-18"><a href="#cb9-18" aria-hidden="true" tabindex="-1"></a>      <span class="va">sample_no_path</span><span class="op">=</span><span class="va">${line</span><span class="op">##</span><span class="pp">*</span>/<span class="va">}</span></span>
+<span id="cb9-19"><a href="#cb9-19" aria-hidden="true" tabindex="-1"></a>      <span class="va">sample</span><span class="op">=</span><span class="va">${sample_no_path</span><span class="op">%</span>.<span class="pp">*</span><span class="va">}</span></span>
+<span id="cb9-20"><a href="#cb9-20" aria-hidden="true" tabindex="-1"></a>      <span class="bu">echo</span> <span class="va">${sample}</span> <span class="va">${line}</span></span>
+<span id="cb9-21"><a href="#cb9-21" aria-hidden="true" tabindex="-1"></a>    <span class="cf">done</span> <span class="op">&lt;</span> gtf_list.txt <span class="op">&gt;&gt;</span> prepDE-sample_list.txt</span>
+<span id="cb9-22"><a href="#cb9-22" aria-hidden="true" tabindex="-1"></a>  <span class="cf">fi</span></span>
+<span id="cb9-23"><a href="#cb9-23" aria-hidden="true" tabindex="-1"></a><span class="cf">else</span></span>
+<span id="cb9-24"><a href="#cb9-24" aria-hidden="true" tabindex="-1"></a>  <span class="bu">echo</span> <span class="st">"prepDE-sample_list.txt does not exist. Creating sample list."</span></span>
+<span id="cb9-25"><a href="#cb9-25" aria-hidden="true" tabindex="-1"></a>  <span class="cf">while</span> <span class="bu">read</span> <span class="at">-r</span> <span class="va">line</span></span>
+<span id="cb9-26"><a href="#cb9-26" aria-hidden="true" tabindex="-1"></a>  <span class="cf">do</span></span>
+<span id="cb9-27"><a href="#cb9-27" aria-hidden="true" tabindex="-1"></a>    <span class="va">sample_no_path</span><span class="op">=</span><span class="va">${line</span><span class="op">##</span><span class="pp">*</span>/<span class="va">}</span></span>
+<span id="cb9-28"><a href="#cb9-28" aria-hidden="true" tabindex="-1"></a>    <span class="va">sample</span><span class="op">=</span><span class="va">${sample_no_path</span><span class="op">%</span>.<span class="pp">*</span><span class="va">}</span></span>
+<span id="cb9-29"><a href="#cb9-29" aria-hidden="true" tabindex="-1"></a>    <span class="bu">echo</span> <span class="va">${sample}</span> <span class="va">${line}</span></span>
+<span id="cb9-30"><a href="#cb9-30" aria-hidden="true" tabindex="-1"></a>  <span class="cf">done</span> <span class="op">&lt;</span> gtf_list.txt <span class="op">&gt;&gt;</span> prepDE-sample_list.txt</span>
+<span id="cb9-31"><a href="#cb9-31" aria-hidden="true" tabindex="-1"></a><span class="cf">fi</span></span>
+<span id="cb9-32"><a href="#cb9-32" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-33"><a href="#cb9-33" aria-hidden="true" tabindex="-1"></a><span class="co"># Create count matrices for genes and transcripts</span></span>
+<span id="cb9-34"><a href="#cb9-34" aria-hidden="true" tabindex="-1"></a><span class="co"># Compatible with import to DESeq2</span></span>
+<span id="cb9-35"><a href="#cb9-35" aria-hidden="true" tabindex="-1"></a><span class="ex">python3</span> <span class="st">"</span><span class="va">${programs_array</span><span class="op">[</span>prepDE<span class="op">]</span><span class="va">}</span><span class="st">"</span> <span class="dt">\</span></span>
+<span id="cb9-36"><a href="#cb9-36" aria-hidden="true" tabindex="-1"></a>--input=prepDE-sample_list.txt <span class="dt">\</span></span>
+<span id="cb9-37"><a href="#cb9-37" aria-hidden="true" tabindex="-1"></a>-g ptua-gene_count_matrix.csv <span class="dt">\</span></span>
+<span id="cb9-38"><a href="#cb9-38" aria-hidden="true" tabindex="-1"></a>-t ptua-transcript_count_matrix.csv <span class="dt">\</span></span>
+<span id="cb9-39"><a href="#cb9-39" aria-hidden="true" tabindex="-1"></a>--length=<span class="va">${read_length}</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<pre><code>prepDE-sample_list.txt exists and line count matches gtf_list.txt. Skipping sample list creation.
+/home/shared/stringtie-2.2.1.Linux_x86_64/prepDE.py3:69: SyntaxWarning: invalid escape sequence '\-'
+  RE_COVERAGE=re.compile('cov "([\-\+\d\.]+)"')
+/home/shared/stringtie-2.2.1.Linux_x86_64/prepDE.py3:72: SyntaxWarning: invalid escape sequence '\-'
+  RE_GFILE=re.compile('\-G\s*(\S+)') #assume filepath without spaces..</code></pre>
+</section>
+<section id="add-gene-ids-to-transcript-count-matrix" class="level1">
+<h1>7 Add Gene IDs to Transcript Count Matrix</h1>
+<p>Create an enhanced version of the transcript count matrix that includes the corresponding gene ID for each transcript.</p>
+<div class="sourceCode" id="cb11"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Load bash variables into memory</span></span>
+<span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a><span class="bu">source</span> .bashvars</span>
+<span id="cb11-3"><a href="#cb11-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb11-4"><a href="#cb11-4" aria-hidden="true" tabindex="-1"></a><span class="co"># Change to output directory</span></span>
+<span id="cb11-5"><a href="#cb11-5" aria-hidden="true" tabindex="-1"></a><span class="bu">cd</span> <span class="st">"</span><span class="va">${output_dir_top}</span><span class="st">"</span></span>
+<span id="cb11-6"><a href="#cb11-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb11-7"><a href="#cb11-7" aria-hidden="true" tabindex="-1"></a><span class="co"># Extract transcript_id to ref_gene_id mapping from GTF file</span></span>
+<span id="cb11-8"><a href="#cb11-8" aria-hidden="true" tabindex="-1"></a><span class="bu">echo</span> <span class="st">"Extracting transcript to gene ID mappings from GTF file..."</span></span>
+<span id="cb11-9"><a href="#cb11-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb11-10"><a href="#cb11-10" aria-hidden="true" tabindex="-1"></a><span class="fu">grep</span> <span class="at">-E</span> <span class="st">$'</span><span class="dt">\t</span><span class="st">transcript</span><span class="dt">\t</span><span class="st">'</span> <span class="st">"</span><span class="va">${genome_index_name}</span><span class="st">.stringtie.gtf"</span> <span class="kw">|</span> <span class="dt">\</span></span>
+<span id="cb11-11"><a href="#cb11-11" aria-hidden="true" tabindex="-1"></a><span class="fu">awk</span> <span class="at">-F</span><span class="st">'\t'</span> <span class="st">'{</span></span>
+<span id="cb11-12"><a href="#cb11-12" aria-hidden="true" tabindex="-1"></a><span class="st">    # Extract transcript_id</span></span>
+<span id="cb11-13"><a href="#cb11-13" aria-hidden="true" tabindex="-1"></a><span class="st">    match($9, /transcript_id "([^"]+)"/, transcript_arr)</span></span>
+<span id="cb11-14"><a href="#cb11-14" aria-hidden="true" tabindex="-1"></a><span class="st">    transcript_id = transcript_arr[1]</span></span>
+<span id="cb11-15"><a href="#cb11-15" aria-hidden="true" tabindex="-1"></a><span class="st">    </span></span>
+<span id="cb11-16"><a href="#cb11-16" aria-hidden="true" tabindex="-1"></a><span class="st">    # Extract ref_gene_id</span></span>
+<span id="cb11-17"><a href="#cb11-17" aria-hidden="true" tabindex="-1"></a><span class="st">    match($9, /ref_gene_id "([^"]+)"/, gene_arr)</span></span>
+<span id="cb11-18"><a href="#cb11-18" aria-hidden="true" tabindex="-1"></a><span class="st">    ref_gene_id = gene_arr[1]</span></span>
+<span id="cb11-19"><a href="#cb11-19" aria-hidden="true" tabindex="-1"></a><span class="st">    </span></span>
+<span id="cb11-20"><a href="#cb11-20" aria-hidden="true" tabindex="-1"></a><span class="st">    # Print mapping if both IDs found</span></span>
+<span id="cb11-21"><a href="#cb11-21" aria-hidden="true" tabindex="-1"></a><span class="st">    if (transcript_id &amp;&amp; ref_gene_id) {</span></span>
+<span id="cb11-22"><a href="#cb11-22" aria-hidden="true" tabindex="-1"></a><span class="st">        print transcript_id "\t" ref_gene_id</span></span>
+<span id="cb11-23"><a href="#cb11-23" aria-hidden="true" tabindex="-1"></a><span class="st">    }</span></span>
+<span id="cb11-24"><a href="#cb11-24" aria-hidden="true" tabindex="-1"></a><span class="st">}'</span> <span class="op">&gt;</span> transcript_gene_mapping.txt</span>
+<span id="cb11-25"><a href="#cb11-25" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb11-26"><a href="#cb11-26" aria-hidden="true" tabindex="-1"></a><span class="co"># Check if mapping file was created successfully</span></span>
+<span id="cb11-27"><a href="#cb11-27" aria-hidden="true" tabindex="-1"></a><span class="cf">if</span> <span class="bu">[</span> <span class="ot">!</span> <span class="ot">-s</span> transcript_gene_mapping.txt <span class="bu">]</span><span class="kw">;</span> <span class="cf">then</span></span>
+<span id="cb11-28"><a href="#cb11-28" aria-hidden="true" tabindex="-1"></a>    <span class="bu">echo</span> <span class="st">"Error: Failed to create transcript-gene mapping file"</span></span>
+<span id="cb11-29"><a href="#cb11-29" aria-hidden="true" tabindex="-1"></a>    <span class="bu">exit</span> 1</span>
+<span id="cb11-30"><a href="#cb11-30" aria-hidden="true" tabindex="-1"></a><span class="cf">fi</span></span>
+<span id="cb11-31"><a href="#cb11-31" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb11-32"><a href="#cb11-32" aria-hidden="true" tabindex="-1"></a><span class="bu">echo</span> <span class="st">"Found </span><span class="va">$(</span><span class="fu">wc</span> <span class="at">-l</span> <span class="op">&lt;</span> transcript_gene_mapping.txt<span class="va">)</span><span class="st"> transcript-gene mappings"</span></span>
+<span id="cb11-33"><a href="#cb11-33" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb11-34"><a href="#cb11-34" aria-hidden="true" tabindex="-1"></a><span class="co"># Create enhanced transcript count matrix with gene IDs</span></span>
+<span id="cb11-35"><a href="#cb11-35" aria-hidden="true" tabindex="-1"></a><span class="bu">echo</span> <span class="st">"Creating enhanced transcript count matrix with gene IDs..."</span></span>
+<span id="cb11-36"><a href="#cb11-36" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb11-37"><a href="#cb11-37" aria-hidden="true" tabindex="-1"></a><span class="co"># Read header from original transcript count matrix</span></span>
+<span id="cb11-38"><a href="#cb11-38" aria-hidden="true" tabindex="-1"></a><span class="fu">head</span> <span class="at">-1</span> ptua-transcript_count_matrix.csv <span class="op">&gt;</span> temp_header.txt</span>
+<span id="cb11-39"><a href="#cb11-39" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb11-40"><a href="#cb11-40" aria-hidden="true" tabindex="-1"></a><span class="co"># Add ref_gene_id to header (insert after transcript_id column)</span></span>
+<span id="cb11-41"><a href="#cb11-41" aria-hidden="true" tabindex="-1"></a><span class="fu">sed</span> <span class="st">'s/transcript_id,/transcript_id,ref_gene_id,/'</span> temp_header.txt <span class="op">&gt;</span> ptua-transcript_count_matrix_with_gene_ids.csv</span>
+<span id="cb11-42"><a href="#cb11-42" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb11-43"><a href="#cb11-43" aria-hidden="true" tabindex="-1"></a><span class="co"># Process data rows</span></span>
+<span id="cb11-44"><a href="#cb11-44" aria-hidden="true" tabindex="-1"></a><span class="fu">tail</span> <span class="at">-n</span> +2 ptua-transcript_count_matrix.csv <span class="kw">|</span> <span class="cf">while</span> <span class="va">IFS</span><span class="op">=</span><span class="st">','</span> <span class="bu">read</span> <span class="at">-r</span> <span class="va">transcript_id</span> <span class="va">rest_of_line</span><span class="kw">;</span> <span class="cf">do</span></span>
+<span id="cb11-45"><a href="#cb11-45" aria-hidden="true" tabindex="-1"></a>    <span class="co"># Look up gene ID for this transcript</span></span>
+<span id="cb11-46"><a href="#cb11-46" aria-hidden="true" tabindex="-1"></a>    <span class="va">gene_id</span><span class="op">=</span><span class="va">$(</span><span class="fu">grep</span> <span class="st">"^</span><span class="va">${transcript_id}</span><span class="st">[[:space:]]"</span> transcript_gene_mapping.txt <span class="kw">|</span> <span class="fu">cut</span> <span class="at">-f2</span><span class="va">)</span></span>
+<span id="cb11-47"><a href="#cb11-47" aria-hidden="true" tabindex="-1"></a>    </span>
+<span id="cb11-48"><a href="#cb11-48" aria-hidden="true" tabindex="-1"></a>    <span class="co"># If no gene ID found, use empty field</span></span>
+<span id="cb11-49"><a href="#cb11-49" aria-hidden="true" tabindex="-1"></a>    <span class="cf">if</span> <span class="bu">[</span> <span class="ot">-z</span> <span class="st">"</span><span class="va">$gene_id</span><span class="st">"</span> <span class="bu">]</span><span class="kw">;</span> <span class="cf">then</span></span>
+<span id="cb11-50"><a href="#cb11-50" aria-hidden="true" tabindex="-1"></a>        <span class="va">gene_id</span><span class="op">=</span><span class="st">""</span></span>
+<span id="cb11-51"><a href="#cb11-51" aria-hidden="true" tabindex="-1"></a>    <span class="cf">fi</span></span>
+<span id="cb11-52"><a href="#cb11-52" aria-hidden="true" tabindex="-1"></a>    </span>
+<span id="cb11-53"><a href="#cb11-53" aria-hidden="true" tabindex="-1"></a>    <span class="co"># Output line with gene ID inserted after transcript ID</span></span>
+<span id="cb11-54"><a href="#cb11-54" aria-hidden="true" tabindex="-1"></a>    <span class="bu">echo</span> <span class="st">"</span><span class="va">${transcript_id}</span><span class="st">,</span><span class="va">${gene_id}</span><span class="st">,</span><span class="va">${rest_of_line}</span><span class="st">"</span></span>
+<span id="cb11-55"><a href="#cb11-55" aria-hidden="true" tabindex="-1"></a><span class="cf">done</span> <span class="op">&gt;&gt;</span> ptua-transcript_count_matrix_with_gene_ids.csv</span>
+<span id="cb11-56"><a href="#cb11-56" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb11-57"><a href="#cb11-57" aria-hidden="true" tabindex="-1"></a><span class="co"># Generate summary statistics</span></span>
+<span id="cb11-58"><a href="#cb11-58" aria-hidden="true" tabindex="-1"></a><span class="bu">echo</span> <span class="st">""</span></span>
+<span id="cb11-59"><a href="#cb11-59" aria-hidden="true" tabindex="-1"></a><span class="bu">echo</span> <span class="st">"Summary of enhanced transcript count matrix:"</span></span>
+<span id="cb11-60"><a href="#cb11-60" aria-hidden="true" tabindex="-1"></a><span class="va">original_lines</span><span class="op">=</span><span class="va">$(</span><span class="fu">wc</span> <span class="at">-l</span> <span class="op">&lt;</span> ptua-transcript_count_matrix.csv<span class="va">)</span></span>
+<span id="cb11-61"><a href="#cb11-61" aria-hidden="true" tabindex="-1"></a><span class="va">enhanced_lines</span><span class="op">=</span><span class="va">$(</span><span class="fu">wc</span> <span class="at">-l</span> <span class="op">&lt;</span> ptua-transcript_count_matrix_with_gene_ids.csv<span class="va">)</span></span>
+<span id="cb11-62"><a href="#cb11-62" aria-hidden="true" tabindex="-1"></a><span class="bu">echo</span> <span class="st">"Original transcript count matrix lines: </span><span class="va">$original_lines</span><span class="st">"</span></span>
+<span id="cb11-63"><a href="#cb11-63" aria-hidden="true" tabindex="-1"></a><span class="bu">echo</span> <span class="st">"Enhanced transcript count matrix lines: </span><span class="va">$enhanced_lines</span><span class="st">"</span></span>
+<span id="cb11-64"><a href="#cb11-64" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb11-65"><a href="#cb11-65" aria-hidden="true" tabindex="-1"></a><span class="co"># Count transcripts with and without gene ID mappings</span></span>
+<span id="cb11-66"><a href="#cb11-66" aria-hidden="true" tabindex="-1"></a><span class="va">transcripts_with_genes</span><span class="op">=</span><span class="va">$(</span><span class="fu">tail</span> <span class="at">-n</span> +2 ptua-transcript_count_matrix_with_gene_ids.csv <span class="kw">|</span> <span class="fu">awk</span> <span class="at">-F</span><span class="st">','</span> <span class="st">'$2 != ""'</span> <span class="kw">|</span> <span class="fu">wc</span> <span class="at">-l</span><span class="va">)</span></span>
+<span id="cb11-67"><a href="#cb11-67" aria-hidden="true" tabindex="-1"></a><span class="va">transcripts_without_genes</span><span class="op">=</span><span class="va">$(</span><span class="fu">tail</span> <span class="at">-n</span> +2 ptua-transcript_count_matrix_with_gene_ids.csv <span class="kw">|</span> <span class="fu">awk</span> <span class="at">-F</span><span class="st">','</span> <span class="st">'$2 == ""'</span> <span class="kw">|</span> <span class="fu">wc</span> <span class="at">-l</span><span class="va">)</span></span>
+<span id="cb11-68"><a href="#cb11-68" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb11-69"><a href="#cb11-69" aria-hidden="true" tabindex="-1"></a><span class="bu">echo</span> <span class="st">"Number of transcripts with gene ID mappings: </span><span class="va">$transcripts_with_genes</span><span class="st">"</span></span>
+<span id="cb11-70"><a href="#cb11-70" aria-hidden="true" tabindex="-1"></a><span class="bu">echo</span> <span class="st">"Number of transcripts without gene ID mappings: </span><span class="va">$transcripts_without_genes</span><span class="st">"</span></span>
+<span id="cb11-71"><a href="#cb11-71" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb11-72"><a href="#cb11-72" aria-hidden="true" tabindex="-1"></a><span class="co"># Display first few lines of enhanced matrix</span></span>
+<span id="cb11-73"><a href="#cb11-73" aria-hidden="true" tabindex="-1"></a><span class="bu">echo</span> <span class="st">""</span></span>
+<span id="cb11-74"><a href="#cb11-74" aria-hidden="true" tabindex="-1"></a><span class="bu">echo</span> <span class="st">"First 5 rows of enhanced transcript count matrix (first 5 columns):"</span></span>
+<span id="cb11-75"><a href="#cb11-75" aria-hidden="true" tabindex="-1"></a><span class="fu">head</span> <span class="at">-6</span> ptua-transcript_count_matrix_with_gene_ids.csv <span class="kw">|</span> <span class="fu">cut</span> <span class="at">-d</span><span class="st">','</span> <span class="at">-f1-5</span></span>
+<span id="cb11-76"><a href="#cb11-76" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb11-77"><a href="#cb11-77" aria-hidden="true" tabindex="-1"></a><span class="co"># Clean up temporary files</span></span>
+<span id="cb11-78"><a href="#cb11-78" aria-hidden="true" tabindex="-1"></a><span class="fu">rm</span> temp_header.txt transcript_gene_mapping.txt</span>
+<span id="cb11-79"><a href="#cb11-79" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb11-80"><a href="#cb11-80" aria-hidden="true" tabindex="-1"></a><span class="bu">echo</span> <span class="st">""</span></span>
+<span id="cb11-81"><a href="#cb11-81" aria-hidden="true" tabindex="-1"></a><span class="bu">echo</span> <span class="st">"Enhanced transcript count matrix saved as: ptua-transcript_count_matrix_with_gene_ids.csv"</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<pre><code>Extracting transcript to gene ID mappings from GTF file...
+Found 31840 transcript-gene mappings
+Creating enhanced transcript count matrix with gene IDs...
+
+Summary of enhanced transcript count matrix:
+Original transcript count matrix lines: 31841
+Enhanced transcript count matrix lines: 31841
+Number of transcripts with gene ID mappings: 31840
+Number of transcripts without gene ID mappings: 0
+
+First 5 rows of enhanced transcript count matrix (first 5 columns):
+transcript_id,ref_gene_id,POC-201-TP1,POC-201-TP2,POC-201-TP3
+mrna-Pocillopora_meandrina_HIv1___RNAseq.g20905.t1,gene-Pocillopora_meandrina_HIv1___RNAseq.g20905.t1,54,170,18
+mrna-Pocillopora_meandrina_HIv1___RNAseq.g20902.t1,gene-Pocillopora_meandrina_HIv1___RNAseq.g20902.t1,957,759,143
+mrna-Pocillopora_meandrina_HIv1___RNAseq.g20903.t1,gene-Pocillopora_meandrina_HIv1___RNAseq.g20903.t1,249,452,381
+mrna-Pocillopora_meandrina_HIv1___TS.g25664.t1,gene-Pocillopora_meandrina_HIv1___TS.g25664.t1,365,191,13
+mrna-Pocillopora_meandrina_HIv1___RNAseq.g20907.t1,gene-Pocillopora_meandrina_HIv1___RNAseq.g20907.t1,187,435,137
+
+Enhanced transcript count matrix saved as: ptua-transcript_count_matrix_with_gene_ids.csv</code></pre>
 </section>
 <section id="generate-checksums" class="level1">
-<h1>7 Generate checksums</h1>
-<div class="sourceCode" id="cb10"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Load bash variables into memory</span></span>
-<span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a><span class="bu">source</span> .bashvars</span>
-<span id="cb10-3"><a href="#cb10-3" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb10-4"><a href="#cb10-4" aria-hidden="true" tabindex="-1"></a><span class="co"># Change to ouput directory</span></span>
-<span id="cb10-5"><a href="#cb10-5" aria-hidden="true" tabindex="-1"></a><span class="bu">cd</span> <span class="st">"</span><span class="va">${output_dir_top}</span><span class="st">"</span></span>
-<span id="cb10-6"><a href="#cb10-6" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb10-7"><a href="#cb10-7" aria-hidden="true" tabindex="-1"></a><span class="co"># Uses find command to avoid passing</span></span>
-<span id="cb10-8"><a href="#cb10-8" aria-hidden="true" tabindex="-1"></a><span class="co"># directory names to the md5sum command.</span></span>
-<span id="cb10-9"><a href="#cb10-9" aria-hidden="true" tabindex="-1"></a><span class="fu">find</span> . <span class="at">-maxdepth</span> 1 <span class="at">-type</span> f <span class="at">-exec</span> md5sum {} + <span class="dt">\</span></span>
-<span id="cb10-10"><a href="#cb10-10" aria-hidden="true" tabindex="-1"></a><span class="kw">|</span> <span class="fu">tee</span> <span class="at">--append</span> checksums.md5</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<h1>8 Generate checksums</h1>
+<div class="sourceCode" id="cb13"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Load bash variables into memory</span></span>
+<span id="cb13-2"><a href="#cb13-2" aria-hidden="true" tabindex="-1"></a><span class="bu">source</span> .bashvars</span>
+<span id="cb13-3"><a href="#cb13-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb13-4"><a href="#cb13-4" aria-hidden="true" tabindex="-1"></a><span class="co"># Change to ouput directory</span></span>
+<span id="cb13-5"><a href="#cb13-5" aria-hidden="true" tabindex="-1"></a><span class="bu">cd</span> <span class="st">"</span><span class="va">${output_dir_top}</span><span class="st">"</span></span>
+<span id="cb13-6"><a href="#cb13-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb13-7"><a href="#cb13-7" aria-hidden="true" tabindex="-1"></a><span class="co"># Uses find command to avoid passing</span></span>
+<span id="cb13-8"><a href="#cb13-8" aria-hidden="true" tabindex="-1"></a><span class="co"># directory names to the md5sum command.</span></span>
+<span id="cb13-9"><a href="#cb13-9" aria-hidden="true" tabindex="-1"></a><span class="fu">find</span> . <span class="at">-maxdepth</span> 1 <span class="at">-type</span> f <span class="at">-exec</span> md5sum {} + <span class="dt">\</span></span>
+<span id="cb13-10"><a href="#cb13-10" aria-hidden="true" tabindex="-1"></a><span class="kw">|</span> <span class="fu">tee</span> <span class="at">--append</span> checksums.md5</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </section>
 <section id="references" class="level1">
-<h1>8 References</h1>
+<h1>9 References</h1>
 <div id="refs" class="references csl-bib-body hanging-indent" role="list">
 <div id="ref-kim2019" class="csl-entry" role="listitem">
 Kim, Daehwan, Joseph M. Paggi, Chanhee Park, Christopher Bennett, and Steven L. Salzberg. 2019. “Graph-Based Genome Alignment and Genotyping with HISAT2 and HISAT-Genotype.” <em>Nature Biotechnology</em> 37 (8): 907–15. <a href="https://doi.org/10.1038/s41587-019-0201-4" class="uri">https://doi.org/10.1038/s41587-019-0201-4</a>.
@@ -1407,8 +1527,6 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
   });
   clipboard.on('success', onCopySuccess);
   if (window.document.getElementById('quarto-embedded-source-code-modal')) {
-    // For code content inside modals, clipBoardJS needs to be initialized with a container option
-    // TODO: Check when it could be a function (https://github.com/zenorocha/clipboard.js/issues/860)
     const clipboardModal = new window.ClipboardJS('.code-copy-button[data-in-quarto-modal]', {
       text: getTextToCopy,
       container: window.document.getElementById('quarto-embedded-source-code-modal')
@@ -1519,7 +1637,6 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
       if (window.Quarto?.typesetMath) {
         window.Quarto.typesetMath(note);
       }
-      // TODO in 1.5, we should make sure this works without a callout special case
       if (note.classList.contains("callout")) {
         return note.outerHTML;
       } else {
