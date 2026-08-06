@@ -1,0 +1,312 @@
+---
+author: Sam White
+toc-title: Contents
+toc-depth: 5
+toc-location: left
+title: FastQC MultiQC - Andy Dittman Remaining RNA-seq Data on Hyak
+date: '2026-08-06'
+draft: false
+engine: knitr
+categories: 
+  - "2026"
+  - "FastQC"
+  - "MultiQC"
+  - "RNA-seq"
+  - "hyak"
+---
+# INTRO
+
+The remainder of RNA-seq data for Andy Dittman at NOAA came in on [20260715](../2026-07-15-Data-Received---Full-RNA-seq-Data-for-Andy-Dittman-and-NOAA/index.qmd) (Notebook entry). The data is the remainder of the RNA-seq data, after an initial run of a subset of samples to see how the data looked and to make sure it was of good quality. The initial [GitHub Issue](https://github.com/RobertsLab/resources/issues/2397) indicated that the RNA Integrity Number (RIN) for these samples was not ideal, however, the [initial FastQC/MultiQC](../2026-05-19-FastQC-MultiQC---Andy-Dittman-Preliminary-RNA-seq-Data-on-Hyak/index.qmd) (notebook entry) and [subsequent trimming](../2026-05-20-Trimming---Andy-Dittman-Preliminary-RNA-seq-Data-Using-Fastp-FastQC-MultiQC-on-Hyak/index.qmd) (notebook entry) showed the data was good. I ran FastQC and MultiQC on these new raw reads to assess their quality.
+
+Analysis was run on Hyak using the following Roberts Lab Apptainer image:
+
+- `srlab-R4.4-bioinformatics-container-c3d3116.sif` (built on 20260410)
+
+# RESULTS
+
+Output directory:
+
+- [https://owl.fish.washington.edu/nightingales/dittman_grc_rnaseq_1/](https://owl.fish.washington.edu/nightingales/dittman_grc_rnaseq_1/)
+
+MultiQC Report (HTML):
+
+- [https://owl.fish.washington.edu/nightingales/dittman_grc_rnaseq_1/multiqc_report.html](https://owl.fish.washington.edu/nightingales/dittman_grc_rnaseq_1/multiqc_report.html)
+
+
+Overall, the FastQC and MultiQC reports indicate that the raw reads are of good quality, with quality being consistent for what we usually see with RNA-seq data. Will proceed with quality trimming and adapter removal using FastP, and then re-run FastQC and MultiQC on the trimmed reads.
+
+
+
+Code is below.
+
+
+---
+
+# 1 SETUP
+
+## 1.1 Libraries
+
+``` r
+library(knitr)
+
+knitr::opts_chunk$set(
+  echo = TRUE,         # Display code chunks
+  eval = TRUE,         # Evaluate code chunks
+  warning = FALSE,     # Hide warnings
+  message = FALSE,     # Hide messages
+  comment = "",        # Prevents appending '##' to beginning of lines in code output
+  results = 'hold'     # Holds output so it's all printed together after code chunk
+)
+```
+
+# 2 VARIABLES
+
+``` r
+# DIRECTORIES
+raw_reads_dir <- "/mmfs1/gscratch/scrubbed/samwhite/data/dittman_grc_rnaseq_1"
+output_dir <- "/mmfs1/gscratch/scrubbed/samwhite/outputs/20260806-FastQC-MultiQC-dittman-grc-rnaseq/"
+
+# FILES
+fastq_pattern="*.fastq.gz"
+
+# SETTINGS
+threads <- "50"
+
+
+# Export these as environment variables for bash chunks.
+Sys.setenv(
+  fastq_pattern = fastq_pattern,
+  raw_reads_dir = raw_reads_dir,
+  output_dir = output_dir,
+  threads = threads
+)
+```
+
+# 3 FASTQC/MULTIQC
+
+``` bash
+# Make output directory if it doesn't exist
+mkdir --parents "${raw_reads_dir}"
+
+############ RUN FASTQC ############
+
+
+# Create array of trimmed FastQs
+raw_fastqs_array=(${raw_reads_dir}/${fastq_pattern})
+
+# Pass array contents to new variable as space-delimited list
+raw_fastqc_list=$(echo "${raw_fastqs_array[*]}")
+
+echo "Beginning FastQC on raw reads..."
+echo ""
+
+# Run FastQC
+### NOTE: Do NOT quote raw_fastqc_list
+fastqc \
+--threads ${threads} \
+--outdir ${raw_reads_dir} \
+--quiet \
+${raw_fastqc_list}
+
+echo "FastQC on raw reads complete!"
+echo ""
+
+############ END FASTQC ############
+
+############ RUN MULTIQC ############
+echo "Beginning MultiQC on raw FastQC..."
+echo ""
+
+multiqc ${raw_reads_dir} \
+--interactive \
+-o ${raw_reads_dir}
+
+echo ""
+echo "MultiQC on raw FastQs complete."
+echo ""
+
+############ END MULTIQC ############
+
+echo "Removing FastQC zip files."
+echo ""
+rm ${raw_reads_dir}/*.zip
+echo "FastQC zip files removed."
+echo ""
+```
+
+    Beginning FastQC on raw reads...
+
+    application/gzip
+    application/gzip
+    application/gzip
+    application/gzip
+    application/gzip
+    application/gzip
+    application/gzip
+    application/gzip
+    application/gzip
+    application/gzip
+    application/gzip
+    application/gzip
+    application/gzip
+    application/gzip
+    application/gzip
+    application/gzip
+    application/gzip
+    application/gzip
+    application/gzip
+    application/gzip
+    application/gzip
+    application/gzip
+    application/gzip
+    application/gzip
+    application/gzip
+    application/gzip
+    application/gzip
+    application/gzip
+    application/gzip
+    application/gzip
+    application/gzip
+    application/gzip
+    application/gzip
+    application/gzip
+    application/gzip
+    application/gzip
+    application/gzip
+    application/gzip
+    application/gzip
+    application/gzip
+    application/gzip
+    application/gzip
+    application/gzip
+    application/gzip
+    application/gzip
+    application/gzip
+    application/gzip
+    application/gzip
+    application/gzip
+    application/gzip
+    application/gzip
+    application/gzip
+    application/gzip
+    application/gzip
+    application/gzip
+    application/gzip
+    application/gzip
+    application/gzip
+    application/gzip
+    application/gzip
+    application/gzip
+    application/gzip
+    application/gzip
+    application/gzip
+    application/gzip
+    application/gzip
+    application/gzip
+    application/gzip
+    application/gzip
+    application/gzip
+    application/gzip
+    application/gzip
+    application/gzip
+    application/gzip
+    application/gzip
+    application/gzip
+    application/gzip
+    application/gzip
+    application/gzip
+    application/gzip
+    application/gzip
+    application/gzip
+    application/gzip
+    application/gzip
+    application/gzip
+    application/gzip
+    application/gzip
+    application/gzip
+    application/gzip
+    application/gzip
+    application/gzip
+    application/gzip
+    application/gzip
+    application/gzip
+    application/gzip
+    application/gzip
+    application/gzip
+    application/gzip
+    application/gzip
+    application/gzip
+    application/gzip
+    application/gzip
+    application/gzip
+    application/gzip
+    application/gzip
+    application/gzip
+    application/gzip
+    application/gzip
+    application/gzip
+    application/gzip
+    application/gzip
+    application/gzip
+    application/gzip
+    application/gzip
+    application/gzip
+    application/gzip
+    application/gzip
+    application/gzip
+    application/gzip
+    application/gzip
+    application/gzip
+    application/gzip
+    application/gzip
+    application/gzip
+    application/gzip
+    application/gzip
+    application/gzip
+    application/gzip
+    application/gzip
+    application/gzip
+    application/gzip
+    application/gzip
+    application/gzip
+    application/gzip
+    application/gzip
+    application/gzip
+    application/gzip
+    application/gzip
+    application/gzip
+    application/gzip
+    application/gzip
+    application/gzip
+    application/gzip
+    application/gzip
+    application/gzip
+    application/gzip
+    application/gzip
+    application/gzip
+    application/gzip
+    application/gzip
+    application/gzip
+    application/gzip
+    application/gzip
+    application/gzip
+    application/gzip
+    FastQC on raw reads complete!
+
+    Beginning MultiQC on raw FastQC...
+
+
+    /// MultiQC 🔍 v1.24.1
+
+         version_check | MultiQC Version v1.35 now available!
+           file_search | Search path: /mmfs1/gscratch/scrubbed/samwhite/data/dittman_grc_rnaseq_1
+                fastqc | Found 155 reports
+         write_results | Data        : /mmfs1/gscratch/scrubbed/samwhite/data/dittman_grc_rnaseq_1/multiqc_data
+         write_results | Report      : /mmfs1/gscratch/scrubbed/samwhite/data/dittman_grc_rnaseq_1/multiqc_report.html
+               multiqc | MultiQC complete
+
+    MultiQC on raw FastQs complete.
+
+    Removing FastQC zip files.
+
+    FastQC zip files removed.
