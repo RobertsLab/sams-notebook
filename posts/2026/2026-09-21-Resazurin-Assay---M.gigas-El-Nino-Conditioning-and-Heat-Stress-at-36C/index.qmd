@@ -110,14 +110,17 @@ explanatory error if it is missing. Timepoint labels may be bare numbers
 | `<data_dir>/*.txt` | Plate reader fluorescence exports (files without a `Results` block are reported and skipped) |
 | `<data_dir>/layout.csv` | Well metadata: plate ID, well ID, blank flag, optional `timepoint`, any number of `*.group` columns (e.g. `family_ID.group`, `treatment.group`, `sample_ID.group`) and any number of `*.measurement` columns (e.g. `area_mm2.measurement`, from ImageJ) |
 
-`data_dir` and `out_dir` are set in the configuration block at the top
-of `Load Data`; in normal use those two paths are the only lines that
-need editing between experiments.
+`data_dir` and `analysis_name` are set in the `Variables` chunk under
+`Setup`; in normal use those are the only lines that need editing
+between experiments (`out_dir` is derived from `analysis_name`).
 
 ## 1.3 Expected outputs
 
 All outputs are written to `out_dir`
-(`resazurin/outputs/01.00-resazurin-20260921-mgig-36C/`).
+(`resazurin/outputs/01.00-resazurin-20260921-mgig-36C/`), a directory
+named identically to this script. The knitted `.md`/`.html` render and
+its `*_files/` figure folder are written separately by knitr, next to
+this `.Rmd` in `resazurin/code/`.
 
 | File | Description |
 |:---|:---|
@@ -142,7 +145,48 @@ knitr::opts_chunk$set(
 )
 ```
 
-## 2.2 Load libraries
+## 2.2 Variables
+
+The values below are the only ones that normally need editing when this
+script is reused for another experiment or project. Everything
+downstream is derived from them.
+
+| Variable | Purpose |
+|:---|:---|
+| `proj_root` | Repository root, located automatically from the `.Rproj` file |
+| `analysis_name` | This script’s name; also names the outputs directory |
+| `data_dir` | Directory holding the plate exports and `layout.csv` |
+| `out_dir` | Directory for generated figures and data tables |
+| `fig_dir` | Figures subdirectory of `out_dir` |
+| `plate_file_pattern` | Which files in `data_dir` are plate reader exports |
+
+``` r
+# Repository root, so every path below is absolute and independent of the
+# working directory a chunk happens to run in.
+proj_root <- rprojroot::find_rstudio_root_file()
+
+# This script's own name. Per lab convention the outputs directory is named
+# identically to the .Rmd that writes it. (The knitted .md/.html and its
+# `*_files/` folder are written next to the .Rmd in `code/` by knitr itself,
+# and are unrelated to `out_dir`.)
+analysis_name <- "01.00-resazurin-20260921-mgig-36C"
+
+# INPUT: plate reader exports and layout.csv for this experiment.
+data_dir <- file.path(proj_root, "resazurin", "data", "20260921-mgig-36C")
+
+# OUTPUT: generated figures and data tables.
+out_dir <- file.path(proj_root, "resazurin", "outputs", analysis_name)
+fig_dir <- file.path(out_dir, "figures")
+
+# Which files in `data_dir` are plate reader exports. The default accepts any
+# .txt; anything without a "Results" block is reported and skipped.
+plate_file_pattern <- "(?i)\\.txt$"
+
+dir.create(out_dir, recursive = TRUE, showWarnings = FALSE)
+dir.create(fig_dir, recursive = TRUE, showWarnings = FALSE)
+```
+
+## 2.3 Load libraries
 
 ``` r
 library(tidyverse)
@@ -155,7 +199,17 @@ library(cowplot)
 library(colorspace)   # qualitative_hcl() for large palettes
 ```
 
-# 3 Helper Functions
+## 2.4 Helper Functions
+
+Small, self-contained functions used throughout the script. Each is
+defined in its own chunk so it can be re-run in isolation while
+developing.
+
+### 2.4.1 Normalise well IDs
+
+Converts a well label to a canonical `<row><unpadded column>` form so
+that `A01` from `layout.csv` and `A1` from the plate reader export
+compare equal. Returns `NA` for anything that is not a well label.
 
 ``` r
 normalize_well_id <- function(x) {
@@ -167,21 +221,35 @@ normalize_well_id <- function(x) {
   out[valid] <- paste0(m[, 2], as.integer(m[, 3]))
   out
 }
+```
 
-# Timepoint encoded in the plate export FILENAME, e.g. "..._T3.txt" -> 3.
-# Returns NA when the filename carries no timepoint token, in which case the
-# timepoint is taken from the layout file instead (see `timepoint_source`).
+### 2.4.2 Timepoint from a plate export filename
+
+Reads the timepoint encoded in the filename, e.g. `..._T3.txt` gives
+`3`. Returns `NA` when the filename carries no timepoint token, in which
+case the timepoint is taken from the layout file instead (see
+`timepoint_source`).
+
+``` r
 parse_time_hr <- function(path) {
   hit <- str_match(basename(path),
                    "(?i)[_-]T([0-9]+(?:\\.[0-9]+)?)\\.[^.]+$")
   as.numeric(hit[, 2])
 }
+```
 
-# Plate ID from the plate export FILENAME. Must resolve to the same value as
-# `plate_id` in layout.csv, which is lower-cased and has any "plate-"/"plate_"
-# prefix stripped. Handles both file naming conventions:
-#   "20260624_round1_T3.txt" -> "round1"  (date_plate_timepoint)
-#   "plate-D.txt"            -> "d"       (one file per plate)
+### 2.4.3 Plate ID from a plate export filename
+
+Must resolve to the same value as `plate_id` in `layout.csv`, which is
+lower-cased and has any `plate-`/`plate_` prefix stripped. Handles both
+file naming conventions:
+
+| Filename                 | Plate ID                        |
+|:-------------------------|:--------------------------------|
+| `20260624_round1_T3.txt` | `round1` (date_plate_timepoint) |
+| `plate-D.txt`            | `d` (one file per plate)        |
+
+``` r
 parse_plate_id <- function(path) {
   base     <- str_remove(basename(path), "\\.[^.]+$")
   has_time <- !is.na(parse_time_hr(path))
@@ -197,17 +265,33 @@ parse_plate_id <- function(path) {
   id <- str_remove(str_to_lower(trimws(id)), "^plate[_-]")
   if (is.na(id) || id == "") "unknown" else id
 }
+```
 
-# Timepoint encoded in the LAYOUT, converted to numeric hours. Accepts bare
-# numbers ("0", "1.5"), T-prefixed labels ("T0", "t3") and unit suffixes
-# ("4h", "90min" -> 1.5). Returns NA when no number can be recovered.
+### 2.4.4 Timepoint from a layout label
+
+Converts a layout timepoint label to numeric hours. Accepts bare numbers
+(`0`, `1.5`), T-prefixed labels (`T0`, `t3`) and unit suffixes (`4h`,
+and `90min` which becomes `1.5`). Returns `NA` when no number can be
+recovered.
+
+``` r
 parse_timepoint_hr <- function(x) {
   x      <- trimws(as.character(x))
   num    <- suppressWarnings(as.numeric(str_extract(x, "[0-9]+(?:\\.[0-9]+)?")))
   is_min <- str_detect(str_to_lower(replace_na(x, "")), "min")
   if_else(is_min & !is.na(num), num / 60, num)
 }
+```
 
+### 2.4.5 Locate the results block in a plate export
+
+Plate reader exports begin with a long instrument header. This finds the
+`Results` marker and returns the column IDs and the raw data lines that
+follow it, stopping at the first blank or non-data line. Errors if the
+file has no `Results` section, which is how non-plate `.txt` files get
+skipped.
+
+``` r
 extract_results_block <- function(lines) {
   results_idx <- which(trimws(lines) == "Results")
   if (length(results_idx) == 0) stop("No Results section found")
@@ -226,7 +310,15 @@ extract_results_block <- function(lines) {
   }
   list(col_ids = col_ids, data_lines = data_lines)
 }
+```
 
+### 2.4.6 Parse a plate export into a data frame
+
+Turns one plate reader export into a long data frame of one row per
+well, carrying the plate ID and (when the filename supplies it) the
+timepoint.
+
+``` r
 parse_plate_export <- function(path) {
   lines <- readLines(path, warn = FALSE)
   res <- extract_results_block(lines)
@@ -253,16 +345,23 @@ parse_plate_export <- function(path) {
       time_hr  = parse_time_hr(path)
     )
 }
+```
 
-# Stable identity of one individual across timepoints. Used for line traces,
-# fold-change baselines, repeated-measures random effects and AUC grouping.
-#
-# The correct fallback depends on where the timepoint comes from:
-#   * FILENAME - the same well is re-read at every timepoint, so plate + well
-#     already identifies the individual.
-#   * LAYOUT   - a well holds a single read, so plate + well cannot span time
-#     and `sample_ID.group` is required (validated when the layout is loaded).
-# Blanks are keyed separately so they never merge with sample traces.
+### 2.4.7 Identify an individual across timepoints
+
+Produces the `trace_id` used for line traces, fold-change baselines,
+repeated-measures random effects and AUC grouping. The correct fallback
+depends on where the timepoint comes from:
+
+- **Filename** — the same well is re-read at every timepoint, so plate +
+  well already identifies the individual.
+- **Layout** — a well holds a single read, so plate + well cannot span
+  time and `sample_ID.group` is required (validated when the layout is
+  loaded).
+
+Blanks are keyed separately so they never merge with sample traces.
+
+``` r
 trace_key <- function(df, timepoint_source = "filename") {
   well_key <- paste(df$plate_id, df$well_id, sep = "_")
   fallback <- if (identical(timepoint_source, "layout")) df$plate_id else well_key
@@ -278,15 +377,29 @@ trace_key <- function(df, timepoint_source = "filename") {
           paste0("blank_", fallback),
           if_else(has_sid, sid, fallback))
 }
+```
 
-# Distinct non-empty values of a column, or character(0) if it is absent.
-# Keeps figure code from failing on layouts that omit a grouping column.
+### 2.4.8 Populated values of a column
+
+Distinct non-empty values of a column, or `character(0)` if the column
+is absent. Keeps figure code from failing on layouts that omit a
+grouping column.
+
+``` r
 col_values <- function(df, col) {
   if (!col %in% names(df)) return(character(0))
   v <- as.character(df[[col]])
   unique(v[!is.na(v) & trimws(v) != ""])
 }
+```
 
+### 2.4.9 Trapezoidal area under the curve
+
+Integrates a value against time by the trapezoid rule, ignoring
+non-finite points. Returns `NA` when fewer than two usable points
+remain.
+
+``` r
 trapezoid_auc <- function(time_hr, value) {
   ok <- is.finite(time_hr) & is.finite(value)
   t <- time_hr[ok]
@@ -296,9 +409,16 @@ trapezoid_auc <- function(time_hr, value) {
   t <- t[ord]; v <- v[ord]
   sum(diff(t) * (head(v, -1) + tail(v, -1)) / 2)
 }
+```
 
-# Shared helper: extract display unit string from a measurement column name.
-# e.g. "area_mm2_measurement" -> "mm²", "weight_mg_measurement" -> "mg"
+### 2.4.10 Measurement unit from a column name
+
+Extracts the display unit from a measurement column name, so axis labels
+follow whichever `*.measurement` columns the layout happens to provide.
+For example `area_mm2_measurement` gives `mm²` and
+`weight_mg_measurement` gives `mg`.
+
+``` r
 parse_meas_unit <- function(col_name) {
   unit_raw <- col_name |>
     str_remove("^metabolism_per_") |>
@@ -312,19 +432,36 @@ parse_meas_unit <- function(col_name) {
     TRUE              ~ unit_raw
   )
 }
+```
 
-# y-axis label for metabolism line plots: "fold change/mm²"
+### 2.4.11 Metabolism y-axis label
+
+Builds the y-axis label for metabolism line plots, e.g.
+`Metabolism (fold change/mm²)`.
+
+``` r
 metabolism_y_label <- function(col_name) {
   paste0("Metabolism (fold change/", parse_meas_unit(col_name), ")")
 }
+```
 
-# y-axis label for AUC box plots: "Metabolism (AUC; mm²)"
+### 2.4.12 AUC y-axis label
+
+Builds the y-axis label for AUC box plots, e.g. `Metabolism (AUC; mm²)`.
+
+``` r
 auc_y_label <- function(metric_name) {
   paste0("Metabolism (AUC; ", parse_meas_unit(metric_name), ")")
 }
+```
 
-# Mean ± SE time series of `value_col`, one coloured line per level of
-# `colour_col`, optionally split into linetypes by a second grouping column.
+### 2.4.13 Mean ± SE time-series plot
+
+Mean ± SE time series of `value_col`, one coloured line per level of
+`colour_col`, optionally split into linetypes by a second grouping
+column. Wells flagged `exclude_from_analysis` are dropped.
+
+``` r
 mean_ts_plot <- function(df, value_col, colour_col, colours, legend_name,
                          y_lab, linetype_col = NULL, linetypes = NULL) {
   if (!is.null(linetype_col) && !linetype_col %in% names(df))
@@ -366,9 +503,14 @@ mean_ts_plot <- function(df, value_col, colour_col, colours, legend_name,
     p <- p + scale_linetype_manual(values = linetypes, name = "Treatment")
   p
 }
+```
 
-# One line per individual (`trace_id`), faceted by `facet_col` and coloured
-# by `colour_col`.
+### 2.4.14 Individual-trace time-series plot
+
+One line per individual (`trace_id`), faceted by `facet_col` and
+coloured by `colour_col`.
+
+``` r
 individual_ts_plot <- function(df, value_col, facet_col, colour_col,
                                colours, legend_name, y_lab) {
   df %>%
@@ -387,29 +529,11 @@ individual_ts_plot <- function(df, value_col, facet_col, colour_col,
 }
 ```
 
-# 4 Load Data
+# 3 Load Data
 
-## 4.1 Plate export files
+## 3.1 Plate export files
 
 ``` r
-# ---------------------------------------------------------------------------
-# CONFIGURATION - normally the only lines that change between experiments.
-# ---------------------------------------------------------------------------
-proj_root <- rprojroot::find_rstudio_root_file()
-data_dir  <- file.path(proj_root, "resazurin", "data", "20260921-mgig-36C")
-out_dir   <- file.path(proj_root, "resazurin", "outputs",
-                       "01.00-resazurin-20260921-mgig-36C")
-
-# Which files in `data_dir` are plate reader exports. The default accepts any
-# .txt; anything without a "Results" block is reported and skipped.
-plate_file_pattern <- "(?i)\\.txt$"
-# ---------------------------------------------------------------------------
-
-fig_dir <- file.path(out_dir, "figures")
-
-dir.create(fig_dir, recursive = TRUE, showWarnings = FALSE)
-dir.create(out_dir, recursive = TRUE, showWarnings = FALSE)
-
 plate_files <- list.files(data_dir, pattern = plate_file_pattern,
                           full.names = TRUE)
 
@@ -435,7 +559,7 @@ str(plate_raw)
      $ plate_id: chr [1:288] "d" "d" "d" "d" ...
      $ time_hr : num [1:288] NA NA NA NA NA NA NA NA NA NA ...
 
-## 4.2 Layout file
+## 3.2 Layout file
 
 ``` r
 layout_path <- file.path(data_dir, "layout.csv")
@@ -571,7 +695,7 @@ str(layout_clean)
      $ timepoint_label      : chr [1:205] "T0" "T0" "T0" "T0" ...
      $ time_hr              : num [1:205] 0 0 0 0 0 0 0 0 0 0 ...
 
-# 5 Merge Plate Data with Layout
+# 4 Merge Plate Data with Layout
 
 ``` r
 dat <- plate_raw %>%
@@ -630,7 +754,7 @@ str(dat)
      $ area_mm2_measurement : num [1:205] 617 950 1249 1004 1267 ...
      $ trace_id             : chr [1:205] "56" "72" "13" "65" ...
 
-## 5.1 Plate consistency check
+## 4.1 Plate consistency check
 
 Checks that every plate x timepoint read covers the same number of
 wells. The expected well count is the mode across all reads. Any plate
@@ -676,9 +800,9 @@ if (nrow(inconsistent_reads) > 0) {
 Plate consistency check passed: all 3 plate(s) read 41 wells at every
 timepoint.
 
-# 6 Raw Fluorescence
+# 5 Raw Fluorescence
 
-## 6.1 Data frame
+## 5.1 Data frame
 
 ``` r
 # Wells in the plate reader output that have no layout entry get all-NA group
@@ -759,7 +883,7 @@ str(raw_df)
      $ area_mm2_measurement : num [1:200] 617 950 1249 1004 1267 ...
      $ trace_id             : chr [1:200] "56" "72" "13" "65" ...
 
-## 6.2 Raw fluorescence, all wells (including blanks)
+## 5.2 Raw fluorescence, all wells (including blanks)
 
 Faceted by plate when every plate spans the whole time series; when the
 layout assigns timepoints a plate may cover only part of it, so the
@@ -809,7 +933,7 @@ ggsave(file.path(fig_dir, "raw_fluor_by_plate.png"),
        p_raw_plates, width = 10, height = 8)
 ```
 
-## 6.3 Mean raw fluorescence by group
+## 5.3 Mean raw fluorescence by group
 
 ``` r
 if (has_fam) {
@@ -831,7 +955,7 @@ if (has_trt) {
 
 ![](01.00-resazurin-20260921-mgig-36C_files/figure-gfm/raw-mean-1.png)<!-- -->
 
-## 6.4 Individual raw fluorescence traces
+## 5.4 Individual raw fluorescence traces
 
 ``` r
 if (has_fam) {
@@ -861,7 +985,7 @@ if (has_trt) {
 
 ![](01.00-resazurin-20260921-mgig-36C_files/figure-gfm/raw-individual-1.png)<!-- -->
 
-## 6.5 Excluded samples
+## 5.5 Excluded samples
 
 Wells flagged `exclude_from_analysis = TRUE` appear in the raw
 fluorescence plots above but are omitted from all analyses that follow.
@@ -883,7 +1007,7 @@ if (nrow(excluded_wells) > 0) {
 
 No wells are excluded from analysis.
 
-# 7 Blank Correction via Fold-Change Normalization
+# 6 Blank Correction via Fold-Change Normalization
 
 T0 is the earliest timepoint present in the dataset (not necessarily 0
 hr). Sample fold-change is expressed relative to each individual’s T0
@@ -897,7 +1021,7 @@ blank fold-change from sample fold-change removes background
 fluorescence drift; all samples start at exactly 0 at T0 by
 construction.
 
-## 7.1 Step 1 – Identify T0 and compute per-sample fold-change
+## 6.1 Step 1 – Identify T0 and compute per-sample fold-change
 
 ``` r
 # T0 = earliest timepoint present in the dataset
@@ -950,7 +1074,7 @@ str(dat_fc)
      $ value_t0             : num [1:205] 597 609 609 631 601 669 655 599 623 614 ...
      $ fold_change          : num [1:205] 1 1 1 1 1 1 1 1 1 1 ...
 
-## 7.2 Step 2 – Blank fold-change reference per plate per timepoint
+## 6.2 Step 2 – Blank fold-change reference per plate per timepoint
 
 ``` r
 # Pooled mean blank RFU at T0 across all T0 plates
@@ -979,7 +1103,7 @@ str(blank_fc_ref)
      $ mean_blank_rfu: num [1:5] 655 792 1067 1033 943
      $ mean_blank_fc : num [1:5] 1 1.21 1.63 1.58 1.44
 
-## 7.3 Step 3 – Subtract blank fold-change from sample fold-change
+## 6.3 Step 3 – Subtract blank fold-change from sample fold-change
 
 ``` r
 samples <- dat_fc %>%
@@ -1014,9 +1138,9 @@ str(samples)
      $ mean_blank_fc        : num [1:200] 1 1 1 1 1 1 1 1 1 1 ...
      $ corrected_fc         : num [1:200] 0 0 0 0 0 0 0 0 0 0 ...
 
-# 8 Blank-Corrected Fold-Change
+# 7 Blank-Corrected Fold-Change
 
-## 8.1 Mean by group
+## 7.1 Mean by group
 
 ``` r
 if (has_fam) {
@@ -1040,7 +1164,7 @@ if (has_trt) {
 
 ![](01.00-resazurin-20260921-mgig-36C_files/figure-gfm/bc-fc-mean-1.png)<!-- -->
 
-## 8.2 Individual traces
+## 7.2 Individual traces
 
 ``` r
 if (has_fam) {
@@ -1070,7 +1194,7 @@ if (has_trt) {
 
 ![](01.00-resazurin-20260921-mgig-36C_files/figure-gfm/bc-fc-individual-1.png)<!-- -->
 
-# 9 Metabolism (Size-Normalised Fold-Change)
+# 8 Metabolism (Size-Normalised Fold-Change)
 
 Blank-corrected fold-change divided by each active measurement column.
 This is “metabolism” as defined in Huffmyer et al.
@@ -1123,7 +1247,7 @@ str(metabolism_df)
      $ corrected_fc                       : num [1:200] 0 0 0 0 0 0 0 0 0 0 ...
      $ metabolism_per_area_mm2_measurement: num [1:200] 0 0 0 0 0 0 0 0 0 0 ...
 
-## 9.1 Mean metabolism by group
+## 8.1 Mean metabolism by group
 
 ``` r
 if (nrow(metabolism_df) > 0) {
@@ -1157,7 +1281,7 @@ if (nrow(metabolism_df) > 0) {
 
 ![](01.00-resazurin-20260921-mgig-36C_files/figure-gfm/metabolism-mean-1.png)<!-- -->
 
-## 9.2 Individual metabolism traces
+## 8.2 Individual metabolism traces
 
 ``` r
 if (nrow(metabolism_df) > 0) {
@@ -1286,7 +1410,7 @@ if (nrow(metabolism_df) > 0) {
 }
 ```
 
-## 9.3 Results
+## 8.3 Results
 
 ``` r
 for (col in names(ts_stats)) {
@@ -1309,7 +1433,7 @@ for (col in names(ts_stats)) {
 }
 ```
 
-### 9.3.1 Metric: metabolism_per_area_mm2_measurement
+### 8.3.1 Metric: metabolism_per_area_mm2_measurement
 
 **Type III ANOVA (Satterthwaite approximation):**
 
@@ -1335,7 +1459,7 @@ for (col in names(ts_stats)) {
 | control - el_niño | 3      |   -4e-04 | 7e-04 | 95.0353 | -0.6404 |  0.5234 |
 | control - el_niño | 4      |   -6e-04 | 7e-04 | 95.0353 | -0.8754 |  0.3836 |
 
-# 10 Area Under the Curve (AUC)
+# 9 Area Under the Curve (AUC)
 
 AUC computed per individual via the trapezoid rule across all
 timepoints. `metabolism_per_*` is the primary metric matching the paper;
@@ -1385,7 +1509,7 @@ str(auc_all)
      $ n_timepoints   : int [1:40] 5 5 5 5 5 5 5 5 5 5 ...
      $ metric         : chr [1:40] "metabolism_per_area_mm2_measurement" "metabolism_per_area_mm2_measurement" "metabolism_per_area_mm2_measurement" "metabolism_per_area_mm2_measurement" ...
 
-## 10.1 AUC summary tables
+## 9.1 AUC summary tables
 
 ``` r
 sum_vars <- intersect(
@@ -1412,7 +1536,7 @@ print(auc_summary)
     1 metabolis… <NA>            control            20 0.0245 0.00610 0.00136 0.0248
     2 metabolis… <NA>            el_niño            20 0.0244 0.00697 0.00156 0.0243
 
-# 11 Statistical Analysis
+# 10 Statistical Analysis
 
 Each individual oyster (`sample_id_group`) is the observational unit.
 The model is built from whichever grouping factors are present: both
@@ -1487,7 +1611,7 @@ stats_results   <- map(
 )
 ```
 
-## 11.1 Results by metric
+## 10.1 Results by metric
 
 ``` r
 for (met in metrics_to_test) {
@@ -1518,7 +1642,7 @@ for (met in metrics_to_test) {
 }
 ```
 
-### 11.1.1 Metric: metabolism_per_area_mm2_measurement
+### 10.1.1 Metric: metabolism_per_area_mm2_measurement
 
 **ANOVA:**
 
@@ -1533,7 +1657,7 @@ for (met in metrics_to_test) {
 |:------------------|---------:|-------:|----:|--------:|--------:|
 | control - el_niño |    1e-04 | 0.0021 |  38 |  0.0499 |  0.9604 |
 
-# 12 AUC Box Plots with Statistical Annotations
+# 11 AUC Box Plots with Statistical Annotations
 
 Significance labels: `***` p \< 0.001, `**` p \< 0.01, `*` p \< 0.05.
 Brackets are drawn only for significant pairs (p \< 0.05). Plots are
@@ -1716,7 +1840,7 @@ for (met in metrics_to_test) {
 
 ![](01.00-resazurin-20260921-mgig-36C_files/figure-gfm/auc-boxplots-1.png)<!-- -->
 
-# 13 Save Output Data
+# 12 Save Output Data
 
 ``` r
 write_csv(auc_all,      file.path(out_dir, "auc_all_metrics.csv"))
