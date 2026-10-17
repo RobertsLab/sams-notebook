@@ -2,7 +2,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
 
 <meta charset="utf-8">
-<meta name="generator" content="quarto-1.6.42">
+<meta name="generator" content="quarto-1.5.57">
 
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
@@ -38,10 +38,10 @@ ul.task-list li input[type="checkbox"] {
 <script src="../../../site_libs/quarto-html/tippy.umd.min.js"></script>
 <script src="../../../site_libs/quarto-html/anchor.min.js"></script>
 <link href="../../../site_libs/quarto-html/tippy.css" rel="stylesheet">
-<link href="../../../site_libs/quarto-html/quarto-syntax-highlighting-dark-b53751a350365c71b6c909e95f209ed1.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<link href="../../../site_libs/quarto-html/quarto-syntax-highlighting-dark.css" rel="stylesheet" id="quarto-text-highlighting-styles">
 <script src="../../../site_libs/bootstrap/bootstrap.min.js"></script>
 <link href="../../../site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
-<link href="../../../site_libs/bootstrap/bootstrap-e518e50a9807db09b51ea894c4c266f8.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="dark">
+<link href="../../../site_libs/bootstrap/bootstrap.min.css" rel="stylesheet" id="quarto-bootstrap" data-mode="dark">
 <script id="quarto-search-options" type="application/json">{
   "location": "navbar",
   "copy-button": true,
@@ -227,10 +227,10 @@ gtag('config', 'G-7483T61T11', { 'anonymize_ip': true});
 
 <p>I previously <a href="../../../posts/2017/2017-10-30-software-installation-pb-jelly-suite-and-blasr-on-emu/index.html">installed</a>. Despite no error messages being output, I noticed something odd during my quick post-assembly stats check: <a href="../../../posts/2017/2017-11-14-assembly-comparison-oly-assemblies-using-quast/index.html">The PB Jelly numbers were identical to the input reference file</a>. This seemed very strange and made me decide to look a bit deeper in the PB Jelly output files.</p>
 <p>As it turns out, PB Jelly did not complete successfully! Here’s a look at one of the output files (notice the error messages!):</p>
-<p><img src="https://owl.fish.washington.edu/Athaliana/20171120_pbjellly_error.png" class="img-fluid">(http://owl.fish.washington.edu/Athaliana/20171120_pbjellly_error.png)</p>
+<p><img src="./20171120_pbjellly_error.png" class="img-fluid">(./20171120_pbjellly_error.png)</p>
 <p>Looking around the internet seemed to suggest that the issue could be that the <code>blasr</code> program wasn’t in my system PATH (<code>blasr</code> is located in: <code>/home/shared/bin</code>). So, I updated that, since <code>/home/shared/bin</code> wasn’t in the system PATH!:</p>
-<p><img src="https://owl.fish.washington.edu/Athaliana/20171120_update_etc_environment.png" class="img-fluid">(http://owl.fish.washington.edu/Athaliana/20171120_update_etc_environment.png)</p>
-<p><img src="https://owl.fish.washington.edu/Athaliana/20171120_updated_PATH.png" class="img-fluid">(http://owl.fish.washington.edu/Athaliana/20171120_updated_PATH.png)</p>
+<p><img src="./20171120_update_etc_environment.png" class="img-fluid">(./20171120_update_etc_environment.png)</p>
+<p><img src="./20171120_updated_PATH.png" class="img-fluid">(./20171120_updated_PATH.png)</p>
 <p>After doing this, I noticed that the PATH assignment in the <code>/etc/environment</code> file is incorrect - it has the $PATH variable appended to the front of the list. This results in the system PATH appending itself to itself over and over again, resulting in a ridiculously long list (like in the screen cap directly above this text). So, I removed that portion and re-sourced the <code>/etc/environment</code> file to tidy things up.</p>
 <p>Fingers crossed this will resolve the issue…</p>
 
@@ -319,6 +319,8 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
   });
   clipboard.on('success', onCopySuccess);
   if (window.document.getElementById('quarto-embedded-source-code-modal')) {
+    // For code content inside modals, clipBoardJS needs to be initialized with a container option
+    // TODO: Check when it could be a function (https://github.com/zenorocha/clipboard.js/issues/860)
     const clipboardModal = new window.ClipboardJS('.code-copy-button[data-in-quarto-modal]', {
       text: getTextToCopy,
       container: window.document.getElementById('quarto-embedded-source-code-modal')
@@ -429,6 +431,7 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
       if (window.Quarto?.typesetMath) {
         window.Quarto.typesetMath(note);
       }
+      // TODO in 1.5, we should make sure this works without a callout special case
       if (note.classList.contains("callout")) {
         return note.outerHTML;
       } else {

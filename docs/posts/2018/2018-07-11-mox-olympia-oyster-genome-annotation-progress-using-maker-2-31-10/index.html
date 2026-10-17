@@ -2,7 +2,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
 
 <meta charset="utf-8">
-<meta name="generator" content="quarto-1.6.42">
+<meta name="generator" content="quarto-1.5.57">
 
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
@@ -38,10 +38,10 @@ ul.task-list li input[type="checkbox"] {
 <script src="../../../site_libs/quarto-html/tippy.umd.min.js"></script>
 <script src="../../../site_libs/quarto-html/anchor.min.js"></script>
 <link href="../../../site_libs/quarto-html/tippy.css" rel="stylesheet">
-<link href="../../../site_libs/quarto-html/quarto-syntax-highlighting-dark-b53751a350365c71b6c909e95f209ed1.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<link href="../../../site_libs/quarto-html/quarto-syntax-highlighting-dark.css" rel="stylesheet" id="quarto-text-highlighting-styles">
 <script src="../../../site_libs/bootstrap/bootstrap.min.js"></script>
 <link href="../../../site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
-<link href="../../../site_libs/bootstrap/bootstrap-e518e50a9807db09b51ea894c4c266f8.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="dark">
+<link href="../../../site_libs/bootstrap/bootstrap.min.css" rel="stylesheet" id="quarto-bootstrap" data-mode="dark">
 <script id="quarto-search-options" type="application/json">{
   "location": "navbar",
   "copy-button": true,
@@ -241,7 +241,7 @@ gtag('config', 'G-7483T61T11', { 'anonymize_ip': true});
 <li><p>I figured out that it produces a generic feature format (GFF) file for each contig.</p></li>
 <li><p>Decided to search for the first contig GFF and look at it’s last modified date. This would tell me if it was newly generated (i.e.&nbsp;on the date that the job was restarted after the maintenance shutdown) or if it was old. Additionally, if there were more than one of these files, then I’d also know that Maker was just starting at the beginning and writing data to a different location.</p></li>
 </ol>
-<p><img src="https://owl.fish.washington.edu/Athaliana/20180711_mox_maker_progress_01.png" class="img-fluid"></p>
+<p><img src="./20180711_mox_maker_progress_01.png" class="img-fluid"></p>
 <p>This shows:</p>
 <pre><code>1. Only one copy of Contig0.gff exists.
 
@@ -251,14 +251,14 @@ gtag('config', 'G-7483T61T11', { 'anonymize_ip': true});
 <ol start="3" type="1">
 <li>Check the slurm output file for info.</li>
 </ol>
-<p><img src="https://owl.fish.washington.edu/Athaliana/20180711_mox_maker_progress_02.png" class="img-fluid"></p>
+<p><img src="./20180711_mox_maker_progress_02.png" class="img-fluid"></p>
 <p>This reveals this important piece of info:</p>
 <blockquote class="blockquote">
 MAKER WARNING: The file 20180529_oly_annotation_01.maker.output/20180529_oly_annotation_01_datastore/AC/68/Contig215522//theVoid.Contig215522/0/Contig215522.0.all.rb.out did not finish on the last run
 </blockquote>
 <p>All of these taken together lead me to confidently conclude that Maker is <em>not</em> restarting from the beginning and is, indeed, continuing where it left off. WHEW!</p>
 <p>Just for kicks, I also ran a count of GFF files to see where this stands so far:</p>
-<p><img src="https://owl.fish.washington.edu/Athaliana/20180711_mox_maker_progress_03.png" class="img-fluid"></p>
+<p><img src="./20180711_mox_maker_progress_03.png" class="img-fluid"></p>
 <p>Wow! 622,010 GFFs!!!</p>
 <p>Finally, for posterity, here’s the SLURM script I used to submit this job, back in May! I’ll have all of the corresponding genome files, proteome files, transcriptome files, etc. on one of our servers once the job completes.</p>
 <pre><code>&lt;code&gt;
@@ -414,6 +414,8 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
   });
   clipboard.on('success', onCopySuccess);
   if (window.document.getElementById('quarto-embedded-source-code-modal')) {
+    // For code content inside modals, clipBoardJS needs to be initialized with a container option
+    // TODO: Check when it could be a function (https://github.com/zenorocha/clipboard.js/issues/860)
     const clipboardModal = new window.ClipboardJS('.code-copy-button[data-in-quarto-modal]', {
       text: getTextToCopy,
       container: window.document.getElementById('quarto-embedded-source-code-modal')
@@ -524,6 +526,7 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
       if (window.Quarto?.typesetMath) {
         window.Quarto.typesetMath(note);
       }
+      // TODO in 1.5, we should make sure this works without a callout special case
       if (note.classList.contains("callout")) {
         return note.outerHTML;
       } else {

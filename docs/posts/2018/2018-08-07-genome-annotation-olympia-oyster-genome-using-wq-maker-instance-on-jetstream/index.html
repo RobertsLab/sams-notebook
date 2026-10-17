@@ -2,7 +2,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
 
 <meta charset="utf-8">
-<meta name="generator" content="quarto-1.6.42">
+<meta name="generator" content="quarto-1.5.57">
 
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
@@ -38,10 +38,10 @@ ul.task-list li input[type="checkbox"] {
 <script src="../../../site_libs/quarto-html/tippy.umd.min.js"></script>
 <script src="../../../site_libs/quarto-html/anchor.min.js"></script>
 <link href="../../../site_libs/quarto-html/tippy.css" rel="stylesheet">
-<link href="../../../site_libs/quarto-html/quarto-syntax-highlighting-dark-b53751a350365c71b6c909e95f209ed1.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<link href="../../../site_libs/quarto-html/quarto-syntax-highlighting-dark.css" rel="stylesheet" id="quarto-text-highlighting-styles">
 <script src="../../../site_libs/bootstrap/bootstrap.min.js"></script>
 <link href="../../../site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
-<link href="../../../site_libs/bootstrap/bootstrap-e518e50a9807db09b51ea894c4c266f8.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="dark">
+<link href="../../../site_libs/bootstrap/bootstrap.min.css" rel="stylesheet" id="quarto-bootstrap" data-mode="dark">
 <script id="quarto-search-options" type="application/json">{
   "location": "navbar",
   "copy-button": true,
@@ -296,7 +296,7 @@ Efficient Use of Resources:
 <hr>
 <p>Now, on to how I got the run going…</p>
 <p>I initiated the Olympia oyster genome annotation using a <a href="https://use.jetstream-cloud.org/application/images/492">WQ-MAKER instance (MAKER 2.31.9 with CCTools v3.1) on Jetstream</a>:</p>
-<p><img src="https://owl.fish.washington.edu/Athaliana/20180807_wq-maker_04.png" class="img-fluid"></p>
+<p><img src="./20180807_wq-maker_04.png" class="img-fluid"></p>
 <hr>
 <p>I followed the excellent step-by-step directions here:</p>
 <ul>
@@ -305,19 +305,19 @@ Efficient Use of Resources:
 <p>The “MASTER” machine was a “m1.xlarge” machine (i.e.&nbsp;CPU: 24, Mem: 60 GB, Disk: 60 GB).</p>
 <p>I attached a 1TB volume to the MASTER machine.</p>
 <p>I set up the run using 21 “WORKER” machines. Twenty WORKERS were “m1.large” machines (i.e.&nbsp;CPU: 10, Mem: 30 GB, Disk: 60 GB). The remaining WORKER was set at “m1.xlarge” (i.e.&nbsp;CPU: 24, Mem: 60 GB, Disk: 60 GB) to use up the rest of our allocated memory.</p>
-<p><img src="https://owl.fish.washington.edu/Athaliana/20180807_wq-maker_01.png" class="img-fluid"></p>
+<p><img src="./20180807_wq-maker_01.png" class="img-fluid"></p>
 <hr>
 <p>MASTER machine was initialized with the following command:</p>
 <pre><code>&lt;code&gt;nohup wq_maker -contigs-per-split 1 -cores 1 -memory 2048 -disk 4096 -N wq_maker_oly${USER} -d all -o master.dbg -debug_size_limit=0 -stats test_out_stats.txt &gt; log_file.txt 2&gt;&amp;1 &amp;&lt;/code&gt;</code></pre>
 <p>Each WORKER was started with the following command:</p>
 <pre><code>&lt;code&gt;nohup work_queue_worker -N wq_maker_oly${USER} --cores all --debug-rotate-max=0 -d all -o worker.dbg &gt; log_file_2.txt 2&gt;&amp;1 &amp;&lt;/code&gt;</code></pre>
 <p>When starting each WORKER, an error message was generated, but this doesn’t seem to have any impact on the ability of the program to run:</p>
-<p><img src="https://owl.fish.washington.edu/Athaliana/20180807_wq-maker_worker_error.png" class="img-fluid"></p>
+<p><img src="./20180807_wq-maker_worker_error.png" class="img-fluid"></p>
 <hr>
 <p>I checked on the status of the run and you can see that there are 22 WORKERS and 15,568 files “WAITING”. BUT, there are 159,429 contigs in our genome FastA!</p>
 <p>Why don’t these match??!!</p>
 <p>This is because WQ-MAKER splits the genome FastA into smaller FastA files containg only 10 sequences each. This is why we see 10-fold fewer files being processed than sequences in our genome file.</p>
-<p><img src="https://owl.fish.washington.edu/Athaliana/20180807_wq-maker_03.png" class="img-fluid"></p>
+<p><img src="./20180807_wq-maker_03.png" class="img-fluid"></p>
 <hr>
 <p>Here is the rest of the nitty gritty details:</p>
 <section id="genome-file" class="level5">
@@ -519,6 +519,8 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
   });
   clipboard.on('success', onCopySuccess);
   if (window.document.getElementById('quarto-embedded-source-code-modal')) {
+    // For code content inside modals, clipBoardJS needs to be initialized with a container option
+    // TODO: Check when it could be a function (https://github.com/zenorocha/clipboard.js/issues/860)
     const clipboardModal = new window.ClipboardJS('.code-copy-button[data-in-quarto-modal]', {
       text: getTextToCopy,
       container: window.document.getElementById('quarto-embedded-source-code-modal')
@@ -629,6 +631,7 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
       if (window.Quarto?.typesetMath) {
         window.Quarto.typesetMath(note);
       }
+      // TODO in 1.5, we should make sure this works without a callout special case
       if (note.classList.contains("callout")) {
         return note.outerHTML;
       } else {
